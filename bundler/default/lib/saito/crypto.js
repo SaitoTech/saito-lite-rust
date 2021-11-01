@@ -1,15 +1,11 @@
 'use strict'
 
 const crypto            = require('crypto-browserify');
-// server
-//const blake3		= require('blake3');
-// javascript for browser
 const miniBlake3    	= require('mini-blake3');
 const sha256            = require('sha256');
 const node_cryptojs     = require('node-cryptojs-aes');
 const { randomBytes }   = require('crypto');
 const secp256k1         = require('secp256k1');
-//const secp256k1         = require('secp256k1/elliptic')
 const CryptoJS          = node_cryptojs.CryptoJS;
 const JsonFormatter     = node_cryptojs.JsonFormatter;
 const Base58            = require("base-58");
@@ -35,7 +31,6 @@ class Crypto {
    */
   hash(data="") {
     return miniBlake3.hash(data);
-    //return blake3.newRegular().update(data).finalize();
   }
 
 
