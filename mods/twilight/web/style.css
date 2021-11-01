@@ -1,0 +1,460 @@
+.noncard {
+  color: black;
+  padding: 10px;
+}
+
+.cardbox-menu.cardbox-card {
+  bottom: 10px;
+  width: 83%;
+}
+
+.hud-long {
+  max-width:90vw;
+}
+
+.status-message {
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0px;
+}
+
+.statistics-overlay {
+  min-width:50vw;
+  min-height: 50vh;
+  padding: 10px;
+  background-color: whitesmoke;
+}
+.statistics-round-table {
+  min-width:50vw;
+  text-align: center;
+}
+
+.china_card_status_us_faceup {
+  background-color: #3277de;
+}
+.china_card_status_us_facedown {
+  background-color: #063b8a;
+}
+.china_card_status_ussr_faceup {
+  background-color: #8a0612;
+}
+.china_card_status_ussr_facedown {
+  background-color: #ea3041;
+}
+.china_card_status {
+  position: absolute;
+  width: 130px;
+  height: 100px;
+  left: 2040px;
+  top: 570px;
+  color: white;
+  font-weight: heavy;
+  font-size: 2em;
+}
+
+.formosan_resolution {
+  display: none;
+  position: absolute;
+  z-index: 0;
+  background-image: url("img/Formosan.png");
+  background-size: cover;
+}
+.removecards li {
+  float: left;
+  min-width: 300px;
+  font-size: 15px;
+  list-style-type: none;
+}
+.game_details_select {
+  max-width: 300px;
+}
+.game_details {
+  max-width: 100%;
+}
+
+.statistics-table {
+  cell-padding: 50px;
+  cell-spacing: 5px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.statistics-info {
+  margin-top:20px;
+}
+.zoom_button {
+ border: 1px solid #707070;
+ background-color: #646464;
+ -webkit-border-radius: 4px;
+ -moz-border-radius: 4px;
+ border-radius: 4px;
+ font-size:2em;
+ color: #FFFFFF;
+ height: 40px;
+ width: 40px;
+ text-align: center;
+ vertical-align: middle;
+ line-height: 20px;
+}
+.action_round_cover {
+  position: absolute;
+  background-color: black;
+}
+
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.main {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+
+  margin-top: unset;
+}
+
+
+/** Modal **/
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Modal Header */
+.modal_header {
+  padding: 2px 16px;
+  color: white;
+}
+
+/* Modal Body */
+.modal_body {padding: 2px 16px; color: white;}
+
+#modal_header_text {
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+  text-decoration: center;
+}
+
+#modal_body_text { margin: 1em 0 1em 0; }
+
+/* Modal Footer */
+.modal_footer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 16px;
+  color: white;
+}
+
+/* Button for closing the modal */
+.modal_ok_button {
+  float: right;
+  padding: 12px;
+  border-radius: 7px;
+  margin: 10px;
+  font-size: 1em;
+  color: white;
+  border: unset;
+  color:white;
+  width: 125px;
+  background-color: rgb(0, 190, 10);
+}
+
+/* Modal Content */
+.modal_content {
+  position: absolute;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 33%;
+  min-width: 250px;
+  max-width: 600px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  background: #4e4e4e;
+  border-radius: 5px;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.connection_monitor {
+  position: fixed;
+  display: none;
+  min-height: 30px;
+  z-index: 90000;
+  background: #ef6666;
+  font-size: 1.8em;
+  padding: 15px;
+}
+
+.link {
+  border-bottom: 1px dashed;
+}
+
+.dashed {
+  border-bottom: 1px dashed;
+}
+
+.logcard {
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 1px dashed;
+}
+
+.gameboard {
+  position: relative;
+  /*background-image: url("img/TS Map-11.jpg");*/
+  background-image: url("img/TS Map-11-medium.jpg");
+  /*background-image: url("img/TS Map-11-small.jpg");*/
+  background-size: cover;
+  width: 2550px;
+  height: 1650px;
+
+
+/*   3D Perspective
+  -webkit-transform: perspective(200px) rotateX(5deg);
+  -moz-transform: perspective(200px) rotateX(5deg);
+  -ms-transform: perspective(200px) rotateX(5deg);
+  -o-transform: perspective(200px) rotateX(5deg);
+  transform: perspective(200px) rotateX(5deg); */
+
+}
+
+#back_button {
+  font-size: 1.2em;
+  /* position: absolute; */
+  cursor:pointer;
+  width:30px;
+  height:30px;
+}
+
+
+.round {
+  position: absolute;
+  background-image: url("img/Turn.svg");
+  background-size: cover;
+}
+
+.action_round_us {
+  position: absolute;
+  background-image: url("img/AmericanActionRound.svg");
+  background-size: cover;
+  display: all;
+}
+
+.action_round_ussr {
+  position: absolute;
+  background-image: url("img/SovietActionRound.svg");
+  background-size: cover;
+  display: all;
+}
+
+.defcon {
+  position: absolute;
+  background-image: url("img/Radiation_warning_symbol.svg");
+  background-size: cover;
+}
+
+.vp {
+  position: absolute;
+  background-image: url("img/VPs.svg");
+  background-size: cover;
+}
+
+.space_race_us {
+  position: absolute;
+  background-image: url("img/AmericanSpaceRace.svg");
+  background-size: cover;
+}
+
+.space_race_ussr {
+  position: absolute;
+  background-image: url("img/SovietSpaceRace.svg");
+  background-size: cover;
+}
+
+.milops_us {
+  position: absolute;
+  background-image: url("img/AmericanMilitaryOperations.svg");
+  background-size: cover;
+}
+
+.milops_ussr {
+  position: absolute;
+  background-image: url("img/SovietMilitaryOperations.svg");
+  background-size: cover;
+}
+
+.inline {
+  display: inline;
+}
+
+.card {
+  cursor: pointer;
+}
+
+.link {
+  display: inline;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.country {
+  position: absolute;
+  cursor: pointer;
+}
+
+.showcard {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cardbox_event_blocker {
+ position:absolute;
+ width:0px;
+ height:0px;
+ background-color: black;
+ z-index: 89999;
+ display:none;
+ opacity: 0.4;
+}
+
+.us {
+  display: inline;
+  float: left;
+}
+
+.ussr {
+  display: inline;
+  float: left;
+}
+
+.us_control {
+  color: #FFFFFF;
+  background-image: url("img/AmericanInfluenceControlledBackground.png");
+  background-size: cover;
+  text-align: center;
+  line-height: 48px;
+  padding-top:2px;
+}
+
+.us_uncontrol {
+  color: #008fd5;
+  background-image: url("img/AmericanInfluenceUnControlledBackground.png");
+  background-size: cover;
+  text-align: center;
+  line-height: 48px;
+  padding-top:2px;
+}
+
+.ussr_control {
+  color: #FFFFFF;
+  background-image: url("img/SovietInfluenceControlledBackground.png");
+  background-size: cover;
+  text-align: center;
+  line-height: 48px;
+  padding-top:2px;
+}
+
+.ussr_uncontrol {
+  color: #d2232a;
+  background-size: cover;
+  background-image: url("img/SovietInfluenceUnControlledBackground.png");
+  text-align: center;
+  line-height: 48px;
+  padding-top:2px;
+}
+
+.loader {
+  width: 100%;
+  max-width: 600px;
+}
+
+.event_tile {
+  display:none;
+  float:right;
+}
+
+
+.cardlist-container {
+  height: 80vh;
+  width: 80vw;
+  overflow-y: scroll;
+}
+.cardlist-card {
+  position: relative;
+  float:left;
+  margin-right:10px;
+  margin-bottom: 10px;
+  height: 30vh;
+  max-height: 520px;
+  width: calc(30vh * 0.72110);
+  max-width: 375px;
+  background-image: url("/twilight/img/Base.svg");
+  z-index: 2;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.cardimg-hud {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0px;
+  left: 0px;
+}
+
+.cardimg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.cardbox-hud {
+  background-image: url(/twilight/img/Base.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  max-width: 120px;
+}
+.cardbox-card {
+  background-image: url("/twilight/img/Base.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+
+
+
+
+
+

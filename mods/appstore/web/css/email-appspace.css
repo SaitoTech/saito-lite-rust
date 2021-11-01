@@ -1,0 +1,312 @@
+.appspace-appstore-container {
+  display: grid;
+  /* grid-template-rows: appstore-header-featured appstore-app-list appstore-app-viewmore-header appstore-header-browse appstore-browse; */
+  grid-column-gap: 15px;
+  grid-row-gap: 20px;
+  grid-auto-flow: row;
+  align-items: center;
+}
+
+#appstore-search-box {
+  border: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+.appstore-header-featured {
+}
+
+.app-space {
+  border: 1px solid #8888;
+  padding: 0 1em 1em;
+  box-shadow: 0px 0px 3px 1px rgba(220, 220, 220, 0.75);
+}
+
+.appstore-app-list {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr 1fr;
+}
+
+.appstore-app-list-details {}
+
+.appstore-app-item-description {
+  overflow-y: auto;
+  grid-column: 1 / span 2;
+  min-height: 2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appstore-app-item {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 2fr 3fr;
+  cursor: pointer;
+  border: 1px solid var(--saito-red);
+  padding: 10px;
+}
+
+.appstore-app-item-categories {
+  grid-column: 1 / span 2;
+  display: none;
+}
+
+.appstore-overlay-container .appstore-header-featured .appstore-overlay-searchbox {
+  padding: 0px;
+  font-size: 20px;
+}
+.appstore-overlay-container .appstore-header-featured .appstore-header-title {
+  font-size: 20px;
+}
+
+
+.appstore-app-item-categories .category {
+  display: inline-block;
+  margin: 0 5px 0 0;
+}
+
+.appstore-app-item-image {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.appstore-app-item-image img {
+  height: 100%;
+  width: 100%;
+}
+
+.appstore-app-item-name {
+  font-size: 16px;
+  color: #000;
+  font-weight: bold;
+}
+
+.appstore-app-item-rating {
+  font-size: 14px;
+  color: #605f5f;
+}
+
+.appstore-app-item-publisher {
+  margin: 0;
+}
+
+.appstore-app-item-publisher div {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.category {
+  border: 1px solid var(--saito-red);
+  padding: 5px 10px 3px;
+  border-radius: 20px;
+  color: #fff;
+  background: var(--saito-red);
+}
+
+.appstore-app-install-btn {
+  padding: 5px 45px 5px 45px;
+  width: 100%;
+  /* margin:0 auto; */
+  /* margin-top: 10px;
+    margin-bottom: 15px; */
+}
+
+.appstore-app-viewmore-header {
+  justify-self: center;
+  align-self: center;
+}
+
+.appstore-browse-list {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-items: center;
+  grid-gap: 1em;
+}
+
+.appstore-bundler-install-notice {
+  font-size: 1.2em;
+  height: 300px;
+  width: 600px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid var(--saito-red);
+  background-color: var(--saito-cyber-black);
+  color: #fff;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  padding: 1em;
+  transform: translate(-50%, -50%);
+}
+
+.appstore-browse-item {
+  display: grid;
+  grid-template-areas: "appstore-browse-header appstore-browse-icon" "appstore-browse-content appstore-browse-content";
+  width: 100%;
+  height: 100%;
+  padding: 1em;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+  font-family: visuelt-medium;
+  /* margin-right: 15px;
+    margin-top: 20px; */
+}
+
+.appstore-sort-item-name {
+  grid-area: appstore-browse-header;
+  font-weight: bold;
+}
+
+.appstore-sort-item-icon {
+  /* position: relative; */
+  /* bottom: 60px;
+    left: 120px; */
+  justify-self: flex-end;
+  grid-area: appstore-browse-icon;
+  color: var(--saito-red);
+}
+
+.appstore-sort-item-amount {
+  /* margin-left: 15px; */
+  grid-area: appstore-browse-content;
+  font-size: 14px;
+  color: #868282;
+}
+
+/** APPSTORE PUBLISH **/
+
+.appstore-publish {}
+
+.appstore-publish h3 {
+  margin-right: 1em;
+}
+
+#appstore-publish-form {
+  margin-top: 10px;
+}
+
+#appstore-publish-moddrop {
+  display: none;
+  width: 400px;
+  height: 220px;
+  border-style: dashed;
+  border-width: 2px;
+  position: relative;
+  border-radius: 15px;
+  text-align: center;
+  line-height: 220px;
+  color: #414040;
+  font-family: visuelt-medium;
+  letter-spacing: 0.05em;
+  font-size: 20px;
+  border-color: #bbb;
+  margin: 20px 0 20px 0;
+}
+
+#appstore-publish-moddrop-inside {
+  background-color: transparent;
+  border-radius: 15px;
+  width: 404px;
+  height: 224px;
+  position: absolute;
+  top: -2px;
+  left: -2px;
+}
+
+@media only screen and (max-width: 900px) {
+  #appstore-publish-moddrop {
+    width: 100%;
+  }
+  #appstore-publish-moddrop-inside{
+      width: 100%;
+  }
+
+}
+.submit-file-btn-box {
+  width: 400px;
+  height: auto;
+  margin-top: 20px;
+}
+
+#submit-file-btn {
+  display: block;
+  margin: 0 auto;
+}
+
+.appstore-app-install-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0009;
+  width: 100%;
+  height: 100%;
+  font-size: 1.1em;
+}
+
+.appstore-app-install-content {
+  width: 80%;
+  max-width: 800px;
+  min-width: 400px;
+  padding: 1em;
+  color: var(--saito-white);
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  line-height: 1.5em;
+  background-color: var(--saito-cyber-black);
+  margin: auto;
+  position: relative;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: grid;
+    grid-gap: 1em;
+    grid-template-columns: 1fr 3fr;
+}
+
+.appstore-app-install-version {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.appstore-app-install-image img {
+  width: 250px;
+}
+
+.appstore-app-istall-details.grid-2 {
+  grid-gap: 0.5em;
+  margin: 0;
+}
+
+.appstore-app-istall-details.grid-2 div{
+  padding: 0;
+  margin: 0;
+}
+
+.appstore-app-install-name {
+  position: absolute;
+  z-index: 5;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 0 2px #000;
+}
+
+.appstore-app-install-image {
+  position: relative;
+}
+
+.appstore-app-install-description {
+  height: 3em;
+  overflow-y: auto;
+  margin: 0 0 1em 0;
+}
+
+.grid-2 div {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
