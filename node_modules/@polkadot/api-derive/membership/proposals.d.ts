@@ -1,0 +1,10 @@
+import type { Observable } from 'rxjs';
+import type { ApiInterfaceRx } from '@polkadot/api/types';
+import type { u32 } from '@polkadot/types';
+import type { Hash } from '@polkadot/types/interfaces';
+import type { DeriveCollectiveProposal } from '../types';
+export declare function hasProposals(instanceId: string, api: ApiInterfaceRx): () => Observable<boolean>;
+export declare function proposal(instanceId: string, api: ApiInterfaceRx): (hash: Hash | Uint8Array | string) => Observable<DeriveCollectiveProposal | null>;
+export declare function proposalCount(instanceId: string, api: ApiInterfaceRx): () => Observable<u32 | null>;
+export declare function proposalHashes(instanceId: string, api: ApiInterfaceRx): () => Observable<Hash[]>;
+export declare function proposals(instanceId: string, api: ApiInterfaceRx): () => Observable<DeriveCollectiveProposal[]>;

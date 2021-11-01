@@ -1,8 +1,8 @@
 # Welcome to Saito
 
-Saito is a **Tier 1 Blockchain Protocol** that provides **high throughput**. The network accomplishes this with a consensus mechanism that pays the ISPs in the network instead of miners and stakers. The technical solution unleashes a distributed, global PKI layer.
+Saito is a **Tier 1 Blockchain Protocol** that provides **high throughput**. The network accomplishes this with a consensus mechanism that pays nodes in the network for the collection and sharing of fees. This incenrtivizes spending on whatever user-facing infrastructure or services provide value to users, instead of extractive activities of mining and staking which require participants to find external business models to support the network.
 
-If you need to get in touch with us, please reach out anytime.
+This client is the latest iteration of the in-browser software that can follow Saito-consensus and run applications in the browser.
 
 The Saito Team
 info@saito.tech

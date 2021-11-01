@@ -1,6 +1,7 @@
 'use strict'
 
 const crypto            = require('crypto-browserify');
+const blake3		= require('blake3');
 const sha256            = require('sha256');
 const node_cryptojs     = require('node-cryptojs-aes');
 const { randomBytes }   = require('crypto');
@@ -25,11 +26,11 @@ class Crypto {
   ///////////////////////////////////
 
   /**
-   * Hashes a string using sha256
+   * Hashes a string using blake3
    * @param {string} data string data
-   * @returns {string} sha256 hash
+   * @returns {string} blake3 hash
    */
-  hash(data="") { return sha256(data); }
+  hash(data="") { return blake3.hash(data); }
 
 
   //////////////////////////

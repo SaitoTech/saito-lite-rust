@@ -49,8 +49,6 @@ class Saito {
         _self.options.runtime[uvar] = uval;
       });
 
-
-
       this.wallet.initialize();
       this.mempool.initialize();
       this.keys.initialize();

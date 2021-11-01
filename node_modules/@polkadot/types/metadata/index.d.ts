@@ -1,0 +1,2 @@
+export { Metadata } from './Metadata';
+export { decorateConstants, decorateExtrinsics, decorateStorage, expandMetadata } from './decorate';

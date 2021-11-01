@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jsonTreeViewer</title>
+    <meta charset="utf-8" />
+    
+    <link href="libs/app/reset.css" rel="stylesheet" />
+    <link href="libs/app/app.css" rel="stylesheet" />
+    <link href="libs/jsonTree/jsonTree.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
+    
+    <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+    <!--
+        JSON Tree Viewer
+        http://github.com/summerstyle/jsonTreeViewer
+        
+        Copyright 2017 Vera Lobacheva (http://iamvera.com)
+        Released under the MIT license (LICENSE.txt)
+    -->
+</head>
+<body class="jsontree_bg">
+    <noscript>
+        <div id="noscript">
+        Please, enable javascript in your browser
+        </div>
+    </noscript>
+    
+    <!-- Buttons -->
+    <header id="header">
+        <h1 id="logo">
+            <a href="http://github.com/summerstyle/jsonTreeViewer">
+                jsonTreeViewer
+            </a>
+        </h1>
+        <nav id="nav" class="clearfix">
+            <ul class="menu menu_level1">
+                <li data-action="load" class="menu__item">
+                    <span class="menu__item-name">load</span>
+                </li>
+                <li data-action="expand" class="menu__item">
+                    <span class="menu__item-name">expand all</span>
+                </li>
+                <li data-action="collapse" class="menu__item">
+                    <span class="menu__item-name">collapse all</span>
+                </li>
+                <li data-action="find_and_mark" class="menu__item">
+                    <span class="menu__item-name">find and mark</span>
+                </li>
+                <li data-action="unmark_all" class="menu__item">
+                    <span class="menu__item-name">unmark all</span>
+                </li>
+                <li data-action="source" class="menu__item">
+                    <span class="menu__item-name">show source</span>
+                </li>
+                <li data-action="help" class="menu__item">
+                    <span class="menu__item-name">?</span>
+                </li>
+            </ul>
+        </nav>
+        <div id="coords"></div>
+        <div id="debug"></div>
+    </header>
+    
+    <!-- json tree -->
+    <div id="wrapper">
+    
+        <div id="tree"></div>
+    
+    </div>
+       
+    <!-- Help block -->
+    <div id="help">
+        <div class="txt">
+            <section>
+                <h5>1. Load json</h5>
+                <p>
+                    Click on "load" button and load a json-string to opened form
+                </p>
+            </section>
+            <section>
+                <h5>2. Expand/collapse single nodes</h5>
+                <p>
+                    By click on properties names (recursively - by <span class="key">CTRL/META</span> + click)
+                </p>
+            </section>
+            <section>
+                <h5>3. Expand/collapse all tree nodes</h5>
+                <p>
+                    By click on "expand all" and "collapse all" buttons
+                </p>
+            </section>
+            <section>
+                <h5>4. Mark/unmark node labels</h5>
+                <p>
+                    By click on label with pressed ALT key
+                </p>
+            </section>
+            <section>
+                <h5>5. Show JSONPath of node</h5>
+                <p>
+                    By click on label with pressed SHIFT key
+                </p>
+            </section>
+            <footer>
+                <a href="http://github.com/summerstyle/jsonTreeViewer">jsonTreeViewer</a><br />
+                &copy; 2017 Vera Lobacheva<br />
+                MIT License
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Load json block -->
+    <form id="load_json_form" class="form" data-header="Load json">
+        <section>
+            <p>
+                <label for="code_input">JSON:</label>
+            </p>
+            <p>
+                <textarea id="code_input"></textarea>
+            </p>
+        </section>
+        <button id="load_code_button">Load</button>
+    </form>
+
+    <!-- Find nodes form -->
+    <form id="find_nodes_form" class="form" data-header="Find nodes">
+        <section>
+            <p>
+                <label>
+                    <input type="radio" 
+                        name="nodes_search_type" 
+                        value="label" 
+                        id="nodes_search_by_label"
+                        checked="checked" />
+                    By label name:
+                </label>
+            </p>
+            <input type="text" id="search_by_label_name" />
+        </section>
+        <section>
+            <p>
+                <label>
+                    <input type="radio" 
+                        name="nodes_search_type"
+                        id="nodes_search_by_type" 
+                        value="type" />
+                    By value type:
+                </label>
+            </p>
+            <ul class="checkboxes">
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="string" />
+                        string
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="number" />
+                        number
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="boolean" />
+                        boolean
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="null" />
+                        null
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="object" />
+                        object
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="checkbox" name="nodes_type" value="array" />
+                        array
+                    </label>
+                </li>
+            </ul>
+        </section>
+        <button id="find_button">Find and mark</button>
+    </form>
+
+    <!-- For source JSON -->
+    <div class="code" id="source_json" data-header="Source JSON"></div>
+    
+    <script src="libs/app/App.js"></script>
+    <script src="libs/jsonTree/jsonTree.js"></script>
+    <script src="jsonTreeViewer.js"></script>
+    <script>
+        var example = '{\
+            "firstName": "John",\
+            "lastName": "Smith",\
+            "isAlive": true,\
+            "age": 25,\
+            "company": null,\
+            "height_cm": 167.64,\
+            "address": {\
+                "streetAddress": "21 2nd Street",\
+                "city": "New York",\
+                "state": "NY",\
+                "postalCode": "10021-3100"\
+            },\
+            "phoneNumbers": [\
+                {\
+                    "type": "home",\
+                    "number": "212 555-1234"\
+                },\
+                {\
+                    "type": "fax",\
+                    "number": "646 555-4567"\
+                }\
+            ]\
+        }';
+
+        jsonTreeViewer.parse(example);
+    </script>
+</body>
+</html>
