@@ -55,6 +55,14 @@ class Storage {
   }
 
 
+  getModuleOptionsByName(modname) {
+    for (let i = 0; i < this.app.options.modules.length; i++) {
+      if (this.app.options.modules[i].name === modname) {
+        return this.app.options.modules[i];
+      }
+    }
+    return null;
+  }
 
 
   /**
