@@ -27,6 +27,8 @@
     "big.js": "^5.2.2",
     "bitwise-xor": "0.0.0",
     "blake3": "^2.1.4",
+    "blake3-js": "0.0.5",
+    "blake3-wasm": "^2.1.5",
     "body-parser": "^1.19.0",
     "chess.js": "^0.12.0",
     "crypto": "^1.0.1",
