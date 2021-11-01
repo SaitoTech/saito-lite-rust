@@ -4,7 +4,7 @@ const crypto            = require('crypto-browserify');
 // server
 //const blake3		= require('blake3');
 // javascript for browser
-const blake3		= require('blake3-js');
+const miniBlake3    	= require('mini-blake3');
 const sha256            = require('sha256');
 const node_cryptojs     = require('node-cryptojs-aes');
 const { randomBytes }   = require('crypto');
@@ -34,7 +34,8 @@ class Crypto {
    * @returns {string} blake3 hash
    */
   hash(data="") {
-    return blake3.newRegular().update(data).finalize();
+    return miniBlake3.hash(data);
+    //return blake3.newRegular().update(data).finalize();
   }
 
 

@@ -22,7 +22,7 @@ class Saito {
     this.connection = new saito_lib.connection();
     this.browser    = new saito_lib.browser(this);
     this.storage    = new saito_lib.storage(this);
-    this.shashmap   = new saito_lib.shashmap(this);
+    this.utxoset    = new saito_lib.utxoset(this);
     this.mempool    = new saito_lib.mempool(this);
     this.wallet     = new saito_lib.wallet(this);
     this.miner      = new saito_lib.miner(this);
