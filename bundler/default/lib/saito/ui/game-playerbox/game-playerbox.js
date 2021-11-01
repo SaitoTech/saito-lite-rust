@@ -142,14 +142,11 @@ class GamePlayerBox {
 
     refreshName(pnum, name="") {
 
-console.log("pnum: " + pnum + " -- " + name);
-
       let selector = "#player-box-head-"+this._playerBox(pnum-1);
       let identicon = "";
 
       if (name == "") {
         name = this.game_mod.game.players[pnum-1];
-console.log("player: " + pnum-1 + " -- " + name);
         identicon = this.app.keys.returnIdenticon(name);
         name = this.app.keys.returnUsername(name);
 	if (name != "") {

@@ -3,7 +3,6 @@ const saito         = require('./saito');
 class Key {
 
   constructor() {
-
     if (!(this instanceof Key)) {
       return new Key();
     }
@@ -36,12 +35,10 @@ class Key {
   }
 
 
-
   hasSharedSecret() {
     if (this.aes_secret != "") { return true; }
     return false;
   }
-
 
   isIdentifier(identifier) {
     for (let x = 0; x < this.identifiers.length; x++) {
@@ -50,16 +47,13 @@ class Key {
     return false;
   }
 
-
   isPublicKey(publickey) {
     return this.publickey == publickey;
   }
 
-
   isWatched(publickey) {
     return this.watched;
   }
-
 
   isTagged(tag) {
     for (let x = 0; x < this.tags.length; x++) {
@@ -67,7 +61,6 @@ class Key {
     }
     return false;
   }
-
 
   removeIdentifier(identifier) {
     if (!this.isIdentifier(identifier)) { return; }

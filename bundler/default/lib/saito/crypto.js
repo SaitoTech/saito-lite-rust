@@ -17,7 +17,8 @@ const stringify 	= require('fastest-stable-stringify');
  * Crypto Constructor
  */
 class Crypto {
-  // constructor() { return this; }
+
+  constructor() { return this; }
 
   ///////////////////////////////////
   // BASIC CRYPTOGRAPHIC FUNCTIONS //

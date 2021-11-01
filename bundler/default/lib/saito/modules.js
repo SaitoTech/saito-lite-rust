@@ -1,6 +1,5 @@
 class Mods {
 
-
   constructor(app, config) {
 
     this.app     = app;
@@ -214,16 +213,6 @@ class Mods {
     }
     return null;
   }
-  // 
-  // implementsKeys(request) {
-  //   return this.mods
-  //     .map(mod => {
-  //       return mod.implementsKeys(request);
-  //     })
-  //     .filter(mod => {
-  //       return mod != null;
-  //     });
-  // }
 
   respondTo(request) {
     return this.mods
@@ -232,7 +221,6 @@ class Mods {
       });
   }
 
-  // respondTo V2
   getRespondTos(request) {
     let compliantInterfaces = [];
     this.mods.forEach((mod) => {
@@ -375,4 +363,5 @@ class Mods {
 
 }
 
-module.exports = Mods
+module.exports = Mods;
+
