@@ -24,8 +24,10 @@ class Wallet {
     this.wallet.publickey                = "";
     this.wallet.privatekey               = "";
 
-    this.wallet.inputs                   = [];
-    this.wallet.outputs                  = [];
+    this.wallet.inputs                   = [];		// slips available
+    this.wallet.outputs                  = [];		// slips spenr
+    this.wallet.spends                   = [];		// TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
+    this.wallet.pending                  = [];		// slips pending broadcast
     this.wallet.default_fee              = 2;
     this.wallet.version                  = 3.443;
 
@@ -84,6 +86,7 @@ class Wallet {
             // delete inputs and outputs
             this.app.options.wallet.inputs   = [];
             this.app.options.wallet.outputs  = [];
+            this.app.options.wallet.spends   = [];
             this.app.options.wallet.pending  = [];
             this.app.options.wallet.balance  = "0.0";
             this.app.options.wallet.version  = this.wallet.version;
@@ -118,6 +121,15 @@ class Wallet {
 
   }
 
+  isSlipValid(slip, index) {
+    let isSlipSpent = this.wallet.spends[index];
+    let isSlipLC = slip.lc == 1;
+    let isSlipGtLVB = slip.bid >= this.app.blockchain.returnLowestSpendableBlock();
+    let isSlipinTX = this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1;
+    let valid = !isSlipSpent && isSlipLC && isSlipGtLVB && isSlipinTX;
+    return valid;
+  }
+
   returnPublicKey() {
     return this.wallet.publickey;
   }
@@ -130,6 +142,7 @@ class Wallet {
     if (ticker === "SAITO") {
       let b = Big(0);
        this.wallet.inputs.forEach((input, index )=> {
+console.log(input + " ---- " + index);
          if (this.isSlipValid(input, index)) {
            b = b.plus(input.amt);
          }
@@ -138,7 +151,6 @@ class Wallet {
     }
     return "0.0";
   }
-
 
 
   /**
@@ -161,6 +173,7 @@ class Wallet {
 
     this.wallet.inputs                = [];
     this.wallet.outputs               = [];
+    this.wallet.spends                = [];
     this.wallet.pending               = [];
 
     this.saveWallet();
@@ -178,6 +191,34 @@ class Wallet {
   saveWallet() {
     this.app.options.wallet = this.wallet;
     this.app.storage.saveOptions();
+  }
+
+  /**
+   * Sign a transactions and attach the sig to the transation
+   * @param {Transaction}
+   * @return {Transaction}
+   */
+  signTransaction(tx) {
+
+    if (tx == null) { return null; }
+
+    //
+    // convert tx.msg to base64 tx.transaction.m
+    //
+    try {
+      tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
+      tx.sign(this.app);
+    } catch (err) {
+      console.error("####################");
+      console.error("### OVERSIZED TX ###");
+      console.error("###   -revert-   ###");
+      console.error("####################");
+      console.error(err);
+      tx.msg = {};
+      return tx;
+    }
+
+    return tx;
   }
 
 

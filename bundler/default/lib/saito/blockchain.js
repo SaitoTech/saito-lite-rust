@@ -11,6 +11,11 @@ class Blockchain {
 
   }
 
+  //  TODO fix
+  returnLowestSpendableBlock() {
+    return 0;
+  }
+
 }
 
 module.exports = Blockchain;

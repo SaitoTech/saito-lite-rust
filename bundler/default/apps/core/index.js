@@ -40,15 +40,6 @@ class Saito {
 
       let _self = this;
 
-      //
-      // having initialized storage, we permit command-line arguments to alter runtime variables
-      //
-      process.argv.forEach(function (val, index, array) {
-	let uvar = val.split("=")[0];
-	let uval = val.split("=")[1];
-        _self.options.runtime[uvar] = uval;
-      });
-
       this.wallet.initialize();
       this.mempool.initialize();
       this.keys.initialize();
