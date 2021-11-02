@@ -18,7 +18,7 @@ class Saito {
   }
 
   newSaito() {
-    this.crypto     = new saito_lib.crypto();
+    this.crypto     = new saito_lib.crypto(this);
     this.connection = new saito_lib.connection();
     this.browser    = new saito_lib.browser(this);
     this.storage    = new saito_lib.storage(this);
@@ -30,13 +30,31 @@ class Saito {
     this.network    = new saito_lib.network(this);
     this.burnfee    = new saito_lib.burnfee(this);
     this.blockchain = new saito_lib.blockchain(this);
-
   }
 
   async init() {
     try {
 
       await this.storage.initialize();
+
+if (this.BROWSER == 0) {
+  //this.blake3 = require('blake3');
+  //this.hash = this.blake3.hash;
+  //console.log("TEST: " + this.hash("TESTING"));
+  let blake3 = require('blake3');
+  this.hash = (data) => { return blake3.hash(data).toString('hex'); };
+  console.log("TEST: " + this.hash("TESTING"));
+} else {
+  console.log("importing blake 3");
+  let blake3 = require("blake3-js");
+  console.log("importing blake 3 - 2");
+  this.hash = (data) => { 
+    console.log("in hash function");
+    return blake3.newRegular().update(data).finalize(); 
+  }
+  console.log("HASH: " + this.hash("TESTING"));
+  //console.log("HASH: " + this.blake3.newRegular().update("TESTING").finalize());
+}
 
       let _self = this;
 

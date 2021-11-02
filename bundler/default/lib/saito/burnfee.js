@@ -8,7 +8,7 @@ class BurnFee {
     this.heartbeat = 30_000;
   }
 
-  returnRoutingWorkNeededToProduceBlockInNolan(burnfee_previous_block, current_block_timestamp, previous_block_timestamp) {
+  returnRoutingWorkNeededToProduceBlockInNolan(burn_fee_previous_block, current_block_timestamp, previous_block_timestamp) {
 
     if (previous_block_timestamp >= current_block_timestamp) {
       return 10_000_000_000_000_000_000;
