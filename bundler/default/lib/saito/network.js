@@ -7,7 +7,10 @@ const secp256k1 = require('secp256k1');
 class Network {
 
   constructor(app) {
+
     this.app = app || {};
+
+    this.peers = [];
   }
 
   initialize() {
@@ -24,7 +27,6 @@ class Network {
       return false;
     }
     return true;
-    return false;
   }
 
   isProductionNetwork() {

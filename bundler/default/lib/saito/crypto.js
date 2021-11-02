@@ -21,18 +21,6 @@ class Crypto {
 
     this.app                      = app || {};
 
-/****
-if (this.app.BROWSER == 0) {
-  const blake3 = require('blake3');
-  this.hash = blake3.hash;
-  console.log("TEST: " + this.hash("TESTING"));
-} else {
-  console.log("importing blake 3");
-  const blake3 = require("blake3-js");
-  console.log("HASH: " + blake3.newRegular().update("TESTING").finalize());
-}
-****/
-
     return this;
   }
 
@@ -49,7 +37,15 @@ if (this.app.BROWSER == 0) {
    *
    * @param {string} data string data
    * @returns {string} blake3 hash
+   *
+   * NOTE: we use different libraries for the server and in-browser clients
+   * and these are initialized in /apps/core/index.js as opposed to here in
+   * order to avoid compilation errors that come from the structure of the 
+   * libraries we are using. There may be a way to improve this, but for now
+   * means that the hashing algorithm is dynamically added to the app obj on
+   * initialization.
    */
+
   hash(data="") {
     return this.app.hash(data);
   }

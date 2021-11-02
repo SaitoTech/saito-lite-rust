@@ -16,6 +16,18 @@ class Blockchain {
     return 0;
   }
 
+  returnLatestBlock() {
+    return null;
+  }
+
+  returnLatestBlockHash() {
+    return "";
+  }
+
+  returnLatestBlockId() {
+    return 0;
+  }
+
 }
 
 module.exports = Blockchain;
