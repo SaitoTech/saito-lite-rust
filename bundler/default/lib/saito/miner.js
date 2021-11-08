@@ -50,8 +50,7 @@ console.log("we found a valid golden ticket!");
 
          //let tx = this.app.wallet.create_golden_ticket(self.target, random_hash);
 
-         // stop mining
-         self.set_is_active(false);
+         this.stopMining();
 
       }
     }

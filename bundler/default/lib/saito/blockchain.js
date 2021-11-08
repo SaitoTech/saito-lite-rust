@@ -8,7 +8,7 @@ class Blockchain {
   }
 
   initialize() {
-
+    this.app.miner.startMining(this.returnLatestBlockHash(), this.returnDifficulty());
   }
 
   returnDifficulty() {

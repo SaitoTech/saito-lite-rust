@@ -18,18 +18,19 @@ class Saito {
   }
 
   newSaito() {
-    this.crypto     = new saito_lib.crypto(this);
-    this.connection = new saito_lib.connection();
-    this.browser    = new saito_lib.browser(this);
-    this.storage    = new saito_lib.storage(this);
-    this.utxoset    = new saito_lib.utxoset(this);
-    this.mempool    = new saito_lib.mempool(this);
-    this.wallet     = new saito_lib.wallet(this);
-    this.miner      = new saito_lib.miner(this);
-    this.keys       = new saito_lib.keychain(this);
-    this.network    = new saito_lib.network(this);
-    this.burnfee    = new saito_lib.burnfee(this);
-    this.blockchain = new saito_lib.blockchain(this);
+    this.crypto       = new saito_lib.crypto(this);
+    this.connection   = new saito_lib.connection();
+    this.browser      = new saito_lib.browser(this);
+    this.storage      = new saito_lib.storage(this);
+    this.goldenticket = new saito_lib.goldenticket(this);
+    this.utxoset      = new saito_lib.utxoset(this);
+    this.mempool      = new saito_lib.mempool(this);
+    this.wallet       = new saito_lib.wallet(this);
+    this.miner        = new saito_lib.miner(this);
+    this.keys         = new saito_lib.keychain(this);
+    this.network      = new saito_lib.network(this);
+    this.burnfee      = new saito_lib.burnfee(this);
+    this.blockchain   = new saito_lib.blockchain(this);
   }
 
   async init() {
@@ -37,24 +38,25 @@ class Saito {
 
       await this.storage.initialize();
 
-if (this.BROWSER == 0) {
-  //this.blake3 = require('blake3');
-  //this.hash = this.blake3.hash;
-  //console.log("TEST: " + this.hash("TESTING"));
-  let blake3 = require('blake3');
-  this.hash = (data) => { return blake3.hash(data).toString('hex'); };
-  console.log("TEST: " + this.hash("TESTING"));
-} else {
-  console.log("importing blake 3");
-  let blake3 = require("blake3-js");
-  console.log("importing blake 3 - 2");
-  this.hash = (data) => { 
-    console.log("in hash function");
-    return blake3.newRegular().update(data).finalize(); 
-  }
-  console.log("HASH: " + this.hash("TESTING"));
-  //console.log("HASH: " + this.blake3.newRegular().update("TESTING").finalize());
-}
+      //
+      // import hashing library here because of complications with both 
+      // performant blake3 library and less performant blake3-js that neeeds
+      // to run in the browser but cannot be deployed via WASM.
+      //
+      // app.crypto.hash()
+      //
+      // is still our go-to function for hashing. This just prepares the 
+      // functions and puts them on the app object so that the crypto.hash
+      // function can invoke whichever one is being used in that specific
+      // configuration (server / browser);
+      //
+      if (this.BROWSER == 0) {
+        let blake3 = require('blake3');
+        this.hash = (data) => { return blake3.hash(data).toString('hex'); };
+      } else {
+        let blake3 = require("blake3-js");
+        this.hash = (data) => { return blake3.newRegular().update(data).finalize();  }
+      }
 
       let _self = this;
 

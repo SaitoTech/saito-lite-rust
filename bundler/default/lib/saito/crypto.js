@@ -47,6 +47,9 @@ class Crypto {
    */
 
   hash(data="") {
+    //
+    // 64-bit hash
+    //
     return this.app.hash(data);
   }
 
