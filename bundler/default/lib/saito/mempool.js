@@ -110,7 +110,7 @@ class Mempool {
       //
       // update its consensus data
       //
-      await blk.generate_from_mempool(this.mempool, previous_block_hash);
+      await blk.generateFromMempool(this.mempool, previous_block_hash);
 
       //
       // and add to mempool

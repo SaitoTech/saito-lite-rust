@@ -4,7 +4,12 @@ const Big = require('big.js');
 class Blockchain {
 
   constructor(app) {
+
     this.app                   = app || {};
+    this.genesis_period        = 10;
+
+    this.blockring 	       = new saito.blockring(this.app, this.genesis_period);  
+    this.staking	       = new saito.staking(this.app);
   }
 
   initialize() {
@@ -13,6 +18,10 @@ class Blockchain {
 
   returnDifficulty() {
     return 1;
+  }
+
+  returnGenesisPeriod() {
+    return this.genesis_period;
   }
 
   //  TODO fix

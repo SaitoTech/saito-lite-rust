@@ -25,7 +25,7 @@ class Block {
 
   }
 
-  async generate_from_mempool(mempool, previous_block_hash) {
+  async generateFromMempool(mempool, previous_block_hash) {
 
     //
     // fetch consensus values from preceding block
@@ -99,6 +99,33 @@ class Block {
     // and return to normal
     //
     this.bundling_active = false;
+
+  }
+
+  returnId() { 
+    return this.block.id;
+  }
+
+  returnHash() {
+    if (this.hash != "") { return this.hash; }
+    this.prehash = this.app.crypto.hash(this.serializeForSignature());
+    this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
+    return this.hash;
+  }
+  
+  serializeForSignature() {
+
+    let vbytes = "";
+        vbytes += this.block.id;
+        vbytes += this.block.timestamp;
+        vbytes += this.block.previous_block_hash;
+        vbytes += this.block.creator;
+        vbytes += this.block.merkle;
+        vbytes += this.block.treasury;
+        vbytes += this.block.staking_treasury;
+        vbytes += this.block.burnfee;
+        vbytes += this.block.difficulty;
+    return vbytes
 
   }
 

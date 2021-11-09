@@ -17,9 +17,6 @@ class GoldenTicket {
     let leading_zeroes_required = Math.floor(difficulty/16);
     let final_digit = 15 - (difficulty%16);
 
-console.log("DIFF: " + difficulty);
-console.log(solution + " .... " + leading_zeroes_required + " .... " + final_digit);
-
     //
     // create our target hash
     //
@@ -46,7 +43,6 @@ console.log(solution + " .... " + leading_zeroes_required + " .... " + final_dig
     //
     // if we hit here, true
     //
-console.log("viable solution and target: " + solution + " || " + target_hash);
     return true;
 
   }
