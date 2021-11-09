@@ -21,6 +21,8 @@ class Block {
     this.block.treasury                = Big("0.0");
     this.block.staking_treasury        = Big("0.0");
 
+    this.lc 	                       = 0;
+
     this.transactions                  = [];
 
   }
@@ -127,6 +129,10 @@ class Block {
         vbytes += this.block.difficulty;
     return vbytes
 
+  }
+
+  async validate() {
+    return true;
   }
 
 }
