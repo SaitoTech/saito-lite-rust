@@ -29,6 +29,7 @@ class Saito {
     this.miner        = new saito_lib.miner(this);
     this.keys         = new saito_lib.keychain(this);
     this.network      = new saito_lib.network(this);
+    this.networkapi   = new saito_lib.networkapi(this);
     this.burnfee      = new saito_lib.burnfee(this);
     this.blockchain   = new saito_lib.blockchain(this);
   }
@@ -39,13 +40,13 @@ class Saito {
       await this.storage.initialize();
 
       //
-      // import hashing library here because of complications with both 
+      // import hashing library here because of complications with both
       // performant blake3 library and less performant blake3-js that neeeds
       // to run in the browser but cannot be deployed via WASM.
       //
       // app.crypto.hash()
       //
-      // is still our go-to function for hashing. This just prepares the 
+      // is still our go-to function for hashing. This just prepares the
       // functions and puts them on the app object so that the crypto.hash
       // function can invoke whichever one is being used in that specific
       // configuration (server / browser);
