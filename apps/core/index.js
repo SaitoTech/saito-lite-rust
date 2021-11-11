@@ -64,6 +64,7 @@ class Saito {
 
       this.wallet.initialize();
       this.mempool.initialize();
+      this.miner.initialize();
       this.keys.initialize();
 
       this.modules.mods = this.modules.mods_list.map(mod_path => {

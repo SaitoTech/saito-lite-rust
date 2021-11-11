@@ -70,12 +70,8 @@ class Mempool {
 
   addBlock(block) {
 
-console.log("adding block!");
-
     if (block == null) { return false; }
     if (!block.is_valid) { return false; }
-
-console.log("inserting into queue");
 
     //
     // insert into queue
@@ -88,11 +84,8 @@ console.log("inserting into queue");
       }
     }
 
-console.log("insert? " + insertme);
-
     if (insertme) {
       this.mempool.blocks.push(block);
-console.log("block is inserted!");
     } else {
       return false;
     }
@@ -108,19 +101,12 @@ console.log("block is inserted!");
     //
     this.mempool.blocks.sort((a,b) => a.block.id - b.block.id);
 
-console.log("setting up loop!");
-
     try {
       this.processing_timer = setInterval(async () => {
-console.log("loop");
         if (this.mempool.blocks.length > 0) {
-console.log("we have a block to add...");
           if (this.app.blockchain.indexing_active == false) {
-console.log("and our blockchain is not active!");
             let block = this.mempool.blocks.shift();
-console.log("adding block to blockchain!");
             await this.app.blockchain.addBlockToBlockchain(block);
-console.log("done adding block to blockchain!");
           }
         } else {
           this.processing_active = 0;
@@ -173,7 +159,6 @@ console.log("done adding block to blockchain!");
       //
       let block = new saito.block(this.app);
       let previous_block_hash = this.app.blockring.returnLatestBlockHash();
-
 
       //
       // update its consensus data

@@ -26,6 +26,7 @@ class Block {
     this.transactions                  = [];
 
     this.is_valid		       = 1;
+    this.has_golden_ticket	       = false;
 
   }
 
@@ -47,6 +48,9 @@ class Block {
 
     let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
 
+if (previous_block) {
+  console.log("previous block is: " + previous_block.returnId());
+}
     if (previous_block) {
       previous_block_id = previous_block.block.id;
       previous_block_burnfee = previous_block.block.burnfee;
@@ -93,6 +97,7 @@ class Block {
     for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
       if (mempool.golden_tickets[i].returnMessage() === previous_block_hash) {
         this.transactions.unshift(mempool.golden_tickets[i]);
+        this.has_golden_ticket = 1;
         mempool.golden_tickets.splice(i, 1);
         i = mempool.mempool.golden_tickets.length + 2;
       }
@@ -110,14 +115,22 @@ class Block {
 
   }
 
-  generate_metadata() {
+  generateMetadata() {
     this.generate_hashes();
   }
 
-  generate_hashes() {
+  generateHashes() {
     this.hash = "";
     this.hash = this.returnHash();
   }
+
+  hasGoldenTicket() {
+    return this.has_golden_ticket; 
+  }
+
+  returnBurnFee() {
+    return this.block.burnfee;
+  }  
 
   returnDifficulty() {
     return this.block.difficulty;
@@ -133,7 +146,15 @@ class Block {
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
   }
-  
+
+  returnPreviousBlockHash() {
+    return this.block.previous_block_hash;
+  }
+
+  returnTimestamp() {
+    return this.block.timestamp;
+  }  
+
   serializeForSignature() {
 
     let vbytes = "";

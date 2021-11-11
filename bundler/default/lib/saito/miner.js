@@ -17,6 +17,17 @@ class Miner {
 
   }
 
+  initialize() {
+
+    this.app.connection.on('BlockchainNewLongestChainBlock', (msg) => {
+console.log("MINER HAS RECEIVED NEW LONGEST CHAIN BLOCK EVENT");
+      this.stopMining();
+      this.startMining(msg.block_hash, msg.difficulty);
+    });
+
+
+  }
+
 
   startMining(previous_block_hash, difficulty) {
 
