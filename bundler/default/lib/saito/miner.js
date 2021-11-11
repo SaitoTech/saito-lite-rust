@@ -20,7 +20,6 @@ class Miner {
   initialize() {
 
     this.app.connection.on('BlockchainNewLongestChainBlock', (msg) => {
-console.log("MINER HAS RECEIVED NEW LONGEST CHAIN BLOCK EVENT");
       this.stopMining();
       this.startMining(msg.block_hash, msg.difficulty);
     });
@@ -56,6 +55,8 @@ console.log("MINER HAS RECEIVED NEW LONGEST CHAIN BLOCK EVENT");
       let random_hash = this.app.crypto.generateRandomNumber();
 
       if (this.app.goldenticket.validate(this.target, random_hash, this.app.wallet.returnPublicKey(), this.difficulty)) {
+         //this.app.network.propagateTransaction();
+         //this.app.mempool.addTransaction();
 console.log("we found a valid golden ticket!");
          this.stopMining();
       }

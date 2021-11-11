@@ -1,11 +1,12 @@
- saito = require('./saito');
+saito = require('./saito');
 const Big = require('big.js');
+const Block = require('./block');
+const UtxoSet = require('./utxoset');
 
 class Blockchain {
-
   constructor(app) {
 
-    this.app                   	       			= app || {};
+    this.app                   	   = app || {};
 
     this.blockchain                    			= {};
     this.blockchain.fork_id            			= "";
@@ -33,14 +34,22 @@ class Blockchain {
     this.blockchain.lowest_acceptable_block_id 		= 0;
 
     //
+    // core components
+    //
+    this.blockring 	       	   = new saito.blockring(this.app, this.blockchain.genesis_period);
+    this.staking	       	   = new saito.staking(this.app);
+    this.blocks                    = {}; // hashmap of block_hash => block
+    this.utxoset                   = new UtxoSet();
+
+
+    //
     // downgrade blocks after N blocks
     //
-    this.blockchain.prune_after_blocks = 20;
+    this.prune_after_blocks = 20;
 
-
-    this.staking	       	     = new saito.staking(this.app);
-    this.blocks                      = {}; // hashmap of block_hash => block
-
+    //
+    // set to true when adding blocks to disk (must be done one at a time!)
+    //
     this.indexing_active	     = false; // when adding to blockchain or loading from disk
 
   }
@@ -222,6 +231,8 @@ class Blockchain {
 
       if (does_new_chain_validate) {
 
+console.log("does validate");
+
         await this.addBlockSuccess(block);
         this.blocks[block_hash].lc = true;
 
@@ -231,6 +242,8 @@ class Blockchain {
         return 1;
 
       } else {
+
+console.log("does not validate");
 
 	await this.addBlockFailure(block);
 	this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
@@ -249,13 +262,21 @@ class Blockchain {
 
   }
 
+
   async addBlockSuccess(block) {
+
+console.log("in add block success!");
 
     let block_id = block.returnId();
 
     //
     // save to disk
     //
+    if (block.block_type !== Block.BlockType.Header) {
+console.log("SAVING BLOCK!");
+      await this.app.storage.saveBlock(block);
+    }
+    console.log(" ... block save done: " + Date.now());
 
 
     //
@@ -325,11 +346,11 @@ class Blockchain {
       //
       // downgrade blocks still on the chain
       //
-      if (this.blockchain.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
+      if (this.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
         return;
       }
 
-      let prune_blocks_at_block_id = this.app.blockring.returnLatestBlockId() - this.blockchain.prune_after_blocks;
+      let prune_blocks_at_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
       if (prune_blocks_at_block_id < 1) { return; }
 
       let block_hashes_copy = [];
@@ -348,49 +369,33 @@ class Blockchain {
 
 
 
-
-
   generateForkId(block_id) {
 
+    let fork_id = new Array(32).fill(0).toString();
     let current_block_id = block_id;
-    let fork_id = "";
 
     //
     // roll back to last even 10 blocks
     //
     for (let i = 0; i < 10; i++) {
-      if ((current_block_id - i) % 10 == 0) {
+      if ((current_block_id - i) % 10 === 0) {
         current_block_id -= i;
-        break;
       }
     }
+
+    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
     //
     // loop backwards through blockchain
     //
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 16; ++i) {
 
-      if (i == 0) { current_block_id -= 0; }
-      if (i == 1) { current_block_id -= 10; }
-      if (i == 2) { current_block_id -= 10; }
-      if (i == 3) { current_block_id -= 10; }
-      if (i == 4) { current_block_id -= 10; }
-      if (i == 5) { current_block_id -= 10; }
-      if (i == 6) { current_block_id -= 25; }
-      if (i == 7) { current_block_id -= 25; }
-      if (i == 8) { current_block_id -= 100; }
-      if (i == 9) { current_block_id -= 300; }
-      if (i == 10) { current_block_id -= 500; }
-      if (i == 11) { current_block_id -= 4000; }
-      if (i == 12) { current_block_id -= 10000; }
-      if (i == 13) { current_block_id -= 20000; }
-      if (i == 14) { current_block_id -= 50000; }
-      if (i == 15) { current_block_id -= 100000; }
+      current_block_id -= weights[i];
 
       //
       // do not loop around if block id < 0
       //
-      if (current_block_id > block_id || current_block_id == 0) {
+      if (current_block_id > block_id || current_block_id === 0) {
         break;
       }
 
@@ -398,33 +403,146 @@ class Blockchain {
       // index to update
       //
       let idx = 2 * i;
+      let block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
-      //
-      //
-      //
-      let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
-      if (block_hash !== "" && block_hash.length > idx) {
-        fork_id[idx] = block_hash[idx];
-        fork_id[idx+1] = block_hash[idx+1];
-      }
+      forkId[idx] = blockHash[idx];
+      forkId[idx + 1] = blockHash[idx + 1];
+
     }
-
-    while (fork_id.length < 32) { fork_id += "0"; }
     return fork_id;
-
   }
 
-  generateLastSharedAncestor(peer_latest_block_id, fork_id) {
+
+  async updateGenesisPeriod(){
+
+    //
+    // we need to make sure this is not a random block that is disconnected
+    // from our previous genesis_id. If there is no connection between it
+    // and us, then we cannot delete anything as otherwise the provision of
+    // the block may be an attack on us intended to force us to discard
+    // actually useful data.
+    //
+    // so we check that our block is the head of the longest-chain and only
+    // update the genesis period for the block that should be removed when it 
+    // is added to the chain. 
+    //
+    let latest_block_id = this.app.blockring.returnLatestBlockId();
+
+    if (latest_block_id >= (this.blockchain.genesis_period *2)+1) {
+
+      //
+      // we should prune blocks
+      //
+      let purge_block_id = latest_block_id = (this.blockchain.genesis_period * 2);
+
+      //
+      // sanity check
+      //
+      if (purge_block_id > 0) {
+
+        this.blockchain.genesis_block_id = latest_block_id - this.blockchain.genesis_period;
+
+	//
+        // in either case, we are OK to throw out everything below the
+        // lowest_block_id that we have found. we use the purge_id to
+        // handle purges.
+	//
+        await this.deleteBlocks(purge_block_id);
+
+      }
+    }
+  }
+
+
+  // deletes all blocks at a single block_id
+  async deleteBlocks(deletedBlockId) {
+    console.trace("removing data including from disk at id " + deletedBlockId);
+
+    let blockHashesCopy = [];
+    let blockHashes = this.blockring.returnBlockHashesAtBlockId(deletedBlockId);
+    for (let hash of blockHashes){
+      blockHashesCopy.push([...hash]);
+    }
+
+    console.trace("number of hashes to remove "+blockHashesCopy.length);
+
+    for (let hash of blockHashesCopy){
+      await this.deleteBlock(deletedBlockId, hash);
+    }
+  }
+
+  // deletes a single block
+  async deleteBlock(deletedBlockId, deletedBlockHash) {
+    //
+    // ask block to delete itself / utxo-wise
+    // -- need to load data as async
+    let block = this.blocks[deletedBlockHash];
+
+    let blockFilename = this.app.storage.generateBlockFilename(block);
+
+    //
+    // loop backwards through blockchain
+    //
+
+    //
+    // remove slips from wallet
+    //
+    let wallet = this.app.wallet;
+    wallet.deleteBlock(block);
+
+    // removes utxoset data
+    await block.delete(this.utxoset);
+
+    // deletes block from disk
+    this.app.storage.deleteBlockFromDisk(blockFilename);
+
+    // ask blockring to remove
+    this.blockring.deleteBlock(deletedBlockId,deletedBlockHash);
+
+    // remove from block index
+    if (this.blocks.hasOwnProperty(deletedBlockHash))
+    {
+      delete this.blocks[deletedBlockHash];
+    }
+  }
+
+  async downgradeBlockchainData() {
+
+    //
+    // downgrade blocks
+    //
+    if (this.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
+      return;
+    }
+  
+    let prune_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
+    let block_hashes_copy = [];
+    let block_hashes = this.blockring.returnBlockHashesAtBlockId(pruneBlocksAtBlockId);
+
+    for (let hash of block_hashes){
+      blockHashesCopy.push([...hash]);
+    }
+
+    for (let hash of blockHashesCopy){
+      // ask the block to remove its transactions
+      await this.blocks[hash].downgradeBlockToBlockType(Block.BlockType.Pruned);
+    }
+  }
+
+
+   generateLastSharedAncestor(peer_latest_block_id, fork_id) {
 
     let my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
     let pbid = peer_latest_block_id;
     let mbid = my_latest_block_id;
+    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
     //
     // peer is further ahead
     //
     if (peer_latest_block_id >= my_latest_block_id) {        
+
       //
       // roll back to last even 10 blocks
       //
@@ -435,105 +553,76 @@ class Blockchain {
         }
       }
 
+      let current_block_id = pbid;
+
       //
-      // their fork id
+      // loop backwards through blockchain
       //
-      for (let i = 0; i < 10; i++) {
-        if (i == 0) { pbid -= 0; }
-        if (i == 1) { pbid -= 10; }
-        if (i == 2) { pbid -= 10; }
-        if (i == 3) { pbid -= 10; }
-        if (i == 4) { pbid -= 10; }
-        if (i == 5) { pbid -= 10; }
-        if (i == 6) { pbid -= 25; }
-        if (i == 7) { pbid -= 25; }
-        if (i == 8) { pbid -= 100; }
-        if (i == 9) { pbid -= 300; }
-        if (i == 10) { pbid -= 500; }
-        if (i == 11) { pbid -= 4000; }
-        if (i == 12) { pbid -= 10000; }
-        if (i == 13) { pbid -= 20000; }
-        if (i == 14) { pbid -= 50000; }
-        if (i == 15) { pbid -= 100000; }
+      for (let i = 0; i < 16; ++i) {
+
+        current_block_id -= weights[i];
 
         //
         // do not loop around if block id < 0
         //
-        if (pbid > peer_latest_block_id || pbid == 0) {
-          return 0;
-        }
+        if (current_block_id < mbid && current_block_id > 0) {
 
-        //
-        // index in fork_id hash
-        //
-        let idx = 2 * i;
+          let idx = 2 * i;
 
-        //
-        // compare input hash to my hash
-        //
-        if (pbid <= mbid) {
           let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
           if (fork_id[idx] == block_hash[idx] && fork_id[idx + 1] == block_hash[idx + 1]) {
-            return pbid;
+            return current_block_id;
           }
-        }
+
+	}
       }
 
+      return 0;
 
     //
     // peer is not further ahead
     //
     } else {
+
       //
-      // their fork id
+      // roll back to last even 10 blocks
       //
-      for (let i = 0; i < 16; i++) {
-        if (i == 0) { mbid -= 0; }
-        if (i == 1) { mbid -= 10; }
-        if (i == 2) { mbid -= 10; }
-        if (i == 3) { mbid -= 10; }
-        if (i == 4) { mbid -= 10; }
-        if (i == 5) { mbid -= 10; }
-        if (i == 6) { mbid -= 25; }
-        if (i == 7) { mbid -= 25; }
-        if (i == 8) { mbid -= 100; }
-        if (i == 9) { mbid -= 300; }
-        if (i == 10) { mbid -= 500; }
-        if (i == 11) { mbid -= 4000; }
-        if (i == 12) { mbid -= 10000; }
-        if (i == 13) { mbid -= 20000; }
-        if (i == 14) { mbid -= 50000; }
-        if (i == 15) { mbid -= 100000; }
+      for (let i = 0; i < 10; i++) {
+        if ((mbid - i) % 10 == 0) {
+          mbid -= i;
+          break;
+        }
+      }
+
+      let current_block_id = mbid;
+
+      for (let i = 0; i < 16; ++i) {
+
+        current_block_id -= weights[i];
 
         //
         // do not loop around if block id < 0
         //
-        if (mbid > my_latest_block_id || mbid == 0) {
-          return 0;
-        }
+        if (current_block_id <= peer_latest_block_id && current_block_id > 0) {
 
-        //
-        // index in fork_id hash
-        //
-        let idx = 2 * i;
+          //
+          // index in fork_id hash
+          //
+          let idx = 2 * i;
 
-        //
-        // compare input hash to my hash
-        //
-        if (pbid <= mbid) {
-          let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
+          //
+          // compare input hash to my hash
+          //
+          let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
           if (fork_id[idx] == block_hash[idx] && fork_id[idx + 1] == block_hash[idx + 1]) {
-            return pbid;
+            return current_block_id;
           }
         }
       }
+
+      return 0;
+
     }
-
-    //
-    // no match? return 0 -- no shared ancestor
-    //
-    return 0;
-
   }
 
 
@@ -566,8 +655,9 @@ class Blockchain {
 
   }
 
+
   isBlockIndexed(block_hash) {
-    if (this.blocks[block_hash]) { return true; }
+    if (this.blocks.hasOwnProperty[block_hash]) { return true; }
     return false;
   }
 
@@ -849,8 +939,8 @@ class Blockchain {
     let block = await this.loadBlockAsync(new_chain[current_wind_index]);
 
     let latest_block_id = block.returnId();
-            
-    // 
+
+    //
     // ensure previous blocks that may be needed to calculate the staking
     // tables or the nolan that are potentially falling off the chain have
     // full access to their transaction data.
