@@ -27,6 +27,7 @@ test/
 data/*.sq3
 data/*/*.blk
 data/blocks/*.blk
+data/blocks/*.sai
 data/shashmaps/*.smap
 
 

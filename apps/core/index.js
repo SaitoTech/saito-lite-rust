@@ -29,7 +29,7 @@ class Saito {
     this.miner        = new saito_lib.miner(this);
     this.keys         = new saito_lib.keychain(this);
     this.network      = new saito_lib.network(this);
-    this.networkapi   = new saito_lib.networkapi(this);
+    this.networkApi   = new saito_lib.networkApi(this);
     this.burnfee      = new saito_lib.burnfee(this);
     this.blockchain   = new saito_lib.blockchain(this);
   }
