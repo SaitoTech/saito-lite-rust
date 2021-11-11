@@ -25,6 +25,12 @@ class Block {
 
     this.transactions                  = [];
 
+    this.is_valid		       = 1;
+    this.has_golden_ticket	       = false;
+
+  }
+
+  async downgradeBlockToBlockType(block_type) {
   }
 
   async generateFromMempool(mempool, previous_block_hash) {
@@ -38,9 +44,13 @@ class Block {
     let previous_block_difficulty = 0;
     let previous_block_treasury = 0;
     let previous_block_staking_treasury = 0;
+    let current_timestamp = new Date().getTime();
 
-    let previous_block = blockchain.get_block(previous_block_hash);
+    let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
 
+if (previous_block) {
+  console.log("previous block is: " + previous_block.returnId());
+}
     if (previous_block) {
       previous_block_id = previous_block.block.id;
       previous_block_burnfee = previous_block.block.burnfee;
@@ -60,10 +70,10 @@ class Block {
     // set our values
     //
     this.block.id = previous_block_id + 1;
-    this.block.previous_block_hash(previous_block_hash);
-    this.block.burnfee(current_burnfee);
-    this.block.timestamp(current_timestamp);
-    this.block.difficulty(previous_block_difficulty);
+    this.block.previous_block_hash = previous_block_hash;
+    this.block.burnfee = current_burnfee;
+    this.block.timestamp = current_timestamp;
+    this.block.difficulty = previous_block_difficulty;
 
 
     //
@@ -84,24 +94,46 @@ class Block {
     // object, so we can hot-swap using pass-by-reference. these 
     // modifications change the mempool in real-time.
     //
-    for (let i = 0; i < mempool.golden_tickets.length; i++) {
+    for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
       if (mempool.golden_tickets[i].returnMessage() === previous_block_hash) {
         this.transactions.unshift(mempool.golden_tickets[i]);
+        this.has_golden_ticket = 1;
         mempool.golden_tickets.splice(i, 1);
-        i = mempool.golden_tickets.length + 2;
+        i = mempool.mempool.golden_tickets.length + 2;
       }
     }
 
     //
     // update dynamic consensus-variables
     //
-    this.updateConsensusValues();
+    await this.updateConsensusValues();
 
     //
     // and return to normal
     //
     this.bundling_active = false;
 
+  }
+
+  generateMetadata() {
+    this.generate_hashes();
+  }
+
+  generateHashes() {
+    this.hash = "";
+    this.hash = this.returnHash();
+  }
+
+  hasGoldenTicket() {
+    return this.has_golden_ticket; 
+  }
+
+  returnBurnFee() {
+    return this.block.burnfee;
+  }  
+
+  returnDifficulty() {
+    return this.block.difficulty;
   }
 
   returnId() { 
@@ -114,7 +146,15 @@ class Block {
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
   }
-  
+
+  returnPreviousBlockHash() {
+    return this.block.previous_block_hash;
+  }
+
+  returnTimestamp() {
+    return this.block.timestamp;
+  }  
+
   serializeForSignature() {
 
     let vbytes = "";
@@ -129,6 +169,13 @@ class Block {
         vbytes += this.block.difficulty;
     return vbytes
 
+  }
+
+  async updateConsensusValues() {
+
+  }
+
+  async upgradeBlockToBlockType(block_type) {
   }
 
   async validate() {

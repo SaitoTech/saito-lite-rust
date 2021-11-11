@@ -32,6 +32,8 @@ class Saito {
     this.networkApi   = new saito_lib.networkApi(this);
     this.burnfee      = new saito_lib.burnfee(this);
     this.blockchain   = new saito_lib.blockchain(this);
+    this.blockring    = new saito_lib.blockring(this, this.blockchain.returnGenesisPeriod());
+
   }
 
   async init() {
@@ -63,6 +65,7 @@ class Saito {
 
       this.wallet.initialize();
       this.mempool.initialize();
+      this.miner.initialize();
       this.keys.initialize();
 
       this.modules.mods = this.modules.mods_list.map(mod_path => {

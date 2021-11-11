@@ -68,6 +68,58 @@ class Mempool {
   }
 
 
+  addBlock(block) {
+
+    if (block == null) { return false; }
+    if (!block.is_valid) { return false; }
+
+    //
+    // insert into queue
+    //
+    let hash = block.returnHash();
+    let insertme = true;
+    for (let i = 0; i < this.mempool.blocks.length; i++) {
+      if (this.mempool.blocks[i].returnHash() == hash) {
+	insertme = false;
+      }
+    }
+
+    if (insertme) {
+      this.mempool.blocks.push(block);
+    } else {
+      return false;
+    }
+
+    //
+    // process queue
+    //
+    if (this.processing_active == 1) { return; }
+    this.processing_active = 1;
+
+    //
+    // sort our block queue before adding to chain
+    //
+    this.mempool.blocks.sort((a,b) => a.block.id - b.block.id);
+
+    try {
+      this.processing_timer = setInterval(async () => {
+        if (this.mempool.blocks.length > 0) {
+          if (this.app.blockchain.indexing_active == false) {
+            let block = this.mempool.blocks.shift();
+            await this.app.blockchain.addBlockToBlockchain(block);
+          }
+        } else {
+          this.processing_active = 0;
+          clearInterval(this.processing_timer);
+        }
+      }, this.processing_speed);
+    } catch (err) {
+      console.log(err);
+    }
+
+  }
+
+
   async bundleBlock() {
 
     //
@@ -82,9 +134,11 @@ class Mempool {
     // and don't spam the public network
     //
     if (this.mempool.transactions.length == 0) {
-      if (! this.app.network.isPrivateNetwork() || this.app.network.isProductionNetwork()) {
-        console.log("WARNING 582034: refusing to spam public network with no-tx blocks.");
-        return;
+      if (!this.app.network.isPrivateNetwork()) {
+	if (this.app.network.isProductionNetwork()) {
+          console.log("WARNING 582034: refusing to spam public network with no-tx blocks.");
+          return;
+        }
       }
     }
 
@@ -103,19 +157,18 @@ class Mempool {
       //
       // create the block
       //
-      let blk = new saito.block(this.app);
-      let previous_block = this.app.blockchain.returnLatestBlock();
-      let previous_block_hash = previous_block.returnHash();
+      let block = new saito.block(this.app);
+      let previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
       //
       // update its consensus data
       //
-      await blk.generateFromMempool(this.mempool, previous_block_hash);
+      await block.generateFromMempool(this.app.mempool, previous_block_hash);
 
       //
       // and add to mempool
       //
-      this.addBlock(blk);
+      this.addBlock(block);
 
     } catch(err) {
       console.log("ERROR 781029: unexpected problem bundling block in mempool: " + err);
