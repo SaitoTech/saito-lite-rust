@@ -31,6 +31,8 @@ class Saito {
     this.network      = new saito_lib.network(this);
     this.burnfee      = new saito_lib.burnfee(this);
     this.blockchain   = new saito_lib.blockchain(this);
+    this.blockring    = new saito_lib.blockring(this, this.blockchain.returnGenesisPeriod());
+
   }
 
   async init() {
