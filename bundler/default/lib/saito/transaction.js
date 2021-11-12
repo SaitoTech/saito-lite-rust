@@ -1,6 +1,10 @@
 const Big      = require('big.js');
 const saito    = require('./saito');
 
+const TRANSACTION_SIZE = 89;
+const SLIP_SIZE = 75;
+const HOP_SIZE = 130;
+
 const TransactionType = {
   Normal: 0,
   Fee: 1,
@@ -74,6 +78,64 @@ class Transaction {
   }
 
 
+  /**
+   * Deserialize Transaction
+   * @param {array} buffer - raw bytes, perhaps an entire block
+   * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
+   * @returns {Transaction}
+   */
+  deserialize(buffer, start_of_transaction_data) {
+    let inputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+    let outputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+    let message_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+    let path_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+
+    let signature = this.app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
+    let timestamp = this.app.networkApi.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
+    let transaction_type = buffer[start_of_transaction_data + 88];
+    let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
+    let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
+    let start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;
+    let start_of_path = start_of_message + message_len;
+
+    let inputs = [];
+    for (let i = 0; i < inputs_len; i++) {
+      let start_of_slip = start_of_inputs + (i * SLIP_SIZE);
+      let end_of_slip = start_of_slip + SLIP_SIZE;
+      let input = this.deserializeSlip(buffer.slice(start_of_slip, end_of_slip));
+      inputs.push(input);
+    }
+    let outputs = [];
+    for (let i = 0; i < outputs_len; i++) {
+      let start_of_slip = start_of_outputs + (i * SLIP_SIZE);
+      let end_of_slip = start_of_slip + SLIP_SIZE;
+      let input = this.deserializeSlip(buffer.slice(start_of_slip, end_of_slip));
+      outputs.push(input);
+    }
+    let message = buffer.slice(start_of_message, start_of_message + message_len);
+
+    let path = [];
+    for (let i = 0; i < path_len; i++) {
+      let start_of_data = start_of_path + (i * HOP_SIZE);
+      let end_of_data = start_of_data + HOP_SIZE;
+      let hop = this.deserializeHop(buffer.slice(start_of_data, end_of_data));
+      path.push(hop);
+    }
+
+    return {
+      inputs: inputs,
+      outputs: outputs,
+      timestamp: timestamp,
+      signature: signature,
+      path: path,
+      transaction_type: transaction_type,
+      message: message,
+    };
+  }
+
+
+
+
   returnFeesTotal(app) {
     if (this.fees_total == "") {
 
@@ -127,6 +189,75 @@ class Transaction {
     this.sign(app);
     return this.transaction.sig;
   }
+
+  /**
+   * Serialize TX
+   * @param {TransactionV2} transaction
+   * @returns {array} raw bytes
+   */
+  serialize(transaction) {
+
+    let inputs_len = this.app.networkApi.u32AsBytes(transaction.inputs.length);
+    let outputs_len = this.app.networkApi.u32AsBytes(transaction.outputs.length);
+    let message_len = this.app.networkApi.u32AsBytes(transaction.message.length);
+    let path_len = this.app.networkApi.u32AsBytes(transaction.path.length);
+    let signature = Buffer.from(transaction.signature, 'hex');
+    let timestamp = this.app.networkApi.u64AsBytes(transaction.timestamp);
+    let transaction_type = this.app.networkApi.u8AsByte(transaction.transaction_type);
+    let inputs = [];
+    let outputs = [];
+    let path = [];
+
+    let start_of_inputs = TRANSACTION_SIZE;
+    let start_of_outputs = TRANSACTION_SIZE + ((transaction.inputs.length) * SLIP_SIZE);
+    let start_of_message = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE);
+    let start_of_path = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE) + transaction.message.length;
+    let size_of_tx_data = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE) + transaction.message.length + transaction.path.length * HOP_SIZE;
+
+    let ret = new Uint8Array(size_of_tx_data);
+    ret.set(new Uint8Array([
+      ...inputs_len,
+      ...outputs_len,
+      ...message_len,
+      ...path_len,
+      ...signature,
+      ...timestamp,
+      transaction_type]),
+      0);
+
+    for (let i = 0; i < transaction.inputs.length; i++) {
+      inputs.push(this.serializeSlip(transaction.inputs[i]));
+    }
+    let next_input_location = start_of_inputs;
+    for (let i = 0; i < inputs.length; i++) {
+      ret.set(inputs[i], next_input_location);
+      next_input_location += SLIP_SIZE;
+    }
+
+    for (let i = 0; i < transaction.outputs.length; i++) {
+      outputs.push(this.serializeSlip(transaction.outputs[i]));
+    }
+    let next_output_location = start_of_outputs;
+    for (let i = 0; i < outputs.length; i++) {
+      ret.set(outputs[i], next_output_location);
+      next_output_location += SLIP_SIZE;
+    }
+
+    ret.set(transaction.message, start_of_message);
+
+    for (let i = 0; i < transaction.path.length; i++) {
+      let serialized_hop = this.serializeHop(transaction.path[i]);
+      path.push(serialized_hop);
+    }
+    let next_hop_location = start_of_path;
+    for(let i = 0; i < path.length; i++) {
+      ret.set(path[i], next_hop_location);
+      next_hop_location += HOP_SIZE;
+    }
+
+    return ret;
+  }
+
 
   serializeForSignature() {
     let s = this.transaction.ts;

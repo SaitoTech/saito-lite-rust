@@ -52,39 +52,42 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer) {
-    let block = this;
+
     let transactions_length = this.app.networkApi.u32FromBytes(buffer.slice(0, 4));
-    block.id = this.app.networkApi.u64FromBytes(buffer.slice(4, 12));
-    block.timestamp = this.app.networkApi.u64FromBytes(buffer.slice(12, 20));
-    block.previous_block_hash = this.app.crypto.stringToHex(buffer.slice(20, 52));
-    block.creator = this.app.crypto.stringToHex(buffer.slice(52, 85));
-    block.merkle_root = this.app.crypto.stringToHex(buffer.slice(85, 117));
-    block.signature = this.app.crypto.stringToHex(buffer.slice(117, 181));
-    block.treasury = this.app.networkApi.u64FromBytes(buffer.slice(181, 189));
-    block.staking_treasury = this.app.networkApi.u64FromBytes(buffer.slice(189, 197));
-    block.burnfee = this.app.networkApi.u64FromBytes(buffer.slice(197, 205));
-    block.difficulty = this.app.networkApi.u64FromBytes(buffer.slice(205, 213));
+    this.block.id = this.app.networkApi.u64FromBytes(buffer.slice(4, 12));
+    this.block.timestamp = this.app.networkApi.u64FromBytes(buffer.slice(12, 20));
+    this.block.previous_block_hash = this.app.crypto.stringToHex(buffer.slice(20, 52));
+    this.block.creator = this.app.crypto.stringToHex(buffer.slice(52, 85));
+    this.block.merkle = this.app.crypto.stringToHex(buffer.slice(85, 117));
+    this.block.signature = this.app.crypto.stringToHex(buffer.slice(117, 181));
+    this.block.treasury = this.app.networkApi.u64FromBytes(buffer.slice(181, 189));
+    this.block.staking_treasury = this.app.networkApi.u64FromBytes(buffer.slice(189, 197));
+    this.block.burnfee = this.app.networkApi.u64FromBytes(buffer.slice(197, 205));
+    this.block.difficulty = this.app.networkApi.u64FromBytes(buffer.slice(205, 213));
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
-    for (let i = 0; i < transactions_length; i++) {
-      let inputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-      let outputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-      let message_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-      let path_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
-      let end_of_transaction_data = start_of_transaction_data
-        + TRANSACTION_SIZE
-        + ((inputs_len + outputs_len) * SLIP_SIZE)
-        + message_len
-        + path_len * HOP_SIZE;
+console.log("CONTENTS DESERIALIZE: " + JSON.stringify(this.block));
+console.log("TX LEN: " + transactions_length);
 
-      let tx = this.deserializeTransaction(
-        buffer,
-        start_of_transaction_data
-      );
-
-      block.transactions.push(tx);
-      start_of_transaction_data = end_of_transaction_data;
-    }
+//    for (let i = 0; i < transactions_length; i++) {
+//      let inputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+//      let outputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+//      let message_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+//      let path_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+//      let end_of_transaction_data = start_of_transaction_data
+//        + TRANSACTION_SIZE
+//        + ((inputs_len + outputs_len) * SLIP_SIZE)
+//        + message_len
+//        + path_len * HOP_SIZE;
+//
+//      let tx = this.deserializeTransaction(
+//        buffer,
+//        start_of_transaction_data
+//      );
+//
+//      block.transactions.push(tx);
+//      start_of_transaction_data = end_of_transaction_data;
+//    }
   }
 
 
@@ -344,9 +347,7 @@ class Block {
    */
   serialize() {
 
-console.log("A");
     let transactions_length = this.app.networkApi.u32AsBytes(0);
-console.log("B");
     if (this.transactions.length > 0) { transactions_length = this.app.networkApi.u32AsBytes(this.transactions.length); }
     let id = this.app.networkApi.u64AsBytes(new Big(this.block.id));
     let timestamp = this.app.networkApi.u64AsBytes(new Big(this.block.timestamp));
@@ -358,7 +359,6 @@ console.log("B");
     let staking_treasury = this.app.networkApi.u64AsBytes(new Big(this.block.staking_treasury));
     let burnfee = this.app.networkApi.u64AsBytes(new Big(this.block.burnfee));
     let difficulty = this.app.networkApi.u64AsBytes(new Big(this.block.difficulty));
-console.log("C");
     let block_header_data = new Uint8Array([
       ...transactions_length,
       ...id,
