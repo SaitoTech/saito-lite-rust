@@ -140,7 +140,7 @@ class StorageCore extends Storage {
     try {
       if (!fs.existsSync(blk.filename)) {
 	let fd = fs.openSync(blk.filename, 'w');
-        fs.writeSync(fd, this.app.networkApi.serializeBlock(blk));
+        fs.writeSync(fd, blk.serialize());
         fs.closeSync(fd);
       }
       return true;
