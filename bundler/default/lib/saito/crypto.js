@@ -46,6 +46,7 @@ class Crypto {
    * initialization.
    */
 
+
   hash(data="") {
     //
     // 64-bit hash

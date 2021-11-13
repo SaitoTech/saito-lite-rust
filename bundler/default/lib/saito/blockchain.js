@@ -241,7 +241,7 @@ console.log("contents: " + JSON.stringify(block.block));
       if (does_new_chain_validate) {
 
         await this.addBlockSuccess(block);
-        this.blocks[block_hash].lc = true;
+        this.blocks[block_hash].lc = 1;
 
 	this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
 	this.app.connection.emit("BlockchainNewLongestChainBlock", { block_hash : block_hash, block_difficulty : block_difficulty});
@@ -735,6 +735,33 @@ console.log("contents: " + JSON.stringify(block.block));
     }
 
     await this.downgradeBlockchainData();
+
+  }
+
+  resetBlockchain() {
+
+    //
+    // last in longest_chain
+    //
+    this.blockchain.last_block_hash    			= "";
+    this.blockchain.last_block_id      			= "";
+    this.blockchain.last_timestamp     			= new Date().getTime();
+    this.blockchain.last_burnfee       			= 0;
+
+    //
+    // earliest in epoch
+    //
+    this.blockchain.genesis_block_id   			= 0;
+    this.blockchain.genesis_timestamp  			= 0;
+
+    //
+    // first received this sync (used to prevent recursive fetch forever)
+    //
+    this.blockchain.lowest_acceptable_timestamp 	= 0;
+    this.blockchain.lowest_acceptable_block_hash 	= "";
+    this.blockchain.lowest_acceptable_block_id 		= 0;
+
+    this.saveBlockchain();
 
   }
 

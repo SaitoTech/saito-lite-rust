@@ -24,23 +24,21 @@ class Transaction {
     /////////////////////////
     // consensus variables //
     /////////////////////////
-    this.transaction               = {};
-    this.transaction.id            = 1;
-    this.transaction.from          = [];
-    this.transaction.to            = [];
-    this.transaction.ts            = new Date().getTime();
-    this.transaction.sig           = "";  // sig of tx
-    this.transaction.ver           = 1.0;
-    this.transaction.path          = [];
-    this.transaction.r             = 1; // "replaces" (how many txs this represents in merkle-tree for spv block)
-    this.transaction.type          = 0;
-    this.transaction.m             = "";
+    this.transaction                  = {};
+    this.transaction.to	 	      = [];
+    this.transaction.from	      = [];
+    this.transaction.ts               = new Date().getTime();
+    this.transaction.sig              = "";
+    this.transaction.path             = [];
+    this.transaction.r                = 1; // replaces
+    this.transaction.type             = TransactionType.Normal;
+    this.transaction.m                = "";
 
-    this.fees_total                = "";
-    this.work_available_to_me      = "";
-    this.work_available_to_creator = "";
-    this.work_cumulative           = "0.0";
-					  //
+    this.fees_total                   = "";
+    this.work_available_to_me         = "";
+    this.work_available_to_creator    = "";
+    this.work_cumulative              = "0.0";
+				 	  //
                                           // cumulative fees. this is calculated when
 					  // we process the block so that we can quickly
 					  // select the winning transaction based on the
@@ -56,9 +54,6 @@ class Transaction {
     this.dmsg                      = "";
     this.size                      = 0;
     this.is_valid                  = 1;
-    this.transactionType           = TransactionType.Normal;
-    this.inputs                    = [];
-    this.outputs                   = [];
 
     return this;
   }
@@ -85,6 +80,7 @@ class Transaction {
    * @returns {Transaction}
    */
   deserialize(buffer, start_of_transaction_data) {
+
     let inputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
     let outputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
     let message_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
@@ -102,15 +98,17 @@ class Transaction {
     for (let i = 0; i < inputs_len; i++) {
       let start_of_slip = start_of_inputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
-      let input = this.deserializeSlip(buffer.slice(start_of_slip, end_of_slip));
+      let input = new saito.slip();
+      input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       inputs.push(input);
     }
     let outputs = [];
     for (let i = 0; i < outputs_len; i++) {
       let start_of_slip = start_of_outputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
-      let input = this.deserializeSlip(buffer.slice(start_of_slip, end_of_slip));
-      outputs.push(input);
+      let output = new saito.slip();
+      output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
+      outputs.push(output);
     }
     let message = buffer.slice(start_of_message, start_of_message + message_len);
 
@@ -118,19 +116,19 @@ class Transaction {
     for (let i = 0; i < path_len; i++) {
       let start_of_data = start_of_path + (i * HOP_SIZE);
       let end_of_data = start_of_data + HOP_SIZE;
-      let hop = this.deserializeHop(buffer.slice(start_of_data, end_of_data));
+      let hop = new saito.hop();
+      hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
       path.push(hop);
     }
 
-    return {
-      inputs: inputs,
-      outputs: outputs,
-      timestamp: timestamp,
-      signature: signature,
-      path: path,
-      transaction_type: transaction_type,
-      message: message,
-    };
+    this.transaction.from = inputs;
+    this.transaction.to = outputs;
+    this.transaction.ts = timestamp;
+    this.transaction.sig = signature;
+    this.transaction.path = path;
+    this.transaction.type = transaction_type;
+    this.transaction.m = message;
+
   }
 
 
@@ -195,24 +193,24 @@ class Transaction {
    * @param {TransactionV2} transaction
    * @returns {array} raw bytes
    */
-  serialize(transaction) {
+  serialize(app) {
 
-    let inputs_len = this.app.networkApi.u32AsBytes(transaction.inputs.length);
-    let outputs_len = this.app.networkApi.u32AsBytes(transaction.outputs.length);
-    let message_len = this.app.networkApi.u32AsBytes(transaction.message.length);
-    let path_len = this.app.networkApi.u32AsBytes(transaction.path.length);
-    let signature = Buffer.from(transaction.signature, 'hex');
-    let timestamp = this.app.networkApi.u64AsBytes(transaction.timestamp);
-    let transaction_type = this.app.networkApi.u8AsByte(transaction.transaction_type);
+    let inputs_len = app.networkApi.u32AsBytes(this.transaction.from.length);
+    let outputs_len = app.networkApi.u32AsBytes(this.transaction.to.length);
+    let message_len = app.networkApi.u32AsBytes(this.transaction.m.length);
+    let path_len = app.networkApi.u32AsBytes(this.transaction.path.length);
+    let signature = Buffer.from(this.transaction.sig, 'hex');
+    let timestamp = app.networkApi.u64AsBytes(this.transaction.ts);
+    let transaction_type = app.networkApi.u8AsByte(this.transaction.type);
     let inputs = [];
     let outputs = [];
     let path = [];
 
     let start_of_inputs = TRANSACTION_SIZE;
-    let start_of_outputs = TRANSACTION_SIZE + ((transaction.inputs.length) * SLIP_SIZE);
-    let start_of_message = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE);
-    let start_of_path = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE) + transaction.message.length;
-    let size_of_tx_data = TRANSACTION_SIZE + ((transaction.inputs.length + transaction.outputs.length) * SLIP_SIZE) + transaction.message.length + transaction.path.length * HOP_SIZE;
+    let start_of_outputs = TRANSACTION_SIZE + ((this.transaction.from.length) * SLIP_SIZE);
+    let start_of_message = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE);
+    let start_of_path = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length;
+    let size_of_tx_data = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length + this.transaction.path.length * HOP_SIZE;
 
     let ret = new Uint8Array(size_of_tx_data);
     ret.set(new Uint8Array([
@@ -225,8 +223,8 @@ class Transaction {
       transaction_type]),
       0);
 
-    for (let i = 0; i < transaction.inputs.length; i++) {
-      inputs.push(this.serializeSlip(transaction.inputs[i]));
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      inputs.push(this.transaction.from[i].serialize(app));
     }
     let next_input_location = start_of_inputs;
     for (let i = 0; i < inputs.length; i++) {
@@ -234,8 +232,8 @@ class Transaction {
       next_input_location += SLIP_SIZE;
     }
 
-    for (let i = 0; i < transaction.outputs.length; i++) {
-      outputs.push(this.serializeSlip(transaction.outputs[i]));
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      outputs.push(this.transaction.to[i].serialize(app));
     }
     let next_output_location = start_of_outputs;
     for (let i = 0; i < outputs.length; i++) {
@@ -243,10 +241,10 @@ class Transaction {
       next_output_location += SLIP_SIZE;
     }
 
-    ret.set(transaction.message, start_of_message);
+    ret.set(this.transaction.m, start_of_message);
 
-    for (let i = 0; i < transaction.path.length; i++) {
-      let serialized_hop = this.serializeHop(transaction.path[i]);
+    for (let i = 0; i < this.transaction.path.length; i++) {
+      let serialized_hop = this.transaction.path[i].serialize(app);
       path.push(serialized_hop);
     }
     let next_hop_location = start_of_path;
