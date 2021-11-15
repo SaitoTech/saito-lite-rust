@@ -81,13 +81,13 @@ class Transaction {
    */
   deserialize(buffer, start_of_transaction_data) {
 
-    let inputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-    let outputs_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-    let message_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-    let path_len = this.app.networkApi.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+    let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+    let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+    let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+    let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
     let signature = this.app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-    let timestamp = this.app.networkApi.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
+    let timestamp = this.app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
     let transaction_type = buffer[start_of_transaction_data + 88];
     let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
@@ -195,13 +195,13 @@ class Transaction {
    */
   serialize(app) {
 
-    let inputs_len = app.networkApi.u32AsBytes(this.transaction.from.length);
-    let outputs_len = app.networkApi.u32AsBytes(this.transaction.to.length);
-    let message_len = app.networkApi.u32AsBytes(this.transaction.m.length);
-    let path_len = app.networkApi.u32AsBytes(this.transaction.path.length);
+    let inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
+    let outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
+    let message_len = app.binary.u32AsBytes(this.transaction.m.length);
+    let path_len = app.binary.u32AsBytes(this.transaction.path.length);
     let signature = Buffer.from(this.transaction.sig, 'hex');
-    let timestamp = app.networkApi.u64AsBytes(this.transaction.ts);
-    let transaction_type = app.networkApi.u8AsByte(this.transaction.type);
+    let timestamp = app.binary.u64AsBytes(this.transaction.ts);
+    let transaction_type = app.binary.u8AsByte(this.transaction.type);
     let inputs = [];
     let outputs = [];
     let path = [];
