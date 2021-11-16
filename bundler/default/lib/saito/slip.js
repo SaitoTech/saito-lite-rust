@@ -3,16 +3,16 @@ const saito = require('./saito');
 
 class Slip {
 
-  constructor(publickey="", amount="", type=1, uuid="", slip_ordinal=0, payout=0, lc=1) {
+  constructor(publickey="", amount="0", type=1, uuid="", slip_ordinal=0, payout=0, lc=1) {
 
     //
     // consensus variables
     //
-    this.publickey = publickey;
-    this.amount = amount;
+    this.add = publickey;
+    this.amt = amount;
     this.type = type;
     this.uuid = uuid;
-    this.slip_ordinal = slip_ordinal;
+    this.sid = slip_ordinal;
 
     //
     // non-consensus variables
@@ -30,11 +30,11 @@ class Slip {
   }
 
   deserialize(app, buffer) {
-    this.publickey = app.crypto.stringToHex(buffer.slice(0, 33));
+    this.add = app.crypto.stringToHex(buffer.slice(0, 33));
     this.uuid = app.crypto.stringToHex(buffer.slice(33, 65));
-    this.amount = app.binary.u64FromBytes(buffer.slice(65, 73));
-    this.slip_ordinal = app.binary.u8FromByte(buffer[73]);
-    this.slip_type = app.binary.u8FromByte(buffer[SLIP_SIZE - 1]);
+    this.amt = app.binary.u64FromBytes(buffer.slice(65, 73));
+    this.sid = app.binary.u8FromByte(buffer[73]);
+    this.type = app.binary.u8FromByte(buffer[SLIP_SIZE - 1]);
   }
 
 
@@ -54,11 +54,11 @@ class Slip {
    */
   serialize(app, uuid) {
 
-    let publickey = Buffer.from(this.publickey, 'hex');
+    let publickey = Buffer.from(this.add, 'hex');
     let uuidx = Buffer.from(uuid, 'hex');
-    let amount = app.binary.u64AsBytes(this.amount);
-    let slip_ordinal = app.binary.u8AsByte(this.slip_ordinal);
-    let slip_type = app.binary.u8AsByte(this.slip_type);
+    let amount = app.binary.u64AsBytes(this.amt);
+    let slip_ordinal = app.binary.u8AsByte(this.sid);
+    let slip_type = app.binary.u8AsByte(this.type);
 
     return new Uint8Array([
         ...publickey,
