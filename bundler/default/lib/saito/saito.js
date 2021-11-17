@@ -1,5 +1,6 @@
 const saito = exports;
 
+saito.binary         = require('./binary');
 saito.block          = require('./block');
 saito.blockchain     = require('./blockchain');
 saito.blockring      = require('./blockring');
@@ -8,6 +9,7 @@ saito.burnfee        = require('./burnfee');
 saito.connection     = require('./connection');
 saito.crypto         = require('./crypto');
 saito.goldenticket   = require('./goldenticket');
+saito.hop            = require('./hop');
 saito.key            = require('./key');
 saito.keychain       = require('./keychain');
 saito.miner          = require('./miner');

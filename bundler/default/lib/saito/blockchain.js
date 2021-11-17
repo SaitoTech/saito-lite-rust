@@ -1,6 +1,5 @@
 saito = require('./saito');
 const Big = require('big.js');
-const Block = require('./block');
 const UtxoSet = require('./utxoset');
 
 class Blockchain {
@@ -50,12 +49,18 @@ class Blockchain {
     //
     // set to true when adding blocks to disk (must be done one at a time!)
     //
-    this.indexing_active	     = false; // when adding to blockchain or loading from disk
+    // NOTE: this is set to true on creation so that mempool does not start
+    // producing blocks on initialization until the blockchain class as got
+    // through its own initialization process and had a chance to load blocks
+    // off disk.
+    //
+    this.indexing_active	     = true;
 
   }
 
 
   async addBlockToBlockchain(block, force=0) {
+
 
     //
     // 
@@ -67,6 +72,9 @@ class Blockchain {
     // first things first, ensure hashes OK
     //
     block.generateHashes();
+
+console.log("adding: " + block.returnHash());
+console.log("contents: " + JSON.stringify(block.block));
 
     //
     // start by extracting some variables that we will use
@@ -82,7 +90,7 @@ class Blockchain {
     //
     // sanity checks
     //
-    if (this.blocks[block_hash]) {
+    if (this.isBlockIndexed(block_hash)) {
       console.log("ERROR 581023: block exists in blockchain index");
       this.indexing_active = false;
       return;
@@ -129,7 +137,7 @@ class Blockchain {
     // all block_hashes to be unique, so simply insert blocks one-by-one on
     // arrival if they do not exist.
     //
-    if (!this.blocks[block_hash]) {
+    if (!this.isBlockIndexed(block_hash)) {
       this.blocks[block_hash] = block;
     }
 
@@ -232,7 +240,7 @@ class Blockchain {
       if (does_new_chain_validate) {
 
         await this.addBlockSuccess(block);
-        this.blocks[block_hash].lc = true;
+        this.blocks[block_hash].lc = 1;
 
 	this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
 	this.app.connection.emit("BlockchainNewLongestChainBlock", { block_hash : block_hash, block_difficulty : block_difficulty});
@@ -266,13 +274,14 @@ class Blockchain {
     //
     // save to disk
     //
-    if (block.block_type !== Block.BlockType.Header) {
+    if (!block.isType("Header")) {
       await this.app.storage.saveBlock(block);
     }
 
     //
     // pre-load for next block
     //
+console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash()));
 
   }
 
@@ -351,7 +360,7 @@ class Blockchain {
         // ask block to remove its transactions
         //
         let pblock = await this.self.loadBlockAsync(hash);
-        await pblock.downgradeBlockToBlockType("pruned");
+        await pblock.downgradeBlockToBlockType("Pruned");
       }
 
     }
@@ -445,15 +454,12 @@ class Blockchain {
 
   // deletes all blocks at a single block_id
   async deleteBlocks(deletedBlockId) {
-    console.trace("removing data including from disk at id " + deletedBlockId);
 
     let blockHashesCopy = [];
     let blockHashes = this.blockring.returnBlockHashesAtBlockId(deletedBlockId);
     for (let hash of blockHashes){
       blockHashesCopy.push([...hash]);
     }
-
-    console.trace("number of hashes to remove "+blockHashesCopy.length);
 
     for (let hash of blockHashesCopy){
       await this.deleteBlock(deletedBlockId, hash);
@@ -489,7 +495,7 @@ class Blockchain {
     this.blockring.deleteBlock(deletedBlockId,deletedBlockHash);
 
     // remove from block index
-    if (this.blocks.hasOwnProperty(deletedBlockHash))
+    if (this.isBlockIndexed(deletedBlockHash))
     {
       delete this.blocks[deletedBlockHash];
     }
@@ -615,8 +621,31 @@ class Blockchain {
   }
 
 
-  initialize() {
+  async initialize() {
+
+    //
+    // prevent mempool from producing blocks while we load
+    //
+    this.app.mempool.bundling_active = true;
+    this.indexing_active = false;
+
+
+    //
+    // load blocks from disk
+    //
+    await this.app.storage.loadBlocksFromDisk(); 
+
+
+    //
+    // and start mining
+    //
     this.app.miner.startMining(this.returnLatestBlockHash(), this.returnDifficulty());
+
+    //
+    // permit mempool to continue
+    //
+    this.app.mempool.bundling_active = false;
+
   }
 
   isNewChainTheLongestChain(new_chain, old_chain) {
@@ -646,7 +675,7 @@ class Blockchain {
 
 
   isBlockIndexed(block_hash) {
-    if (this.blocks.hasOwnProperty[block_hash]) { return true; }
+    if (this.blocks[block_hash]) { return true; }
     return false;
   }
 
@@ -706,6 +735,33 @@ class Blockchain {
 
   }
 
+  resetBlockchain() {
+
+    //
+    // last in longest_chain
+    //
+    this.blockchain.last_block_hash    			= "";
+    this.blockchain.last_block_id      			= "";
+    this.blockchain.last_timestamp     			= new Date().getTime();
+    this.blockchain.last_burnfee       			= 0;
+
+    //
+    // earliest in epoch
+    //
+    this.blockchain.genesis_block_id   			= 0;
+    this.blockchain.genesis_timestamp  			= 0;
+
+    //
+    // first received this sync (used to prevent recursive fetch forever)
+    //
+    this.blockchain.lowest_acceptable_timestamp 	= 0;
+    this.blockchain.lowest_acceptable_block_hash 	= "";
+    this.blockchain.lowest_acceptable_block_id 		= 0;
+
+    this.saveBlockchain();
+
+  }
+
   returnDifficulty() {
     return 1;
   }
@@ -719,16 +775,17 @@ class Blockchain {
     return 0;
   }
 
+  // returns header info as indexed, txs and purged data not guaranteed
   returnLatestBlock() {
-    return null;
+    return this.app.blockring.returnLatestBlock();
   }
 
   returnLatestBlockHash() {
-    return "";
+    return this.app.blockring.returnLatestBlockHash();
   }
 
   returnLatestBlockId() {
-    return 0;
+    return this.app.blockring.returnLatestBlockId();
   }
 
   saveBlockchain() {
@@ -942,12 +999,14 @@ class Blockchain {
       let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
       if (this.isBlockIndexed(previous_block_hash)) {
         let previous_block = await this.loadBlockAsync(previous_block_hash);
-        await previous_block.upgradeBlockToBlockType("full");
+        await previous_block.upgradeBlockToBlockType("Full");
       }
     }
 
 
     let does_block_validate = await block.validate();
+
+console.log("does block validate? " + does_block_validate);
 
     if (does_block_validate) {
 

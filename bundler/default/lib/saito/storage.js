@@ -81,12 +81,14 @@ class Storage {
         let buffer = fs.readFileSync(filename);
         let block = new saito.block(this.app);
         block.deserialize(buffer);
+        block.generateMetadata();
         return block;
       }
     } catch (error) {
       console.log("Error reading block from disk");
-      console.error(err);
+      console.error(error);
     }
+    return null;
   }
 
   deleteBlockFromDisk(filename) {
@@ -105,22 +107,7 @@ class Storage {
 
   returnFileSystem() { return null; }
 
-  async saveBlock(block) { // TODO : check whether matches with the rust implementation
-    try {
-      let filename = this.generateBlockFilename(block);
-      if (!fs.existsSync(filename)) {
-        let fd = fs.openSync(filename, 'w');
-        let buffer = block.serializeForNet();
-        fs.writeSync(fd, buffer);
-        fs.fsyncSync(fd);
-        fs.closeSync(fd);
-      }
-      return filename;
-    } catch (err) {
-      console.log("ERROR 285029: error saving block to disk " + err);
-    }
-    return true;
-  }
+  async saveBlock(block) { return false; }
 
   saveClientOptions() {}
 

@@ -55,10 +55,15 @@ class Miner {
       let random_hash = this.app.crypto.generateRandomNumber();
 
       if (this.app.goldenticket.validate(this.target, random_hash, this.app.wallet.returnPublicKey(), this.difficulty)) {
-         //this.app.network.propagateTransaction();
-         //this.app.mempool.addTransaction();
+
+	let transaction = this.app.wallet.createUnsignedTransaction();
+        transaction.msg = this.app.goldenticket.serialize(this.target, random_hash);
+        transaction.sign(this.app);
+
+        //this.app.network.propagateTransaction();
+        this.app.mempool.addTransaction(transaction);
 console.log("we found a valid golden ticket!");
-         this.stopMining();
+        this.stopMining();
       }
     }
 

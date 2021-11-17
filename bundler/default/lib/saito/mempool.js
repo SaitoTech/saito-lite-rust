@@ -120,6 +120,17 @@ class Mempool {
   }
 
 
+  addTransaction(transaction) {
+
+    for (let i = 0; i < this.mempool.transactions.length; i++) {
+      if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) { return; }
+    }
+
+    this.mempool.transactions.push(transaction);
+
+  }
+
+
   async bundleBlock() {
 
     //
@@ -166,6 +177,11 @@ class Mempool {
       await block.generateFromMempool(this.app.mempool, previous_block_hash);
 
       //
+      // sign the block
+      //
+      block.signBlock(this.app.wallet.returnPublicKey(), this.app.wallet.returnPrivateKey());
+
+      //
       // and add to mempool
       //
       this.addBlock(block);
@@ -184,6 +200,10 @@ class Mempool {
 
   canBundleBlock() {
 
+    if (this.app.mempool.mempool.transactions.length == 0) {
+      console.log("CANNOT PRODUCE AS MEMPOOL PROCESSING ACTIVE");
+      return false;
+    }
     if (this.app.mempool.processing_active == true) {
       console.log("CANNOT PRODUCE AS MEMPOOL PROCESSING ACTIVE");
       return false;
@@ -245,7 +265,7 @@ class Mempool {
     //
     // TODO - optimize so we don't always recalculate
     //
-    this.routing_work_in_mempool = parseFloat(this.returnRoutingWorkAvailable());
+    this.routing_work_in_mempool = parseInt(this.returnRoutingWorkAvailable());
 
     console.log("Total Work Needed: " + this.routing_work_needed + " ---- available ---> " + this.routing_work_in_mempool + "     (" + this.app.wallet.returnBalance() + ")");
 

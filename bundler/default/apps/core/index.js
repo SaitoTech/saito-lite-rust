@@ -18,6 +18,7 @@ class Saito {
   }
 
   newSaito() {
+    this.binary       = new saito_lib.binary(this);
     this.crypto       = new saito_lib.crypto(this);
     this.connection   = new saito_lib.connection();
     this.browser      = new saito_lib.browser(this);

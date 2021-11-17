@@ -208,7 +208,9 @@ class StorageCore extends Storage {
 
   async loadBlockByFilename(filename) {
 
-    let block_filename = `${ this.data_dir}/${this.dest}/${filename}`;
+    let block_filename = `${this.data_dir}/${this.dest}/${filename}`;
+
+console.log("trying to load: " + block_filename);
 
     try {
     //
@@ -222,40 +224,49 @@ class StorageCore extends Storage {
     //
     if (fs.existsSync(block_filename)) {
 
-      let headers_processed = 0;
+//      let headers_processed = 0;
+//
+//      const rl = readline.createInterface({
+//        input: fs.createReadStream(block_filename, this.file_encoding_load) ,
+//        crlfDelay: Infinity
+//      });
+//
+//      // async await in every reading of the file causes problems
+//      let startReading = async () => {
+//        let blk = null;
+//        for await (const line of rl ) {
+//          if (headers_processed == 0) {
+//            //console.log(`HEADER: ${line}`);
+//            blk = new saito.block(this.app, JSON.parse(line));
+//            headers_processed = 1;
+//          } else {
+//            //console.log(`TRANSACTION: `);
+//            let tx = JSON.parse(line);
+//            blk.transactions.push(new saito.transaction(tx.transaction))
+//          }
+//        }
+//        return blk;
+//      };
+//      let blk = await startReading();
 
-      const rl = readline.createInterface({
-        input: fs.createReadStream(block_filename, this.file_encoding_load) ,
-        crlfDelay: Infinity
-      });
+      let data = fs.readFileSync(block_filename);
+      let block = new saito.block(this.app);
 
-      // async await in every reading of the file causes problems
-      let startReading = async () => {
-        let blk = null;
-        for await (const line of rl ) {
-          if (headers_processed == 0) {
-            //console.log(`HEADER: ${line}`);
-            blk = new saito.block(this.app, JSON.parse(line));
-            headers_processed = 1;
-          } else {
-            //console.log(`TRANSACTION: `);
-            let tx = JSON.parse(line);
-            blk.transactions.push(new saito.transaction(tx.transaction))
-          }
-        }
-        return blk;
-      };
-      let blk = await startReading();
+console.log("read from disk: " + JSON.stringify(data));
 
-//      let data = JSON.parse(fs.readFileSync(block_filename, this.file_encoding_load));
-//	console.log(data);
-//      let blk = new saito.block(this.app, data);
+      block.deserialize(data);
+      block.generateMetadata();
+      block.generateHashes();
 
-      return blk;
+console.log("block hash is: " + block.returnHash());
+
+      return block;
 
     } else {
+
       console.error(`cannot open: ${block_filename} as it does not exist on disk`)
       return null;
+
     }
     } catch (err) {
       console.log("Error reading block from disk");

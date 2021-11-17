@@ -32,7 +32,7 @@ class Crypto {
    * Hashes a string using blake3
    *
    * over-written on init with library-specific function
-   * 
+   *
    * server is fast, client is slow
    *
    * @param {string} data string data
@@ -40,16 +40,18 @@ class Crypto {
    *
    * NOTE: we use different libraries for the server and in-browser clients
    * and these are initialized in /apps/core/index.js as opposed to here in
-   * order to avoid compilation errors that come from the structure of the 
+   * order to avoid compilation errors that come from the structure of the
    * libraries we are using. There may be a way to improve this, but for now
    * means that the hashing algorithm is dynamically added to the app obj on
    * initialization.
    */
 
+
   hash(data="") {
     //
     // 64-bit hash
     //
+
     return this.app.hash(data);
   }
 
@@ -95,6 +97,14 @@ class Crypto {
     while (str.length > key.length) { key = key+key; }
     return this.xor(Buffer.from(str, 'hex'), Buffer.from(key, 'hex')).toString('hex');
   };
+
+  toSizedArray(value, size) {
+    let value_buffer = Buffer.from(value, "hex");
+    let new_buffer = Buffer.alloc(size);
+    console.assert(size >= value_buffer.length, "unhandled value ranges found");
+    value_buffer.copy(new_buffer, size - value_buffer.length);
+    return new_buffer;
+  }
 
   stringToHex(str) {
     return Buffer.from(str, 'utf-8').toString('hex');
@@ -159,7 +169,7 @@ class Crypto {
   }
 
   /**
-   * Creates a random number, but not a privatekey. used for 
+   * Creates a random number, but not a privatekey. used for
    * XOR encryption in the game engine among other uses. public/private keypair. returns the string
    * @returns {string} private key
    */
