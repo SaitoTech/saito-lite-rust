@@ -144,6 +144,63 @@ class Block {
   }
 
 
+  findWinningRouter(random_number) {
+
+    //
+    // find winning nolan
+    //
+    let x = BigInt('0x'+random_number);
+
+    //
+    // fee calculation should be the same used in block when
+    // generating the fee transaction.
+    //
+    let y = BigInt(this.returnFeesTotal());
+
+    //
+    // if there are no fees, payout to no-one
+    //
+    if (y == 0) {
+      return "";
+    }
+
+    let winning_nolan = x % y;
+    
+    //
+    // winning tx is either fee-paying or ATR transaction
+    //
+    winning_tx = this.transactions[0];
+    for (let i = 0; i < this.transactions.length; i++) {
+      if (this.transactions[i].transaction.cumulative_fees > winning_nolan) {
+        break;
+      }
+      winning_tx = this.transactions[i];
+    }
+
+
+    //
+    // if winner is atr, take inside TX
+    //
+    if (winning_tx.returnTransactionType == saito.transaction.TransactionType.ATR) {
+      let buffer = winning_tx.returnMessage();
+      let winning_tx_placeholder = new saito.transaction();
+      winning_tx_placeholder.deserialize(buffer);
+      winning_tx = winning_tx_placeholder;
+    }
+
+    //
+    // hash random number to pick routing node
+    //
+    let rn = this.app.crypto.hash(random_number);
+
+    //
+    // and pick from path, if exists
+    //
+    return winning_tx.returnWinningRoutingNode(rn);
+
+  }
+
+
   isType(type) {
     if (type == "Ghost") { return (this.block_type === BlockType.Ghost); }
     if (type == "Pruned") { return (this.block_type === BlockType.Pruned); }
@@ -530,7 +587,7 @@ class Block {
       for (let i = 1; i <= MAX_STAKER_RECURSION; i++) {
         if (i >= this.returnId()) { break; }
 
-        let bid = self.returnId() - i;
+        let bid = this.returnId() - i;
         let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
         if (previous_block_hash != "") {
           let previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
@@ -627,6 +684,13 @@ class Block {
     // update dynamic consensus-variables
     //
     await this.updateConsensusValues();
+
+
+    //
+    // handle merkle root
+    //
+    this.block.merkle = this.generateMerkleRoot();
+
 
     //
     // and return to normal
@@ -797,6 +861,61 @@ class Block {
   returnId() {
     return this.block.id;
   }
+
+  generateMerkleRoot() {
+
+    //
+    // if we are lite-client and have been given a block without transactions
+    // we accept the merkle root since it is what has been provided. users who
+    // do not wish to run this risk need necessarily to fully-validate, since
+    // they are trusting the server to notify them when there *are* transactions
+    // as in any other blockchains/SPV/MR implementation.
+    //
+    if (this.transactions.length == 0 && (this.app.BROWSER == 1 || this.app.SPVMODE == 1)) {
+      return this.block.merkle;
+    }
+
+    let mr  = "";
+    let txs = [];
+
+    for (let i = 0; i < this.transactions.length; i++) {
+      if (this.transactions[i].transaction.type == saito.transaction.TransactionType.SPV) {
+        txs.push(this.transactions[i].transaction.sig);
+      } else {
+        txs.push(this.app.crypto.hash(this.transactions[i].returnSignatureSource(this.app)));
+      }
+    }
+
+    while (mr == "") {
+
+      let tx2 = [];
+
+      if (txs.length <= 2) {
+        if (txs.length == 1) {
+          mr = txs[0];
+        } else {
+          mr = this.app.crypto.hash((""+txs[0]+txs[1]));
+        }
+      } else {
+
+        for (let i = 0; i < txs.length; i++) {
+          if (i <= txs.length-2) {
+            tx2.push(this.app.crypto.hash((""+txs[i]+txs[i+1])));
+            i++;
+          } else {
+            tx2.push(txs[i]);
+          }
+        }
+
+        txs = tx2;
+
+      }
+    }
+    return mr;
+
+  }
+
+
 
   returnPreviousBlockHash() {
     return this.block.previous_block_hash;
@@ -1039,6 +1158,130 @@ class Block {
 
     }
 
+    //
+    // validate atr
+    //
+    // Automatic Transaction Rebroadcasts are removed programmatically from
+    // an earlier block in the blockchain and rebroadcast into the latest
+    // block, with a fee being deducted to keep the data on-chain. In order
+    // to validate ATR we need to make sure we have the correct number of
+    // transactions (and ONLY those transactions!) included in our block.
+    //
+    // we do this by comparing the total number of ATR slips and nolan
+    // which we counted in the generate_metadata() function, with the
+    // expected number given the consensus values we calculated earlier.
+    //
+    if (cv.total_rebroadcast_slips != self.total_rebroadcast_slips) {
+      console.log("ERROR 624442: rebroadcast slips total incorrect");
+      return false;
+    }
+    if (cv.total_rebroadcast_nolan != self.total_rebroadcast_nolan) {
+      console.log("ERROR 294018: rebroadcast nolan amount incorrect");
+      return false;
+    }
+    if (cv.rebroadcast_hash != self.rebroadcast_hash) {
+      console.log("ERROR 123422: hash of rebroadcast transactions incorrect");
+      return false;
+    }
+
+    //
+    // validate merkle root
+    //
+    if (this.block.merkle != self.generateMerkleRoot()) {
+      console.log("merkle root is unset or is invalid false 1");
+      return false;
+    }
+
+
+    //
+    // validate fee transactions
+    //
+    // if this block contains a golden ticket, we have to use the random
+    // number associated with the golden ticket to create a fee-transaction
+    // that stretches back into previous blocks and finds the winning nodes
+    // that should collect payment.
+    //
+    if (cv.ft_num > 0) {
+
+      //
+      // no golden ticket? invalid
+      //
+      if (cv.gt_num == 0) {
+        console.log("ERROR 48203: fee transaction exists but no golden ticket, thus invalid");
+        return false;
+      }
+
+      let fee_transaction = this.transactions[cv.ft_idx];
+
+      //
+      // the fee transaction we receive from the CV needs to be updated with
+      // block-specific data in the same way that all of the transactions in
+      // the block have been. we must do this prior to comparing them.
+      //
+      cv.fee_transaction.generateMetadata(this.returnCreator());
+
+      let hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature());
+      let hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
+
+      if (hash1 != hash2) {
+        console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
+        return false;
+      }
+    }
+
+
+
+    //
+    // validate difficulty
+    //
+    // difficulty here refers the difficulty of generating a golden ticket
+    // for any particular block. this is the difficulty of the mining
+    // puzzle that is used for releasing payments.
+    //
+    // those more familiar with POW and POS should note that "difficulty" of
+    // finding a block is represented in the burn fee variable which we have
+    // already examined and validated above. producing a block requires a
+    // certain amount of golden ticket solutions over-time, so the
+    // distinction is in practice less clean.
+    //
+    if (cv.expected_difficulty != this.returnDifficulty()) {
+      console.log("ERROR 202392: difficulty is invalid - "+cv.expected_difficulty+" versus "+this.returnDifficulty());
+      return false;
+    }
+
+
+    //
+    // validate transactions
+    //
+    // validating transactions requires checking that the signatures are valid,
+    // the routing paths are valid, and all of the input slips are pointing
+    // to spendable tokens that exist in our UTXOSET. this logic is separate
+    // from the validation of block-level variables, so is handled in the
+    // transaction objects.
+    //
+    // this is one of the most computationally intensive parts of processing a
+    // block which is why we handle it in parallel. the exact logic needed to
+    // examine a transaction may depend on the transaction itself, as we have
+    // some specific types (Fee / ATR / etc.) that are generated automatically
+    // and may have different requirements.
+    //
+    // the validation logic for transactions is contained in the transaction
+    // class, and the validation logic for slips is contained in the slips
+    // class. Note that we are passing in a read-only copy of our UTXOSet so
+    // as to determine spendability.
+    //
+    // TODO - remove when convenient. when transactions fail to validate using
+    // parallel processing can make it difficult to find out exactly what the
+    // problem is. ergo this code that tries to do them on the main thread so
+    // debugging output works.
+    //
+    for (let i = 0; i < this.transactions.length; i++) {
+      let is_valid = self.transactions[i].validate(this.app);
+      if (!is_valid) {
+	console.log("ERROR 579128: transaction is invalid");
+	return false;
+      }
+    }
 
     return true;
   }
