@@ -601,7 +601,7 @@ class Block {
               // RECURSION is 3, at 3 we are the fourth block back.
               //
               if (i == MAX_STAKER_RECURSION) {
-                cv.nolan_falling_off_chain = previous_block.get_total_fees();
+                cv.nolan_falling_off_chain = previous_block.returnFeesTotal();
               }
             }
           }
@@ -1257,7 +1257,7 @@ console.log("HELLO! 4");
     //
     // validate merkle root
     //
-    if (this.block.merkle != self.generateMerkleRoot()) {
+    if (this.block.merkle != this.generateMerkleRoot()) {
       console.log("merkle root is unset or is invalid false 1");
       return false;
     }
@@ -1346,7 +1346,7 @@ console.log("HELLO! 4");
     // debugging output works.
     //
     for (let i = 0; i < this.transactions.length; i++) {
-      let is_valid = self.transactions[i].validate(this.app);
+      let is_valid = this.transactions[i].validate(this.app);
       if (!is_valid) {
 	console.log("ERROR 579128: transaction is invalid");
 	return false;
