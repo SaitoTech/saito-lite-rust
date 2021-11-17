@@ -61,14 +61,14 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer) {
-
-    let transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
-    this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)));
-    this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)));
+    let binary = new saito.binary(this.app);
+    let transactions_length = binary.u32FromBytes(buffer.slice(0, 4));
+    this.block.id = parseInt(binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
+    this.block.timestamp = parseInt(binary.u64FromBytes(buffer.slice(12, 20)).toString());
 
     //
-    // Sanka -- note -- this fix sorts out issues 
-    // 
+    // Sanka -- note -- this fix sorts out issues
+    //
     // crypto.stringToHex assumes UTF8 input, which assumes 8-bit chars instead of 4 as in binary-hex conversion
     //
     //this.block.previous_block_hash = this.app.crypto.stringToHex(Buffer.from(buffer.slice(20, 52)).toString());
@@ -83,10 +83,10 @@ class Block {
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString('hex');
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString('hex');
 
-    this.block.treasury = this.app.binary.u64FromBytes(buffer.slice(181, 189));
-    this.block.staking_treasury = this.app.binary.u64FromBytes(buffer.slice(189, 197));
-    this.block.burnfee = parseInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
-    this.block.difficulty = parseInt(this.app.binary.u64FromBytes(buffer.slice(205, 213)));
+    this.block.treasury = binary.u64FromBytes(buffer.slice(181, 189));
+    this.block.staking_treasury = binary.u64FromBytes(buffer.slice(189, 197));
+    this.block.burnfee = parseInt(binary.u64FromBytes(buffer.slice(197, 205)));
+    this.block.difficulty = parseInt(binary.u64FromBytes(buffer.slice(205, 213)));
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
     //
@@ -94,25 +94,24 @@ class Block {
     //
     if (this.block.previous_block_hash === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.previous_block_hash = ""; }
     if (this.block.merkle === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.merkle = ""; }
-    if (this.block.creator === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.creator = ""; }
+    if (this.block.creator === "000000000000000000000000000000000000000000000000000000000000000000") { this.block.creator = ""; }
     if (this.block.signature === "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") { this.block.signature = ""; }
-
 
     for (let i = 0; i < transactions_length; i++) {
 
-      let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-      let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-      let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-      let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+      let inputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+      let outputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+      let message_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+      let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
       let end_of_transaction_data = start_of_transaction_data
-        + TRANSACTION_SIZE
-        + ((inputs_len + outputs_len) * SLIP_SIZE)
+        + saito.transaction.TRANSACTION_SIZE
+        + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE)
         + message_len
-        + path_len * HOP_SIZE;
+        + path_len * saito.transaction.HOP_SIZE;
 
-      let transaction = new saito.transaction();
+      let transaction = new saito.transaction(this.app);
       transaction.deserialize(buffer, start_of_transaction_data);
-      block.transactions.push(transaction);
+      this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
 
     }
@@ -740,7 +739,7 @@ class Block {
   }
 
   hasGoldenTicket() {
-    return this.has_golden_ticket; 
+    return this.has_golden_ticket;
   }
 
   hasIssuanceTransaction() {
@@ -749,7 +748,7 @@ class Block {
 
   returnBurnFee() {
     return this.block.burnfee;
-  }  
+  }
 
   returnCreator() {
     return this.block.creator;
@@ -770,7 +769,7 @@ class Block {
     return this.hash;
   }
 
-  returnId() { 
+  returnId() {
     return this.block.id;
   }
 
@@ -788,8 +787,7 @@ class Block {
 
   returnTimestamp() {
     return this.block.timestamp;
-  }  
-
+  }
 
   /**
    * Serialize Block
@@ -802,27 +800,27 @@ class Block {
     // ensure strings have appropriate number of bytes if empty
     //
     let block_previous_block_hash = this.block.previous_block_hash;
-    if (block_previous_block_hash === "") { block_previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_previous_block_hash === "") { block_previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"; }
 
     //
     // TODO - there is a cleaner way to do this
     //
     let block_merkle = this.block.merkle;
-    if (block_merkle === "") { block_merkle = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_merkle === "") { block_merkle = "0000000000000000000000000000000000000000000000000000000000000000"; }
     let block_creator = this.block.creator;
-    if (block_creator === "") { block_creator = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_creator === "") { block_creator = "0000000000000000000000000000000000000000000000000000000000000000"; }
     let block_signature = this.block.signature;
-    if (block_signature === "") { block_signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_signature === "") { block_signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; }
 
     let transactions_length = this.app.binary.u32AsBytes(0);
     if (this.transactions.length > 0) { transactions_length = this.app.binary.u32AsBytes(this.transactions.length); }
     let id = this.app.binary.u64AsBytes(new Big(this.block.id));
     let timestamp = this.app.binary.u64AsBytes(new Big(this.block.timestamp));
 
-    let previous_block_hash = Buffer.from(block_previous_block_hash, 'hex');
-    let creator = Buffer.from(block_creator, 'hex');
-    let merkle_root = Buffer.from(block_merkle, 'hex');
-    let signature = Buffer.from(block_signature, 'hex');
+    let previous_block_hash = this.app.crypto.toSizedArray(block_previous_block_hash, 32);
+    let creator = this.app.crypto.toSizedArray(block_creator, 33);
+    let merkle_root = this.app.crypto.toSizedArray(block_merkle, 32);
+    let signature = this.app.crypto.toSizedArray(block_signature, 64);
 
     let treasury = this.app.binary.u64AsBytes(new Big(this.block.treasury));
     let staking_treasury = this.app.binary.u64AsBytes(new Big(this.block.staking_treasury));
@@ -882,12 +880,12 @@ class Block {
     return vbytes
 
   }
- 
+
   signBlock(publickey, privatekey) {
     this.block.creator = publickey;
     this.block.signature = this.app.crypto.signMessage(this.serializeForSignature(), privatekey);
   }
- 
+
   async updateConsensusValues() {
 
   }
@@ -1058,8 +1056,6 @@ class Block {
 
     return false;
   }
-
-
 
 }
 
