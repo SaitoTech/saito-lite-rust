@@ -213,6 +213,11 @@ class Transaction {
     return this.transaction.sig;
   }
 
+  returnSignatureSource() {
+    // TODO - update.
+    return "";
+  }
+
   returnWinningRoutingNode(random_number) {
     //
     // if there are no routing paths, we return the sender of
@@ -382,7 +387,7 @@ class Transaction {
 
 }
 
-Transaction.TranasctionType = TransactionType;
+Transaction.TransactionType = TransactionType;
 Transaction.TRANSACTION_SIZE = TRANSACTION_SIZE;
 Transaction.SLIP_SIZE = SLIP_SIZE;
 Transaction.HOP_SIZE = HOP_SIZE;
