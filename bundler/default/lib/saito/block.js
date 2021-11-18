@@ -762,7 +762,7 @@ class Block {
     //
     // sign the block
     //
-    this.sign(this.app)
+    this.sign(this.app.wallet.returnPublicKey(), this.app.wallet.returnPrivateKey())
 
     //
     // and return to normal
