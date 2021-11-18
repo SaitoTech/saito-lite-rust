@@ -4,7 +4,6 @@ const fs = require("fs-extra");
 const Big = require('big.js');
 
 class Storage {
-  BlocksDirPath      = "./data/blocks/";
   constructor(app, data, dest="blocks") {
     this.app                = app || {};
     this.active_tab	        = 1; 		// TODO - only active tab saves, move to Browser class
@@ -66,30 +65,6 @@ class Storage {
     return null;
   }
 
-  generateBlockFilename(block) { // TODO : check whether matches with the rust implementation
-    let filename = this.BlocksDirPath;
-    filename += Buffer.from(this.app.networkApi.u64AsBytes(new Big(block.block.timestamp))).toString('hex');
-    filename += "-";
-    filename += Buffer.from(block.hash).toString("hex");
-    filename += ".sai";
-    return filename;
-  }
-
-  loadBlockFromDisk(filename) { // TODO : check whether matches with the rust implementation
-    try {
-      if (fs.existsSync(filename)) {
-        let buffer = fs.readFileSync(filename);
-        let block = new saito.block(this.app);
-        block.deserialize(buffer);
-        block.generateMetadata();
-        return block;
-      }
-    } catch (error) {
-      console.log("Error reading block from disk");
-      console.error(error);
-    }
-    return null;
-  }
 
   deleteBlockFromDisk(filename) {
     return fs.unlinkSync(filename);
@@ -101,13 +76,15 @@ class Storage {
 
   loadBlockByHash(bsh) {}
 
+  loadBlockFromDisk(filename) {}
+
   loadBlockByFilename(filename) {}
 
   async loadBlocksFromDisk(maxblocks=0) {}
 
   returnFileSystem() { return null; }
 
-  async saveBlock(block) { return false; }
+  async saveBlock(block) { return ""; }
 
   saveClientOptions() {}
 
