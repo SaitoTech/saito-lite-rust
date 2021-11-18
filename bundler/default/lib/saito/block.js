@@ -50,7 +50,7 @@ class Block {
     this.slips_spent_this_block        = {};
     this.rebroadcast_hash              = "";
     this.total_rebroadcast_slips       = 0;
-    this.total_rebroadcast_nolans      = 0;
+    this.total_rebroadcast_nolan      = 0;
 
   }
 
@@ -61,14 +61,14 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer) {
-
-    let transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
-    this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)));
-    this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)));
+    let binary = new saito.binary(this.app);
+    let transactions_length = binary.u32FromBytes(buffer.slice(0, 4));
+    this.block.id = parseInt(binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
+    this.block.timestamp = parseInt(binary.u64FromBytes(buffer.slice(12, 20)).toString());
 
     //
-    // Sanka -- note -- this fix sorts out issues 
-    // 
+    // Sanka -- note -- this fix sorts out issues
+    //
     // crypto.stringToHex assumes UTF8 input, which assumes 8-bit chars instead of 4 as in binary-hex conversion
     //
     //this.block.previous_block_hash = this.app.crypto.stringToHex(Buffer.from(buffer.slice(20, 52)).toString());
@@ -83,10 +83,10 @@ class Block {
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString('hex');
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString('hex');
 
-    this.block.treasury = this.app.binary.u64FromBytes(buffer.slice(181, 189));
-    this.block.staking_treasury = this.app.binary.u64FromBytes(buffer.slice(189, 197));
-    this.block.burnfee = parseInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
-    this.block.difficulty = parseInt(this.app.binary.u64FromBytes(buffer.slice(205, 213)));
+    this.block.treasury = binary.u64FromBytes(buffer.slice(181, 189));
+    this.block.staking_treasury = binary.u64FromBytes(buffer.slice(189, 197));
+    this.block.burnfee = parseInt(binary.u64FromBytes(buffer.slice(197, 205)));
+    this.block.difficulty = parseInt(binary.u64FromBytes(buffer.slice(205, 213)));
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
     //
@@ -94,25 +94,24 @@ class Block {
     //
     if (this.block.previous_block_hash === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.previous_block_hash = ""; }
     if (this.block.merkle === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.merkle = ""; }
-    if (this.block.creator === "0000000000000000000000000000000000000000000000000000000000000000") { this.block.creator = ""; }
+    if (this.block.creator === "000000000000000000000000000000000000000000000000000000000000000000") { this.block.creator = ""; }
     if (this.block.signature === "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") { this.block.signature = ""; }
-
 
     for (let i = 0; i < transactions_length; i++) {
 
-      let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-      let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-      let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-      let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+      let inputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+      let outputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+      let message_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+      let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
       let end_of_transaction_data = start_of_transaction_data
-        + TRANSACTION_SIZE
-        + ((inputs_len + outputs_len) * SLIP_SIZE)
+        + saito.transaction.TRANSACTION_SIZE
+        + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE)
         + message_len
-        + path_len * HOP_SIZE;
+        + path_len * saito.transaction.HOP_SIZE;
 
-      let transaction = new saito.transaction();
+      let transaction = new saito.transaction(this.app);
       transaction.deserialize(buffer, start_of_transaction_data);
-      block.transactions.push(transaction);
+      this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
 
     }
@@ -145,6 +144,63 @@ class Block {
   }
 
 
+  findWinningRouter(random_number) {
+
+    //
+    // find winning nolan
+    //
+    let x = BigInt('0x'+random_number);
+
+    //
+    // fee calculation should be the same used in block when
+    // generating the fee transaction.
+    //
+    let y = BigInt(this.returnFeesTotal());
+
+    //
+    // if there are no fees, payout to no-one
+    //
+    if (y == 0) {
+      return "";
+    }
+
+    let winning_nolan = x % y;
+    
+    //
+    // winning tx is either fee-paying or ATR transaction
+    //
+    winning_tx = this.transactions[0];
+    for (let i = 0; i < this.transactions.length; i++) {
+      if (this.transactions[i].transaction.cumulative_fees > winning_nolan) {
+        break;
+      }
+      winning_tx = this.transactions[i];
+    }
+
+
+    //
+    // if winner is atr, take inside TX
+    //
+    if (winning_tx.returnTransactionType == saito.transaction.TransactionType.ATR) {
+      let buffer = winning_tx.returnMessage();
+      let winning_tx_placeholder = new saito.transaction();
+      winning_tx_placeholder.deserialize(buffer);
+      winning_tx = winning_tx_placeholder;
+    }
+
+    //
+    // hash random number to pick routing node
+    //
+    let rn = this.app.crypto.hash(random_number);
+
+    //
+    // and pick from path, if exists
+    //
+    return winning_tx.returnWinningRoutingNode(rn);
+
+  }
+
+
   isType(type) {
     if (type == "Ghost") { return (this.block_type === BlockType.Ghost); }
     if (type == "Pruned") { return (this.block_type === BlockType.Pruned); }
@@ -153,6 +209,10 @@ class Block {
   }
 
   async generateConsensusValues() {
+
+    // this is also set in blockchain.js
+    let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
+
 
     //
     // return obj w/ default values
@@ -167,17 +227,16 @@ class Block {
         cv.ft_idx = 0;
         cv.gt_idx = 0;
         cv.it_idx = 0;
-
         cv.expected_difficulty = 1;
-
         cv.total_rebroadcast_nolan = 0;
         cv.total_rebroadcast_fees_nolan = 0
         cv.total_rebroadcast_slips = 0;
         cv.nolan_falling_off_chain = 0;
-
 	cv.rebroadcast_hash = "";
-
 	cv.staking_treasury = 0;
+	cv.rebroadcasts = [];
+        cv.block_payouts = [];
+	cv.fee_transaction = null;
 
     //
     // total fees and indices
@@ -301,238 +360,260 @@ class Block {
       }
     }
 
-
-
-/*****
     //
     // calculate payments to miners / routers / stakers
     //
     if (cv.gt_idx > 0) {
 
-      let golden_ticket: GoldenTicket = GoldenTicket::deserialize_for_transaction(
-        this.transactions[gt_idx].get_message().to_vec(),
-      );
-            // generate input hash for router
-            let mut next_random_number = hash(&golden_ticket.get_random().to_vec());
-            let _miner_publickey = golden_ticket.get_publickey();
+      let golden_ticket_transaction = this.transactions[cv.gt_idx];
+      let gt = this.app.goldenticket.deserialize(golden_ticket_transaction.transaction.m);
 
-            //
-            // miner payout is fees from previous block, no staking treasury
-            //
-            if let Some(previous_block) = blockchain.blocks.get(&this.get_previous_block_hash()) {
-                let miner_payment = previous_block.get_total_fees() / 2;
-                let router_payment = previous_block.get_total_fees() - miner_payment;
+      let next_random_number = this.app.crypto.hash(gt.random_bytes);
+      let miner_publickey = gt.creator;
+ 
+      //
+      // miner payout is fees from previous block, no staking treasury
+      //
+      if (previous_block) {
 
-                //
-                // calculate miner and router payments
-                //
-                let block_payouts: RouterPayout =
-                    previous_block.find_winning_router(next_random_number);
-                let router_publickey = block_payouts.publickey;
-
-                // these two from find_winning_router - 3, 4
-                next_random_number = hash(&next_random_number.to_vec());
-                next_random_number = hash(&next_random_number.to_vec());
-
-                let mut payout = BlockPayout::new();
-                payout.miner = golden_ticket.get_publickey();
-                payout.router = router_publickey;
-                payout.miner_payout = miner_payment;
-                payout.router_payout = router_payment;
-
-                cv.block_payout.push(payout);
-
-                //
-                // loop backwards until MAX recursion OR golden ticket
-                //
-                let mut cont = 1;
-                let mut loop_idx = 0;
-                let mut did_the_block_before_our_staking_block_have_a_golden_ticket =
-                    previous_block.get_has_golden_ticket();
-                //
-                // staking block hash is 3 back, pre
-                //
-                let mut staking_block_hash = previous_block.get_previous_block_hash();
-
-                while cont == 1 {
-                    loop_idx += 1;
-
-                    //
-                    // we start with the second block, so once loop_IDX hits the same
-                    // number as MAX_STAKER_RECURSION we have processed N blocks where
-                    // N is MAX_STAKER_RECURSION.
-                    //
-                    if loop_idx >= MAX_STAKER_RECURSION {
-                        cont = 0;
-                    } else {
-                        if let Some(staking_block) = blockchain.blocks.get(&staking_block_hash) {
-                            staking_block_hash = staking_block.get_previous_block_hash();
-                            if !did_the_block_before_our_staking_block_have_a_golden_ticket {
-                                //
-                                // update with this block info in case of next loop
-                                //
-                                did_the_block_before_our_staking_block_have_a_golden_ticket =
-                                    staking_block.get_has_golden_ticket();
-
-                                //
-                                // calculate staker and router payments
-                                //
-                                // the staker payout is contained in the slip of the winner. this is
-                                // because we calculate it afresh every time we reset the staking table
-                                // the payment for the router requires calculating the amount that will
-                                // be withheld for the staker treasury, which is what previous_staker_
-                                // payment is measuring.
-                                //
-                                let sp = staking_block.get_total_fees() / 2;
-                                let rp = staking_block.get_total_fees() - sp;
-
-                                let mut payout = BlockPayout::new();
-                                payout.router = staking_block
-                                    .find_winning_router(next_random_number)
-                                    .publickey;
-                                payout.router_payout = rp;
-                                payout.staking_treasury = sp as i64;
-
-                                // router consumes 2 hashes
-                                next_random_number = hash(&next_random_number.to_vec());
-                                next_random_number = hash(&next_random_number.to_vec());
-
-                                let staker_slip_option =
-                                    blockchain.staking.find_winning_staker(next_random_number);
-                                if let Some(staker_slip) = staker_slip_option {
-                                    let mut slip_was_spent = 0;
-
-                                    //
-                                    // check to see if the block already pays out to this slip
-                                    //
-                                    for i in 0..cv.block_payout.len() {
-                                        if cv.block_payout[i].staker_slip.get_utxoset_key()
-                                            == staker_slip.get_utxoset_key()
-                                        {
-                                            slip_was_spent = 1;
-                                            break;
-                                        }
-                                    }
-
-                                    //
-                                    // check to see if staker slip already spent/withdrawn
-                                    //
-                                    if this
-                                        .slips_spent_this_block
-                                        .contains_key(&staker_slip.get_utxoset_key())
-                                    {
-                                        slip_was_spent = 1;
-                                    }
-
-                                    //
-                                    // add payout to staker if staker is new
-                                    //
-                                    // the payout is the return on staking, stored separately so that the
-                                    // UTXO for the slip will still validate.
-                                    //
-                                    if slip_was_spent == 0 {
-                                        payout.staker = staker_slip.get_publickey();
-                                        payout.staker_payout =
-                                            staker_slip.get_amount() + staker_slip.get_payout();
-                                        payout.staker_slip = staker_slip.clone();
-                                    }
-
-                                    next_random_number = hash(&next_random_number.to_vec());
-
-                                    cv.block_payout.push(payout);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            //
-            // now create fee transaction using the block payout data
-            //
-            let mut slip_ordinal = 0;
-            let mut transaction = Transaction::new();
-            transaction.set_transaction_type(TransactionType::Fee);
-
-            for i in 0..cv.block_payout.len() {
-                if cv.block_payout[i].miner != [0; 33] {
-                    let mut output = Slip::new();
-                    output.set_publickey(cv.block_payout[i].miner);
-                    output.set_amount(cv.block_payout[i].miner_payout);
-                    output.set_slip_type(SlipType::MinerOutput);
-                    output.set_slip_ordinal(slip_ordinal);
-                    transaction.add_output(output.clone());
-                    slip_ordinal += 1;
-                }
-                if cv.block_payout[i].router != [0; 33] {
-                    let mut output = Slip::new();
-                    output.set_publickey(cv.block_payout[i].router);
-                    output.set_amount(cv.block_payout[i].router_payout);
-                    output.set_slip_type(SlipType::RouterOutput);
-                    output.set_slip_ordinal(slip_ordinal);
-                    transaction.add_output(output.clone());
-                    slip_ordinal += 1;
-                }
-                if cv.block_payout[i].staker != [0; 33] {
-                    transaction.add_input(cv.block_payout[i].staker_slip.clone());
-
-                    let mut output = Slip::new();
-                    output.set_publickey(cv.block_payout[i].staker);
-                    output.set_amount(cv.block_payout[i].staker_payout);
-                    output.set_slip_type(SlipType::StakerOutput);
-                    output.set_slip_ordinal(slip_ordinal);
-                    transaction.add_output(output);
-                    slip_ordinal += 1;
-                    cv.staking_treasury += cv.block_payout[i].staking_treasury;
-                    cv.staking_treasury -= cv.block_payout[i].staker_payout as i64;
-                }
-            }
-
-            cv.fee_transaction = Some(transaction);
-        }
+        let miner_payment = previous_block.returnFeesTotal() / 2;
+        let router_payment = previous_block.returnFeesTotal() / 2;
 
         //
-        // if there is no golden ticket AND there is no golden ticket before the MAX
-        // blocks we recurse to collect NOLAN we have to add the amount of the unpaid
-        // block to the amount of NOLAN that is falling off our chain.
+        // calculate miner and router payments
         //
-        if cv.gt_num == 0 {
-            for i in 1..=MAX_STAKER_RECURSION {
-                if i >= this.returnId() {
-                    break;
+        let block_payout = {
+  	  miner : "",
+  	  staker : "",
+  	  router : "",
+   	  miner_payout : 0,
+  	  staker_payout : 0,
+  	  router_payout : 0,
+  	  staking_treasury : 0,
+  	  staker_slip : null,
+  	  random_number : next_random_number,
+	};
+
+	block_payout.router = previous_block.findWinningRouter(next_random_number);
+        block_payout.miner = miner_publickey;
+        block_payout.miner_payout = miner_payment;
+        block_payout.router_payout = router_payment;
+
+        //
+        // these two from find_winning_router - 3, 4
+        //
+        next_random_number = this.app.crypto.hash(next_random_number);
+        next_random_number = this.app.crypto.hash(next_random_number);
+
+	//
+	// add these payouts to consensus values
+	//
+        cv.block_payouts.push(block_payout);
+
+	//
+        // loop backwards until MAX recursion OR golden ticket
+        //
+        let cont = 1;
+        let loop_idx = 0;
+        let did_the_block_before_our_staking_block_have_a_golden_ticket = previous_block.hasGoldenTicket();
+
+        //
+        // staking block hash is 3 back, pre
+        //
+        let staking_block_hash = previous_block.returnPreviousBlockHash();
+
+        while (cont == 1) {
+
+          loop_idx += 1;
+
+          //
+          // we start with the second block, so once loop_IDX hits the same
+          // number as MAX_STAKER_RECURSION we have processed N blocks where
+          // N is MAX_STAKER_RECURSION.
+          //
+          if (loop_idx >= MAX_STAKER_RECURSION) {
+            cont = 0;
+          } else {
+	    let staking_block = await this.app.blockchain.loadBlockAsync(staking_block_hash);
+	    if (staking_block) {
+
+	      //
+	      // in case we need another loop
+	      //
+	      staking_block_hash = staking_block.returnPreviousBlockHash();
+
+              if (!did_the_block_before_our_staking_block_have_a_golden_ticket) {
+
+                //
+                // update with this block info in case of next loop
+                //
+                did_the_block_before_our_staking_block_have_a_golden_ticket = staking_block.hasGoldenTicket();
+
+                //
+                // calculate staker and router payments
+                //
+                // the staker payout is contained in the slip of the winner. this is
+                // because we calculate it afresh every time we reset the staking table
+                // the payment for the router requires calculating the amount that will
+                // be withheld for the staker treasury, which is what previous_staker_
+                // payment is measuring.
+                //
+                let sp = staking_block.returnFeesTotal() / 2;
+                let rp = staking_block.returnFeesTotal() - sp;
+
+                let block_payout = {
+                  miner : "",
+                  staker : "",
+                  router : "",
+                  miner_payout : 0,
+                  staker_payout : 0,
+                  router_payout : 0,
+                  staking_treasury : 0,
+                  staker_slip : null,
+                  random_number : next_random_number,
+                };
+
+                block_payout.router = staking_block.findWinningRouter(next_random_number);
+                block_payout.router_payout = rp;
+                block_payout.staking_treasury = sp;
+
+                // router consumes 2 hashes
+                next_random_number = this.app.crypto.hash(next_random_number);
+                next_random_number = this.app.crypto.hash(next_random_number);
+
+                let staker_slip = this.app.staking.findWinningStaker(next_random_number);
+                if (staker_slip) {
+                  let slip_was_spent = 0;
+
+                  //
+                  // check to see if block already pays out to this slip
+                  //
+                  for (let i = 0; i < cv.block_payouts.length; i++) {
+                    if (cv.block_payouts[i].staker_slip.returnKey() === staker_slip.returnKey()) {
+		      slip_was_spent = 1;
+		      break;
+		    }
+		  }
+
+
+                  //
+                  // check to see if staker slip already spent/withdrawn
+                  //
+                  if (this.slips_spent_this_block.includes(staker_slip.returnKey())) {
+                    slip_was_spent = 1;
+                  }
+
+
+                  //
+                  // add payout to staker if staker is new
+                  //
+                  if (slip_was_spent == 0) {
+                    block_payout.staker = staker_slip.returnPublickey();
+                    block_payout.staker_payout = staker_slip.returnAmount() + staker_slip.returnPayout();
+                    block_payout.staker_slip = staker_slip.clone();
+                  }
+
+                  next_random_number = this.app.crypto.hash(next_random_number);
+
+                  cv.block_payouts.push(block_payout);
                 }
-
-                let bid = self.get_id() - i;
-                let previous_block_hash = blockchain
-                    .blockring
-                    .get_longest_chain_block_hash_by_block_id(bid);
-
-                // previous block hash can be [0; 32] if there is no longest-chain block
-
-                if previous_block_hash != [0; 32] {
-                    let previous_block = blockchain.get_block(&previous_block_hash).await.unwrap();
-
-                    if previous_block.get_has_golden_ticket() {
-                        break;
-                    } else {
-                        //
-                        // this is the block BEFORE from which we need to collect the nolan due to
-                        // our iterator starting at 0 for the current block. i.e. if MAX_STAKER_
-                        // RECURSION is 3, at 3 we are the fourth block back.
-                        //
-                        if i == MAX_STAKER_RECURSION {
-                            cv.nolan_falling_off_chain = previous_block.get_total_fees();
-                        }
-                    }
-                }
+              }
             }
+          }
         }
-******/
+      }
+
+      //
+      // now create fee transaction using the block payouts
+      //
+      let slip_ordinal = 0;
+      let transaction = new saito.transaction();
+
+      transaction.transaction.type = saito.transaction.TransactionType.Fee;
+
+      for (let i = 0; i < cv.block_payouts.length; i++) {
+        if (cv.block_payout[i].miner !== "") {
+          let output = new saito.slip();
+              output.add = cv.block_payout[i].miner;
+	      output.amt = cv.block_payout[i].miner_payout;
+	      output.type = saito.slip.SlipType.MinerOutput;
+              output.sid = slip_ordinal;	
+	  transaction.addOutput(output.clone());
+	  slip_ordinal += 1;
+        }
+        if (cv.block_payout[i].router !== "") {
+          let output = new saito.slip();
+              output.add = cv.block_payout[i].router;
+	      output.amt = cv.block_payout[i].router_payout;
+	      output.type = saito.slip.SlipType.RouterOutput;
+              output.sid = slip_ordinal;	
+	  transaction.addOutput(output.clone());
+	  slip_ordinal += 1;
+        }
+        if (cv.block_payout[i].router !== "") {
+          let output = new saito.slip();
+              output.add = cv.block_payout[i].router;
+	      output.amt = cv.block_payout[i].router_payout;
+	      output.type = saito.slip.SlipType.RouterOutput;
+              output.sid = slip_ordinal;	
+	  transaction.addOutput(output.clone());
+	  slip_ordinal += 1;
+        }
+        if (cv.block_payout[i].staker !== "") {
+          let output = new saito.slip();
+              output.add = cv.block_payout[i].staker;
+	      output.amt = cv.block_payout[i].staker_payout;
+	      output.type = saito.slip.SlipType.StakerOutput;
+              output.sid = slip_ordinal;	
+	  transaction.addOutput(output.clone());
+	  slip_ordinal += 1;
+          cv.staking_treasury += cv.block_payout[i].staking_treasury;
+          cv.staking_treasury -= cv.block_payout[i].staker_payout;
+        }
+      }
+
+      cv.fee_transaction = transaction;
+    }
+
+
+    //
+    // collect destroyed NOLAN and add to treasury
+    //
+    // if there is no golden ticket AND there is no golden ticket before the MAX
+    // blocks we recurse to collect NOLAN we have to add the amount of the unpaid
+    // block to the amount of NOLAN that is falling off our chain.
+    //
+    if (cv.gt_num == 0) {
+      for (let i = 1; i <= MAX_STAKER_RECURSION; i++) {
+        if (i >= this.returnId()) { break; }
+
+        let bid = this.returnId() - i;
+        let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
+        if (previous_block_hash != "") {
+          let previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
+          if (previous_block) {
+	    if (previous_block.hasGoldenTicket()) {
+	      break;
+            } else {
+              //
+              // this is the block BEFORE from which we need to collect the nolan due to
+              // our iterator starting at 0 for the current block. i.e. if MAX_STAKER_
+              // RECURSION is 3, at 3 we are the fourth block back.
+              //
+              if (i == MAX_STAKER_RECURSION) {
+                cv.nolan_falling_off_chain = previous_block.returnFeesTotal();
+              }
+            }
+          }
+        }
+      }
+    }
 
     return cv;
   }
 
 
-  async generateFromMempool(mempool, previous_block_hash) {
+  async generate(previous_block_hash, mempool=null) {
 
     //
     // fetch consensus values from preceding block
@@ -599,10 +680,90 @@ class Block {
       }
     }
 
+
     //
-    // update dynamic consensus-variables
+    // contextual values
     //
-    await this.updateConsensusValues();
+    let cv = await this.generateConsensusValues(this.app);
+
+    //
+    // ATR transactions - TODO, make more efficient?
+    //
+    let rlen = cv.rebroadcasts.length;
+    for (let i = 0; i < rlen; i++) {
+      cv.rebroadcasts[i].generateMetadata(this.app.wallet.returnPublicKey());
+      this.transactions.push(cv.rebroadcasts[i]);
+    }
+
+    //
+    // fee transactions
+    //
+    if (cv.fee_transaction != null) {
+      //
+      // creator signs fee transaction
+      //
+      cv.fee_transaction.sign(this.app);
+      this.add_transaction(cv.fee_transaction);
+    }
+
+    //
+    // update slips_spent_this_block so that we have a record of
+    // how many times input slips are spent in this block. we will
+    // use this later to ensure there are no duplicates. this include
+    // during the fee transaction, so that we cannot pay a staker
+    // that is also paid this block otherwise.
+    //
+    for (let i = 0; i < this.transactions.length; i++) {
+      if (!this.transactions[i].isFeeTransaction()) {
+        for (let k = 0; k < this.transactions[i].transaction.from.length; k++) {
+	  this.slips_spent_this_block[this.transactions[i].transaction.from[k].returnKey()] = 1;
+	}
+      }
+    }
+    this.created_hashmap_of_slips_spent_this_block = true;
+console.log("HELLO! 4");
+
+
+    //
+    // set difficulty
+    //
+    this.block.difficulty = cv.expected_difficulty;
+
+    //
+    // set treasury
+    //
+    if (cv.nolan_falling_off_chain != 0) {
+      this.block.treasury(previous_block_treasury + cv.nolan_falling_off_chain);
+    }
+
+
+    //
+    // set staking treasury
+    //
+    if (cv.staking_treasury != 0) {
+      let adjusted_staking_treasury = previous_block_staking_treasury;
+      if (cv.staking_treasury < 0) {
+        let x = cv.staking_treasury * -1;
+        if (adjusted_staking_treasury > x) {
+          adjusted_staking_treasury -= x;
+        } else {
+          adjusted_staking_treasury = 0;
+        }
+      } else {
+        adjusted_staking_treasury += cv.staking_treasury;
+      }
+    }
+
+    //
+    // generate merkle root
+    //
+    this.block.merkle = this.generateMerkleRoot();
+
+
+    //
+    // sign the block
+    //
+    this.sign(this.app)
 
     //
     // and return to normal
@@ -610,6 +771,7 @@ class Block {
     this.bundling_active = false;
 
   }
+
 
   generateMetadata() {
 
@@ -705,7 +867,7 @@ class Block {
 
           for (let i = 0; i < transaction.transaction.from.length; i++) {
             this.total_rebroadcast_slips += 1;
-            this.total_rebroadcast_nolans += input.returnAmount();
+            this.total_rebroadcast_nolan += transaction.returnAmount();
           }
           break;
         }
@@ -740,7 +902,7 @@ class Block {
   }
 
   hasGoldenTicket() {
-    return this.has_golden_ticket; 
+    return this.has_golden_ticket;
   }
 
   hasIssuanceTransaction() {
@@ -749,7 +911,7 @@ class Block {
 
   returnBurnFee() {
     return this.block.burnfee;
-  }  
+  }
 
   returnCreator() {
     return this.block.creator;
@@ -770,9 +932,64 @@ class Block {
     return this.hash;
   }
 
-  returnId() { 
+  returnId() {
     return this.block.id;
   }
+
+  generateMerkleRoot() {
+
+    //
+    // if we are lite-client and have been given a block without transactions
+    // we accept the merkle root since it is what has been provided. users who
+    // do not wish to run this risk need necessarily to fully-validate, since
+    // they are trusting the server to notify them when there *are* transactions
+    // as in any other blockchains/SPV/MR implementation.
+    //
+    if (this.transactions.length == 0 && (this.app.BROWSER == 1 || this.app.SPVMODE == 1)) {
+      return this.block.merkle;
+    }
+
+    let mr  = "";
+    let txs = [];
+
+    for (let i = 0; i < this.transactions.length; i++) {
+      if (this.transactions[i].transaction.type == saito.transaction.TransactionType.SPV) {
+        txs.push(this.transactions[i].transaction.sig);
+      } else {
+        txs.push(this.app.crypto.hash(this.transactions[i].returnSignatureSource(this.app)));
+      }
+    }
+
+    while (mr == "") {
+
+      let tx2 = [];
+
+      if (txs.length <= 2) {
+        if (txs.length == 1) {
+          mr = txs[0];
+        } else {
+          mr = this.app.crypto.hash((""+txs[0]+txs[1]));
+        }
+      } else {
+
+        for (let i = 0; i < txs.length; i++) {
+          if (i <= txs.length-2) {
+            tx2.push(this.app.crypto.hash((""+txs[i]+txs[i+1])));
+            i++;
+          } else {
+            tx2.push(txs[i]);
+          }
+        }
+
+        txs = tx2;
+
+      }
+    }
+    return mr;
+
+  }
+
+
 
   returnPreviousBlockHash() {
     return this.block.previous_block_hash;
@@ -788,8 +1005,7 @@ class Block {
 
   returnTimestamp() {
     return this.block.timestamp;
-  }  
-
+  }
 
   /**
    * Serialize Block
@@ -802,27 +1018,27 @@ class Block {
     // ensure strings have appropriate number of bytes if empty
     //
     let block_previous_block_hash = this.block.previous_block_hash;
-    if (block_previous_block_hash === "") { block_previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_previous_block_hash === "") { block_previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"; }
 
     //
     // TODO - there is a cleaner way to do this
     //
     let block_merkle = this.block.merkle;
-    if (block_merkle === "") { block_merkle = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_merkle === "") { block_merkle = "0000000000000000000000000000000000000000000000000000000000000000"; }
     let block_creator = this.block.creator;
-    if (block_creator === "") { block_creator = "0000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_creator === "") { block_creator = "0000000000000000000000000000000000000000000000000000000000000000"; }
     let block_signature = this.block.signature;
-    if (block_signature === "") { block_signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; }
+    // if (block_signature === "") { block_signature = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; }
 
     let transactions_length = this.app.binary.u32AsBytes(0);
     if (this.transactions.length > 0) { transactions_length = this.app.binary.u32AsBytes(this.transactions.length); }
     let id = this.app.binary.u64AsBytes(new Big(this.block.id));
     let timestamp = this.app.binary.u64AsBytes(new Big(this.block.timestamp));
 
-    let previous_block_hash = Buffer.from(block_previous_block_hash, 'hex');
-    let creator = Buffer.from(block_creator, 'hex');
-    let merkle_root = Buffer.from(block_merkle, 'hex');
-    let signature = Buffer.from(block_signature, 'hex');
+    let previous_block_hash = this.app.crypto.toSizedArray(block_previous_block_hash, 32);
+    let creator = this.app.crypto.toSizedArray(block_creator, 33);
+    let merkle_root = this.app.crypto.toSizedArray(block_merkle, 32);
+    let signature = this.app.crypto.toSizedArray(block_signature, 64);
 
     let treasury = this.app.binary.u64AsBytes(new Big(this.block.treasury));
     let staking_treasury = this.app.binary.u64AsBytes(new Big(this.block.staking_treasury));
@@ -882,14 +1098,10 @@ class Block {
     return vbytes
 
   }
- 
-  signBlock(publickey, privatekey) {
-    this.block.creator = publickey;
-    this.block.signature = this.app.crypto.signMessage(this.serializeForSignature(), privatekey);
-  }
- 
-  async updateConsensusValues() {
 
+  sign(app) {
+    this.block.creator = app.wallet.returnPublicKey();
+    this.block.signature = this.app.crypto.signMessage(this.serializeForSignature(), app.wallet.returnPrivateKey());
   }
 
   async validate() {
@@ -997,23 +1209,14 @@ class Block {
       // we find that out now, and it invalidates the block.
       //
       if (cv.gt_idx > 0) {
-/***
-                let golden_ticket: GoldenTicket = GoldenTicket::deserialize_for_transaction(
-                    self.get_transactions()[gt_idx].get_message().to_vec(),
-                );
-                let solution = GoldenTicket::generate_solution(
-                    previous_block.get_hash(),
-                    golden_ticket.get_random(),
-                    golden_ticket.get_publickey(),
-                );
-                if !GoldenTicket::is_valid_solution(solution, previous_block.get_difficulty()) {
-                    error!(
-                        "ERROR: Golden Ticket solution does not validate against previous block hash and difficulty"
-                    );
-                    return false;
-                }
 
-***/
+	let golden_ticket_transaction = this.transactions[cv.gt_idx];
+	let gt = this.app.goldenticket.deserialize(golden_ticket_transaction.transaction.m);
+	let solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_bytes, gt.creator);
+	if (!this.app.goldenticket.isValidSolution(solution, previous_block.returnDifficulty())) {
+	  console.log("ERROR 801923: golden ticket included in block is invalid");
+	  return false;
+	}
       }
 
 
@@ -1025,6 +1228,130 @@ class Block {
 
     }
 
+    //
+    // validate atr
+    //
+    // Automatic Transaction Rebroadcasts are removed programmatically from
+    // an earlier block in the blockchain and rebroadcast into the latest
+    // block, with a fee being deducted to keep the data on-chain. In order
+    // to validate ATR we need to make sure we have the correct number of
+    // transactions (and ONLY those transactions!) included in our block.
+    //
+    // we do this by comparing the total number of ATR slips and nolan
+    // which we counted in the generate_metadata() function, with the
+    // expected number given the consensus values we calculated earlier.
+    //
+    if (cv.total_rebroadcast_slips != this.total_rebroadcast_slips) {
+      console.log("ERROR 624442: rebroadcast slips total incorrect");
+      return false;
+    }
+    if (cv.total_rebroadcast_nolan != this.total_rebroadcast_nolan) {
+      console.log(`ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`); 
+      return false;
+    }
+    if (cv.rebroadcast_hash != this.rebroadcast_hash) {
+      console.log("ERROR 123422: hash of rebroadcast transactions incorrect");
+      return false;
+    }
+
+    //
+    // validate merkle root
+    //
+    if (this.block.merkle != this.generateMerkleRoot()) {
+      console.log("merkle root is unset or is invalid false 1");
+      return false;
+    }
+
+
+    //
+    // validate fee transactions
+    //
+    // if this block contains a golden ticket, we have to use the random
+    // number associated with the golden ticket to create a fee-transaction
+    // that stretches back into previous blocks and finds the winning nodes
+    // that should collect payment.
+    //
+    if (cv.ft_num > 0) {
+
+      //
+      // no golden ticket? invalid
+      //
+      if (cv.gt_num == 0) {
+        console.log("ERROR 48203: fee transaction exists but no golden ticket, thus invalid");
+        return false;
+      }
+
+      let fee_transaction = this.transactions[cv.ft_idx];
+
+      //
+      // the fee transaction we receive from the CV needs to be updated with
+      // block-specific data in the same way that all of the transactions in
+      // the block have been. we must do this prior to comparing them.
+      //
+      cv.fee_transaction.generateMetadata(this.returnCreator());
+
+      let hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature());
+      let hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
+
+      if (hash1 != hash2) {
+        console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
+        return false;
+      }
+    }
+
+
+
+    //
+    // validate difficulty
+    //
+    // difficulty here refers the difficulty of generating a golden ticket
+    // for any particular block. this is the difficulty of the mining
+    // puzzle that is used for releasing payments.
+    //
+    // those more familiar with POW and POS should note that "difficulty" of
+    // finding a block is represented in the burn fee variable which we have
+    // already examined and validated above. producing a block requires a
+    // certain amount of golden ticket solutions over-time, so the
+    // distinction is in practice less clean.
+    //
+    if (cv.expected_difficulty != this.returnDifficulty()) {
+      console.log("ERROR 202392: difficulty is invalid - "+cv.expected_difficulty+" versus "+this.returnDifficulty());
+      return false;
+    }
+
+
+    //
+    // validate transactions
+    //
+    // validating transactions requires checking that the signatures are valid,
+    // the routing paths are valid, and all of the input slips are pointing
+    // to spendable tokens that exist in our UTXOSET. this logic is separate
+    // from the validation of block-level variables, so is handled in the
+    // transaction objects.
+    //
+    // this is one of the most computationally intensive parts of processing a
+    // block which is why we handle it in parallel. the exact logic needed to
+    // examine a transaction may depend on the transaction itself, as we have
+    // some specific types (Fee / ATR / etc.) that are generated automatically
+    // and may have different requirements.
+    //
+    // the validation logic for transactions is contained in the transaction
+    // class, and the validation logic for slips is contained in the slips
+    // class. Note that we are passing in a read-only copy of our UTXOSet so
+    // as to determine spendability.
+    //
+    // TODO - remove when convenient. when transactions fail to validate using
+    // parallel processing can make it difficult to find out exactly what the
+    // problem is. ergo this code that tries to do them on the main thread so
+    // debugging output works.
+    //
+    for (let i = 0; i < this.transactions.length; i++) {
+      let is_valid = this.transactions[i].validate(this.app);
+      if (!is_valid) {
+	console.log("ERROR 579128: transaction is invalid");
+	return false;
+      }
+    }
 
     return true;
   }
@@ -1058,8 +1385,6 @@ class Block {
 
     return false;
   }
-
-
 
 }
 

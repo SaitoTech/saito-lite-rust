@@ -14,13 +14,15 @@ const TransactionType = {
   StakerDeposit: 5,
   StakerWithdrawal: 6,
   Other: 7,
-  Issuance: 8
+  Issuance: 8,
+  SPV: 9,
 };
 
 class Transaction {
 
-  constructor(txobj=null) {
+  constructor(app=null) {
 
+    this.app = app;
     /////////////////////////
     // consensus variables //
     /////////////////////////
@@ -80,14 +82,15 @@ class Transaction {
    * @returns {Transaction}
    */
   deserialize(buffer, start_of_transaction_data) {
+    let binary = new saito.binary(this.app);
 
-    let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-    let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-    let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-    let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+    let inputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+    let outputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+    let message_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+    let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
     let signature = this.app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-    let timestamp = this.app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
+    let timestamp = binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
     let transaction_type = buffer[start_of_transaction_data + 88];
     let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
@@ -99,7 +102,7 @@ class Transaction {
       let start_of_slip = start_of_inputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
       let input = new saito.slip();
-      input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
+      input.deserialize(this.app, buffer.slice(start_of_slip, end_of_slip));
       inputs.push(input);
     }
     let outputs = [];
@@ -107,7 +110,7 @@ class Transaction {
       let start_of_slip = start_of_outputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
       let output = new saito.slip();
-      output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
+      output.deserialize(this.app, buffer.slice(start_of_slip, end_of_slip));
       outputs.push(output);
     }
     let message = buffer.slice(start_of_message, start_of_message + message_len);
@@ -117,7 +120,7 @@ class Transaction {
       let start_of_data = start_of_path + (i * HOP_SIZE);
       let end_of_data = start_of_data + HOP_SIZE;
       let hop = new saito.hop();
-      hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
+      hop.deserialize(this.app, buffer.slice(start_of_data, end_of_data));
       path.push(hop);
     }
 
@@ -131,12 +134,9 @@ class Transaction {
 
   }
 
-
   generateRebroadcastTransaction(output_to_rebroadcast, fee_to_deduct) {
 
   }
-
-
 
   isGoldenTicket() {
     if (this.transaction.type == TransactionType.GoldenTicket) {
@@ -212,6 +212,73 @@ class Transaction {
     this.sign(app);
     return this.transaction.sig;
   }
+
+  returnSignatureSource() {
+    // TODO - update.
+    return "";
+  }
+
+  returnWinningRoutingNode(random_number) {
+    //
+    // if there are no routing paths, we return the sender of
+    // the payment, as they're got all of the routing work by
+    // definition. this is the edge-case where sending a tx
+    // can make you money.
+    //
+    if (this.path.length == 0) {
+      if (this.transaction.from.length != 0) {
+        return this.transaction.from[0].returnPublickey();
+      }
+    }
+
+    //
+    // no winning transaction should have no fees unless the
+    // entire block has no fees, in which case we have a block
+    // without any fee-paying transactions.
+    //
+    // burn these fees for the sake of safety.
+    //
+    if (this.returnFeesTotal() == 0) {
+      return "";
+    }
+
+    //
+    // if we have a routing path, we calculate the total amount
+    // of routing work that it is possible for this transaction
+    // to contain (2x the fee).
+    //
+    let aggregate_routing_work = this.returnTotalFees();
+    let routing_work_this_hop = aggregate_routing_work;
+    let work_by_hop = [];
+    work_by_hop.push(aggregate_routing_work);
+
+    for (let i = 0; i < this.path.length; i++) {
+      let new_routing_work_this_hop = routing_work_this_hop / 2;
+      aggregate_routing_work += new_routing_work_this_hop;
+      routing_work_this_hop = new_routing_work_this_hop;
+      work_by_hop.push(aggregate_routing_work);
+    }
+
+    //
+    // find winning routing node
+    //
+    let x = BigInt('0x'+random_number);
+    let z = BigInt('0x'+aggregate_routing_work);
+    let winning_routing_work_in_nolan = x % z;
+
+    for (let i = 0; i < work_by_hop.length; i++) {
+      if (winning_routing_work_in_nolan <= work_by_hop[i]) {
+        return this.path[i].returnTo();
+      }
+    }
+
+    //
+    // we should never reach this
+    //
+    return "";
+
+  } 
+
 
   /**
    * Serialize TX
@@ -320,7 +387,10 @@ class Transaction {
 
 }
 
-Transaction.TranasctionType = TransactionType;
+Transaction.TransactionType = TransactionType;
+Transaction.TRANSACTION_SIZE = TRANSACTION_SIZE;
+Transaction.SLIP_SIZE = SLIP_SIZE;
+Transaction.HOP_SIZE = HOP_SIZE;
 
 module.exports = Transaction;
 

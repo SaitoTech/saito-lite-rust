@@ -50,16 +50,19 @@ class GoldenTicket {
   serialize(target_hash, random_hash) {
     let th = Buffer.from(target_hash, 'hex');
     let rh = Buffer.from(random_hash, 'hex');
+    let cr = Buffer.from(this.app.wallet.returnPublicKey(), 'hex');
     return new Uint8Array([
        ...th,
        ...rh,
-    ]);;
+       ...cr,
+    ]);
   }
 
   deserialize(buffer) {
     let target_hash = buffer.slice(0, 32).toString('hex');
-    let random_hash = buffer.slice(0, 32).toString('hex');
-    return { target_hash : target_hash , random_hash : random_hash };
+    let random_hash = buffer.slice(32, 64).toString('hex');
+    let creator = buffer.slice(64, 97).toString('hex');
+    return { target_hash : target_hash , random_hash : random_hash , creator : creator };
   }
 
 }
