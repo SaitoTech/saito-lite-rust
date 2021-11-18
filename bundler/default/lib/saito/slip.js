@@ -79,7 +79,7 @@ class Slip {
   /**
    * Serialize Slip
    * @param {Slip} slip
-   * @returns {array} raw bytes
+   * @returns {Uint8Array} raw bytes
    */
   serialize(app, uuid="") {
 
