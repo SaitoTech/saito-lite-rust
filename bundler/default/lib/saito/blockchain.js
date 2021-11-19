@@ -61,6 +61,14 @@ class Blockchain {
 
   async addBlockToBlockchain(block, force=0) {
 
+    let w = "400000000"
+    let x = BigInt(w);
+    let y = this.app.binary.u64AsBytes(x.toString());
+    let z = BigInt(this.app.binary.u64FromBytes(y)); 
+    console.log("Z: " + z.toString());
+    console.log("W: " + w);
+    if (w === z.toString()) { console.log("They are the same"); }
+
 
     //
     // 
@@ -74,7 +82,6 @@ class Blockchain {
     block.generateHashes();
 
 console.log("adding: " + block.returnHash());
-console.log("contents: " + JSON.stringify(block.block));
 
     //
     // start by extracting some variables that we will use
@@ -654,8 +661,8 @@ console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash(
     if (old_chain.length > new_chain.length) { return false; }
     if (this.app.blockring.returnLatestBlockId() >= this.blocks[new_chain[0]].block.id) { return false; }
 
-    let old_bf = 0;
-    let new_bf = 0;
+    let old_bf = BigInt(0);
+    let new_bf = BigInt(0);
 
     for (let i = 0; i < old_chain.length; i++) {
       old_bf += this.blocks[old_chain[i]].block.burnfee;

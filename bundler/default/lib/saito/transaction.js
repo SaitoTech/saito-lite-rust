@@ -22,7 +22,6 @@ class Transaction {
 
   constructor(app=null) {
 
-    this.app = app;
     /////////////////////////
     // consensus variables //
     /////////////////////////
@@ -36,10 +35,10 @@ class Transaction {
     this.transaction.type             = TransactionType.Normal;
     this.transaction.m                = "";
 
-    this.fees_total                   = "";
-    this.work_available_to_me         = "";
-    this.work_available_to_creator    = "";
-    this.work_cumulative              = "0.0";
+    this.fees_total                   = BigInt(0);
+    this.work_available_to_me         = BigInt(0);
+    this.work_available_to_creator    = BigInt(0);
+    this.work_cumulative              = BigInt(0);
 				 	  //
                                           // cumulative fees. this is calculated when
 					  // we process the block so that we can quickly
@@ -90,16 +89,15 @@ class Transaction {
    * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
    * @returns {Transaction}
    */
-  deserialize(buffer, start_of_transaction_data) {
-    let binary = new saito.binary(this.app);
+  deserialize(app, buffer, start_of_transaction_data) {
 
-    let inputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-    let outputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-    let message_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-    let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+    let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+    let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+    let message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+    let path_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
-    let signature = this.app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-    let timestamp = binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)).toString();
+    let signature = app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
+    let timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)).toString();
     let transaction_type = buffer[start_of_transaction_data + 88];
     let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
@@ -111,7 +109,7 @@ class Transaction {
       let start_of_slip = start_of_inputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
       let input = new saito.slip();
-      input.deserialize(this.app, buffer.slice(start_of_slip, end_of_slip));
+      input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       inputs.push(input);
     }
     let outputs = [];
@@ -119,7 +117,7 @@ class Transaction {
       let start_of_slip = start_of_outputs + (i * SLIP_SIZE);
       let end_of_slip = start_of_slip + SLIP_SIZE;
       let output = new saito.slip();
-      output.deserialize(this.app, buffer.slice(start_of_slip, end_of_slip));
+      output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       outputs.push(output);
     }
     let message = buffer.slice(start_of_message, start_of_message + message_len);
@@ -129,7 +127,7 @@ class Transaction {
       let start_of_data = start_of_path + (i * HOP_SIZE);
       let end_of_data = start_of_data + HOP_SIZE;
       let hop = new saito.hop();
-      hop.deserialize(this.app, buffer.slice(start_of_data, end_of_data));
+      hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
       path.push(hop);
     }
 
@@ -169,32 +167,32 @@ class Transaction {
   }
 
   returnFeesTotal(app) {
-    if (this.fees_total == "") {
+    if (this.fees_total == BigInt(0)) {
 
       //
       // sum inputs
       //
-      let inputs = Big(0.0);
+      let inputs = BigInt(0);
       if (this.transaction.from != null) {
         for (let v = 0; v < this.transaction.from.length; v++) {
-          inputs = inputs.plus(Big(this.transaction.from[v].amt));
+          inputs += this.transaction.from[v].returnAmount();
         }
       }
 
       //
       // sum outputs
       //
-      let outputs = Big(0.0);
+      let outputs = BigInt(0);
       for (let v = 0; v < this.transaction.to.length; v++) {
         //
         // do not count outputs in GT and FEE txs create outputs that cannot be counted.
         //
-        if (this.transaction.to[v].type != 1 && this.transaction.to[v].type != 2) {
-          outputs = outputs.plus(Big(this.transaction.to[v].amt));
+        if (this.transaction.to[v].type != saito.transaction.TransactionType.Fee && this.transaction.to[v].type != saito.transaction.TransactionType.GoldenTicket) {
+          outputs += this.transaction.to[v].returnAmount();
         }
       }
 
-      this.fees_total = inputs.minus(outputs).toFixed(8);
+      this.fees_total = inputs - outputs;
     }
 
     return this.fees_total;
@@ -207,13 +205,13 @@ class Transaction {
   }
 
   returnRoutingWorkAvailableToPublicKey(app) {
-    let uf =  Big(this.returnFeesTotal(app));
+    let uf =  this.returnFeesTotal(app);
     for (let i = 0; i < this.transaction.path.length; i++) {
       let d = 1;
       for (let j = i; j > 0; j--) { d = d*2; }
-      uf = uf.div(d);
+      uf /= BigInt(d);
     }
-    return uf.toFixed(8);
+    return uf;
   }
 
   returnSignature(app, force=0) {
@@ -231,7 +229,7 @@ class Transaction {
     //
     if (this.path.length == 0) {
       if (this.transaction.from.length != 0) {
-        return this.transaction.from[0].returnPublickey();
+        return this.transaction.from[0].returnPublicKey();
       }
     }
 
@@ -242,9 +240,7 @@ class Transaction {
     //
     // burn these fees for the sake of safety.
     //
-    if (this.returnFeesTotal() == 0) {
-      return "";
-    }
+    if (this.returnFeesTotal() == BigInt(0)) { return ""; }
 
     //
     // if we have a routing path, we calculate the total amount
@@ -257,7 +253,7 @@ class Transaction {
     work_by_hop.push(aggregate_routing_work);
 
     for (let i = 0; i < this.path.length; i++) {
-      let new_routing_work_this_hop = routing_work_this_hop / 2;
+      let new_routing_work_this_hop = routing_work_this_hop / BigInt(2);
       aggregate_routing_work += new_routing_work_this_hop;
       routing_work_this_hop = new_routing_work_this_hop;
       work_by_hop.push(aggregate_routing_work);
@@ -426,9 +422,6 @@ class Transaction {
       //
       // validate signature
       //
-console.log("add is -- " + this.transaction.from[0].add);
-console.log("sig is -- " + this.transaction.sig);
-console.log("hash us -- " + app.crypto.hash(this.serializeForSignature(app)));
       if (!app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, this.transaction.from[0].add)) {
         console.log("ERROR:382029: transaction signature does not validate");
         return false;
@@ -445,8 +438,12 @@ console.log("hash us -- " + app.crypto.hash(this.serializeForSignature(app)));
       //
       // validate we're not creating tokens out of nothing
       //
+      let total_in = BigInt(0);
+      let total_out = BigInt(0);
+      for (let i = 0; i < this.transaction.from.length; i++) { total_in += this.transaction.from[i].returnAmount(); }
+      for (let i = 0; i < this.transaction.to.length; i++) { total_out += this.transaction.to[i].returnAmount(); }
       if (
-	this.total_out > this.total_in &&
+	total_out > total_in &&
 	this.transaction.type != TransactionType.Fee &&
 	this.transaction.type != TransactionType.Vip
       ) {
@@ -549,12 +546,10 @@ console.log("JS needs to validate routing paths still...");
 
   }
 
-  generateMetadata() {
+  generateMetadata() {}
+  generateMetadataCumulativeFees(){ return BigInt(0); }
+  generateMetadataCumulativeWork(){ return BigInt(0); }
 
-  }
-
-  generateMetadataCumulativeFees(){ return 0; }
-  generateMetadataCumulativeWork(){ return 0; }
 }
 
 Transaction.TransactionType = TransactionType;

@@ -24,10 +24,10 @@ class Block {
     this.block.previous_block_hash     = "";
     this.block.merkle                  = "";
     this.block.creator                 = "";
-    this.block.burnfee                 = 0;
+    this.block.burnfee                 = BigInt(0);
     this.block.difficulty              = 0;
-    this.block.treasury                = "0";
-    this.block.staking_treasury        = "0";
+    this.block.treasury                = BigInt(0);
+    this.block.staking_treasury        = BigInt(0);
     this.block.signature               = "";
 
     this.lc 	                       = 0;
@@ -39,8 +39,8 @@ class Block {
     this.prehash                       = "";
     this.filename		       = ""; // set when saved
 
-    this.total_fees 		       = 0;
-    this.routing_work_for_creator      = 0;
+    this.total_fees 		       = BigInt(0);
+    this.routing_work_for_creator      = BigInt(0);
 
     this.is_valid		       = 1;
     this.has_golden_ticket	       = false;
@@ -50,9 +50,10 @@ class Block {
     this.slips_spent_this_block        = {};
     this.rebroadcast_hash              = "";
     this.total_rebroadcast_slips       = 0;
-    this.total_rebroadcast_nolan      = 0;
+    this.total_rebroadcast_nolan      = BigInt(0);
 
   }
+
 
 
   /**
@@ -61,32 +62,20 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer) {
-    let binary = new saito.binary(this.app);
-    let transactions_length = binary.u32FromBytes(buffer.slice(0, 4));
-    this.block.id = parseInt(binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
-    this.block.timestamp = parseInt(binary.u64FromBytes(buffer.slice(12, 20)).toString());
 
-    //
-    // Sanka -- note -- this fix sorts out issues
-    //
-    // crypto.stringToHex assumes UTF8 input, which assumes 8-bit chars instead of 4 as in binary-hex conversion
-    //
-    //this.block.previous_block_hash = this.app.crypto.stringToHex(Buffer.from(buffer.slice(20, 52)).toString());
+    let transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
+    this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
+    this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)).toString());
     this.block.previous_block_hash = Buffer.from(buffer.slice(20, 52)).toString('hex');
-
-    // ditto
-    //this.block.creator = this.app.crypto.stringToHex(buffer.slice(52, 85));
-    //this.block.merkle = this.app.crypto.stringToHex(buffer.slice(85, 117));
-    //this.block.signature = this.app.crypto.stringToHex(buffer.slice(117, 181));
-
     this.block.creator = Buffer.from(buffer.slice(52, 85)).toString('hex');
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString('hex');
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString('hex');
 
-    this.block.treasury = binary.u64FromBytes(buffer.slice(181, 189));
-    this.block.staking_treasury = binary.u64FromBytes(buffer.slice(189, 197));
-    this.block.burnfee = parseInt(binary.u64FromBytes(buffer.slice(197, 205)));
-    this.block.difficulty = parseInt(binary.u64FromBytes(buffer.slice(205, 213)));
+    this.block.treasury = BigInt(this.app.binary.u64FromBytes(buffer.slice(181, 189)));
+    this.block.staking_treasury = BigInt(this.app.binary.u64FromBytes(buffer.slice(189, 197)));
+    this.block.burnfee = BigInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
+
+    this.block.difficulty = parseInt(this.app.binary.u64FromBytes(buffer.slice(205, 213)));
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
     //
@@ -99,10 +88,10 @@ class Block {
 
     for (let i = 0; i < transactions_length; i++) {
 
-      let inputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-      let outputs_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-      let message_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-      let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+      let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+      let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+      let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+      let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
       let end_of_transaction_data = start_of_transaction_data
         + saito.transaction.TRANSACTION_SIZE
         + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE)
@@ -110,7 +99,7 @@ class Block {
         + path_len * saito.transaction.HOP_SIZE;
 
       let transaction = new saito.transaction(this.app);
-      transaction.deserialize(buffer, start_of_transaction_data);
+      transaction.deserialize(this.app, buffer, start_of_transaction_data);
       this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
 
@@ -219,7 +208,7 @@ class Block {
     //
     let cv = {};
 
-        cv.total_fees = 0;
+        cv.total_fees = BigInt(0);
 
         cv.ft_num = 0;
         cv.gt_num = 0;
@@ -228,12 +217,12 @@ class Block {
         cv.gt_idx = 0;
         cv.it_idx = 0;
         cv.expected_difficulty = 1;
-        cv.total_rebroadcast_nolan = 0;
-        cv.total_rebroadcast_fees_nolan = 0
+        cv.total_rebroadcast_nolan = BigInt(0);
+        cv.total_rebroadcast_fees_nolan = BigInt(0);
         cv.total_rebroadcast_slips = 0;
-        cv.nolan_falling_off_chain = 0;
+        cv.nolan_falling_off_chain = BigInt(0);
 	cv.rebroadcast_hash = "";
-	cv.staking_treasury = 0;
+	cv.staking_treasury = BigInt(0);
 	cv.rebroadcasts = [];
         cv.block_payouts = [];
 	cv.fee_transaction = null;
@@ -313,7 +302,7 @@ class Block {
           for (let k = 0; k < tx.to.length; k++) {
 
 	    let output = tx.to[k];
-	    let REBROADCAST_FEE = 200_000_000;
+	    let REBROADCAST_FEE = BigInt(200000000);
 
             //
             // valid means spendable and non-zero
@@ -323,10 +312,10 @@ class Block {
               //
 	      // TODO - no parse int as numbers potentially too big
 	      //
-              if (parseInt(output.returnAmount()) > 200_000_000) {
+              if (output.returnAmount() > REBROADCAST_FEE) {
 
-                cv.total_rebroadcast_nolan += parseInt(output.returnAmount());
-                cv.total_rebroadcast_fees_nolan += 200_000_000;
+                cv.total_rebroadcast_nolan += output.returnAmount();
+                cv.total_rebroadcast_fees_nolan += REBROADCAST_FEE;
                 cv.total_rebroadcast_slips += 1;
 
                 //
@@ -335,7 +324,7 @@ class Block {
                 // TODO - floating fee based on previous block average
                 //
                 let rebroadcast_transaction = new saito.transaction();
-	        rebroadcast_transaction.generateRebroadcastTransaction(ouput, 200_000_000);
+	        rebroadcast_transaction.generateRebroadcastTransaction(ouput, REBROADCAST_FEE);
 
                 //
                 // update cryptographic hash of all ATRs
@@ -351,7 +340,7 @@ class Block {
                 // change this if the DUST becomes a significant enough amount
                 // each block to reduce consensus security.
                 //
-                cv.total_rebroadcast_fees_nolan += parseInt(output.returnAmount());
+                cv.total_rebroadcast_fees_nolan += output.returnAmount();
 
               }
             }
@@ -376,8 +365,8 @@ class Block {
       //
       if (previous_block) {
 
-        let miner_payment = previous_block.returnFeesTotal() / 2;
-        let router_payment = previous_block.returnFeesTotal() / 2;
+        let miner_payment = previous_block.returnFeesTotal() / BigInt(2);
+        let router_payment = previous_block.returnFeesTotal() / BigInt(2);
 
         //
         // calculate miner and router payments
@@ -386,10 +375,10 @@ class Block {
   	  miner : "",
   	  staker : "",
   	  router : "",
-   	  miner_payout : 0,
-  	  staker_payout : 0,
-  	  router_payout : 0,
-  	  staking_treasury : 0,
+   	  miner_payout : BigInt(0),
+  	  staker_payout : BigInt(0),
+  	  router_payout : BigInt(0),
+  	  staking_treasury : BigInt(0),
   	  staker_slip : null,
   	  random_number : next_random_number,
 	};
@@ -458,17 +447,17 @@ class Block {
                 // be withheld for the staker treasury, which is what previous_staker_
                 // payment is measuring.
                 //
-                let sp = staking_block.returnFeesTotal() / 2;
+                let sp = staking_block.returnFeesTotal() / BigInt(2);
                 let rp = staking_block.returnFeesTotal() - sp;
 
                 let block_payout = {
                   miner : "",
                   staker : "",
                   router : "",
-                  miner_payout : 0,
-                  staker_payout : 0,
-                  router_payout : 0,
-                  staking_treasury : 0,
+                  miner_payout : BigInt(0),
+                  staker_payout : BigInt(0),
+                  router_payout : BigInt(0),
+                  staking_treasury : BigInt(0),
                   staker_slip : null,
                   random_number : next_random_number,
                 };
@@ -476,6 +465,7 @@ class Block {
                 block_payout.router = staking_block.findWinningRouter(next_random_number);
                 block_payout.router_payout = rp;
                 block_payout.staking_treasury = sp;
+
 
                 // router consumes 2 hashes
                 next_random_number = this.app.crypto.hash(next_random_number);
@@ -508,7 +498,7 @@ class Block {
                   // add payout to staker if staker is new
                   //
                   if (slip_was_spent == 0) {
-                    block_payout.staker = staker_slip.returnPublickey();
+                    block_payout.staker = staker_slip.returnPublicKey();
                     block_payout.staker_payout = staker_slip.returnAmount() + staker_slip.returnPayout();
                     block_payout.staker_slip = staker_slip.clone();
                   }
@@ -619,11 +609,11 @@ class Block {
     // fetch consensus values from preceding block
     //
     let previous_block_id = 0;
-    let previous_block_burnfee = 0;
     let previous_block_timestamp = 0;
     let previous_block_difficulty = 0;
-    let previous_block_treasury = 0;
-    let previous_block_staking_treasury = 0;
+    let previous_block_burnfee = BigInt(0);
+    let previous_block_treasury = BigInt(0);
+    let previous_block_staking_treasury = BigInt(0);
     let current_timestamp = new Date().getTime();
 
     let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
@@ -864,9 +854,10 @@ class Block {
           let bytes = new Uint8Array([...this.rebroadcast_hash, ...transaction.serializeForSignature(this.app)]);
           this.rebroadcast_hash = this.app.crypto.hash(bytes);
 
-          for (let input of transaction.transaction.from) {
+          for (let i = 0; i < transaction.transaction.from.length; i++) {
+	    let input = transaction.transaction.from[i];
             this.total_rebroadcast_slips += 1;
-            this.total_rebroadcast_nolan += transaction.returnAmount();
+            this.total_rebroadcast_nolan += input.returnAmount();
           }
           break;
         }
@@ -1038,10 +1029,9 @@ class Block {
     let merkle_root = this.app.crypto.toSizedArray(block_merkle, 32);
     let signature = this.app.crypto.toSizedArray(block_signature, 64);
 
-    let treasury = this.app.binary.u64AsBytes(new Big(this.block.treasury));
-    let staking_treasury = this.app.binary.u64AsBytes(new Big(this.block.staking_treasury));
-
-    let burnfee = this.app.binary.u64AsBytes(new Big(this.block.burnfee));
+    let treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
+    let staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
+    let burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
     let difficulty = this.app.binary.u64AsBytes(new Big(this.block.difficulty));
 
     let block_header_data = new Uint8Array([
@@ -1088,9 +1078,9 @@ class Block {
       this.app.crypto.toSizedArray(this.block.previous_block_hash, 32),
       this.app.crypto.toSizedArray(this.block.creator, 33),
       this.app.crypto.toSizedArray(this.block.merkle, 32),
-      this.app.binary.u64AsBytes(this.block.treasury),
-      this.app.binary.u64AsBytes(new Big(this.block.staking_treasury)),
-      this.app.binary.u64AsBytes(new Big(this.block.burnfee)),
+      this.app.binary.u64AsBytes(this.block.treasury.toString()),
+      this.app.binary.u64AsBytes(new Big(this.block.staking_treasury.toString())),
+      this.app.binary.u64AsBytes(new Big(this.block.burnfee.toString())),
       this.app.binary.u64AsBytes(new Big(this.block.difficulty))
     ]));
   }
@@ -1098,9 +1088,6 @@ class Block {
   sign(publickey, privatekey) {
     this.block.creator = publickey;
     this.block.signature = this.app.crypto.signBuffer(this.app.crypto.hash(Buffer.from(this.serializeForSignature())), privatekey);
-  }
-
-  async updateConsensusValues() {
   }
 
   async validate() {
@@ -1116,13 +1103,10 @@ class Block {
     //
     // verify creator signed
     //
-console.log(this.block.signature);
-console.log(this.block.creator);
     if (!this.app.crypto.verifyHash(this.app.crypto.hash(this.serializeForSignature()), this.block.signature, this.block.creator)) {
       console.log("ERROR 582039: block is not signed by creator or signature does not validate",);
       return false;
     }
-console.log("hash verifies!");
 
     //
     // generate consensus values
