@@ -74,7 +74,6 @@ class Blockchain {
     block.generateHashes();
 
 console.log("adding: " + block.returnHash());
-console.log("contents: " + JSON.stringify(block.block));
 
     //
     // start by extracting some variables that we will use

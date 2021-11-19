@@ -230,7 +230,7 @@ class Block {
         cv.it_idx = 0;
         cv.expected_difficulty = 1;
         cv.total_rebroadcast_nolan = BigInt(0);
-        cv.total_rebroadcast_fees_nolan = BitInt(0);
+        cv.total_rebroadcast_fees_nolan = BigInt(0);
         cv.total_rebroadcast_slips = 0;
         cv.nolan_falling_off_chain = BigInt(0);
 	cv.rebroadcast_hash = "";
@@ -390,7 +390,7 @@ class Block {
    	  miner_payout : BigInt(0),
   	  staker_payout : BigInt(0),
   	  router_payout : BigInt(0),
-  	  staking_treasury : BitInt(0),
+  	  staking_treasury : BigInt(0),
   	  staker_slip : null,
   	  random_number : next_random_number,
 	};
