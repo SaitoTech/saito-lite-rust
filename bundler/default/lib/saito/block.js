@@ -19,8 +19,8 @@ class Block {
     // consensus variables
     //
     this.block                         = {};
-    this.block.id                      = 1;
-    this.block.timestamp               = new Date().getTime();
+    this.block.id                      = 0;
+    this.block.timestamp               = 0;
     this.block.previous_block_hash     = "";
     this.block.merkle                  = "";
     this.block.creator                 = "";
@@ -165,7 +165,7 @@ class Block {
     }
 
     let winning_nolan = x % y;
-    
+
     //
     // winning tx is either fee-paying or ATR transaction
     //
@@ -252,15 +252,15 @@ class Block {
       if (this.transactions[i].isGoldenTicket()) {
         cv.gt_num += 1;
         cv.gt_idx = i;
-        this.has_golden_ticket = true; 
+        this.has_golden_ticket = true;
       }
       if (this.transactions[i].isIssuanceTransaction()) {
         cv.it_num += 1;
         cv.it_idx = i;
-        this.has_issuance_transaction = true; 
+        this.has_issuance_transaction = true;
       }
     }
-    
+
     //
     // burn-fee
     //
@@ -370,7 +370,7 @@ class Block {
 
       let next_random_number = this.app.crypto.hash(gt.random_bytes);
       let miner_publickey = gt.creator;
- 
+
       //
       // miner payout is fees from previous block, no staking treasury
       //
@@ -537,7 +537,7 @@ class Block {
               output.add = cv.block_payout[i].miner;
 	      output.amt = cv.block_payout[i].miner_payout;
 	      output.type = saito.slip.SlipType.MinerOutput;
-              output.sid = slip_ordinal;	
+              output.sid = slip_ordinal;
 	  transaction.addOutput(output.clone());
 	  slip_ordinal += 1;
         }
@@ -546,7 +546,7 @@ class Block {
               output.add = cv.block_payout[i].router;
 	      output.amt = cv.block_payout[i].router_payout;
 	      output.type = saito.slip.SlipType.RouterOutput;
-              output.sid = slip_ordinal;	
+              output.sid = slip_ordinal;
 	  transaction.addOutput(output.clone());
 	  slip_ordinal += 1;
         }
@@ -555,7 +555,7 @@ class Block {
               output.add = cv.block_payout[i].router;
 	      output.amt = cv.block_payout[i].router_payout;
 	      output.type = saito.slip.SlipType.RouterOutput;
-              output.sid = slip_ordinal;	
+              output.sid = slip_ordinal;
 	  transaction.addOutput(output.clone());
 	  slip_ordinal += 1;
         }
@@ -564,7 +564,7 @@ class Block {
               output.add = cv.block_payout[i].staker;
 	      output.amt = cv.block_payout[i].staker_payout;
 	      output.type = saito.slip.SlipType.StakerOutput;
-              output.sid = slip_ordinal;	
+              output.sid = slip_ordinal;
 	  transaction.addOutput(output.clone());
 	  slip_ordinal += 1;
           cv.staking_treasury += cv.block_payout[i].staking_treasury;
@@ -721,7 +721,6 @@ class Block {
       }
     }
     this.created_hashmap_of_slips_spent_this_block = true;
-console.log("HELLO! 4");
 
 
     //
@@ -763,7 +762,7 @@ console.log("HELLO! 4");
     //
     // sign the block
     //
-    this.sign(this.app)
+    this.sign(this.app.wallet.returnPublicKey(), this.app.wallet.returnPrivateKey())
 
     //
     // and return to normal
@@ -816,8 +815,8 @@ console.log("HELLO! 4");
 
       let transaction = this.transactions[i];
 
-      cumulative_fees = transaction.generateMetadataCumulativeFees(cumulativeFees);
-      cumulative_work = transaction.generateMetadataCumulativeWork(cumulativeWork);
+      cumulative_fees = transaction.generateMetadataCumulativeFees(cumulative_fees);
+      cumulative_work = transaction.generateMetadataCumulativeWork(cumulative_work);
 
       //
       // update slips_spent_this_block so that we have a record of
@@ -834,7 +833,7 @@ console.log("HELLO! 4");
       //
       if (!this.has_hashmap_of_slips_spent_this_block) {
 
-        if (transaction.transaction.type !== Transaction.TranasctionType.Fee) {
+        if (transaction.transaction.type !== saito.transaction.TransactionType.Fee) {
           for (let i = 0; i < transaction.transaction.from.length; i++) {
             let key = transaction.transaction.from[i].returnKey();
             this.slips_spent_this_block[key] = 1;
@@ -847,25 +846,25 @@ console.log("HELLO! 4");
       // also check the transactions for golden ticket and fees
       //
       switch (transaction.transaction.type) {
-        case TransactionType.Issuance:
+        case saito.transaction.TransactionType.Issuance:
           has_issuance_transaction = true;
           issuance_transaction_idx = i;
           break;
-        case TransactionType.Fee:
+        case saito.transaction.TransactionType.Fee:
           has_fee_transaction = true;
           fee_transaction_idx = i;
           break;
-        case TransactionType.GoldenTicket:
+        case saito.transaction.TransactionType.GoldenTicket:
           has_golden_ticket = true;
           golden_ticket_idx = i;
           break;
-        case TransactionType.ATR: {
+        case saito.transaction.TransactionType.ATR: {
 
           // TODO : move to another method
-          let bytes = new Uint8Array([...this.rebroadcast_hash, ...transaction.serializeForSignature()]);
+          let bytes = new Uint8Array([...this.rebroadcast_hash, ...transaction.serializeForSignature(this.app)]);
           this.rebroadcast_hash = this.app.crypto.hash(bytes);
 
-          for (let i = 0; i < transaction.transaction.from.length; i++) {
+          for (let input of transaction.transaction.from) {
             this.total_rebroadcast_slips += 1;
             this.total_rebroadcast_nolan += transaction.returnAmount();
           }
@@ -893,7 +892,6 @@ console.log("HELLO! 4");
   }
 
   generateHashes() {
-    this.hash = "";
     this.hash = this.returnHash();
   }
 
@@ -926,7 +924,7 @@ console.log("HELLO! 4");
   }
 
   returnHash() {
-    if (this.hash != "") { return this.hash; }
+    if (this.hash) { return this.hash; }
     this.prehash = this.app.crypto.hash(this.serializeForSignature());
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
@@ -956,7 +954,7 @@ console.log("HELLO! 4");
       if (this.transactions[i].transaction.type == saito.transaction.TransactionType.SPV) {
         txs.push(this.transactions[i].transaction.sig);
       } else {
-        txs.push(this.app.crypto.hash(this.transactions[i].returnSignatureSource(this.app)));
+        txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app)));
       }
     }
 
@@ -997,11 +995,11 @@ console.log("HELLO! 4");
 
   returnStakingTreasury() {
     return this.block.staking_treasury;
-  }  
+  }
 
   returnTreasury() {
     return this.block.treasury;
-  }  
+  }
 
   returnTimestamp() {
     return this.block.timestamp;
@@ -1032,8 +1030,8 @@ console.log("HELLO! 4");
 
     let transactions_length = this.app.binary.u32AsBytes(0);
     if (this.transactions.length > 0) { transactions_length = this.app.binary.u32AsBytes(this.transactions.length); }
-    let id = this.app.binary.u64AsBytes(new Big(this.block.id));
-    let timestamp = this.app.binary.u64AsBytes(new Big(this.block.timestamp));
+    let id = this.app.binary.u64AsBytes(this.block.id);
+    let timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
 
     let previous_block_hash = this.app.crypto.toSizedArray(block_previous_block_hash, 32);
     let creator = this.app.crypto.toSizedArray(block_creator, 33);
@@ -1084,24 +1082,25 @@ console.log("HELLO! 4");
   }
 
   serializeForSignature() {
-
-    let vbytes = "";
-        vbytes += this.block.id;
-        vbytes += this.block.timestamp;
-        vbytes += this.block.previous_block_hash;
-        vbytes += this.block.creator;
-        vbytes += this.block.merkle;
-        vbytes += this.block.treasury;
-        vbytes += this.block.staking_treasury;
-        vbytes += this.block.burnfee;
-        vbytes += this.block.difficulty;
-    return vbytes
-
+    return Uint8Array.from(Buffer.concat([
+      this.app.binary.u64AsBytes(this.block.id),
+      this.app.binary.u64AsBytes(this.block.timestamp),
+      this.app.crypto.toSizedArray(this.block.previous_block_hash, 32),
+      this.app.crypto.toSizedArray(this.block.creator, 33),
+      this.app.crypto.toSizedArray(this.block.merkle, 32),
+      this.app.binary.u64AsBytes(this.block.treasury),
+      this.app.binary.u64AsBytes(new Big(this.block.staking_treasury)),
+      this.app.binary.u64AsBytes(new Big(this.block.burnfee)),
+      this.app.binary.u64AsBytes(new Big(this.block.difficulty))
+    ]));
   }
 
-  sign(app) {
-    this.block.creator = app.wallet.returnPublicKey();
-    this.block.signature = this.app.crypto.signMessage(this.serializeForSignature(), app.wallet.returnPrivateKey());
+  sign(publickey, privatekey) {
+    this.block.creator = publickey;
+    this.block.signature = this.app.crypto.signBuffer(this.app.crypto.hash(Buffer.from(this.serializeForSignature())), privatekey);
+  }
+
+  async updateConsensusValues() {
   }
 
   async validate() {
@@ -1117,10 +1116,13 @@ console.log("HELLO! 4");
     //
     // verify creator signed
     //
-    if (!this.app.crypto.verifyMessage(this.serializeForSignature(), this.block.signature, this.block.creator)) {
+console.log(this.block.signature);
+console.log(this.block.creator);
+    if (!this.app.crypto.verifyHash(this.app.crypto.hash(this.serializeForSignature()), this.block.signature, this.block.creator)) {
       console.log("ERROR 582039: block is not signed by creator or signature does not validate",);
       return false;
     }
+console.log("hash verifies!");
 
     //
     // generate consensus values
@@ -1246,7 +1248,7 @@ console.log("HELLO! 4");
       return false;
     }
     if (cv.total_rebroadcast_nolan != this.total_rebroadcast_nolan) {
-      console.log(`ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`); 
+      console.log(`ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`);
       return false;
     }
     if (cv.rebroadcast_hash != this.rebroadcast_hash) {

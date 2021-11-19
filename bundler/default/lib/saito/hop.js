@@ -8,14 +8,30 @@ class Hop {
 
 
   /**
+   * Serialize Hop
+   * @param {Hop} hop
+   * @returns {array} raw bytes
+   */
+  serialize(app) {
+    let from = app.crypto.toSizedArray(hop.from, 33);
+    let to = app.crypto.toSizedArray(hop.to, 32);
+    let sig = app.crypto.toSizedArray(hop.sig, 64);
+    return new Uint8Array([
+       ...from,
+       ...to,
+       ...sig,
+    ]);
+  }
+
+  /**
    * Deserialize Hop
    * @param {array} buffer
    * @returns {Hop}
    */
   deserialize(app, buffer) {
-    let from = app.crypto.stringToHex(buffer.slice(0, 33));
-    let to = app.crypto.stringToHex(buffer.slice(33, 66));
-    let sig = app.crypto.stringToHex(buffer.slice(66, 130));
+    let from =  Buffer.from(buffer.slice(0, 33)).toString("hex");
+    let to =  Buffer.from(buffer.slice(33, 66)).toString("hex");
+    let sig =  Buffer.from(buffer.slice(66, 130)).toString("hex");
     return {
       from: from,
       to: to,
@@ -33,22 +49,6 @@ class Hop {
 
   returnTo() {
     return this.to;
-  }
-
-  /**
-   * Serialize Hop
-   * @param {Hop} hop
-   * @returns {array} raw bytes
-   */
-  serialize(app) {
-    let from = Buffer.from(hop.from, 'hex');
-    let to = Buffer.from(hop.to, 'hex');
-    let sig = Buffer.from(hop.sig, 'hex');
-    return new Uint8Array([
-       ...from,
-       ...to,
-       ...sig,
-    ]);;
   }
 
 }

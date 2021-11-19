@@ -56,7 +56,7 @@ class Mempool {
     // hashmap
     //
     this.transactions_hmap        = [];  // index is tx.transaction.sig
-    this.transactions_inputs_hmap = [];  // index is slip returnSignatureSource()
+    this.transactions_inputs_hmap = [];  // index is slip returnKey()
 
     //
     // downloads
@@ -172,14 +172,9 @@ class Mempool {
       let previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
       //
-      // update its consensus data
+      // generate and sign
       //
       await block.generate(previous_block_hash, this.app.mempool);
-
-      //
-      // sign the block
-      //
-      block.sign(this.app);
 
       //
       // and add to mempool

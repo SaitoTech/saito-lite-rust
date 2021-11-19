@@ -29,7 +29,7 @@ class Transaction {
     this.transaction                  = {};
     this.transaction.to	 	      = [];
     this.transaction.from	      = [];
-    this.transaction.ts               = new Date().getTime();
+    this.transaction.ts               = 0;
     this.transaction.sig              = "";
     this.transaction.path             = [];
     this.transaction.r                = 1; // replaces
@@ -59,6 +59,15 @@ class Transaction {
 
     return this;
   }
+
+  addInput(slip) {
+    this.transaction.from.push(slip);
+  }
+
+  addOutput(slip) {
+    this.transaction.fto.push(slip);
+  }
+
 
   decryptMessage(app) {
     if (this.transaction.from[0].add != app.wallet.returnPublicKey()) {
@@ -90,7 +99,7 @@ class Transaction {
     let path_len = binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
     let signature = this.app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-    let timestamp = binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
+    let timestamp = binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)).toString();
     let transaction_type = buffer[start_of_transaction_data + 88];
     let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
@@ -213,11 +222,6 @@ class Transaction {
     return this.transaction.sig;
   }
 
-  returnSignatureSource() {
-    // TODO - update.
-    return "";
-  }
-
   returnWinningRoutingNode(random_number) {
     //
     // if there are no routing paths, we return the sender of
@@ -291,7 +295,7 @@ class Transaction {
     let outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
     let message_len = app.binary.u32AsBytes(this.transaction.m.length);
     let path_len = app.binary.u32AsBytes(this.transaction.path.length);
-    let signature = Buffer.from(this.transaction.sig, 'hex');
+    let signature = app.crypto.toSizedArray(this.transaction.sig, 64);
     let timestamp = app.binary.u64AsBytes(this.transaction.ts);
     let transaction_type = app.binary.u8AsByte(this.transaction.type);
     let inputs = [];
@@ -350,16 +354,17 @@ class Transaction {
 
 
   serializeForSignature(app) {
-    let s = this.transaction.ts;
+    let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
+
     for (let i = 0; i < this.transaction.from.length; i++) {
-      s += this.transaction.from[i].serializeInputForSignature(app);
+      buffer = Buffer.concat([buffer, this.transaction.from[i].serializeInputForSignature(app)])
     }
     for (let i = 0; i < this.transaction.to.length; i++) {
-      s += this.transaction.to[i].serializeOutputForSignature(app);
+      buffer = Buffer.concat([buffer, this.transaction.to[i].serializeOutputForSignature(app)])
     }
-    s += this.transaction.type;
-    s += this.transaction.m;
-    return s;
+    this.transaction.m = Buffer.from(JSON.stringify(this.msg),'utf-8').toString('hex');
+    buffer = Buffer.concat([buffer, Buffer.from(app.binary.u32AsBytes(this.transaction.type)), Buffer.from(this.transaction.m,"hex")])
+    return Uint8Array.from(buffer);
   }
 
 
@@ -368,16 +373,163 @@ class Transaction {
     // set slip ordinals
     //
     for (let i = 0; i < this.transaction.to.length; i++) { this.transaction.to[i].sid = i; }
-    this.transaction.m = this.msg;
-    this.transaction.sig = app.crypto.signMessage(this.serializeForSignature(app), app.wallet.returnPrivateKey());
+    this.transaction.sig = app.crypto.signBuffer(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), app.wallet.returnPrivateKey());
   }
 
 
-  validate() {
+  validate(app) {
 
-    for (let i = 0; i < this.transaction.from.length; i++) {
-      if (this.transaction.from[i].validate() != true) {
+    //
+    // Fee Transactions are validated in the block class. There can only
+    // be one per block, and they are checked by ensuring the transaction hash
+    // matches our self-generated safety check. We do not need to validate
+    // their input slips as their input slips are records of what to do
+    // when reversing/unwinding the chain and have been spent previously.
+    //
+    if (this.transaction.type == TransactionType.Fee) {
+      return true;
+    }
+
+    //
+    // User-Sent Transactions
+    //
+    // most transactions are identifiable by the publickey that
+    // has signed their input transaction, but some transactions
+    // do not have senders as they are auto-generated as part of
+    // the block itself.
+    //
+    // ATR transactions
+    // VIP transactions
+    // FEE transactions
+    //
+    // the first set of validation criteria is applied only to
+    // user-sent transactions. validation criteria for the above
+    // classes of transactions are further down in this function.
+    // at the bottom is the validation criteria applied to ALL
+    // transaction types.
+    //
+    if  (
+         this.transaction.type != TransactionType.Fee
+      && this.transaction.type != TransactionType.ATR
+      && this.transaction.type != TransactionType.Vip
+      && this.transaction.type != TransactionType.Issuance
+    ) {
+
+      //
+      // validate sender exists
+      //
+      if (this.transaction.from.length < 1) { 
+        console.log("ERROR 582039: less than 1 input in transaction");
+        return false;
+      }
+
+      //
+      // validate signature
+      //
+console.log("add is -- " + this.transaction.from[0].add);
+console.log("sig is -- " + this.transaction.sig);
+console.log("hash us -- " + app.crypto.hash(this.serializeForSignature(app)));
+      if (!app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, this.transaction.from[0].add)) {
+        console.log("ERROR:382029: transaction signature does not validate");
+        return false;
+      }
+
+      //
+      // validate routing path sigs
+      //
+      if (!this.validateRoutingPath()) {
+        console.log("ERROR 482033: routing paths do not validate, transaction invalid");
+        return false;
+      }
+
+      //
+      // validate we're not creating tokens out of nothing
+      //
+      if (
+	this.total_out > this.total_in &&
+	this.transaction.type != TransactionType.Fee &&
+	this.transaction.type != TransactionType.Vip
+      ) {
+        console.log("ERROR 802394: transaction spends more than it has available");
 	return false;
+      }
+
+    }
+
+    //
+    // fee transactions
+    //
+    if (this.transaction.type == TransactionType.Fee) {}
+
+    //
+    // atr transactions
+    //
+    if (this.transaction.type == TransactionType.ATR) {}
+
+    //
+    // normal transactions
+    //
+    if (this.transaction.type == TransactionType.Normal) {}
+
+    //
+    // golden ticket transactions
+    //
+    if (this.transaction.type == TransactionType.GoldenTicket) {}
+
+    //
+    // Staking Withdrawal Transactions
+    //
+    if (this.transaction.type == TransactionType.StakerWithdrawal) {
+      for (let i = 0; i < this.transaction.from.length; i++) {
+        if (this.transaction.from[i].type == saito.slip.SlipType.StakerWithdrawalPending) {
+          if (!app.staking.validateSlipInPending(this.transaction.from[i])) {
+            console.log("ERROR 089231: Staking Withdrawal Pending input slip is not in Pending thus transaction invalid!");
+            return false;
+          }
+        }
+        if (this.transaction.from[i].type == saito.slip.SlipType.StakerWithdrawalStaking) {
+          if (!app.staking.validateSlipInStakers(this.transaction.from[i])) {
+            console.log("ERROR 089231: Staking Withdrawal Staking input slip is not in Stakers thus transaction invalid!");
+            return false;
+          }
+        }
+      }
+    }
+
+    //
+    // vip transactions
+    //
+    // a special class of transactions that do not pay rebroadcasting
+    // fees. these are issued to the early supporters of the Saito
+    // project. they carried us and we're going to carry them. thanks
+    // for the faith and support.
+    //
+    if (this.transaction.type == TransactionType.Vip) {
+      //
+      // validate VIP transactions appropriately signed
+      //
+    }
+
+
+    //
+    // all Transactions
+    //
+
+    //
+    // must have outputs
+    //
+    if (this.transaction.to.length == 0) {
+      console.log("ERROR 582039: transaction does not have a single output");
+      return false;
+    }
+
+    //
+    // must have valid slips
+    //
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      if (this.transaction.from[i].validate(app) != true) {
+        console.log("ERROR 858043: transaction does not have valid slips");
+        return false;
       }
     }
 
@@ -385,6 +537,24 @@ class Transaction {
 
   }
 
+
+  validateRoutingPath() {
+
+console.log("JS needs to validate routing paths still...");
+
+    //
+    // return true;
+    //
+    return true;
+
+  }
+
+  generateMetadata() {
+
+  }
+
+  generateMetadataCumulativeFees(){ return 0; }
+  generateMetadataCumulativeWork(){ return 0; }
 }
 
 Transaction.TransactionType = TransactionType;

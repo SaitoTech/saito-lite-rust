@@ -199,6 +199,33 @@ class Crypto {
     return this.toBase58(secp256k1.sign(Buffer.from(this.hash(Buffer.from(msg, 'utf-8').toString('base64')),'hex'), Buffer.from(privkey,'hex')).signature.toString('hex'));
   }
 
+  /**
+   * Signs a message buffer
+   * @param {string} buffer
+   * @param {string} privatekey
+   * @returns {string}
+   */
+  signBuffer(buffer, privatekey) {
+    return secp256k1.sign(Buffer.from(buffer,'hex'), Buffer.from(privatekey,'hex')).signature.toString('hex');
+  }
+
+  /**
+   * Confirms that a message was signed by the private
+   * key associated with a providded public key
+   * @param {string} buffer
+   * @param {string} sig
+   * @param {string} pubkey
+   * @returns {boolean} is signature valid?
+   */
+  verifyHash(buffer, sig, pubkey) {
+    try {
+      return secp256k1.verify(Buffer.from(buffer, 'hex'), Buffer.from(sig,'hex'), Buffer.from(this.fromBase58(pubkey),'hex'));
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
 
   /**
    * Returns an uncompressed public key from publickey
