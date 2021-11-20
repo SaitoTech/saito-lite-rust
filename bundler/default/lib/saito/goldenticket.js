@@ -65,6 +65,10 @@ class GoldenTicket {
     return { target_hash : target_hash , random_hash : random_hash , creator : creator };
   }
 
+  deserializeFromTransaction(transaction) {
+    return this.deserialize(transaction.transaction.m);
+  }
+
 }
 
 module.exports = GoldenTicket;

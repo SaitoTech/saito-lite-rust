@@ -141,7 +141,50 @@ class Transaction {
 
   }
 
-  generateRebroadcastTransaction(output_to_rebroadcast, fee_to_deduct) {
+  generateRebroadcastTransaction(app, utput_slip_to_rebroadcast, with_fee) {
+
+    let transaction = saito.transaction();
+
+    let output_payment = BigInt(0);
+    if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
+      output_payment = output_slip_to_rebroadcast.returnAmount() - with_fee;
+    }
+
+    transaction.transaction.type = saito.transaction.TransactionType.ATR;
+
+    let output = saito.slip();
+        output.add = output_slip_to_rebroadcast.add;
+        output.amt = output_payment;
+        output.type = saito.slip.SlipType.ATR;
+        output.uuid = output_slip_to_rebroadcast.uuid;
+
+    //
+    // if this is the FIRST time we are rebroadcasting, we copy the
+    // original transaction into the message field in serialized
+    // form. this preserves the original message and its signature
+    // in perpetuity.
+    //
+    // if this is the SECOND or subsequent rebroadcast, we do not
+    // copy the ATR tx (no need for a meta-tx) and rather just update
+    // the message field with the original transaction (which is
+    // by definition already in the previous TX message space.
+    //
+    if (output_slip_to_rebroadcast.type == saito.slip.SlipType.ATR) {
+      transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
+    } else {
+      transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
+    }
+
+    transaction.addOutput(output);
+
+    //
+    // signature is the ORIGINAL signature. this transaction
+    // will fail its signature check and then get analysed as
+    // a rebroadcast transaction because of its transaction type.
+    //
+    transaction.sign(app);
+
+    return transaction;
 
   }
 
@@ -164,6 +207,62 @@ class Transaction {
       return true;
     }
     return false;
+  }
+
+
+
+  isFrom(senderPublicKey) {
+    if (this.returnSlipsFrom(senderPublicKey).length != 0) { return true; }
+    return false;
+  }
+
+  isTo(receiverPublicKey) {
+    if (this.returnSlipsTo(receiverPublicKey).length > 0) { return true; }
+    return false;
+  }
+
+  onChainReorganization(app, lc, block_id) {
+
+    let input_slip_value = 1;
+    let output_slip_value = 0;
+
+    if (lc) {
+      input_slip_value = block_id;
+      output_slip_value = 1;
+    }
+
+
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      this.transaction.from[i].onChainReorganization(app, lc, input_slip_value);
+    }
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      this.transaction.to[i].onChainReorganization(app, lc, output_slip_value);
+    }
+
+  }
+
+  asReadableString() {
+    let html = '';
+    html += `
+      timestamp:   ${this.transaction.ts}
+      signature:   ${this.transaction.sig}
+      type:        ${this.transaction.type}
+      message:     ${this.transaction.m}
+      === from slips ==
+`;
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      html += this.transaction.from[i].asReadableString();
+      html += "\n";
+    }
+html += `      === to slips ==
+`;
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      html += this.transaction.to[i].asReadableString();
+      html += "\n";
+    }
+html += `
+`;
+    return html;
   }
 
   returnFeesTotal(app) {
@@ -219,6 +318,47 @@ class Transaction {
     this.sign(app);
     return this.transaction.sig;
   }
+
+
+  returnSlipsFrom(publickey) {
+    let x = [];
+    if (this.transaction.from != null) {
+      for (let v = 0; v < this.transaction.from.length; v++) {
+        if (this.transaction.from[v].add === publickey) { x.push(this.transaction.from[v]); }
+      }
+    }
+    return x;
+  }
+
+  returnSlipsToAndFrom(publickey) {
+    let x = {};
+    x.from = [];
+    x.to = [];
+    if (this.transaction.from != null) {
+      for (let v = 0; v < this.transaction.from.length; v++) {
+        if (this.transaction.from[v].add === publickey) { x.from.push(this.transaction.from[v]); }
+      }
+    }
+    if (this.transaction.to != null) {
+      for (let v = 0; v < this.transaction.to.length; v++) {
+        if (this.transaction.to[v].add === publickey) { x.to.push(this.transaction.to[v]); }
+      }
+    }
+    return x;
+  }
+
+  returnSlipsTo(publickey) {
+    let x = [];
+    if (this.transaction.to != null) {
+      for (let v = 0; v < this.transaction.to.length; v++) {
+        if (this.transaction.to[v].add === publickey) { x.push(this.transaction.to[v]); }
+      }
+    }
+    return x;
+  }
+
+
+
 
   returnWinningRoutingNode(random_number) {
     //

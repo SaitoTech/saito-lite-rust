@@ -61,15 +61,6 @@ class Blockchain {
 
   async addBlockToBlockchain(block, force=0) {
 
-    let w = "400000000"
-    let x = BigInt(w);
-    let y = this.app.binary.u64AsBytes(x.toString());
-    let z = BigInt(this.app.binary.u64FromBytes(y)); 
-    console.log("Z: " + z.toString());
-    console.log("W: " + w);
-    if (w === z.toString()) { console.log("They are the same"); }
-
-
     //
     // 
     //
@@ -80,8 +71,6 @@ class Blockchain {
     // first things first, ensure hashes OK
     //
     block.generateHashes();
-
-console.log("adding: " + block.returnHash());
 
     //
     // start by extracting some variables that we will use
@@ -290,9 +279,24 @@ console.log("adding: " + block.returnHash());
     //
 console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash()));
 
+    //
+    // clean up mempool
+    //
+    this.app.mempool.removeBlockAndTransactions(block);
+
+    //
+    //
+    //
+console.log(block.asReadableString());
+
   }
 
   async addBlockFailure(block) {
+
+    //
+    // clean up mempool
+    //
+    this.app.mempool.removeBlockAndTransactions(block);
 
   }
 
@@ -805,7 +809,7 @@ console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash(
     let block = await this.loadBlockAsync(old_chain[current_unwind_index]);;
 
     // utxoset update
-    //block.onChainReorganization(false);
+    block.onChainReorganization(false);
     // blockring update
     this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
     // staking tables
