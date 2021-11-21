@@ -275,7 +275,7 @@ console.log("---------------------");
       let slips_to_merge = 7;
       if (force_merge > 7) { slips_to_merge = force_merge; }
       let slips_merged = 0;
-      let output_amount = Big(0);
+      let output_amount = BigInt(0);
       let lowest_block = this.app.blockchain.last_bid - this.app.blockchain.genesis_period + 2;
 
       //
@@ -307,7 +307,7 @@ console.log("---------------------");
               this.wallet.spends[i] = 1;
 
               slips_merged++;
-              output_amount = output_amount.plus(Big(slip.amt));
+              output_amount = output_amount.plus(BigInt(slip.amt));
 
               tx.transaction.from.push(slip);
 
@@ -689,10 +689,10 @@ console.log("---------------------");
 
   returnBalance(ticker="SAITO") {
     if (ticker === "SAITO") {
-      let b = Big(0);
+      let b = BigInt(0);
        this.wallet.inputs.forEach((input, index )=> {
          if (this.isSlipValid(input, index)) {
-           b = b.plus(input.amt);
+           b += input.returnAmount();
          }
        });
        return b;
@@ -738,6 +738,12 @@ console.log("---------------------");
    */
   saveWallet() {
     this.app.options.wallet = this.wallet;
+    for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
+      this.app.options.wallets.inputs[i].amt = this.app.options.wallets.inputs[i].amt.toString();
+    }
+    for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
+      this.app.options.wallets.outputs[i].amt = this.app.options.wallets.outputs[i].amt.toString();
+    }
     this.app.storage.saveOptions();
   }
 
@@ -784,10 +790,10 @@ console.log("---------------------");
   }
 
   calculateBalance() {
-    let bal = Big(0);
+    let bal = BigInt(0);
      this.wallet.inputs.forEach((input, index )=> {
        if (this.isSlipValid(input, index)) {
-         bal = bal.plus(input.amt);
+         bal += input.returnAmount();
        }
      });
      return bal;

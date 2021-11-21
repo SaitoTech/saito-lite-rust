@@ -60,7 +60,7 @@ class StorageCore extends Storage {
 
   generateBlockFilename(block) {
     let filename = this.data_dir + "/" + this.dest + "/";
-    filename += Buffer.from(this.app.networkApi.u64AsBytes(new Big(block.block.timestamp))).toString('hex');
+    filename += Buffer.from(this.app.binary.u64AsBytes(new Big(block.block.timestamp))).toString('hex');
     filename += "-";
     filename += Buffer.from(block.hash).toString("hex");
     filename += ".sai";
