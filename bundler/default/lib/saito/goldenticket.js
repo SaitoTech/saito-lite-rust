@@ -50,7 +50,7 @@ class GoldenTicket {
   serialize(target_hash, random_hash) {
     let th = Buffer.from(target_hash, 'hex');
     let rh = Buffer.from(random_hash, 'hex');
-    let cr = Buffer.from(this.app.wallet.returnPublicKey(), 'hex');
+    let cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
     return new Uint8Array([
        ...th,
        ...rh,
