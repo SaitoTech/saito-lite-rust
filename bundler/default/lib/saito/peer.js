@@ -46,7 +46,7 @@ class Peer {
   } 
 
   async connect(attempt=0) {
-    this.socket = await this.app.networkApi.wsConnectAndInitialize();
+//    this.socket = await this.app.networkApi.wsConnectAndInitialize();
   }
 
 

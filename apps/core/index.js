@@ -5,35 +5,54 @@ class Saito {
 
   constructor(config={}) {
 
-    this.BROWSER           = 1;
-    this.SPVMODE           = 0;
-    this.options           = config;
-    this.config            = {};
+console.log("core constructor!");
 
-    this.newSaito();
+//    this.BROWSER           = 1;
+//    this.SPVMODE           = 0;
+//    this.options           = config;
+//    this.config            = {};
 
-    this.modules    = new saito_lib.modules(this, config.mod_paths);
+//    this.newSaito();
+
+//    this.modules    = new saito_lib.modules(this, config.mod_paths);
 
     return this;
   }
 
   newSaito() {
+console.log("A");
     this.binary       = new saito_lib.binary(this);
+console.log("A1");
     this.crypto       = new saito_lib.crypto(this);
+console.log("A2");
     this.connection   = new saito_lib.connection();
+console.log("A3");
     this.browser      = new saito_lib.browser(this);
+console.log("A4");
     this.storage      = new saito_lib.storage(this);
+console.log("A5");
     this.goldenticket = new saito_lib.goldenticket(this);
+console.log("A6");
     this.utxoset      = new saito_lib.utxoset(this);
+console.log("A7");
     this.mempool      = new saito_lib.mempool(this);
+console.log("A8");
     this.wallet       = new saito_lib.wallet(this);
+console.log("A9");
     this.miner        = new saito_lib.miner(this);
+console.log("A10");
     this.keys         = new saito_lib.keychain(this);
+console.log("A11");
     this.network      = new saito_lib.network(this);
+console.log("A12");
     this.networkApi   = new saito_lib.networkApi(this);
+console.log("A13");
     this.burnfee      = new saito_lib.burnfee(this);
+console.log("A14");
     this.blockchain   = new saito_lib.blockchain(this);
+console.log("A15");
     this.blockring    = new saito_lib.blockring(this, this.blockchain.returnGenesisPeriod());
+console.log("A16");
 
   }
 
@@ -41,6 +60,8 @@ class Saito {
     try {
 
       await this.storage.initialize();
+
+console.log("B1");
 
       //
       // import hashing library here because of complications with both
@@ -61,6 +82,7 @@ class Saito {
         let blake3 = require("blake3-js");
         this.hash = (data) => { return blake3.newRegular().update(data).finalize();  }
       }
+console.log("B2");
 
       let _self = this;
 
@@ -68,6 +90,7 @@ class Saito {
       this.mempool.initialize();
       this.miner.initialize();
       this.keys.initialize();
+console.log("B3");
 
       this.modules.mods = this.modules.mods_list.map(mod_path => {
         const Module = require(`../../mods/${mod_path}`);
@@ -75,6 +98,7 @@ class Saito {
         x.dirname = path.dirname(mod_path);
         return x;
       });
+console.log("B4");
 
       //
       // browser sets active module

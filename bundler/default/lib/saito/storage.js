@@ -1,7 +1,5 @@
 'use strict';
 const saito = require('./saito');
-const fs = require("fs-extra");
-const Big = require('big.js');
 
 class Storage {
   constructor(app, data, dest="blocks") {
@@ -66,12 +64,11 @@ class Storage {
   }
 
 
-  deleteBlockFromDisk(filename) {
-    return fs.unlinkSync(filename);
-  }
   /**
    * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
    **/
+  deleteBlockFromDisk(filename) {}
+
   loadBlockById(bid) {}
 
   loadBlockByHash(bsh) {}

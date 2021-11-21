@@ -1,4 +1,3 @@
-const Big = require('big.js');
 const saito = require('./saito');
 
 const BLOCK_HEADER_SIZE = 213;
@@ -1077,7 +1076,7 @@ for (let i = 0; i < this.transactions.length; i++) {
     let treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
     let staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
     let burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
-    let difficulty = this.app.binary.u64AsBytes(new Big(this.block.difficulty));
+    let difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
     let block_header_data = new Uint8Array([
       ...transactions_length,
@@ -1124,9 +1123,9 @@ for (let i = 0; i < this.transactions.length; i++) {
       this.app.crypto.toSizedArray(this.block.creator, 33),
       this.app.crypto.toSizedArray(this.block.merkle, 32),
       this.app.binary.u64AsBytes(this.block.treasury.toString()),
-      this.app.binary.u64AsBytes(new Big(this.block.staking_treasury.toString())),
-      this.app.binary.u64AsBytes(new Big(this.block.burnfee.toString())),
-      this.app.binary.u64AsBytes(new Big(this.block.difficulty))
+      this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
+      this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+      this.app.binary.u64AsBytes(this.block.difficulty)
     ]));
   }
 
@@ -1177,7 +1176,7 @@ for (let i = 0; i < this.transactions.length; i++) {
       //
       // treasury
       //
-      if (Big(this.returnTreasury()).toString() !== Big(previous_block.returnTreasury()).plus(Big(cv.nolan_falling_off_chain)).toString()) {
+      if (this.returnTreasury() !== (previous_block.returnTreasury() + cv.nolan_falling_off_chain)) {
         console.log("ERROR 123243: treasury is not calculated properly");
         return false;
       }
@@ -1186,14 +1185,14 @@ for (let i = 0; i < this.transactions.length; i++) {
       //
       // staking treasury
       //
-      let adjusted_staking_treasury = Big(previous_block.returnStakingTreasury());
-      let cv_st = Big(cv.staking_treasury);
+      let adjusted_staking_treasury = previous_block.returnStakingTreasury();
+      let cv_st = cv.staking_treasury;
       if (cv_st.lt(0)) {
         let x = cv_st.times(-1);
         if (adjusted_staking_treasury.lt(x)) {
           adjusted_staking_treasury = adjusted_staking_treasury.minus(x);
         } else {
-          adjusted_staking_treasury = Big(0);
+          adjusted_staking_treasury = BigInt(0);
         }
       } else {
         let x = cv_st;

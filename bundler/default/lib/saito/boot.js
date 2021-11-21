@@ -5,6 +5,7 @@
 // is not the default software, and swaps it in instead of 
 // the default if it exists and can be found.
 //
+console.log("BOOT1");
 if (typeof(Storage) !== "undefined") {
 
   let mySource = document.currentScript.src;
@@ -32,4 +33,5 @@ if (typeof(Storage) !== "undefined") {
   }
 
 }
+console.log("BOOT2");
 

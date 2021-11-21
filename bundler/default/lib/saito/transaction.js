@@ -1,4 +1,3 @@
-const Big      = require('big.js');
 const saito    = require('./saito');
 
 const TRANSACTION_SIZE = 89;
