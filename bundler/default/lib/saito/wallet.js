@@ -123,6 +123,19 @@ class Wallet {
   }
 
 
+
+  addTransactionToPending(tx) {
+    let txjson = JSON.stringify(tx.transaction);
+    if (txjson.length > 100000) { return; }
+    if (! this.wallet.pending.includes(txjson)) {
+      this.wallet.pending.push(txjson);
+      this.saveWallet();
+    } 
+  }
+
+
+
+
   containsInput(s) {
     let hmi = s.returnKey();
     if (this.inputs_hmap[hmi] == 1) { return true; }
