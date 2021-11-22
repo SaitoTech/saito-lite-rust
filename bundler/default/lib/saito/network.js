@@ -320,6 +320,7 @@ class Network {
   }
 
 
+
   //
   // propagate transaction
   //
@@ -369,6 +370,45 @@ console.log("DOWN HERE");
     this.sendTransactionToPeers(tx, outbound_message, fees, mycallback);
 
   }
+
+
+  sendPeerRequest(message, data = "", peer) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      if (this.peers[x] == peer) {
+        this.peers[x].sendRequest(message, data);
+      }
+    }
+  }
+  sendRequest(message, data = "") {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequest(message, data);
+    }
+  }
+
+  sendRequestWithCallback(message, data = "", callback) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequestWithCallback(message, data, callback);
+    }
+   sendPeerRequest(message, data = "", peer) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      if (this.peers[x] == peer) {
+        this.peers[x].sendRequest(message, data);
+      }
+    }
+  }
+  sendRequest(message, data = "") {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequest(message, data);
+    }
+  }
+
+  sendRequestWithCallback(message, data = "", callback) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequestWithCallback(message, data, callback);
+    }
+  }
+ }
+
 
 
   sendTransactionToPeers(tx, outbound_message, fees = 1, callback = null) {
