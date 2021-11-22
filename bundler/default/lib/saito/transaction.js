@@ -1,5 +1,5 @@
 const saito    = require('./saito');
-
+const JSON = require('json-bigint');
 const TRANSACTION_SIZE = 89;
 const SLIP_SIZE = 75;
 const HOP_SIZE = 130;
@@ -66,6 +66,29 @@ class Transaction {
     this.transaction.fto.push(slip);
   }
 
+  clone() {
+
+    let tx = new saito.transaction();
+    tx.transaction.from = [];
+    tx.transaction.to = [];
+    for (let i = 0; i < this.transaction.from.length; i++) {
+      tx.transaction.from.push(this.transaction.from[i].clone());
+    }
+    for (let i = 0; i < this.transaction.to.length; i++) {
+      tx.transaction.to.push(this.transaction.to[i].clone());
+    }
+    tx.transaction.ts               = this.transaction.ts;
+    tx.transaction.sig              = this.transaction.path;
+    tx.transaction.path             = [];
+    for (let i = 0; i < this.transaction.path.length; i++) {
+      tx.transaction.path.push(this.transaction.path[i].clone());
+    }
+    tx.transaction.r                = this.transaction.r;
+    tx.transaction.type             = this.transaction.type;
+    tx.transaction.m                = this.transaction.m;
+
+    return tx;
+  }
 
   decryptMessage(app) {
     if (this.transaction.from[0].add != app.wallet.returnPublicKey()) {

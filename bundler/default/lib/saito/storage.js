@@ -1,5 +1,6 @@
 'use strict';
 const saito = require('./saito');
+const JSON = require('json-bigint');
 
 class Storage {
   constructor(app, data, dest="blocks") {

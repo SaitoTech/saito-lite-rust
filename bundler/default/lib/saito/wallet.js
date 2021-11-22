@@ -125,9 +125,9 @@ class Wallet {
 
 
   addTransactionToPending(tx) {
-    let txjson = JSON.stringify(tx.transaction);
-    if (txjson.length > 100000) { return; }
-    if (! this.wallet.pending.includes(txjson)) {
+    let txjson = tx.serialize(this.app);
+    if (txjson.toString('hex').length > 100000) { return; }
+    if (! this.wallet.pending.includes(txjson.toString('hex'))) {
       this.wallet.pending.push(txjson);
       this.saveWallet();
     } 
@@ -192,8 +192,6 @@ class Wallet {
       return null;
     }
 
-
-
     //
     // zero-fee transactions have fake inputs
     //
@@ -213,7 +211,6 @@ class Wallet {
       //
       tx.transaction.from = [];
       tx.transaction.from.push(new saito.slip(this.returnPublicKey(), BigInt(0)));
-      //return null;
 
     }
     if (tx.transaction.to == null) {
@@ -226,7 +223,6 @@ class Wallet {
       //return null;
 
     }
-
 
     // add change input
     let total_inputs = BigInt(0);
@@ -271,8 +267,6 @@ class Wallet {
       }
     }
       
-
-
 /**** DISABLED RUST PORT
 
     //

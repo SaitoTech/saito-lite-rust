@@ -1,6 +1,8 @@
 saito = require('./saito');
+const JSON = require('json-bigint');
 const Big = require('big.js');
 const UtxoSet = require('./utxoset');
+
 
 class Blockchain {
   constructor(app) {
@@ -287,7 +289,9 @@ console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash(
     //
     //
     //
-console.log(block.asReadableString());
+console.log(JSON.stringify(block.block));
+
+//console.log(block.asReadableString());
 
   }
 
