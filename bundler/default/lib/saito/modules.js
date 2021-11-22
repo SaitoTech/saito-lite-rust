@@ -69,6 +69,8 @@ class Mods {
 
   async initialize() {
 
+console.log("initializing modules!");
+
     //
     // remove any disabled / inactive modules
     //
@@ -188,9 +190,11 @@ class Mods {
     // .. and setup active module
     //
     if (this.app.BROWSER) {
+console.log("SETTING UP THE ACTIVE MODULE!");
       await this.app.modules.initializeHTML();
       await this.app.modules.attachEvents();
       await this.app.modules.render();
+console.log("DONE SETTING UP MODULE");
     }
 
   }

@@ -1,4 +1,3 @@
-const Big = require('big.js');
 const saito = require('./saito');
 
 const BLOCK_HEADER_SIZE = 213;
@@ -40,11 +39,14 @@ class Block {
     this.filename		       = ""; // set when saved
 
     this.total_fees 		       = BigInt(0);
+    this.total_work 		       = BigInt(0);
     this.routing_work_for_creator      = BigInt(0);
 
     this.is_valid		       = 1;
     this.has_golden_ticket	       = false;
     this.has_fee_transaction	       = false;
+    this.ft_idx			       = 0;
+    this.gt_idx			       = 0;
     this.has_issuance_transaction       = false;
     this.has_hashmap_of_slips_spent_this_block = false;
     this.slips_spent_this_block        = {};
@@ -237,11 +239,13 @@ class Block {
         cv.ft_num += 1;
         cv.ft_idx = i;
         this.has_fee_transaction = true;
+	this.ft_idx = i;
      }
       if (this.transactions[i].isGoldenTicket()) {
         cv.gt_num += 1;
         cv.gt_idx = i;
         this.has_golden_ticket = true;
+	this.gt_idx = i;
       }
       if (this.transactions[i].isIssuanceTransaction()) {
         cv.it_num += 1;
@@ -324,7 +328,7 @@ class Block {
                 // TODO - floating fee based on previous block average
                 //
                 let rebroadcast_transaction = new saito.transaction();
-	        rebroadcast_transaction.generateRebroadcastTransaction(ouput, REBROADCAST_FEE);
+	        rebroadcast_transaction.generateRebroadcastTransaction(this.app, output, REBROADCAST_FEE);
 
                 //
                 // update cryptographic hash of all ATRs
@@ -898,12 +902,52 @@ class Block {
     return this.has_issuance_transaction;
   }
 
+  onChainReorganization(lc) {
+    let block_id = this.returnId();
+    for (let i = 0; i < this.transactions.length; i++) {
+      this.transactions[i].onChainReorganization(this.app, lc, block_id);
+    }
+  }
+
+  asReadableString() {
+
+    let html = '';
+html += `
+ Block ${this.block.id} - ${this.returnHash()}
+   timestamp:   ${this.block.timestamp}
+   prevblock:   ${this.block.previous_block_hash}
+   merkle:      ${this.block.merkle}
+   burnfee:     ${this.block.burnfee.toString()}
+   difficulty:  ${this.block.difficulty}
+   streasury:   ${this.block.staking_treasury.toString()}
+   *** transactions ***
+`;
+for (let i = 0; i < this.transactions.length; i++) {
+  html += this.transactions[i].asReadableString();
+  html += "\n";
+}
+    return html;
+
+  }
+
   returnBurnFee() {
     return this.block.burnfee;
   }
 
   returnCreator() {
     return this.block.creator;
+  }
+
+  returnFeeTransaction() {
+    if (!this.has_fee_transaction) { return null; }
+    if (this.transactions.length == 0) { return null; }
+    return this.transactions[this.ft_idx];
+  }
+
+  returnGoldenTicketTransaction() {
+    if (!this.has_golden_ticket) { return null; }
+    if (this.transactions.length == 0) { return null; }
+    return this.transactions[this.gt_idx];
   }
 
   returnDifficulty() {
@@ -1032,7 +1076,7 @@ class Block {
     let treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
     let staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
     let burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
-    let difficulty = this.app.binary.u64AsBytes(new Big(this.block.difficulty));
+    let difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
     let block_header_data = new Uint8Array([
       ...transactions_length,
@@ -1079,9 +1123,9 @@ class Block {
       this.app.crypto.toSizedArray(this.block.creator, 33),
       this.app.crypto.toSizedArray(this.block.merkle, 32),
       this.app.binary.u64AsBytes(this.block.treasury.toString()),
-      this.app.binary.u64AsBytes(new Big(this.block.staking_treasury.toString())),
-      this.app.binary.u64AsBytes(new Big(this.block.burnfee.toString())),
-      this.app.binary.u64AsBytes(new Big(this.block.difficulty))
+      this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
+      this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+      this.app.binary.u64AsBytes(this.block.difficulty)
     ]));
   }
 
@@ -1132,7 +1176,7 @@ class Block {
       //
       // treasury
       //
-      if (Big(this.returnTreasury()).toString() !== Big(previous_block.returnTreasury()).plus(Big(cv.nolan_falling_off_chain)).toString()) {
+      if (this.returnTreasury() !== (previous_block.returnTreasury() + cv.nolan_falling_off_chain)) {
         console.log("ERROR 123243: treasury is not calculated properly");
         return false;
       }
@@ -1141,14 +1185,14 @@ class Block {
       //
       // staking treasury
       //
-      let adjusted_staking_treasury = Big(previous_block.returnStakingTreasury());
-      let cv_st = Big(cv.staking_treasury);
+      let adjusted_staking_treasury = previous_block.returnStakingTreasury();
+      let cv_st = cv.staking_treasury;
       if (cv_st.lt(0)) {
         let x = cv_st.times(-1);
         if (adjusted_staking_treasury.lt(x)) {
           adjusted_staking_treasury = adjusted_staking_treasury.minus(x);
         } else {
-          adjusted_staking_treasury = Big(0);
+          adjusted_staking_treasury = BigInt(0);
         }
       } else {
         let x = cv_st;

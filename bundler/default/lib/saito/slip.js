@@ -19,6 +19,7 @@ const SlipType = {
 
 class Slip {
 
+  // amount can be a string in NOLAN or a BigInt
   constructor(publickey = "", amount = "0", type = SlipType.Normal, uuid = "", slip_ordinal = 0, payout = 0, lc = 1) {
 
     //
@@ -42,12 +43,47 @@ class Slip {
 
   returnAmount() { return this.amt; }
 
+
+  //
+  // slip comparison is used when inserting slips (staking slips) into the
+  // staking tables, as the order of the stakers table needs to be identical
+  // regardless of the order in which components are added, lest we get
+  // disagreement.
+  //
+  // 1 = self is bigger
+  // 2 = other is bigger
+  // 3 = same
+  //
+  compare(other_slip) {
+
+    let x = BigInt('0x'+this.returnPublicKey());
+    let y = BigInt('0x'+other_slip.returnPublicKey());
+
+    if (x > y) { return 1; }
+    if (y > x) { return 2; }
+
+    //
+    // use the part of the utxoset key that does not include the
+    // publickey but includes the amount and slip ordinal, so that
+    // testing is happy that manually created slips are somewhat
+    // unique for staker-table insertion..
+    //
+    let a = BigInt(this.returnKey().substring(42, 74));
+    let b = BigInt(other_slip.returnKey().substring(42, 74));
+
+    if (a > b) { return 1; }
+    if (b > a) { return 2; }
+
+    return 3;
+
+  }
+
   clone() {
     return new saito.slip(this.add, this.amt.toString(), this.type, this.uuid, this.sid, this.payout, this.lc);
   }
 
   deserialize(app, buffer) {
-    this.add = Buffer.from(buffer.slice(0, 33)).toString("hex");
+    this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
     this.amt = app.binary.u64FromBytes(buffer.slice(65, 73)).toString();
     this.sid = app.binary.u8FromByte(buffer[73]);
@@ -64,16 +100,26 @@ class Slip {
     return 1;
   }
 
+  onChainReorganization(app, lc, slip_value) {
+    if (this.isNonZeroAmount()) {
+      app.utxoset.update(self.returnKey(), slip_value);
+    }
+  }
+
+  asReadableString() {
+    return `         ${this.sid} | ${this.add} | ${this.amt.toString()}`;
+  }
+
+  returnAmount() {
+    return this.amt;
+  }
+
   returnKey() {
     return this.add + this.uuid + this.amt.toString() + this.sid;
   }
 
   returnPublicKey() {
     return this.add;
-  }
-
-  returnAmount() {
-    return this.amt;
   }
 
   returnPayout() {
@@ -88,9 +134,11 @@ class Slip {
   serialize(app, uuid="") {
 
     if (uuid === "") { uuid = this.uuid; }
+    if (uuid === "") { uuid = "0"; }
 
-    let publickey = app.crypto.toSizedArray(this.add, 33);
-    let uuidx = app.crypto.toSizedArray(Buffer.from(uuid,"hex"), 32);
+    let publickey = app.crypto.toSizedArray(app.crypto.fromBase58(this.add).toString('hex'), 33);
+    let uuidx = app.crypto.toSizedArray(uuid, 32);
+     
     let amount = app.binary.u64AsBytes(this.amt.toString());
     let slip_ordinal = app.binary.u8AsByte(this.sid);
     let slip_type = app.binary.u32AsBytes(this.type);
@@ -109,7 +157,12 @@ class Slip {
   }
 
   serializeOutputForSignature(app) {
-    return this.serialize(app, (new Array(32).fill(0).toString()));
+    return this.serialize(app, "0");
+//(new Array(32).fill(0).toString()));
+  }
+
+  setPayout(payout) {
+    this.payout = payout;
   }
 
   validate(app) {

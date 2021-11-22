@@ -61,7 +61,6 @@ class Saito {
         let blake3 = require("blake3-js");
         this.hash = (data) => { return blake3.newRegular().update(data).finalize();  }
       }
-
       let _self = this;
 
       this.wallet.initialize();

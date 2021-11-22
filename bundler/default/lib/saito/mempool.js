@@ -55,6 +55,7 @@ class Mempool {
     //
     // hashmap
     //
+    this.blocks_hmap              = [];  // index is block.block.sig
     this.transactions_hmap        = [];  // index is tx.transaction.sig
     this.transactions_inputs_hmap = [];  // index is slip returnKey()
 
@@ -65,7 +66,16 @@ class Mempool {
     this.downloads_hmap           = {};
     this.downloading_active       = 0;
 
+    //
+    // size limits
+    //
+    this.transaction_size_limit   = 0;
+    this.transaction_size_current = 0;
+    this.block_size_limit	  = 0;
+    this.block_size_current	  = 0;
+
   }
+
 
 
   addBlock(block) {
@@ -239,7 +249,7 @@ class Mempool {
         }
       }
       if (this.app.options.peers) {
-        if (this.app.options.peers.length > 0 && this.app.blockchain.index.blocks.length == 0) {
+        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.length == 0) {
           console.log("ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN...");
           return false;
         }
@@ -271,6 +281,48 @@ class Mempool {
 
   }
 
+
+
+  containsBlock(block) {
+
+    if (block == null)                { return 0; }
+    if (block.block == null)          { return 0; }
+    if (block.is_valid == 0)          { return 0; }
+
+    if (this.blocks_hmap[block.block.sig] == 1) { return true; }
+    return false;
+
+  }
+
+  containsTransaction(tx) {
+
+    if (tx == null)                  { return 0; }
+    if (tx.transaction == null)      { return 0; }
+    if (tx.transaction.from == null) { return 0; }
+
+    if (this.transactions_hmap[tx.transaction.sig] == 1) {
+      return true;
+    }
+
+    for (let i = 0; i < tx.transaction.from.length; i++) {
+      if (tx.transaction.from[i].isNonZeroAmount()) {
+        let slip_index = tx.transaction.from[i].returnKey();
+        if (this.transactions_inputs_hmap[slip_index] == 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  containsGoldenTicket() {
+    if (this.mempool.goldentickets.length > 0) { return true; }
+    return false;
+  }
+
+
+
   async initialize() {
 
     if (this.app.BROWSER == 1) { return; }
@@ -289,25 +341,83 @@ class Mempool {
       this.bundling_timer           = null;
     }
 
-/***** TESTING
-    let hash = await this.app.crypto.hash("Testing");
+  }
 
-console.log("hash: " + hash);
+  removeBlock(blk=null) {
+    if (blk == null) { return; }
+    this.clearing_active = true;
+    for (let b = this.mempool.blocks.length-1; b >= 0; b--) {
+      if (this.mempool.blocks[b].returnHash() == blk.returnHash()) {
+        this.block_size_current -= this.blocks[b].size;
+        this.blocks.splice(b, 1);
+      }
+    }
+    this.clearing_active = false;
+  }
 
-    let bf1 = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(10, 2 * this.app.burnfee.heartbeat, 0);
-    let bf2 = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(10_0000_0000, 0, 0);
-    let bf3 = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(100_000_000, this.app.burnfee.heartbeat, 0);
-    let bf4 = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(100_000_000, this.app.burnfee.heartbeat / 10, 0);
-    let bf4out = Math.round(100_000_000.0 * Math.sqrt(10.0));
 
-console.log("bf1: " + bf1 + " -- " + 0);
-console.log("bf2: " + bf2 + " -- " + 10_000_000_000_000_000_000);
-console.log("bf3: " + bf3 + " -- " + 100_000_000);
-console.log("bf4: " + bf4 + " -- " + bf4out);
+  removeBlockAndTransactions(blk=null) {
 
-*****/
+    if (blk == null) { return; }
+
+    this.clearing_active = true;
+
+    //
+    // lets make some hmaps
+    //
+    let mempool_transactions = [];
+    let replacement          = [];
+
+    //
+    // create hashmap for mempool transactions
+    //
+    for (let b = 0; b < this.mempool.transactions.length; b++) {
+      mempool_transactions[this.mempool.transactions[b].transaction.sig] = b;
+    }
+
+    //
+    // set hashmap value to -1 for all txs in block
+    //
+    for (let b = 0; b < blk.transactions.length; b++) {
+      let location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
+      if (location_in_mempool != undefined) {
+        mempool_transactions[blk.transactions[b].transaction.sig] = -1;
+        this.transaction_size_current -= this.transactions[location_in_mempool].size;
+      }
+    }
+
+    //
+    // delete any old golden tickets
+    //
+    this.mempool.goldentickets = [];
+
+
+    //
+    // fill our replacement array with all non -1 values
+    //
+    for (let t = 0; t < this.mempool.transactions.length; t++) {
+      if (mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1) {
+        replacement.push(this.mempool.transactions[t]);
+      }
+    }
+
+    this.mempool.transactions = replacement;
+
+    //
+    // and delete utxo references too
+    //
+    for (let b = 0; b < blk.transactions.length; b++) {
+      delete this.transactions_hmap[blk.transactions[b].transaction.sig];
+      for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
+        delete this.transactions_inputs_hmap[blk.transactions[b].transaction.from[i].returnKey()];
+      }
+    }
+
+    this.removeBlock(blk);
+    this.clearing_active = false;
 
   }
+
 
 
 
