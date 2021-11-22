@@ -136,8 +136,8 @@ class Slip {
     if (uuid === "") { uuid = this.uuid; }
     if (uuid === "") { uuid = "0"; }
 
-    let publickey = app.crypto.toSizedArray(app.crypto.fromBase58(this.add).toString('hex'), 33);
-    let uuidx = app.crypto.toSizedArray(uuid, 32);
+    let publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add).toString('hex'), 33);
+    let uuidx = app.binary.hexToSizedArray(uuid, 32);
      
     let amount = app.binary.u64AsBytes(this.amt.toString());
     let slip_ordinal = app.binary.u8AsByte(this.sid);
