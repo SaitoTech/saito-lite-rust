@@ -326,8 +326,6 @@ class Network {
   //
   propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
 
-console.log("ABOUT TO PROPAGATE TRANSACTION");
-
     if (tx == null) { return; }
     if (!tx.is_valid) { return; }
     if (tx.transaction.type == 1) { outbound_message = "golden ticket"; }
@@ -362,16 +360,44 @@ console.log("ABOUT TO PROPAGATE TRANSACTION");
     }
 
     //
-    // whether we propagate depends on whether the fees paid are adequate
+    // now send the transaction out with the appropriate routing hop
     //
     let fees = tx.returnFeesTotal(this.app);
     for (let i = 0; i < tx.transaction.path.length; i++) { fees = fees / 2; }
-console.log("DOWN HERE");
-    this.sendTransactionToPeers(tx, outbound_message, fees, mycallback);
-
+    this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
+      if (peer.peer.receivetxs == 0) {
+        console.log("peer does not receive txs... not sending");
+        return;
+      }
+      if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
+        let tmptx = peer.addPathToTransaction(tx);
+        if (callback) {
+          peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), callback);
+        } else {
+          peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
+        }
+      }
+    });
   }
 
 
+  sendPeerRequest(message, data = "", peer) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      if (this.peers[x] == peer) {
+        this.peers[x].sendRequest(message, data);
+      }
+    }
+  }
+  sendRequest(message, data = "") {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequest(message, data);
+    }
+  }
+  sendRequestWithCallback(message, data = "", callback) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequestWithCallback(message, data, callback);
+    }
+  }
   sendPeerRequest(message, data = "", peer) {
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] == peer) {
@@ -389,50 +415,7 @@ console.log("DOWN HERE");
     for (let x = this.peers.length - 1; x >= 0; x--) {
       this.peers[x].sendRequestWithCallback(message, data, callback);
     }
-   sendPeerRequest(message, data = "", peer) {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      if (this.peers[x] == peer) {
-        this.peers[x].sendRequest(message, data);
-      }
-    }
   }
-  sendRequest(message, data = "") {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequest(message, data);
-    }
-  }
-
-  sendRequestWithCallback(message, data = "", callback) {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequestWithCallback(message, data, callback);
-    }
-  }
- }
-
-
-
-  sendTransactionToPeers(tx, outbound_message, fees = 1, callback = null) {
-
-    this.peers.forEach((peer) => {
-      //&& fees >= peer.peer.minfee
-
-      if (peer.peer.receivetxs == 0) {
-console.log("peer does not receive txs... not sending");
-        return;
-      }
-      if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
-        let tmptx = peer.addPathToTransaction(tx);
-        if (callback) {
-          peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), callback);
-        } else {
-          peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
-        }
-      }
-    });
-  }
-
-
-
 
 
   //
