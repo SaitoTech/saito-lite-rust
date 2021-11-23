@@ -52,7 +52,7 @@ let GameObserver = require('../saito/ui/game-observer/game-observer');
 const GameBoardSizer = require('../saito/ui/game-board-sizer/game-board-sizer');
 const GameHammerMobile = require('../saito/ui/game-hammer-mobile/game-hammer-mobile');
 let GameCryptoTransferManager = require('../saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
-
+const JSON = require('json-bigint');
 
 
 class GameTemplate extends ModTemplate {
