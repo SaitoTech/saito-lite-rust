@@ -326,6 +326,8 @@ class Network {
   //
   propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
 
+console.log("prop trans 1");
+
     if (tx == null) { return; }
     if (!tx.is_valid) { return; }
     if (tx.transaction.type == 1) { outbound_message = "golden ticket"; }
@@ -337,6 +339,8 @@ class Network {
       this.app.wallet.addTransactionToPending(tx);
       this.app.connection.emit("update_balance", this.app.wallet);
     }
+
+console.log("prop trans 2");
 
     if (this.app.BROWSER == 0 && this.app.SPVMODE == 0) {
 
@@ -364,6 +368,7 @@ class Network {
     //
     let fees = tx.returnFeesTotal(this.app);
     for (let i = 0; i < tx.transaction.path.length; i++) { fees = fees / 2; }
+console.log("prop trans 3");
     this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
       if (peer.peer.receivetxs == 0) {
         console.log("peer does not receive txs... not sending");
@@ -371,13 +376,16 @@ class Network {
       }
       if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
         let tmptx = peer.addPathToTransaction(tx);
-        if (callback) {
-          peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), callback);
+        if (mycallback) {
+console.log("prop trans 4");
+          peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), mycallback);
         } else {
+console.log("prop trans 5");
           peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
         }
       }
     });
+console.log("prop trans 3");
   }
 
 
