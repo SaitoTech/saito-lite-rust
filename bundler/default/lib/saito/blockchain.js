@@ -64,7 +64,7 @@ class Blockchain {
   async addBlockToBlockchain(block, force=0) {
 
     //
-    // 
+    //
     //
     this.indexing_active = true;
 
@@ -212,11 +212,11 @@ class Blockchain {
     //
     // now update blockring so it is not empty
     //
-    // we do this down here instead of automatically on 
+    // we do this down here instead of automatically on
     // adding a block, as we want to have the above check
     // for handling the edge-case of blocks received in the
-    // wrong order. the longest_chain check also requires a 
-    // first-block-received check that is conducted against 
+    // wrong order. the longest_chain check also requires a
+    // first-block-received check that is conducted against
     // the blockring.
     //
     this.app.blockring.is_empty = false;
@@ -314,7 +314,7 @@ console.log(JSON.stringify(block.block));
     for (let hash in block_hashes) {
       await this.deleteBlock(delete_block_id, hash);
     }
-  }   
+  }
 
 
   //
@@ -326,16 +326,16 @@ console.log(JSON.stringify(block.block));
     //
     let pblock = await this.loadBlockSync(delete_block_hash);
 
-    // 
+    //
     // remove slips from wallet
     //
-            
-    // 
+
+    //
     // removes utxoset data
     //
     //await pblock.delete();
-            
-    // 
+
+    //
     // deletes block from disk
     //
     //await this.app.storage.deleteBlock(pblock);
@@ -436,8 +436,8 @@ console.log(JSON.stringify(block.block));
     // actually useful data.
     //
     // so we check that our block is the head of the longest-chain and only
-    // update the genesis period for the block that should be removed when it 
-    // is added to the chain. 
+    // update the genesis period for the block that should be removed when it
+    // is added to the chain.
     //
     let latest_block_id = this.app.blockring.returnLatestBlockId();
 
@@ -524,7 +524,7 @@ console.log(JSON.stringify(block.block));
     if (this.prune_after_blocks > this.app.blockring.returnLatestBlockId()) {
       return;
     }
-  
+
     let prune_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
     let block_hashes_copy = [];
     let block_hashes = this.blockring.returnBlockHashesAtBlockId(pruneBlocksAtBlockId);
@@ -551,7 +551,7 @@ console.log(JSON.stringify(block.block));
     //
     // peer is further ahead
     //
-    if (peer_latest_block_id >= my_latest_block_id) {        
+    if (peer_latest_block_id >= my_latest_block_id) {
 
       //
       // roll back to last even 10 blocks
@@ -648,7 +648,7 @@ console.log(JSON.stringify(block.block));
     //
     // load blocks from disk
     //
-    await this.app.storage.loadBlocksFromDisk(); 
+    await this.app.storage.loadBlocksFromDisk();
 
 
     //
@@ -673,10 +673,10 @@ console.log(JSON.stringify(block.block));
     let new_bf = BigInt(0);
 
     for (let i = 0; i < old_chain.length; i++) {
-      old_bf += this.blocks[old_chain[i]].block.burnfee;
+      old_bf += BigInt(this.blocks[old_chain[i]].block.burnfee);
     }
     for (let i = 0; i < new_chain.length; i++) {
-      new_bf += this.blocks[new_chain[i]].block.burnfee;
+      new_bf += BigInt(this.blocks[new_chain[i]].block.burnfee);
     }
 
     //
@@ -703,7 +703,7 @@ console.log(JSON.stringify(block.block));
   }
 
   //
-  // keeps any blockchain variables like fork_id or genesis_period 
+  // keeps any blockchain variables like fork_id or genesis_period
   // tracking variables updated as the chain gets new blocks. also
   // pre-loads any blocks needed to improve performance.
   //
@@ -741,7 +741,7 @@ console.log(JSON.stringify(block.block));
 
       //
       // save options
-      // 
+      //
       this.saveBlockchain();
 
     }
@@ -961,7 +961,7 @@ console.log(JSON.stringify(block.block));
 	}
       }
     }
-    if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR) { 
+    if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR) {
       return false;
     }
 
