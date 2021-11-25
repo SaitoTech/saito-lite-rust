@@ -4956,8 +4956,13 @@ console.log("STRAT SEC: " + player + " -- " + strategy_card_player);
       type		: 	"secret" ,
       phase		: 	"action" ,
       onNewTurn		: 	function(imperium_self, player, mycallback) {
-	imperium_self.game.state.secret_objective_close_the_trap = 0;
-	imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 0;
+	if (imperium_self.game.state.secret_objective_close_the_trap_offturn == 0) {
+	  imperium_self.game.state.secret_objective_close_the_trap = 0;
+	  imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 0;
+	  imperium_self.game.state.secret_objective_close_the_trap_offturn = 0;
+	} else {
+	  imperium_self.game.state.secret_objective_close_the_trap_offturn = 0;
+	}
         return 0; 
       },
       modifyPDSRoll     :       function(imperium_self, attacker, defender, roll) {
@@ -4978,6 +4983,10 @@ console.log("STRAT SEC: " + player + " -- " + strategy_card_player);
 	    if (imperium_self.game.state.secret_objective_close_the_trap_pds_fired == 1) {
 	      imperium_self.game.state.secret_objective_close_the_trap = 1;
 	      imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+	      if (imperium_self.game.state.active_player_turn != attacker) {
+console.log("CLOSING TRAP OFFTURN");
+	        imperium_self.game.state.secret_objective_close_the_trap_offturn = 1;
+	      }
 	    }
 	  }
 	}
@@ -4986,6 +4995,10 @@ console.log("STRAT SEC: " + player + " -- " + strategy_card_player);
 	    if (imperium_self.game.state.secret_objective_close_the_trap_pds_fired == 1) {
 	      imperium_self.game.state.secret_objective_close_the_trap = 1;
 	      imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+	      if (imperium_self.game.state.active_player_turn != defender) {
+console.log("CLOSING TRAP OFFTURN 2");
+	        imperium_self.game.state.secret_objective_close_the_trap_offturn = 1;
+	      }
 	    }
 	  }
 	}
@@ -15156,15 +15169,23 @@ this.game.state.end_round_scoring = 0;
 		}
 	      }
 
-	      let roll = this.rollDice(selectable.length);
-	      let action_card = selectable[roll-1];
-	      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-	        if (this.game.deck[1].hand[i] === action_card) {
-		  this.game.deck[1].hand.splice((roll-1), 1);
-		}
+	      if (selectable.length == 0) {
+
+	        this.addMove("NOTIFY\t" + this.returnFaction(pullee) + " does not have any action cards");
+
+	      } else {
+
+	        let roll = this.rollDice(selectable.length);
+	        let action_card = selectable[roll-1];
+	        for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	          if (this.game.deck[1].hand[i] === action_card) {
+	  	    this.game.deck[1].hand.splice((roll-1), 1);
+		  }
+	        }
+	        this.addMove("give\t"+pullee+"\t"+puller+"\t"+"action"+"\t"+action_card);
+	        this.addMove("NOTIFY\t" + this.returnFaction(puller) + " pulls " + this.action_cards[action_card].name);
 	      }
-	      this.addMove("give\t"+pullee+"\t"+puller+"\t"+"action"+"\t"+action_card);
-	      this.addMove("NOTIFY\t" + this.returnFaction(puller) + " pulls " + this.action_cards[action_card].name);
+
 	      this.endTurn();
 	    } else {
 	      let roll = this.rollDice();
@@ -17552,6 +17573,9 @@ console.log("bonus: " + (i+1));
   	let player       = mv[1];
         let sector       = mv[2];
         let planet_idx   = mv[3];
+
+console.log("SCA: " + this.game.state.space_combat_attacker);
+console.log("SCD: " + this.game.state.space_combat_defender);
 
   	if (this.hasUnresolvedSpaceCombat(player, sector) == 1) {
 	  if (this.game.player == player) {

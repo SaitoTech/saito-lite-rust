@@ -323,118 +323,124 @@ class Network {
     }
 
 
-    //
-    // propagate block
-    //
-    propagateBlock(blk) {
 
-        if (this.app.BROWSER == 1) {
-            return;
-        }
-        if (blk == null) {
-            return;
-        }
-        if (blk.is_valid == 0) {
-            return;
-        }
 
-        var data = {bhash: blk.returnHash(), bid: blk.block.id};
-        for (let i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].handshake_completed == 1) {
-                if (this.peers[i].peer.sendblks == 1) {
-                    this.peers[i].sendRequest("block", data);
-                }
-            }
+
+
+
+
+
+  //
+  // propagate block
+  //
+  propagateBlock(blk) {
+
+    if (this.app.BROWSER == 1) { return; }
+    if (blk == null) { return; }
+    if (blk.is_valid == 0) { return; }
+
+    var data = { bhash: blk.returnHash(), bid: blk.block.id };
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].handshake_completed == 1) {
+        if (this.peers[i].peer.sendblks == 1) {
+          this.peers[i].sendRequest("block", data);
         }
+      }
+    }
+  }
+
+
+
+
+//
+  // propagate transaction
+  //
+  propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
+
+console.log("prop trans 1");
+
+    if (tx == null) { return; }
+    if (!tx.is_valid) { return; }
+    if (tx.transaction.type == 1) { outbound_message = "golden ticket"; }
+
+    //
+    // if this is our (normal) transaction, add to pending
+    //
+    if (tx.transaction.from[0].add == this.app.wallet.returnPublicKey()) {
+      this.app.wallet.addTransactionToPending(tx);
+      this.app.connection.emit("update_balance", this.app.wallet);
     }
 
+console.log("prop trans 2");
 
-    //
-    // propagate transaction
-    //
-    propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
+    if (this.app.BROWSER == 0 && this.app.SPVMODE == 0) {
 
-        console.log("ABOUT TO PROPAGATE TRANSACTION");
-
-        if (tx == null) {
-            return;
-        }
-        if (!tx.is_valid) {
-            return;
-        }
-        if (tx.transaction.type == 1) {
-            outbound_message = "golden ticket";
-        }
+      //
+      // is this a transaction we can use to make a block
+      //
+      if (this.app.mempool.containsTransaction(tx) != 1) {
 
         //
-        // if this is our (normal) transaction, add to pending
+        // return if we can create a transaction
         //
-        if (tx.transaction.from[0].add == this.app.wallet.returnPublicKey()) {
-            this.app.wallet.addTransactionToPending(tx);
-            this.app.connection.emit("update_balance", this.app.wallet);
+        if (!this.app.mempool.addTransaction(tx)) {
+          console.error("ERROR 810299: balking at propagating bad transaction");
+          console.error("BAD TX: " + JSON.stringify(tx.transaction));
+          return;
         }
-
-        if (this.app.BROWSER == 0 && this.app.SPVMODE == 0) {
-
-            //
-            // is this a transaction we can use to make a block
-            //
-            if (this.app.mempool.containsTransaction(tx) != 1) {
-
-                //
-                // return if we can create a transaction
-                //
-                if (!this.app.mempool.addTransaction(tx)) {
-                    console.error("ERROR 810299: balking at propagating bad transaction");
-                    console.error("BAD TX: " + JSON.stringify(tx.transaction));
-                    return;
-                }
-                if (this.app.mempool.canBundleBlock() == 1) {
-                    return 1;
-                }
-            }
+        if (this.app.mempool.canBundleBlock() == 1) {
+          return 1;
         }
-
-        //
-        // whether we propagate depends on whether the fees paid are adequate
-        //
-        let fees = tx.returnFeesTotal(this.app);
-        for (let i = 0; i < tx.transaction.path.length; i++) {
-            fees = fees / 2;
-        }
-        console.log("DOWN HERE");
-        this.sendTransactionToPeers(tx, outbound_message, fees, mycallback);
-
+      }
     }
 
-
-    sendTransactionToPeers(tx, outbound_message, fees = 1, callback = null) {
-
-        this.peers.forEach((peer) => {
-            //&& fees >= peer.peer.minfee
-
-            if (peer.peer.receivetxs == 0) {
-                console.log("peer does not receive txs... not sending");
-                return;
-            }
-            if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
-                let tmptx = peer.addPathToTransaction(tx);
-                if (callback) {
-                    peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), callback);
-                } else {
-                    peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
-                }
-            }
-        });
-    }
-
-
     //
-    // this function requires switching to the new network API
+    // now send the transaction out with the appropriate routing hop
     //
-    updatePeersWithWatchedPublicKeys() {
+    let fees = tx.returnFeesTotal(this.app);
+    for (let i = 0; i < tx.transaction.path.length; i++) { fees = fees / 2; }
+    this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
+      if (peer.peer.receivetxs == 0) {
+        console.log("peer does not receive txs... not sending");
+        return;
+      }
+      if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
+        let tmptx = peer.addPathToTransaction(tx);
+        if (mycallback) {
+          peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), mycallback);
+        } else {
+          peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
+        }
+      }
+    });
+  }
 
+
+  sendPeerRequest(message, data = "", peer) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      if (this.peers[x] == peer) {
+        this.peers[x].sendRequest(message, data);
+      }
     }
+  }
+  sendRequest(message, data = "") {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequest(message, data);
+    }
+  }
+  sendRequestWithCallback(message, data = "", callback) {
+    for (let x = this.peers.length - 1; x >= 0; x--) {
+      this.peers[x].sendRequestWithCallback(message, data, callback);
+    }
+  }
+
+
+  //
+  // this function requires switching to the new network API
+  //
+  updatePeersWithWatchedPublicKeys() {
+  }
+
 }
 
 Network.ChallengeSize = 82;

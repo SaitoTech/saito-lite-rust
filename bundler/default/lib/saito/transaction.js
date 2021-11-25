@@ -19,7 +19,7 @@ const TransactionType = {
 
 class Transaction {
 
-  constructor(app=null) {
+  constructor(jsonobj=null) {
 
     /////////////////////////
     // consensus variables //
@@ -54,6 +54,10 @@ class Transaction {
     this.dmsg                      = "";
     this.size                      = 0;
     this.is_valid                  = 1;
+
+    if (jsonobj != null) {
+      this.transaction = jsonobj;
+    }
 
     return this;
   }
@@ -453,7 +457,7 @@ html += `
     let outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
     let message_len = app.binary.u32AsBytes(this.transaction.m.length);
     let path_len = app.binary.u32AsBytes(this.transaction.path.length);
-    let signature = app.crypto.toSizedArray(this.transaction.sig, 64);
+    let signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
     let timestamp = app.binary.u64AsBytes(this.transaction.ts);
     let transaction_type = app.binary.u8AsByte(this.transaction.type);
     let inputs = [];

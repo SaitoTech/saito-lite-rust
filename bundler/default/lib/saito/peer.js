@@ -1,5 +1,6 @@
 const io = require('socket.io-client');
 const saito = require('./saito');
+
 const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
 const Network = require('./network');
 const Transaction = require('./transaction');
@@ -8,6 +9,8 @@ const Block = require("./block");
 const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
 const SendBlockchainMessage = require("./networking/send_blockchain_message");
 const RequestBlockchainMessage = require("./networking/request_blockchain_message");
+
+const JSON = require('json-bigint');
 
 class Peer {
 
@@ -70,11 +73,6 @@ class Peer {
     }
 
 
-    async connect(attempt = 0) {
-        console.log("attempting to connect!");
-        this.socket = await this.app.networkApi.wsConnectAndInitialize(this.peer.protocol, this.peer.host, this.peer.port);
-    }
-
 
     //
     // delete before we close
@@ -115,6 +113,9 @@ class Peer {
         return 0;
     }
 
+    async connect(attempt=0) {
+      this.socket = await this.app.networkApi.wsConnectAndInitialize(this.peer.protocol, this.peer.host, this.peer.port);
+    }
 
     returnPublicKey() {
         return this.peer.publickey;
@@ -129,7 +130,9 @@ class Peer {
     }
 
     async handlePeerCommand(peer, message) {
+
         console.log("handling message : " + message.message_name);
+
         let command = message.message_name;
         if (command === "SHAKINIT") {
             // let challenge = await this.buildSerializedHandshakeChallenge(message, wallet);
@@ -213,7 +216,6 @@ class Peer {
         let peer_octets = message.getMessageData().slice(0, 4);
         let peer_pubkey = message.getMessageData().slice(4, 37);
         let my_octets = Buffer.from([127, 0, 0, 1]);
-
         let challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
         return challenge.serializeWithSig(my_privkey);
     }
@@ -266,6 +268,14 @@ class Peer {
         } else {
             return null;
         }
+    }
+
+    inTransactionPath(tx) {
+      if (tx == null) { return 0; }
+      if (tx.isFrom(this.peer.publickey)) { return 1; }
+      for (let i = 0; i < tx.transaction.path.length; i++) {
+        if (tx.transaction.path[i].from == this.peer.publickey) { return 1; }
+      }
     }
 
     async buildSendBlockchainMessage(request_blockchain_message) {
@@ -324,6 +334,96 @@ class Peer {
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
         await this.app.networkApi.sendAPICall(this.socket, "RESULT__", buffer);
     }
+  returnPublicKey() {
+    return this.peer.publickey;
+  }
+
+
+  sendRequest(message, data = "") {
+
+    //
+    // respect prohibitions
+    //
+    if (this.peer.receiveblks == 0 && message == "block") { return; }
+    if (this.peer.receiveblks == 0 && message == "blockchain") { return; }
+    if (this.peer.receivetxs == 0 && message == "transaction") { return; }
+    if (this.peer.receivegts == 0 && message == "golden ticket") { return; }
+
+    //
+    // TODO -- SANKA, can you confirm the "is socket active" code below?
+    //
+    let data_to_send = { message: message, data: data };
+    let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
+
+    if (this.socket != null && this.socket.connected == true) {
+      // no need to await as no callback, so no response
+      this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer);
+    } else {
+      callback({err: "Socket Not Connected"});
+      this.sendRequestWithCallbackAndRetry(message, data);
+    }
+  }
+
+
+  //
+  // new default implementation
+  //
+  sendRequestWithCallback(request, data = {}, callback=null) {
+
+    //
+    // respect prohibitions
+    //
+    if (this.peer.receiveblks == 0 && message == "block") { return; }
+    if (this.peer.receiveblks == 0 && message == "blockchain") { return; }
+    if (this.peer.receivetxs == 0 && message == "transaction") { return; }
+    if (this.peer.receivegts == 0 && message == "golden ticket") { return; }
+
+    var requestMessage = {};
+    requestMessage.request = request;
+    requestMessage.data = data;
+
+    if (this.socket != null && this.socket.connected && this.socket.readyState === this.socket.OPEN) {
+      //
+      // TODO -- Sanka, we used to await on this, but no async on sendRequestWithCallback
+      //
+      let response = this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer);
+      if (callback != null) {
+        callback(res);
+      }
+    } else {
+      callback({err: "Socket Not Connected"});
+      this.sendRequestWithCallbackAndRetry(message, data, callback);
+    }
+  }
+
+  //
+  // repeats until success. this should no longer be called directly, it is called by the 
+  // above functions in the event that socket transmission is unsuccessful. this is part of
+  // our effort to simplify and move down to having only two methods for requesting 
+  // request emission.
+  //
+  sendRequestWithCallbackAndRetry(request, data = {}, callback = null, initialDelay = 1000, delayFalloff = 1.3) {
+    let callbackWrapper = (res) => {
+      if (!res.err) {
+	if (callback != null) {
+          callback(res);
+	}
+      } else if (res.err === "Socket Not Connected") {
+        setTimeout((() => {
+          initialDelay = initialDelay * delayFalloff;
+          this.sendRequestWithCallback(request, data, callbackWrapper);
+        }), initialDelay);
+      } else if(res.err === "Peer not found") {
+	if (callback != null) {
+          callback(res); // Server could not find peer,
+	}
+      } else  {
+        console.log("ERROR 12511: Unknown Error from socket...")
+      }
+    }
+    this.sendRequestWithCallback(request, data, callbackWrapper);
+  }
+
 }
 
 module.exports = Peer;
