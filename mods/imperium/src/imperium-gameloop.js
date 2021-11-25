@@ -4676,6 +4676,9 @@ console.log("bonus: " + (i+1));
         let sector       = mv[2];
         let planet_idx   = mv[3];
 
+console.log("SCA: " + this.game.state.space_combat_attacker);
+console.log("SCD: " + this.game.state.space_combat_defender);
+
   	if (this.hasUnresolvedSpaceCombat(player, sector) == 1) {
 	  if (this.game.player == player) {
 	    this.addMove("space_combat_post\t"+player+"\t"+sector);

@@ -282,20 +282,29 @@
       type		: 	"secret" ,
       phase		: 	"action" ,
       onNewTurn		: 	function(imperium_self, player, mycallback) {
-	imperium_self.game.state.secret_objective_close_the_trap = 0;
-	imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 0;
+	if (imperium_self.game.state.secret_objective_close_the_trap_offturn == 0) {
+	  imperium_self.game.state.secret_objective_close_the_trap = 0;
+	  imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 0;
+	  imperium_self.game.state.secret_objective_close_the_trap_offturn = 0;
+	} else {
+	  imperium_self.game.state.secret_objective_close_the_trap_offturn = 0;
+	}
         return 0; 
       },
-      modifyPDSRoll     :       function(imperium_self, attacker, defender, roll) {
+      modifyPDSRoll     :       function(imperium_self, attacker, defender, player, roll) {
         if (attacker == imperium_self.game.player) {
-	  imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+          imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
         }
         if (defender == imperium_self.game.player) {
-	  imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+          imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
         }
+        // return roll, this is just pass-through tracking
+        return roll;
       },
       modifySpaceCombatRoll     :       function(imperium_self, attacker, defender, roll) {
 	imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 0;
+	imperium_self.game.state.secret_objective_close_the_trap_offturn = 0;
+	return roll;
       },
       spaceCombatRoundEnd :	function(imperium_self, attacker, defender, sector) {
 	let sys = imperium_self.returnSectorAndPlanets(sector);
@@ -304,6 +313,9 @@
 	    if (imperium_self.game.state.secret_objective_close_the_trap_pds_fired == 1) {
 	      imperium_self.game.state.secret_objective_close_the_trap = 1;
 	      imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+	      if (imperium_self.game.state.active_player_turn != attacker) {
+	        imperium_self.game.state.secret_objective_close_the_trap_offturn = 1;
+	      }
 	    }
 	  }
 	}
@@ -312,6 +324,9 @@
 	    if (imperium_self.game.state.secret_objective_close_the_trap_pds_fired == 1) {
 	      imperium_self.game.state.secret_objective_close_the_trap = 1;
 	      imperium_self.game.state.secret_objective_close_the_trap_pds_fired = 1;
+	      if (imperium_self.game.state.active_player_turn != defender) {
+	        imperium_self.game.state.secret_objective_close_the_trap_offturn = 1;
+	      }
 	    }
 	  }
 	}
