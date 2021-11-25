@@ -1,6 +1,6 @@
 'use strict';
-
 const saito = require('./saito');
+const JSON = require('json-bigint');
 const Big      = require('big.js');
 const AbstractCryptoModule = require('../templates/abstractcryptomodule')
 const ModalSelectCrypto = require('./ui/modal-select-crypto/modal-select-crypto');
@@ -125,15 +125,13 @@ class Wallet {
 
 
   addTransactionToPending(tx) {
-    let txjson = tx.serialize(this.app);
-    if (txjson.toString('hex').length > 100000) { return; }
-    if (! this.wallet.pending.includes(txjson.toString('hex'))) {
+    let txjson = JSON.stringify(tx.transaction);
+    if (txjson.length > 100000) { return; }
+    if (!this.wallet.pending.includes(txjson)) {
       this.wallet.pending.push(txjson);
       this.saveWallet();
     } 
   }
-
-
 
 
   containsInput(s) {

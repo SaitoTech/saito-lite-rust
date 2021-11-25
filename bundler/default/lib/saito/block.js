@@ -100,7 +100,7 @@ class Block {
         + message_len
         + path_len * saito.transaction.HOP_SIZE;
 
-      let transaction = new saito.transaction(this.app);
+      let transaction = new saito.transaction();
       transaction.deserialize(this.app, buffer, start_of_transaction_data);
       this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;

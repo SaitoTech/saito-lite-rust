@@ -368,7 +368,6 @@ console.log("prop trans 2");
     //
     let fees = tx.returnFeesTotal(this.app);
     for (let i = 0; i < tx.transaction.path.length; i++) { fees = fees / 2; }
-console.log("prop trans 3");
     this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
       if (peer.peer.receivetxs == 0) {
         console.log("peer does not receive txs... not sending");
@@ -377,15 +376,12 @@ console.log("prop trans 3");
       if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
         let tmptx = peer.addPathToTransaction(tx);
         if (mycallback) {
-console.log("prop trans 4");
           peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), mycallback);
         } else {
-console.log("prop trans 5");
           peer.sendRequest(outbound_message, JSON.stringify(tmptx.transaction));
         }
       }
     });
-console.log("prop trans 3");
   }
 
 
@@ -406,24 +402,7 @@ console.log("prop trans 3");
       this.peers[x].sendRequestWithCallback(message, data, callback);
     }
   }
-  sendPeerRequest(message, data = "", peer) {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      if (this.peers[x] == peer) {
-        this.peers[x].sendRequest(message, data);
-      }
-    }
-  }
-  sendRequest(message, data = "") {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequest(message, data);
-    }
-  }
 
-  sendRequestWithCallback(message, data = "", callback) {
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequestWithCallback(message, data, callback);
-    }
-  }
 
 
   //
