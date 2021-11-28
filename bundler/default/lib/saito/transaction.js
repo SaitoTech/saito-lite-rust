@@ -82,7 +82,7 @@ class Transaction {
       tx.transaction.to.push(this.transaction.to[i].clone());
     }
     tx.transaction.ts               = this.transaction.ts;
-    tx.transaction.sig              = this.transaction.path;
+    tx.transaction.sig              = this.transaction.sig;
     tx.transaction.path             = [];
     for (let i = 0; i < this.transaction.path.length; i++) {
       tx.transaction.path.push(this.transaction.path[i].clone());
@@ -117,6 +117,8 @@ class Transaction {
    */
   deserialize(app, buffer, start_of_transaction_data) {
 
+console.log("DESERIALIZING: " + buffer.toString('hex'));
+
     let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
     let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
     let message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
@@ -126,8 +128,8 @@ class Transaction {
     let timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)).toString();
     let transaction_type = buffer[start_of_transaction_data + 88];
     let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
-    let start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
-    let start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;
+    let start_of_outputs = start_of_inputs + (inputs_len * SLIP_SIZE);
+    let start_of_message = start_of_outputs + (outputs_len * SLIP_SIZE);
     let start_of_path = start_of_message + message_len;
 
     let inputs = [];
@@ -164,6 +166,9 @@ class Transaction {
     this.transaction.path = path;
     this.transaction.type = transaction_type;
     this.transaction.m = message;
+
+console.log("deserializing with M: " + Buffer.from(this.transaction.m).toString('hex'));
+console.log("deserializing with M2: " + this.transaction.m.toString('hex'));
 
   }
 
@@ -464,6 +469,22 @@ html += `
     let outputs = [];
     let path = [];
 
+    ///
+    ///  reference for starting point of inputs
+    ///
+    /// [len of inputs - 4 bytes - u32]
+    /// [len of outputs - 4 bytes - u32]
+    /// [len of message - 4 bytes - u32]
+    /// [len of path - 4 bytes - u32]
+    /// [signature - 64 bytes - Secp25k1 sig]
+    /// [timestamp - 8 bytes - u64]
+    /// [transaction type - 1 byte]
+    /// [input][input][input]...
+    /// [output][output][output]...
+    /// [message]
+    /// [hop][hop][hop]...
+
+
     let start_of_inputs = TRANSACTION_SIZE;
     let start_of_outputs = TRANSACTION_SIZE + ((this.transaction.from.length) * SLIP_SIZE);
     let start_of_message = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE);
@@ -499,7 +520,14 @@ html += `
       next_output_location += SLIP_SIZE;
     }
 
-    ret.set(this.transaction.m, start_of_message);
+    //
+    // convert message to hex as otherwise issues in current implementation
+    //
+    let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
+    // binary requires 1/2 length of hex string
+    let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length/2);
+
+    ret.set(tm, start_of_message);
 
     for (let i = 0; i < this.transaction.path.length; i++) {
       let serialized_hop = this.transaction.path[i].serialize(app);
@@ -525,8 +553,16 @@ html += `
     for (let i = 0; i < this.transaction.to.length; i++) {
       buffer = Buffer.concat([buffer, new Buffer(this.transaction.to[i].serializeOutputForSignature(app))])
     }
-    this.transaction.m = Buffer.from(JSON.stringify(this.msg),'utf-8').toString('hex');
-    buffer = Buffer.concat([buffer, Buffer.from(app.binary.u32AsBytes(this.transaction.type)), Buffer.from(this.transaction.m,"hex")])
+    buffer = Buffer.concat([buffer, Buffer.from(app.binary.u32AsBytes(this.transaction.type))]);
+//    buffer = Buffer.concat([buffer, Buffer.from(this.transaction.m, "hex")]);
+
+
+    let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
+    let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length/2);
+    buffer = Buffer.concat([buffer, tm]);
+
+console.log("Buffer is: " + buffer.toString('hex'));
+
     return Uint8Array.from(buffer);
   }
 
@@ -536,7 +572,19 @@ html += `
     // set slip ordinals
     //
     for (let i = 0; i < this.transaction.to.length; i++) { this.transaction.to[i].sid = i; }
+
+    //
+    // transaction message
+    //
+    if (this.transaction.m === "") {
+      this.transaction.m = Buffer.from(JSON.stringify(this.msg),'utf-8').toString('hex');
+    }
+
     this.transaction.sig = app.crypto.signBuffer(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), app.wallet.returnPrivateKey());
+
+console.log("generated sig: " +this.transaction.sig);
+console.log("with publickey: " + app.wallet.returnPublicKey());
+console.log("and signing hash: " + app.crypto.hash(Buffer.from(this.serializeForSignature(app))));
   }
 
 
@@ -589,6 +637,10 @@ html += `
       //
       // validate signature
       //
+console.log("input is: " + Buffer.from(this.serializeForSignature(app)).toString('hex'));
+console.log("verifying hash: " + app.crypto.hash(this.serializeForSignature(app)));
+console.log("verifying sig: " + this.transaction.sig);
+console.log("verifying add: " + this.transaction.from[0].add);
       if (!app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, this.transaction.from[0].add)) {
         console.log("ERROR:382029: transaction signature does not validate");
         return false;

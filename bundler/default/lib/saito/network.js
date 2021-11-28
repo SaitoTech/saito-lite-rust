@@ -343,7 +343,7 @@ class Network {
         for (let i = 0; i < this.peers.length; i++) {
             // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
                 if (this.peers[i].peer.sendblks === 1) {
-                    this.peers[i].sendAPICall(this.peers[i].socket,"", blk.serialize());
+                    this.peers[i].sendAPICall(this.peers[i].socket,"", blk.serialize()); // TODO : what's the correct command here??
                 }
             // }
         }
@@ -353,7 +353,7 @@ class Network {
 //
     // propagate transaction
     //
-    propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
+    propagateTransaction(tx, outbound_message = "transaction") {
 
         console.log("prop trans 1");
 
@@ -398,6 +398,9 @@ class Network {
             }
         }
 
+
+console.log("being unable to make a block ourselves, we ... forward");
+
         //
         // now send the transaction out with the appropriate routing hop
         //
@@ -412,14 +415,8 @@ class Network {
             }
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
-                if (mycallback) {
-                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app))
-                        .then((response) => {
-                            mycallback(response);
-                        });
-                } else {
-                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
-                }
+console.log("tx being sent: " + Buffer.from(tx.serialize(this.app)).toString('hex'));
+                this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
             }
         });
     }
