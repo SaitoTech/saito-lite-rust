@@ -52,10 +52,22 @@ class Block {
     this.slips_spent_this_block        = {};
     this.rebroadcast_hash              = "";
     this.total_rebroadcast_slips       = 0;
-    this.total_rebroadcast_nolan      = BigInt(0);
+    this.total_rebroadcast_nolan       = BigInt(0);
+
+    this.callbacks		       = [];
+    this.callbackTxs		       = [];
+    this.confirmations		       = -1; // set to +1 when we start callbacks
 
   }
 
+
+
+  affixCallbacks() {
+    for (let z = 0; z < this.transactions.length; z++) {
+      var txmsg = this.transactions[z].returnMessage();
+      this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
+    }
+  }
 
 
   /**
@@ -907,6 +919,7 @@ class Block {
     for (let i = 0; i < this.transactions.length; i++) {
       this.transactions[i].onChainReorganization(this.app, lc, block_id);
     }
+    this.lc = lc;
   }
 
   asReadableString() {
@@ -971,6 +984,23 @@ for (let i = 0; i < this.transactions.length; i++) {
 
   returnId() {
     return this.block.id;
+  }
+
+  async runCallbacks(conf, run_callbacks=1) {
+    if (this.confirmations && this.callbacks) {
+      for (let i = this.confirmations + 1; i <= conf; i++) {
+        for (let ii = 0; ii < this.callbacks.length; ii++) {
+          try {
+            if (run_callbacks == 1) {
+              await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
+            }
+          } catch(err) {
+            console.log("ERROR 567567: ", err);
+          }
+        }
+      }
+    }
+    this.confirmations = conf;
   }
 
   generateMerkleRoot() {
