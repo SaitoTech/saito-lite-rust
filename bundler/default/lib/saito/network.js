@@ -343,7 +343,7 @@ class Network {
         for (let i = 0; i < this.peers.length; i++) {
             // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
                 if (this.peers[i].peer.sendblks === 1) {
-                    this.peers[i].sendAPICall(this.peers[i].socket,"", blk.serialize());
+                    this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", blk.returnHash());
                 }
             // }
         }
@@ -353,9 +353,7 @@ class Network {
 //
     // propagate transaction
     //
-    propagateTransaction(tx, outbound_message = "transaction", mycallback = null) {
-
-        console.log("prop trans 1");
+    propagateTransaction(tx, outbound_message = "transaction") {
 
         if (tx == null) {
             return;
@@ -374,8 +372,6 @@ class Network {
             this.app.wallet.addTransactionToPending(tx);
             this.app.connection.emit("update_balance", this.app.wallet);
         }
-
-        console.log("prop trans 2");
 
         if (this.app.BROWSER === 0 && this.app.SPVMODE === 0) {
 
@@ -398,6 +394,9 @@ class Network {
             }
         }
 
+
+console.log("being unable to make a block ourselves, we ... forward");
+
         //
         // now send the transaction out with the appropriate routing hop
         //
@@ -412,14 +411,7 @@ class Network {
             }
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
-                if (mycallback) {
-                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app))
-                        .then((response) => {
-                            mycallback(response);
-                        });
-                } else {
-                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
-                }
+                this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
             }
         });
     }
