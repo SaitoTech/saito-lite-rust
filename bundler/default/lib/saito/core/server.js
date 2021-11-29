@@ -301,15 +301,20 @@ class Server {
             }
             console.log("requesting block : " + hash);
 
-            let block = await this.app.mempool.findBlock(hash);
+            let block = await this.app.blockchain.findBlock(hash);
             if (!block) {
                 console.warn("block not found for : " + hash);
                 return res.sendStatus(404); // Not Found
             }
             let buffer = block.serialize();
+            console.log(buffer);
+            buffer = Buffer.from(buffer, 'binary').toString('base64');
+            
+
             console.log("sending buffer with length : " + buffer.length);
+            console.log(buffer);
             res.status(200);
-            res.end(Buffer.from(buffer).toString('base64'));
+            res.end(buffer);
         });
 
         /////////
