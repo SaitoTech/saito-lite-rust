@@ -114,17 +114,21 @@ class Peer {
     }
 
 
-  //
-  // returns true if we are the first listed peer in the options file
-  // TODO -- isFirstPeer
-  isMainPeer() {
-    if (this.app?.options?.peers?.length > 0) {
-      const option_peer = this.app.options.peers[0];
-      if (option_peer.host === this.peer.endpoint.host) { return true; }
-      if (option_peer.host === this.peer.host) { return true; }
+    //
+    // returns true if we are the first listed peer in the options file
+    // TODO -- isFirstPeer
+    isMainPeer() {
+        if (this.app?.options?.peers?.length > 0) {
+            const option_peer = this.app.options.peers[0];
+            if (option_peer.host === this.peer.endpoint.host) {
+                return true;
+            }
+            if (option_peer.host === this.peer.host) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
 
 
     async connect(attempt = 0) {
@@ -220,14 +224,18 @@ class Peer {
                     console.log("url = " + url);
                     const res = await fetch(url);
                     if (res.ok) {
-                        const base64Buffer = await res.buffer();
-                        console.debug("buffer received for block");
-                        const buffer = Buffer.from(base64Buffer, 'base64');
+                        // console.log(res.body);
+                        const base64Buffer = await res.arrayBuffer();
+                        console.log("buffer received for block");
+                        console.log(base64Buffer);
+                        const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
                         console.log("received buffer with length : " + buffer.length);
+                        console.log(buffer);
                         let block = new saito.block(this.app);
                         block.deserialize(buffer);
-                        console.log(`GOT BLOCK ${block.id} ${block.timestamp}`)
-                        this.app.mempool.addBlock(block);
+                        console.log(`GOT BLOCK ${block.id} ${block.timestamp}`);
+                        console.log(block);
+                        // this.app.mempool.addBlock(block);
                     } else {
                         console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
                     }
