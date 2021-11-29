@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const {set} = require('numeral');
 const Base58 = require("base-58");
 const secp256k1 = require('secp256k1');
+const SendBlockHeadMessage = require("./networking/send_block_head_message");
 
 class Network {
 
@@ -172,7 +173,7 @@ class Network {
         for (let c = 0; c < this.peers.length; c++) {
             if (this.peers[c] === peer) {
 
-                var keep_peer = -1;
+                let keep_peer = -1;
 
                 //
                 // do not remove peers we asked to add
@@ -269,7 +270,7 @@ class Network {
 
     pollPeers(peers, app) {
 
-        var this_network = app.network;
+        const this_network = app.network;
 
         //
         // loop through peers to see if disconnected
@@ -289,7 +290,7 @@ class Network {
         //console.log('dead peers to add: ' + this.dead_peers.length);
         // limit amount of time nodes spend trying to reconnect to
         // prevent ddos issues.
-        var peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
+        const peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
         this.dead_peers.forEach((peer) => {
             setTimeout(() => {
                 this_network.connectToPeer(JSON.stringify(peer))
@@ -328,23 +329,29 @@ class Network {
     // propagate block
     //
     propagateBlock(blk) {
+        console.log("propagating block : " + blk.returnHash());
 
-        if (this.app.BROWSER === 1) {
+        if (this.app.BROWSER) {
             return;
         }
-        if (blk == null) {
+        if (!blk) {
             return;
         }
-        if (blk.is_valid === 0) {
+        if (!blk.is_valid) {
             return;
         }
 
-        var data = {bhash: blk.returnHash(), bid: blk.block.id};
+        const data = {bhash: blk.returnHash(), bid: blk.block.id};
         for (let i = 0; i < this.peers.length; i++) {
             // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
-                if (this.peers[i].peer.sendblks === 1) {
-                    this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", blk.returnHash());
-                }
+            if (this.peers[i].peer.sendblks === 1) {
+                let message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
+                console.log(message);
+                let buffer = message.serialize();
+                let new_message = SendBlockHeadMessage.deserialize(buffer);
+                console.log(new_message);
+                this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", message.serialize());
+            }
             // }
         }
     }
@@ -395,7 +402,7 @@ class Network {
         }
 
 
-console.log("being unable to make a block ourselves, we ... forward");
+        console.log("being unable to make a block ourselves, we ... forward");
 
         //
         // now send the transaction out with the appropriate routing hop

@@ -13,6 +13,7 @@ const ws = require('ws');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
+const saito = require("../saito");
 
 
 /**
@@ -61,6 +62,25 @@ class Server {
         server.on('connection', (connection, request) => {
             console.log("new connection received");
             this.app.network.addRemotePeer(connection);
+
+            let block = new saito.block(this.app);
+            block.block.id = 10;
+            block.block.timestamp = 1637034582666;
+            block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+            block.block.merkle = "ccf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+            block.block.creator = this.app.crypto.toBase58("dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc");
+            block.block.burnfee = BigInt(50000000);
+            block.block.difficulty = 0;
+            block.block.treasury = BigInt(0);
+            block.block.staking_treasury = BigInt(0);
+            block.block.signature = "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
+
+            this.app.mempool.addBlock(block);
+
+            // this.app.network.propagateTransaction(tx);
+
+            // let block = new saito.block(this.app);
+            this.app.network.propagateBlock(block);
 
             connection.on("message", async (message) => {
                 console.log("message received");
@@ -273,6 +293,24 @@ class Server {
 
         });
 
+        app.get("/block/:hash", async (req, res) => {
+            let hash = req.params.hash;
+            if (!hash) {
+                console.warn("hash not provided");
+                return res.sendStatus(400); // Bad request
+            }
+            console.log("requesting block : " + hash);
+
+            let block = await this.app.mempool.findBlock(hash);
+            if (!block) {
+                console.warn("block not found for : " + hash);
+                return res.sendStatus(404); // Not Found
+            }
+            let buffer = block.serialize();
+            console.log("sending buffer with length : " + buffer.length);
+            res.status(200);
+            res.end(Buffer.from(buffer).toString('base64'));
+        });
 
         /////////
         // web //
