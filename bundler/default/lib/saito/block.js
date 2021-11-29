@@ -57,6 +57,7 @@ class Block {
     this.callbacks		       = [];
     this.callbackTxs		       = [];
     this.confirmations		       = -1; // set to +1 when we start callbacks
+    this.force			       = 0;  // set to 1 if "force" loaded -- used to avoid duplicating callbacks
 
   }
 

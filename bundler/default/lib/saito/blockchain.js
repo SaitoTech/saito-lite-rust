@@ -215,6 +215,7 @@ class Blockchain {
     //
     let am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);
     block.lc = am_i_the_longest_chain;
+    block.force = force;
 
     //
     // now update blockring so it is not empty
@@ -309,12 +310,13 @@ console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash(
       //
       // this block is initialized with zero-confs processed
       //
+console.log("affixing callbacks!");
       block.affixCallbacks();
 
       //
       // don't run callbacks if reloading (force!)
       //
-      if (block.lc == 1 && !force) {
+      if (block.lc == 1 && !block.force) {
 
 	let starting_block_id = block.returnId() - this.callback_limit;
 	let block_id_in_which_to_delete_callbacks = block.returnId() - this.callback_limit;
@@ -344,6 +346,7 @@ console.log("is our block indexed now? " + this.isBlockIndexed(block.returnHash(
 	    if (i !== "") {
 	      let callback_block = this.blocks[callback_block_hash];
 	      if (callback_block) {
+console.log("running callbacks on block: " + callback_block.returnId() + " at conf " + this_confirmation);
 		await callback_block.runCallbacks(this_confirmation);
 	      }
 	    }
