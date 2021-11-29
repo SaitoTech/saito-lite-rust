@@ -69,8 +69,8 @@ System-specific installation instructions are available on the [official NodeJS 
 Clone the Saito software directory and through a Bash shell start-up an instance of Saito as follows:
 
 ```
-git clone https://github.com/saitotech/saito-lite
-cd saito-lite
+git clone https://github.com/saitotech/saito-lite-rust
+cd saito-lite-rust
 npm install
 npm run nuke
 npm start
