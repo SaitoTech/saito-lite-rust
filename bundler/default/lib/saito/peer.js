@@ -114,22 +114,25 @@ class Peer {
     }
 
 
-  //
-  // returns true if we are the first listed peer in the options file
-  // TODO -- isFirstPeer
-  isMainPeer() {
-    if (this.app.options) {
-      if (this.app.options.peers) {
-        if (this.app.options.peers.length > 0) {
-          let option_peer = this.app.options.peers[0];
-          if (option_peer.host == this.peer.endpoint.host) { return true; }
-          if (option_peer.host == this.peer.host) { return true; }
+    //
+    // returns true if we are the first listed peer in the options file
+    // TODO -- isFirstPeer
+    isMainPeer() {
+        if (this.app.options) {
+            if (this.app.options.peers) {
+                if (this.app.options.peers.length > 0) {
+                    let option_peer = this.app.options.peers[0];
+                    if (option_peer.host == this.peer.endpoint.host) {
+                        return true;
+                    }
+                    if (option_peer.host == this.peer.host) {
+                        return true;
+                    }
+                }
+            }
         }
-      }
+        return false;
     }
-    return false;
-  }
-
 
 
     async connect(attempt = 0) {
@@ -209,39 +212,45 @@ class Peer {
                 await peer.doReqBlock(data.block_hash);
             }
         } else if (command === "SNDBLKHD") {
-console.log("RECEIVED BLOCK HEADER");
+            console.log("RECEIVED BLOCK HEADER");
             let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
-	    let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
+            console.log(send_block_head_message);
+            console.log(Buffer.from(send_block_head_message.block_hash).toString("hex"));
+            let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
             let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
             if (is_block_indexed) {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
 
-              const fetch = require('node-fetch');
-              try {
-                const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
-                const res = await fetch(url);
-                if (res.ok) {
-                  const buffer = await res.buffer();
-                  let block = new saito.block(this.app);
-                  block.deserialize(buffer);
-                  console.log(`GOT BLOCK ${block.id} ${block.timestamp}`)
-		  this.app.mempool.addBlock(block);
-                } else {
-                  console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+                const fetch = require('node-fetch');
+                try {
+                    const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
+                    console.log("url = " + url);
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        const base64Buffer = await res.buffer();
+                        console.debug("buffer received for block");
+                        const buffer = Buffer.from(base64Buffer, 'base64');
+                        console.log("received buffer with length : " + buffer.length);
+                        let block = new saito.block(this.app);
+                        block.deserialize(buffer);
+                        console.log(`GOT BLOCK ${block.id} ${block.timestamp}`)
+                        this.app.mempool.addBlock(block);
+                    } else {
+                        console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+                    }
+                } catch (err) {
+                    console.log(`Error fetching block: ${err}`);
                 }
-              } catch (err) {
-                console.log(`Error fetching block: ${err}`);
-              }
 
-	      //
-	      // download block
-	      //
-	      // add to mempool.addBlock
-	      //
-              //let message_data = Buffer.from("OK", "utf-8");
-	      //  await peer.sendResponse(message.message_id, message_data);
-              // await peer.doReqBlock(send_block_head_message.block_hash);
+                //
+                // download block
+                //
+                // add to mempool.addBlock
+                //
+                //let message_data = Buffer.from("OK", "utf-8");
+                //  await peer.sendResponse(message.message_id, message_data);
+                // await peer.doReqBlock(send_block_head_message.block_hash);
             }
         } else if (command === "SNDTRANS") {
             let tx = this.socketReceiveTransaction(message);
@@ -462,6 +471,7 @@ console.log("RECEIVED BLOCK HEADER");
             console.log(this);
         }
     }
+
     async sendResponse(message_id, data) {
         console.log("sendResponse");
         console.log(data);
