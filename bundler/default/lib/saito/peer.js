@@ -113,6 +113,25 @@ class Peer {
         return 0;
     }
 
+
+  //
+  // returns true if we are the first listed peer in the options file
+  // TODO -- isFirstPeer
+  isMainPeer() {
+    if (this.app.options) {
+      if (this.app.options.peers) {
+        if (this.app.options.peers.length > 0) {
+          let option_peer = this.app.options.peers[0];
+          if (option_peer.host == this.peer.endpoint.host) { return true; }
+          if (option_peer.host == this.peer.host) { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
+
+
     async connect(attempt = 0) {
         this.socket = await this.app.networkApi.wsConnectAndInitialize(this.peer.protocol, this.peer.host, this.peer.port);
 
@@ -190,19 +209,42 @@ class Peer {
                 await peer.doReqBlock(data.block_hash);
             }
         } else if (command === "SNDBLKHD") {
+console.log("RECEIVED BLOCK HEADER");
             let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
-            let block = await this.app.blockchain.getBlock(send_block_head_message.block_hash);
-            if (block) {
+	    let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
+            let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+            if (is_block_indexed) {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
-                let message_data = Buffer.from("OK", "utf-8");
-                await peer.sendResponse(message.message_id, message_data);
-                await peer.doReqBlock(send_block_head_message.block_hash);
+
+              const fetch = require('node-fetch');
+              try {
+                const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
+                const res = await fetch(url);
+                if (res.ok) {
+                  const buffer = await res.buffer();
+                  let block = new saito.block(this.app);
+                  block.deserialize(buffer);
+                  console.log(`GOT BLOCK ${block.id} ${block.timestamp}`)
+		  this.app.mempool.addBlock(block);
+                } else {
+                  console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+                }
+              } catch (err) {
+                console.log(`Error fetching block: ${err}`);
+              }
+
+	      //
+	      // download block
+	      //
+	      // add to mempool.addBlock
+	      //
+              //let message_data = Buffer.from("OK", "utf-8");
+	      //  await peer.sendResponse(message.message_id, message_data);
+              // await peer.doReqBlock(send_block_head_message.block_hash);
             }
         } else if (command === "SNDTRANS") {
-console.log("receiving SNDTRANS");
             let tx = this.socketReceiveTransaction(message);
-console.log("transaction is as hex: " + JSON.stringify(tx.transaction));
             await this.app.mempool.addTransaction(tx);
             //await peer.sendResponseFromStr(message.message_id, "OK");
         } else if (command === "SNDKYLST") {

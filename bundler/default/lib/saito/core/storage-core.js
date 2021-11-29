@@ -162,7 +162,7 @@ class StorageCore extends Storage {
       let filename = this.generateBlockFilename(block);
       if (!fs.existsSync(filename)) {
         let fd = fs.openSync(filename, 'w');
-        let buffer = block.serializeForNet();
+        let buffer = block.serialize();
         fs.writeSync(fd, buffer);
         fs.fsyncSync(fd);
         fs.closeSync(fd);
