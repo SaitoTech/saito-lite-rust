@@ -30,6 +30,7 @@ class Block {
         this.block.signature = "";
 
         this.lc = 0;
+        this.force = 0;  // set to 1 if "force" loaded -- used to avoid duplicating callbacks
 
         this.transactions = [];
 
@@ -57,7 +58,6 @@ class Block {
         this.callbacks = [];
         this.callbackTxs = [];
         this.confirmations = -1; // set to +1 when we start callbacks
-        this.force = 0;  // set to 1 if "force" loaded -- used to avoid duplicating callbacks
 
     }
 
@@ -65,8 +65,10 @@ class Block {
     affixCallbacks() {
         for (let z = 0; z < this.transactions.length; z++) {
             var txmsg = this.transactions[z].returnMessage();
+console.log("this txmsg: " + JSON.stringify(txmsg));
             this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
         }
+console.log("number of callbacks: " + this.callbackTxs.length);
     }
 
 
@@ -127,6 +129,12 @@ class Block {
             start_of_transaction_data = end_of_transaction_data;
 
         }
+
+console.log("deserializing and we have txs [] of ----> " + this.transactions.length);
+for (let i = 0; i < this.transactions.length; i++) {
+  console.log(i + " txt: " + this.transactions[i].transaction.m);
+  console.log(i + " json: " + JSON.stringify(this.transactions[i].returnMessage()));
+}
 
     }
 

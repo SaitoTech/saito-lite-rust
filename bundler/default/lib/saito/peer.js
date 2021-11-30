@@ -233,9 +233,8 @@ class Peer {
                         console.log(buffer);
                         let block = new saito.block(this.app);
                         block.deserialize(buffer);
-                        console.log(`GOT BLOCK ${block.id} ${block.timestamp}`);
-                        console.log(block);
-                        // this.app.mempool.addBlock(block);
+                        console.log(`ADD TO MEMPOOL BLOCK ${block.returnId()} ${block.returnTimestamp()}`);
+                        this.app.mempool.addBlock(block);
                     } else {
                         console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
                     }
