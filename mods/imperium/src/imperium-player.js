@@ -282,6 +282,10 @@ playerTurn(stage = "main") {
       }
     }
 
+    if (this.canPlayerScoreActionStageVictoryPoints(this.game.player) != "") {
+      html += '<li class="option" id="score">score secret objective</li>';
+    }
+
     if (this.game.players_info[this.game.player - 1].command_tokens > 0) {
       if (this.game.state.active_player_moved == 0) {
         html += '<li class="option" id="activate">activate sector</li>';
@@ -344,6 +348,18 @@ playerTurn(stage = "main") {
           }
         }
       }
+
+
+      if (action2 == "score") {
+        imperium_self.playerScoreActionStageVictoryPoints(imperium_self, function (imperium_self, vp, objective) {
+          //imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
+          if (vp > 0) { imperium_self.addMove("score\t" + imperium_self.game.player + "\t" + vp + "\t" + objective); }
+          imperium_self.game.players_info[imperium_self.game.player - 1].objectives_scored_this_round.push(objective);
+          imperium_self.endTurn();
+          return;
+        });
+      }
+
 
       if (action2 == "activate") {
         imperium_self.playerActivateSystem();
@@ -1081,7 +1097,7 @@ playerDestroyUnits(player, total, sector, capital = 0) {
     if (targetted_units.includes(unit.type)) { total_targetted_units++; }
     html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
   }
-  for (let p = 0; i < sys.p.length; p++) {
+  for (let p = 0; p < sys.p.length; p++) {
     for (let i = 0; i < sys.p[p].units[imperium_self.game.player - 1].length; i++) {
       let unit = sys.p[p].units[imperium_self.game.player - 1][i];
       maximum_assignable_hits++;
@@ -1103,18 +1119,18 @@ playerDestroyUnits(player, total, sector, capital = 0) {
   $('.textchoice').off();
   $('.textchoice').on('click', function () {
 
-
     let ship_idx = $(this).attr("id");
     let planet_idx = 0;
     let unit_idx = 0;
     let unit_type = "ship";
 
-    if (ship_idx.indexOf("_unit_") > 0) {
+    if (ship_idx.indexOf("nd_unit_") > 0) {
       unit_type = "ground";
       let tmpk = ship_idx.split("_");
-      planet_idx = tmpk[1];
-      unit_idx = tmpk[2];
-
+      planet_idx = parseInt(tmpk[2]);
+      unit_idx = parseInt(tmpk[3]);
+    } else {
+      ship_idx = parseInt(ship_idx);
     }
 
     let selected_unit = null;
@@ -3115,6 +3131,14 @@ console.log("Calculated Production Limit: " + calculated_production_limit);
         imperium_self.addMove("expend\t" + imperium_self.game.player + "\tstrategy\t1");
       }
 
+      //
+      // sanity check on people trying to produce nothing
+      //
+      if (total_cost == 0 && stuff_to_build.length == 0) {
+	let c = confirm("Are you sure you want to produce no units at all? Click cancel to re-pick!");
+	if (!c) { return; }
+      }
+
       imperium_self.unlockInterface();
       imperium_self.playerSelectResources(total_cost, function (success) {
 
@@ -4345,6 +4369,8 @@ playerSelectUnitsToMove(destination) {
 	  let this_ship_ii = obj.stuff_to_move[y].ii;
 	  let this_ship_hazard = obj.ships_and_sectors[this_ship_i].hazards[this_ship_ii];
 
+	  // Nov 24
+          imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector);
           imperium_self.addMove("move\t" + imperium_self.game.player + "\t" + 1 + "\t" + obj.ships_and_sectors[obj.stuff_to_move[y].i].sector + "\t" + destination + "\t" + JSON.stringify(obj.ships_and_sectors[obj.stuff_to_move[y].i].ships[obj.stuff_to_move[y].ii]) + "\t" + this_ship_hazard);
         }
         for (let y = obj.stuff_to_load.length - 1; y >= 0; y--) {
@@ -4743,6 +4769,8 @@ playerSelectInfantryToLand(sector) {
 	}
 
       });
+
+      return;
     };
 
     //
@@ -4751,6 +4779,7 @@ playerSelectInfantryToLand(sector) {
     if (id == "clear") {
       salert("To change movement options, just reload!");
       window.location.reload(true);
+      return;
     }
 
 
@@ -4793,6 +4822,7 @@ playerInvadePlanet(player, sector) {
   let space_transport_used = 0;
 
   let landing_forces = [];
+  let total_landing_forces = 0;
   let landing_on_planet_idx = [];
   let planets_invaded = [];
 
@@ -4821,12 +4851,10 @@ playerInvadePlanet(player, sector) {
 
     if (planet_idx === "confirm") {
 
-/***
-      if (landing_forces.length == 0) {
+      if (total_landing_forces == 0) {
 	let sanity_check = confirm("Invade without landing forces? Are you sure -- the invasion will fail.");
 	if (!sanity_check) { return; }
       }
-***/
 
       for (let i = 0; i < planets_invaded.length; i++) {
 
@@ -4983,6 +5011,7 @@ playerInvadePlanet(player, sector) {
           imperium_self.addMove("land\t" + imperium_self.game.player + "\t" + 1 + "\t" + landing_forces[y].sector + "\t" + landing_forces[y].source + "\t" + landing_forces[y].source_idx + "\t" + landing_forces[y].planet_idx + "\t" + landing_forces[y].unitjson);
 	  if (!landing_on_planet_idx.includes(landing_forces[y].planet_idx)) { landing_on_planet_idx.push(landing_forces[y].planet_idx); }
         };
+	total_landing_forces += landing_forces.length;
         landing_forces = [];
 	
 
@@ -5037,9 +5066,13 @@ playerActivateSystem() {
 
       if (imperium_self.game.state.round == 1) {
         if (!imperium_self.canPlayerMoveShipsIntoSector(imperium_self.game.player, pid)) {
-          if (!imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
-            imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnFirstTurnOverlay());
-	    return;
+	  if (imperium_self.hasPlayerActivatedSector(imperium_self.game.player) && !imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
+            imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnActivatedSectorsOverlay());
+	  } else {
+            if (!imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
+              imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnFirstTurnOverlay());
+	      return;
+            }
           }
         }
       } else {

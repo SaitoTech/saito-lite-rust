@@ -163,12 +163,17 @@ class Transaction {
     this.transaction.sig = signature;
     this.transaction.path = path;
     this.transaction.type = transaction_type;
-    this.transaction.m = message;
+    this.transaction.m = Buffer.from(message).toString();
 
-    let reconstruct = app.crypto.base64ToString(this.transaction.m);
-    this.msg = reconstruct;
-
-console.log("reconstructed msg: " + JSON.stringify(JSON.parse(this.msg)));
+try {
+    if (this.transaction.type === TransactionType.Normal) {
+      let reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
+      this.msg = JSON.parse(reconstruct);
+    }
+    console.log("reconstructed msg: " + JSON.stringify(this.msg));
+} catch (err) {
+  console.log("error trying to parse this.msg: " + reconstruct);
+}
 
   }
 
@@ -329,7 +334,9 @@ html += `
   }
 
   returnMessage() {
+console.log("A");
     if (this.dmsg != "") { return this.dmsg; }
+console.log("B");
     if (this.msg != {}) { return this.msg; }
     try {
 console.log("return message: tx.m");
@@ -337,7 +344,7 @@ console.log("return message: tx.m");
 console.log("as utf-8: " + x);
       this.msg = JSON.parse(x);
     } catch (err) {
-
+console.log("err in returnMessage: " + err);
     }
     return this.msg;
   }
@@ -580,18 +587,12 @@ console.log("as utf-8: " + x);
     //
     for (let i = 0; i < this.transaction.to.length; i++) { this.transaction.to[i].sid = i; }
 
-console.log("this message is: " + JSON.stringify(this.msg));
-console.log("m: " + this.transaction.m);
     //
     // transaction message
     //
     if (this.transaction.m === "") {
       this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
     }
-console.log("m2: " + this.transaction.m);
-    let reconstruct = app.crypto.base64ToString(this.transaction.m);
-console.log("reconstruct: " + reconstruct);
-console.log("into obj: " + JSON.stringify(JSON.parse(reconstruct)));
 
     this.transaction.sig = app.crypto.signBuffer(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), app.wallet.returnPrivateKey());
 

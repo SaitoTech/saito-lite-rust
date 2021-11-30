@@ -36,12 +36,12 @@ class Escrow extends ModTemplate {
       this.escrow.create_pending = app.options.escrow.create_pending;
     }
 
-    app.network.oldPropagateTransactionWithCallback = app.network.propagateTransactionWithCallback;
-    app.network.propagateTransactionWithCallback = function newPropagateTransactionWithCallback(newtx, mycallback) {
+    app.network.oldPropagateTransaction = app.network.propagateTransaction;
+    app.network.propagateTransaction = function newPropagateTransaction(newtx, outbound_message="transaction", mycallback) {
 console.log("\n\nESCROW HAS OVERWRITTEN THIS FUNCTION TO DO SOME STUFF FIRST!\n\n");
       newtx.msg.escrow = this.publickey;
       newtx = app.wallet.signTransaction(newtx);
-      app.network.oldPropagateTransactionWithCallback(newtx, mycallback);
+      app.network.oldPropagateTransaction(newtx, outbound_message, mycallback);
     }
 
   }

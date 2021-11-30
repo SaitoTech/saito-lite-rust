@@ -193,10 +193,11 @@ toggleIntro() {
     this.log.attachEvents(app, this);
 
     this.playerbox.render(app, this);
-    this.playerbox.addClassAll("p",true);
+    this.playerbox.attachEvents(app, this); //empty function
+    this.playerbox.addClassAll("poker-seat-",true);
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
-    //this.playerbox.attachEvents(app.this);
+    this.playerbox.addStatus(); //enable update Status to display in playerbox
   
   }
 
@@ -836,15 +837,14 @@ toggleIntro() {
         this.playerbox.refreshName(i+1);
 
         newhtml = `<div class="chips">${this.game.state.player[i].credit} ${this.game.options.crypto}</div>`;
-        if (this.game.state.dealer == (i+1)){
+        if (this.game.state.dealer == (i+1)) {
           newhtml += `<div class="player-notice dealer">DEALER</div>`;  
         }else{
           newhtml += `<div class="player-notice">Player ${i+1}</div>`;  
         }
         
-        
       
-        this.playerbox.refreshInfo(newhtml, i);
+        this.playerbox.refreshInfo(newhtml, (i+1));
         newhtml = "";
         
         if (this.game.state.player[i].hand) {
@@ -867,7 +867,7 @@ toggleIntro() {
               }
        	    }
             newhtml += `</div>`;
-            this.playerbox.refreshGraphic(newhtml, i);
+            this.playerbox.refreshGraphic(newhtml, (i+1));
 
         }
       }
@@ -1160,10 +1160,8 @@ toggleIntro() {
     try {
       if (hide_info == 0) {
         this.playerbox.showInfo();
-        //document.querySelector(".p1 > .info").style.display = "block";
       } else {
         this.playerbox.hideInfo();
-        //document.querySelector(".p1 > .info").style.display = "none";
       }
 
       if (this.lock_interface == 1) { return; }

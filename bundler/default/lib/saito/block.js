@@ -1,4 +1,5 @@
 const saito = require('./saito');
+const JSON = require('json-bigint');
 
 const BLOCK_HEADER_SIZE = 213;
 const BlockType = {
@@ -63,11 +64,13 @@ class Block {
 
 
     affixCallbacks() {
-        for (let z = 0; z < this.transactions.length; z++) {
-            var txmsg = this.transactions[z].returnMessage();
+      for (let z = 0; z < this.transactions.length; z++) {
+        if (this.transactions[z].transaction.type === saito.transaction.TransactionType.Normal) {
+          let txmsg = this.transactions[z].returnMessage();
 console.log("this txmsg: " + JSON.stringify(txmsg));
-            this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
+          this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
         }
+      }
 console.log("number of callbacks: " + this.callbackTxs.length);
     }
 
