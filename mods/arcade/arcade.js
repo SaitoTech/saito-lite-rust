@@ -1459,7 +1459,9 @@ console.log("RES IS 2: " + JSON.stringify(res));
     if (!tx) { return false; }
 
     let for_us = true;
-    let txmsg = tx.returnMessage();
+    let txmsg = tx.returnMessage(this.app);
+
+console.log("HERE: " + JSON.stringify(txmsg));
 
     if (!txmsg) { return false; }
 
