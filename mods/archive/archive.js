@@ -71,6 +71,7 @@ class Archive extends ModTemplate {
         if (!req.data.keys) { return; }
         txs = await this.loadTransactionsByKeys(req.data);
         response.err = "";
+        response.test = [1,2,3,4];
         response.txs = txs;
         mycallback(response);
       }

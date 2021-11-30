@@ -50,8 +50,6 @@ class Network {
     // we initiate an outgoing connection
     //
     addPeer(peerjson) {
-        console.log("addPeer", peerjson);
-        console.log("peer count = " + this.peers.length);
 
         let peerhost = "";
         let peerport = "";
@@ -102,6 +100,8 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
+console.log("OUTBOUND PEER ID: " + peer.id);
+
         //
         // we connect to them
         //
@@ -118,8 +118,6 @@ class Network {
     // server sends us a websocket
     //
     addRemotePeer(socket) {
-        console.log("addRemotePeer", socket);
-        console.log("peer count = " + this.peers.length);
 
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
@@ -142,7 +140,12 @@ class Network {
         // add peer
         //
         let peer = new saito.peer(this.app);
+console.log("REMOTE PEER ID: " + peer.id);
         peer.socket = socket;
+	//
+	// manually setting, used so the socket knows which peer
+	//
+	peer.socket.peer = peer;
 
         //
         // they connected to us

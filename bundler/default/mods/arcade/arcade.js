@@ -696,6 +696,9 @@ console.log("and processing join request");
                 if (rows3[0].status === "open") {
                   this.accepted[game_id] = 0;
                   res.rows.push({ game_still_open: 1 });
+
+console.log("RES IS: " + JSON.stringify(res));
+
                   mycallback(res);
                   return;
                 }
@@ -710,6 +713,7 @@ console.log("and processing join request");
           res.rows.push({ game_still_open: 1 });
         }
 
+console.log("RES IS 2: " + JSON.stringify(res));
         mycallback(res);
         return;
 

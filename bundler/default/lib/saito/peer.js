@@ -19,6 +19,8 @@ class Peer {
 
         this.app = app || {};
 
+	this.id = new Date().getTime();
+
         this.peer = {};
         this.peer.host = "localhost";
         this.peer.port = "12101";
@@ -139,7 +141,7 @@ class Peer {
         //
         // TODO - test
         //
-        console.log("emit handshake complete");
+        console.log("start emit handshake complete");
         this.app.connection.emit("handshake_complete", this);
         console.log("done emitting handshake complete");
 
@@ -159,7 +161,7 @@ class Peer {
 
     async handlePeerCommand(peer, message) {
 
-        console.log("handling message : " + message.message_name);
+        console.log("peer "+peer.id+" handling message : " + message.message_name);
 
         let command = message.message_name;
         if (command === "SHAKINIT") {
@@ -274,16 +276,12 @@ class Peer {
         let reconstructed_data;
 
         try {
-            mdata = msg.message_data.toString();
-console.log("mdata 1: " + JSON.stringify(mdata));
-            reconstructed_obj = JSON.parse(mdata);
-console.log("mdata 2: " + JSON.stringify(reconstructed_obj));
-            reconstructed_message = reconstructed_obj.message;
-console.log("mdata 3: " + JSON.stringify(reconstructed_message));
-            reconstructed_data = reconstructed_obj.data;
-console.log("mdata 4: " + JSON.stringify(reconstructed_data));
+          mdata = msg.message_data.toString();
+          reconstructed_obj = JSON.parse(mdata);
+          reconstructed_message = reconstructed_obj.message;
+          reconstructed_data = reconstructed_obj.data;
         } catch (err) {
-console.log("Error reconstructing data: " + err);
+          console.log("Error reconstructing data: " + err);
         }
 
         let message = {};
@@ -464,24 +462,39 @@ console.log("Error reconstructing data: " + err);
         }
     }
 
+    //
+    // we do not check socket conditions as the socket is open if we have received
+    // a response. on initialization it is possible for us not to know the socket
+    // is open yet, even though it is.
+    //
     async sendResponseFromStr(message_id, data) {
         console.log("sendResponseFromStr");
         console.log(data);
-        if (this.socket && this.socket.readyState === this.socket.OPEN) {
-            await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(data, 'utf-8'));
-        } else {
-            console.error("socket not open");
-        }
+console.log("which peer is sending response? " + this.id);
+        //if (this.socket && this.socket.readyState === this.socket.OPEN) {
+        await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(data, 'utf-8'));
+        //} else {
+        //    console.error("socket not open");
+        //}
     }
 
+    //
+    // we do not check socket conditions as the socket is open if we have received
+    // a response. on initialization it is possible for us not to know the socket
+    // is open yet, even though it is.
+    //
     async sendResponse(message_id, data) {
         console.log("sendResponse");
         console.log(data);
-        if (this.socket && this.socket.readyState === this.socket.OPEN) {
-            await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(JSON.stringify(data), 'utf-8'));
-        } else {
-            console.error("socket not open");
-        }
+console.log("which peer is sending response? " + this.id);
+//console.log("RS: " + this.socket.readyState);
+        //if (this.socket && this.socket.readyState === this.socket.OPEN) {
+console.log("sending message_id ... : " + message_id);
+console.log("sending response now...: " + JSON.stringify(data));
+        await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(JSON.stringify(data), 'utf-8'));
+        //} else {
+        //    console.error("socket not open");
+        //}
     }
 
     sendRequest(message, data = "") {
@@ -524,6 +537,7 @@ console.log("SENDING SENDMSG 2");
     // new default implementation
     //
     sendRequestWithCallback(message, data = "", callback = null, loop = true) {
+
         console.log("sendRequestWithCallback : " + message);
         //
         // respect prohibitions
@@ -541,20 +555,18 @@ console.log("SENDING SENDMSG 2");
             return;
         }
 
-console.log("making it through the no-return");
-
         let data_to_send = {message: message, data: data};
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-console.log("trying to send...: " + this.socket.readyState);
-
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
+console.log("SEND MESG: !" + message);
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then((response) => {
+console.log("RESPONSE RECEIVED: " + Buffer.from(response).toString('utf-8'));
                     if (callback) {
                         let content = Buffer.from(response).toString('utf-8');
                         content = JSON.parse(content);
-console.log("SENDMESG callback: " + JSON.stringify(response));
+console.log("SENDMESG callback: " + JSON.stringify(content));
                         callback(content);
                     }
                 })
@@ -565,13 +577,11 @@ console.log("SENDMESG callback: " + JSON.stringify(response));
                     }
                 });
         } else {
-console.log("socket not open... lopping? " + loop);
             if (loop) {
 console.log("send request with callback and retry!");
                 this.sendRequestWithCallbackAndRetry(message, data, callback);
             } else {
               if (callback) {
-console.log("socketend request with callback and retry!");
                 callback({err: "Socket Not Connected"});
               }
 	    }

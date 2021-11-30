@@ -73,8 +73,6 @@ console.log("handle peer data: " + JSON.stringify(message.data));
 
   async initialize() {
 
-console.log("initializing modules!");
-
     //
     // remove any disabled / inactive modules
     //

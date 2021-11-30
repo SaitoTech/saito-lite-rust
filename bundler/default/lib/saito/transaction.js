@@ -119,7 +119,6 @@ class Transaction {
      * @returns {Transaction}
      */
     deserialize(app, buffer, start_of_transaction_data) {
-        console.log("transaction.deserialize");
         let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
         let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
         let message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
@@ -617,18 +616,13 @@ class Transaction {
             this.transaction.to[i].sid = i;
         }
 
-        console.log("this message is: " + JSON.stringify(this.msg));
-        console.log("m: " + this.transaction.m);
         //
         // transaction message
         //
         if (this.transaction.m === "") {
             this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
         }
-        console.log("m2: " + this.transaction.m);
         let reconstruct = app.crypto.base64ToString(this.transaction.m);
-        console.log("reconstruct: " + reconstruct);
-        console.log("into obj: " + JSON.stringify(JSON.parse(reconstruct)));
 
         this.transaction.sig = app.crypto.signBuffer(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), app.wallet.returnPrivateKey());
 

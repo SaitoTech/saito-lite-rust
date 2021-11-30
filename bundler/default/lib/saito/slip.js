@@ -93,7 +93,6 @@ class Slip {
     }
 
     deserialize(app, buffer) {
-        console.log("slip.deserialize");
         this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
         this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
         this.amt = app.binary.u64FromBytes(buffer.slice(65, 73)).toString();
