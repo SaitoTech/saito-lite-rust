@@ -5,6 +5,7 @@ const PostSidebar = require('./lib/post-sidebar/post-sidebar');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
+const JSON = require('json-bigint');
 
 class Post extends ModTemplate {
 

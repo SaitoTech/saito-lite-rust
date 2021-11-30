@@ -1,4 +1,5 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const JSON = require('json-bigint');
 
 class Archive extends ModTemplate {
 
