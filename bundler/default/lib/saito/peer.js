@@ -132,7 +132,11 @@ class Peer {
 
 
     async connect(attempt = 0) {
+        console.log("peer.connect", this);
         this.socket = await this.app.networkApi.wsConnectAndInitialize(this.peer.protocol, this.peer.host, this.peer.port);
+        console.log("socket connected", this.socket);
+        this.socket.peer = this;
+        console.log("peer connected", this);
 
         //
         // TODO - test
@@ -191,9 +195,7 @@ class Peer {
             }
         } else if (command === "REQCHAIN") {
             await peer.sendResponseFromStr(message.message_id, "OK");
-            let blockchain_message = await this.buildSendBlockchainMessage(
-                RequestBlockchainMessage.deserialize(message.getMessageData(), this.app)
-            );
+            let blockchain_message = await this.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.getMessageData(), this.app));
             if (blockchain_message) {
                 let connection_id_clone = peer.connection_id + "";
                 // TODO : PORT thread + db code here.
@@ -239,7 +241,8 @@ class Peer {
                         console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
                     }
                 } catch (err) {
-                    console.log(`Error fetching block: ${err}`);
+                    console.log(`Error fetching block:`);
+                    console.error(err);
                 }
 
                 //
@@ -428,8 +431,7 @@ class Peer {
         let block_zero_hash = Buffer.alloc(32, 0);
 
         let peers_latest_hash = undefined;
-        if (request_blockchain_message.latest_block_id === 0
-            && request_blockchain_message.latest_block_hash === block_zero_hash) {
+        if (request_blockchain_message.latest_block_id === 0 && request_blockchain_message.latest_block_hash === block_zero_hash) {
             peers_latest_hash = block_zero_hash;
         } else {
             // TODO contains_block_hash_at_block_id for some reason needs mutable access to block_ring
