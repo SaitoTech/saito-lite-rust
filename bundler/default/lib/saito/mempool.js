@@ -209,7 +209,7 @@ class Mempool {
     canBundleBlock() {
 
         if (this.app.mempool.mempool.transactions.length === 0) {
-            console.log("CANNOT PRODUCE AS MEMPOOL PROCESSING ACTIVE");
+            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS");
             return false;
         }
         if (this.app.mempool.processing_active === true) {

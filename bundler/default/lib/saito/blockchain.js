@@ -330,8 +330,6 @@ console.log("ABS: " + block_id);
             console.log("affixing callbacks!");
             block.affixCallbacks();
 
-console.log(block.lc + " --- " + block.force);
-
             //
             // don't run callbacks if reloading (force!)
             //
