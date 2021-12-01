@@ -48,9 +48,12 @@ class GoldenTicket {
   }
 
   serialize(target_hash, random_hash) {
+
+
     let th = Buffer.from(target_hash, 'hex');
     let rh = Buffer.from(random_hash, 'hex');
     let cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
+console.log("serializing th: " + target_hash);
     return new Uint8Array([
        ...th,
        ...rh,
@@ -62,6 +65,7 @@ class GoldenTicket {
     let target_hash = buffer.slice(0, 32).toString('hex');
     let random_hash = buffer.slice(32, 64).toString('hex');
     let creator = buffer.slice(64, 97).toString('hex');
+console.log("reconstructing th: " + target_hash);
     return { target_hash : target_hash , random_hash : random_hash , creator : creator };
   }
 

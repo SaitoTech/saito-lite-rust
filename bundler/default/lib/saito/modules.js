@@ -57,10 +57,6 @@ class Mods {
   }
 
   handlePeerRequest(message, peer, mycallback=null) {
-
-console.log("handle peer request: " + message.request);
-console.log("handle peer data: " + JSON.stringify(message.data));
-
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
         this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);

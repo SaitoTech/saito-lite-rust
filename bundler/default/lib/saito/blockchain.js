@@ -266,6 +266,8 @@ console.log("ABTB: " + block.returnHash());
 
             } else {
 
+console.log("new chain does not validate!");
+
                 await this.addBlockFailure(block);
                 this.blocks[block_hash].lc = 0;
                 this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
@@ -284,13 +286,9 @@ console.log("ABTB: " + block.returnHash());
 
     }
 
-    findBlock(hash) {
-        console.log("blockchain :: finding block : " + hash);
-        return this.blocks[hash];
-    }
-
     async addBlockSuccess(block) {
 
+console.log("SUCCESS: " + block.returnHash());
         let block_id = block.returnId();
 
 console.log("ABS: " + block_id);
@@ -327,15 +325,12 @@ console.log("ABS: " + block_id);
             //
             // this block is initialized with zero-confs processed
             //
-            console.log("affixing callbacks!");
             block.affixCallbacks();
 
             //
             // don't run callbacks if reloading (force!)
             //
             if (block.lc == 1 && block.force !== 1) {
-
-console.log("run callbacks!");
 
                 let starting_block_id = block.returnId() - this.callback_limit;
                 let block_id_in_which_to_delete_callbacks = block.returnId() - this.callback_limit;
@@ -398,6 +393,7 @@ console.log("run callbacks!");
 
     async addBlockFailure(block) {
 
+console.log("FAILURE: " + block.returnHash());
         //
         // clean up mempool
         //
@@ -424,7 +420,7 @@ console.log("run callbacks!");
         //
         // ask block to delete itself / utxo-wise
         //
-        let pblock = await this.loadBlockSync(delete_block_hash);
+        let pblock = await this.loadBlockAsync(delete_block_hash);
 
         //
         // remove slips from wallet
@@ -1077,7 +1073,9 @@ console.log("run callbacks!");
                 }
             }
         }
+
         if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR) {
+console.log("not enough golden tickets!");
             return false;
         }
 
@@ -1087,6 +1085,7 @@ console.log("run callbacks!");
             if (new_chain.length > 0) {
                 return await this.unwindChain(new_chain, old_chain, 0, true);
             } else {
+console.log("lengths are inappropriate");
                 return false;
             }
         }

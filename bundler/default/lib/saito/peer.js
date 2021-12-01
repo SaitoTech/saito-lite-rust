@@ -161,8 +161,6 @@ class Peer {
 
     async handlePeerCommand(peer, message) {
 
-        console.log("peer "+peer.id+" handling message : " + message.message_name);
-
         let command = message.message_name;
         if (command === "SHAKINIT") {
             // let challenge = await this.buildSerializedHandshakeChallenge(message, wallet);
@@ -212,8 +210,6 @@ class Peer {
         } else if (command === "SNDBLKHD") {
             console.log("RECEIVED BLOCK HEADER");
             let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
-            console.log(send_block_head_message);
-            console.log(Buffer.from(send_block_head_message.block_hash).toString("hex"));
             let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
             let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
             if (is_block_indexed) {
@@ -228,11 +224,11 @@ class Peer {
                     if (res.ok) {
                         // console.log(res.body);
                         const base64Buffer = await res.arrayBuffer();
-                        console.log("buffer received for block");
-                        console.log(base64Buffer);
+                        //console.log("buffer received for block");
+                        //console.log(base64Buffer);
                         const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
-                        console.log("received buffer with length : " + buffer.length);
-                        console.log(buffer);
+                        //console.log("received buffer with length : " + buffer.length);
+                        //console.log(buffer);
                         let block = new saito.block(this.app);
                         block.deserialize(buffer);
                         console.log(`ADD TO MEMPOOL BLOCK ${block.returnId()} ${block.returnTimestamp()}`);
@@ -294,9 +290,6 @@ class Peer {
         if (reconstructed_data) {
             message.data = reconstructed_data;
         }
-
-        console.log("X: " + reconstructed_message);
-        console.log("Y: " + JSON.stringify(reconstructed_data));
 
         let mycallback = function (response_object) {
             peer.sendResponse(msg.message_id, response_object);
@@ -468,14 +461,7 @@ class Peer {
     // is open yet, even though it is.
     //
     async sendResponseFromStr(message_id, data) {
-        console.log("sendResponseFromStr");
-        console.log(data);
-console.log("which peer is sending response? " + this.id);
-        //if (this.socket && this.socket.readyState === this.socket.OPEN) {
         await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(data, 'utf-8'));
-        //} else {
-        //    console.error("socket not open");
-        //}
     }
 
     //
@@ -484,21 +470,10 @@ console.log("which peer is sending response? " + this.id);
     // is open yet, even though it is.
     //
     async sendResponse(message_id, data) {
-        console.log("sendResponse");
-        console.log(data);
-console.log("which peer is sending response? " + this.id);
-//console.log("RS: " + this.socket.readyState);
-        //if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("sending message_id ... : " + message_id);
-console.log("sending response now...: " + JSON.stringify(data));
         await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(JSON.stringify(data), 'utf-8'));
-        //} else {
-        //    console.error("socket not open");
-        //}
     }
 
     sendRequest(message, data = "") {
-        console.log("send request!");
 
         //
         // respect prohibitions

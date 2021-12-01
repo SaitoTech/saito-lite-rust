@@ -137,13 +137,47 @@ class Mempool {
 
 
     addTransaction(transaction) {
-        for (let i = 0; i < this.mempool.transactions.length; i++) {
-            if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
-                return;
-            }
-        }
 
-        this.mempool.transactions.push(transaction);
+	if (transaction.isGoldenTicket()) {
+
+	  let new_gt = this.app.goldenticket.deserialize(transaction.transaction.m);
+
+console.log("new gt targets hash: " + new_gt.target_hash);
+
+	  //
+	  // TODO -- update this to check the target block hash, not the sig
+	  //
+          for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
+
+	    let gt = this.app.goldenticket.deserialize(this.mempool.golden_tickets[i].transaction.m);
+	    
+console.log("gt at " + i + " targets hash: " + gt.target_hash);
+            if (gt.target_hash === new_gt.target_hash) {
+
+console.log("golden ticket already exists targeting this hash");
+              return false;
+            }
+
+          }
+
+console.log("adding golden ticket to mempool...");
+          this.mempool.golden_tickets.push(transaction);
+console.log("how many tickets? " + this.mempool.golden_tickets.length);
+
+	} else {
+
+          for (let i = 0; i < this.mempool.transactions.length; i++) {
+            if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
+              return false;
+            }
+          }
+
+console.log("adding normal tx to mempool...");
+          this.mempool.transactions.push(transaction);
+
+	}
+
+	return true;
     }
 
 
@@ -208,6 +242,10 @@ class Mempool {
 
     canBundleBlock() {
 
+        if (this.app.mempool.mempool.golden_tickets.length == 0 && this.app.blockring.returnLatestBlockId() > 2) {
+            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO GOLDEN TICKET -- want to avoid producing failed block");
+            return false;
+        }
         if (this.app.mempool.mempool.transactions.length === 0) {
             console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS");
             return false;

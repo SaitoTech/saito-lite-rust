@@ -412,8 +412,6 @@ console.log("REMOTE PEER ID: " + peer.id);
 
         console.log("being unable to make a block ourselves, we ... forward");
 
-        console.log("transaction being sent: " + JSON.stringify(tx.transaction));
-
         //
         // now send the transaction out with the appropriate routing hop
         //
@@ -421,21 +419,16 @@ console.log("REMOTE PEER ID: " + peer.id);
         for (let i = 0; i < tx.transaction.path.length; i++) {
             fees = fees / 2;
         }
-        console.log("peer count = " + this.peers.length);
         this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
             if (peer.peer.receivetxs === 0) {
-                console.log("peer does not receive txs... not sending");
                 return;
             }
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
-                    console.log("socket found");
-                    console.log(peer);
                     this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
                 } else {
                     console.error("socket not found");
-                    console.log(peer);
                 }
             }
         });
