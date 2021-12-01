@@ -410,7 +410,7 @@ class Chat extends ModTemplate {
     let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
     if (newtx == null) { return; }
     for (let i = 1; i < members.length; i++) {
-      newtx.transaction.to.push(this.app.wallet.createSlip(members[i]));
+      newtx.transaction.to.push(new saito.slip(members[i]));
     }
     newtx.msg = {
       module: "Chat",
