@@ -64,8 +64,6 @@ class Midnight extends GameTemplate {
     ///////////
     if (this.game.queue.length > 0) {
 
-console.log("QUEUE: " + JSON.stringify(this.game.queue));
-
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
 

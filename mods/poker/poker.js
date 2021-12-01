@@ -1272,13 +1272,8 @@ console.log("plays since last raise is now 1 because of raise...");
         html += '<li class="menu_option" id="0">cancel raise</li>';
         //}
 
-console.log("raise required: " + raise_required);
-console.log("credit remaining: " + credit_remaining);
-console.log("smallest stack: " + smallest_stack);
-
         for (let i = 0; i < 6; i++) {
           let this_raise = (raise_required + (i * poker_self.game.state.last_raise));
-console.log("this raise: " + this_raise);
           if (credit_remaining > this_raise && smallest_stack > this_raise) {
             if (this_raise - cost_to_monster > 0) {
               html += '<li class="menu_option" id="' + (this_raise - cost_to_monster) + '">raise ' + poker_self.sizeNumber(this_raise - cost_to_monster) + '</li>';
@@ -2815,9 +2810,9 @@ console.log("STATE: " + JSON.stringify(state));
 
     try {
     if (hide_info == 0) {
-      document.querySelector(".p1 > .info").style.display = "block";
+      document.querySelector(".poker-seat-1 > .info").style.display = "block";
     } else {
-      document.querySelector(".p1 > .info").style.display = "none";
+      document.querySelector(".poker-seat-1 > .info").style.display = "none";
     }
 
     if (this.lock_interface == 1) { return; }

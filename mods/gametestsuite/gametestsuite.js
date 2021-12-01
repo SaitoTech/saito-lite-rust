@@ -30,6 +30,12 @@ class GameTestSuite extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 6;
 
+    this.game_cardfan_visible = 0;
+    this.game_menu_visible = 0;
+    this.game_hud_visible = 0;
+    this.game_cardbox_visible = 0;
+    this.game_playerboxes_visible = 0;
+
     return this;
 
   }
@@ -71,9 +77,8 @@ class GameTestSuite extends GameTemplate {
       this.endTurn();
     }
 
-console.log("GAME CRYPTO IS: " + this.game.crypto);
-
   }
+
 
   //
   // initialize HTML and UI components
@@ -181,6 +186,7 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
     let state = {};
 
     state.cards_dealt_to_players = 0;
+    state.simultaneous_pick_submitted = 0;
 
     return state;
   }
@@ -282,6 +288,13 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
       }
 
       //
+      // insecure dice roll
+      //
+      document.getElementById("insecure_dice_roll_button").onclick = (e) => {
+	game_self.insecure_dice_roll_test(game_self.app);
+      }
+
+      //
       // secure dice roll
       //
       document.getElementById("secure_dice_roll_button").onclick = (e) => {
@@ -327,7 +340,14 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
       // deal cards to players
       //
       document.getElementById("deal_cards_to_player_button").onclick = (e) => {
-	game_self.deal_cards_to_player(game_self.app);
+	game_self.deal_cards_to_player_test(game_self.app);
+      }
+
+      //
+      // deal cards to the table
+      //
+      document.getElementById("shuffle_deck_button").onclick = (e) => {
+	game_self.shuffle_deck_test(game_self.app);
       }
 
       //
@@ -410,14 +430,30 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
   // developers. Questions and feedback are welcome, as are contributions.
   //
   add_player_boxes_test(app) {
-    this.playerbox.render(app, this);
-    this.playerbox.attachEvents(app, this);
-    for (let i = 0; i < this.game.players.length; i++) {
-      this.playerbox.refreshName(i+1);
+    if (this.game_playerboxes_visible == 0) {
+      this.playerbox.render(app, this);
+      this.playerbox.addClassAll("poker-seat-",true); //Have to manually add a class for positioning
+      this.playerbox.attachEvents(app, this);
+      for (let i = 0; i < this.game.players.length; i++) {
+        this.playerbox.refreshName(i+1);
+      }
+      this.game_playerboxes_visible = 1;
+    } else {
+      this.game_playerboxes_visible = 0;
+      this.playerbox.hide();
     }
   }
 
+  insecure_dice_roll_test(app) {
+    // individual machines can do this, but to keep dice rolls in sync wrap rolls in 
+    // a function that can be called simultaneously on both machines on the queue...
+    // this.diceRoll(6);
+    this.addMove("LOGDICE");
+    this.endTurn();
+  }
+
   secure_dice_roll_test(app) {
+    this.addMove("LOGDICE");
     this.requestSecureRoll();
     this.endTurn();
   }
@@ -426,6 +462,13 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
 
     let game_self = this;
     let simultaneous_pick_card = Math.random().toString();
+
+    if (game_self.game.state.simultaneous_pick_submitted) {
+      salert("All players need to click on the simultaneous pick button. The results will be printed in the console.log. The test is restricted to running a single time, to avoid players making multiple submissions before all players have contributed and triggering failures in card selection.");
+      return 0;
+    }
+
+    game_self.game.state.simultaneous_pick_submitted = 1;
 
     game_self.updateLog(`
 
@@ -540,7 +583,7 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
 
   }
 
-  deal_cards_to_player(app) {
+  deal_cards_to_player_test(app) {
 
     let game_self = this;
 
@@ -566,7 +609,7 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
 
   }
 
-  deal_cards_to_table(app) {
+  deal_cards_to_table_test(app) {
 
     let game_self = this;
 
@@ -591,6 +634,25 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
       game_self.addMove("DECKXOR\t1\t"+i);
     }
     game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck())); // create deck with index 1 (deck-1)
+    game_self.endTurn();
+
+  }
+
+
+  shuffle_deck_test(app) {
+
+    let game_self = this;
+
+    game_self.updateLog(`
+
+			shuffling a deck uses a random number to re-arrange the order of
+			undealt (encrypted or unencrypted) cards. simply use the SHUFFLE
+			instruction and deck-number and the game engine will handle this
+			for all players, while keeping decryption keys in sync, etc.			
+    `);
+
+    game_self.addMove("NOTIFY\tDeck 1 shuffle complete");
+    game_self.addMove("SHUFFLE\t1");
     game_self.endTurn();
 
   }
@@ -654,17 +716,29 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
   }
 
   display_cardfan_test(app) {
-    this.cardfan.render(this.app, this);
-    this.cardfan.attachEvents(this.app, this);
+    if (this.game_cardfan_visible == 0) {
+      this.cardfan.render(this.app, this);
+      this.cardfan.attachEvents(this.app, this);
+      this.game_cardfan_visible = 1;
+    } else {
+      this.cardfan.hide();
+      this.game_cardfan_visible = 0;
+    }
   }
 
   display_cardhud_test(app) {
-    this.hud.render(this.app, this);
-    this.hud.attachEvents(this.app, this);
-    this.hud.updateStatusMessageAndShowCards('updating the status message', this.game.deck[0].hand, this.game.deck[0].cards);
-    this.hud.onCardClick(function(card) {
-      alert("Selected a card: "+card);
-    });
+    if (this.game_hud_visible == 0) {
+      this.hud.render(this.app, this);
+      this.hud.attachEvents(this.app, this);
+      this.hud.updateStatusMessageAndShowCards('updating the status message', this.game.deck[0].hand, this.game.deck[0].cards);
+      this.hud.onCardClick(function(card) {
+        alert("Selected a card: "+card);
+      });
+      this.game_hud_visible = 1;
+    } else {
+      this.hud.hide();
+      this.game_hud_visible = 0;
+    }
   }
 
   toggle_cardbox_test(app) {
@@ -680,15 +754,16 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
   }
 
   add_menu_test(app) {
-    this.menu.addMenuOption({
+    if (this.game_menu_visible == 0) {
+      this.menu.addMenuOption({
           text : "Game",
           id : "game-game",
           class : "game-game",
           callback : function(app, game_mod) {
             game_mod.menu.showSubMenu("game-game");
           },
-    });
-    this.menu.addSubMenuOption("game-game", {
+      });
+      this.menu.addSubMenuOption("game-game", {
           text : "Log",
           id : "game-log",
           class : "game-log",
@@ -696,17 +771,22 @@ console.log("GAME CRYPTO IS: " + this.game.crypto);
             game_mod.menu.hideSubMenus();
             game_mod.log.toggleLog();
           },
-    });
-    this.menu.addSubMenuOption("game-game", {
+      });
+      this.menu.addSubMenuOption("game-game", {
           text : "Exit",
           id : "game-exit",
           class : "game-exit",
           callback : function(app, game_mod) {
             window.location.href = "/arcade";
           },
-    });
-    this.menu.render(this.app, this);
-    this.menu.attachEvents(this.app, this);
+      });
+      this.menu.render(this.app, this);
+      this.menu.attachEvents(this.app, this);
+      this.game_menu_visible = 1;
+    } else {
+      this.menu.hide();
+      this.game_menu_visible = 0;
+    }
   }
 
 

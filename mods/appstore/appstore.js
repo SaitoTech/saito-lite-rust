@@ -8,7 +8,7 @@ const AppStoreModuleIndexedConfirm = require('./lib/appstore-overlay/appstore-mo
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const fs = require('fs');
 const path = require('path');
-
+const JSON = require('json-bigint');
 
 
 class AppStore extends ModTemplate {

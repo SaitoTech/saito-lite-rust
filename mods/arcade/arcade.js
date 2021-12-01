@@ -7,6 +7,7 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const getMockGames = require('./mockinvites.js');
 const ArcadeContainerTemplate = require('./lib/arcade-main/templates/arcade-container.template');
 const ModalRegisterEmail = require('../../lib/saito/ui/modal-register-email/modal-register-email');
+const JSON = require('json-bigint');
 
 fetch = require("node-fetch");
 
@@ -695,6 +696,9 @@ console.log("and processing join request");
                 if (rows3[0].status === "open") {
                   this.accepted[game_id] = 0;
                   res.rows.push({ game_still_open: 1 });
+
+console.log("RES IS: " + JSON.stringify(res));
+
                   mycallback(res);
                   return;
                 }
@@ -709,6 +713,7 @@ console.log("and processing join request");
           res.rows.push({ game_still_open: 1 });
         }
 
+console.log("RES IS 2: " + JSON.stringify(res));
         mycallback(res);
         return;
 
@@ -1454,7 +1459,9 @@ console.log("and processing join request");
     if (!tx) { return false; }
 
     let for_us = true;
-    let txmsg = tx.returnMessage();
+    let txmsg = tx.returnMessage(this.app);
+
+console.log("HERE: " + JSON.stringify(txmsg));
 
     if (!txmsg) { return false; }
 

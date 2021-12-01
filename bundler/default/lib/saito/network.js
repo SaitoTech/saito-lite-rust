@@ -100,6 +100,8 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
+console.log("OUTBOUND PEER ID: " + peer.id);
+
         //
         // we connect to them
         //
@@ -116,6 +118,7 @@ class Network {
     // server sends us a websocket
     //
     addRemotePeer(socket) {
+
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
             console.log("ERROR 757594: denying request to remote peer as server overloaded...");
@@ -137,7 +140,12 @@ class Network {
         // add peer
         //
         let peer = new saito.peer(this.app);
+console.log("REMOTE PEER ID: " + peer.id);
         peer.socket = socket;
+	//
+	// manually setting, used so the socket knows which peer
+	//
+	peer.socket.peer = peer;
 
         //
         // they connected to us
@@ -411,6 +419,7 @@ class Network {
         for (let i = 0; i < tx.transaction.path.length; i++) {
             fees = fees / 2;
         }
+        console.log("peer count = " + this.peers.length);
         this.peers.forEach((peer) => {  //&& fees >= peer.peer.minfee
             if (peer.peer.receivetxs === 0) {
                 console.log("peer does not receive txs... not sending");
@@ -418,7 +427,14 @@ class Network {
             }
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
-                this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
+                if (peer.socket) {
+                    console.log("socket found");
+                    console.log(peer);
+                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
+                } else {
+                    console.error("socket not found");
+                    console.log(peer);
+                }
             }
         });
     }

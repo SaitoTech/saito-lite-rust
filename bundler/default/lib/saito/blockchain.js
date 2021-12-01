@@ -81,7 +81,7 @@ class Blockchain {
         //
         block.generateHashes();
 
-        console.log("ABTB: " + block.returnHash());
+console.log("ABTB: " + block.returnHash());
 
         //
         // start by extracting some variables that we will use
@@ -222,9 +222,7 @@ class Blockchain {
         // does this block require validation?
         //
         let am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);
-        if (am_i_the_longest_chain) {
-            block.lc = 1;
-        }
+        if (am_i_the_longest_chain) { block.lc = 1; }
         block.force = force;
 
         //
@@ -260,7 +258,8 @@ class Blockchain {
 
                 this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
                 this.app.connection.emit("BlockchainNewLongestChainBlock", {
-                    block_hash: block_hash, block_difficulty: block_difficulty
+                    block_hash: block_hash,
+                    block_difficulty: block_difficulty
                 });
                 this.indexing_active = false;
                 return 1;
@@ -294,7 +293,7 @@ class Blockchain {
 
         let block_id = block.returnId();
 
-        console.log("ABS: " + block_id);
+console.log("ABS: " + block_id);
 
         //
         // save to disk
@@ -331,28 +330,23 @@ class Blockchain {
             console.log("affixing callbacks!");
             block.affixCallbacks();
 
-            console.log(block.lc + " --- " + block.force);
-
             //
             // don't run callbacks if reloading (force!)
             //
             if (block.lc == 1 && block.force !== 1) {
 
-                console.log("run callbacks!");
+console.log("run callbacks!");
 
                 let starting_block_id = block.returnId() - this.callback_limit;
                 let block_id_in_which_to_delete_callbacks = block.returnId() - this.callback_limit;
-                if (starting_block_id < 1) {
-                    starting_block_id = 1;
-                }
+                if (starting_block_id < 1) { starting_block_id = 1; }
 
                 for (let i = starting_block_id; i <= block.returnId(); i++) {
 
-                    let blocks_back = block.returnId() - i;
+		    let blocks_back = block.returnId() - i;
                     let this_confirmation = blocks_back + 1;
                     let run_callbacks = 1;
 
-                    console.log("running callbacks for block: " + i + " at confirmation " + this_confirmation);
                     //
                     // if bid is less than our last-bid but it is still
                     // the biggest BID we have, then we should avoid
@@ -367,16 +361,11 @@ class Blockchain {
                         }
                     }
 
-                    console.log("should we run callbacks? " + run_callbacks);
-
                     if (run_callbacks === 1) {
                         let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-                        console.log("should we run callbacks? " + run_callbacks + " -- " + callback_block_hash);
                         if (callback_block_hash != "") {
                             let callback_block = this.blocks[callback_block_hash];
-                            console.log("next message if block is not null");
                             if (callback_block) {
-                                console.log("running callbacks on block: " + callback_block.returnId() + " at conf " + this_confirmation);
                                 await callback_block.runCallbacks(this_confirmation);
                             }
                         }
@@ -1106,7 +1095,7 @@ class Blockchain {
 
     async windChain(new_chain, old_chain, current_wind_index, wind_failure) {
 
-        console.log("wind chain...");
+console.log("wind chain...");
 
         //
         // if we are winding a non-existent chain with a wind_failure it
