@@ -354,10 +354,8 @@ console.log("REMOTE PEER ID: " + peer.id);
             // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
             if (this.peers[i].peer.sendblks === 1) {
                 let message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
-                console.log(message);
                 let buffer = message.serialize();
                 let new_message = SendBlockHeadMessage.deserialize(buffer);
-                console.log(new_message);
                 this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", message.serialize());
             }
             // }
