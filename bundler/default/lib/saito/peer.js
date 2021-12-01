@@ -161,19 +161,15 @@ class Peer {
 
         let command = message.message_name;
         if (command === "SHAKINIT") {
-            // let challenge = await this.buildSerializedHandshakeChallenge(message, wallet);
-            // await peer.sendResponse(message.message_id, challenge);
-            console.log("not handled yet");
-            // await peer.sendResponseFromStr(message.message_id, "OK");
-
-            // this.sendRequest("application message", Buffer.from("application message data"));
-
+            let challenge = await this.buildSerializedChallenge(message);
+            console.log(challenge);
+            await peer.sendResponse(message.message_id, challenge);
         } else if (command === "SHAKCOMP") {
-            let challenge = this.verifySocketHandshake(message.message_data);
+            let challenge = this.socketHandshakeVerify(message.message_data);
             if (challenge) {
                 peer.has_completed_handshake = true;
                 peer.publicKey = challenge.opponent_pubkey;
-                await peer.sendResponse(message.message_id, Buffer.from("OK", "utf-8"));
+                await peer.sendResponseFromStr(message.message_id, "OK");
             } else {
                 console.error("Error verifying peer handshake signature");
             }
@@ -191,9 +187,7 @@ class Peer {
             }
         } else if (command === "REQCHAIN") {
             await peer.sendResponseFromStr(message.message_id, "OK");
-            let blockchain_message = await this.buildSendBlockchainMessage(
-                RequestBlockchainMessage.deserialize(message.getMessageData(), this.app)
-            );
+            let blockchain_message = await this.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.getMessageData(), this.app));
             if (blockchain_message) {
                 let connection_id_clone = peer.connection_id + "";
                 // TODO : PORT thread + db code here.
@@ -350,11 +344,11 @@ class Peer {
     }
 
     buildSerializedChallenge(message) {
-        let my_pubkey = this.app.wallet.wallet.publickey;
-        let my_privkey = this.app.wallet.wallet.privatekey;
+        let my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
+        let my_privkey = Buffer.from(this.app.wallet.wallet.privatekey, 'hex');
 
-        let peer_octets = message.getMessageData().slice(0, 4);
-        let peer_pubkey = message.getMessageData().slice(4, 37);
+        let peer_octets = message.message_data.slice(0, 4);
+        let peer_pubkey = message.message_data.slice(4, 37);
         let my_octets = Buffer.from([127, 0, 0, 1]);
         let challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
         return challenge.serializeWithSig(my_privkey);
@@ -428,8 +422,7 @@ class Peer {
         let block_zero_hash = Buffer.alloc(32, 0);
 
         let peers_latest_hash = undefined;
-        if (request_blockchain_message.latest_block_id === 0
-            && request_blockchain_message.latest_block_hash === block_zero_hash) {
+        if (request_blockchain_message.latest_block_id === 0 && request_blockchain_message.latest_block_hash === block_zero_hash) {
             peers_latest_hash = block_zero_hash;
         } else {
             // TODO contains_block_hash_at_block_id for some reason needs mutable access to block_ring
