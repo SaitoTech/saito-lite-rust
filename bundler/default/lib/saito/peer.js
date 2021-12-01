@@ -19,7 +19,7 @@ class Peer {
 
         this.app = app || {};
 
-	this.id = new Date().getTime();
+        this.id = new Date().getTime();
 
         this.peer = {};
         this.peer.host = "localhost";
@@ -161,12 +161,11 @@ class Peer {
 
     async handlePeerCommand(peer, message) {
 
-        console.log("peer "+peer.id+" handling message : " + message.message_name);
+        console.log("peer " + peer.id + " handling message : " + message.message_name);
 
         let command = message.message_name;
         if (command === "SHAKINIT") {
             let challenge = await this.buildSerializedChallenge(message);
-            console.log(challenge);
             await peer.sendResponse(message.message_id, challenge);
         } else if (command === "SHAKCOMP") {
             let challenge = this.socketHandshakeVerify(message.message_data);
@@ -272,12 +271,12 @@ class Peer {
         let reconstructed_data;
 
         try {
-          mdata = msg.message_data.toString();
-          reconstructed_obj = JSON.parse(mdata);
-          reconstructed_message = reconstructed_obj.message;
-          reconstructed_data = reconstructed_obj.data;
+            mdata = msg.message_data.toString();
+            reconstructed_obj = JSON.parse(mdata);
+            reconstructed_message = reconstructed_obj.message;
+            reconstructed_data = reconstructed_obj.data;
         } catch (err) {
-          console.log("Error reconstructing data: " + err);
+            console.log("Error reconstructing data: " + err);
         }
 
         let message = {};
@@ -356,7 +355,11 @@ class Peer {
         let peer_pubkey = message.message_data.slice(4, 37);
         let my_octets = Buffer.from([127, 0, 0, 1]);
         let challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
-        return challenge.serializeWithSig(my_privkey);
+        let buffer = challenge.serializeWithSig(my_privkey);
+        console.log("serialized challenge", buffer);
+        console.log("serialized challenge length = " + buffer.length);
+        console.log("public key : ", this.app.crypto.fromBase58(this.app.wallet.wallet.publickey));
+        return buffer;
     }
 
     socketHandshakeVerify(message_data) {
@@ -365,11 +368,17 @@ class Peer {
             console.error("Error validating timestamp for handshake complete");
             return null;
         }
-        if (!this.app.crypto.verify(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize + 64), challenge.opponent_node.sig, challenge.opponent_node.public_key))) {
+        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize + 64)),
+                                        Buffer.from(challenge.opponent_node.sig).toString("hex"),
+                                        this.app.crypto.toBase58(Buffer.from(challenge.opponent_node.public_key).toString('hex'))
+        )) {
             console.error("Error with validating opponent sig");
             return null;
         }
-        if (!this.app.crypto.verify(this.app.hash(0, Network.ChallengeSize), challenge.challenger_node.sig, challenge.challenger_node.public_key)) {
+        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize)),
+                                        Buffer.from(challenge.challenger_node.sig).toString("hex"),
+                                        this.app.crypto.toBase58(Buffer.from(challenge.challenger_node.public_key).toString('hex'))
+        )) {
             console.error("Error with validating challenger sig");
             return null;
         }
@@ -433,7 +442,9 @@ class Peer {
             // TODO contains_block_hash_at_block_id for some reason needs mutable access to block_ring
             // We should figure out why this is and get rid of this problem, I don't think there's any
             // reason we should need to get the write lock for this operation...
-            if (!this.app.blockchain.containsBlockHashAtBlockId(request_blockchain_message.latest_block_id, request_blockchain_message.latest_block_hash)) {
+            if (!this.app.blockchain.containsBlockHashAtBlockId(request_blockchain_message.latest_block_id,
+                                                                request_blockchain_message.latest_block_hash
+            )) {
                 // The latest hash from our peer is not in the longest chain
                 return null;
             }
@@ -466,7 +477,7 @@ class Peer {
     async sendResponseFromStr(message_id, data) {
         console.log("sendResponseFromStr");
         console.log(data);
-console.log("which peer is sending response? " + this.id);
+        console.log("which peer is sending response? " + this.id);
         //if (this.socket && this.socket.readyState === this.socket.OPEN) {
         await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(data, 'utf-8'));
         //} else {
@@ -481,13 +492,14 @@ console.log("which peer is sending response? " + this.id);
     //
     async sendResponse(message_id, data) {
         console.log("sendResponse");
-        console.log(data);
-console.log("which peer is sending response? " + this.id);
+        console.log("data : ", data);
+        console.log("data length : " + data.length);
+        console.log("which peer is sending response? " + this.id);
 //console.log("RS: " + this.socket.readyState);
         //if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("sending message_id ... : " + message_id);
-console.log("sending response now...: " + JSON.stringify(data));
-        await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(JSON.stringify(data), 'utf-8'));
+        console.log("sending message_id ... : " + message_id);
+        console.log("sending response now...: " + JSON.stringify(data));
+        await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
         //} else {
         //    console.error("socket not open");
         //}
@@ -517,13 +529,13 @@ console.log("sending response now...: " + JSON.stringify(data));
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             // no need to await as no callback, so no response
-console.log("SENDING SENDMSG 1");
+            console.log("SENDING SENDMSG 1");
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then(() => {
                     console.debug("message sent with sendRequest");
                 });
         } else {
-console.log("SENDING SENDMSG 2");
+            console.log("SENDING SENDMSG 2");
             this.sendRequestWithCallbackAndRetry(message, data);
         }
     }
@@ -555,14 +567,14 @@ console.log("SENDING SENDMSG 2");
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("SEND MESG: !" + message);
+            console.log("SEND MESG: !" + message);
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then((response) => {
-console.log("RESPONSE RECEIVED: " + Buffer.from(response).toString('utf-8'));
+                    console.log("RESPONSE RECEIVED: ", response);
                     if (callback) {
                         let content = Buffer.from(response).toString('utf-8');
                         content = JSON.parse(content);
-console.log("SENDMESG callback: " + JSON.stringify(content));
+                        console.log("SENDMESG callback: " + JSON.stringify(content));
                         callback(content);
                     }
                 })
@@ -574,13 +586,13 @@ console.log("SENDMESG callback: " + JSON.stringify(content));
                 });
         } else {
             if (loop) {
-console.log("send request with callback and retry!");
+                console.log("send request with callback and retry!");
                 this.sendRequestWithCallbackAndRetry(message, data, callback);
             } else {
-              if (callback) {
-                callback({err: "Socket Not Connected"});
-              }
-	    }
+                if (callback) {
+                    callback({err: "Socket Not Connected"});
+                }
+            }
         }
     }
 
