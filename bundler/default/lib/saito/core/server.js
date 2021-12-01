@@ -63,6 +63,7 @@ class Server {
         server.on('connection', (wsocket, request) => {
 
             console.log("new connection received");
+
             this.app.network.addRemotePeer(wsocket);
 
             wsocket.on("message", async (message) => {
@@ -90,7 +91,7 @@ class Server {
 
         let server_self = this;
 
-        if (this.app.BROWSER == 1) {
+        if (this.app.BROWSER === 1) {
             return;
         }
 
@@ -115,7 +116,7 @@ class Server {
         //
         // sanity check
         //
-        if (this.server.host == "" || this.server.port == 0) {
+        if (this.server.host === "" || this.server.port === 0) {
             console.log("Not starting local server as no hostname / port in options file");
             return;
         }
@@ -288,12 +289,9 @@ class Server {
                 return res.sendStatus(404); // Not Found
             }
             let buffer = block.serialize();
-            console.log(buffer);
             buffer = Buffer.from(buffer, 'binary').toString('base64');
-            
 
             console.log("sending buffer with length : " + buffer.length);
-            console.log(buffer);
             res.status(200);
             res.end(buffer);
         });
@@ -353,7 +351,7 @@ class Server {
             //
             // caching in prod
             //
-            var caching = process.env.NODE_ENV == 'prod' ? "private max-age=31536000" : "private, no-cache, no-store, must-revalidate";
+            var caching = process.env.NODE_ENV === 'prod' ? "private max-age=31536000" : "private, no-cache, no-store, must-revalidate";
             res.setHeader("Cache-Control", caching);
             res.setHeader("expires", "-1");
             res.setHeader("pragma", "no-cache");
