@@ -1393,8 +1393,7 @@ console.log(" .. add future move " + gametx.transaction.sig);
     //}
 
 
-    game_self.app.network.propagateTransactionWithCallback(newtx, function (errobj) {
-    });
+    game_self.app.network.propagateTransaction(newtx);
 
   }
 

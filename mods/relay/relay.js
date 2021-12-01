@@ -114,13 +114,13 @@ class Relay extends ModTemplate {
   
   sendRelayMessageWithRetry(request, data, callback = ()=>{}) {
     data.request = request;
-    this.app.network.peers[0].sendRequestWithCallback("relayPeerMessage2", data, callback.bind(this));
+    this.app.network.peers[0].sendRequestWithCallbackAndRetry("relayPeerMessage2", data, callback.bind(this));
   }
   
   sendRelayMessageToRecipientWithRetry(request, recipient, data, callback = ()=>{}) {
     data.request = request;
     data.recipient = recipient;
-    this.app.network.peers[0].sendRequestWithCallback("relayPeerMessageToRecipient", data, callback.bind(this));
+    this.app.network.peers[0].sendRequestWithCallbackAndRetry("relayPeerMessageToRecipient", data, callback.bind(this));
   }
 
   async handlePeerRequest(app, message, peer, mycallback=null) {
@@ -136,7 +136,7 @@ class Relay extends ModTemplate {
             if(mycallback === null) {
               peer.sendRequest(message.data.request, message.data);
             } else {
-              peer.sendRequestWithCallback(message.data.request, message.data, function(res) {
+              peer.sendRequestWithCallbackAndRetry(message.data.request, message.data, function(res) {
                 mycallback(res);
               });
             }  

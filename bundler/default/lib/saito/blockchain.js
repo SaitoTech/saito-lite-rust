@@ -330,8 +330,6 @@ console.log("ABS: " + block_id);
             console.log("affixing callbacks!");
             block.affixCallbacks();
 
-console.log(block.lc + " --- " + block.force);
-
             //
             // don't run callbacks if reloading (force!)
             //
@@ -349,7 +347,6 @@ console.log("run callbacks!");
                     let this_confirmation = blocks_back + 1;
                     let run_callbacks = 1;
 
-console.log("running callbacks for block: " + i + " at confirmation " + this_confirmation);
                     //
                     // if bid is less than our last-bid but it is still
                     // the biggest BID we have, then we should avoid
@@ -364,16 +361,11 @@ console.log("running callbacks for block: " + i + " at confirmation " + this_con
                         }
                     }
 
-console.log("should we run callbacks? " + run_callbacks);
-
                     if (run_callbacks === 1) {
                         let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-console.log("should we run callbacks? " + run_callbacks + " -- " + callback_block_hash);
                         if (callback_block_hash != "") {
                             let callback_block = this.blocks[callback_block_hash];
-console.log("next message if block is not null");
                             if (callback_block) {
-                                console.log("running callbacks on block: " + callback_block.returnId() + " at conf " + this_confirmation);
                                 await callback_block.runCallbacks(this_confirmation);
                             }
                         }

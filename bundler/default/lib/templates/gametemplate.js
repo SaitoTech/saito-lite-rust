@@ -441,11 +441,11 @@ class GameTemplate extends ModTemplate {
       //
       // delete bad games
       //
-      if (this.app.options) {
-        for (let i = 0; i < this.app.options.games; i++) {
-          if (this.app.options.games[i].id) {
-            if (this.app.options.games[i].id.length < 25) {
-              this.app.options.games.splice(i, 1);
+      if (app.options?.games) {
+        for (let i = 0; i < app.options.games.length; i++) {
+          if (app.options.games[i].id) {
+            if (app.options.games[i].id.length < 25) {
+              app.options.games.splice(i, 1);
               i--;
             }
           }
@@ -2019,9 +2019,7 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
       }
     }
 
-    game_self.app.network.propagateTransactionWithCallback(newtx, function (errobj) {
-
-    });
+    game_self.app.network.propagateTransaction(newtx);
 
   }
 
