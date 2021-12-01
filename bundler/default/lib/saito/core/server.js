@@ -66,7 +66,6 @@ class Server {
             this.app.network.addRemotePeer(wsocket);
 
             wsocket.on("message", async (message) => {
-                console.log("message received from peer.id: " + wsocket.peer.id);
                 let api_message = this.app.networkApi.deserializeAPIMessage(message);
                 if (api_message.message_name === "RESULT__") {
                     this.app.networkApi.receiveAPIResponse(api_message);
