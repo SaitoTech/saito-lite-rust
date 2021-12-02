@@ -4,6 +4,7 @@ const EmailChat = require('./lib/email-chat/email-chat');
 const ChatMain = require('./lib/chat-main/chat-main');
 const ChatRoom = require('./lib/chat-main/chat-room');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
+const JSON = require('json-bigint');
 
 var marked = require('marked');
 var sanitizeHtml = require('sanitize-html');
@@ -172,6 +173,7 @@ class Chat extends ModTemplate {
     // create mastodon server
     //
     if (peer.isMainPeer()) {
+console.log("peer handshake complete with: " + peer.peer.publickey);
       this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
     } else {
 
@@ -523,6 +525,7 @@ class Chat extends ModTemplate {
         this.showAlert();
       }
     }
+
 
     //
     // if direct message, add group

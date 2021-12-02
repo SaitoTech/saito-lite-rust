@@ -220,8 +220,8 @@ class Crypto {
      * @returns {string}
      */
     signBuffer(buffer, privatekey) {
-        console.log("signBuffer", buffer);
-        console.log("buffer length = " + buffer.length);
+        //console.log("signBuffer", buffer);
+        //console.log("buffer length = " + buffer.length);
         let signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), privatekey).signature.toString('hex');
 
         return signature;
@@ -236,8 +236,8 @@ class Crypto {
      * @returns {boolean} is signature valid?
      */
     verifyHash(buffer, sig, pubkey) {
-        console.log("verifyHash");
-        console.log(arguments);
+        //console.log("verifyHash");
+        //console.log(arguments);
         try {
             return secp256k1.verify(Buffer.from(buffer, 'hex'), Buffer.from(sig, 'hex'), Buffer.from(this.fromBase58(pubkey), 'hex'));
         } catch (err) {

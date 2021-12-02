@@ -116,10 +116,46 @@ class Storage {
 
 
   /**
+   * FUNCTIONS OVERWRITTEN BY STORAGE-CORE WHICH HANDLES ITS OWN DATA STORAGE IN ./core/storage-core.js
+   **/
+
+  saveTransaction(tx) {
+
+    let txmsg = tx.returnMessage();
+
+    let message = "archive";
+    let data = {};
+        data.request = "save";
+        data.tx = tx;
+        data.type = txmsg.module;
+
+    this.app.network.sendRequestWithCallback(message, data, function(res) {
+    });
+
+  }
+
+
+  saveTransactionByKey(key, tx) {
+
+    let txmsg = tx.returnMessage();
+
+    let message = "archive";
+    let data = {};
+        data.request = "save_key";
+        data.tx = tx;
+        data.key = key;
+        data.type = txmsg.module;
+
+    this.app.network.sendRequestWithCallback(message, data, function(res) {
+    });
+
+  }
+
+
+  /**
    * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
    **/
   deleteBlockFromDisk(filename) {}
-
   loadBlockById(bid) {}
 
   loadBlockByHash(bsh) {}

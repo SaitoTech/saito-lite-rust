@@ -716,7 +716,6 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this
                 this.has_golden_ticket = 1;
                 mempool.mempool.golden_tickets.splice(i, 1);
                 i = mempool.mempool.golden_tickets.length + 2;
-console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeFromTransaction(this.transactions[0]));
             }
         }
 
@@ -1213,7 +1212,7 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
     }
 
     sign(publickey, privatekey) {
-        console.log("block::sign", privatekey);
+        //console.log("block::sign", privatekey);
         this.block.creator = publickey;
         this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()),
                                                           Buffer.from(privatekey, 'hex')
@@ -1222,7 +1221,7 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
 
     async validate() {
 
-        console.log("block::validate");
+        //console.log("block::validate");
         //
         // invalid if no transactions
         //
@@ -1380,7 +1379,6 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
         //
         // validate merkle root
         //
-console.log("GENERATING: " + this.block.merkle + " -- " + this.generateMerkleRoot());
         if (this.block.merkle !== this.generateMerkleRoot()) {
             console.log("merkle root is unset or is invalid false 1");
             return false;

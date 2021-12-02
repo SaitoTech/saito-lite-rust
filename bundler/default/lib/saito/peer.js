@@ -139,11 +139,11 @@ class Peer {
         this.socket.peer = this;
 
         //
-        // TODO - test
+        // TODO - test -- where is publickey set
         //
-        console.log("start emit handshake complete");
-        this.app.connection.emit("handshake_complete", this);
-        console.log("done emitting handshake complete");
+        //console.log("start emit handshake complete");
+        //this.app.connection.emit("handshake_complete", this);
+        //console.log("done emitting handshake complete");
 
     }
 
@@ -168,7 +168,7 @@ class Peer {
             let challenge = this.socketHandshakeVerify(message.message_data);
             if (challenge) {
                 peer.has_completed_handshake = true;
-                peer.publicKey = challenge.opponent_pubkey;
+                peer.publickey = challenge.opponent_pubkey;
                 await peer.sendResponseFromStr(message.message_id, "OK");
             } else {
                 console.error("Error verifying peer handshake signature");
@@ -522,7 +522,7 @@ class Peer {
     //
     sendRequestWithCallback(message, data = "", callback = null, loop = true) {
 
-        console.log("sendRequestWithCallback : " + message);
+        //console.log("sendRequestWithCallback : " + message);
         //
         // respect prohibitions
         //
@@ -543,14 +543,14 @@ class Peer {
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
-            console.log("SEND MESG: !" + message);
+            //console.log("SEND MESG: !" + message);
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then((response) => {
-                    console.log("RESPONSE RECEIVED: ", response);
+                    //console.log("RESPONSE RECEIVED: ", response);
                     if (callback) {
                         let content = Buffer.from(response).toString('utf-8');
                         content = JSON.parse(content);
-                        console.log("SENDMESG callback: ", content);
+                        //console.log("SENDMESG callback: ", content);
                         callback(content);
                     }
                 })
@@ -562,7 +562,7 @@ class Peer {
                 });
         } else {
             if (loop) {
-                console.log("send request with callback and retry!");
+                //console.log("send request with callback and retry!");
                 this.sendRequestWithCallbackAndRetry(message, data, callback);
             } else {
                 if (callback) {
