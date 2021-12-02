@@ -48,12 +48,21 @@ class GoldenTicket {
   }
 
   serialize(target_hash, random_hash) {
+
     let th = Buffer.from(target_hash, 'hex');
     let rh = Buffer.from(random_hash, 'hex');
     let cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
+
+    let th2 = this.app.binary.hexToSizedArray(th.toString('hex'), 32);
+    let rh2 = this.app.binary.hexToSizedArray(rh.toString('hex'), 32);
+
+//console.log("serializing th: " + th2.toString('hex'));
+//console.log("serializing rh: " + rh2.toString('hex'));
+//console.log("serializing cr: " + this.app.wallet.returnPublicKey());
+
     return new Uint8Array([
-       ...th,
-       ...rh,
+       ...th2,
+       ...rh2,
        ...cr,
     ]);
   }
@@ -61,12 +70,17 @@ class GoldenTicket {
   deserialize(buffer) {
     let target_hash = buffer.slice(0, 32).toString('hex');
     let random_hash = buffer.slice(32, 64).toString('hex');
-    let creator = buffer.slice(64, 97).toString('hex');
+    let creator = this.app.crypto.toBase58(buffer.slice(64, 97));
+
+//console.log("reconstructing th: " + target_hash);
+//console.log("reconstructing rh: " + random_hash);
+//console.log("reconstructing cr: " + creator);
+
     return { target_hash : target_hash , random_hash : random_hash , creator : creator };
   }
 
   deserializeFromTransaction(transaction) {
-    return this.deserialize(transaction.transaction.m);
+    return this.deserialize(Buffer.from(transaction.transaction.m));
   }
 
 }
