@@ -701,7 +701,7 @@ class Post extends ModTemplate {
 
   async receiveDeleteTransaction(tx) {
     
-    if (this.app.crypto.verifyMessage(tx.returnSignatureSource(this.app), tx.transaction.sig, tx.transaction.from[0].add)) {
+    if (this.app.crypto.verifyHash(this.app.crypto.hash(tx.returnSignatureSource(this.app)), tx.transaction.sig, tx.transaction.from[0].add)) {
       let txmsg = tx.returnMessage();
       console.log(txmsg);
       let sql = `
