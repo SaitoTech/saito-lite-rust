@@ -3,10 +3,10 @@ const JSON = require('json-bigint');
 
 const BLOCK_HEADER_SIZE = 213;
 const BlockType = {
-    Ghost: 0,
+    Ghost:  0,
     Header: 1,
     Pruned: 2,
-    Full: 3
+    Full:   3
 };
 
 class Block {
@@ -108,7 +108,8 @@ class Block {
         if (this.block.creator === "000000000000000000000000000000000000000000000000000000000000000000") {
             this.block.creator = "";
         }
-        if (this.block.signature === "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+        if (this.block.signature ===
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
             this.block.signature = "";
         }
 
@@ -119,7 +120,12 @@ class Block {
             let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
             let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
             let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
-            let end_of_transaction_data = start_of_transaction_data + saito.transaction.TRANSACTION_SIZE + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE) + message_len + path_len * saito.transaction.HOP_SIZE;
+            let end_of_transaction_data = start_of_transaction_data +
+                saito.transaction.TRANSACTION_SIZE +
+                ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE) +
+                message_len +
+                path_len *
+                saito.transaction.HOP_SIZE;
 
             let transaction = new saito.transaction();
             transaction.deserialize(this.app, buffer, start_of_transaction_data);
@@ -411,15 +417,15 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                 // calculate miner and router payments
                 //
                 let block_payout = {
-                    miner: "",
-                    staker: "",
-                    router: "",
-                    miner_payout: BigInt(0),
-                    staker_payout: BigInt(0),
-                    router_payout: BigInt(0),
+                    miner:            "",
+                    staker:           "",
+                    router:           "",
+                    miner_payout:     BigInt(0),
+                    staker_payout:    BigInt(0),
+                    router_payout:    BigInt(0),
                     staking_treasury: BigInt(0),
-                    staker_slip: null,
-                    random_number: next_random_number,
+                    staker_slip:      null,
+                    random_number:    next_random_number,
                 };
 
                 block_payout.router = previous_block.findWinningRouter(next_random_number);
@@ -490,15 +496,15 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                                 let rp = staking_block.returnFeesTotal() - sp;
 
                                 let block_payout = {
-                                    miner: "",
-                                    staker: "",
-                                    router: "",
-                                    miner_payout: BigInt(0),
-                                    staker_payout: BigInt(0),
-                                    router_payout: BigInt(0),
+                                    miner:            "",
+                                    staker:           "",
+                                    router:           "",
+                                    miner_payout:     BigInt(0),
+                                    staker_payout:    BigInt(0),
+                                    router_payout:    BigInt(0),
                                     staking_treasury: BigInt(0),
-                                    staker_slip: null,
-                                    random_number: next_random_number,
+                                    staker_slip:      null,
+                                    random_number:    next_random_number,
                                 };
 
                                 block_payout.router = staking_block.findWinningRouter(next_random_number);
@@ -668,7 +674,10 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
             previous_block_staking_treasury = previous_block.block.staking_treasury;
         }
 
-        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, current_timestamp, previous_block_timestamp);
+        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee,
+                                                                                                      current_timestamp,
+                                                                                                      previous_block_timestamp
+        );
 
         //
         // set our values
@@ -1146,18 +1155,18 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
         let difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
         let block_header_data = new Uint8Array([
-            ...transactions_length,
-            ...id,
-            ...timestamp,
-            ...previous_block_hash,
-            ...creator,
-            ...merkle_root,
-            ...signature,
-            ...treasury,
-            ...staking_treasury,
-            ...burnfee,
-            ...difficulty,
-        ]);
+                                                   ...transactions_length,
+                                                   ...id,
+                                                   ...timestamp,
+                                                   ...previous_block_hash,
+                                                   ...creator,
+                                                   ...merkle_root,
+                                                   ...signature,
+                                                   ...treasury,
+                                                   ...staking_treasury,
+                                                   ...burnfee,
+                                                   ...difficulty,
+                                               ]);
 
 
         if (block_type === BlockType.Header) {
@@ -1190,25 +1199,28 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
 
     serializeForSignature() {
         return Uint8Array.from(Buffer.concat([
-            this.app.binary.u64AsBytes(this.block.id),
-            this.app.binary.u64AsBytes(this.block.timestamp),
-            this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
-            this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator).toString('hex'), 33),
-            this.app.binary.hexToSizedArray(this.block.merkle, 32),
-            this.app.binary.u64AsBytes(this.block.treasury.toString()),
-            this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
-            this.app.binary.u64AsBytes(this.block.burnfee.toString()),
-            this.app.binary.u64AsBytes(this.block.difficulty)
-        ]));
+                                                 this.app.binary.u64AsBytes(this.block.id),
+                                                 this.app.binary.u64AsBytes(this.block.timestamp),
+                                                 this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
+                                                 this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator).toString('hex'), 33),
+                                                 this.app.binary.hexToSizedArray(this.block.merkle, 32),
+                                                 this.app.binary.u64AsBytes(this.block.treasury.toString()),
+                                                 this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
+                                                 this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+                                                 this.app.binary.u64AsBytes(this.block.difficulty)
+                                             ]));
     }
 
     sign(publickey, privatekey) {
+        console.log("block::sign", privatekey);
         this.block.creator = publickey;
-        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.app.crypto.hash(Buffer.from(this.serializeForSignature())), 'hex'), Buffer.from(privatekey, 'hex'));
+        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()),
+                                                          Buffer.from(privatekey, 'hex')
+        );
     }
 
     async validate() {
-
+        console.log("block::validate");
         //
         // invalid if no transactions
         //
@@ -1280,7 +1292,10 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
             //
             // burn fee
             //
-            let new_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block.returnBurnFee(), this.returnTimestamp(), previous_block.returnTimestamp());
+            let new_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block.returnBurnFee(),
+                                                                                                      this.returnTimestamp(),
+                                                                                                      previous_block.returnTimestamp()
+            );
             if (new_burnfee !== this.returnBurnFee()) {
                 console.log("ERROR 182085: burn fee not calculated properly thus invalid");
                 return false;
@@ -1290,7 +1305,10 @@ console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeF
             //
             // validate routing work required
             //
-            let amount_of_routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(previous_block.returnBurnFee(), this.returnTimestamp(), previous_block.returnTimestamp());
+            let amount_of_routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(previous_block.returnBurnFee(),
+                                                                                                              this.returnTimestamp(),
+                                                                                                              previous_block.returnTimestamp()
+            );
             if (this.routing_work_for_creator < amount_of_routing_work_needed) {
                 console.log("ERROR 510293: block lacking adequate routing work from creator");
                 return false;

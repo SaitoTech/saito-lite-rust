@@ -5,16 +5,16 @@ const SLIP_SIZE = 75;
 const HOP_SIZE = 130;
 
 const TransactionType = {
-    Normal: 0,
-    Fee: 1,
-    GoldenTicket: 2,
-    ATR: 3,
-    Vip: 4,
-    StakerDeposit: 5,
+    Normal:           0,
+    Fee:              1,
+    GoldenTicket:     2,
+    ATR:              3,
+    Vip:              4,
+    StakerDeposit:    5,
     StakerWithdrawal: 6,
-    Other: 7,
-    Issuance: 8,
-    SPV: 9,
+    Other:            7,
+    Issuance:         8,
+    SPV:              9,
 };
 
 class Transaction {
@@ -333,7 +333,10 @@ class Transaction {
                 //
                 // do not count outputs in GT and FEE txs create outputs that cannot be counted.
                 //
-                if (this.transaction.to[v].type !== saito.transaction.TransactionType.Fee && this.transaction.to[v].type !== saito.transaction.TransactionType.GoldenTicket) {
+                if (this.transaction.to[v].type !==
+                    saito.transaction.TransactionType.Fee &&
+                    this.transaction.to[v].type !==
+                    saito.transaction.TransactionType.GoldenTicket) {
                     outputs += this.transaction.to[v].returnAmount();
                 }
             }
@@ -379,11 +382,11 @@ class Transaction {
     }
 
     returnSignature(app, force = 0) {
-      if (this.transaction.sig !== "" && force != 1) {
+        if (this.transaction.sig !== "" && force != 1) {
+            return this.transaction.sig;
+        }
+        this.sign(app);
         return this.transaction.sig;
-      }
-      this.sign(app);
-      return this.transaction.sig;
     }
 
     returnMessage() {
@@ -514,7 +517,8 @@ class Transaction {
      * @returns {array} raw bytes
      */
     serialize(app) {
-
+        console.log("tx.serialize", this.transaction);
+        
         let inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
         let outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
         let message_len = app.binary.u32AsBytes(this.transaction.m.length);
@@ -546,18 +550,23 @@ class Transaction {
         let start_of_outputs = TRANSACTION_SIZE + ((this.transaction.from.length) * SLIP_SIZE);
         let start_of_message = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE);
         let start_of_path = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length;
-        let size_of_tx_data = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length + this.transaction.path.length * HOP_SIZE;
+        let size_of_tx_data = TRANSACTION_SIZE +
+            ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) +
+            this.transaction.m.length +
+            this.transaction.path.length *
+            HOP_SIZE;
 
         let ret = new Uint8Array(size_of_tx_data);
         ret.set(new Uint8Array([
-                ...inputs_len,
-                ...outputs_len,
-                ...message_len,
-                ...path_len,
-                ...signature,
-                ...timestamp,
-                transaction_type]),
-            0);
+                                   ...inputs_len,
+                                   ...outputs_len,
+                                   ...message_len,
+                                   ...path_len,
+                                   ...signature,
+                                   ...timestamp,
+                                   transaction_type]),
+                0
+        );
 
         for (let i = 0; i < this.transaction.from.length; i++) {
             inputs.push(this.transaction.from[i].serialize(app));
@@ -613,9 +622,9 @@ class Transaction {
         buffer = Buffer.concat([buffer, Buffer.from(app.binary.u32AsBytes(this.transaction.type))]);
 
         let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
-if (this.transaction.type == saito.transaction.TransactionType.GoldenTicket) {
-  console.log("GT details: " + JSON.stringify(app.goldenticket.deserializeFromTransaction(this)));
-}
+        if (this.transaction.type == saito.transaction.TransactionType.GoldenTicket) {
+            console.log("GT details: " + JSON.stringify(app.goldenticket.deserializeFromTransaction(this)));
+        }
         let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
         buffer = Buffer.concat([buffer, tm]);
 
@@ -639,7 +648,9 @@ if (this.transaction.type == saito.transaction.TransactionType.GoldenTicket) {
             this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
         }
 
-        this.transaction.sig = app.crypto.signBuffer(Buffer.from(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), 'hex'), Buffer.from(app.wallet.returnPrivateKey(), 'hex'));
+        this.transaction.sig = app.crypto.signBuffer(Buffer.from(app.crypto.hash(Buffer.from(this.serializeForSignature(app))), 'hex'),
+                                                     Buffer.from(app.wallet.returnPrivateKey(), 'hex')
+        );
 
     }
 
