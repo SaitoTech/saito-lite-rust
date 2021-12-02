@@ -5,7 +5,8 @@ const Big = require('big.js')
 class BurnFee {
 
   constructor() {
-    this.heartbeat = 30_000;
+    //this.heartbeat = 30_000;
+    this.heartbeat = 5_000;
   }
 
   returnRoutingWorkNeededToProduceBlockInNolan(burn_fee_previous_block, current_block_timestamp, previous_block_timestamp) {
