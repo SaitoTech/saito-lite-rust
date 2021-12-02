@@ -285,7 +285,7 @@ try {
                 this.has_golden_ticket = true;
                 this.gt_idx = i;
 console.log("GOLDEN TICKET");
-console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this.transactions[i].deserializeFromTransaction())));
+console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this.transactions[i])));
             }
             if (this.transactions[i].isIssuanceTransaction()) {
                 cv.it_num += 1;
@@ -293,6 +293,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this
                 this.has_issuance_transaction = true;
             }
 } catch (err) {
+  console.log("ERROR: " + err);
   console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
 }
         }
