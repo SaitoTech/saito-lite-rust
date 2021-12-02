@@ -64,12 +64,13 @@ class Block {
 
 
     affixCallbacks() {
-      for (let z = 0; z < this.transactions.length; z++) {
-        if (this.transactions[z].transaction.type === saito.transaction.TransactionType.Normal) {
-          let txmsg = this.transactions[z].returnMessage();
-          this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
+
+        for (let z = 0; z < this.transactions.length; z++) {
+            if (this.transactions[z].transaction.type === saito.transaction.TransactionType.Normal) {
+                let txmsg = this.transactions[z].returnMessage();
+                this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
+            }
         }
-      }
     }
 
 
@@ -79,7 +80,7 @@ class Block {
      * @returns {Block}
      */
     deserialize(buffer) {
-        
+
         let transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
         this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
         this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)).toString());
@@ -118,11 +119,7 @@ class Block {
             let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
             let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
             let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
-            let end_of_transaction_data = start_of_transaction_data
-                + saito.transaction.TRANSACTION_SIZE
-                + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE)
-                + message_len
-                + path_len * saito.transaction.HOP_SIZE;
+            let end_of_transaction_data = start_of_transaction_data + saito.transaction.TRANSACTION_SIZE + ((inputs_len + outputs_len) * saito.transaction.SLIP_SIZE) + message_len + path_len * saito.transaction.HOP_SIZE;
 
             let transaction = new saito.transaction();
             transaction.deserialize(this.app, buffer, start_of_transaction_data);
@@ -130,6 +127,7 @@ class Block {
             start_of_transaction_data = end_of_transaction_data;
 
         }
+
 
     }
 
@@ -174,7 +172,7 @@ class Block {
         //
         // if there are no fees, payout to no-one
         //
-        if (y == 0) {
+        if (y === 0) {
             return "";
         }
 
@@ -195,7 +193,7 @@ class Block {
         //
         // if winner is atr, take inside TX
         //
-        if (winning_tx.returnTransactionType == saito.transaction.TransactionType.ATR) {
+        if (winning_tx.returnTransactionType === saito.transaction.TransactionType.ATR) {
             let buffer = winning_tx.returnMessage();
             let winning_tx_placeholder = new saito.transaction();
             winning_tx_placeholder.deserialize(buffer);
@@ -216,16 +214,16 @@ class Block {
 
 
     isType(type) {
-        if (type == "Ghost") {
+        if (type === "Ghost") {
             return (this.block_type === BlockType.Ghost);
         }
-        if (type == "Pruned") {
+        if (type === "Pruned") {
             return (this.block_type === BlockType.Pruned);
         }
-        if (type == "Header") {
+        if (type === "Header") {
             return (this.block_type === BlockType.Header);
         }
-        if (type == "Full") {
+        if (type === "Full") {
             return (this.block_type === BlockType.Full);
         }
     }
@@ -299,7 +297,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
 
             let difficulty = previous_block.returnDifficulty();
 
-            if (previous_block.hasGoldenTicket() && cv.gt_num == 0) {
+            if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
                 if (difficulty > 0) {
                     cv.expected_difficulty = previous_block.returnDifficulty() - 1;
                 }
@@ -452,7 +450,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                 //
                 let staking_block_hash = previous_block.returnPreviousBlockHash();
 
-                while (cont == 1) {
+                while (cont === 1) {
 
                     loop_idx += 1;
 
@@ -538,7 +536,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                                     //
                                     // add payout to staker if staker is new
                                     //
-                                    if (slip_was_spent == 0) {
+                                    if (slip_was_spent === 0) {
                                         block_payout.staker = staker_slip.returnPublicKey();
                                         block_payout.staker_payout = staker_slip.returnAmount() + staker_slip.returnPayout();
                                         block_payout.staker_slip = staker_slip.clone();
@@ -614,7 +612,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         // blocks we recurse to collect NOLAN we have to add the amount of the unpaid
         // block to the amount of NOLAN that is falling off our chain.
         //
-        if (cv.gt_num == 0) {
+        if (cv.gt_num === 0) {
             for (let i = 1; i <= MAX_STAKER_RECURSION; i++) {
                 if (i >= this.returnId()) {
                     break;
@@ -622,7 +620,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
 
                 let bid = this.returnId() - i;
                 let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
-                if (previous_block_hash != "") {
+                if (previous_block_hash !== "") {
                     let previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
                     if (previous_block) {
                         if (previous_block.hasGoldenTicket()) {
@@ -633,7 +631,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                             // our iterator starting at 0 for the current block. i.e. if MAX_STAKER_
                             // RECURSION is 3, at 3 we are the fourth block back.
                             //
-                            if (i == MAX_STAKER_RECURSION) {
+                            if (i === MAX_STAKER_RECURSION) {
                                 cv.nolan_falling_off_chain = previous_block.returnFeesTotal();
                             }
                         }
@@ -670,11 +668,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
             previous_block_staking_treasury = previous_block.block.staking_treasury;
         }
 
-        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(
-            previous_block_burnfee,
-            current_timestamp,
-            previous_block_timestamp
-        );
+        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, current_timestamp, previous_block_timestamp);
 
         //
         // set our values
@@ -711,6 +705,8 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                 this.has_golden_ticket = 1;
                 mempool.mempool.golden_tickets.splice(i, 1);
                 i = mempool.mempool.golden_tickets.length + 2;
+console.log("CREATING BLOCK WITH THIS GT: " + this.app.goldenticket.deserializeFromTransaction(this.transactions[0]));
+                this.transactions.unshift(mempool.mempool.golden_tickets[i]);
             }
         }
 
@@ -765,7 +761,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         //
         // set treasury
         //
-        if (cv.nolan_falling_off_chain != 0) {
+        if (cv.nolan_falling_off_chain !== 0) {
             this.block.treasury(previous_block_treasury + cv.nolan_falling_off_chain);
         }
 
@@ -773,7 +769,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         //
         // set staking treasury
         //
-        if (cv.staking_treasury != 0) {
+        if (cv.staking_treasury !== 0) {
             let adjusted_staking_treasury = previous_block_staking_treasury;
             if (cv.staking_treasury < 0) {
                 let x = cv.staking_treasury * -1;
@@ -983,7 +979,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         if (!this.has_fee_transaction) {
             return null;
         }
-        if (this.transactions.length == 0) {
+        if (this.transactions.length === 0) {
             return null;
         }
         return this.transactions[this.ft_idx];
@@ -997,7 +993,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         if (!this.has_golden_ticket) {
             return null;
         }
-        if (this.transactions.length == 0) {
+        if (this.transactions.length === 0) {
             return null;
         }
         return this.transactions[this.gt_idx];
@@ -1029,7 +1025,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
             for (let i = this.confirmations + 1; i <= conf; i++) {
                 for (let ii = 0; ii < this.callbacks.length; ii++) {
                     try {
-                        if (run_callbacks == 1) {
+                        if (run_callbacks === 1) {
                             await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
                         }
                     } catch (err) {
@@ -1051,7 +1047,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         // they are trusting the server to notify them when there *are* transactions
         // as in any other blockchains/SPV/MR implementation.
         //
-        if (this.transactions.length == 0 && (this.app.BROWSER == 1 || this.app.SPVMODE == 1)) {
+        if (this.transactions.length === 0 && (this.app.BROWSER === 1 || this.app.SPVMODE === 1)) {
             return this.block.merkle;
         }
 
@@ -1059,19 +1055,19 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         let txs = [];
 
         for (let i = 0; i < this.transactions.length; i++) {
-            if (this.transactions[i].transaction.type == saito.transaction.TransactionType.SPV) {
+            if (this.transactions[i].transaction.type === saito.transaction.TransactionType.SPV) {
                 txs.push(this.transactions[i].transaction.sig);
             } else {
                 txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app)));
             }
         }
 
-        while (mr == "") {
+        while (mr === "") {
 
             let tx2 = [];
 
             if (txs.length <= 2) {
-                if (txs.length == 1) {
+                if (txs.length === 1) {
                     mr = txs[0];
                 } else {
                     mr = this.app.crypto.hash(("" + txs[0] + txs[1]));
@@ -1164,7 +1160,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         ]);
 
 
-        if (block_type == BlockType.Header) {
+        if (block_type === BlockType.Header) {
             let ret = new Uint8Array(BLOCK_HEADER_SIZE);
             ret.set(block_header_data, 0);
             return ret;
@@ -1208,7 +1204,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
 
     sign(publickey, privatekey) {
         this.block.creator = publickey;
-        this.block.signature = this.app.crypto.signBuffer(this.app.crypto.hash(Buffer.from(this.serializeForSignature())), privatekey);
+        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.app.crypto.hash(Buffer.from(this.serializeForSignature())), 'hex'), Buffer.from(privatekey, 'hex'));
     }
 
     async validate() {
@@ -1216,7 +1212,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         //
         // invalid if no transactions
         //
-        if (this.transactions.length == 0) {
+        if (this.transactions.length === 0) {
             console.log("ERROR 582034: no transactions in blocks, thus invalid");
             return false;
         }
@@ -1275,7 +1271,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
                 let x = cv_st;
                 adjusted_staking_treasury = adjusted_staking_treasury + x;
             }
-            if (this.returnStakingTreasury() != adjusted_staking_treasury.toString()) {
+            if (this.returnStakingTreasury() !== adjusted_staking_treasury.toString()) {
                 console.log("ERROR 820391: staking treasury does not validate");
                 return false;
             }
@@ -1285,7 +1281,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
             // burn fee
             //
             let new_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block.returnBurnFee(), this.returnTimestamp(), previous_block.returnTimestamp());
-            if (new_burnfee != this.returnBurnFee()) {
+            if (new_burnfee !== this.returnBurnFee()) {
                 console.log("ERROR 182085: burn fee not calculated properly thus invalid");
                 return false;
             }
@@ -1348,15 +1344,15 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         // which we counted in the generate_metadata() function, with the
         // expected number given the consensus values we calculated earlier.
         //
-        if (cv.total_rebroadcast_slips != this.total_rebroadcast_slips) {
+        if (cv.total_rebroadcast_slips !== this.total_rebroadcast_slips) {
             console.log("ERROR 624442: rebroadcast slips total incorrect");
             return false;
         }
-        if (cv.total_rebroadcast_nolan != this.total_rebroadcast_nolan) {
+        if (cv.total_rebroadcast_nolan !== this.total_rebroadcast_nolan) {
             console.log(`ERROR 294018: rebroadcast nolan amount incorrect: ${cv.total_rebroadcast_nolan} - ${this.total_rebroadcast_nolan}`);
             return false;
         }
-        if (cv.rebroadcast_hash != this.rebroadcast_hash) {
+        if (cv.rebroadcast_hash !== this.rebroadcast_hash) {
             console.log("ERROR 123422: hash of rebroadcast transactions incorrect");
             return false;
         }
@@ -1365,7 +1361,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(tran
         // validate merkle root
         //
 console.log("GENERATING: " + this.block.merkle + " -- " + this.generateMerkleRoot());
-        if (this.block.merkle != this.generateMerkleRoot()) {
+        if (this.block.merkle !== this.generateMerkleRoot()) {
             console.log("merkle root is unset or is invalid false 1");
             return false;
         }
@@ -1384,7 +1380,7 @@ console.log("GENERATING: " + this.block.merkle + " -- " + this.generateMerkleRoo
             //
             // no golden ticket? invalid
             //
-            if (cv.gt_num == 0) {
+            if (cv.gt_num === 0) {
                 console.log("ERROR 48203: fee transaction exists but no golden ticket, thus invalid");
                 return false;
             }
@@ -1401,7 +1397,7 @@ console.log("GENERATING: " + this.block.merkle + " -- " + this.generateMerkleRoo
             let hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature());
             let hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
 
-            if (hash1 != hash2) {
+            if (hash1 !== hash2) {
                 console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
                 return false;
             }
@@ -1421,7 +1417,7 @@ console.log("GENERATING: " + this.block.merkle + " -- " + this.generateMerkleRoo
         // certain amount of golden ticket solutions over-time, so the
         // distinction is in practice less clean.
         //
-        if (cv.expected_difficulty != this.returnDifficulty()) {
+        if (cv.expected_difficulty !== this.returnDifficulty()) {
             console.log("ERROR 202392: difficulty is invalid - " + cv.expected_difficulty + " versus " + this.returnDifficulty());
             return false;
         }
