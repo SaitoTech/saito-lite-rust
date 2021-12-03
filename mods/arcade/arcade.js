@@ -486,7 +486,7 @@ class Arcade extends ModTemplate {
                     //
                     let currentTime = new Date().getTime();
                     if ((currentTime - this.app.options.games[i].ts) > 5000) {
-                      console.log(`${currentTime} ------- ${this.app.options.games[i].ts}`);
+                      //console.log(`${currentTime} ------- ${this.app.options.games[i].ts}`);
                       return;
                     }
                   }
@@ -572,8 +572,6 @@ class Arcade extends ModTemplate {
       let conf = 0;
       let blk = null;
 
-console.log("arcade spv update: " + JSON.stringify(txmsg));
-
       //
       // open msgs -- public invitations
       //
@@ -595,9 +593,7 @@ console.log("arcade spv update: " + JSON.stringify(txmsg));
       // join msgs -- add myself to game list
       //
       if (txmsg.request == "join") {
-console.log("joining game on open list...");
         this.joinGameOnOpenList(tx);
-console.log("and processing join request");
         this.receiveJoinRequest(blk, tx, conf, app);
       }
 
@@ -696,9 +692,6 @@ console.log("and processing join request");
                 if (rows3[0].status === "open") {
                   this.accepted[game_id] = 0;
                   res.rows.push({ game_still_open: 1 });
-
-console.log("RES IS: " + JSON.stringify(res));
-
                   mycallback(res);
                   return;
                 }
@@ -713,7 +706,6 @@ console.log("RES IS: " + JSON.stringify(res));
           res.rows.push({ game_still_open: 1 });
         }
 
-console.log("RES IS 2: " + JSON.stringify(res));
         mycallback(res);
         return;
 
@@ -1157,7 +1149,6 @@ console.log("RES IS 2: " + JSON.stringify(res));
     let arcade_self = this;
     arcade_self.is_initializing = true;
     arcade_self.initialization_timer = setInterval(() => {
-      console.log("setInterval");
       let game_idx = -1;
       if (arcade_self.app.options.games != undefined) {
         for (let i = 0; i < arcade_self.app.options.games.length; i++) {
@@ -1460,8 +1451,6 @@ console.log("RES IS 2: " + JSON.stringify(res));
 
     let for_us = true;
     let txmsg = tx.returnMessage(this.app);
-
-console.log("HERE: " + JSON.stringify(txmsg));
 
     if (!txmsg) { return false; }
 

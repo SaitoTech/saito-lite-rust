@@ -1214,9 +1214,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this
     sign(publickey, privatekey) {
         //console.log("block::sign", privatekey);
         this.block.creator = publickey;
-        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()),
-                                                          Buffer.from(privatekey, 'hex')
-        );
+        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()), privatekey);
     }
 
     async validate() {

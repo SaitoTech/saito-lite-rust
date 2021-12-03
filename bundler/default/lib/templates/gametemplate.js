@@ -211,13 +211,13 @@ class GameTemplate extends ModTemplate {
 	if (ptx.msg) {
 	  if (ptx.msg.game_id) {
 	    if (ptx.msg.game_id == this.game.id) {
+/***
 
 	      console.log("Rebroadcasting Pending Game TX as NEW TX");
 	      console.log("gameid: " + ptx.msg.game_id);
 
 	      let newptx = ptx;
 
-/***
 	      //
 	      // resend move as zero-fee TX in case of failure with slips in paid one
 	      //
@@ -835,6 +835,9 @@ class GameTemplate extends ModTemplate {
     let all_verify = 1;
     if (txmsg.players.length != txmsg.players_sigs.length) { all_verify = 0; }
     for (let i = 0; i < txmsg.players.length; i++) {
+console.log("verifying: " + msg_to_verify);
+console.log("sig: " + txmsg.player_sigs[i]);
+console.log("publickey: " + txmsg.players[i]);
       if (!app.crypto.verifyMessage(msg_to_verify, txmsg.players_sigs[i], txmsg.players[i])) {
         console.log("PLAYER SIGS do not verify for all players, aborting game acceptance");
         this.game.halted = 0;

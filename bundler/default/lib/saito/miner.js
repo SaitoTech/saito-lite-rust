@@ -44,25 +44,15 @@ class Miner {
 
 
   stopMining() {
-
     this.mining_active = false;
     clearInterval(this.mining_timer);
-
   }
 
 
   async mine() {
-
-console.log("mining active? " + this.mining_active);
-
     if (this.mining_active) {
-
       let random_hash = this.app.crypto.generateRandomNumber();
-
-console.log("mining against: " + this.target);
-
       if (this.app.goldenticket.validate(this.target, random_hash, this.app.wallet.returnPublicKey(), this.difficulty)) {
-
 	let transaction = this.app.wallet.createUnsignedTransaction();
         transaction.transaction.type = saito.transaction.TransactionType.GoldenTicket;
         transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash).toString('base64');
@@ -71,7 +61,6 @@ console.log("mining against: " + this.target);
         this.stopMining();
       }
     }
-
   }
 
 }

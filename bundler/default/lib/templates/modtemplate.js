@@ -120,7 +120,6 @@ class ModTemplate {
           try {
             let filename = path.join(sqldir, sql_files[i]);
             let data = fs.readFileSync(filename, 'utf8');
-            console.log("Creating database for: " + dbname);
             await app.storage.executeDatabase(data, {}, dbname);
           } catch (err) {
             console.log(err);
@@ -529,12 +528,10 @@ class ModTemplate {
 
     if (peer == null) {
       this.app.network.sendRequestWithCallback(message.request, message.data, function (res) {
-        console.log("callback data1: " + JSON.stringify(res));
         mycallback(res);
       });
     } else {
       peer.sendRequestWithCallback(message.request, message.data, function (res) {
-        console.log("callback data2: " + JSON.stringify(res));
         mycallback(res);
       });
     }

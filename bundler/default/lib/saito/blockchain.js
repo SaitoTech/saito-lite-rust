@@ -288,6 +288,8 @@ class Blockchain {
     async addBlockSuccess(block) {
 
         console.log("SUCCESS: " + block.returnHash());
+	this.app.blockring.print();
+
         let block_id = block.returnId();
 
         //
@@ -1021,73 +1023,87 @@ class Blockchain {
     }
 
 
+    async doesChainMeetGoldenTicketRequirements(previous_block_hash, current_block_has_golden_ticket=false) {
+
+      //
+      // ensure adequate mining support
+      //
+      let golden_tickets_found = 0;
+      let search_depth_idx = 0;
+      let latest_block_hash = previous_block_hash;
+
+      let MIN_GOLDEN_TICKETS_NUMERATOR = 2;
+      let MIN_GOLDEN_TICKETS_DENOMINATOR = 6;
+
+      //
+      // make sure we have enough golden tickets
+      //
+      for (let i = 0; i < MIN_GOLDEN_TICKETS_DENOMINATOR; i++) {
+
+        search_depth_idx += 1;
+
+        if (this.blocks[latest_block_hash]) {
+
+          let block = this.blocks[latest_block_hash];
+
+          if (i === 0) {
+            if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
+              golden_tickets_found = MIN_GOLDEN_TICKETS_DENOMINATOR;
+              break;
+            }
+          }
+
+          if (block.hasGoldenTicket()) {
+            golden_tickets_found += 1;
+          }
+
+          latest_block_hash = block.returnPreviousBlockHash();
+
+        } else {
+          break;
+        }
+      }
+
+      //
+      // make sure we have enough golden tickets
+      //
+      if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR && search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR) {
+        if (current_block_hash_golden_ticket) {
+          golden_tickets_found++;
+        }
+      }
+
+      if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR && search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR) {
+        console.log("not enough golden tickets!");
+        return false;
+      }
+
+      return true;
+    }
+
+
     async validate(new_chain, old_chain) {
 
-        //
-        // ensure adequate mining support
-        //
-        let golden_tickets_found = 0;
-        let search_depth_idx = 0;
-        let latest_block_hash = new_chain[0];
+      let block = this.blocks[new_chain[0]];
+      let previous_block_hash = block.returnPreviousBlockHash();
 
-        let MIN_GOLDEN_TICKETS_NUMERATOR = 2;
-        let MIN_GOLDEN_TICKETS_DENOMINATOR = 6;
+      let does_chain_meet_golden_ticket_requirements = await this.doesChainMeetGoldenTicketRequirements(previous_block_hash, block.hasGoldenTicket());
 
-        //
-        // make sure we have enough golden tickets
-        //
-        for (let i = 0; i < MIN_GOLDEN_TICKETS_DENOMINATOR; i++) {
+      if (!does_chain_meet_golden_ticket_requirements) {
+        console.log("not enough golden tickets!");
+        return false;
+      }
 
-            search_depth_idx += 1;
-
-            if (this.blocks[latest_block_hash]) {
-
-                let block = this.blocks[latest_block_hash];
-
-                if (i === 0) {
-                    if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
-                        golden_tickets_found = MIN_GOLDEN_TICKETS_DENOMINATOR;
-                        break;
-                    }
-                }
-
-                if (block.hasGoldenTicket()) {
-                    golden_tickets_found += 1;
-                }
-
-                latest_block_hash = block.returnPreviousBlockHash();
-
-            } else {
-                break;
-            }
-        }
-
-        //
-        // make sure we have enough golden tickets
-        //
-        if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR && search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR) {
-            if (this.blocks[new_chain[0]]) {
-                if (this.blocks[new_chain[0]].hasGoldenTicket()) {
-                    golden_tickets_found++;
-                }
-            }
-        }
-
-        if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR) {
-            console.log("not enough golden tickets!");
-            return false;
-        }
-
-        if (old_chain.length === 0) {
-            return await this.windChain(new_chain, old_chain, new_chain.length - 1, false);
+      if (old_chain.length === 0) {
+        return await this.windChain(new_chain, old_chain, new_chain.length - 1, false);
+      } else {
+        if (new_chain.length > 0) {
+          return await this.unwindChain(new_chain, old_chain, 0, true);
         } else {
-            if (new_chain.length > 0) {
-                return await this.unwindChain(new_chain, old_chain, 0, true);
-            } else {
-                console.log("lengths are inappropriate");
-                return false;
-            }
+          console.log("lengths are inappropriate");
+          return false;
         }
+      }
 
     }
 
