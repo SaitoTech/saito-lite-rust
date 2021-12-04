@@ -159,8 +159,6 @@ class Arcade extends ModTemplate {
 
        `SELECT DISTINCT id, count(id) as count, last_move, game_id, module, player, players_array FROM gamestate WHERE 1 = 1 AND last_move > 10 GROUP BY game_id ORDER BY count DESC, last_move DESC LIMIT 8`,
 
-
-
       (res) => {
 
         if (res.rows) {
@@ -913,14 +911,16 @@ class Arcade extends ModTemplate {
     let { ts, name, options, options_html, players_needed } = gamedata;
     let accept_sig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
 
+console.log("TIMESTAMP IS: " + ts);
+
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.slip(sendto, 0.0));
     tx.msg = {
-      ts,
+      ts: ts,
       module: moduletype,
       request: "open",
       game: name,
-      options,
+      options: options,
       options_html: options_html || "",
       players_needed : parseInt(players_needed),
       players: [this.app.wallet.returnPublicKey()],

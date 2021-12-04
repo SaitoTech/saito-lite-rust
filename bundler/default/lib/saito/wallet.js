@@ -765,6 +765,7 @@ console.log("---------------------");
     // convert tx.msg to base64 tx.transaction.m
     //
     try {
+console.log("SIGNING THE TRANSACTION THIS WAY");
       //tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
       tx.sign(this.app);
     } catch (err) {

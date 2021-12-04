@@ -151,6 +151,7 @@ module.exports = ArcadeGameDetails = {
         app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
         let gamemod = app.modules.returnModule(options.gamename);
         let gamedata = {
+	  ts: new Date().getTime(),
           name: gamemod.name,
           slug: gamemod.returnSlug(),
           options: gamemod.returnFormattedGameOptions(options),

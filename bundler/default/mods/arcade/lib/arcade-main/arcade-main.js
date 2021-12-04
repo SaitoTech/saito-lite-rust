@@ -314,6 +314,7 @@ module.exports = ArcadeMain = {
               // data re: game in form of tx
               //
               let { transaction } = accepted_game;
+console.log("Accepted Game is: " + JSON.stringify(accepted_game));
               let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
 
               salert("Game accepted - please wait");

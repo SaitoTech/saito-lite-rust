@@ -343,7 +343,7 @@ console.log("PRIVATEKEY: " + this.app.wallet.returnPrivateKey());
 
     buildSerializedChallenge(message) {
         let my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
-        let my_privkey = this.returnPrivateKey();
+        let my_privkey = this.app.wallet.returnPrivateKey();
 
         //console.log("public key", this.app.wallet.wallet.publickey);
         //console.log("private key", this.app.wallet.wallet.privatekey);
