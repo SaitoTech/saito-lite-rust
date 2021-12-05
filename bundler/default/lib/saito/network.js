@@ -397,7 +397,9 @@ console.log("OUTBOUND PEER ID: " + peer.id);
                     console.error("ERROR 810299: balking at propagating bad transaction");
                     console.error("BAD TX: " + JSON.stringify(tx.transaction));
                     return;
-                }
+                } else {
+		    console.log(" ... added transaftion");
+		}
                 if (this.app.mempool.canBundleBlock() === 1) {
                     return 1;
                 }

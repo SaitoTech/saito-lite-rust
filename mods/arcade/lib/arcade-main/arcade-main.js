@@ -8,7 +8,7 @@ const ArcadeGameDetails = require('./../arcade-game/arcade-game-details');
 const ArcadeInviteTemplate = require('./templates/arcade-invite.template');
 const ArcadeObserveTemplate = require('./templates/arcade-observe.template');
 const GameCryptoTransferManager = require('./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
-
+const JSON = require('json-bigint');
 
 let tabNames = ["arcade", "observables", "tournaments"];
 module.exports = ArcadeMain = {
@@ -314,7 +314,6 @@ module.exports = ArcadeMain = {
               // data re: game in form of tx
               //
               let { transaction } = accepted_game;
-console.log("Accepted Game is: " + JSON.stringify(accepted_game));
               let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
 
               salert("Game accepted - please wait");

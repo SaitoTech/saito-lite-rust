@@ -208,7 +208,7 @@ class Crypto {
      * @returns {string} hex signed message
      */
     signMessage(msg, privatekey) {
-      let signature = this.signBuffer(Buffer.from(msg), privatekey);
+      let signature = this.signBuffer(Buffer.from(msg, 'utf-8'), privatekey);
       return signature;
     }
 
@@ -253,7 +253,8 @@ class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-	   let hash = this.hash(Buffer.from(msg).toString('hex'));
+	   let hash = this.hash(Buffer.from(msg, 'utf-8'));
+	   //let hash = this.hash(Buffer.from(msg).toString('hex'));
 	   return this.verifyHash(hash, sig, pubkey);
         } catch (err) {
           console.log(err);

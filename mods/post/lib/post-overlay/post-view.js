@@ -2,6 +2,7 @@ let saito = require('./../../../../lib/saito/saito');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const PostViewTemplate = require('./post-view.template');
 const PostViewCommentTemplate = require('./post-view-comment.template');
+const JSON = require('json-bigint');
 
 module.exports = PostView = {
 

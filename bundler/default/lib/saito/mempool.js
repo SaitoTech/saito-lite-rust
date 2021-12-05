@@ -253,7 +253,7 @@ class Mempool {
             return false;
         }
         if (this.app.mempool.mempool.transactions.length === 0) {
-            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS");
+            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS -- ("+this.app.mempool.mempool.golden_tickets.length+")");
             return false;
         }
         if (this.app.mempool.processing_active === true) {

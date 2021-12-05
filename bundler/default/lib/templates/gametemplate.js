@@ -653,6 +653,13 @@ console.log("*****************");
     tx.msg.options        = options;
     tx.msg.players        = players;
     tx.msg.players_needed = players_needed;
+
+console.log("SIGNING MESSAGE: ");
+let tsig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
+console.log(`msg is: invite_game_${ts}`);
+console.log("sig is: " + tsig);
+console.log("validates? " + this.app.crypto.verifyMessage(`invite_game_${ts}`, tsig, this.app.wallet.returnPublicKey()));
+
     tx.msg.players_sigs   = [...players_sigs, this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey())];
     //
     // this tx is addressed to all participants, thus we set a
@@ -844,9 +851,9 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
     let all_verify = 1;
     if (txmsg.players.length != txmsg.players_sigs.length) { all_verify = 0; }
     for (let i = 0; i < txmsg.players.length; i++) {
-console.log("verifying: " + msg_to_verify);
-console.log("sig: " + txmsg.player_sigs[i]);
-console.log("publickey: " + txmsg.players[i]);
+console.log("MSG TO VERIFY: " + msg_to_verify);
+console.log("PLAYER SIG: " + i + " --> " + txmsg.players_sigs[i]);
+console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
       if (!app.crypto.verifyMessage(msg_to_verify, txmsg.players_sigs[i], txmsg.players[i])) {
         console.log("PLAYER SIGS do not verify for all players, aborting game acceptance");
         this.game.halted = 0;

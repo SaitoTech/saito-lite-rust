@@ -170,7 +170,6 @@ class Transaction {
         this.transaction.from = inputs;
         this.transaction.to = outputs;
         this.transaction.ts = Number(timestamp);
-        console.log("DESERIALIZING TX: " + this.transaction.ts);
         this.transaction.sig = signature;
         this.transaction.path = path;
         this.transaction.type = transaction_type;
@@ -235,6 +234,7 @@ class Transaction {
     }
 
     isGoldenTicket() {
+console.log("is this a golden ticket: " + this.transaction.type);
         if (this.transaction.type === TransactionType.GoldenTicket) {
             return true;
         }
@@ -557,22 +557,6 @@ class Transaction {
             this.transaction.m.length +
             this.transaction.path.length *
             HOP_SIZE;
-
-
-// HACK -- issues here
-//let testts = BigInt(1637034582666);
-let testts = BigInt(1638670605802);
-let testbytes = app.binary.u64AsBytes(testts);
-let recreated = app.binary.u64FromBytes(testbytes);
-console.log("ORIGINAL TS: " + testts);
-console.log("RECREATED TS: " + recreated);
-console.log("RECREATED TS STR: " + recreated.toString());
-
-///console.log("RECREATING TS 1: " + Buffer.from(timestamp).toString());
-///console.log("RECREATING TS 2: " + testbytes);
-///console.log("RECREATING TS 3: " + app.binary.u64FromBytes(timestamp).intValue());
-///console.log("RECREATING TS 4: " + app.binary.u64FromBytes(timestamp).toString());
-
         let ret = new Uint8Array(size_of_tx_data);
         ret.set(new Uint8Array([
                                    ...inputs_len,

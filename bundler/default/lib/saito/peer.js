@@ -1,5 +1,6 @@
 const io = require('socket.io-client');
 const saito = require('./saito');
+const JSON = require('json-bigint');
 
 const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
 const Network = require('./network');
@@ -10,7 +11,6 @@ const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchai
 const SendBlockchainMessage = require("./networking/send_blockchain_message");
 const RequestBlockchainMessage = require("./networking/request_blockchain_message");
 
-const JSON = require('json-bigint');
 const SendBlockHeadMessage = require("./networking/send_block_head_message");
 
 class Peer {
