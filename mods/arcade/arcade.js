@@ -911,8 +911,6 @@ class Arcade extends ModTemplate {
     let { ts, name, options, options_html, players_needed } = gamedata;
     let accept_sig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
 
-console.log("TIMESTAMP IS: " + ts);
-
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.slip(sendto, 0.0));
     tx.msg = {

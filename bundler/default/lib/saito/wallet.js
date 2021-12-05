@@ -169,7 +169,6 @@ class Wallet {
     }
     var tx           = new saito.transaction();
 
-
     //
     // check to-address is ok -- this just keeps a server
     // that receives an invalid address from forking off

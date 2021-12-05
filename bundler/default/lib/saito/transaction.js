@@ -27,7 +27,7 @@ class Transaction {
         this.transaction = {};
         this.transaction.to = [];
         this.transaction.from = [];
-        this.transaction.ts = new Date().getTime();
+        this.transaction.ts = 0;
         this.transaction.sig = "";
         this.transaction.path = [];
         this.transaction.r = 1; // replaces
@@ -59,8 +59,8 @@ class Transaction {
             this.transaction = jsonobj;
             if (this.transaction.type === TransactionType.Normal) {
                 try {
-                    let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-                    this.msg = JSON.parse(reconstruct);
+                  let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+                  this.msg = JSON.parse(reconstruct);
                 } catch (err) {
                 }
             }
@@ -126,13 +126,14 @@ class Transaction {
      * @returns {Transaction}
      */
     deserialize(app, buffer, start_of_transaction_data) {
+
         let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
         let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
         let message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
         let path_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
         let signature = app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-        let timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)).toString();
+        let timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
         let transaction_type = buffer[start_of_transaction_data + 88];
         let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
         let start_of_outputs = start_of_inputs + (inputs_len * SLIP_SIZE);
@@ -169,6 +170,7 @@ class Transaction {
         this.transaction.from = inputs;
         this.transaction.to = outputs;
         this.transaction.ts = timestamp;
+console.log("DESERIALIZING TX: " + this.transaction.ts);
         this.transaction.sig = signature;
         this.transaction.path = path;
         this.transaction.type = transaction_type;
@@ -179,7 +181,7 @@ class Transaction {
                 let reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
                 this.msg = JSON.parse(reconstruct);
             }
-            console.log("reconstructed msg: " + JSON.stringify(this.msg));
+//            console.log("reconstructed msg: " + JSON.stringify(this.msg));
         } catch (err) {
             console.log("error trying to parse this.msg: " + reconstruct);
         }
@@ -556,6 +558,21 @@ class Transaction {
             this.transaction.path.length *
             HOP_SIZE;
 
+
+// HACK -- issues here
+
+let testts = 1638670605802;
+let testbytes = app.binary.u64AsBytes(testts);
+let recreated = app.binary.u64FromBytes(testbytes);
+console.log("ORIGINAL TS: " + testts);
+console.log("RECREATED TS: " + recreated);
+console.log("RECREATED TS STR: " + recreated.toString());
+
+///console.log("RECREATING TS 1: " + Buffer.from(timestamp).toString());
+///console.log("RECREATING TS 2: " + testbytes);
+///console.log("RECREATING TS 3: " + app.binary.u64FromBytes(timestamp).intValue());
+///console.log("RECREATING TS 4: " + app.binary.u64FromBytes(timestamp).toString());
+
         let ret = new Uint8Array(size_of_tx_data);
         ret.set(new Uint8Array([
                                    ...inputs_len,
@@ -567,6 +584,9 @@ class Transaction {
                                    transaction_type]),
                 0
         );
+
+
+
 
         for (let i = 0; i < this.transaction.from.length; i++) {
             inputs.push(this.transaction.from[i].serialize(app));
@@ -611,7 +631,11 @@ class Transaction {
 
     serializeForSignature(app) {
 
+console.log("---->ts---->"+this.transaction.ts+"<-----");
+
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
+
+console.log("1: " + app.crypto.hash(buffer.toString('hex')));
 
         for (let i = 0; i < this.transaction.from.length; i++) {
             buffer = Buffer.concat([buffer, Buffer(this.transaction.from[i].serializeInputForSignature(app))])
@@ -622,7 +646,6 @@ class Transaction {
         buffer = Buffer.concat([buffer, Buffer(app.binary.u32AsBytes(this.transaction.type))]);
 
         let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
-
         let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
         buffer = Buffer.concat([buffer, tm]);
 
@@ -709,15 +732,6 @@ console.log("DOES VALIDATE: " + app.crypto.verifyHash(app.crypto.hash(this.seria
             //
             // validate signature
             //
-
-//
-//ith: 9e41f68ff77f0aa848ceea034626c6fb2a629397a23580cad1754a7751eaf7b3
-// HASH 
-//
-//2 -- hash buffer --- 32f643bdc4dc090fb4f82fc8f5fa4b79f09ff3eaaed73b96189ea471c699329a ----- c24512544150f156da6a8cb40cda561071228a43d462b0607804cb262019418a
-//saito.js:61 SIG SET AS: db2c459f3647d32094908b3ae142a8474c03ca5354fe1e1074a72d64728234fc30ff1db648e82c97e92c856560e6caa050a83d2da9af50f2d5e7a4f0b8cd8158
-//saito.js:61 SIG USING PUBLICKEY: njSJkpe7qRvC3PxYVkhCArCAzTRB6VgUzT5qGakJ4cyY
-
 console.log("transaction.m: " + this.transaction.m);
 console.log("verifying hash: " + app.crypto.hash(this.serializeForSignature(app)))
 
