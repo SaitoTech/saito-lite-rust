@@ -59,8 +59,8 @@ class Transaction {
             this.transaction = jsonobj;
             if (this.transaction.type === TransactionType.Normal) {
                 try {
-                  let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-                  this.msg = JSON.parse(reconstruct);
+                    let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+                    this.msg = JSON.parse(reconstruct);
                 } catch (err) {
                 }
             }
@@ -169,8 +169,8 @@ class Transaction {
 
         this.transaction.from = inputs;
         this.transaction.to = outputs;
-        this.transaction.ts = timestamp;
-console.log("DESERIALIZING TX: " + this.transaction.ts);
+        this.transaction.ts = Number(timestamp);
+        console.log("DESERIALIZING TX: " + this.transaction.ts);
         this.transaction.sig = signature;
         this.transaction.path = path;
         this.transaction.type = transaction_type;
@@ -562,7 +562,6 @@ console.log("DESERIALIZING TX: " + this.transaction.ts);
 // HACK -- issues here
 //let testts = BigInt(1637034582666);
 let testts = BigInt(1638670605802);
-
 let testbytes = app.binary.u64AsBytes(testts);
 let recreated = app.binary.u64FromBytes(testbytes);
 console.log("ORIGINAL TS: " + testts);
@@ -585,8 +584,6 @@ console.log("RECREATED TS STR: " + recreated.toString());
                                    transaction_type]),
                 0
         );
-
-
 
 
         for (let i = 0; i < this.transaction.from.length; i++) {
@@ -632,11 +629,11 @@ console.log("RECREATED TS STR: " + recreated.toString());
 
     serializeForSignature(app) {
 
-console.log("---->ts---->"+this.transaction.ts+"<-----");
+        console.log("---->ts---->" + this.transaction.ts + "<-----");
 
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
-console.log("1: " + app.crypto.hash(buffer.toString('hex')));
+        console.log("1: " + app.crypto.hash(buffer.toString('hex')));
 
         for (let i = 0; i < this.transaction.from.length; i++) {
             buffer = Buffer.concat([buffer, Buffer(this.transaction.from[i].serializeInputForSignature(app))])
@@ -668,7 +665,7 @@ console.log("1: " + app.crypto.hash(buffer.toString('hex')));
         //
         if (this.transaction.m == "") {
 //console.log("------------------");
-console.log("-- SIGN AND SET --");
+            console.log("-- SIGN AND SET --");
 //console.log(JSON.stringify(this.msg));
 //console.log("------------------");
             this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
@@ -678,8 +675,9 @@ console.log("-- SIGN AND SET --");
 
 //console.log("SIG SET AS: " + this.transaction.sig);
 //console.log("SIG USING PUBLICKEY: " + app.wallet.returnPublicKey());
-console.log("HASH TO SIGN: " + app.crypto.hash(this.serializeForSignature(app)));
-console.log("DOES VALIDATE: " + app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, app.wallet.returnPublicKey()));
+        console.log("HASH TO SIGN: " + app.crypto.hash(this.serializeForSignature(app)));
+        console.log("DOES VALIDATE: " +
+                        app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, app.wallet.returnPublicKey()));
 
     }
 
@@ -733,8 +731,8 @@ console.log("DOES VALIDATE: " + app.crypto.verifyHash(app.crypto.hash(this.seria
             //
             // validate signature
             //
-console.log("transaction.m: " + this.transaction.m);
-console.log("verifying hash: " + app.crypto.hash(this.serializeForSignature(app)))
+            console.log("transaction.m: " + this.transaction.m);
+            console.log("verifying hash: " + app.crypto.hash(this.serializeForSignature(app)))
 
             if (!app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, this.transaction.from[0].add)) {
                 console.log("ERROR:382029: transaction signature does not validate");
