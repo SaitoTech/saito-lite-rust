@@ -629,11 +629,7 @@ console.log("RECREATED TS STR: " + recreated.toString());
 
     serializeForSignature(app) {
 
-        console.log("---->ts---->" + this.transaction.ts + "<-----");
-
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
-
-        console.log("1: " + app.crypto.hash(buffer.toString('hex')));
 
         for (let i = 0; i < this.transaction.from.length; i++) {
             buffer = Buffer.concat([buffer, Buffer(this.transaction.from[i].serializeInputForSignature(app))])
@@ -664,20 +660,14 @@ console.log("RECREATED TS STR: " + recreated.toString());
         // transaction message
         //
         if (this.transaction.m == "") {
-//console.log("------------------");
+console.log("------------------");
             console.log("-- SIGN AND SET --");
-//console.log(JSON.stringify(this.msg));
-//console.log("------------------");
+console.log(JSON.stringify(this.msg));
+console.log("------------------");
             this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
         }
 
         this.transaction.sig = app.crypto.signBuffer(this.serializeForSignature(app), app.wallet.returnPrivateKey());
-
-//console.log("SIG SET AS: " + this.transaction.sig);
-//console.log("SIG USING PUBLICKEY: " + app.wallet.returnPublicKey());
-        console.log("HASH TO SIGN: " + app.crypto.hash(this.serializeForSignature(app)));
-        console.log("DOES VALIDATE: " +
-                        app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, app.wallet.returnPublicKey()));
 
     }
 
@@ -731,9 +721,6 @@ console.log("RECREATED TS STR: " + recreated.toString());
             //
             // validate signature
             //
-            console.log("transaction.m: " + this.transaction.m);
-            console.log("verifying hash: " + app.crypto.hash(this.serializeForSignature(app)))
-
             if (!app.crypto.verifyHash(app.crypto.hash(this.serializeForSignature(app)), this.transaction.sig, this.transaction.from[0].add)) {
                 console.log("ERROR:382029: transaction signature does not validate");
                 return false;

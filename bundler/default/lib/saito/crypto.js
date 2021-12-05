@@ -50,7 +50,6 @@ class Crypto {
         //
         // 64-bit hash
         //
-//console.log("PRE-HASH DATA: " + data.toString('hex'));
         return this.app.hash(data);
     }
 
@@ -209,7 +208,6 @@ class Crypto {
      * @returns {string} hex signed message
      */
     signMessage(msg, privatekey) {
-console.log(`1 --- ${msg} ----- ${privatekey}`);
       let signature = this.signBuffer(Buffer.from(msg), privatekey);
       return signature;
     }
@@ -221,7 +219,6 @@ console.log(`1 --- ${msg} ----- ${privatekey}`);
      * @returns {string}
      */
     signBuffer(buffer, privatekey) {
-console.log(`2 -- hash buffer --- ${this.hash(buffer)} ----- ${privatekey}`);
         let signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), Buffer.from(privatekey, 'hex')).signature.toString('hex');
 	return signature;
     }
