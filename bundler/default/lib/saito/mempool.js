@@ -78,13 +78,13 @@ class Mempool {
 
 
     addBlock(block) {
-        console.debug("Mempool : adding block...");
+        //console.debug("Mempool : adding block...");
         if (!block) {
-            console.warn("block is not provided");
+            console.warn("ERROR 529384: mempool add.block is not provided");
             return false;
         }
         if (!block.is_valid) {
-            console.warn("block is not valid");
+            console.warn("ERROR 529385: mempool add.block is not valid");
             return false;
         }
 
@@ -148,6 +148,7 @@ class Mempool {
           for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
 	    let gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);	    
             if (gt.target_hash === new_gt.target_hash) { return false; }
+console.log("added golden ticket targeting block: " + gt.target_hash);
           }
 
           this.mempool.golden_tickets.push(transaction);
@@ -169,6 +170,25 @@ class Mempool {
 
 
     async bundleBlock() {
+
+	//
+	// nope out if inadequate golden ticket support
+	//
+        let previous_block_hash = this.app.blockring.returnLatestBlockHash();
+        let mempool_contains_golden_ticket = this.containsValidGoldenTicket(previous_block_hash);
+        let does_chain_meet_golden_ticket_requirements = await this.app.blockchain.doesChainMeetGoldenTicketRequirements(previous_block_hash, mempool_contains_golden_ticket);
+
+
+        //
+        // stop if inadequate golden ticket support?
+        //
+        if (!does_chain_meet_golden_ticket_requirements) {
+            console.log("ERROR 850293: we do not have enough golden ticket support, waiting before bundling...");
+            return;
+        }
+
+
+
         //
         // stop if already bundling?
         //
@@ -234,7 +254,7 @@ class Mempool {
             return false;
         }
         if (this.app.mempool.mempool.transactions.length === 0) {
-            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS");
+            console.log("CANNOT PRODUCE AS MEMPOOL HAS NO TXS -- ("+this.app.mempool.mempool.golden_tickets.length+")");
             return false;
         }
         if (this.app.mempool.processing_active === true) {
@@ -269,6 +289,7 @@ class Mempool {
             console.log("CANNOT PRODUCE AS NETWORK DOWNLOADING BLOCKS");
             return false;
         }
+
 
         if (this.app.options) {
             if (this.app.options.wallet) {
@@ -373,14 +394,19 @@ class Mempool {
         return false;
     }
 
-    findBlock(hash) {
-        for (let block of this.mempool.blocks) {
-            if (block.returnHash() === hash) {
-                return block;
-            }
+    containsValidGoldenTicket(target_hash) {
+      if (this.mempool.golden_tickets.length > 0) {
+        for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
+          let gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
+          if (gt.target_hash === target_hash) {
+            return true;
+          }
         }
-
+      }
+      return false;
     }
+
+
 
     async initialize() {
 

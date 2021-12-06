@@ -211,13 +211,13 @@ class GameTemplate extends ModTemplate {
 	if (ptx.msg) {
 	  if (ptx.msg.game_id) {
 	    if (ptx.msg.game_id == this.game.id) {
+/***
 
 	      console.log("Rebroadcasting Pending Game TX as NEW TX");
 	      console.log("gameid: " + ptx.msg.game_id);
 
 	      let newptx = ptx;
 
-/***
 	      //
 	      // resend move as zero-fee TX in case of failure with slips in paid one
 	      //
@@ -635,6 +635,11 @@ class GameTemplate extends ModTemplate {
 
 
   createAcceptTransaction(game) {
+
+console.log("*****************");
+console.log("CREATING ACCEPT: " + JSON.stringify(game));
+console.log("*****************");
+
     let {players, ts, players_needed, players_sigs, id, options} = game;
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -648,6 +653,13 @@ class GameTemplate extends ModTemplate {
     tx.msg.options        = options;
     tx.msg.players        = players;
     tx.msg.players_needed = players_needed;
+
+console.log("SIGNING MESSAGE: ");
+let tsig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
+console.log(`msg is: invite_game_${ts}`);
+console.log("sig is: " + tsig);
+console.log("validates? " + this.app.crypto.verifyMessage(`invite_game_${ts}`, tsig, this.app.wallet.returnPublicKey()));
+
     tx.msg.players_sigs   = [...players_sigs, this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey())];
     //
     // this tx is addressed to all participants, thus we set a
@@ -655,7 +667,8 @@ class GameTemplate extends ModTemplate {
     // invite transaction is being responded to here.
     //
     tx.msg.originator   = tx.transaction.from[0].add;
-    tx = this.app.wallet.signTransaction(tx);
+    tx.transaction.m    = "";
+    tx.sign(this.app);
 
     return tx;
 
@@ -671,6 +684,7 @@ class GameTemplate extends ModTemplate {
     let invite_sig = "";
     let players_needed = 1;
 
+    if (txmsg.ts == "") { tx.transaction.ts; }
     if (txmsg.game_id != "") { game_id = txmsg.game_id; }
     if (txmsg.options != "") { options = txmsg.options; }
     if (txmsg.invite_sig != "") { invite_sig = txmsg.invite_sig; }
@@ -793,6 +807,8 @@ class GameTemplate extends ModTemplate {
 
     let txmsg = tx.returnMessage();
 
+console.log("TXMSG: " + JSON.stringify(txmsg));
+
     let game_id = txmsg.game_id;
     let originator = txmsg.originator;
 
@@ -835,6 +851,9 @@ class GameTemplate extends ModTemplate {
     let all_verify = 1;
     if (txmsg.players.length != txmsg.players_sigs.length) { all_verify = 0; }
     for (let i = 0; i < txmsg.players.length; i++) {
+console.log("MSG TO VERIFY: " + msg_to_verify);
+console.log("PLAYER SIG: " + i + " --> " + txmsg.players_sigs[i]);
+console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
       if (!app.crypto.verifyMessage(msg_to_verify, txmsg.players_sigs[i], txmsg.players[i])) {
         console.log("PLAYER SIGS do not verify for all players, aborting game acceptance");
         this.game.halted = 0;

@@ -284,8 +284,6 @@ try {
                 cv.gt_idx = i;
                 this.has_golden_ticket = true;
                 this.gt_idx = i;
-console.log("GOLDEN TICKET");
-console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this.transactions[i])));
             }
             if (this.transactions[i].isIssuanceTransaction()) {
                 cv.it_num += 1;
@@ -709,15 +707,21 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this
         // object, so we can hot-swap using pass-by-reference. these
         // modifications change the mempool in real-time.
         //
+console.log("-----------------------------------");
+console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
         for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
+console.log("checking GT: " + i);
           let gt = this.app.goldenticket.deserializeFromTransaction(mempool.mempool.golden_tickets[i]);
-            if (gt.target_hash === previous_block_hash) {
+console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
+          if (gt.target_hash === previous_block_hash) {
+console.log("ADDING GT TX TO BLOCK");
                 this.transactions.unshift(mempool.mempool.golden_tickets[i]);
                 this.has_golden_ticket = 1;
                 mempool.mempool.golden_tickets.splice(i, 1);
                 i = mempool.mempool.golden_tickets.length + 2;
-            }
+          }
         }
+console.log("-----------------------------------");
 
 
         //
@@ -1214,9 +1218,7 @@ console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this
     sign(publickey, privatekey) {
         //console.log("block::sign", privatekey);
         this.block.creator = publickey;
-        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()),
-                                                          Buffer.from(privatekey, 'hex')
-        );
+        this.block.signature = this.app.crypto.signBuffer(Buffer.from(this.serializeForSignature()), privatekey);
     }
 
     async validate() {
