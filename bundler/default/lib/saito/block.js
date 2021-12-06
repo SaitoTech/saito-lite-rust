@@ -266,8 +266,6 @@ class Block {
         cv.block_payouts = [];
         cv.fee_transaction = null;
 
-console.log("ABOUT TO SET CONSENSUS VALUES");
-
         //
         // total fees and indices
         //
@@ -281,17 +279,12 @@ try {
                 this.has_fee_transaction = true;
                 this.ft_idx = i;
             }
-console.log("about to test on the golden ticket!");
             if (this.transactions[i].isGoldenTicket()) {
                 cv.gt_num += 1;
                 cv.gt_idx = i;
                 this.has_golden_ticket = true;
                 this.gt_idx = i;
-console.log("GOLDEN TICKET");
-console.log(JSON.stringify(this.app.goldenticket.deserializeFromTransaction(this.transactions[i])));
-            } else {
-console.log("transaction " + i + " is not a golden ticket");
-	    }
+            }
             if (this.transactions[i].isIssuanceTransaction()) {
                 cv.it_num += 1;
                 cv.it_idx = i;
