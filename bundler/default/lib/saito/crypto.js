@@ -205,12 +205,11 @@ class Crypto {
      * Signs a message with a private key, and returns the message
      * @param {string} msg message to sign
      * @param {string} privkey private key (hex)
-     * @returns {string} base-58 signed message
+     * @returns {string} hex signed message
      */
-    signMessage(msg, privkey) {
-        return this.toBase58(secp256k1.sign(Buffer.from(this.hash(Buffer.from(msg, 'utf-8').toString('base64')), 'hex'), Buffer.from(privkey, 'hex'))
-                                 .signature
-                                 .toString('hex'));
+    signMessage(msg, privatekey) {
+      let signature = this.signBuffer(Buffer.from(msg, 'utf-8'), privatekey);
+      return signature;
     }
 
     /**
@@ -220,11 +219,8 @@ class Crypto {
      * @returns {string}
      */
     signBuffer(buffer, privatekey) {
-        //console.log("signBuffer", buffer);
-        //console.log("buffer length = " + buffer.length);
-        let signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), privatekey).signature.toString('hex');
-
-        return signature;
+        let signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), Buffer.from(privatekey, 'hex')).signature.toString('hex');
+	return signature;
     }
 
     /**
@@ -257,7 +253,8 @@ class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-	   let hash = this.hash(Buffer.from(msg, 'utf8').toString('hex'));
+	   let hash = this.hash(Buffer.from(msg, 'utf-8'));
+	   //let hash = this.hash(Buffer.from(msg).toString('hex'));
 	   return this.verifyHash(hash, sig, pubkey);
         } catch (err) {
           console.log(err);

@@ -1,6 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const saito = require('../../lib/saito/saito');
-
+const JSON = require('json-bigint');
 
 //////////////////
 // CONSTRUCTOR  //

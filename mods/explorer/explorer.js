@@ -1,5 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const sanitizer = require('sanitizer');
+const JSON = require('json-bigint');
 
 class ExplorerCore extends ModTemplate {
   constructor(app) {

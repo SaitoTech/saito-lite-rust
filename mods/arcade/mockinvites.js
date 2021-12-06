@@ -1,3 +1,4 @@
+const JSON = require('json-bigint');
 
 let mockAddress = "zPwFAUi2S3AAUwhAxX19UAAUUisrrw9QtMTpwAC6w3fK";
 let mockGame = { 
