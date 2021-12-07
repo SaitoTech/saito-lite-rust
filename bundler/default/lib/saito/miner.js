@@ -55,7 +55,6 @@ console.log("stop mining loop...");
 
 
   async mine() {
-console.log(" ... is mining active... " + this.mining_active);
     if (this.mining_active) {
 
       let random_hash = this.app.crypto.generateRandomNumber();
@@ -63,8 +62,6 @@ console.log(" ... is mining active... " + this.mining_active);
 console.log("we found a golden ticket... targeting hash: " + this.target);
 	let transaction = this.app.wallet.createUnsignedTransaction();
         transaction.transaction.type = saito.transaction.TransactionType.GoldenTicket;
-        //transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash).toString('base64');
-        //transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
         transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
         //transaction.msg = this.app.goldenticket.serialize(this.target, random_hash);
         transaction.sign(this.app);
@@ -73,7 +70,6 @@ let gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 console.log("reconstructed target hash: " + gt.target_hash);
         this.stopMining();
         this.app.network.propagateTransaction(transaction);
-console.log("so we stop mining...");
       }
     }
     return;

@@ -539,7 +539,7 @@ console.log("---------------------");
                 if (Math.random() <= 0.1) {
 
                   let ptx_ts = ptx.transaction.ts;
-                  let blk_ts = blk.block.ts;
+                  let blk_ts = block.block.ts;
 
                   if ((ptx_ts + 12000000) < blk_ts) {
                     this.wallet.pending.splice(i, 1);
@@ -866,8 +866,9 @@ console.log(err);
 
   updateBalance() {
     let bal = this.calculateBalance();
+    let ebal = this.wallet.balance;
     this.wallet.balance = bal.toString();
-    if (this.wallet.balance != existing_balance) {
+    if (this.wallet.balance !== ebal) {
       this.app.connection.emit("update_balance", this);
     }
   }
