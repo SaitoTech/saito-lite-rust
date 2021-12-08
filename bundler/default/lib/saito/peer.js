@@ -12,6 +12,7 @@ const SendBlockchainMessage = require("./networking/send_blockchain_message");
 const RequestBlockchainMessage = require("./networking/request_blockchain_message");
 
 const SendBlockHeadMessage = require("./networking/send_block_head_message");
+const fetch = require("node-fetch");
 
 class Peer {
 
@@ -209,31 +210,8 @@ class Peer {
             if (is_block_indexed) {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
-
-                const fetch = require('node-fetch');
-                try {
-                    const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
-                    //console.log("url = " + url);
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        // console.log(res.body);
-                        const base64Buffer = await res.arrayBuffer();
-                        //console.log("buffer received for block");
-                        //console.log(base64Buffer);
-                        const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
-                        //console.log("received buffer with length : " + buffer.length);
-                        //console.log(buffer);
-                        let block = new saito.block(this.app);
-                        block.deserialize(buffer);
-                        //console.log(`ADD TO MEMPOOL BLOCK ${block.returnId()} ${block.returnTimestamp()}`);
-                        this.app.mempool.addBlock(block);
-                    } else {
-                        console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
-                    }
-                } catch (err) {
-                    console.log(`Error fetching block:`);
-                    console.error(err);
-                }
+                let block = await this.fetchBlock(block_hash);
+                this.app.mempool.addBlock(block);
 
                 //
                 // download block
@@ -246,7 +224,7 @@ class Peer {
             }
         } else if (command === "SNDTRANS") {
             let tx = this.socketReceiveTransaction(message);
-console.log("received TX w/ timestamp: " + tx.transaction.ts);
+            console.log("received TX w/ timestamp: " + tx.transaction.ts);
             await this.app.mempool.addTransaction(tx);
             //await peer.sendResponseFromStr(message.message_id, "OK");
         } else if (command === "SNDKYLST") {
@@ -257,6 +235,34 @@ console.log("received TX w/ timestamp: " + tx.transaction.ts);
             console.error("Unhandled command received by client... ", message.message_name);
             await peer.sendErrorResponseFromStr(message.message_id, "NO SUCH");
         }
+    }
+
+    /**
+     * @param {string} block_hash
+     */
+    async fetchBlock(block_hash) {
+        console.log("peer.fetchBlock : " + block_hash);
+
+        try {
+            const fetch = require('node-fetch');
+            const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
+            console.debug("fetch url = " + url);
+            const res = await fetch(url);
+            if (res.ok) {
+                const base64Buffer = await res.arrayBuffer();
+                const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
+                let block = new saito.block(this.app);
+                block.deserialize(buffer);
+                block.peer = this;
+                return block;
+            } else {
+                console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+            }
+        } catch (err) {
+            console.log(`Error fetching block:`);
+            console.error(err);
+        }
+        return null;
     }
 
     async handleApplicationMessage(peer, msg) {
@@ -312,8 +318,6 @@ console.log("received TX w/ timestamp: " + tx.transaction.ts);
                 //this.handleKeylistRequest(message);
                 break;
             default:
-
-
                 //
                 // if the attached data is a transaction, ensure MSG field exists
                 //

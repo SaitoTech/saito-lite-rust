@@ -100,7 +100,7 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
-console.log("OUTBOUND PEER ID: " + peer.id);
+        console.log("OUTBOUND PEER ID: " + peer.id);
 
         //
         // we connect to them
@@ -141,10 +141,10 @@ console.log("OUTBOUND PEER ID: " + peer.id);
         //
         let peer = new saito.peer(this.app);
         peer.socket = socket;
-	//
-	// manually setting, used so the socket knows which peer
-	//
-	peer.socket.peer = peer;
+        //
+        // manually setting, used so the socket knows which peer
+        //
+        peer.socket.peer = peer;
 
         //
         // they connected to us
@@ -196,7 +196,10 @@ console.log("OUTBOUND PEER ID: " + peer.id);
                 //
                 if (this.app.options.peers != null && typeof peer.peer.endpoint != 'undefined') {
                     for (let d = 0; d < this.app.options.peers.length; d++) {
-                        if (this.app.options.peers[d].host === peer.peer.endpoint.host && this.app.options.peers[d].port === peer.peer.endpoint.port) {
+                        if (this.app.options.peers[d].host ===
+                            peer.peer.endpoint.host &&
+                            this.app.options.peers[d].port ===
+                            peer.peer.endpoint.port) {
                             keep_peer = d;
                         }
                     }
@@ -453,6 +456,19 @@ console.log("propagating tx with timestamp: " + tx.transaction.ts);
         }
     }
 
+    /**
+     * @param {string} block_hash
+     * @param {Peer} peer
+     */
+    async requestMissingBlock(block_hash, peer = null) {
+        console.log("fetching missing block : " + block_hash);
+
+        peer = peer || ((this.peers.length > 0) ? this.peers[0] : null);
+        if (!peer) {
+            return null;
+        }
+        return await peer.fetchBlock(block_hash);
+    }
 
     //
     // this function requires switching to the new network API
