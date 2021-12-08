@@ -1115,6 +1115,9 @@ console.log("!!!!!!!!!!!!!!!!!!!!");
     if (game_self.game.queue.length > 0) {
       while (game_self.game.queue.length > 0 && cont == 1) {
 
+console.log("QUEUE ENTRIES: " + game_self.game.queue.length);
+console.log("LATEST: " + game_self.game.queue[game_self.game.queue.length-1]);
+
 	loops_through_queue++;
         loop_length = game_self.game.queue.length;
         loop_length_instruction = game_self.game.queue[game_self.game.queue.length-1];

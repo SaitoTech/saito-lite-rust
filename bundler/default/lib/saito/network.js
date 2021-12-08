@@ -100,8 +100,6 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
-        console.log("OUTBOUND PEER ID: " + peer.id);
-
         //
         // we connect to them
         //
@@ -337,7 +335,8 @@ class Network {
     // propagate block
     //
     propagateBlock(blk) {
-        console.log("propagating block : " + blk.returnHash());
+
+//        console.log("propagating block : " + blk.returnHash());
 
         if (this.app.BROWSER) {
             return;
@@ -408,9 +407,6 @@ class Network {
                 }
             }
         }
-
-
-        console.log("being unable to make a block ourselves, we ... forward");
 
         //
         // now send the transaction out with the appropriate routing hop
