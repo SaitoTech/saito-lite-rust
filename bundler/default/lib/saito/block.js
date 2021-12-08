@@ -667,9 +667,9 @@ console.log("BLOCK HAS GOLDEN TICKET true!");
         let previous_block_staking_treasury = BigInt(0);
         let current_timestamp = new Date().getTime();
 
-console.log("prev block hash: " + previous_block_hash);
-
         let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
+
+console.log("Previous Block Hash: " + previous_block_hash);
 
         if (previous_block) {
             previous_block_id = previous_block.block.id;
@@ -680,7 +680,7 @@ console.log("prev block hash: " + previous_block_hash);
             previous_block_staking_treasury = previous_block.block.staking_treasury;
         }
 
-        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, previous_block_timestamp);
+        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, current_timestamp, previous_block_timestamp);
 
         //
         // set our values

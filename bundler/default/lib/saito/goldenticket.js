@@ -111,7 +111,7 @@ class GoldenTicket {
     }
 
     deserializeFromTransaction(transaction) {
-        return this.deserialize(Buffer.from(transaction.transaction.m));
+        return this.deserialize(transaction.transaction.m);
     }
 
 }

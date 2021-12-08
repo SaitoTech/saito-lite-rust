@@ -1587,8 +1587,13 @@ console.log("validates? " + this.app.crypto.verifyMessage(msg_to_sign, tsig, thi
 
     let game_state = "";
 
+try {
     if (txmsg.game_state != "") { game_state = txmsg.game_state; }
-
+} catch (err) {
+  console.log("error saving game state, so quitting...");
+  console.log(JSON.stringify(txmsg));
+  return;
+}
 
     let sql = `INSERT INTO gamestate (
                 game_id ,

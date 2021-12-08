@@ -122,7 +122,7 @@ class Network {
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
             console.log("ERROR 757594: denying request to remote peer as server overloaded...");
-            return;
+            return null;
         }
 
         //
@@ -401,8 +401,8 @@ class Network {
                     console.error("BAD TX: " + JSON.stringify(tx.transaction));
                     return;
                 } else {
-		    console.log(" ... added transaftion");
-		}
+                    console.log(" ... added transaftion");
+                }
                 if (this.app.mempool.canBundleBlock() === 1) {
                     return 1;
                 }
@@ -426,7 +426,7 @@ class Network {
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
-console.log("propagating tx with timestamp: " + tx.transaction.ts);
+                    console.log("propagating tx with timestamp: " + tx.transaction.ts);
                     this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
                 } else {
                     console.error("socket not found");
