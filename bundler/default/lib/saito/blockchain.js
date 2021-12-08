@@ -103,6 +103,25 @@ class Blockchain {
             return;
         }
 
+        // check if previous block exists and if not fetch that block.
+        let parent_block_hash = block.block.previous_block_hash;
+        if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
+            let parent_block = await this.loadBlockAsync(parent_block_hash);
+            if (parent_block) {
+                let block = await this.app.network.requestMissingBlock(parent_block_hash);
+                if (!block) {
+                    console.error("previous block not found");
+                    return;
+                }
+                if (block.block.timestamp > this.blockchain.lowest_acceptable_timestamp
+                    && block.block.id > (this.returnLatestBlockId() - this.returnGenesisPeriod())) {
+                    if (!this.app.mempool.addBlock(block)) {
+                        return;
+                    }
+                }
+            }
+        }
+
         // pre-validation
         //
         // this would be a great place to put in a prevalidation check
@@ -929,7 +948,7 @@ class Blockchain {
         this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
         // staking tables
         let {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, false);
-        //this.app.wallet.onChainReorganization(block, false);
+        this.app.wallet.onChainReorganization(block, false);
         await this.onChainReorganization(block, false);
 
         //
@@ -1171,7 +1190,7 @@ console.log("does block have GT: " + block.hasGoldenTicket());
             // utxoset update
             //block.onChainReorganization(true);
             let {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, true);
-            //this.app.wallet(onChainReorganization(block, true);
+            this.app.wallet.onChainReorganization(block, true);
 
             //
             // TODO - do we want async on this?

@@ -235,12 +235,11 @@ class Block {
     }
 
     async generateConsensusValues() {
-	
-	//
-        // this is also set in blockchain.js
-	//
-        let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
+        //
+        // this is also set in blockchain.js
+        //
+        let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
         //
         // return obj w/ default values
@@ -270,30 +269,34 @@ class Block {
         // total fees and indices
         //
         for (let i = 0; i < this.transactions.length; i++) {
-try {
-            if (!this.transactions[i].isFeeTransaction()) {
-                cv.total_fees += this.transactions[i].returnFeesTotal();
-            } else {
-                cv.ft_num += 1;
-                cv.ft_idx = i;
-                this.has_fee_transaction = true;
-                this.ft_idx = i;
+            try {
+                if (!this.transactions[i].isFeeTransaction()) {
+                    cv.total_fees += this.transactions[i].returnFeesTotal();
+                } else {
+                    cv.ft_num += 1;
+                    cv.ft_idx = i;
+                    this.has_fee_transaction = true;
+                    this.ft_idx = i;
+                }
+
+                if (this.transactions[i].isGoldenTicket()) {
+
+console.log("BLOCK HAS GOLDEN TICKET true!");
+
+                    cv.gt_num += 1;
+                    cv.gt_idx = i;
+                    this.has_golden_ticket = true;
+                    this.gt_idx = i;
+                }
+                if (this.transactions[i].isIssuanceTransaction()) {
+                    cv.it_num += 1;
+                    cv.it_idx = i;
+                    this.has_issuance_transaction = true;
+                }
+            } catch (err) {
+                console.log("ERROR: " + err);
+                console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
             }
-            if (this.transactions[i].isGoldenTicket()) {
-                cv.gt_num += 1;
-                cv.gt_idx = i;
-                this.has_golden_ticket = true;
-                this.gt_idx = i;
-            }
-            if (this.transactions[i].isIssuanceTransaction()) {
-                cv.it_num += 1;
-                cv.it_idx = i;
-                this.has_issuance_transaction = true;
-            }
-} catch (err) {
-  console.log("ERROR: " + err);
-  console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
-}
         }
 
         //
@@ -664,6 +667,8 @@ try {
         let previous_block_staking_treasury = BigInt(0);
         let current_timestamp = new Date().getTime();
 
+console.log("prev block hash: " + previous_block_hash);
+
         let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
 
         if (previous_block) {
@@ -675,10 +680,7 @@ try {
             previous_block_staking_treasury = previous_block.block.staking_treasury;
         }
 
-        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee,
-                                                                                                      current_timestamp,
-                                                                                                      previous_block_timestamp
-        );
+        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, previous_block_timestamp);
 
         //
         // set our values
@@ -707,21 +709,21 @@ try {
         // object, so we can hot-swap using pass-by-reference. these
         // modifications change the mempool in real-time.
         //
-console.log("-----------------------------------");
-console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
+        console.log("-----------------------------------");
+        console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
         for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
-console.log("checking GT: " + i);
-          let gt = this.app.goldenticket.deserializeFromTransaction(mempool.mempool.golden_tickets[i]);
-console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
-          if (gt.target_hash === previous_block_hash) {
-console.log("ADDING GT TX TO BLOCK");
+            console.log("checking GT: " + i);
+            let gt = this.app.goldenticket.deserializeFromTransaction(mempool.mempool.golden_tickets[i]);
+            console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
+            if (gt.target_hash === previous_block_hash) {
+                console.log("ADDING GT TX TO BLOCK");
                 this.transactions.unshift(mempool.mempool.golden_tickets[i]);
                 this.has_golden_ticket = 1;
                 mempool.mempool.golden_tickets.splice(i, 1);
                 i = mempool.mempool.golden_tickets.length + 2;
-          }
+            }
         }
-console.log("-----------------------------------");
+        console.log("-----------------------------------");
 
 
         //

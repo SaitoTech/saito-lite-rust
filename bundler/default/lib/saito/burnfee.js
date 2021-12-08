@@ -39,6 +39,9 @@ class BurnFee {
   /// * `previous_block_timestamp` - The timestamp of the previous `Block`
   returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(burn_fee_previous_block, current_block_timestamp, previous_block_timestamp) {
 
+console.log("cbt: " + current_block_timestamp);
+console.log("pbt: " + previous_block_timestamp);
+
     //
     // impossible if times misordered
     //
@@ -54,11 +57,20 @@ class BurnFee {
       return 50_000_000;
     }
 
-    let burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
-    let res1 = burn_fee_previous_block_as_float * Math.sqrt( (parseFloat(this.heartbeat) / parseFloat(timestamp_difference)) );
-    let new_burnfee = BigInt(Math.round(res1 * 100_000_000.0));
+console.log("Timestamp difference: " + timestamp_difference);
+console.log("heartbeat: " + this.heartbeat);
 
-    return new_burnfee;
+
+console.log("BFPBAS: " + burn_fee_previous_block.toString());
+
+    let burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
+console.log("BFPBASAF: " + burn_fee_previous_block_as_float); 
+console.log('mathsq' + Math.sqrt( (parseFloat(this.heartbeat) / parseFloat(timestamp_difference))));
+    let res1 = burn_fee_previous_block_as_float * Math.sqrt( (parseFloat(this.heartbeat) / parseFloat(timestamp_difference)) );
+console.log("RES1: " +res1);
+    let new_burnfee = parseInt(Math.round(res1 * 100_000_000.0));
+console.log("NEW BF: " + new_burnfee);
+    return BigInt(new_burnfee);
 
   }
 

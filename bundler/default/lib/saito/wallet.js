@@ -15,7 +15,9 @@ class Wallet {
 
   constructor(app) {
     if (!(this instanceof Wallet)) {
+
       return new Wallet(app);
+
     }
 
     this.app				 = app || {};
@@ -29,7 +31,7 @@ class Wallet {
     this.wallet.spends                   = [];		// TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     this.wallet.pending                  = [];		// slips pending broadcast
     this.wallet.default_fee              = 2;
-    this.wallet.version                  = 3.443;
+    this.wallet.version                  = 4.001;
 
     this.wallet.preferred_crypto         = "SAITO";
     this.wallet.preferred_txs            = [];
@@ -539,7 +541,7 @@ console.log("---------------------");
                 if (Math.random() <= 0.1) {
 
                   let ptx_ts = ptx.transaction.ts;
-                  let blk_ts = blk.block.ts;
+                  let blk_ts = block.block.ts;
 
                   if ((ptx_ts + 12000000) < blk_ts) {
                     this.wallet.pending.splice(i, 1);
@@ -866,8 +868,9 @@ console.log(err);
 
   updateBalance() {
     let bal = this.calculateBalance();
+    let ebal = this.wallet.balance;
     this.wallet.balance = bal.toString();
-    if (this.wallet.balance != existing_balance) {
+    if (this.wallet.balance !== ebal) {
       this.app.connection.emit("update_balance", this);
     }
   }
