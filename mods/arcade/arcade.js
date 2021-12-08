@@ -911,14 +911,6 @@ class Arcade extends ModTemplate {
     let { ts, name, options, options_html, players_needed } = gamedata;
     let accept_sig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
 
-
-console.log("SIGNING OPEN MESSAGE: ");
-let msg_to_sign = `invite_game_${ts}`;
-let tsig = this.app.crypto.signMessage(msg_to_sign, this.app.wallet.returnPrivateKey());
-console.log(`msg is: invite_game_${ts}`);
-console.log("sig is: " + tsig);
-console.log("validates? " + this.app.crypto.verifyMessage(msg_to_sign, tsig, this.app.wallet.returnPublicKey()));
-
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.slip(sendto, 0.0));
     tx.msg = {

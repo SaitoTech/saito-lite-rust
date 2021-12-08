@@ -518,6 +518,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         let player_to_go = parseInt(mv[1]);
         this.displayBoard();
 
+console.log("processing turn");
 
         //
         // if everyone except 1 player has zero credit...
@@ -588,6 +589,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 
           // if everyone has folded - start a new round
+console.log("everyone has folded... start next round");
           this.startNextRound();
 
           return 1;
@@ -665,13 +667,17 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           return 1;
         } else {
 
+
+console.log("this is our first turn " + this.game.player);
           //
           // if this is the first turn
           // 
           if (parseInt(mv[1]) == this.game.player) {
+console.log("A");
             this.playerTurn();
             return 0;
           } else {
+console.log("B");
             this.updateStatus("Waiting for " + this.game.state.player_names[mv[1] - 1]);
             this.updatePlayerLog(parseInt(mv[1]), "player turn");
             return 0;

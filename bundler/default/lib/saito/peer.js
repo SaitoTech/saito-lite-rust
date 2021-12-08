@@ -161,7 +161,7 @@ class Peer {
     }
 
     async handlePeerCommand(message) {
-        console.debug("handlePeerCommand : " + message.message_name);
+        //console.debug("handlePeerCommand : " + message.message_name);
 
         let command = message.message_name;
         if (command === "SHAKINIT") {
@@ -202,7 +202,7 @@ class Peer {
         } else if (command === "REQCHAIN") {
             await this.sendResponseFromStr(message.message_id, "OK");
             let blockchain_message = await this.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
-            console.debug("built blockchain response", blockchain_message);
+            //console.debug("built blockchain response", blockchain_message);
             if (blockchain_message) {
                 await this.app.networkApi.sendAPICall(this.socket, "SNDCHAIN", blockchain_message.serialize());
             } else {
@@ -213,7 +213,7 @@ class Peer {
             await this.sendResponseFromStr(message.message_id, "OK");
 
             let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
-            console.debug("received send blockchain message", send_blockchain_message);
+            //console.debug("received send blockchain message", send_blockchain_message);
             for (let data of send_blockchain_message.blocks_data) {
                 let block = await this.fetchBlock(data.block_hash);
                 console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
@@ -229,7 +229,6 @@ class Peer {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
                 let block = await this.fetchBlock(block_hash);
-                console.log(`ADD TO MEMPOOL BLOCK ${block.returnId()} ${block.returnTimestamp()}`);
 
                 this.app.mempool.addBlock(block);
 
@@ -244,7 +243,7 @@ class Peer {
             }
         } else if (command === "SNDTRANS") {
             let tx = this.socketReceiveTransaction(message);
-            console.log("received TX w/ timestamp: " + tx.transaction.ts);
+            //console.log("received TX w/ timestamp: " + tx.transaction.ts);
             await this.app.mempool.addTransaction(tx);
             //await peer.sendResponseFromStr(message.message_id, "OK");
         } else if (command === "SNDKYLST") {
@@ -261,12 +260,12 @@ class Peer {
      * @param {string} block_hash
      */
     async fetchBlock(block_hash) {
-        console.debug("peer.fetchBlock : " + block_hash);
+        //console.debug("peer.fetchBlock : " + block_hash);
 
         try {
             const fetch = require('node-fetch');
             const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
-            console.debug("fetch url = " + url);
+            //console.debug("fetch url = " + url);
             const res = await fetch(url);
             if (res.ok) {
                 const base64Buffer = await res.arrayBuffer();
@@ -286,20 +285,21 @@ class Peer {
     }
 
     async handleApplicationMessage(msg) {
-        console.debug("handleApplicationMessage", msg);
         let mdata;
         let reconstructed_obj;
         let reconstructed_message;
         let reconstructed_data;
-
         try {
             mdata = msg.message_data.toString();
             reconstructed_obj = JSON.parse(mdata);
             reconstructed_message = reconstructed_obj.message;
             reconstructed_data = reconstructed_obj.data;
         } catch (err) {
-            console.log("Error reconstructing data: ");
-            console.error(err);
+            //try {
+            //} catch (err) {
+                console.log("Error reconstructing data: " + Buffer.from(mdata).toString());
+                console.error(err);
+	    //}
         }
 
         let message = {};
@@ -316,6 +316,8 @@ class Peer {
         let mycallback = function (response_object) {
             peer.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
         }
+
+console.log("HANDLE APPLICATION MESSAGE 2: " + msg.message_name);
 
         switch (msg.message_name) {
             case 'block':
@@ -366,7 +368,7 @@ class Peer {
     }
 
     buildSerializedChallenge(message) {
-        console.debug("buildSerializedChallenge", message);
+        //console.debug("buildSerializedChallenge", message);
         let my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
         let my_privkey = this.app.wallet.returnPrivateKey();
 
@@ -386,7 +388,7 @@ class Peer {
 
     socketHandshakeVerify(message_data) {
         let challenge = HandshakeChallengeMessage.deserialize(message_data, this.app);
-        console.debug("socketHandshakeVerify", challenge);
+        //console.debug("socketHandshakeVerify", challenge);
         if (challenge.timestamp < Date.now() - Network.ChallengeExpirationTime) {
             console.error("Error validating timestamp for handshake complete");
             return null;
@@ -442,7 +444,7 @@ class Peer {
     }
 
     buildRequestBlockchainMessage(latest_block_id, latest_block_hash, fork_id) {
-        console.debug("buildRequestBlockchainMessage", arguments);
+        //console.debug("buildRequestBlockchainMessage", arguments);
         return new RequestBlockchainMessage(this.app, latest_block_id, latest_block_hash, fork_id);
     }
 
@@ -452,7 +454,7 @@ class Peer {
      * @returns Promise<SendBlockchainMessage>
      */
     async buildSendBlockchainMessage(request_blockchain_message) {
-        console.debug("peer.buildSendBlockchainMessage", request_blockchain_message);
+        //console.debug("peer.buildSendBlockchainMessage", request_blockchain_message);
 
         let block_zero_hash = Buffer.alloc(32, 0);
 
@@ -478,7 +480,7 @@ class Peer {
             let this_block;
             let block_count = 0;
             while (previous_block_hash !== peers_latest_hash && block_count < this.app.blockchain.genesis_period) {
-                console.debug("adding block hash : " + previous_block_hash);
+                //console.debug("adding block hash : " + previous_block_hash);
                 block_count += 1;
                 this_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
                 blocks_data.push(new SendBlockchainBlockData(this_block.block.id, this_block.hash, this_block.timestamp, Buffer.alloc(32, 0), 0));
@@ -486,7 +488,7 @@ class Peer {
             }
             return new SendBlockchainMessage(SyncType.Full, peers_latest_hash, blocks_data, this.app);
         } else {
-            console.debug("No blocks in the blockchain");
+            //console.debug("No blocks in the blockchain");
             return new SendBlockchainMessage(SyncType.Full, block_zero_hash, blocks_data, this.app);
         }
     }
@@ -510,7 +512,7 @@ class Peer {
     }
 
     sendRequest(message, data = "") {
-        console.debug("sendRequest : " + message);
+        //console.debug("sendRequest : " + message);
         //
         // respect prohibitions
         //
@@ -534,12 +536,12 @@ class Peer {
         let data_to_send = {message: message, data: data};
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-        console.debug("socket : ", this.socket);
+        //console.debug("socket : ", this.socket);
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             // no need to await as no callback, so no response
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then(() => {
-                    console.debug("message sent with sendRequest");
+                    //console.debug("message sent with sendRequest");
                 });
         } else {
             this.sendRequestWithCallbackAndRetry(message, data);
@@ -609,7 +611,7 @@ class Peer {
     // request emission.
     //
     sendRequestWithCallbackAndRetry(request, data = {}, callback = null, initialDelay = 1000, delayFalloff = 1.3) {
-        console.debug("sendRequestWithCallbackAndRetry");
+        //console.debug("sendRequestWithCallbackAndRetry");
         let callbackWrapper = (res) => {
             if (!res.err) {
                 if (callback != null) {

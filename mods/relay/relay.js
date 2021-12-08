@@ -36,6 +36,8 @@ class Relay extends ModTemplate {
   //
   sendRelayMessage(recipients, message_request, message_data) {
 
+console.log("Send Relay Message");
+
     //
     // recipient can be an array
     //
@@ -100,6 +102,7 @@ class Relay extends ModTemplate {
         //
         // peer.sendRequestWithCallback("relay peer message", tx2.transaction, function(res) {
         // });
+console.log(" and relay peer message...");
         peer.sendRequest("relay peer message", tx2.transaction);
 
       }
@@ -130,6 +133,8 @@ class Relay extends ModTemplate {
       let relay_self = app.modules.returnModule("Relay");
       if (message.request === "relayPeerMessageToRecipient") { 
 
+console.log("RPM 1");
+
         if (message.data && message.data.request && message.data.recipient) {
           let peer = this.app.network.returnPeerByPublicKey(message.data.recipient);
           if(peer != null) {
@@ -146,6 +151,9 @@ class Relay extends ModTemplate {
         }
       }
       if (message.request === "relayPeerMessage2") { 
+
+console.log("RPM 2");
+
         if(message.data && message.data.request) {
           if(mycallback === null) {
             this.app.network.sendRequest(message.data.request, message.data);
@@ -157,6 +165,8 @@ class Relay extends ModTemplate {
         }
       }
       if (message.request === "relay peer message") {
+
+console.log("in Relay handlePeerRequest... def relay message");
 
         //
         // sanity check on tx
