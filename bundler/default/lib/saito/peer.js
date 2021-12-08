@@ -229,7 +229,6 @@ class Peer {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
                 let block = await this.fetchBlock(block_hash);
-                console.log(`ADD TO MEMPOOL BLOCK ${block.returnId()} ${block.returnTimestamp()}`);
 
                 this.app.mempool.addBlock(block);
 
@@ -317,6 +316,8 @@ class Peer {
         let mycallback = function (response_object) {
             peer.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
         }
+
+console.log("HANDLE APPLICATION MESSAGE 2: " + msg.message_name);
 
         switch (msg.message_name) {
             case 'block':
