@@ -57,12 +57,9 @@ class Mods {
   }
 
   async handlePeerRequest(message, peer, mycallback=null) {
-console.log("mods length: " + this.mods.length);
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-console.log("start hpr for: " + this.mods[iii].name);
         await this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
-console.log("done hpr for: " + this.mods[iii].name);
       } catch (err) {
         console.log("handlePeerRequest Unknown Error: \n" + err);
       }
