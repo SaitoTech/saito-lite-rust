@@ -148,7 +148,6 @@ class Mempool {
           for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
 	    let gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);	    
             if (gt.target_hash === new_gt.target_hash) { return false; }
-console.log("added golden ticket targeting block: " + gt.target_hash);
           }
 
           this.mempool.golden_tickets.push(transaction);

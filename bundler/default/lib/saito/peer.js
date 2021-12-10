@@ -241,8 +241,6 @@ class Peer {
         } else if (command === "SNDKYLST") {
             await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
         } else if (command === "SENDMESG") {
-console.log("RECEIVED SENDMESG FROM CLIENT!");
-console.log("THIS IN PARTICULAR: " + JSON.stringify(message)); 
            await this.handleApplicationMessage(message);
         } else {
             console.error("Unhandled command received by client... " + message.message_name);
@@ -312,10 +310,6 @@ console.log("THIS IN PARTICULAR: " + JSON.stringify(message));
         let mycallback = function (response_object) {
             peer.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
         }
-
-console.log("HANDLE APPLICATION MESSAGE 2: " + msg.message_name);
-console.log("HANDLE APPLICATION MESSAGE 2 r: " + JSON.stringify(message.request));
-console.log("HANDLE APPLICATION MESSAGE 2 d: " + JSON.stringify(message.data));
 
         switch (msg.message_name) {
             case 'block':

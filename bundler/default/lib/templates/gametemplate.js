@@ -1115,9 +1115,9 @@ console.log("!!!!!!!!!!!!!!!!!!!!");
     if (game_self.game.queue.length > 0) {
       while (game_self.game.queue.length > 0 && cont == 1) {
 
-console.log("QUEUE ENTRIES: " + game_self.game.queue.length);
-console.log("LATEST: " + game_self.game.queue[game_self.game.queue.length-1]);
-console.log("FULL QUEUE: " + JSON.stringify(game_self.game.queue));
+//console.log("QUEUE ENTRIES: " + game_self.game.queue.length);
+//console.log("LATEST: " + game_self.game.queue[game_self.game.queue.length-1]);
+//console.log("FULL QUEUE: " + JSON.stringify(game_self.game.queue));
 
 	loops_through_queue++;
         loop_length = game_self.game.queue.length;
@@ -2037,7 +2037,6 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
         // only initialized moves off-chain
         //
         if (relay_mod != null && (game_self.game.initializing == 0 || (game_self.initialize_game_offchain_if_possible == 1))) {
-console.log("GAME MACHINE: sending message");
           relay_mod.sendRelayMessage(this.game.players, 'game relay gamemove', newtx);
         }
       }
@@ -2060,11 +2059,7 @@ console.log("GAME MACHINE: sending message");
 
     let game_self = this;
 
-console.log("A");
-
     await super.handlePeerRequest(app, message, peer, mycallback);
-
-console.log("B");
 
     if (message.request === "game relay gamemove") {
       if (message.data != undefined) {
@@ -2072,8 +2067,6 @@ console.log("B");
         let gametx = new saito.transaction(message.data.transaction);
 
         let gametxmsg = gametx.returnMessage();
-
-console.log("gametxmessage: " + JSON.stringify(gametxmsg));
 
         //
         // nope out if game does not exist locally
@@ -2083,16 +2076,12 @@ console.log("gametxmessage: " + JSON.stringify(gametxmsg));
 	  return;
         }
 
-console.log("C");
-
 
         if (gametxmsg.module == this.name) { 
 	  //
 	  // we are concerned about receiving moves out-of-order
  	  //
-console.log("D");
 	  try {
-console.log("E");
           if ( ( (!game_self.game) || (game_self.game.id != gametxmsg.game_id ) ) && gametxmsg.game_id != "") {
 	    for (let i = 0; i < gametxmsg.turn.length; i++) {
 	      if (gametxmsg.turn[i].indexOf("FLIP") > -1) { 
@@ -2117,8 +2106,6 @@ console.log("E");
 console.log("err taking shortcuts in game library...");
 	  }
 
-console.log("F");
-
           //
           // if this game is not loaded...
           //
@@ -2133,11 +2120,9 @@ console.log("F");
 
 
           if (game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg)) {
-console.log("add future move...");
             game_self.addFutureMove(gametx);
           } else {
             if (game_self.isUnprocessedMove(gametx.transaction.from[0].add, gametxmsg)) {
-console.log("add next move...");
               game_self.addNextMove(gametx);
             } else {
 //console.log("Receive Move Offchain but neither future nor unprocessed: " + gametx.transaction.from[0].add + " -- " + JSON.stringify(gametxmsg.step));

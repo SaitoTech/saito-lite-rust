@@ -202,7 +202,6 @@ class Relay extends ModTemplate {
 	  let txmsg2 = tx2.returnMessage();
 
 	  if (txmsg2.request) {
-            //app.modules.handlePeerRequest(tx3msg, peer, mycallback);
             await app.modules.handlePeerRequest(txmsg2, peer, mycallback);
             if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
 	    return;
