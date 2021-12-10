@@ -36,8 +36,6 @@ class Relay extends ModTemplate {
   //
   sendRelayMessage(recipients, message_request, message_data) {
 
-console.log("Send Relay Message");
-
     //
     // recipient can be an array
     //
@@ -71,8 +69,6 @@ console.log("Send Relay Message");
     //
     for (let i = 0; i < this.app.network.peers.length; i++) {
 
-console.log("considering a relay to: " + i);
-
       if (this.app.network.peers[i].peer) {
       //if (this.app.network.peers[i].peer.modules) {
       //if (this.app.network.peers[i].peer.modules.length > 0) {
@@ -104,8 +100,6 @@ console.log("considering a relay to: " + i);
         //
         // peer.sendRequestWithCallback("relay peer message", tx2.transaction, function(res) {
         // });
-console.log(" and send relay peer message...");
-console.log(" sending this: " + JSON.stringify(tx2.transaction));
         peer.sendRequest("relay peer message", tx2.transaction);
 
       }
@@ -136,8 +130,6 @@ console.log(" sending this: " + JSON.stringify(tx2.transaction));
       let relay_self = app.modules.returnModule("Relay");
       if (message.request === "relayPeerMessageToRecipient") { 
 
-console.log("RPM 1");
-
         if (message.data && message.data.request && message.data.recipient) {
           let peer = this.app.network.returnPeerByPublicKey(message.data.recipient);
           if(peer != null) {
@@ -155,8 +147,6 @@ console.log("RPM 1");
       }
       if (message.request === "relayPeerMessage2") { 
 
-console.log("RPM 2");
-
         if(message.data && message.data.request) {
           if(mycallback === null) {
             this.app.network.sendRequest(message.data.request, message.data);
@@ -168,8 +158,6 @@ console.log("RPM 2");
         }
       }
       if (message.request === "relay peer message") {
-
-console.log("in Relay handlePeerRequest... def relay message");
 
         //
         // sanity check on tx
@@ -183,20 +171,15 @@ console.log("in Relay handlePeerRequest... def relay message");
         //
         // get the inner-tx / tx-to-relay
         //
-console.log("before we ask tx to decrypt...");
         tx.decryptMessage(this.app);
-console.log("before we ask tx to return message...");
         let txmsg = tx.returnMessage();
 
 
 	//
 	// we have a handlePeerRequest, not a transaction
 	//
-console.log("txmsg is: " + JSON.stringify(txmsg));
-console.log("txmsg data is: " + JSON.stringify(txmsg.data));
 	if (txmsg.data) { 
-console.log("sending to handle peer request...");
-          app.modules.handlePeerRequest(txmsg, peer, mycallback);
+          await app.modules.handlePeerRequest(txmsg, peer, mycallback);
           if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
 	  return;
 	}
@@ -219,7 +202,8 @@ console.log("sending to handle peer request...");
 	  let txmsg2 = tx2.returnMessage();
 
 	  if (txmsg2.request) {
-            app.modules.handlePeerRequest(tx3msg, peer, mycallback);
+            //app.modules.handlePeerRequest(tx3msg, peer, mycallback);
+            await app.modules.handlePeerRequest(txmsg2, peer, mycallback);
             if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
 	    return;
 	  }
@@ -231,7 +215,14 @@ console.log("sending to handle peer request...");
 	  tx3.decryptMessage(app);
 	  let tx3msg = tx3.returnMessage();
 
-          app.modules.handlePeerRequest(tx3msg, peer, mycallback);
+
+	  if (tx3msg.request) {
+            await app.modules.handlePeerRequest(tx3msg, peer, mycallback);
+            if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
+	    return;
+	  }
+
+          await app.modules.handlePeerRequest(tx3msg, peer, mycallback);
           if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
 
         } else {
@@ -241,15 +232,11 @@ console.log("sending to handle peer request...");
 	  //
           let peer_found = 0;
 
-console.log("looking for peer...");
           for (let i = 0; i < app.network.peers.length; i++) {
             if (tx2.isTo(app.network.peers[i].peer.publickey)) {
-console.log("found target peer...");
 
               peer_found = 1;
 
-console.log("what will we send? " + JSON.stringify(message.data));
-console.log("sending!");
               app.network.peers[i].sendRequest("relay peer message", message.data, function() {
 	        if (mycallback != null) {
                   mycallback({ err : "" , success : 1 });

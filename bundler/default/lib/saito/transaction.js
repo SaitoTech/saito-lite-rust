@@ -361,29 +361,15 @@ class Transaction {
 
     returnMessage() {
         if (this.dmsg !== "") {
-console.log(" ... lower a");
-console.log("dmsg is " + JSON.stringify(this.dmsg));
             return this.dmsg;
         }
         if (this.msg !== {}) {
-console.log(" ... lower b");
             return this.msg;
         }
         try {
-            console.log("return message: tx.m");
-            //let x = Buffer.from(JSON.stringify(this.transaction.m), 'hex').toString('utf-8');
-            //if (app != null) {
             let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
-console.log(" ... reconstruct: " + reconstruct);
             this.msg = JSON.parse(reconstruct);
-console.log(" ... msg: " + JSON.stringify(this.msg));
-            //}
-            //console.log("as utf-8: " + x);
-            //this.msg = JSON.parse(x);
-        } catch (err) {
-
-        }
-console.log("returning msg");
+        } catch (err) {}
         return this.msg;
     }
 
