@@ -528,19 +528,23 @@ class GameTemplate extends ModTemplate {
     let game_self = this;
 
     if (txmsg.game_id !== game_self.game.id) { 
+console.log("a - same move as step");
       return 0;
     }
     if (parseInt(txmsg.step.game) <= (parseInt(game_self.game.step.game)+1)) { 
+console.log("b - past move");
       return 0; 
     }
     if (txmsg.step.game <= (game_self.game.step.players[playerpkey]+1)) { 
+console.log("c - past move");
       return 0; 
     }
 
     if (txmsg.step.game > (game_self.game.step.game+1)) { return 1; }
     if (txmsg.step.game > (game_self.game.step.players[playerpkey]+1)) { return 1; }
-
     if (game_self.gaming_active == 1) { return 1; }
+
+console.log("d - none of the above");
 
     return 0;
 
@@ -2021,7 +2025,12 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
 
     game_self.app.wallet.wallet.pending.push(JSON.stringify(newtx.transaction));
     game_self.app.wallet.saveWallet();
+
+console.log("SAVING GAME!");
+
     game_self.saveGame(game_self.game.id);
+
+console.log("SENDING MESSAGE!");
 
     //
     // send off-chain if possible - step 2 onchain to avoid relay issues with options
@@ -2036,13 +2045,18 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
         //
         // only initialized moves off-chain
         //
+console.log("are we relaying?");
         if (relay_mod != null && (game_self.game.initializing == 0 || (game_self.initialize_game_offchain_if_possible == 1))) {
+console.log("yes, we are relaying?");
           relay_mod.sendRelayMessage(this.game.players, 'game relay gamemove', newtx);
+console.log("done invoking relay mod...");
         }
       }
     }
 
+console.log("before propagate tx...");
     game_self.app.network.propagateTransaction(newtx);
+console.log("after propagate tx...");
 
   }
 
@@ -2059,7 +2073,8 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
 
     let game_self = this;
 
-    await super.handlePeerRequest(app, message, peer, mycallback);
+    //await super.handlePeerRequest(app, message, peer, mycallback);
+    super.handlePeerRequest(app, message, peer, mycallback);
 
     if (message.request === "game relay gamemove") {
       if (message.data != undefined) {
@@ -2075,6 +2090,25 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
 	  console.log("Game does not exist locally. Not processing HPR message: waiting for on-chain");
 	  return;
         }
+
+
+	//
+	// this might be a request game / game-state combo
+	//
+	if (gametxmsg.request === "game") {
+	  if (gametxmsg.game_state) {
+	    gametxmsg = gametxmsg.game_state;	  
+	  }
+	}
+
+
+	//
+	// load game if this is not accurate
+	//
+	if (!game_self.game?.id && this.name === gametxmsg.module) {
+console.log("loading game...");
+	  game_self.game = game_self.loadGame(gametxmsg.id);
+	}
 
 
         if (gametxmsg.module == this.name) { 
@@ -2110,14 +2144,28 @@ console.log("err taking shortcuts in game library...");
           // if this game is not loaded...
           //
 	  try {
-          if ((game_self.game == "undefined" || game_self.game == undefined || game_self.game == "" || game_self.game == null) && gametxmsg.game_id != game_self.game.id) {
-	    console.log("peer to peer game move but not for this game so dropping");
-	    return;
-          }
+          let gid = gametxmsg.game_id;
+	  if (gametxmsg.id) { gid = gametxmsg.id; gametxmsg.game_id = gid; }
+	  if (game_self.game?.id) {
+            if (gametxmsg.game_id != game_self.game.id) {
+	      console.log("peer to peer game move but not for this game so dropping");
+	      return;
+            }
+          } else {
+console.log("game self game id does not exist... try loading it...");
+
+	  }
 	  } catch (err) {
-	    console.log("error handling peer to peer move in game template library");
+	    console.log("error handling peer to peer move in game template library: "+err);
+	    console.log("i am module: " + this.name);
+	    console.log("txmsg that caused issues? " + JSON.stringify(gametxmsg));
 	  }
 
+
+
+console.log("CHECK WHO MADE MOVE: " + gametx.transaction.from[0].add);
+console.log("FUTURE MOVE? " + game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg));
+console.log("NEXT MOVE? " + game_self.isUnprocessedMove(gametx.transaction.from[0].add, gametxmsg));
 
           if (game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg)) {
             game_self.addFutureMove(gametx);

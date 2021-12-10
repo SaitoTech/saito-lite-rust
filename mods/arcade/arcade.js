@@ -1580,10 +1580,10 @@ class Arcade extends ModTemplate {
     let game_state = "";
 
 try {
-    if (txmsg.game_state != "") { game_state = txmsg.game_state; }
+    if (txmsg.game_state) { game_state = txmsg.game_state; }
 } catch (err) {
   console.log("error saving game state, so quitting...");
-  console.log(JSON.stringify(txmsg));
+  console.log("is this: " + JSON.stringify(txmsg));
   return;
 }
 

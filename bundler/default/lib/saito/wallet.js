@@ -766,8 +766,6 @@ console.log("---------------------");
     // convert tx.msg to base64 tx.transaction.m
     //
     try {
-      // DEC 3 - can delete if unproblematic
-      //tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
       tx.sign(this.app);
     } catch (err) {
       console.error("####################");

@@ -3876,6 +3876,7 @@ if (this.game.player == 0) {
                 twilight_self.endRegionBonus();
               } else {
                 twilight_self.playerFinishedPlacingInfluence();
+console.log("finished placing influence -- end turn");
                 twilight_self.endTurn();
                 return;
               }
@@ -5601,7 +5602,9 @@ this.startClock();
 
     this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, this.log_length, 1);
 
+console.log("showing influence: " + country + " - " + inf + " -- " + player);
     this.showInfluence(country, player, mycallback);
+console.log("showing influence 2!");
 
   }
 
