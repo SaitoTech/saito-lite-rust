@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   sodipodi:docname="Gonzaga.svg"
+   version="1.0"
+   width="76"
+   inkscape:version="0.48.1 "
+   height="76">
+  <metadata
+     id="metadata7446">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     objecttolerance="10"
+     bordercolor="#666666"
+     inkscape:window-height="891"
+     inkscape:zoom="2.8284271"
+     gridtolerance="10"
+     id="namedview7444"
+     inkscape:current-layer="g4951"
+     inkscape:window-y="77"
+     inkscape:cy="42.619929"
+     inkscape:window-x="213"
+     inkscape:cx="-15.318419"
+     showgrid="false"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1305"
+     inkscape:window-maximized="0"
+     borderopacity="1"
+     pagecolor="#ffffff" />
+  <defs
+     id="defs5">
+    <filter
+       x="-0.10506912"
+       width="1.2101382"
+       id="filter3256"
+       height="1.2101382"
+       y="-0.10506912"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         stdDeviation="3.8963134"
+         id="feGaussianBlur3258" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter3818">
+      <feGaussianBlur
+         stdDeviation="1.5861172"
+         id="feGaussianBlur3820" />
+    </filter>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3005">
+      <rect
+         height="71.699486"
+         ry="3.9833047"
+         id="rect3007"
+         rx="4.0563378"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.99999994;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         width="70.985916"
+         y="8.9979124"
+         x="-108.61796" />
+    </clipPath>
+  </defs>
+  <rect
+     x="5.5812325"
+     y="5.8613443"
+     transform="matrix(0.75435383,0,0,0.75435383,0.61374143,1.4265983)"
+     width="90"
+     style="opacity:0.89671362;fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter3256)"
+     rx="3"
+     id="rect2384"
+     ry="3"
+     height="90" />
+  <rect
+     x="0.5"
+     y="0.69999999"
+     width="72"
+     style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+     rx="4"
+     id="rect2663"
+     ry="4"
+     height="72" />
+  <g
+     style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter3818)"
+     id="g3815"
+     transform="translate(0,-24)" />
+  <text
+     x="39.309814"
+     y="10.998518"
+     transform="scale(0.96630279,1.0348723)"
+     style="font-size:38.65211105px;font-style:normal;font-weight:bold;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"
+     id="text8216"
+     sodipodi:linespacing="89.999998%"
+     xml:space="preserve"><tspan
+       x="39.309814"
+       id="tspan8432"
+       y="10.998518"
+       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:89.99999762%;text-anchor:middle;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"
+       sodipodi:role="line" /><tspan
+       x="39.309814"
+       id="tspan9219"
+       y="37.998516"
+       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:89.99999762%;text-anchor:middle;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"
+       sodipodi:role="line" /></text>
+  <text
+     x="47.500301"
+     xml:space="preserve"
+     id="text9213"
+     y="8.7978668"
+     sodipodi:linespacing="125%"
+     style="font-size:40px;font-style:normal;font-weight:bold;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"><tspan
+       x="47.500301"
+       y="8.7978668"
+       id="tspan9215"
+       sodipodi:role="line" /></text>
+  <text
+     x="15.608594"
+     xml:space="preserve"
+     id="text3803"
+     y="68.487434"
+     sodipodi:linespacing="125%"
+     style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"><tspan
+       x="15.608594"
+       y="68.487434"
+       id="tspan3805"
+       style="font-size:20px;letter-spacing:-0.2px;fill:#fff650;fill-opacity:1"
+       sodipodi:role="line">1 VP</tspan></text>
+  <image
+     x="-109.125"
+     y="8.5"
+     transform="matrix(0.98611111,0,0,1.0041913,108.60938,-7.7971911)"
+     clip-path="url(#clipPath3005)"
+     width="72"
+     xlink:href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a HBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIy MjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAyAEgDASIA AhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA AAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3 ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWm p6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEA AwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSEx BhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK U1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3 uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDziTpx UDnj3q1tyDTCgPGKzuatFQn16U3BYnArSsbJbq+jiOdnVvpXr2h6Ro0Fgoks7ZcgcuBz+dc9fFKj bS5pToSmrniBQrzjPsRVk2Uc1n58JYOPvIeea9R8ceFrOPT01TTYI4tnEyoMDB/irzu1KxXJiHKu M8etEK6qR5olKkk7S6mFzS55q3qEAgu2A6NyBVXFdKd1c5JLldgBooUYopiNbI64pCaVx0x0pAKg 3J7SUw3KuCQTxkda9S020ub7w5aXULKlyQQxb0z2rycEoVYdQcivSfC2qfa4IrVvMcY/dgHCqepz XDjI+6mjrwz3VzsbbTvtGjm0vphNvj2uQuAfwrx/XdBl0HWoo5JQ8Zb5WxjNe1xIIYwW4PpmvLvi Tp81vrlndMX8uVcgEkgMP5Vz4ST5rdy6ttzj9Yg3Ksg6rx+FYveupvog8ZHUH+tcwykEg9jXq0ne NjjxMbSuIoopy8UVqc5oucmjOMUrcUxnCr15qWaXJlRnZVHU9K1dP1O80iVntJjGSOeM5rJtbwRS q3llu1aFtBJqmow2cClWmbbk9qymr6S2Nabtqtz1fwlNc38QuL6QuxxgdvrVzxtpMeraMQMebEdy H0NWdF0eext4lYD5IwDjuazvHetJouhSpvX7TcZWJO49TXlxUnL3Udcmt2eUyEvaqx6hcflWDqEX lXb4Hyt8wrYtcyWaruycfzqCCxju02udg/vZ716cHybmNSLqJWMVR1oq7cabNbOcEOo7g0V0KSex yOElowkPyiqxoopEvcsR8Diux8HKP+En07gffP8AI0UVjW+FnRS3Pb24SvF/iUzP4hkDMSFj4yel FFcNH40dD+FnL6f/AKpPqP60yJisTEEgjoQaKK7XuxLZGY7s0p3MT9TRRRWy2OWW5//Z "
+     id="image3801"
+     height="50" />
+  <g
+     id="g4951"
+     transform="translate(-1.0858926,0)">
+    <text
+       x="12.597349"
+       y="45.894951"
+       transform="scale(0.95691006,1.0450303)"
+       style="font-size:17.22438049px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"
+       id="text3807"
+       sodipodi:linespacing="125%"
+       xml:space="preserve"><tspan
+         x="12.597349"
+         id="tspan3809"
+         y="45.894951"
+         sodipodi:role="line"
+         style="font-size:14.35365105px;letter-spacing:-0.2px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none">Gonzaga</tspan></text>
+    <text
+       x="12.5077"
+       y="45.859741"
+       transform="scale(0.95691006,1.0450303)"
+       style="font-size:17.22438049px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Times New Roman;-inkscape-font-specification:Sans Bold"
+       id="text3807-7"
+       sodipodi:linespacing="125%"
+       xml:space="preserve"><tspan
+         x="12.5077"
+         id="tspan3809-4"
+         y="45.859741"
+         sodipodi:role="line"
+         style="font-size:14.35365105px;letter-spacing:-0.2px;fill:#ffffff;fill-opacity:1;stroke:none">Gonzaga</tspan></text>
+  </g>
+</svg>

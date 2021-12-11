@@ -1,0 +1,22 @@
+
+rm ../../web/saito/saito.js
+
+
+#
+# class constructor
+#
+cat ./src/his-init.js > ./his.js
+
+for file in ./src/cards/core/*
+do
+  cat $file >> ./his.js
+done
+
+#
+# and inirtialize
+#
+cat ./src/his-start.js >> ./his.js
+
+
+npm run compile $1
+
