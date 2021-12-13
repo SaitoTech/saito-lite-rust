@@ -1,10 +1,10 @@
 
 
 .gameboard {
-  background-image: url("/his/img/HereIStandMap.jpg");
+  background-image: url("/his/img/gameboard-large.png");
   background-size: cover;
-  width: 5100px;
-  height: 3300px;
+  width: 4950px;
+  height: 3164px;
 }
 
 
