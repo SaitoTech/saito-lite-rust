@@ -73,7 +73,7 @@ module.exports = ArcadeGameDetails = {
       document.querySelector('.game-wizard-publisher-message').innerHTML = `<span style="font-weight:bold">NOTE: </span>${gamemod.publisher_message}`;
     }
 
-    document.querySelector('.game-wizard-title').innerHTML = gamemod.name;
+    document.querySelector('.game-wizard-title').innerHTML = gamemod.gamename;
     document.querySelector('.game-wizard-description').innerHTML = gamemod.description;
 
     setTimeout(() => {

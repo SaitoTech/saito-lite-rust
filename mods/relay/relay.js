@@ -104,9 +104,6 @@ console.log("sending a relay peer message!");
 
       if (message.request === "relay peer message") {
 
-console.log("received relay peer message");
-console.log("MESSAGE: " + JSON.stringify(message));
-
         //
         // sanity check on tx
         //
@@ -120,22 +117,14 @@ console.log("MESSAGE: " + JSON.stringify(message));
 	//
 	// the embedded message to examine is txmsg
 	//
-console.log("TXMSG: " + JSON.stringify(txmsg));
-
-	//
-	// we have a handlePeerRequest, not a transaction
-	//
-	if (txmsg.data) { 
-	}
 
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (tx.isTo(app.wallet.returnPublicKey())) {
+        if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
 
 	  console.log("processing txmsg.request: " + JSON.stringify(txmsg.request));
           app.modules.handlePeerRequest(txmsg, peer, mycallback);
-          if (mycallback != null) { mycallback({ err : "" , success : 1 }); }
 	  return;
 
 	//

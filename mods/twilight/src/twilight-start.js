@@ -3850,6 +3850,8 @@ if (this.game.player == 0) {
           }
           twilight_self.playerPlaceInfluence(player, (country, player) => {
 
+alert("SHOULD BE UPDATED!");
+
             j--;
 
             //
@@ -3876,7 +3878,6 @@ if (this.game.player == 0) {
                 twilight_self.endRegionBonus();
               } else {
                 twilight_self.playerFinishedPlacingInfluence();
-console.log("finished placing influence -- end turn");
                 twilight_self.endTurn();
                 return;
               }
@@ -5602,9 +5603,7 @@ this.startClock();
 
     this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, this.log_length, 1);
 
-console.log("showing influence: " + country + " - " + inf + " -- " + player);
     this.showInfluence(country, player, mycallback);
-console.log("showing influence 2!");
 
   }
 
@@ -5706,8 +5705,6 @@ console.log("showing influence 2!");
     // update game state
     //
     this.game.countries = this.countries;
-
-console.log("updated show screen!");
 
     if (mycallback != null) { mycallback(country, player); }
 
@@ -5905,7 +5902,6 @@ this.startClock();
               // vietnam revolts and china card - US never eligible for former
               //
               twilight_self.game.state.events.vietnam_revolts_eligible = 0;
-              //if (twilight_self.countries[countryname].region !== "seasia") { twilight_self.game.state.events.vietnam_revolts_eligible = 0; }
               if (twilight_self.countries[countryname].region.indexOf("asia") < 0) { twilight_self.game.state.events.china_card_eligible = 0; }
 
               if (twilight_self.isControlled("ussr", countryname) == 1) { twilight_self.game.break_control = 1; }
