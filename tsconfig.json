@@ -11,6 +11,7 @@
     "./lib/templates"
   ],
   "include": [
-    "./lib/**/*"
+    "./lib/**/*",
+    "start.ts"
   ]
 }
