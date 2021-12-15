@@ -4,7 +4,13 @@ const fetch = require('node-fetch');
 const {set} = require('numeral');
 const Base58 = require("base-58");
 const secp256k1 = require('secp256k1');
+
 const SendBlockHeadMessage = require("./networking/send_block_head_message");
+const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
+const RequestBlockMessage = require("./networking/request_block_message");
+const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
+const RequestBlockchainMessage = require("./networking/request_blockchain_message");
+const SendBlockchainMessage = require("./networking/send_blockchain_message");
 
 class Network {
 
@@ -100,6 +106,10 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
+	//
+	//
+	//
+
         //
         // we connect to them
         //
@@ -138,11 +148,13 @@ class Network {
         // add peer
         //
         let peer = new saito.peer(this.app);
-        peer.socket = socket;
-        //
-        // manually setting, used so the socket knows which peer
-        //
-        peer.socket.peer = peer;
+	peer.socket = socket;
+
+	//
+	// create socket and attach events
+	//
+	this.initializeWebSocket(peer, true, false);
+
 
         //
         // they connected to us
@@ -162,14 +174,92 @@ class Network {
         return peer;
     }
 
-    findPeer(socket) {
-        for (let i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].socket_id === socket.id) {
-                return this.peers[i];
+
+    initializeWebSocket(peer, remote_socket=false, browser=false) {
+
+	//
+	// browsers can only use w3c sockets
+	//
+        if (browser == true) {
+
+            let wsProtocol = 'ws';
+            if (peer.peer.protocol === 'https') { wsProtocol = 'wss'; }
+            peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
+            peer.socket.peer = peer;
+
+            peer.socket.onopen = (event) => {
+                console.log("connected to network", event);
+                this.app.networkApi.initiateHandshake(peer.socket);
+            };
+            peer.socket.onclose = (event) => {
+                console.log(`[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`);
+                this.app.network.cleanupDisconnectedSocket(peer.socket);
+            };
+            peer.socket.onerror = (event) => {
+                console.log(`[error] ${event.message}`);
+            };
+            peer.socket.onmessage = async (event) => {
+                let data = await event.data.arrayBuffer();
+                let api_message = this.app.networkApi.deserializeAPIMessage(data);
+console.log("received an abstract message over the network... handling");
+                if (api_message.message_name === "RESULT__") {
+                    this.app.networkApi.receiveAPIResponse(api_message);
+                } else if (api_message.message_name === "ERROR___") {
+                    this.app.networkApi.receiveAPIError(api_message);
+                } else {
+                    await this.handlePeerMessage(peer, api_message);
+                }
+            };
+
+	    return peer.socket;
+	}
+
+
+	//
+	// only create the socket if it is not a remote peer, as remote peers
+	// have their socket code added by the server class.
+	//
+	if (remote_socket == false) {
+
+            const WebSocket = require('ws');
+            let wsProtocol = 'ws';
+            if (peer.peer.protocol === 'https') { wsProtocol = 'wss'; }
+            peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
+            peer.socket.peer = peer;
+
+	    //
+	    // default ws websocket
+	    //
+            peer.socket.on('open', async (event) => {
+                await this.app.networkApi.initiateHandshake(peer.socket);
+            });
+            peer.socket.on('close', (event) => {
+                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            });
+            peer.socket.on('error', (event) => {
+                console.log(`[error] ${event.message}`);
+            });
+
+	} else {
+            peer.socket.peer = peer;
+	}
+
+        peer.socket.on('message', async (data) => {
+            let api_message = this.app.networkApi.deserializeAPIMessage(data);
+            if (api_message.message_name === "RESULT__") {
+                this.app.networkApi.receiveAPIResponse(api_message);
+            } else if (api_message.message_name === "ERROR___") {
+                this.app.networkApi.receiveAPIError(api_message);
+            } else {
+                console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
+                await this.handlePeerMessage(peer, api_message);
             }
-        }
-        return null;
+        });
+
+	return peer.socket;
     }
+    
+
 
     cleanupDisconnectedSocket(peer) {
 
@@ -271,6 +361,119 @@ class Network {
             this.cleanupDisconnectedSocket(peer);
         });
 
+    }
+
+    async handlePeerMessage(peer, message) {
+
+	let challenge;
+
+console.log("Received Peer Message: " + message.message_name);
+
+	switch (message.message_name) {
+
+            case "SHAKINIT":
+
+                challenge = await peer.buildSerializedChallenge(message);
+                await peer.sendResponse(message.message_id, challenge);
+                break;
+
+            case "SHAKCOMP":
+/***
+                challenge = peer.socketHandshakeVerify(message.message_data);
+                if (challenge) {
+                    peer.has_completed_handshake = true;
+                    peer.peer.publickey = challenge.opponent_pubkey;
+                    await peer.sendResponseFromStr(message.message_id, "OK");
+                    await peer.app.networkApi.sendAPICall(peer.socket, "REQCHAIN",
+                              peer.buildRequestBlockchainMessage(
+				  this.app.blockchain.blockchain.last_block_id,
+                                  Buffer.from(this.app.blockchain.blockchain.last_block_hash,
+                                  "hex"
+                               ),
+                               Buffer.from(this.app.blockchain.blockchain.fork_id, "hex")
+                          ).serialize()
+                    );
+                } else {
+                    console.error("Error verifying peer handshake signature");
+                }
+***/
+                break;
+
+            case "REQBLOCK":
+
+		// YET IMPLEMENTED
+                break;
+
+            case "REQBLKHD":
+
+		let bytes = peer.socketSendBlockHeader(message, blockchain);
+	        if (bytes) {
+        	    let data = Buffer.from("OK", "utf-8");
+                    await peer.sendResponse(message.message_id, data);
+                    await this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", bytes);
+                } else {
+                    await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("ERROR", "utf-8"));
+                }
+                break;
+
+            case "REQCHAIN":
+
+		await peer.sendResponseFromStr(message.message_id, "OK");
+            	let blockchain_message = await peer.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
+            	if (blockchain_message) {
+            	    let data = blockchain_message.serialize();
+            	    console.debug("serialized message", data);
+            	    await this.app.networkApi.sendAPICall(peer.socket, "SNDCHAIN", data);
+            	} else {
+            	    console.warn("send blockchain message was not built");
+            	    await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNKNOWN BLOCK HASH", "utf-8"));
+            	}
+                break;
+
+            case "SNDCHAIN":
+                await peer.sendResponseFromStr(message.message_id, "OK");
+                let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
+                for (let data of send_blockchain_message.blocks_data) {
+                    let block = await peer.fetchBlock(data.block_hash.toString("hex"));
+                    console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
+                    this.app.mempool.addBlock(block);
+                }
+                break;
+
+
+            case "SNDBLKHD":
+                let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
+                await peer.sendResponseFromStr(message.message_id, "OK");
+                let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
+                let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+                if (is_block_indexed) {
+                    console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
+                } else {
+                    let block = await peer.fetchBlock(block_hash);
+                    this.app.mempool.addBlock(block);
+                }
+                break;
+
+            case "SNDTRANS":
+		let tx = peer.socketReceiveTransaction(message);
+                await this.app.mempool.addTransaction(tx);
+		break;
+
+            case "SNDKYLST":
+		await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
+	        break;
+
+            case "SENDMESG":
+console.log("received SENDMESG application message...");
+		await peer.handleApplicationMessage(message);
+		break;
+
+	    default:
+	        console.error("Unhandled command received by client... " + message.message_name);
+                await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("NO SUCH", "utf-8"));
+		break;
+
+	}
     }
 
 

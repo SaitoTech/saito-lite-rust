@@ -900,7 +900,6 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
       //
       // TEST - shifted down to init section 
       //
-      console.log("GAMING ACTIVE = 1");
       this.gaming_active = 1;
 
       //
@@ -964,7 +963,6 @@ console.log("!!!!!!!!!!!!!!!!!!!!");
       //
       // small delay to permit save to work
       //
-console.log("GAMING ACTIVE = 0!");
       this.gaming_active = 0;
       this.saveGame(game_id);
 
