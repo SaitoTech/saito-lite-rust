@@ -1,33 +1,32 @@
-const server = require('./lib/saito/core/server.js');
-const storage = require('./lib/saito/core/storage-core.js');
-const mods_config = require('./config/modules.config.js');
-const saito = require('./apps/core/index.js');
+import Server from "./lib/saito/core/server";
+import StorageCore from "./lib/saito/core/storage-core";
+import * as saito from "./apps/core/index";
+
+const mods_config = require('./config/modules.config');
 
 async function initSaito() {
-  const app = new saito.Saito({
-    mod_paths: mods_config.core
-  });
+    const app = new saito.Saito({
+        mod_paths: mods_config.core
+    });
 
-  app.server = new server(app);
-  app.storage = new storage(app);
+    app.server = new Server(app);
+    app.storage = new StorageCore(app);
 
-  app.BROWSER           = 0;
-  app.SPVMODE           = 0;
-  app.CHROME            = 0;
-  app.GENESIS_PUBLICKEY = "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv";
+    app.BROWSER = 0;
+    app.SPVMODE = 0;
 
-  //
-  // set basedir
-  //
-  global.__webdir = __dirname + "/lib/saito/web/";
+    //
+    // set basedir
+    //
+    global.__webdir = __dirname + "/lib/saito/web/";
 
-  await app.init();
+    await app.init();
 
-  const { protocol, host, port } = app.options.server;
+    const {protocol, host, port} = app.options.server;
 
-  const localServer = `${protocol}://${host}:${port}`;
+    const localServer = `${protocol}://${host}:${port}`;
 
-  console.log(`
+    console.log(`
 
                                            
                      ◼◼◼                   
@@ -77,25 +76,25 @@ async function initSaito() {
 
   `);
 
-  function shutdownSaito() {
-    console.log("Shutting down Saito");
-    app.server.close();
-    app.network.close();
-  }
+    function shutdownSaito() {
+        console.log("Shutting down Saito");
+        app.server.close();
+        app.network.close();
+    }
 
-  /////////////////////
-  // Cntl-C to Close //
-  /////////////////////
-  process.on('SIGTERM', function () {
-    shutdownSaito();
-    console.log("Network Shutdown");
-    process.exit(0)
-  });
-  process.on('SIGINT', function () {
-    shutdownSaito();
-    console.log("Network Shutdown");
-    process.exit(0)
-  });
+    /////////////////////
+    // Cntl-C to Close //
+    /////////////////////
+    process.on('SIGTERM', function () {
+        shutdownSaito();
+        console.log("Network Shutdown");
+        process.exit(0)
+    });
+    process.on('SIGINT', function () {
+        shutdownSaito();
+        console.log("Network Shutdown");
+        process.exit(0)
+    });
 }
 
 initSaito();

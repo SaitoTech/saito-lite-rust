@@ -4,7 +4,7 @@
   "description": "scalable blockchain with proper economics",
   "main": "start.js",
   "scripts": {
-    "start dev": "NODE_ENV=prod node --max_old_space_size=8144 start.js",
+    "start dev": "ts-node-dev --max_old_space_size=8144 start.ts",
     "start": "NODE_ENV=prod node --max_old_space_size=8144 start.js",
     "init": " ./compile init",
     "nuke": " ./compile nuke",
@@ -13,7 +13,8 @@
     "old": " webpack --config ./webpack/old/webpack.config.js",
     "test": "jest",
     "analyze": "webpack --config ./webpack/old/webpack.analyze.js",
-    "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md"
+    "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
+    "build": "tsc"
   },
   "author": "Team Saito",
   "license": "SAITO",
@@ -85,6 +86,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
+    "@types/jest": "^27.0.3",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
     "file-loader": "^6.2.0",
@@ -92,6 +94,7 @@
     "jsdoc": "^3.6.6",
     "source-map-loader": "^3.0.0",
     "ts-loader": "^9.2.6",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.4",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",

@@ -4,7 +4,14 @@
     "target": "es5",
     "sourceMap": true,
     "outDir": "./built",
-    "allowJs": true
+    "allowJs": true,
+    "downlevelIteration": true,
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2020.bigint"
+    ]
   },
   "exclude": [
     "node_modules",

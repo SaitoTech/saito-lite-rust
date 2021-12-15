@@ -1,13 +1,10 @@
-const saito = require('./saito');
-const {set} = require('numeral');
-
-
 /**
  * This class provides functions for importing and exporting binary-data.
  * It is used heavily in our serialization and deserialization functions
  * and is included in this class mostly as it does not fall cleanly into
  * the crypto class.
  */
+
 export default class Binary {
     app: {}
 
@@ -15,7 +12,7 @@ export default class Binary {
         this.app = app;
     }
 
-    public hexToSizedArray = (value: Uint8Array, size: number): Buffer => {
+    public hexToSizedArray = (value: Uint8Array | string, size: number): Buffer => {
         let value_buffer: Buffer;
         if (value.toString() !== "0") {
             value_buffer = Buffer.from(value.toString(), "hex");
@@ -35,7 +32,7 @@ export default class Binary {
      * @param {Array} bytes - array of bytes
      * @returns BigInt
      */
-    u64FromBytes(bytes) {
+    u64FromBytes(bytes: Uint8Array): bigint {
         let top = BigInt(this.u32FromBytes(bytes.slice(0, 4)));
         let bottom = BigInt(this.u32FromBytes(bytes.slice(4, 8)));
         let max_u32 = BigInt(4294967296);
@@ -48,7 +45,7 @@ export default class Binary {
      * @param {BigInt|number|string} bigValue - BigInt
      * @returns array of bytes
      */
-    u64AsBytes(bigValue) {
+    u64AsBytes = (bigValue: number | bigint | string): Buffer => {
         bigValue = BigInt(bigValue); // force into Big
         let max_u32 = BigInt(4294967296);
         let top = bigValue / max_u32;
@@ -59,7 +56,7 @@ export default class Binary {
             Buffer.from(new Uint8Array(top_bytes)),
             Buffer.from(new Uint8Array(bottom_bytes)),
         ]);
-    }
+    };
 
     /**
      * Converts from big-endian binary encoded u64(from the wire)
@@ -67,13 +64,13 @@ export default class Binary {
      * @param {array} bytes - array of 4 bytes
      * @returns number
      */
-    u32FromBytes(bytes) {
+    u32FromBytes = (bytes: Uint8Array): number => {
         let val = BigInt(0);
         for (let i = 0; i < bytes.length; ++i) {
             val = BigInt(bytes[i]) + val * BigInt(256);
         }
         return Number(val);
-    }
+    };
 
     /**
      * Converts from a JS Number, treated as an integer, into
@@ -81,7 +78,7 @@ export default class Binary {
      * @param {number} val
      * @returns array of 4 bytes
      */
-    u32AsBytes(val) {
+    u32AsBytes(val: number | bigint) {
         val = BigInt(val);
         let bytes = [];
         let i = 4;
