@@ -1578,13 +1578,12 @@ this.game.state.end_round_scoring = 0;
 	//
 	// ENABLE TESTINGvMODE
 	//
-        //this.game.queue.push("is_testing");
+        this.game.queue.push("is_testing");
 
   
   	//
   	// STRATEGY CARDS
   	//
-// is_testing
         this.game.queue.push("playerschoosestrategycards_after");
         this.game.queue.push("playerschoosestrategycards");
         this.game.queue.push("playerschoosestrategycards_before");

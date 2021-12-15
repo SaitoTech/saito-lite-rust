@@ -528,23 +528,18 @@ class GameTemplate extends ModTemplate {
     let game_self = this;
 
     if (txmsg.game_id !== game_self.game.id) { 
-console.log("a - same move as step");
       return 0;
     }
     if (parseInt(txmsg.step.game) <= (parseInt(game_self.game.step.game)+1)) { 
-console.log("b - past move");
       return 0; 
     }
     if (txmsg.step.game <= (game_self.game.step.players[playerpkey]+1)) { 
-console.log("c - past move");
       return 0; 
     }
 
     if (txmsg.step.game > (game_self.game.step.game+1)) { return 1; }
     if (txmsg.step.game > (game_self.game.step.players[playerpkey]+1)) { return 1; }
     if (game_self.gaming_active == 1) { return 1; }
-
-console.log("d - none of the above");
 
     return 0;
 
@@ -575,6 +570,7 @@ console.log("d - none of the above");
   isUnprocessedMove(player, txmsg) {
 
     let game_self = this;
+
     if (txmsg.game_id !== game_self.game.id) { 
       return 0;
     }
@@ -657,12 +653,6 @@ console.log("*****************");
     tx.msg.options        = options;
     tx.msg.players        = players;
     tx.msg.players_needed = players_needed;
-
-console.log("SIGNING MESSAGE: ");
-let tsig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
-console.log(`msg is: invite_game_${ts}`);
-console.log("sig is: " + tsig);
-console.log("validates? " + this.app.crypto.verifyMessage(`invite_game_${ts}`, tsig, this.app.wallet.returnPublicKey()));
 
     tx.msg.players_sigs   = [...players_sigs, this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey())];
     //
@@ -849,15 +839,20 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
 
 
     //
+    // do not re-accept
+    //
+    if (this.game.step.game > 2) {
+      return 0;
+    }
+
+
+    //
     // validate all accept-sigs are proper
     //
     let msg_to_verify = "invite_game_" + txmsg.ts;
     let all_verify = 1;
     if (txmsg.players.length != txmsg.players_sigs.length) { all_verify = 0; }
     for (let i = 0; i < txmsg.players.length; i++) {
-console.log("MSG TO VERIFY: " + msg_to_verify);
-console.log("PLAYER SIG: " + i + " --> " + txmsg.players_sigs[i]);
-console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
       if (!app.crypto.verifyMessage(msg_to_verify, txmsg.players_sigs[i], txmsg.players[i])) {
         console.log("PLAYER SIGS do not verify for all players, aborting game acceptance");
         this.game.halted = 0;
@@ -877,7 +872,6 @@ console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
     //
     // otherwise setup the game
     //
-    this.gaming_active = 1;
     this.game.options = txmsg.options;
     this.game.module = txmsg.module;
 
@@ -892,8 +886,6 @@ console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
     }
 
 
-
-
     //
     // add all the players
     //
@@ -904,6 +896,12 @@ console.log("PLAYER PKEY: "+i+ " --> " + txmsg.players[i]);
     this.saveGame(game_id);
 
     if (this.game.players_set == 0) {
+
+      //
+      // TEST - shifted down to init section 
+      //
+      console.log("GAMING ACTIVE = 1");
+      this.gaming_active = 1;
 
       //
       // set our player numbers alphabetically
@@ -961,12 +959,14 @@ console.log("!!!!!!!!!!!!!!!!!!!!");
 console.log("!!!!!!!!!!!!!!!!!!!!");
 
       this.game.players_set = 1;
-      this.saveGame(game_id);
+      //this.saveGame(game_id);
 
       //
       // small delay to permit save to work
       //
+console.log("GAMING ACTIVE = 0!");
       this.gaming_active = 0;
+      this.saveGame(game_id);
 
       //
       // players are set and game is accepted, so move into handleGame
@@ -1195,6 +1195,7 @@ console.log("!!!!!!!!!!!!!!!!!!!!");
     ////////////////////////////////////
     // observer mode update last_move //
     ////////////////////////////////////
+/***
     if (gametxmsg.last_move > 0) {
       game_self.game.step.ts = gametxmsg.last_move;
       game_self.game.step.bid = gametxmsg.last_bid;
@@ -1215,7 +1216,7 @@ console.log("ERROR updating hash in observer mode");
       window.location.hash = `#gid=${this.game.id}&bid=0&tid=0&lm=${new Date().getTime()}`; 
 
     }
-
+**/
 
     //
     // ACCEPT / JOIN / OPEN will not have turn defined
@@ -1227,12 +1228,11 @@ console.log("ERROR updating hash in observer mode");
       game_self.game.step.game = gametxmsg.step.game;
     }
 
+/***
     //
     // OBSERVER MODE - 
     //
     if (game_self.game.player == 0) {
-
-console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
 
       if (gametxmsg.game_state.deck) {
         if (gametxmsg.game_state.deck.length > 0) {
@@ -1253,7 +1253,6 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
             }
           }
         }
-
   
         //
         // update non-secret deck info
@@ -1261,8 +1260,6 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
         for (let i = 0; i < gametxmsg.game_state.deck.length; i++) {
           game_self.game.deck[i] = gametxmsg.game_state.deck[i];
         }
-      
-
 
         if (gametxmsg.sharekey) {
           let player_idx = 0;
@@ -1289,7 +1286,7 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
         }
       }
     }
-
+***/
 
     ///////////
     // QUEUE //
@@ -1299,6 +1296,7 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
       for (let i = 0; i < gametxmsg.turn.length; i++) {
         game_self.game.queue.push(gametxmsg.turn[i]);
       }
+
 
       //
       // added sept 27 - we may have spliced away, so don't read in saveGame
@@ -2105,12 +2103,12 @@ setTimeout(() => {
 
 
 	//
-	// load game if this is not accurate
+	// TEST -- screwing with gaming active?load game if this is not accurate
 	//
-	if (!game_self.game?.id && this.name === gametxmsg.module) {
+	//if (!game_self.game?.id && this.name === gametxmsg.module) {
 console.log("loading game...");
-	  game_self.game = game_self.loadGame(gametxmsg.id);
-	}
+	//  game_self.game = game_self.loadGame(gametxmsg.id);
+	//}
 
 
         if (gametxmsg.module == this.name) { 
@@ -2163,11 +2161,6 @@ console.log("game self game id does not exist... try loading it...");
 	    console.log("txmsg that caused issues? " + JSON.stringify(gametxmsg));
 	  }
 
-
-
-console.log("CHECK WHO MADE MOVE: " + gametx.transaction.from[0].add);
-console.log("FUTURE MOVE? " + game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg));
-console.log("NEXT MOVE? " + game_self.isUnprocessedMove(gametx.transaction.from[0].add, gametxmsg));
 
           if (game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg)) {
             game_self.addFutureMove(gametx);
@@ -2788,8 +2781,11 @@ console.log("it is not my turn!");
           //
           game_self.saveGame(game_self.game.id);
 
+console.log("running queue");
           let cont = game_self.runQueue();
+console.log("queue has returned: " + cont);
           if (cont == 0) { game_self.processFutureMoves(); }
+console.log("processed future moves");
 
           return 0;
 

@@ -46,8 +46,6 @@ class Relay extends ModTemplate {
       recipients.push(recipient);
     }
 
-console.log("pre tx creation");
-
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
@@ -59,9 +57,7 @@ console.log("pre tx creation");
     tx.transaction.ts   = new Date().getTime();
     tx.msg.request 	= message_request;
     tx.msg.data 	= message_data;
-console.log("pre sign tx");
     tx.sign(this.app);
-console.log("post sign tx");
 
     //
     // ... wrapped in transaction to relaying peer
@@ -69,8 +65,6 @@ console.log("post sign tx");
     for (let i = 0; i < this.app.network.peers.length; i++) {
 
       if (this.app.network.peers[i].peer) {
-
-console.log("peer " + i);
 
       //if (this.app.network.peers[i].peer.modules) {
       //if (this.app.network.peers[i].peer.modules.length > 0) {
@@ -81,7 +75,6 @@ console.log("peer " + i);
         //
         // forward to peer
         //
-console.log("sending a relay peer message!");
         peer.sendRequest("relay peer message", tx.transaction);
 
       }
@@ -121,7 +114,8 @@ console.log("sending a relay peer message!");
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+        if (tx.isTo(app.wallet.returnPublicKey())) {
+// && !tx.isFrom(app.wallet.returnPublicKey())) {
 
 	  console.log("processing txmsg.request: " + JSON.stringify(txmsg.request));
           app.modules.handlePeerRequest(txmsg, peer, mycallback);
@@ -140,18 +134,19 @@ console.log("not for me, so relay to peer!");
           let peer_found = 0;
 
           for (let i = 0; i < app.network.peers.length; i++) {
-            if (tx.isTo(app.network.peers[i].peer.publickey)) {
+            //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
+              if (tx.isTo(app.network.peers[i].peer.publickey)) {
 
-              peer_found = 1;
+                peer_found = 1;
 
 console.log("peer found, relaying to them!");
-              app.network.peers[i].sendRequest("relay peer message", message.data, function() {
-	        if (mycallback != null) {
-                  mycallback({ err : "" , success : 1 });
-		}
-              });
-            } else {
-	    }
+                app.network.peers[i].sendRequest("relay peer message", message.data, function() {
+	          if (mycallback != null) {
+                    mycallback({ err : "" , success : 1 });
+	  	  }
+                });
+              }
+	    //}
           }
           if (peer_found == 0) {
 	    if (mycallback != null) {
