@@ -1389,7 +1389,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["experimental-battlestation"],
+      action_cards	:	["warfare-rider", "technology-rider"],
       //objectives	:	["close-the-trap"],
       tech		: 	["pds-ii","sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -3219,6 +3219,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       homeworld		: 	"sector75",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","pds","spacedock"],
+      action_cards	:	["leadership-rider", "trade-rider"],
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
@@ -11238,8 +11239,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
