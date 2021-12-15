@@ -472,17 +472,11 @@ class GameTemplate extends ModTemplate {
 
             if (tx.isTo(app.wallet.returnPublicKey())) {
               if (tx_processed == 0) {
-
-console.log("ONCONF MOVE RECEIPT: ");
-
                 if (game_self.isFutureMove(tx.transaction.from[0].add, txmsg)) {
-console.log("add future move..");
                   game_self.addFutureMove(tx);
                 } else {
                   if (game_self.isUnprocessedMove(tx.transaction.from[0].add, txmsg)) {
-console.log("add next move..");
                     game_self.addNextMove(tx);
-console.log("done add next move..");
                   } else {
 //console.log("received not a future move, but also not an unprocessed move...");
 		  }
@@ -534,23 +528,18 @@ console.log("done add next move..");
     let game_self = this;
 
     if (txmsg.game_id !== game_self.game.id) { 
-console.log("a - same move as step");
       return 0;
     }
     if (parseInt(txmsg.step.game) <= (parseInt(game_self.game.step.game)+1)) { 
-console.log("b - past move");
       return 0; 
     }
     if (txmsg.step.game <= (game_self.game.step.players[playerpkey]+1)) { 
-console.log("c - past move");
       return 0; 
     }
 
     if (txmsg.step.game > (game_self.game.step.game+1)) { return 1; }
     if (txmsg.step.game > (game_self.game.step.players[playerpkey]+1)) { return 1; }
     if (game_self.gaming_active == 1) { return 1; }
-
-console.log("d - none of the above");
 
     return 0;
 
@@ -581,11 +570,6 @@ console.log("d - none of the above");
   isUnprocessedMove(player, txmsg) {
 
     let game_self = this;
-
-console.log("game step is: " + game_self.game.step.game);
-console.log("txmsg step is: " + txmsg.step.game);
-console.log("txmsg.game_id is: " + txmsg.game_id);
-console.log("game_self.game.id is: " + game_self.game.id);
 
     if (txmsg.game_id !== game_self.game.id) { 
       return 0;
@@ -669,12 +653,6 @@ console.log("*****************");
     tx.msg.options        = options;
     tx.msg.players        = players;
     tx.msg.players_needed = players_needed;
-
-console.log("SIGNING MESSAGE: ");
-let tsig = this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey());
-console.log(`msg is: invite_game_${ts}`);
-console.log("sig is: " + tsig);
-console.log("validates? " + this.app.crypto.verifyMessage(`invite_game_${ts}`, tsig, this.app.wallet.returnPublicKey()));
 
     tx.msg.players_sigs   = [...players_sigs, this.app.crypto.signMessage(`invite_game_${ts}`, this.app.wallet.returnPrivateKey())];
     //
@@ -1199,13 +1177,10 @@ console.log("GAMING ACTIVE = 0!");
     let game_self = this;
     let gametxmsg = gametx.returnMessage();
 
-console.log("anm 1");
-
     ////////////
     // HALTED //
     ////////////
     if (game_self.game.halted == 1 || game_self.gaming_active == 1) {
-console.log("anm halted...: " + game_self.game.halted + " -- " + game_self.gaming_active);
       if (game_self.game.future == undefined || game_self.game.future == "undefined" || game_self.game.future == null) { game_self.game.future = []; }
       if (game_self.game.id === gametxmsg.game_id) {
         game_self.game.future.push(JSON.stringify(gametx.transaction));
@@ -1243,8 +1218,6 @@ console.log("ERROR updating hash in observer mode");
     }
 **/
 
-console.log("anm 1");
-
     //
     // ACCEPT / JOIN / OPEN will not have turn defined
     //
@@ -1255,15 +1228,11 @@ console.log("anm 1");
       game_self.game.step.game = gametxmsg.step.game;
     }
 
-console.log("anm 2 - " + game_self.game.step.game);
-
 /***
     //
     // OBSERVER MODE - 
     //
     if (game_self.game.player == 0) {
-
-console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
 
       if (gametxmsg.game_state.deck) {
         if (gametxmsg.game_state.deck.length > 0) {
@@ -1324,8 +1293,6 @@ console.log("OBSERVER MODE executing step: " + JSON.stringify(gametxmsg.step));
     ///////////
     if (game_self.game.queue != undefined) {
 
-console.log("amn 3");
-
       for (let i = 0; i < gametxmsg.turn.length; i++) {
         game_self.game.queue.push(gametxmsg.turn[i]);
       }
@@ -1334,10 +1301,8 @@ console.log("amn 3");
       //
       // added sept 27 - we may have spliced away, so don't read in saveGame
       //
-console.log("saving here amn");
       game_self.saveFutureMoves(game_self.game.id);
       game_self.saveGame(game_self.game.id);
-console.log("executing QUEUE!");
       game_self.runQueue();
       game_self.processFutureMoves();
       game_self.gaming_active = 0;
@@ -2197,9 +2162,6 @@ console.log("game self game id does not exist... try loading it...");
 	  }
 
 
-console.log("CHECK WHO MADE MOVE: " + gametx.transaction.from[0].add);
-console.log("FUTURE MOVE? " + game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg));
-console.log("NEXT MOVE? " + game_self.isUnprocessedMove(gametx.transaction.from[0].add, gametxmsg));
           if (game_self.isFutureMove(gametx.transaction.from[0].add, gametxmsg)) {
             game_self.addFutureMove(gametx);
           } else {

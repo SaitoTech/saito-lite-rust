@@ -46,8 +46,6 @@ class Relay extends ModTemplate {
       recipients.push(recipient);
     }
 
-console.log("pre tx creation");
-
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
@@ -77,7 +75,6 @@ console.log("pre tx creation");
         //
         // forward to peer
         //
-console.log("sending a relay peer message!");
         peer.sendRequest("relay peer message", tx.transaction);
 
       }
@@ -117,7 +114,8 @@ console.log("sending a relay peer message!");
         //
         // if interior transaction is intended for me, I process regardless
         //
-        if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
+        if (tx.isTo(app.wallet.returnPublicKey())) {
+// && !tx.isFrom(app.wallet.returnPublicKey())) {
 
 	  console.log("processing txmsg.request: " + JSON.stringify(txmsg.request));
           app.modules.handlePeerRequest(txmsg, peer, mycallback);

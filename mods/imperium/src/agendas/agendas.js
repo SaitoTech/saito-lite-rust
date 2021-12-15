@@ -1691,7 +1691,7 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
 	  //
 	  // repeal any laws in plan
 	  //
-	  for (let i = imperium_self.game.state.laws.length-1; i > 0; i--) {
+	  for (let i = imperium_self.game.state.laws.length-1; i >= 0; i--) {
 	    let saved_agenda = imperium_self.game.state.laws[i].agenda;
 	    imperium_self.agenda_cards[saved_agenda].repealAgenda(imperium_self);
 	  }
