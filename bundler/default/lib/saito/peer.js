@@ -146,37 +146,6 @@ class Peer {
         return this.peer.publickey;
     }
 
-    async doReqBlock() {
-
-    }
-
-    /**
-     * @param {string} block_hash
-     */
-    async fetchBlock(block_hash) {
-        //console.debug("peer.fetchBlock : " + block_hash);
-
-        try {
-            const fetch = require('node-fetch');
-            const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
-            //console.debug("fetch url = " + url);
-            const res = await fetch(url);
-            if (res.ok) {
-                const base64Buffer = await res.arrayBuffer();
-                const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
-                let block = new saito.block(this.app);
-                block.deserialize(buffer);
-                block.peer = this;
-                return block;
-            } else {
-                console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
-            }
-        } catch (err) {
-            console.log(`Error fetching block:`);
-            console.error(err);
-        }
-        return null;
-    }
 
     async handleApplicationMessage(msg) {
 
@@ -304,12 +273,6 @@ class Peer {
         return challenge;
     }
 
-    socketReceiveTransaction(message) {
-        let tx = new saito.transaction();
-        tx.deserialize(this.app, message.message_data, 0);
-        return tx;
-    }
-
     async buildRequestBlockResponse(message) {
         let request_block_message = RequestBlockMessage.deserialize(message.message_data, this.app);
         if (request_block_message.block_id) {
@@ -324,16 +287,6 @@ class Peer {
             }
         } else {
             // TODO : handle APIMessage line here
-        }
-    }
-
-    async socketSendBlockHeader(message) {
-        let block_hash = message.message_data.slice(0, 32);
-        let target_block = this.app.blockchain.getBlock(block_hash);
-        if (target_block) {
-            return target_block.serialize(Block.BlockType.Header); // TODO : implement Block Header serialization support
-        } else {
-            return null;
         }
     }
 
@@ -413,34 +366,41 @@ class Peer {
     }
 
     sendRequest(message, data = "") {
-        //console.debug("sendRequest : " + message);
         //
         // respect prohibitions
         //
-        if (this.peer.receiveblks === 0 && message === "block") {
-            console.assert(false);
+
+
+	// block as Block.serialize(BlockType.Header)
+        if (message === "SNDBLOCK") {
+            this.app.networkApi.sendAPICall(this.socket, "SNDBLOCK", data);
             return;
         }
-        if (this.peer.receiveblks === 0 && message === "blockchain") {
-            console.assert(false);
+	// block as NetworkAPI Block
+        if (message === "SNDBLKHD") {
+            this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", data);
             return;
         }
-        if (this.peer.receivetxs === 0 && message === "transaction") {
-            console.assert(false);
+	// block as block_hash
+        if (message === "SNDBLKHH") {
+            this.app.networkApi.sendAPICall(this.socket, "SNDBLKHH", data);
             return;
         }
-        if (this.peer.receivegts === 0 && message === "golden ticket") {
-            console.assert(false);
+	// transaction as Transaction.serialize()
+        if (message === "SNDTRANS") {
+            this.app.networkApi.sendAPICall(this.socket, "SNDTRANS", data);
             return;
         }
 
+	//
+	// alternately, we have a legacy transmission format, which is sent
+	// as a JSON object for reconstruction and manipulation by apps on 
+	// the other side.
+	//
         let data_to_send = {message: message, data: data};
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
-        //console.debug("socket : ", this.socket);
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
-            // no need to await as no callback, so no response
-console.log("sending SENDMESG request...");
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then(() => {
                     //console.debug("message sent with sendRequest");
@@ -477,7 +437,6 @@ console.log("sending SENDMESG request...");
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("sending SENDMESG request...");
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then((response) => {
                     //console.log("RESPONSE RECEIVED: ", response);

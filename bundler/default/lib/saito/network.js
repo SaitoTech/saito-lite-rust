@@ -175,6 +175,42 @@ class Network {
     }
 
 
+
+    /**
+     * @param {string} block_hash
+     * @param {string} preferred peer (if exists); // TODO - remove duplicate function and update blockchain.js
+     */
+    async requestMissingBlock(block_hash, peer = null) { return await fetchBlock(block_hash, peer); }
+    async fetchBlock(block_hash, peer=null) {
+
+	if (peer == null) {
+	    if (this.peers.length == 0) { return; }
+	    peer = this.peers[0];
+	}
+
+        try {
+            const fetch = require('node-fetch');
+            const url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
+            const res = await fetch(url);
+            if (res.ok) {
+                const base64Buffer = await res.arrayBuffer();
+                const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
+                let block = new saito.block(this.app);
+                block.deserialize(buffer);
+                block.peer = this;
+                return block;
+            } else {
+                console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+            }
+        } catch (err) {
+            console.log(`Error fetching block:`);
+            console.error(err);
+        }
+        return null;
+    }
+
+
+
     initializeWebSocket(peer, remote_socket=false, browser=false) {
 
 	//
@@ -207,7 +243,7 @@ console.log("received an abstract message over the network... handling");
                 } else if (api_message.message_name === "ERROR___") {
                     this.app.networkApi.receiveAPIError(api_message);
                 } else {
-                    await this.handlePeerMessage(peer, api_message);
+                    await this.receivePeerRequest(peer, api_message);
                 }
             };
 
@@ -252,7 +288,7 @@ console.log("received an abstract message over the network... handling");
                 this.app.networkApi.receiveAPIError(api_message);
             } else {
                 console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
-                await this.handlePeerMessage(peer, api_message);
+                await this.receivePeerRequest(peer, api_message);
             }
         });
 
@@ -363,9 +399,12 @@ console.log("received an abstract message over the network... handling");
 
     }
 
-    async handlePeerMessage(peer, message) {
+    async receivePeerRequest(peer, message) {
 
+	let block;
+	let block_hash;
 	let challenge;
+	let is_block_indexed = false;
 
 console.log("Received Peer Message: " + message.message_name);
 
@@ -401,70 +440,111 @@ console.log("Received Peer Message: " + message.message_name);
 
             case "REQBLOCK":
 
-		// YET IMPLEMENTED
+		// NOT YET IMPLEMENTED -- send FULL block
                 break;
 
             case "REQBLKHD":
 
-		let bytes = peer.socketSendBlockHeader(message, blockchain);
-	        if (bytes) {
-        	    let data = Buffer.from("OK", "utf-8");
-                    await peer.sendResponse(message.message_id, data);
-                    await this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", bytes);
-                } else {
-                    await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("ERROR", "utf-8"));
-                }
+		// NOT YET IMPLEMENTED -- send HEADER block
                 break;
 
             case "REQCHAIN":
 
-		await peer.sendResponseFromStr(message.message_id, "OK");
-            	let blockchain_message = await peer.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
-            	if (blockchain_message) {
-            	    let data = blockchain_message.serialize();
-            	    console.debug("serialized message", data);
-            	    await this.app.networkApi.sendAPICall(peer.socket, "SNDCHAIN", data);
-            	} else {
-            	    console.warn("send blockchain message was not built");
-            	    await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNKNOWN BLOCK HASH", "utf-8"));
-            	}
-                break;
+		// NOT YET IMPLEMENTED -- request chain
+		break;
+
+		//await peer.sendResponseFromStr(message.message_id, "OK");
+            	//let blockchain_message = await peer.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
+            	//if (blockchain_message) {
+            	//    let data = blockchain_message.serialize();
+            	//    console.debug("serialized message", data);
+            	//    await this.app.networkApi.sendAPICall(peer.socket, "SNDCHAIN", data);
+            	//} else {
+            	//    console.warn("send blockchain message was not built");
+            	//    await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNKNOWN BLOCK HASH", "utf-8"));
+            	//}
 
             case "SNDCHAIN":
-                await peer.sendResponseFromStr(message.message_id, "OK");
-                let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
-                for (let data of send_blockchain_message.blocks_data) {
-                    let block = await peer.fetchBlock(data.block_hash.toString("hex"));
-                    console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
+
+		// NOT YET IMPLEMENTED -- send chain
+		break;
+
+                //await peer.sendResponseFromStr(message.message_id, "OK");
+                //let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
+                //for (let data of send_blockchain_message.blocks_data) {
+                //    let block = await network.fetchBlock(data.block_hash.toString("hex"));
+                //    console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
+                //    this.app.mempool.addBlock(block);
+                //}
+                //break;
+
+
+	    //
+	    // this delivers the block as BlockType.Header
+	    //
+            case "SNDBLOCK":
+
+        	block = new saito.block(this.app);
+        	block.deserialize(message.message_data);
+                block_hash = block.returnHash();
+
+                is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+                if (is_block_indexed) {
+                    console.info("SNDBLOCK hash already known: " + block_hash);
+                } else {
+                    block = await this.fetchBlock(block_hash, peer);
                     this.app.mempool.addBlock(block);
                 }
                 break;
 
+	    //
+	    // this delivers the block as block_hash
+	    //
+            case "SNDBLKHH":
 
-            case "SNDBLKHD":
-                let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
-                await peer.sendResponseFromStr(message.message_id, "OK");
-                let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
-                let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+		block_hash = Buffer.from(message.message_data, 'hex').toString('hex');;
+
+console.log("received block hash: " + block_hash);
+                is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
                 if (is_block_indexed) {
                     console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
                 } else {
-                    let block = await peer.fetchBlock(block_hash);
+                    let block = await this.fetchBlock(block_hash);
+                    this.app.mempool.addBlock(block);
+                }
+                break;
+
+	    //
+	    // this delivers the block as NetworkAPI object
+	    //
+            case "SNDBLKHD":
+
+                let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
+                block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
+                is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+                if (is_block_indexed) {
+                    console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
+                } else {
+                    let block = await network.fetchBlock(block_hash);
                     this.app.mempool.addBlock(block);
                 }
                 break;
 
             case "SNDTRANS":
-		let tx = peer.socketReceiveTransaction(message);
+
+        	let tx = new saito.transaction();
+        	tx.deserialize(this.app, message.message_data, 0);
                 await this.app.mempool.addTransaction(tx);
 		break;
 
             case "SNDKYLST":
-		await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
+		//await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
 	        break;
 
+
             case "SENDMESG":
-console.log("received SENDMESG application message...");
+
+		console.log("received SENDMESG application message...");
 		await peer.handleApplicationMessage(message);
 		break;
 
@@ -551,14 +631,15 @@ console.log("received SENDMESG application message...");
 
         const data = {bhash: blk.returnHash(), bid: blk.block.id};
         for (let i = 0; i < this.peers.length; i++) {
-            // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
             if (this.peers[i].peer.sendblks === 1) {
-                let message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
-                let buffer = message.serialize();
-                let new_message = SendBlockHeadMessage.deserialize(buffer);
-                this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", message.serialize());
+                //let message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
+                //let buffer = message.serialize();
+                //let new_message = SendBlockHeadMessage.deserialize(buffer);
+		//this.sendPeerRequest("SNDBLKHD", message.serialize(), this.peers[i]);
+
+		//this.sendPeerRequest("SNDBLOCK", blk.serialize(saito.block.BlockType.Header), this.peers[i]);
+		this.sendPeerRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
             }
-            // }
         }
     }
 
@@ -623,7 +704,7 @@ console.log("received SENDMESG application message...");
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
-                    this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
+		    this.sendPeerRequest("SNDTRANS", tx.serialize(this.app), peer);
                 } else {
                     console.error("socket not found");
                 }
@@ -640,6 +721,14 @@ console.log("received SENDMESG application message...");
         }
     }
 
+    sendPeerRequestWithCallback(message, data = "", peer) {
+        for (let x = this.peers.length - 1; x >= 0; x--) {
+            if (this.peers[x] === peer) {
+                this.peers[x].sendRequestWithCallback(message, data, callback);
+            }
+        }
+    }
+
     sendRequest(message, data = "") {
         for (let x = this.peers.length - 1; x >= 0; x--) {
             this.peers[x].sendRequest(message, data);
@@ -652,19 +741,6 @@ console.log("received SENDMESG application message...");
         }
     }
 
-    /**
-     * @param {string} block_hash
-     * @param {Peer} peer
-     */
-    async requestMissingBlock(block_hash, peer = null) {
-        console.log("fetching missing block : " + block_hash);
-
-        peer = peer || ((this.peers.length > 0) ? this.peers[0] : null);
-        if (!peer) {
-            return null;
-        }
-        return await peer.fetchBlock(block_hash);
-    }
 
     //
     // this function requires switching to the new network API
