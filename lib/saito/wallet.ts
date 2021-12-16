@@ -1,4 +1,6 @@
 'use strict';
+import {Saito} from "../../apps/core";
+
 const saito = require('./saito');
 const JSON = require('json-bigint');
 const Big = require('big.js');
@@ -11,7 +13,7 @@ const ModalSelectCrypto = require('./ui/modal-select-crypto/modal-select-crypto'
  * @param {*} app
  */
 export default class Wallet {
-    public app: any;
+    public app: Saito;
     public wallet: any;
     public inputs_hmap: any;
     public inputs_hmap_counter: any;

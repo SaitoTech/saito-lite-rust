@@ -1,9 +1,12 @@
+import {Saito} from "../../apps/core";
+
 const saito = require("./saito");
 const blake3 = require("blake3");
 
 test("slip serialize deserialze", () => {
 
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -26,16 +29,16 @@ test("slip serialize deserialze", () => {
     slip.sid = 2;
     slip.type = 3;
 
-    let buffer = slip.serialize(mockApp,"dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b");
+    let buffer = slip.serialize(mockApp, "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b");
 
     let slip2 = new saito.slip(wallet.wallet.privatekey);
     slip2.deserialize(mockApp, buffer);
 
-console.log("SLIP 2");
-console.log(slip2.add);
-console.log(slip2.amt);
-console.log(slip2.sid);
-console.log(slip2.type);
+    console.log("SLIP 2");
+    console.log(slip2.add);
+    console.log(slip2.amt);
+    console.log(slip2.sid);
+    console.log(slip2.type);
 
     expect(slip2.add).toEqual(slip.add);
     expect(slip2.amt).toEqual(slip.amt);
@@ -45,7 +48,8 @@ console.log(slip2.type);
 
 describe("serializeForSignature", () => {
     test("empty slip", () => {
-        let mockApp = {};
+        // @ts-ignore
+        let mockApp: Saito = {};
         let networkApi = new saito.networkApi(mockApp);
         let crypto = new saito.crypto(mockApp);
         let binary = new saito.binary(mockApp);

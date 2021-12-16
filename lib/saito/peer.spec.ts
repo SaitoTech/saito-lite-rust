@@ -1,8 +1,11 @@
+import {Saito} from "../../apps/core";
+
 const saito = require("./saito");
 const blake3 = require("blake3");
 
 test("", () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);

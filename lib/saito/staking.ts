@@ -218,17 +218,17 @@ export default class Staking {
                         next_random_number = this.app.crypto.hash(next_random_number);
 
                     }
-                }
 
-                //
-                // we handle the slips together like this as we can occasionally
-                // get duplicates if the same slip is selected recursively, but
-                // we do not pay out duplicates. so we only add to pending if we
-                // successfully remove from the staker table.
-                //
-                for (let k = 0; k < slips_to_remove_from_staking.length; k++) {
-                    if (this.removeStaker(slips_to_remove_from_staking[k].clone()) == true) {
-                        this.addPending(slips_to_add_to_pending[k].clone());
+                    //
+                    // we handle the slips together like this as we can occasionally
+                    // get duplicates if the same slip is selected recursively, but
+                    // we do not pay out duplicates. so we only add to pending if we
+                    // successfully remove from the staker table.
+                    //
+                    for (let k = 0; k < slips_to_remove_from_staking.length; k++) {
+                        if (this.removeStaker(slips_to_remove_from_staking[k].clone()) == true) {
+                            this.addPending(slips_to_add_to_pending[k].clone());
+                        }
                     }
                 }
 
@@ -250,7 +250,7 @@ export default class Staking {
                 //
                 // reset pending if necessary
                 //
-                if (this.pending.length == 0) {
+                if (this.pending.length === 0) {
 
                     this.pending = [];
                     this.deposits = [];
@@ -296,6 +296,7 @@ export default class Staking {
                     }
                 }
 
+                // TODO : @david: is this copy pasted from above? or redundant code?
                 //
                 // reset pending if necessary
                 //
@@ -469,7 +470,7 @@ export default class Staking {
         } else {
             for (let i = 0; i < this.stakers.length; i++) {
 
-                let how_compares = slip.compare(self.stakers[i]);
+                let how_compares = slip.compare(this.stakers[i]);
 
                 // 1 - this is bigger
                 // 2 - this is smaller

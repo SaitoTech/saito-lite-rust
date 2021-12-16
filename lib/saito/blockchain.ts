@@ -842,10 +842,9 @@ export default class Blockchain {
         this.app.storage.saveOptions();
     }
 
-    async unwindChain(new_chain, old_chain, current_wind_index, wind_failure) {
+    async unwindChain(new_chain, old_chain, current_unwind_index, wind_failure) {
 
         let block = await this.loadBlockAsync(old_chain[current_unwind_index]);
-        ;
 
         // utxoset update
         block.onChainReorganization(false);

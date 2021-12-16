@@ -24,8 +24,8 @@ const path = require("path");
 class Saito {
     BROWSER: number;
     SPVMODE: number;
-    options: {};
-    config: {};
+    options: any = {};
+    config: any = {};
     modules: Mods;
     binary: Binary;
     crypto: Crypto;
@@ -56,6 +56,8 @@ class Saito {
 
         this.newSaito();
 
+        // TODO : where does this mod_paths come from?
+        // @ts-ignore
         this.modules = new saito_lib.modules(this, config.mod_paths);
 
         return this;
@@ -155,6 +157,8 @@ class Saito {
     }
 
     shutdown() {
+        // TODO : couldn't find close method implementation
+        // @ts-ignore
         this.network.close();
     }
 }

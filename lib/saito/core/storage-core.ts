@@ -1,7 +1,10 @@
 'use strict';
 
-const saito = require('../saito');
-const Storage = require('../storage');
+import Storage from "../storage";
+
+import saito from "../saito";
+import Block from "../block";
+
 const fs = require('fs-extra');
 const readline = require('readline');
 const path = require('path');
@@ -11,12 +14,12 @@ const JSON = require('json-bigint');
 
 
 export default class StorageCore extends Storage {
-    public data_dir: any;
-    public config_dir: any;
-    public dest: any;
+    public data_dir: string;
+    public config_dir: string;
+    public dest: string;
     public db: any;
     public dbname: any;
-    public loading_active: any;
+    public loading_active: boolean;
     public file_encoding_save: any;
     public file_encoding_load: any;
     public app: any;
@@ -142,10 +145,11 @@ export default class StorageCore extends Storage {
                         console.log("block is null: " + fileID);
                         return null;
                     }
-                    if (blk.is_valid == 0) {
-                        console.log("We have saved an invalid block: " + fileID);
-                        return null;
-                    }
+                    // TODO : couldn't find variable
+                    // if (blk.is_valid == 0) {
+                    //     console.log("We have saved an invalid block: " + fileID);
+                    //     return null;
+                    // }
 
                     await this.app.blockchain.addBlockToBlockchain(blk, true);
                     console.log("Loaded block " + i + " of " + files.length);
@@ -198,7 +202,8 @@ export default class StorageCore extends Storage {
                         blk.transactions[b].transaction.to[bb].bid = bid;
                         blk.transactions[b].transaction.to[bb].bhash = bsh;
                         blk.transactions[b].transaction.to[bb].tid = blk.transactions[b].transaction.id;
-                        shashmap.delete_slip(blk.transactions[b].transaction.to[bb].returnIndex());
+                        // TODO: what's shashmap ???
+                        // shashmap.delete_slip(blk.transactions[b].transaction.to[bb].returnIndex());
                     }
                 }
             }
@@ -232,7 +237,7 @@ export default class StorageCore extends Storage {
         return blk;
     }
 
-    async loadBlockByFilename(filename) {
+    async loadBlockByFilename(filename): Promise<Block> {
 
         let block_filename = `${this.data_dir}/${this.dest}/${filename}`;
 
@@ -339,7 +344,7 @@ export default class StorageCore extends Storage {
     }
 
     // overwrite to stop the server from attempting to reset options live
-    resetOptions() {
+    async resetOptions() {
     }
 
 

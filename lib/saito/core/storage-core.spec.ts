@@ -1,3 +1,5 @@
+import {Saito} from "../../../apps/core";
+
 const saito = require('../saito');
 const fs = require("fs-extra");
 const blake3 = require("blake3");
@@ -7,7 +9,8 @@ const Storage = require('./storage-core');
 test("write_read_empty_block_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -35,7 +38,8 @@ test("write_read_empty_block_to_file", async () => {
 test("write_read_block_with_data_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -102,7 +106,8 @@ test("write_read_block_with_data_to_file", async () => {
 });
 
 test.skip("read_block_from_disk (from rust generated block)", async () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);

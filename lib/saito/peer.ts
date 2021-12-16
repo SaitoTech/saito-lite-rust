@@ -345,10 +345,14 @@ export default class Peer {
                 // transaction.msg included for backwards compatibility
                 //
                 if (reconstructed_data) {
+                    // @ts-ignore
                     if (reconstructed_data.transaction) {
+                        // @ts-ignore
                         if (reconstructed_data.transaction.m) {
                             // backwards compatible - in case modules try the old fashioned way
+                            // @ts-ignore
                             message.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
+                            // @ts-ignore
                             message.data.msg = message.data.transaction.msg;
                         }
                     }
@@ -516,7 +520,7 @@ export default class Peer {
         await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
     }
 
-    sendRequest(message, data = "") {
+    sendRequest(message, data: any = {}) {
         //console.debug("sendRequest : " + message);
         //
         // respect prohibitions
@@ -557,7 +561,7 @@ export default class Peer {
     //
     // new default implementation
     //
-    sendRequestWithCallback(message, data = "", callback = null, loop = true) {
+    sendRequestWithCallback(message, data: any = {}, callback = null, loop = true) {
 
         //console.log("sendRequestWithCallback : " + message);
         //
@@ -615,7 +619,7 @@ export default class Peer {
     // our effort to simplify and move down to having only two methods for requesting
     // request emission.
     //
-    sendRequestWithCallbackAndRetry(request, data = {}, callback = null, initialDelay = 1000, delayFalloff = 1.3) {
+    sendRequestWithCallbackAndRetry(request, data: any = {}, callback = null, initialDelay = 1000, delayFalloff = 1.3) {
         //console.debug("sendRequestWithCallbackAndRetry");
         let callbackWrapper = (res) => {
             if (!res.err) {
@@ -638,6 +642,9 @@ export default class Peer {
         this.sendRequestWithCallback(request, data, callbackWrapper, false);
     }
 
+    isConnected() {
+        return false;
+    }
 }
 
 

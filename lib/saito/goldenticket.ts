@@ -5,6 +5,7 @@ const Big = require('big.js');
 export default class GoldenTicket {
     public app: any;
 
+
     constructor(app) {
         this.app = app || {};
     }

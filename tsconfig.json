@@ -15,7 +15,8 @@
   },
   "exclude": [
     "node_modules",
-    "./lib/templates"
+    "./lib/templates",
+    "*.spec.ts"
   ],
   "include": [
     "./lib/**/*",

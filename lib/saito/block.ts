@@ -24,7 +24,7 @@ export default class Block {
     public issuance_transaction_idx: any;
     public get_id: any;
     private app: Saito;
-    private block: {
+    block: {
         transactions: Transaction[];
         signature: string;
         staking_treasury: bigint;
@@ -39,10 +39,10 @@ export default class Block {
     };
     private lc: number;
     private force: number;
-    private transactions: Transaction[];
+    transactions: Transaction[];
     private block_type: BlockType;
-    private hash: string;
-    private prehash: string;
+    hash: string;
+    prehash: string;
     private filename: string;
     private total_fees: bigint;
     private total_work: bigint;
@@ -456,7 +456,7 @@ export default class Block {
             let golden_ticket_transaction = this.transactions[cv.gt_idx];
             let gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-            let next_random_number = this.app.crypto.hash(gt.random_bytes);
+            let next_random_number = this.app.crypto.hash(gt.random_hash);
             let miner_publickey = gt.creator;
 
             //
@@ -1379,7 +1379,10 @@ export default class Block {
 
                 let golden_ticket_transaction = this.transactions[cv.gt_idx];
                 let gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
-                let solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_bytes, gt.creator);
+                // TODO : couldn't find these methods anywhere. might want to implement or remove these
+                // @ts-ignore
+                let solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_hash, gt.creator);
+                // @ts-ignore
                 if (!this.app.goldenticket.isValidSolution(solution, previous_block.returnDifficulty())) {
                     console.log("ERROR 801923: golden ticket included in block is invalid");
                     return false;

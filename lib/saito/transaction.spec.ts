@@ -1,9 +1,12 @@
+import {Saito} from "../../apps/core";
+
 const saito = require("./saito");
 const blake3 = require("blake3");
 
 test("tx serialize deserialze", () => {
 
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -118,7 +121,8 @@ describe("serializeForSignature", () => {
 });
 
 test("sign", () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);

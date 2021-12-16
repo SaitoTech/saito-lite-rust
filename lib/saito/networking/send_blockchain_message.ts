@@ -1,13 +1,13 @@
 import {Saito} from "../../../apps/core";
 
-const SyncType = {
-    Full: 0,
-    Lite: 1,
+export enum SyncType {
+    Full = 0,
+    Lite = 1,
 };
 
 const BlockchainBlockDataSize = 84;
 
-class SendBlockchainBlockData {
+export class SendBlockchainBlockData {
     block_id = 0;
     block_hash = [];
     timestamp = 0;
@@ -23,7 +23,7 @@ class SendBlockchainBlockData {
     }
 }
 
-class SendBlockchainMessage {
+export default class SendBlockchainMessage {
     sync_type = undefined;
     starting_hash = [];
     blocks_data = [];
@@ -75,7 +75,3 @@ class SendBlockchainMessage {
     }
 }
 
-SendBlockchainMessage.SendBlockchainBlockData = SendBlockchainBlockData;
-SendBlockchainMessage.SyncType = SyncType;
-
-module.exports = SendBlockchainMessage;

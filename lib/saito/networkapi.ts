@@ -14,11 +14,11 @@ const HandshakeChallengeMessage = require("./networking/handshake_challenge_mess
  * @property {array} message_data - the data being send to the remote procedure
  */
 export class APIMessage {
-    message_name = [];
-    message_id = 0;
-    message_data = [];
+    message_name: string = "";
+    message_id: number = 0;
+    message_data: Buffer;
 
-    constructor(message_name, message_id, message_data) {
+    constructor(message_name: string, message_id: number, message_data: Buffer) {
         this.message_name = message_name;
         this.message_id = message_id;
         this.message_data = message_data;
@@ -99,6 +99,7 @@ export default class NetworkAPI {
                 //     await peer.handlePeerCommand(api_message);
                 // }
                 //console.log("handling peer command - receiving peer id " + socket.peer.id);
+                // @ts-ignore
                 await socket.peer.handlePeerCommand(api_message);
             }
         };
@@ -114,7 +115,7 @@ export default class NetworkAPI {
             Buffer.from(new Uint8Array([127, 0, 0, 1])),
             Buffer.from(Base58.decode(this.app.wallet.returnPublicKey()))
         ]);
-        let handshake_init_response_data = await this.sendAPICall(ws, "SHAKINIT", init_handshake_message);
+        let handshake_init_response_data: Buffer = await this.sendAPICall(ws, "SHAKINIT", init_handshake_message);
         let handshake_challenge = HandshakeChallengeMessage.deserialize(handshake_init_response_data, this.app);
 
         //
@@ -214,7 +215,7 @@ export default class NetworkAPI {
      * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
      * @returns
      */
-    sendAPICall(ws: WebSocket, command: string, message_bytes: Buffer) {
+    sendAPICall(ws: WebSocket, command: string, message_bytes: Buffer): Promise<Buffer> {
         //console.debug("sendAPICall : " + command);
         return new Promise((resolve, reject) => {
             this.api_callbacks[this.api_call_index] = {
@@ -238,9 +239,9 @@ export default class NetworkAPI {
      * function is called and automatically dispatches the returned
      * data to the appropriate resolve().
      * @private
-     * @param {array} bytes
+     * @param api_message
      */
-    receiveAPIResponse(api_message) {
+    receiveAPIResponse(api_message: APIMessage) {
         //console.log("receiveAPIResponse : " + api_message.message_id);
 
         if (this.api_callbacks[api_message.message_id]) {
@@ -257,9 +258,9 @@ export default class NetworkAPI {
      * function is called and automatically dispatches the returned
      * data to the appropriate reject().
      * @private
-     * @param {message} bytes vector
+     * @param message
      */
-    receiveAPIError(message) { // TODO : is this working or need fixing?
+    receiveAPIError(message: APIMessage) { // TODO : is this working or need fixing?
         console.log("receiveAPIError", message);
         let index = this.app.binary.u32FromBytes(message.message_id);
         if (this.api_callbacks[index]) {

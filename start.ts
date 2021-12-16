@@ -1,15 +1,16 @@
 import Server from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
-import * as saito from "./apps/core/index";
+import {Saito} from "./apps/core/index";
 
 const mods_config = require('./config/modules.config');
 
 async function initSaito() {
-    const app = new saito.Saito({
+    const app = new Saito({
         mod_paths: mods_config.core
     });
 
     app.server = new Server(app);
+    // @ts-ignore
     app.storage = new StorageCore(app);
 
     app.BROWSER = 0;

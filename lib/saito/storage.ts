@@ -1,10 +1,11 @@
 import Block from "./block";
+import {Saito} from "../../apps/core";
 
 const saito = require('./saito');
 const JSON = require('json-bigint');
 
 export default class Storage {
-    public app: any;
+    public app: Saito;
     public active_tab: any;
 
     constructor(app) {

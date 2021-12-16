@@ -1,9 +1,11 @@
 import saito from "./saito";
+import {Saito} from "../../apps/core";
 
 const blake3 = require("blake3");
 
 test("signBuffer", () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -30,7 +32,7 @@ test("signBuffer", () => {
         .toEqual(
             "2e4a69e9d538ee32bf44d486b7130a8971c051946184ae27a4e5bbbbe9f85bf16370595e252204d5857659959046f3b374821f08b8f35d824cd7b2010f4987ef");
 
-    let verificationResult = crypto.verifyHash(crypto.hash(testBuffer),
+    let verificationResult = crypto.verifyHash(crypto.hash(testBuffer.toString()),
         result,
         wallet.wallet.publickey
     );

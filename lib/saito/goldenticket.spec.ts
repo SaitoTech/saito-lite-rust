@@ -1,8 +1,11 @@
+import {Saito} from "../../apps/core";
+
 const saito = require("./saito");
 const blake3 = require("blake3");
 
 test("golden ticket serialization", () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -22,7 +25,7 @@ test("golden ticket serialization", () => {
     let random_hash = "03bf1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce";
     let golden_ticket = new saito.goldenticket(mockApp);
     let buffer = golden_ticket.serialize(target_hash,
-                                         random_hash
+        random_hash
     );
     let result = golden_ticket.deserialize(buffer);
     expect(result.target_hash).toEqual(target_hash);

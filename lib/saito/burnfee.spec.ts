@@ -1,7 +1,7 @@
-const saito = require("./saito");
+import saito from "./saito";
 
 test("burnfee routing work needed tests", () => {
-   
+
     let burnfee = new saito.burnfee();
 
     let bf1 = burnfee.returnRoutingWorkNeededToProduceBlockInNolan(BigInt(10), 2 * burnfee.heartbeat, 0);

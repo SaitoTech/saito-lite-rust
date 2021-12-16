@@ -1,9 +1,11 @@
+import {Saito} from "../../../apps/core";
+
 const Network = require('../network');
 
 class HandshakeNode {
     ip_address = [];
     public_key = [];
-    sig = [];
+    sig = Buffer.alloc(64);
 
     constructor(ip_address, public_key, sig = Buffer.from([])) {
         this.ip_address = ip_address;
@@ -13,10 +15,10 @@ class HandshakeNode {
 }
 
 class HandshakeChallengeMessage {
-    challenger_node = {};
-    opponent_node = {};
-    timestamp = BigInt(0);
-    app = {};
+    challenger_node: HandshakeNode;
+    opponent_node: HandshakeNode;
+    timestamp = 0;
+    app: Saito;
 
     constructor(challenger_ip_address, challenger_public_key, opponent_ip_address, opponent_public_key, app) {
         this.challenger_node = new HandshakeNode(challenger_ip_address, challenger_public_key);
@@ -51,10 +53,10 @@ class HandshakeChallengeMessage {
     serialize() {
         //console.debug("handshake challenge message serialize", this);
         return Buffer.concat([Buffer.from(this.challenger_node.ip_address),
-                                 Buffer.from(this.opponent_node.ip_address),
-                                 Buffer.from(this.challenger_node.public_key),
-                                 Buffer.from(this.opponent_node.public_key),
-                                 this.app.binary.u64AsBytes(this.timestamp)]);
+            Buffer.from(this.opponent_node.ip_address),
+            Buffer.from(this.challenger_node.public_key),
+            Buffer.from(this.opponent_node.public_key),
+            this.app.binary.u64AsBytes(this.timestamp)]);
     }
 
     serializeWithSig(privatekey) {

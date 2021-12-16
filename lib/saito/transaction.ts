@@ -240,11 +240,12 @@ export default class Transaction {
         // the message field with the original transaction (which is
         // by definition already in the previous TX message space.
         //
-        if (output_slip_to_rebroadcast.type === SlipType.ATR) {
-            transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
-        } else {
-            transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
-        }
+        // TODO : commenting out since cannot find transaction_to_rebroadcast
+        // if (output_slip_to_rebroadcast.type === SlipType.ATR) {
+        //     transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
+        // } else {
+        //     transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
+        // }
 
         transaction.addOutput(output);
 

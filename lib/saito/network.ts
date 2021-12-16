@@ -1,3 +1,5 @@
+import Peer from "./peer";
+
 const saito = require('./saito');
 const JSON = require('json-bigint');
 const fetch = require('node-fetch');
@@ -8,7 +10,7 @@ const SendBlockHeadMessage = require("./networking/send_block_head_message");
 
 export default class Network {
     public app: any;
-    public peers: any;
+    public peers: Peer[];
     public peers_connected: any;
     public peers_connected_limit: any;
     public sendblks: any;
@@ -182,7 +184,7 @@ export default class Network {
 
     findPeer(socket) {
         for (let i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].socket_id === socket.id) {
+            if (this.peers[i].id === socket.id) {
                 return this.peers[i];
             }
         }
@@ -461,7 +463,7 @@ export default class Network {
         }
     }
 
-    sendRequestWithCallback(message, data = "", callback) {
+    sendRequestWithCallback(message, data: any = {}, callback) {
         for (let x = this.peers.length - 1; x >= 0; x--) {
             this.peers[x].sendRequestWithCallback(message, data, callback);
         }
@@ -487,6 +489,9 @@ export default class Network {
     updatePeersWithWatchedPublicKeys() {
     }
 
+    close() {
+        
+    }
 }
 
 export const ChallengeSize = 82;

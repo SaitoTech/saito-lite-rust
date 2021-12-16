@@ -1,9 +1,12 @@
 import saito from "./saito";
+import {Saito} from "../../apps/core";
+import {TransactionType} from "./transaction";
 
 const blake3 = require("blake3");
 
 test("write_read_empty_block_to_file", async () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -30,7 +33,8 @@ test("write_read_empty_block_to_file", async () => {
 });
 
 test("write_read_block_with_data_to_file", async () => {
-    let mockApp = {};
+    // @ts-ignore
+    let mockApp: Saito = {};
     let networkApi = new saito.networkApi(mockApp);
     let crypto = new saito.crypto(mockApp);
     let binary = new saito.binary(mockApp);
@@ -61,7 +65,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     let tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
-    tx.transaction.type = saito.transaction.TransactionType.ATR;
+    tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
     block.transactions.push(tx);
@@ -99,7 +103,8 @@ test("write_read_block_with_data_to_file", async () => {
 
 describe('serializeForSignature', function () {
     test("empty block", () => {
-        let mockApp = {};
+        // @ts-ignore
+        let mockApp: Saito = {};
         let networkApi = new saito.networkApi(mockApp);
         let crypto = new saito.crypto(mockApp);
         let binary = new saito.binary(mockApp);
@@ -117,7 +122,8 @@ describe('serializeForSignature', function () {
     });
 
     test("block with data", () => {
-        let mockApp = {};
+        // @ts-ignore
+        let mockApp: Saito = {};
         let networkApi = new saito.networkApi(mockApp);
         let crypto = new saito.crypto(mockApp);
         let binary = new saito.binary(mockApp);
@@ -134,7 +140,7 @@ describe('serializeForSignature', function () {
         block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         block.block.merkle = "ccf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         block.block.creator = crypto.toBase58("dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc");
-        block.block.burnfee = 50000000;
+        block.block.burnfee = BigInt(50000000);
         block.block.difficulty = 0;
         block.block.treasury = BigInt(0);
         block.block.staking_treasury = BigInt(0);

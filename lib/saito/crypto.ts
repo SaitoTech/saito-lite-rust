@@ -1,4 +1,4 @@
-import Base58 from "base-58";
+import * as Base58 from "base-58";
 
 const crypto = require('crypto-browserify');
 const sha256 = require('sha256');
@@ -67,7 +67,7 @@ export default class Crypto {
     xor(a, b) {
         if (!Buffer.isBuffer(a)) a = new Buffer(a)
         if (!Buffer.isBuffer(b)) b = new Buffer(b)
-        var res = []
+        const res = [];
         if (a.length > b.length) {
             for (var i = 0; i < b.length; i++) {
                 res.push(a[i] ^ b[i])
@@ -238,7 +238,7 @@ export default class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-            let hash = this.hash(Buffer.from(msg, 'utf-8'));
+            let hash = this.hash(Buffer.from(msg, 'utf-8').toString());
             //let hash = this.hash(Buffer.from(msg).toString('hex'));
             return this.verifyHash(hash, sig, pubkey);
         } catch (err) {
@@ -304,7 +304,7 @@ export default class Crypto {
      * @returns {DiffieHellman object} ecdh
      */
     createDiffieHellman(pubkey = "", privkey = "") {
-        var ecdh = crypto.createECDH("secp256k1");
+        const ecdh = crypto.createECDH("secp256k1");
         ecdh.generateKeys();
         if (pubkey != "") {
             ecdh.setPublicKey(pubkey);
@@ -322,9 +322,10 @@ export default class Crypto {
      * @returns {object} object with keys
      */
     returnDiffieHellmanKeys(dh) {
-        var keys = {};
-        keys.pubkey = dh.getPublicKey(null, "compressed");
-        keys.privkey = dh.getPrivateKey(null, "compressed");
+        const keys = {
+            pubkey: dh.getPublicKey(null, "compressed"),
+            privkey: dh.getPrivateKey(null, "compressed")
+        };
         return keys;
     }
 
@@ -361,8 +362,8 @@ export default class Crypto {
      * @returns {string} json object
      */
     aesEncrypt(msg, secret) {
-        var rp = secret.toString("hex");
-        var en = CryptoJS.AES.encrypt(msg, rp, {format: JsonFormatter});
+        const rp = secret.toString("hex");
+        const en = CryptoJS.AES.encrypt(msg, rp, {format: JsonFormatter});
         return en.toString();
     }
 
@@ -374,8 +375,8 @@ export default class Crypto {
      * @returns {string} unencrypted string
      */
     aesDecrypt(msg, secret) {
-        var rp = secret.toString("hex");
-        var de = CryptoJS.AES.decrypt(msg, rp, {format: JsonFormatter});
+        const rp = secret.toString("hex");
+        const de = CryptoJS.AES.decrypt(msg, rp, {format: JsonFormatter});
         return CryptoJS.enc.Utf8.stringify(de);
     }
 
