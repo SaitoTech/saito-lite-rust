@@ -99,7 +99,7 @@ export default class Crypto {
             key = key + key;
         }
         return this.xor(Buffer.from(str, 'hex'), Buffer.from(key, 'hex')).toString('hex');
-    };
+    }
 
     stringToHex(str) {
         return Buffer.from(str, 'utf-8').toString('hex');
@@ -174,7 +174,7 @@ export default class Crypto {
      * @returns {string} private key
      */
     generateRandomNumber() {
-        let randomNumber = randomBytes(32);
+        const randomNumber = randomBytes(32);
         return randomNumber.toString('hex');
     }
 
@@ -196,7 +196,7 @@ export default class Crypto {
      * @returns {string} hex signed message
      */
     signMessage(msg, privatekey) {
-        let signature = this.signBuffer(Buffer.from(msg, 'utf-8'), privatekey);
+        const signature = this.signBuffer(Buffer.from(msg, 'utf-8'), privatekey);
         return signature;
     }
 
@@ -207,7 +207,7 @@ export default class Crypto {
      * @returns {string}
      */
     signBuffer(buffer, privatekey) {
-        let signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), Buffer.from(privatekey, 'hex')).signature.toString('hex');
+        const signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), Buffer.from(privatekey, 'hex')).signature.toString('hex');
         return signature;
     }
 
@@ -239,7 +239,7 @@ export default class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-            let hash = this.hash(Buffer.from(msg, 'utf-8').toString());
+            const hash = this.hash(Buffer.from(msg, 'utf-8').toString());
             //let hash = this.hash(Buffer.from(msg).toString('hex'));
             return this.verifyHash(hash, sig, pubkey);
         } catch (err) {

@@ -14,12 +14,12 @@ class RequestBlockchainMessage {
     }
 
     static deserialize(bytes, app) {
-        let block_id = app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
+        const block_id = app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
         if (!block_id) { // for initial request
             return new RequestBlockchainMessage(app, 0, Buffer.alloc(32, 0), Buffer.alloc(32, 0));
         }
-        let hash = bytes.slice(8, 40);
-        let fork_id = bytes.slice(40, 72);
+        const hash = bytes.slice(8, 40);
+        const fork_id = bytes.slice(40, 72);
 
         return new RequestBlockchainMessage(app, Number(block_id), Buffer.from(hash), Buffer.from(fork_id));
     }
@@ -29,4 +29,4 @@ class RequestBlockchainMessage {
     }
 }
 
-module.exports = RequestBlockchainMessage;
+export default RequestBlockchainMessage;

@@ -1,6 +1,3 @@
-'use strict'
-const saito = require('./saito');
-
 export default class UtxoSet {
     private slips: any[];
 

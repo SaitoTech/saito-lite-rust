@@ -6,11 +6,11 @@ const blake3 = require("blake3");
 test("tx serialize deserialze", () => {
 
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -22,15 +22,15 @@ test("tx serialize deserialze", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let tx = new saito.transaction();
+    const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = saito.transaction.TransactionType.ATR;
     tx.transaction.sig =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
-    let buffer = tx.serialize(mockApp);
+    const buffer = tx.serialize(mockApp);
 
-    let tx2 = new saito.transaction();
+    const tx2 = new saito.transaction();
     tx2.deserialize(mockApp, buffer, 0);
 
     expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
@@ -122,11 +122,11 @@ describe("serializeForSignature", () => {
 
 test("sign", () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -138,18 +138,18 @@ test("sign", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let tx = new saito.transaction();
+    const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = saito.transaction.TransactionType.ATR;
     tx.msg = {test: "test"};
 
-    let input_slip = new saito.slip(wallet.wallet.publickey);
+    const input_slip = new saito.slip(wallet.wallet.publickey);
     input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
     input_slip.amt = "123";
     input_slip.sid = 10;
     input_slip.type = saito.slip.SlipType.ATR;
 
-    let output_slip = new saito.slip(wallet.wallet.publickey);
+    const output_slip = new saito.slip(wallet.wallet.publickey);
     output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
     output_slip.amt = "345";
     output_slip.sid = 23;

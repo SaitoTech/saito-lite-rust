@@ -1,7 +1,5 @@
 'use strict'
 
-const Big = require('big.js')
-
 export default class BurnFee {
     public heartbeat: any;
 
@@ -25,9 +23,9 @@ export default class BurnFee {
         }
 
         // convert to float for division
-        let elapsed_time_float = elapsed_time;
-        let burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
-        let work_needed_float = burn_fee_previous_block_as_float / elapsed_time_float;
+        const elapsed_time_float = elapsed_time;
+        const burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
+        const work_needed_float = burn_fee_previous_block_as_float / elapsed_time_float;
 
         // convert back to nolan for rounding / safety
         return BigInt(Math.round(work_needed_float * 100_000_000.0));
@@ -62,9 +60,9 @@ export default class BurnFee {
         }
 
         // TODO : check whether overflow occurs
-        let burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100000000.0;
-        let res1 = burn_fee_previous_block_as_float * Math.sqrt(parseFloat(this.heartbeat) / timestamp_difference);
-        let new_burnfee = Math.round(res1 * 100000000);
+        const burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100000000.0;
+        const res1 = burn_fee_previous_block_as_float * Math.sqrt(parseFloat(this.heartbeat) / timestamp_difference);
+        const new_burnfee = Math.round(res1 * 100000000);
         return BigInt(new_burnfee);
 
     }

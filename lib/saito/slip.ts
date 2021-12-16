@@ -1,5 +1,4 @@
-'use strict';
-const saito = require('./saito');
+import saito from "./saito";
 
 export enum SlipType {
     Normal = 0,
@@ -15,7 +14,7 @@ export enum SlipType {
     StakerWithdrawalPending = 10,
     StakerWithdrawalStaking = 11,
     Other = 12,
-};
+}
 
 export default class Slip {
     public add: string;
@@ -63,8 +62,8 @@ export default class Slip {
     //
     compare(other_slip) {
 
-        let x = BigInt('0x' + this.returnPublicKey());
-        let y = BigInt('0x' + other_slip.returnPublicKey());
+        const x = BigInt('0x' + this.returnPublicKey());
+        const y = BigInt('0x' + other_slip.returnPublicKey());
 
         if (x > y) {
             return 1;
@@ -79,8 +78,8 @@ export default class Slip {
         // testing is happy that manually created slips are somewhat
         // unique for staker-table insertion..
         //
-        let a = BigInt(this.returnKey().substring(42, 74));
-        let b = BigInt(other_slip.returnKey().substring(42, 74));
+        const a = BigInt(this.returnKey().substring(42, 74));
+        const b = BigInt(other_slip.returnKey().substring(42, 74));
 
         if (a > b) {
             return 1;
@@ -157,12 +156,12 @@ export default class Slip {
             uuid = "0";
         }
 
-        let publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add).toString('hex'), 33);
-        let uuidx = app.binary.hexToSizedArray(uuid, 32);
+        const publickey = app.binary.hexToSizedArray(app.crypto.fromBase58(this.add).toString('hex'), 33);
+        const uuidx = app.binary.hexToSizedArray(uuid, 32);
 
-        let amount = app.binary.u64AsBytes(this.amt.toString());
-        let slip_ordinal = app.binary.u8AsByte(this.sid);
-        let slip_type = app.binary.u32AsBytes(this.type);
+        const amount = app.binary.u64AsBytes(this.amt.toString());
+        const slip_ordinal = app.binary.u8AsByte(this.sid);
+        const slip_type = app.binary.u32AsBytes(this.type);
 
         return new Uint8Array([
             ...publickey,

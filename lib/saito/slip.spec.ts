@@ -6,11 +6,11 @@ const blake3 = require("blake3");
 test("slip serialize deserialze", () => {
 
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -23,15 +23,15 @@ test("slip serialize deserialze", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let slip = new saito.slip(wallet.wallet.privatekey);
+    const slip = new saito.slip(wallet.wallet.privatekey);
     slip.add = mockApp.crypto.toBase58("02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74");
     slip.amt = BigInt(1234);
     slip.sid = 2;
     slip.type = 3;
 
-    let buffer = slip.serialize(mockApp, "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b");
+    const buffer = slip.serialize(mockApp, "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b");
 
-    let slip2 = new saito.slip(wallet.wallet.privatekey);
+    const slip2 = new saito.slip(wallet.wallet.privatekey);
     slip2.deserialize(mockApp, buffer);
 
     console.log("SLIP 2");
@@ -49,11 +49,11 @@ test("slip serialize deserialze", () => {
 describe("serializeForSignature", () => {
     test("empty slip", () => {
         // @ts-ignore
-        let mockApp: Saito = {};
-        let networkApi = new saito.networkApi(mockApp);
-        let crypto = new saito.crypto(mockApp);
-        let binary = new saito.binary(mockApp);
-        let wallet = new saito.wallet(mockApp);
+        const mockApp: Saito = {};
+        const networkApi = new saito.networkApi(mockApp);
+        const crypto = new saito.crypto(mockApp);
+        const binary = new saito.binary(mockApp);
+        const wallet = new saito.wallet(mockApp);
         mockApp.networkApi = networkApi;
         mockApp.crypto = crypto;
         mockApp.binary = binary;
@@ -65,9 +65,9 @@ describe("serializeForSignature", () => {
             return blake3.hash(data).toString('hex');
         };
 
-        let slip = new saito.slip();
+        const slip = new saito.slip();
 
-        let buffer = slip.serializeInputForSignature(mockApp);
+        const buffer = slip.serializeInputForSignature(mockApp);
 
         expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(78)));
 

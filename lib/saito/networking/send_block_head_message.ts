@@ -6,7 +6,7 @@ class SendBlockHeadMessage {
     }
 
     static deserialize(bytes) {
-        let block_hash = bytes.slice(0, 32);
+        const block_hash = bytes.slice(0, 32);
         return new SendBlockHeadMessage(block_hash);
     }
 
@@ -15,4 +15,4 @@ class SendBlockHeadMessage {
     }
 }
 
-module.exports = SendBlockHeadMessage;
+export default SendBlockHeadMessage;

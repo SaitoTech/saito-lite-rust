@@ -1,12 +1,13 @@
 'use strict';
 import {TransactionType} from "./transaction";
 
-const saito = require('./saito');
-const Big = require('big.js');
+import saito from "./saito";
 
+import Big from "big.js";
+import {Saito} from "../../apps/core";
 
 export default class Miner {
-    public app: any;
+    public app: Saito;
     public mining_active: any;
     public mining_speed: any;
     public mining_timer: any;
@@ -62,9 +63,9 @@ export default class Miner {
     async mine() {
         if (this.mining_active) {
 
-            let random_hash = this.app.crypto.generateRandomNumber();
+            const random_hash = this.app.crypto.generateRandomNumber();
             if (this.app.goldenticket.validate(this.target, random_hash, this.app.wallet.returnPublicKey(), this.difficulty)) {
-                let transaction = this.app.wallet.createUnsignedTransaction();
+                const transaction = this.app.wallet.createUnsignedTransaction();
                 transaction.transaction.type = TransactionType.GoldenTicket;
                 transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
                 transaction.sign(this.app);

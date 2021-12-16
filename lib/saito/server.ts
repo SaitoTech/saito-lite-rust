@@ -1,15 +1,14 @@
 export default class Server {
-  public app: any;
+    public app: any;
 
-  constructor(app) {
-    this.app = app || {};
-  }
+    constructor(app) {
+        this.app = app || {};
+    }
 
-  initialize() {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    initialize() {
 
-  }
-
-
+    }
 }
 
 

@@ -73,7 +73,7 @@ export default class Network {
         let peerhost = "";
         let peerport = "";
 
-        let peerobj = {
+        const peerobj = {
             peer: JSON.parse(peerjson)
         };
 
@@ -118,7 +118,7 @@ export default class Network {
         //
         // create peer and add it
         //
-        let peer = new saito.peer(this.app, JSON.stringify(peerobj));
+        const peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
         //
         // we connect to them
@@ -157,7 +157,7 @@ export default class Network {
         //
         // add peer
         //
-        let peer = new saito.peer(this.app);
+        const peer = new saito.peer(this.app);
         peer.socket = socket;
         //
         // manually setting, used so the socket knows which peer
@@ -370,9 +370,9 @@ export default class Network {
         for (let i = 0; i < this.peers.length; i++) {
             // if (this.peers[i].handshake_completed === 1) { // TODO : uncomment after handling handshake
             if (this.peers[i].peer.sendblks === 1) {
-                let message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
-                let buffer = message.serialize();
-                let new_message = SendBlockHeadMessage.deserialize(buffer);
+                const message = new SendBlockHeadMessage(Buffer.from(blk.returnHash(), 'hex'));
+                const buffer = message.serialize();
+                const new_message = SendBlockHeadMessage.deserialize(buffer);
                 this.app.networkApi.sendAPICall(this.peers[i].socket, "SNDBLKHD", message.serialize());
             }
             // }
@@ -438,7 +438,7 @@ export default class Network {
                 return;
             }
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
-                let tmptx = peer.addPathToTransaction(tx);
+                const tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
                     this.app.networkApi.sendAPICall(peer.socket, "SNDTRANS", tx.serialize(this.app));
                 } else {

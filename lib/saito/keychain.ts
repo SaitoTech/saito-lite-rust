@@ -37,9 +37,9 @@ export default class Keychain {
 
         for (let i = 0; i < this.app.options.keys.length; i++) {
 
-            var tk = this.app.options.keys[i];
+            const tk = this.app.options.keys[i];
 
-            var k = new SaitoCommon.key();
+            const k = new SaitoCommon.key();
             k.publickey = tk.publickey;
             k.watched = tk.watched;
             // @ts-ignore
@@ -179,9 +179,9 @@ export default class Keychain {
         for (let x = 0; x < this.keys.length; x++) {
             if (this.keys[x].publickey == publickey) {
                 if (this.keys[x].aes_secret != "") {
-                    var tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
+                    const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
                     if (tmpmsg != null) {
-                        var tmpx = JSON.parse(tmpmsg);
+                        const tmpx = JSON.parse(tmpmsg);
                         if (tmpx.module != null) {
                             return tmpx;
                         }
@@ -238,7 +238,7 @@ export default class Keychain {
         for (let x = 0; x < this.keys.length; x++) {
             if (this.keys[x].publickey == publickey) {
                 if (this.keys[x].aes_secret != "") {
-                    let tmpmsg = this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
+                    const tmpmsg = this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
                     return tmpmsg;
                 }
             }
@@ -249,7 +249,7 @@ export default class Keychain {
 
 
     encryptMessage(publickey, msg) {
-        let jsonmsg = JSON.stringify(msg);
+        const jsonmsg = JSON.stringify(msg);
         for (let x = 0; x < this.keys.length; x++) {
             if (this.keys[x].publickey == publickey) {
                 if (this.keys[x].aes_secret != "") {
@@ -307,9 +307,9 @@ export default class Keychain {
 
     initializeKeyExchange(publickey) {
 
-        var alice = this.app.crypto.createDiffieHellman();
-        var alice_publickey = alice.getPublicKey(null, "compressed").toString("hex");
-        var alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
+        const alice = this.app.crypto.createDiffieHellman();
+        const alice_publickey = alice.getPublicKey(null, "compressed").toString("hex");
+        const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
         this.updateCryptoByPublicKey(publickey, alice_publickey, alice_privatekey, "");
         return alice_publickey;
 
@@ -317,7 +317,7 @@ export default class Keychain {
 
 
     isTagged(publickey, tag) {
-        var x = this.findByPublicKey(publickey);
+        const x = this.findByPublicKey(publickey);
         if (x == null) {
             return false;
         }
@@ -357,7 +357,7 @@ export default class Keychain {
 
 
     returnKeys() {
-        var kx = [];
+        const kx = [];
         for (let x = 0; x < this.keys.length; x++) {
             if (this.keys[x].lc == 1 && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
                 kx[kx.length] = this.keys[x];
@@ -373,7 +373,7 @@ export default class Keychain {
 
 
     returnKeychainByTag(tag) {
-        var kx = [];
+        const kx = [];
         for (let x = 0; x < this.keys.length; x++) {
             if (this.keys[x].isTagged(tag)) {
                 kx[kx.length] = this.keys[x];
@@ -446,25 +446,25 @@ export default class Keychain {
         //
         // if we reach here, generate from publickey
         //
-        let options = {
+        const options = {
             //foreground: [247, 31, 61, 255],           // saito red
             //background: [255, 255, 255, 255],
             margin: 0.0,                              // 0% margin
             size: 420,                                // 420px square
             format: 'svg'                             // use SVG instead of PNG
         };
-        let data = new Identicon(this.app.crypto.hash(publickey), options).toString();
-        let img = 'data:image/svg+xml;base64,' + data;
+        const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
+        const img = 'data:image/svg+xml;base64,' + data;
 
         return img;
     }
 
     returnIdenticonColor(publickey) {
         // foreground defaults to last 7 chars as hue at 70% saturation, 50% brightness
-        var hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
-        var saturation = 0.7;
-        var brightness = 0.5;
-        var values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
+        const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
+        const saturation = 0.7;
+        const brightness = 0.5;
+        const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
         return `rgba(${values.join(',')})`;
     }
 
@@ -506,7 +506,7 @@ export default class Keychain {
     fetchIdentifier(publickey = "", mycallback) {
 
         let identifier = "";
-        let found_keys = [];
+        const found_keys = [];
         if (publickey == "") {
             mycallback(identifier);
         }
@@ -540,7 +540,7 @@ export default class Keychain {
                     mycallback(rows);
                 }
                 rows = res.rows.map(row => {
-                    let {publickey, identifier, bid, bsh, lc} = row;
+                    const {publickey, identifier, bid, bsh, lc} = row;
 
                     // keep track that we fetched this already
                     this.fetched_keys[publickey] = 1;
@@ -565,11 +565,11 @@ export default class Keychain {
 
     fetchManyIdentifiers(publickeys = [], mycallback) {
 
-        let found_keys = [];
-        let missing_keys = [];
+        const found_keys = [];
+        const missing_keys = [];
 
         publickeys.forEach(publickey => {
-            let identifier = this.returnIdentifierByPublicKey(publickey);
+            const identifier = this.returnIdentifierByPublicKey(publickey);
             if (identifier.length > 0) found_keys[publickey] = identifier;
             else missing_keys.push(`'${publickey}'`);
         });
@@ -579,8 +579,8 @@ export default class Keychain {
             return;
         }
 
-        let where_statement = `publickey in (${missing_keys.join(',')})`;
-        let sql = `select *
+        const where_statement = `publickey in (${missing_keys.join(',')})`;
+        const sql = `select *
                    from records
                    where ${where_statement}`;
 
@@ -607,7 +607,7 @@ export default class Keychain {
                         return;
                     }
                     rows = res.rows.map(row => {
-                        let {publickey, identifier, bid, bsh, lc} = row;
+                        const {publickey, identifier, bid, bsh, lc} = row;
                         this.addKey(publickey, identifier, false, "", bid, bsh, lc);
                         if (!found_keys.includes(publickey)) {
                             found_keys[publickey] = identifier;
@@ -650,7 +650,7 @@ export default class Keychain {
             mycallback(identifier);
         }
 
-        let publickey = this.returnPublicKeyByIdentifier(identifier);
+        const publickey = this.returnPublicKeyByIdentifier(identifier);
         if (publickey != "") {
             mycallback({err: "", rows: [publickey]});
         }
@@ -663,12 +663,12 @@ export default class Keychain {
             "records",
             "*",
             `identifier = '${identifier}'`, null, (res) => {
-                let rows = [];
+                const rows = [];
                 if (res.rows == undefined) {
                     mycallback(rows);
                 }
                 res.rows.forEach(row => {
-                    let {publickey, identifier, bid, bsh, lc} = row;
+                    const {publickey, identifier, bid, bsh, lc} = row;
                     this.addKey(publickey, identifier, false, "", bid, bsh, lc);
                 })
                 //
@@ -681,7 +681,7 @@ export default class Keychain {
 
     returnPublicKeyByIdentifier(identifier) {
         for (let x = 0; x < this.keys.length; x++) {
-            let key = this.keys[x];
+            const key = this.keys[x];
             if (key.lc == 1 && key.isIdentifier(identifier)) {
                 return key.publickey;
             }
@@ -693,7 +693,7 @@ export default class Keychain {
     returnIdentifierByPublicKey(publickey, returnKey = false) {
         if (this.keys != undefined) {
             for (let x = 0; x < this.keys.length; x++) {
-                let key = this.keys[x];
+                const key = this.keys[x];
                 if (key.publickey === publickey) {
                     if (key.identifiers != undefined && key.lc == 1) {
                         if (key.identifiers.length > 0) {
@@ -711,7 +711,7 @@ export default class Keychain {
     }
 
     returnUsername(publickey) {
-        let name = this.returnIdentifierByPublicKey(publickey, true);
+        const name = this.returnIdentifierByPublicKey(publickey, true);
         if (name != "" && name != publickey) {
             return name;
         }
@@ -728,7 +728,7 @@ export default class Keychain {
 
 
     returnWatchedPublicKeys() {
-        var x = [];
+        const x = [];
         for (let i = 0; i < this.keys.length; i++) {
             if (this.keys[i].isWatched() && this.keys[i].lc == 1) {
                 x.push(this.keys[i].publickey);

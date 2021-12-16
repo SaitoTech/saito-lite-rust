@@ -4,11 +4,12 @@
  * and is included in this class mostly as it does not fall cleanly into
  * the crypto class.
  */
+import {Saito} from "../../apps/core";
 
 export default class Binary {
-    app: {}
+    app: Saito;
 
-    constructor(app) {
+    constructor(app:Saito) {
         this.app = app;
     }
 
@@ -19,7 +20,7 @@ export default class Binary {
         } else {
             value_buffer = Buffer.from("");
         }
-        let new_buffer = Buffer.alloc(size);
+        const new_buffer = Buffer.alloc(size);
         console.assert(size >= value_buffer.length, "unhandled value ranges found");
         value_buffer.copy(new_buffer, size - value_buffer.length);
         return new_buffer;
@@ -33,9 +34,9 @@ export default class Binary {
      * @returns BigInt
      */
     u64FromBytes(bytes: Uint8Array): bigint {
-        let top = BigInt(this.u32FromBytes(bytes.slice(0, 4)));
-        let bottom = BigInt(this.u32FromBytes(bytes.slice(4, 8)));
-        let max_u32 = BigInt(4294967296);
+        const top = BigInt(this.u32FromBytes(bytes.slice(0, 4)));
+        const bottom = BigInt(this.u32FromBytes(bytes.slice(4, 8)));
+        const max_u32 = BigInt(4294967296);
         return ((top * max_u32) + bottom);
     }
 
@@ -47,11 +48,11 @@ export default class Binary {
      */
     u64AsBytes = (bigValue: number | bigint | string): Buffer => {
         bigValue = BigInt(bigValue); // force into Big
-        let max_u32 = BigInt(4294967296);
-        let top = bigValue / max_u32;
-        let bottom = bigValue - BigInt(max_u32 * top);
-        let top_bytes = this.u32AsBytes(Number(top));
-        let bottom_bytes = this.u32AsBytes(Number(bottom));
+        const max_u32 = BigInt(4294967296);
+        const top = bigValue / max_u32;
+        const bottom = bigValue - BigInt(max_u32 * top);
+        const top_bytes = this.u32AsBytes(Number(top));
+        const bottom_bytes = this.u32AsBytes(Number(bottom));
         return Buffer.concat([
             Buffer.from(new Uint8Array(top_bytes)),
             Buffer.from(new Uint8Array(bottom_bytes)),
@@ -80,7 +81,7 @@ export default class Binary {
      */
     u32AsBytes(val: number | bigint) {
         val = BigInt(val);
-        let bytes: Uint8Array = Uint8Array.of(0, 0, 0, 0);
+        const bytes: Uint8Array = Uint8Array.of(0, 0, 0, 0);
         let i = 4;
         do {
             bytes[--i] = Number(val & BigInt(255));

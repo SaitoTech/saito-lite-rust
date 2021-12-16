@@ -5,11 +5,11 @@ const blake3 = require("blake3");
 
 test("golden ticket serialization", () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -21,13 +21,13 @@ test("golden ticket serialization", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let target_hash = "844702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235e";
-    let random_hash = "03bf1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce";
-    let golden_ticket = new saito.goldenticket(mockApp);
-    let buffer = golden_ticket.serialize(target_hash,
+    const target_hash = "844702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235e";
+    const random_hash = "03bf1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce";
+    const golden_ticket = new saito.goldenticket(mockApp);
+    const buffer = golden_ticket.serialize(target_hash,
         random_hash
     );
-    let result = golden_ticket.deserialize(buffer);
+    const result = golden_ticket.deserialize(buffer);
     expect(result.target_hash).toEqual(target_hash);
     expect(result.random_hash).toEqual(random_hash);
     expect(result.creator).toEqual(wallet.wallet.publickey);

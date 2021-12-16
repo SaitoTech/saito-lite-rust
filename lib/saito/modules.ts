@@ -162,7 +162,7 @@ export default class Mods {
         }
 
 
-        let modNames = {};
+        const modNames = {};
         this.mods.forEach((mod, i) => {
             if (modNames[mod.name]) {
                 console.log(`*****************************************************************`);
@@ -244,9 +244,9 @@ export default class Mods {
     }
 
     getRespondTos(request) {
-        let compliantInterfaces = [];
+        const compliantInterfaces = [];
         this.mods.forEach((mod) => {
-            let itnerface = mod.respondTo(request);
+            const itnerface = mod.respondTo(request);
             if (itnerface != null) {
                 compliantInterfaces.push({...itnerface, modname: mod.name});
             }
@@ -255,7 +255,7 @@ export default class Mods {
     }
 
     returnModulesBySubType(subtype) {
-        let mods = [];
+        const mods = [];
         this.mods.forEach((mod) => {
             if (mod instanceof subtype) {
                 mods.push(mod);

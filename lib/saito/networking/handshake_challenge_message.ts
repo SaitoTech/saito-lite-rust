@@ -1,6 +1,6 @@
 import {Saito} from "../../../apps/core";
 
-const Network = require('../network');
+import Network, {ChallengeSize} from "../network";
 
 class HandshakeNode {
     ip_address = [];
@@ -29,22 +29,22 @@ class HandshakeChallengeMessage {
 
     static deserialize(bytes, app) {
         //console.log("deserialize handshake message");
-        let challenger_octet = Buffer.from(bytes.slice(0, 4));
-        let opponent_octet = Buffer.from(bytes.slice(4, 8));
+        const challenger_octet = Buffer.from(bytes.slice(0, 4));
+        const opponent_octet = Buffer.from(bytes.slice(4, 8));
 
-        let challenger_pubkey = Buffer.from(bytes.slice(8, 41));
-        let opponent_pubkey = Buffer.from(bytes.slice(41, 74));
-        let timestamp = app.binary.u64FromBytes(Buffer.from(bytes.slice(74, Network.ChallengeSize)));
+        const challenger_pubkey = Buffer.from(bytes.slice(8, 41));
+        const opponent_pubkey = Buffer.from(bytes.slice(41, 74));
+        const timestamp = app.binary.u64FromBytes(Buffer.from(bytes.slice(74, ChallengeSize)));
 
-        let handshake_challenge = new HandshakeChallengeMessage(challenger_octet, challenger_pubkey, opponent_octet, opponent_pubkey, app);
+        const handshake_challenge = new HandshakeChallengeMessage(challenger_octet, challenger_pubkey, opponent_octet, opponent_pubkey, app);
         handshake_challenge.timestamp = timestamp;
 
         //console.log("byte length : " + bytes.byteLength);
-        if (bytes.byteLength > Network.ChallengeSize) {
-            handshake_challenge.challenger_node.sig = bytes.slice(Network.ChallengeSize, Network.ChallengeSize + 64);
+        if (bytes.byteLength > ChallengeSize) {
+            handshake_challenge.challenger_node.sig = bytes.slice(ChallengeSize, ChallengeSize + 64);
         }
-        if (bytes.byteLength > Network.ChallengeSize) {
-            handshake_challenge.opponent_node.sig = bytes.slice(Network.ChallengeSize + 64, Network.ChallengeSize + 128);
+        if (bytes.byteLength > ChallengeSize) {
+            handshake_challenge.opponent_node.sig = bytes.slice(ChallengeSize + 64,ChallengeSize + 128);
         }
 
         return handshake_challenge;
@@ -60,10 +60,10 @@ class HandshakeChallengeMessage {
     }
 
     serializeWithSig(privatekey) {
-        let buffer = Buffer.from(this.serialize());
-        let signature = this.app.crypto.signBuffer(buffer, privatekey);
+        const buffer = Buffer.from(this.serialize());
+        const signature = this.app.crypto.signBuffer(buffer, privatekey);
         return Buffer.concat([buffer, Buffer.from(signature, 'hex')]);
     }
 }
 
-module.exports = HandshakeChallengeMessage;
+export default HandshakeChallengeMessage;

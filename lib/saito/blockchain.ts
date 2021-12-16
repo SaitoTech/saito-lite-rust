@@ -1,6 +1,7 @@
 import saito from "./saito";
 
 import UtxoSet from "./utxoset";
+import Block from "./block";
 
 export default class Blockchain {
     public app: any;
@@ -100,11 +101,11 @@ export default class Blockchain {
         // repeatedly in the course of adding this block to the
         // blockchain and our various indices.
         //
-        let block_hash = block.returnHash();
-        let block_id = block.returnId();
-        let block_difficulty = block.returnDifficulty();
+        const block_hash = block.returnHash();
+        const block_id = block.returnId();
+        const block_difficulty = block.returnDifficulty();
 
-        let previous_block_hash = this.app.blockring.returnLatestBlockHash();
+        const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
         //
         // sanity checks
@@ -117,11 +118,11 @@ export default class Blockchain {
 
         // TODO : haven't tested this code block (fetch missing blocks)
         // check if previous block exists and if not fetch that block.
-        let parent_block_hash = block.block.previous_block_hash;
+        const parent_block_hash = block.block.previous_block_hash;
         if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
-            let parent_block = await this.loadBlockAsync(parent_block_hash);
+            const parent_block = await this.loadBlockAsync(parent_block_hash);
             if (parent_block) {
-                let block = await this.app.network.requestMissingBlock(parent_block_hash);
+                const block = await this.app.network.requestMissingBlock(parent_block_hash);
                 if (!block) {
                     console.error("previous block not found");
                     return;
@@ -183,8 +184,8 @@ export default class Blockchain {
         //
         // find shared ancestor
         //
-        let new_chain = [];
-        let old_chain = [];
+        const new_chain = [];
+        const old_chain = [];
         let shared_ancestor_found = false;
         let new_chain_hash = block_hash;
         let old_chain_hash = previous_block_hash;
@@ -253,7 +254,7 @@ export default class Blockchain {
         //
         // does this block require validation?
         //
-        let am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);
+        const am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);
         if (am_i_the_longest_chain) {
             block.lc = 1;
         }
@@ -283,7 +284,7 @@ export default class Blockchain {
         //
         if (am_i_the_longest_chain) {
 
-            let does_new_chain_validate = await this.validate(new_chain, old_chain);
+            const does_new_chain_validate = await this.validate(new_chain, old_chain);
 
             if (does_new_chain_validate) {
 
@@ -321,7 +322,7 @@ export default class Blockchain {
 
         this.app.blockring.print();
 
-        let block_id = block.returnId();
+        const block_id = block.returnId();
 
         //
         // save to disk
@@ -363,15 +364,15 @@ export default class Blockchain {
             if (block.lc === 1 && block.force !== 1) {
 
                 let starting_block_id = block.returnId() - this.callback_limit;
-                let block_id_in_which_to_delete_callbacks = block.returnId() - this.callback_limit;
+                const block_id_in_which_to_delete_callbacks = block.returnId() - this.callback_limit;
                 if (starting_block_id < 1) {
                     starting_block_id = 1;
                 }
 
                 for (let i = starting_block_id; i <= block.returnId(); i++) {
 
-                    let blocks_back = block.returnId() - i;
-                    let this_confirmation = blocks_back + 1;
+                    const blocks_back = block.returnId() - i;
+                    const this_confirmation = blocks_back + 1;
                     let run_callbacks = 1;
 
                     //
@@ -389,9 +390,9 @@ export default class Blockchain {
                     }
 
                     if (run_callbacks === 1) {
-                        let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+                        const callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
                         if (callback_block_hash !== "") {
-                            let callback_block = this.blocks[callback_block_hash];
+                            const callback_block = this.blocks[callback_block_hash];
                             if (callback_block) {
                                 await callback_block.runCallbacks(this_confirmation);
                             }
@@ -403,8 +404,8 @@ export default class Blockchain {
                 // delete callbacks as appropriate to save memory
                 //
                 if (block_id_in_which_to_delete_callbacks > 0) {
-                    let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(block_id_in_which_to_delete_callbacks);
-                    let callback_block = this.blocks[callback_block_hash];
+                    const callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(block_id_in_which_to_delete_callbacks);
+                    const callback_block = this.blocks[callback_block_hash];
                     if (callback_block) {
                         callback_block.callbacks = [];
                         callback_block.callbackTxs = [];
@@ -436,8 +437,8 @@ export default class Blockchain {
     // deletes all blocks at a single block_id
     //
     async deleteBlocks(delete_block_id) {
-        let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
-        for (let hash in block_hashes) {
+        const block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
+        for (const hash in block_hashes) {
             await this.deleteBlock(delete_block_id, hash);
         }
     }
@@ -450,7 +451,7 @@ export default class Blockchain {
         //
         // ask block to delete itself / utxo-wise
         //
-        let pblock = await this.loadBlockAsync(delete_block_hash);
+        const pblock = await this.loadBlockAsync(delete_block_hash);
 
         //
         // remove slips from wallet
@@ -489,22 +490,22 @@ export default class Blockchain {
             return;
         }
 
-        let prune_blocks_at_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
+        const prune_blocks_at_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
         if (prune_blocks_at_block_id < 1) {
             return;
         }
 
-        let block_hashes_copy = [];
-        let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(prune_blocks_at_block_id);
-        for (let hash in block_hashes) {
+        const block_hashes_copy = [];
+        const block_hashes = this.app.blockring.returnBlockHashesAtBlockId(prune_blocks_at_block_id);
+        for (const hash in block_hashes) {
             block_hashes_copy.push(hash);
         }
 
-        for (let hash in block_hashes_copy) {
+        for (const hash in block_hashes_copy) {
             //
             // ask block to remove its transactions
             //
-            let pblock = await this.loadBlockAsync(hash);
+            const pblock = await this.loadBlockAsync(hash);
             await pblock.downgradeBlockToBlockType("Pruned");
         }
 
@@ -513,7 +514,7 @@ export default class Blockchain {
 
     generateForkId(block_id) {
 
-        let fork_id = [];
+        const fork_id = [];
         for (let i = 0; i < 32; i++) {
             fork_id.push(0);
         }
@@ -528,7 +529,7 @@ export default class Blockchain {
             }
         }
 
-        let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
+        const weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
         //
         // loop backwards through blockchain
@@ -547,8 +548,8 @@ export default class Blockchain {
             //
             // index to update
             //
-            let idx = 2 * i;
-            let block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+            const idx = 2 * i;
+            const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
             fork_id[idx] = block_hash[idx];
             fork_id[idx + 1] = block_hash[idx + 1];
@@ -559,11 +560,11 @@ export default class Blockchain {
 
     generateLastSharedAncestor(peer_latest_block_id, fork_id) {
 
-        let my_latest_block_id = this.app.blockring.returnLatestBlockId();
+        const my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
         let pbid = peer_latest_block_id;
         let mbid = my_latest_block_id;
-        let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
+        const weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
         //
         // peer is further ahead
@@ -594,9 +595,9 @@ export default class Blockchain {
                 //
                 if (current_block_id < mbid && current_block_id > 0) {
 
-                    let idx = 2 * i;
+                    const idx = 2 * i;
 
-                    let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
+                    const block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
                     if (fork_id[idx] === block_hash[idx] && fork_id[idx + 1] === block_hash[idx + 1]) {
                         return current_block_id;
                     }
@@ -635,12 +636,12 @@ export default class Blockchain {
                     //
                     // index in fork_id hash
                     //
-                    let idx = 2 * i;
+                    const idx = 2 * i;
 
                     //
                     // compare input hash to my hash
                     //
-                    let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+                    const block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
                     if (fork_id[idx] === block_hash[idx] && fork_id[idx + 1] === block_hash[idx + 1]) {
                         return current_block_id;
                     }
@@ -729,7 +730,7 @@ export default class Blockchain {
     //
     // TODO - fetch from disk if needed, ergo async
     //
-    async loadBlockAsync(block_hash) {
+    async loadBlockAsync(block_hash) :Promise<Block>{
         if (this.blocks[block_hash]) {
             return this.blocks[block_hash];
         }
@@ -844,14 +845,14 @@ export default class Blockchain {
 
     async unwindChain(new_chain, old_chain, current_unwind_index, wind_failure) {
 
-        let block = await this.loadBlockAsync(old_chain[current_unwind_index]);
+        const block = await this.loadBlockAsync(old_chain[current_unwind_index]);
 
         // utxoset update
         block.onChainReorganization(false);
         // blockring update
         this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
         // staking tables
-        let {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, false);
+        const {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, false);
         this.app.wallet.onChainReorganization(block, false);
         await this.onChainReorganization(block, false);
 
@@ -886,7 +887,7 @@ export default class Blockchain {
             // winding requires starting at the END of the vector and rolling
             // backwards until we have added block #5, etc.
             //
-            let res = await this.windChain(new_chain, old_chain, new_chain.length - 1, wind_failure);
+            const res = await this.windChain(new_chain, old_chain, new_chain.length - 1, wind_failure);
             return res;
 
         } else {
@@ -896,7 +897,7 @@ export default class Blockchain {
             // unwinding requires moving FORWARD in our vector (and backwards in
             // the blockchain). So we increment our unwind index.
             //
-            let res = await this.unwindChain(new_chain, old_chain, current_unwind_index + 1, wind_failure);
+            const res = await this.unwindChain(new_chain, old_chain, current_unwind_index + 1, wind_failure);
             return res;
         }
     }
@@ -914,13 +915,13 @@ export default class Blockchain {
         // so we check that our block is the head of the longest-chain and only
         // update the genesis period when that is the case.
         //
-        let latest_block_id = longest_chain_block.returnId();
+        const latest_block_id = longest_chain_block.returnId();
         if (latest_block_id >= ((this.returnGenesisPeriod() * 2) + 1)) {
 
             //
             // prune blocks
             //
-            let purge_bid = latest_block_id - (this.returnGenesisPeriod() * 2);
+            const purge_bid = latest_block_id - (this.returnGenesisPeriod() * 2);
             this.blockchain.genesis_block_id = latest_block_id - this.returnGenesisPeriod();
 
             //
@@ -935,7 +936,7 @@ export default class Blockchain {
             //
             this.blockchain.genesis_block_id = purge_bid + 1;
             this.blockchain.genesis_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_bid + 1);
-            let genesis_block = this.blocks[this.blockchain.genesis_block_hash];
+            const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
             if (genesis_block) {
                 this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
             }
@@ -954,8 +955,8 @@ export default class Blockchain {
         let search_depth_idx = 0;
         let latest_block_hash = previous_block_hash;
 
-        let MIN_GOLDEN_TICKETS_NUMERATOR = 2;
-        let MIN_GOLDEN_TICKETS_DENOMINATOR = 6;
+        const MIN_GOLDEN_TICKETS_NUMERATOR = 2;
+        const MIN_GOLDEN_TICKETS_DENOMINATOR = 6;
 
         //
         // make sure we have enough golden tickets
@@ -967,7 +968,7 @@ export default class Blockchain {
             if (this.blocks[latest_block_hash]) {
 
 
-                let block = this.blocks[latest_block_hash];
+                const block = this.blocks[latest_block_hash];
 
                 console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
 
@@ -1011,10 +1012,10 @@ export default class Blockchain {
 
     async validate(new_chain, old_chain) {
 
-        let block = this.blocks[new_chain[0]];
-        let previous_block_hash = block.returnPreviousBlockHash();
+        const block = this.blocks[new_chain[0]];
+        const previous_block_hash = block.returnPreviousBlockHash();
 
-        let does_chain_meet_golden_ticket_requirements = await this.doesChainMeetGoldenTicketRequirements(previous_block_hash,
+        const does_chain_meet_golden_ticket_requirements = await this.doesChainMeetGoldenTicketRequirements(previous_block_hash,
             block.hasGoldenTicket()
         );
 
@@ -1060,31 +1061,31 @@ export default class Blockchain {
         // structures. So validation is "read-only" and our "write" actions
         // happen first.
         //
-        let block = await this.loadBlockAsync(new_chain[current_wind_index]);
+        const block = await this.loadBlockAsync(new_chain[current_wind_index]);
 
-        let latest_block_id = block.returnId();
+        const latest_block_id = block.returnId();
 
         //
         // ensure previous blocks that may be needed to calculate the staking
         // tables or the nolan that are potentially falling off the chain have
         // full access to their transaction data.
         //
-        let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
+        const MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
         for (let i = 0; i < MAX_STAKER_RECURSION; i++) {
             if (i >= latest_block_id) {
                 break;
             }
-            let bid = latest_block_id - i;
-            let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
+            const bid = latest_block_id - i;
+            const previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
             if (this.isBlockIndexed(previous_block_hash)) {
-                let previous_block = await this.loadBlockAsync(previous_block_hash);
+                const previous_block = await this.loadBlockAsync(previous_block_hash);
                 await previous_block.upgradeBlockToBlockType("Full");
             }
         }
 
 
-        let does_block_validate = await block.validate();
+        const does_block_validate = await block.validate();
 
         console.log("does block validate? " + does_block_validate);
 
@@ -1095,7 +1096,7 @@ export default class Blockchain {
 
             // utxoset update
             //block.onChainReorganization(true);
-            let {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, true);
+            const {res_spend, res_unspend, res_delete} = this.staking.onChainReorganization(block, true);
             this.app.wallet.onChainReorganization(block, true);
 
             //
@@ -1140,7 +1141,7 @@ export default class Blockchain {
                 }
                 return true;
             }
-            let res = await this.windChain(new_chain, old_chain, current_wind_index - 1, false);
+            const res = await this.windChain(new_chain, old_chain, current_wind_index - 1, false);
             return res;
 
         } else {
@@ -1178,14 +1179,14 @@ export default class Blockchain {
                 // which requires us to start at the END of the new chain vector.
                 //
                 if (old_chain.length > 0) {
-                    let res = await this.windChain(old_chain, new_chain, old_chain.len() - 1, true);
+                    const res = await this.windChain(old_chain, new_chain, old_chain.len() - 1, true);
                     return res;
                 } else {
                     return false;
                 }
             } else {
 
-                let chain_to_unwind = [];
+                const chain_to_unwind = [];
 
                 //
                 // if we run into a problem winding our chain after we have
@@ -1205,7 +1206,7 @@ export default class Blockchain {
                 //
                 // unwinding starts from the BEGINNING of the vector
                 //
-                let res = await this.unwindChain(old_chain, chain_to_unwind, 0, true);
+                const res = await this.unwindChain(old_chain, chain_to_unwind, 0, true);
                 return res;
             }
         }

@@ -17,9 +17,9 @@ export default class GoldenTicket {
             previous_block_hash = "00000000000000000000000000000000";
         }
 
-        let solution = this.app.crypto.hash(previous_block_hash + random_hash + publickey);
-        let leading_zeroes_required = Math.floor(difficulty / 16);
-        let final_digit = 15 - (difficulty % 16);
+        const solution = this.app.crypto.hash(previous_block_hash + random_hash + publickey);
+        const leading_zeroes_required = Math.floor(difficulty / 16);
+        const final_digit = 15 - (difficulty % 16);
 
         //
         // create our target hash
@@ -55,16 +55,16 @@ export default class GoldenTicket {
 
     serialize(target_hash, random_hash) {
 
-        let th = Buffer.from(target_hash, 'hex');
-        let rh = Buffer.from(random_hash, 'hex');
-        let cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
+        const th = Buffer.from(target_hash, 'hex');
+        const rh = Buffer.from(random_hash, 'hex');
+        const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
 
         return Buffer.concat([th, rh, cr]).toString("base64");
 
     }
 
     deserialize(base64buf) {
-        let buffer = Buffer.from(base64buf, "base64");
+        const buffer = Buffer.from(base64buf, "base64");
 
         return {
             target_hash: Buffer.from(buffer.slice(0, 32)).toString("hex"),

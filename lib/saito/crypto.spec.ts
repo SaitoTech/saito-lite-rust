@@ -5,11 +5,11 @@ const blake3 = require("blake3");
 
 test("signBuffer", () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -21,18 +21,18 @@ test("signBuffer", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let testBuffer = Buffer.from("testing 123", 'utf-8');
-    let result = crypto.signBuffer(testBuffer,
+    const testBuffer = Buffer.from("testing 123", 'utf-8');
+    const result = crypto.signBuffer(testBuffer,
         Buffer.from(wallet.wallet.privatekey, "hex")
     );
 
-    let signedBuffer = Buffer.concat([testBuffer, Buffer.from(result, 'hex')]);
+    const signedBuffer = Buffer.concat([testBuffer, Buffer.from(result, 'hex')]);
 
     expect(result)
         .toEqual(
             "2e4a69e9d538ee32bf44d486b7130a8971c051946184ae27a4e5bbbbe9f85bf16370595e252204d5857659959046f3b374821f08b8f35d824cd7b2010f4987ef");
 
-    let verificationResult = crypto.verifyHash(crypto.hash(testBuffer.toString()),
+    const verificationResult = crypto.verifyHash(crypto.hash(testBuffer.toString()),
         result,
         wallet.wallet.publickey
     );

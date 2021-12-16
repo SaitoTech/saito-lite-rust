@@ -6,10 +6,10 @@ const blake3 = require("blake3");
 
 test("write_read_empty_block_to_file", async () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -17,12 +17,12 @@ test("write_read_empty_block_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let block = new saito.block(mockApp);
+    const block = new saito.block(mockApp);
     block.generateMetadata();
 
-    let buffer = block.serialize();
+    const buffer = block.serialize();
 
-    let block2 = new saito.block(mockApp);
+    const block2 = new saito.block(mockApp);
     block2.deserialize(buffer);
     block2.generateMetadata();
 
@@ -34,11 +34,11 @@ test("write_read_empty_block_to_file", async () => {
 
 test("write_read_block_with_data_to_file", async () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -50,7 +50,7 @@ test("write_read_block_with_data_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let block = new saito.block(mockApp);
+    const block = new saito.block(mockApp);
     block.block.id = 10;
     block.block.timestamp = 1637034582666;
     block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -63,7 +63,7 @@ test("write_read_block_with_data_to_file", async () => {
     block.block.signature =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
-    let tx = new saito.transaction();
+    const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
@@ -72,9 +72,9 @@ test("write_read_block_with_data_to_file", async () => {
 
     block.generateMetadata();
 
-    let buffer = block.serialize();
+    const buffer = block.serialize();
 
-    let block2 = new saito.block(mockApp);
+    const block2 = new saito.block(mockApp);
     block2.deserialize(buffer);
     block2.generateMetadata();
 
@@ -95,7 +95,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     expect(block2.transactions.length).toEqual(block.transactions.length);
 
-    let tx2 = block2.transactions[0];
+    const tx2 = block2.transactions[0];
     expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
     expect(tx2.transaction.type).toEqual(tx.transaction.type);
     expect(tx2.transaction.sig).toEqual(tx.transaction.sig);
@@ -104,10 +104,10 @@ test("write_read_block_with_data_to_file", async () => {
 describe('serializeForSignature', function () {
     test("empty block", () => {
         // @ts-ignore
-        let mockApp: Saito = {};
-        let networkApi = new saito.networkApi(mockApp);
-        let crypto = new saito.crypto(mockApp);
-        let binary = new saito.binary(mockApp);
+        const mockApp: Saito = {};
+        const networkApi = new saito.networkApi(mockApp);
+        const crypto = new saito.crypto(mockApp);
+        const binary = new saito.binary(mockApp);
         mockApp.networkApi = networkApi;
         mockApp.crypto = crypto;
         mockApp.binary = binary;
@@ -115,18 +115,18 @@ describe('serializeForSignature', function () {
             return blake3.hash(data).toString('hex');
         };
 
-        let block = new saito.block(mockApp);
+        const block = new saito.block(mockApp);
 
-        let buffer = block.serializeForSignature();
+        const buffer = block.serializeForSignature();
         expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(145)));
     });
 
     test("block with data", () => {
         // @ts-ignore
-        let mockApp: Saito = {};
-        let networkApi = new saito.networkApi(mockApp);
-        let crypto = new saito.crypto(mockApp);
-        let binary = new saito.binary(mockApp);
+        const mockApp: Saito = {};
+        const networkApi = new saito.networkApi(mockApp);
+        const crypto = new saito.crypto(mockApp);
+        const binary = new saito.binary(mockApp);
         mockApp.networkApi = networkApi;
         mockApp.crypto = crypto;
         mockApp.binary = binary;
@@ -134,7 +134,7 @@ describe('serializeForSignature', function () {
             return blake3.hash(data).toString('hex');
         };
 
-        let block = new saito.block(mockApp);
+        const block = new saito.block(mockApp);
         block.block.id = 10;
         block.block.timestamp = 1637034582666;
         block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -147,7 +147,7 @@ describe('serializeForSignature', function () {
         block.block.signature =
             "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
-        let buffer = block.serializeForSignature();
+        const buffer = block.serializeForSignature();
 
         // TODO -- check with block creator as base58
         //expect(buffer).toEqual(Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 1, 125, 38, 221, 98, 138, 188, 246, 204, 235, 116, 113, 127, 152, 195, 247, 35, 148, 89, 187, 54, 253, 205, 143, 53, 14, 237, 191, 204, 251, 235, 247, 192, 176, 22, 31, 205, 139, 220, 246, 204, 235, 116, 113, 127, 152, 195, 247, 35, 148, 89, 187, 54, 253, 205, 143, 53, 14, 237, 191, 204, 251, 235, 247, 192, 176, 22, 31, 205, 139, 204, 204, 246, 204, 235, 116, 113, 127, 152, 195, 247, 35, 148, 89, 187, 54, 253, 205, 143, 53, 14, 237, 191, 204, 251, 235, 247, 192, 176, 22, 31, 205, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 250, 240, 128, 0, 0, 0, 0, 0, 0, 0, 0]));

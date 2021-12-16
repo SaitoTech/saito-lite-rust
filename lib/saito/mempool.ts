@@ -116,7 +116,7 @@ export default class Mempool {
         //
         // insert into queue
         //
-        let hash = block.returnHash();
+        const hash = block.returnHash();
         let insertme = true;
         for (let i = 0; i < this.mempool.blocks.length; i++) {
             if (this.mempool.blocks[i].returnHash() === hash) {
@@ -147,7 +147,7 @@ export default class Mempool {
             this.processing_timer = setInterval(async () => {
                 if (this.mempool.blocks.length > 0) {
                     if (this.app.blockchain.indexing_active === false) {
-                        let block = this.mempool.blocks.shift();
+                        const block = this.mempool.blocks.shift();
                         await this.app.blockchain.addBlockToBlockchain(block);
                     }
                 } else {
@@ -165,13 +165,13 @@ export default class Mempool {
 
         if (transaction.isGoldenTicket()) {
 
-            let new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
+            const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
             //
             // TODO -- update this to check the target block hash, not the sig
             //
             for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
-                let gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
+                const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
                 if (gt.target_hash === new_gt.target_hash) {
                     return false;
                 }
@@ -200,9 +200,9 @@ export default class Mempool {
         //
         // nope out if inadequate golden ticket support
         //
-        let previous_block_hash = this.app.blockring.returnLatestBlockHash();
-        let mempool_contains_golden_ticket = this.containsValidGoldenTicket(previous_block_hash);
-        let does_chain_meet_golden_ticket_requirements = await this.app.blockchain.doesChainMeetGoldenTicketRequirements(previous_block_hash, mempool_contains_golden_ticket);
+        const previous_block_hash = this.app.blockring.returnLatestBlockHash();
+        const mempool_contains_golden_ticket = this.containsValidGoldenTicket(previous_block_hash);
+        const does_chain_meet_golden_ticket_requirements = await this.app.blockchain.doesChainMeetGoldenTicketRequirements(previous_block_hash, mempool_contains_golden_ticket);
 
 
         //
@@ -247,8 +247,8 @@ export default class Mempool {
             //
             // create the block
             //
-            let block = new saito.block(this.app);
-            let previous_block_hash = this.app.blockring.returnLatestBlockHash();
+            const block = new saito.block(this.app);
+            const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
             //
             // generate and sign
@@ -334,7 +334,7 @@ export default class Mempool {
         //
         // made it this far? see if we have enough work
         //
-        let previous_block = this.app.blockchain.returnLatestBlock();
+        const previous_block = this.app.blockchain.returnLatestBlock();
         if (previous_block != null) {
             this.routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(previous_block.block.burnfee,
                 (new Date().getTime()),
@@ -403,7 +403,7 @@ export default class Mempool {
 
         for (let i = 0; i < tx.transaction.from.length; i++) {
             if (tx.transaction.from[i].isNonZeroAmount()) {
-                let slip_index = tx.transaction.from[i].returnKey();
+                const slip_index = tx.transaction.from[i].returnKey();
                 if (this.transactions_inputs_hmap[slip_index] === 1) {
                     return true;
                 }
@@ -423,7 +423,7 @@ export default class Mempool {
     containsValidGoldenTicket(target_hash) {
         if (this.mempool.golden_tickets.length > 0) {
             for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
-                let gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
+                const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
                 if (gt.target_hash === target_hash) {
                     return true;
                 }
@@ -483,8 +483,8 @@ export default class Mempool {
         //
         // lets make some hmaps
         //
-        let mempool_transactions = [];
-        let replacement = [];
+        const mempool_transactions = [];
+        const replacement = [];
 
         //
         // create hashmap for mempool transactions
@@ -497,7 +497,7 @@ export default class Mempool {
         // set hashmap value to -1 for all txs in block
         //
         for (let b = 0; b < blk.transactions.length; b++) {
-            let location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
+            const location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
             if (location_in_mempool !== undefined) {
                 mempool_transactions[blk.transactions[b].transaction.sig] = -1;
                 this.transaction_size_current -= this.mempool.transactions[location_in_mempool].size;

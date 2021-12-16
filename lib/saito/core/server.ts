@@ -7,21 +7,21 @@
 //   }
 // });
 import * as fs from "fs";
+import {Saito} from "../../../apps/core";
+import * as path from "path";
+import * as ws from 'ws';
+import * as bodyParser from "body-parser";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const express = require('express');
 const app = express();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webserver = require('http').Server(app);
-const ws = require('ws');
-const path = require('path');
-const bodyParser = require('body-parser');
-const saito = require("../saito");
-
-
 /**
  * Constructor
  */
 export default class Server {
-    public app: any;
+    public app: Saito;
     public blocks_dir: any;
     public web_dir: any;
     public server: any;
@@ -59,7 +59,7 @@ export default class Server {
 
     initializeWebSocketServer(app) {
 
-        let server = new ws.Server({
+        const server = new ws.Server({
             noServer: true,
             // port:5001, // TODO : setup this correctly
             path: "/wsopen"
@@ -78,14 +78,18 @@ export default class Server {
             this.app.network.addRemotePeer(wsocket);
 
             wsocket.on("message", async (message) => {
-                let api_message = this.app.networkApi.deserializeAPIMessage(message);
+                const api_message = this.app.networkApi.deserializeAPIMessage(message);
                 //console.debug("message received by server", api_message);
                 if (api_message.message_name === "RESULT__") {
                     this.app.networkApi.receiveAPIResponse(api_message);
                 } else if (api_message.message_name === "ERROR___") {
                     this.app.networkApi.receiveAPIError(api_message);
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     if (wsocket.peer) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
                         await wsocket.peer.handlePeerCommand(api_message);
                     } else {
                         console.error("peer not found");
@@ -100,8 +104,6 @@ export default class Server {
 
 
     initialize() {
-
-        let server_self = this;
 
         if (this.app.BROWSER === 1) {
             return;
@@ -142,7 +144,7 @@ export default class Server {
             this.server.endpoint.protocol = this.app.options.server.endpoint.protocol;
             this.server.endpoint.publickey = this.app.options.server.publickey;
         } else {
-            var {host, port, protocol, publickey} = this.server
+            const {host, port, protocol, publickey} = this.server
             this.server.endpoint = {host, port, protocol, publickey};
             this.app.options.server.endpoint = {host, port, protocol, publickey};
             this.app.storage.saveOptions();
@@ -171,14 +173,16 @@ export default class Server {
         /////////////////
         app.get('/blocks/:bhash/:pkey', (req, res) => {
 
-            let bhash = req.params.bhash;
+            const bhash = req.params.bhash;
             if (bhash == null) {
                 return;
             }
 
             try {
-                let ts = this.app.blockchain.bsh_ts_hmap[bhash];
-                let filename = `${ts}-${bhash}.blk`;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const ts = this.app.blockchain.bsh_ts_hmap[bhash];
+                const filename = `${ts}-${bhash}.blk`;
                 if (ts > 0) {
 
                     res.writeHead(200, {
@@ -221,11 +225,13 @@ export default class Server {
                 return;
             }
 
-            let bsh = req.params.bhash;
-            let pkey = req.params.pkey;
+            const bsh = req.params.bhash;
+            const pkey = req.params.pkey;
             let keylist = [];
 
-            let peer = this.app.network.returnPeerByPublicKey(pkey);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const peer = this.app.network.returnPeerByPublicKey(pkey);
 
             if (peer == null) {
                 keylist.push(pkey);
@@ -242,24 +248,30 @@ export default class Server {
             // transactions and thus no need for lite-clients that are not fully-validating
             // the entire block to calculate the merkle root.
             //
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             if (this.app.blockchain.hasKeylistTransactions(bsh, keylist) === 0) {
                 res.writeHead(200, {
                     "Content-Type": "text/plain",
                     "Content-Transfer-Encoding": "utf8"
                 });
-                let blk = this.app.blockchain.returnBlockByHashFromBlockIndex(bsh, 0); // 0 indicates we want in-memory
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const blk = this.app.blockchain.returnBlockByHashFromBlockIndex(bsh, 0); // 0 indicates we want in-memory
                 res.write(Buffer.from(blk.returnBlockHeaderData(), 'utf8'), 'utf8');
                 res.end();
                 return;
             }
 
-            let blk = await this.app.blockchain.returnBlockByHashFromMemoryOrDisk(bsh, 1);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const blk = await this.app.blockchain.returnBlockByHashFromMemoryOrDisk(bsh, 1);
 
             if (blk == null) {
                 res.send("{}");
                 return;
             } else {
-                let newblk = blk.returnLiteBlock(bsh, keylist);
+                const newblk = blk.returnLiteBlock(bsh, keylist);
                 //
                 // formerly binary / binary, but that results in different encoding push than full blocks, so SPV fails
                 //
@@ -288,20 +300,19 @@ export default class Server {
         });
 
         app.get("/block/:hash", async (req, res) => {
-            let hash = req.params.hash;
+            const hash = req.params.hash;
             if (!hash) {
                 console.warn("hash not provided");
                 return res.sendStatus(400); // Bad request
             }
             console.log("requesting block : " + hash);
 
-            let block = await this.app.blockchain.loadBlockAsync(hash);
+            const block = await this.app.blockchain.loadBlockAsync(hash);
             if (!block) {
                 console.warn("block not found for : " + hash);
                 return res.sendStatus(404); // Not Found
             }
-            let buffer = block.serialize();
-            buffer = Buffer.from(buffer, 'binary').toString('base64');
+            const buffer = Buffer.from(block.serialize()).toString('base64');
 
             res.status(200);
             res.end(buffer);
@@ -315,10 +326,10 @@ export default class Server {
             // res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
             // res.setHeader("expires","-1");
             // res.setHeader("pragma","no-cache");
-            let client_options_file = server_self.web_dir + "client.options";
+            const client_options_file = this.web_dir + "client.options";
             if (!fs.existsSync(client_options_file)) {
-                let fd = fs.openSync(client_options_file, 'w');
-                fs.writeSync(fd, server_self.app.storage.returnClientOptions(), server_self.server_file_encoding);
+                const fd = fs.openSync(client_options_file, 'w');
+                fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
                 fs.closeSync(fd);
             }
             res.sendFile(client_options_file);
@@ -331,12 +342,12 @@ export default class Server {
                 "Content-Type": "text/json",
                 "Content-Transfer-Encoding": "utf8"
             });
-            res.write(Buffer.from(JSON.stringify(server_self.app.options.runtime)), 'utf8');
+            res.write(Buffer.from(JSON.stringify(this.app.options.runtime)), 'utf8');
             res.end();
         });
 
         app.get('/r', (req, res) => {
-            res.sendFile(server_self.web_dir + "refer.html");
+            res.sendFile(this.web_dir + "refer.html");
             return;
         });
 
@@ -362,17 +373,17 @@ export default class Server {
             //
             // caching in prod
             //
-            var caching = process.env.NODE_ENV === 'prod' ? "private max-age=31536000" : "private, no-cache, no-store, must-revalidate";
+            const caching = process.env.NODE_ENV === 'prod' ? "private max-age=31536000" : "private, no-cache, no-store, must-revalidate";
             res.setHeader("Cache-Control", caching);
             res.setHeader("expires", "-1");
             res.setHeader("pragma", "no-cache");
-            res.sendFile(server_self.web_dir + '/saito/saito.js');
+            res.sendFile(this.web_dir + '/saito/saito.js');
             return;
         });
 
         //
         // make root directory recursively servable
-        app.use(express.static(server_self.web_dir));
+        app.use(express.static(this.web_dir));
         //
 
         /////////////
@@ -381,8 +392,8 @@ export default class Server {
         this.app.modules.webServer(app, express);
 
         app.get('*', (req, res) => {
-            res.status(404).sendFile(`${server_self.web_dir}404.html`);
-            res.status(404).sendFile(`${server_self.web_dir}tabs.html`);
+            res.status(404).sendFile(`${this.web_dir}404.html`);
+            res.status(404).sendFile(`${this.web_dir}tabs.html`);
         });
 
 

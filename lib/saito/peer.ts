@@ -1,22 +1,27 @@
-const io = require('socket.io-client');
-const saito = require('./saito');
-const JSON = require('json-bigint');
+import HandshakeChallengeMessage from "./networking/handshake_challenge_message";
 
-const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
-const Network = require('./network');
-const Transaction = require('./transaction');
-const RequestBlockMessage = require("./networking/request_block_message");
-const Block = require("./block");
-const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
-const SendBlockchainMessage = require("./networking/send_blockchain_message");
-const RequestBlockchainMessage = require("./networking/request_blockchain_message");
+import {ChallengeExpirationTime, ChallengeSize} from "./network";
 
-const SendBlockHeadMessage = require("./networking/send_block_head_message");
-const fetch = require("node-fetch");
+import saito from "./saito";
+
+import * as JSON from "json-bigint";
+
+import RequestBlockMessage from "./networking/request_block_message";
+
+import {BlockType} from "./block";
+
+import SendBlockchainMessage, {SendBlockchainBlockData, SyncType} from "./networking/send_blockchain_message";
+
+import RequestBlockchainMessage from "./networking/request_blockchain_message";
+
+import SendBlockHeadMessage from "./networking/send_block_head_message";
+
+import fetch from "node-fetch";
+import {Saito} from "../../apps/core";
 
 export default class Peer {
-    public app: any;
-    public id: any;
+    public app: Saito;
+    public id: number;
     public peer: any;
     public socket: any;
     public has_completed_handshake: any;
@@ -28,7 +33,7 @@ export default class Peer {
 
         this.app = app || {};
 
-        this.id = new Date().getTime();
+        this.id = Date.now();
 
         this.peer = {};
         this.peer.host = "localhost";
@@ -57,7 +62,7 @@ export default class Peer {
         this.peer.keylist = [];
 
         if (peerjson !== "") {
-            let peerobj = JSON.parse(peerjson);
+            const peerobj = JSON.parse(peerjson);
             if (peerobj.peer.endpoint == null) {
                 peerobj.peer.endpoint = {};
                 peerobj.peer.endpoint.host = peerobj.peer.host;
@@ -71,10 +76,10 @@ export default class Peer {
 
     addPathToTransaction(tx) {
 
-        var tmptx = tx.clone();
+        const tmptx = tx.clone();
 
         // add our path
-        var hop = new saito.hop();
+        const hop = new saito.hop();
         hop.from = this.app.wallet.returnPublicKey();
         hop.to = this.returnPublicKey();
         hop.sig = this.app.crypto.signMessage(hop.to, this.app.wallet.returnPrivateKey());
@@ -92,7 +97,7 @@ export default class Peer {
 
         try {
 
-            let socket_id = this.socket.id;
+            const socket_id = this.socket.id;
 
             try {
                 this.socket.close();
@@ -160,26 +165,18 @@ export default class Peer {
         return this.peer.publickey;
     }
 
-    async handlePeerMessage(message, connection_id) {
-
-    }
-
-    async doReqBlock() {
-
-    }
-
     async handlePeerCommand(message) {
         //console.debug("handlePeerCommand : " + message.message_name);
 
-        let command = message.message_name;
+        const command = message.message_name;
         if (command === "SHAKINIT") {
-            let challenge = await this.buildSerializedChallenge(message);
+            const challenge = await this.buildSerializedChallenge(message);
             await this.sendResponse(message.message_id, challenge);
         } else if (command === "SHAKCOMP") {
-            let challenge = this.socketHandshakeVerify(message.message_data);
+            const challenge = this.socketHandshakeVerify(message.message_data);
             if (challenge) {
                 this.has_completed_handshake = true;
-                this.publickey = challenge.opponent_pubkey;
+                this.publickey = challenge.opponent_node.public_key;
                 await this.sendResponseFromStr(message.message_id, "OK");
 
                 await this.app.networkApi.sendAPICall(this.socket, "REQCHAIN",
@@ -194,23 +191,23 @@ export default class Peer {
                 console.error("Error verifying peer handshake signature");
             }
         } else if (command === "REQBLOCK") {
-            let api_message = await this.buildRequestBlockResponse(message);
+            const api_message = await this.buildRequestBlockResponse(message);
             await this.sendMesageToSocket(api_message, this.connection_id);
         } else if (command === "REQBLKHD") {
-            let bytes = this.socketSendBlockHeader(message);
+            const bytes = await this.socketSendBlockHeader(message);
             if (bytes) {
-                let data = Buffer.from("OK", "utf-8");
+                const data = Buffer.from("OK", "utf-8");
                 await this.sendResponse(message.message_id, data);
-                await this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", bytes);
+                await this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", Buffer.from(bytes));
             } else {
                 await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("ERROR", "utf-8"));
             }
         } else if (command === "REQCHAIN") {
             await this.sendResponseFromStr(message.message_id, "OK");
-            let blockchain_message = await this.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
+            const blockchain_message = await this.buildSendBlockchainMessage(RequestBlockchainMessage.deserialize(message.message_data, this.app));
             //console.debug("built blockchain response", blockchain_message);
             if (blockchain_message) {
-                let data = blockchain_message.serialize();
+                const data = blockchain_message.serialize();
                 console.debug("serialized message", data);
                 await this.app.networkApi.sendAPICall(this.socket, "SNDCHAIN", data);
             } else {
@@ -221,28 +218,28 @@ export default class Peer {
             await this.sendResponseFromStr(message.message_id, "OK");
 
             console.debug("received message", message.message_data);
-            let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
+            const send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
             //console.debug("received send blockchain message", send_blockchain_message);
-            for (let data of send_blockchain_message.blocks_data) {
-                let block = await this.fetchBlock(data.block_hash.toString("hex"));
+            for (const data of send_blockchain_message.blocks_data) {
+                const block = await this.fetchBlock(data.block_hash.toString("hex"));
                 console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
                 this.app.mempool.addBlock(block);
             }
         } else if (command === "SNDBLKHD") {
             //console.log("RECEIVED BLOCK HEADER");
-            let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
+            const send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data);
             await this.sendResponseFromStr(message.message_id, "OK");
-            let block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
-            let is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
+            const block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
+            const is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
             if (is_block_indexed) {
                 console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
             } else {
-                let block = await this.fetchBlock(block_hash);
+                const block = await this.fetchBlock(block_hash);
 
                 this.app.mempool.addBlock(block);
             }
         } else if (command === "SNDTRANS") {
-            let tx = this.socketReceiveTransaction(message);
+            const tx = this.socketReceiveTransaction(message);
             //console.log("received TX w/ timestamp: " + tx.transaction.ts);
             await this.app.mempool.addTransaction(tx);
             //await peer.sendResponseFromStr(message.message_id, "OK");
@@ -263,15 +260,16 @@ export default class Peer {
         //console.debug("peer.fetchBlock : " + block_hash);
 
         try {
-            const fetch = require('node-fetch');
             const url = `${this.peer.protocol}://${this.peer.host}:${this.peer.port}/block/${block_hash}`;
             //console.debug("fetch url = " + url);
             const res = await fetch(url);
             if (res.ok) {
                 const base64Buffer = await res.arrayBuffer();
                 const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
-                let block = new saito.block(this.app);
+                const block = new saito.block(this.app);
                 block.deserialize(buffer);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 block.peer = this;
                 return block;
             } else {
@@ -304,7 +302,7 @@ export default class Peer {
             //}
         }
 
-        let message = {request: "", data: {}};
+        const message = {request: "", data: {}};
 
         if (reconstructed_message) {
             message.request = reconstructed_message;
@@ -312,10 +310,11 @@ export default class Peer {
         if (reconstructed_data) {
             message.data = reconstructed_data;
         }
-        let peer = this;
-        let mycallback = function (response_object) {
-            peer.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
-        }
+        // const peer = this;
+        const callback = (response_object) => {
+            this.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
+        };
+        callback.bind(this);
 
         switch (msg.message_name) {
             case 'block':
@@ -345,20 +344,24 @@ export default class Peer {
                 // transaction.msg included for backwards compatibility
                 //
                 if (reconstructed_data) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     if (reconstructed_data.transaction) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
                         if (reconstructed_data.transaction.m) {
                             // backwards compatible - in case modules try the old fashioned way
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             message.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             message.data.msg = message.data.transaction.msg;
                         }
                     }
                 }
 
-                this.app.modules.handlePeerRequest(message, this, mycallback);
+                await this.app.modules.handlePeerRequest(message, this, callback);
                 break;
         }
 
@@ -371,38 +374,37 @@ export default class Peer {
 
     buildSerializedChallenge(message) {
         //console.debug("buildSerializedChallenge", message);
-        let my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
-        let my_privkey = this.app.wallet.returnPrivateKey();
+        const my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
+        const my_privkey = this.app.wallet.returnPrivateKey();
 
         //console.log("public key", this.app.wallet.wallet.publickey);
         //console.log("private key", this.app.wallet.wallet.privatekey);
 
-        let peer_octets = message.message_data.slice(0, 4);
-        let peer_pubkey = message.message_data.slice(4, 37);
-        let my_octets = Buffer.from([127, 0, 0, 1]);
-        let challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
-        let buffer = challenge.serializeWithSig(my_privkey);
+        const peer_octets = message.message_data.slice(0, 4);
+        const peer_pubkey = message.message_data.slice(4, 37);
+        const my_octets = Buffer.from([127, 0, 0, 1]);
+        const challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
         //console.log("serialized challenge", buffer);
         //console.log("serialized challenge length = " + buffer.length);
         //console.log("public key : ", this.app.crypto.fromBase58(this.app.wallet.wallet.publickey));
-        return buffer;
+        return challenge.serializeWithSig(my_privkey);
     }
 
     socketHandshakeVerify(message_data) {
-        let challenge = HandshakeChallengeMessage.deserialize(message_data, this.app);
+        const challenge = HandshakeChallengeMessage.deserialize(message_data, this.app);
         //console.debug("socketHandshakeVerify", challenge);
-        if (challenge.timestamp < Date.now() - Network.ChallengeExpirationTime) {
+        if (challenge.timestamp < Date.now() - ChallengeExpirationTime) {
             console.error("Error validating timestamp for handshake complete");
             return null;
         }
-        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize + 64)),
+        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, ChallengeSize + 64)),
             Buffer.from(challenge.opponent_node.sig).toString("hex"),
             this.app.crypto.toBase58(Buffer.from(challenge.opponent_node.public_key).toString('hex'))
         )) {
             console.error("Error with validating opponent sig");
             return null;
         }
-        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize)),
+        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, ChallengeSize)),
             Buffer.from(challenge.challenger_node.sig).toString("hex"),
             this.app.crypto.toBase58(Buffer.from(challenge.challenger_node.public_key).toString('hex'))
         )) {
@@ -413,19 +415,19 @@ export default class Peer {
     }
 
     socketReceiveTransaction(message) {
-        let tx = new saito.transaction();
+        const tx = new saito.transaction();
         tx.deserialize(this.app, message.message_data, 0);
         return tx;
     }
 
     async buildRequestBlockResponse(message) {
-        let request_block_message = RequestBlockMessage.deserialize(message.message_data, this.app);
+        const request_block_message = RequestBlockMessage.deserialize(message.message_data, this.app);
         if (request_block_message.block_id) {
             // TODO : port this correctly
         } else if (request_block_message.block_hash) {
-            let block_hash = request_block_message.block_hash;
+            const block_hash = request_block_message.block_hash;
 
-            if (this.app.blockchain.getBlock(block_hash)) {
+            if (await this.app.blockchain.loadBlockAsync(block_hash)) {
                 // TODO : handle APIMessage line here
             } else {
                 // TODO : handle APIMessage line here
@@ -435,11 +437,11 @@ export default class Peer {
         }
     }
 
-    async socketSendBlockHeader(message) {
-        let block_hash = message.message_data.slice(0, 32);
-        let target_block = this.app.blockchain.getBlock(block_hash);
+    async socketSendBlockHeader(message): Promise<Uint8Array> {
+        const block_hash = message.message_data.slice(0, 32);
+        const target_block = await this.app.blockchain.loadBlockAsync(block_hash);
         if (target_block) {
-            return target_block.serialize(Block.BlockType.Header); // TODO : implement Block Header serialization support
+            return target_block.serialize(BlockType.Header); // TODO : implement Block Header serialization support
         } else {
             return null;
         }
@@ -458,7 +460,7 @@ export default class Peer {
     async buildSendBlockchainMessage(request_blockchain_message) {
         //console.debug("peer.buildSendBlockchainMessage", request_blockchain_message);
 
-        let block_zero_hash = Buffer.alloc(32, 0);
+        const block_zero_hash = Buffer.alloc(32, 0);
 
         let peers_latest_hash = block_zero_hash;
         if (request_blockchain_message.latest_block_id !== 0 ||
@@ -473,8 +475,8 @@ export default class Peer {
             peers_latest_hash = request_blockchain_message.latest_block_hash;
         }
 
-        let blocks_data = [];
-        let latest_block = this.app.blockchain.returnLatestBlock();
+        const blocks_data = [];
+        const latest_block = this.app.blockchain.returnLatestBlock();
         if (latest_block) {
             let previous_block_hash = latest_block.hash;
             console.debug("previous_block_hash = " + previous_block_hash);
@@ -542,8 +544,8 @@ export default class Peer {
             return;
         }
 
-        let data_to_send = {message: message, data: data};
-        let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
+        const data_to_send = {message: message, data: data};
+        const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         //console.debug("socket : ", this.socket);
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
@@ -580,8 +582,8 @@ export default class Peer {
             return;
         }
 
-        let data_to_send = {message: message, data: data};
-        let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
+        const data_to_send = {message: message, data: data};
+        const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             //console.log("SEND MESG: !" + message);
@@ -621,7 +623,7 @@ export default class Peer {
     //
     sendRequestWithCallbackAndRetry(request, data: any = {}, callback = null, initialDelay = 1000, delayFalloff = 1.3) {
         //console.debug("sendRequestWithCallbackAndRetry");
-        let callbackWrapper = (res) => {
+        const callbackWrapper = (res) => {
             if (!res.err) {
                 if (callback != null) {
                     callback(res);

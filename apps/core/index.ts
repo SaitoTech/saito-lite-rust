@@ -57,6 +57,7 @@ class Saito {
         this.newSaito();
 
         // TODO : where does this mod_paths come from?
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.modules = new saito_lib.modules(this, config.mod_paths);
 
@@ -64,23 +65,23 @@ class Saito {
     }
 
     newSaito() {
-        this.binary = new saito_lib.binary(this);
-        this.crypto = new saito_lib.crypto(this);
-        this.connection = new saito_lib.connection();
-        this.browser = new saito_lib.browser(this);
-        this.storage = new saito_lib.storage(this);
-        this.goldenticket = new saito_lib.goldenticket(this);
-        this.utxoset = new saito_lib.utxoset();
-        this.mempool = new saito_lib.mempool(this);
-        this.wallet = new saito_lib.wallet(this);
-        this.miner = new saito_lib.miner(this);
-        this.keys = new saito_lib.keychain(this);
-        this.network = new saito_lib.network(this);
-        this.networkApi = new saito_lib.networkApi(this);
-        this.burnfee = new saito_lib.burnfee();
-        this.blockchain = new saito_lib.blockchain(this);
-        this.blockring = new saito_lib.blockring(this, this.blockchain.returnGenesisPeriod());
-        this.staking = new saito_lib.staking(this);
+        this.binary = new Binary(this);
+        this.crypto = new Crypto(this);
+        this.connection = new Connection();
+        this.browser = new Browser(this);
+        this.storage = new Storage(this);
+        this.goldenticket = new GoldenTicket(this);
+        this.utxoset = new UtxoSet();
+        this.mempool = new Mempool(this);
+        this.wallet = new Wallet(this);
+        this.miner = new Miner(this);
+        this.keys = new Keychain(this);
+        this.network = new Network(this);
+        this.networkApi = new NetworkAPI(this);
+        this.burnfee = new BurnFee();
+        this.blockchain = new Blockchain(this);
+        this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
+        this.staking = new Staking(this);
 
     }
 
@@ -101,18 +102,19 @@ class Saito {
             // function can invoke whichever one is being used in that specific
             // configuration (server / browser);
             //
-            if (this.BROWSER == 0) {
-                let blake3 = require('blake3');
+            if (!this.BROWSER) {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                const blake3 = require('blake3');
                 this.hash = (data) => {
                     return blake3.hash(data).toString('hex');
                 };
             } else {
-                let blake3 = require("blake3-js");
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                const blake3 = require("blake3-js");
                 this.hash = (data) => {
                     return blake3.newRegular().update(data).finalize();
                 }
             }
-            let _self = this;
 
             this.wallet.initialize();
             this.mempool.initialize();
@@ -120,8 +122,9 @@ class Saito {
             this.keys.initialize();
 
             this.modules.mods = this.modules.mods_list.map(mod_path => {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const Module = require(`../../mods/${mod_path}`);
-                let x = new Module(this);
+                const x = new Module(this);
                 x.dirname = path.dirname(mod_path);
                 return x;
             });
@@ -158,6 +161,7 @@ class Saito {
 
     shutdown() {
         // TODO : couldn't find close method implementation
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.network.close();
     }

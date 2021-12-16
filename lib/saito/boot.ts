@@ -7,35 +7,37 @@
 //
 if (typeof (Storage) !== "undefined") {
 
-  // @ts-ignore
-  let mySource = document.currentScript.src;
-  let sscript = document.getElementById("saito");
-  let data = null;
-  let options = null;
-  let bundle = null;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const mySource = document.currentScript.src;
+    const sscript = document.getElementById("saito");
+    let data = null;
+    let options = null;
+    let bundle = null;
 
-  data = localStorage.getItem("options");
-  if (data) {
-    options = JSON.parse(data);
-  }
-  if (options) {
-    bundle = options.bundle;
-  }
-
-
-  if (bundle != null && bundle != "") {
-    if (bundle != mySource) {
-      document.body.removeChild(sscript);
-
-      let sscript2 = document.createElement('script');
-      sscript2.onload = function () {
-      };
-      sscript2.src = bundle;
-      document.body.appendChild(sscript2);
-
-      throw new Error('Exiting before we load bad javascript...!');
+    data = localStorage.getItem("options");
+    if (data) {
+        options = JSON.parse(data);
     }
-  }
+    if (options) {
+        bundle = options.bundle;
+    }
+
+
+    if (bundle != null && bundle != "") {
+        if (bundle != mySource) {
+            document.body.removeChild(sscript);
+
+            const sscript2 = document.createElement('script');
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            sscript2.onload = function () {
+            };
+            sscript2.src = bundle;
+            document.body.appendChild(sscript2);
+
+            throw new Error('Exiting before we load bad javascript...!');
+        }
+    }
 
 }
 

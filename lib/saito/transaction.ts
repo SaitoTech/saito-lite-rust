@@ -2,7 +2,7 @@ import saito from "./saito";
 import {SlipType} from "./slip";
 import {Saito} from "../../apps/core";
 
-const JSON = require('json-bigint');
+import * as JSON from "json-bigint";
 
 export const TRANSACTION_SIZE = 89;
 export const SLIP_SIZE = 75;
@@ -78,17 +78,18 @@ export default class Transaction {
             this.transaction = jsonobj;
             if (this.transaction.type === TransactionType.Normal) {
                 try {
-                    let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+                    const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
                     this.msg = JSON.parse(reconstruct);
                 } catch (err) {
+                    console.error(err);
                 }
             }
             for (let i = 0; i < this.transaction.from.length; i++) {
-                let fslip = this.transaction.from[i];
+                const fslip = this.transaction.from[i];
                 this.transaction.from[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
             for (let i = 0; i < this.transaction.to.length; i++) {
-                let fslip = this.transaction.to[i];
+                const fslip = this.transaction.to[i];
                 this.transaction.to[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
         }
@@ -106,7 +107,7 @@ export default class Transaction {
 
     clone() {
 
-        let tx = new saito.transaction();
+        const tx = new saito.transaction();
         tx.transaction.from = [];
         tx.transaction.to = [];
         for (let i = 0; i < this.transaction.from.length; i++) {
@@ -131,7 +132,7 @@ export default class Transaction {
     decryptMessage(app) {
         if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
             try {
-                let parsed_msg = this.msg;
+                const parsed_msg = this.msg;
                 this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
             } catch (e) {
                 console.log("ERROR: " + e);
@@ -156,42 +157,42 @@ export default class Transaction {
      */
     deserialize(app: Saito, buffer, start_of_transaction_data) {
 
-        let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-        let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-        let message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-        let path_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+        const inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+        const outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+        const message_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+        const path_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
 
-        let signature = app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
-        let timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
-        let transaction_type = buffer[start_of_transaction_data + 88];
-        let start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
-        let start_of_outputs = start_of_inputs + (inputs_len * SLIP_SIZE);
-        let start_of_message = start_of_outputs + (outputs_len * SLIP_SIZE);
-        let start_of_path = start_of_message + message_len;
+        const signature = app.crypto.stringToHex(buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80));
+        const timestamp = app.binary.u64FromBytes(buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88));
+        const transaction_type = buffer[start_of_transaction_data + 88];
+        const start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
+        const start_of_outputs = start_of_inputs + (inputs_len * SLIP_SIZE);
+        const start_of_message = start_of_outputs + (outputs_len * SLIP_SIZE);
+        const start_of_path = start_of_message + message_len;
 
-        let inputs = [];
+        const inputs = [];
         for (let i = 0; i < inputs_len; i++) {
-            let start_of_slip = start_of_inputs + (i * SLIP_SIZE);
-            let end_of_slip = start_of_slip + SLIP_SIZE;
-            let input = new saito.slip();
+            const start_of_slip = start_of_inputs + (i * SLIP_SIZE);
+            const end_of_slip = start_of_slip + SLIP_SIZE;
+            const input = new saito.slip();
             input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             inputs.push(input);
         }
-        let outputs = [];
+        const outputs = [];
         for (let i = 0; i < outputs_len; i++) {
-            let start_of_slip = start_of_outputs + (i * SLIP_SIZE);
-            let end_of_slip = start_of_slip + SLIP_SIZE;
-            let output = new saito.slip();
+            const start_of_slip = start_of_outputs + (i * SLIP_SIZE);
+            const end_of_slip = start_of_slip + SLIP_SIZE;
+            const output = new saito.slip();
             output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             outputs.push(output);
         }
-        let message = buffer.slice(start_of_message, start_of_message + message_len);
+        const message = buffer.slice(start_of_message, start_of_message + message_len);
 
-        let path = [];
+        const path = [];
         for (let i = 0; i < path_len; i++) {
-            let start_of_data = start_of_path + (i * HOP_SIZE);
-            let end_of_data = start_of_data + HOP_SIZE;
-            let hop = new saito.hop();
+            const start_of_data = start_of_path + (i * HOP_SIZE);
+            const end_of_data = start_of_data + HOP_SIZE;
+            const hop = new saito.hop();
             hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
             path.push(hop);
         }
@@ -206,7 +207,7 @@ export default class Transaction {
 
         try {
             if (this.transaction.type === TransactionType.Normal) {
-                let reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
+                const reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
                 this.msg = JSON.parse(reconstruct);
             }
 //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
@@ -218,7 +219,7 @@ export default class Transaction {
 
     generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee) {
 
-        let transaction = new saito.transaction();
+        const transaction = new saito.transaction();
 
         let output_payment = BigInt(0);
         if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
@@ -227,7 +228,7 @@ export default class Transaction {
 
         transaction.transaction.type = TransactionType.ATR;
 
-        let output = new saito.slip();
+        const output = new saito.slip();
         output.add = output_slip_to_rebroadcast.add;
         output.amt = output_payment;
         output.type = SlipType.ATR;
@@ -385,9 +386,10 @@ export default class Transaction {
             return this.msg;
         }
         try {
-            let reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+            const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
             this.msg = JSON.parse(reconstruct);
         } catch (err) {
+            console.error(err);
         }
         return this.msg;
     }
@@ -430,7 +432,7 @@ export default class Transaction {
     }
 
     returnSlipsFrom(publickey) {
-        let x = [];
+        const x = [];
         if (this.transaction.from != null) {
             for (let v = 0; v < this.transaction.from.length; v++) {
                 if (this.transaction.from[v].add === publickey) {
@@ -442,7 +444,7 @@ export default class Transaction {
     }
 
     returnSlipsToAndFrom(publickey) {
-        let x = {from: [], to: []};
+        const x = {from: [], to: []};
         if (this.transaction.from != null) {
             for (let v = 0; v < this.transaction.from.length; v++) {
                 if (this.transaction.from[v].add === publickey) {
@@ -461,7 +463,7 @@ export default class Transaction {
     }
 
     returnSlipsTo(publickey) {
-        let x = [];
+        const x = [];
         if (this.transaction.to != null) {
             for (let v = 0; v < this.transaction.to.length; v++) {
                 if (this.transaction.to[v].add === publickey) {
@@ -504,11 +506,11 @@ export default class Transaction {
         //
         let aggregate_routing_work = this.returnTotalFees();
         let routing_work_this_hop = aggregate_routing_work;
-        let work_by_hop = [];
+        const work_by_hop = [];
         work_by_hop.push(aggregate_routing_work);
 
         for (let i = 0; i < this.path.length; i++) {
-            let new_routing_work_this_hop = routing_work_this_hop / BigInt(2);
+            const new_routing_work_this_hop = routing_work_this_hop / BigInt(2);
             aggregate_routing_work += new_routing_work_this_hop;
             routing_work_this_hop = new_routing_work_this_hop;
             work_by_hop.push(aggregate_routing_work);
@@ -517,9 +519,9 @@ export default class Transaction {
         //
         // find winning routing node
         //
-        let x = BigInt('0x' + random_number);
-        let z = BigInt('0x' + aggregate_routing_work);
-        let winning_routing_work_in_nolan = x % z;
+        const x = BigInt('0x' + random_number);
+        const z = BigInt('0x' + aggregate_routing_work);
+        const winning_routing_work_in_nolan = x % z;
 
         for (let i = 0; i < work_by_hop.length; i++) {
             if (winning_routing_work_in_nolan <= work_by_hop[i]) {
@@ -543,16 +545,16 @@ export default class Transaction {
     serialize(app) {
         //console.log("tx.serialize", this.transaction);
 
-        let inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
-        let outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
-        let message_len = app.binary.u32AsBytes(this.transaction.m.length);
-        let path_len = app.binary.u32AsBytes(this.transaction.path.length);
-        let signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
-        let timestamp = app.binary.u64AsBytes(this.transaction.ts);
-        let transaction_type = app.binary.u8AsByte(this.transaction.type);
-        let inputs = [];
-        let outputs = [];
-        let path = [];
+        const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
+        const outputs_len = app.binary.u32AsBytes(this.transaction.to.length);
+        const message_len = app.binary.u32AsBytes(this.transaction.m.length);
+        const path_len = app.binary.u32AsBytes(this.transaction.path.length);
+        const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
+        const timestamp = app.binary.u64AsBytes(this.transaction.ts);
+        const transaction_type = app.binary.u8AsByte(this.transaction.type);
+        const inputs = [];
+        const outputs = [];
+        const path = [];
 
         ///
         ///  reference for starting point of inputs
@@ -570,16 +572,16 @@ export default class Transaction {
         /// [hop][hop][hop]...
 
 
-        let start_of_inputs = TRANSACTION_SIZE;
-        let start_of_outputs = TRANSACTION_SIZE + ((this.transaction.from.length) * SLIP_SIZE);
-        let start_of_message = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE);
-        let start_of_path = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length;
-        let size_of_tx_data = TRANSACTION_SIZE +
+        const start_of_inputs = TRANSACTION_SIZE;
+        const start_of_outputs = TRANSACTION_SIZE + ((this.transaction.from.length) * SLIP_SIZE);
+        const start_of_message = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE);
+        const start_of_path = TRANSACTION_SIZE + ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) + this.transaction.m.length;
+        const size_of_tx_data = TRANSACTION_SIZE +
             ((this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE) +
             this.transaction.m.length +
             this.transaction.path.length *
             HOP_SIZE;
-        let ret = new Uint8Array(size_of_tx_data);
+        const ret = new Uint8Array(size_of_tx_data);
         ret.set(new Uint8Array([
                 ...inputs_len,
                 ...outputs_len,
@@ -613,14 +615,14 @@ export default class Transaction {
         //
         // convert message to hex as otherwise issues in current implementation
         //
-        let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
+        const m_as_hex = Buffer.from(this.transaction.m).toString('hex');
         // binary requires 1/2 length of hex string
-        let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
+        const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
 
         ret.set(tm, start_of_message);
 
         for (let i = 0; i < this.transaction.path.length; i++) {
-            let serialized_hop = this.transaction.path[i].serialize(app);
+            const serialized_hop = this.transaction.path[i].serialize(app);
             path.push(serialized_hop);
         }
         let next_hop_location = start_of_path;
@@ -646,8 +648,8 @@ export default class Transaction {
 
         buffer = Buffer.concat([buffer, Buffer.from(app.binary.u32AsBytes(this.transaction.type))]);
 
-        let m_as_hex = Buffer.from(this.transaction.m).toString('hex');
-        let tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
+        const m_as_hex = Buffer.from(this.transaction.m).toString('hex');
+        const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
         buffer = Buffer.concat([buffer, tm]);
 
         return Uint8Array.from(buffer);
@@ -706,6 +708,7 @@ export default class Transaction {
         // at the bottom is the validation criteria applied to ALL
         // transaction types.
         //
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         if (this.transaction.type !== TransactionType.Fee
             && this.transaction.type !== TransactionType.ATR
@@ -747,6 +750,7 @@ export default class Transaction {
             for (let i = 0; i < this.transaction.to.length; i++) {
                 total_out += this.transaction.to[i].returnAmount();
             }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             if (total_out > total_in && this.transaction.type !== TransactionType.Fee && this.transaction.type !== TransactionType.Vip) {
                 console.log("ERROR 802394: transaction spends more than it has available");
@@ -758,27 +762,28 @@ export default class Transaction {
         //
         // fee transactions
         //
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        if (this.transaction.type === TransactionType.Fee) {
-        }
+        // if (this.transaction.type === TransactionType.Fee) {
+        // }
 
         //
         // atr transactions
         //
-        if (this.transaction.type === TransactionType.ATR) {
-        }
+        // if (this.transaction.type === TransactionType.ATR) {
+        // }
 
         //
         // normal transactions
         //
-        if (this.transaction.type === TransactionType.Normal) {
-        }
+        // if (this.transaction.type === TransactionType.Normal) {
+        // }
 
         //
         // golden ticket transactions
         //
-        if (this.transaction.type === TransactionType.GoldenTicket) {
-        }
+        // if (this.transaction.type === TransactionType.GoldenTicket) {
+        // }
 
         //
         // Staking Withdrawal Transactions
@@ -853,6 +858,7 @@ export default class Transaction {
 
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     generateMetadata() {
     }
 

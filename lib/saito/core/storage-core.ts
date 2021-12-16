@@ -5,13 +5,13 @@ import Storage from "../storage";
 import saito from "../saito";
 import Block from "../block";
 
-const fs = require('fs-extra');
-const readline = require('readline');
-const path = require('path');
-const sqlite = require('sqlite');
-const stream = require('stream');
-const JSON = require('json-bigint');
+import * as fs from "fs-extra";
 
+import * as path from "path";
+
+import * as sqlite from "sqlite";
+
+import * as JSON from "json-bigint";
 
 export default class StorageCore extends Storage {
     public data_dir: string;
@@ -59,7 +59,7 @@ export default class StorageCore extends Storage {
         }
         try {
 
-            let db = await sqlite.open(this.data_dir + '/' + dbname + '.sq3');
+            const db = await sqlite.open(this.data_dir + '/' + dbname + '.sq3');
 
             this.dbname.push(dbname);
             this.db.push(db);
@@ -86,8 +86,8 @@ export default class StorageCore extends Storage {
     loadBlockFromDisk(filename) {
         try {
             if (fs.existsSync(filename)) {
-                let buffer = fs.readFileSync(filename);
-                let block = new saito.block(this.app);
+                const buffer = fs.readFileSync(filename);
+                const block = new saito.block(this.app);
                 block.deserialize(buffer);
                 block.generateMetadata();
                 return block;
@@ -107,7 +107,7 @@ export default class StorageCore extends Storage {
         // sort files by creation date, and then name
         // if two files have the same creation date
         //
-        let dir = `${this.data_dir}/${this.dest}/`;
+        const dir = `${this.data_dir}/${this.dest}/`;
 
         //
         // if this takes a long time, our server can
@@ -115,7 +115,7 @@ export default class StorageCore extends Storage {
         // as when it starts to connect, currently_reindexing
         // will be set at 1
         //
-        let files = fs.readdirSync(dir);
+        const files = fs.readdirSync(dir);
 
         //
         // "empty" file only
@@ -137,10 +137,10 @@ export default class StorageCore extends Storage {
 
             try {
 
-                let fileID = files[i];
+                const fileID = files[i];
                 if (fileID !== "empty") {
 
-                    let blk = await this.loadBlockByFilename(fileID);
+                    const blk = await this.loadBlockByFilename(fileID);
                     if (blk == null) {
                         console.log("block is null: " + fileID);
                         return null;
@@ -170,10 +170,10 @@ export default class StorageCore extends Storage {
      */
     async saveBlock(block) {
         // try {
-        let filename = this.generateBlockFilename(block);
+        const filename = this.generateBlockFilename(block);
         if (!fs.existsSync(filename)) {
-            let fd = fs.openSync(filename, 'w');
-            let buffer = block.serialize();
+            const fd = fs.openSync(filename, 'w');
+            const buffer = block.serialize();
             fs.writeSync(fd, buffer);
             fs.fsyncSync(fd);
             fs.closeSync(fd);
@@ -209,7 +209,7 @@ export default class StorageCore extends Storage {
             //
             // deleting file
             //
-            let block_filename = await this.returnBlockFilenameByHashPromise(bsh);
+            const block_filename = await this.returnBlockFilenameByHashPromise(bsh);
 
             fs.unlink(block_filename, function (err) {
                 if (err) {
@@ -221,31 +221,31 @@ export default class StorageCore extends Storage {
 
 
     async loadBlockById(bid) {
-        let bsh = this.app.blockchain.bid_bsh_hmap[bid];
-        let ts = this.app.blockchain.bsh_ts_hmap[bsh];
-        let filename = ts + "-" + bsh + ".blk";
-        let blk = await this.loadBlockByFilename(filename);
+        const bsh = this.app.blockchain.bid_bsh_hmap[bid];
+        const ts = this.app.blockchain.bsh_ts_hmap[bsh];
+        const filename = ts + "-" + bsh + ".blk";
+        const blk = await this.loadBlockByFilename(filename);
         return blk;
     }
 
     async loadBlockByHash(bsh) {
-        let ts = this.app.blockchain.bsh_ts_hmap[bsh];
-        let filename = ts + "-" + bsh + ".blk";
-        let blk = await this.loadBlockByFilename(filename);
+        const ts = this.app.blockchain.bsh_ts_hmap[bsh];
+        const filename = ts + "-" + bsh + ".blk";
+        const blk = await this.loadBlockByFilename(filename);
         return blk;
     }
 
     async loadBlockByFilename(filename): Promise<Block> {
 
-        let block_filename = `${this.data_dir}/${this.dest}/${filename}`;
+        const block_filename = `${this.data_dir}/${this.dest}/${filename}`;
 
         console.log("trying to load: " + block_filename);
 
         try {
             if (fs.existsSync(block_filename)) {
 
-                let data = fs.readFileSync(block_filename);
-                let block = new saito.block(this.app);
+                const data = fs.readFileSync(block_filename);
+                const block = new saito.block(this.app);
 
                 block.deserialize(data);
                 block.generateMetadata();
@@ -280,8 +280,8 @@ export default class StorageCore extends Storage {
             // open options file
             //
             try {
-                let optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
-                this.app.options = JSON.parse(optionsfile);
+                const optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
+                this.app.options = JSON.parse(optionsfile.toString());
             } catch (err) {
                 // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
                 console.error(err);
@@ -306,8 +306,8 @@ export default class StorageCore extends Storage {
             // open runtime config file
             //
             try {
-                let configfile = fs.readFileSync(`${this.config_dir}/runtime.config.js`, this.file_encoding_load);
-                this.app.options.runtime = JSON.parse(configfile);
+                const configfile = fs.readFileSync(`${this.config_dir}/runtime.config.js`, this.file_encoding_load);
+                this.app.options.runtime = JSON.parse(configfile.toString());
             } catch (err) {
                 // this.app.logger.logError("Error Reading Runtime Config File", {message:"", stack: err});
                 console.error(err);
@@ -332,7 +332,7 @@ export default class StorageCore extends Storage {
         this.app.options = Object.assign({}, this.app.options);
 
         try {
-            fs.writeFileSync(`${this.config_dir}/options`, JSON.stringify(this.app.options), null, 4);
+            fs.writeFileSync(`${this.config_dir}/options`, JSON.stringify(this.app.options), null);
         } catch (err) {
             // this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
             console.error(err);
@@ -343,6 +343,7 @@ export default class StorageCore extends Storage {
 
     // overwrite to stop the server from attempting to reset options live
     async resetOptions() {
+        return null;
     }
 
 
@@ -364,7 +365,7 @@ export default class StorageCore extends Storage {
         if (this.app.BROWSER == 1) {
             return;
         }
-        let client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
+        const client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
         //
         // mostly empty, except that we tell them what our latest
         // block_id is and send them information on where our
@@ -397,7 +398,7 @@ export default class StorageCore extends Storage {
 
     }
 
-    returnClientOptions() {
+    returnClientOptions(): any {
 
         if (this.app.BROWSER == 1) {
             return;
@@ -408,7 +409,7 @@ export default class StorageCore extends Storage {
             }
         }
 
-        let client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
+        const client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
         //
         // mostly empty, except that we tell them what our latest
         // block_id is and send them information on where our
@@ -441,16 +442,16 @@ export default class StorageCore extends Storage {
      **/
     async returnBlockFilenameByHash(block_hash, mycallback) {
 
-        let sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
-        let params = {$block_hash: block_hash};
+        const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
+        const params = {$block_hash: block_hash};
 
         try {
-            let row = await this.db.get(sql, params)
+            const row = await this.db.get(sql, params)
             if (row == undefined) {
                 mycallback(null, "Block not found on this server");
                 return
             }
-            let filename = `${row.ts}-${block_hash}.blk`;
+            const filename = `${row.ts}-${block_hash}.blk`;
             mycallback(filename, null);
         } catch (err) {
             console.log("ERROR getting block filename in storage: " + err);
@@ -459,7 +460,7 @@ export default class StorageCore extends Storage {
 
     }
 
-    returnBlockFilenameByHashPromise(block_hash) {
+    returnBlockFilenameByHashPromise(block_hash): Promise<string> {
         return new Promise((resolve, reject) => {
             this.returnBlockFilenameByHash(block_hash, (filename, err) => {
                 if (err) {
@@ -480,7 +481,7 @@ export default class StorageCore extends Storage {
      */
     async executeDatabase(sql, params, database: string, mycallback = null) {
         try {
-            let db = await this.returnDatabaseByName(database);
+            const db = await this.returnDatabaseByName(database);
             if (!mycallback) {
                 return await db.run(sql, params);
             } else {
@@ -493,7 +494,7 @@ export default class StorageCore extends Storage {
 
     async queryDatabase(sql, params, database) {
         try {
-            let db = await this.returnDatabaseByName(database);
+            const db = await this.returnDatabaseByName(database);
             const rows = await db.all(sql, params);
             if (rows == undefined) {
                 return [];

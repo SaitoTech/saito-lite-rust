@@ -1,11 +1,11 @@
 import saito from "./saito";
 
-import JSON from "json-bigint";
+import * as JSON from "json-bigint";
 import {Saito} from "../../apps/core";
 import Transaction, {HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType} from "./transaction";
-import {SlipType} from "./slip";
+import Slip, {SlipType} from "./slip";
 
-export const BLOCK_HEADER_SIZE: number = 213;
+export const BLOCK_HEADER_SIZE = 213;
 
 export enum BlockType {
     Ghost = 0,
@@ -54,7 +54,7 @@ export default class Block {
     private gt_idx: number;
     private has_issuance_transaction: boolean;
     private has_hashmap_of_slips_spent_this_block: boolean;
-    private slips_spent_this_block: {};
+    private slips_spent_this_block: Map<string, Slip>;
     private rebroadcast_hash: string;
     private total_rebroadcast_slips: number;
     private total_rebroadcast_nolan: bigint;
@@ -62,7 +62,7 @@ export default class Block {
     private callbackTxs: any[];
     private confirmations: number;
 
-    constructor(app: Saito, blkobj = null, confirmations: number = -1) {
+    constructor(app: Saito, blkobj = null, confirmations = -1) {
 
         this.app = app;
 
@@ -101,7 +101,7 @@ export default class Block {
         this.gt_idx = 0;
         this.has_issuance_transaction = false;
         this.has_hashmap_of_slips_spent_this_block = false;
-        this.slips_spent_this_block = {};
+        this.slips_spent_this_block = new Map<string, Slip>();
         this.rebroadcast_hash = "";
         this.total_rebroadcast_slips = 0;
         this.total_rebroadcast_nolan = BigInt(0);
@@ -117,7 +117,7 @@ export default class Block {
 
         for (let z = 0; z < this.transactions.length; z++) {
             if (this.transactions[z].transaction.type === TransactionType.Normal) {
-                let txmsg = this.transactions[z].returnMessage();
+                const txmsg = this.transactions[z].returnMessage();
                 this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs);
             }
         }
@@ -131,7 +131,7 @@ export default class Block {
      */
     deserialize(buffer?) {
 
-        let transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
+        const transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
         this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
         this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)).toString());
         this.block.previous_block_hash = Buffer.from(buffer.slice(20, 52)).toString('hex');
@@ -166,18 +166,18 @@ export default class Block {
         console.debug("transaction count = " + transactions_length);
         for (let i = 0; i < transactions_length; i++) {
 
-            let inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
-            let outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
-            let message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
-            let path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
-            let end_of_transaction_data = start_of_transaction_data +
+            const inputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
+            const outputs_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
+            const message_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12));
+            const path_len = this.app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16));
+            const end_of_transaction_data = start_of_transaction_data +
                 TRANSACTION_SIZE +
                 ((inputs_len + outputs_len) * SLIP_SIZE) +
                 message_len +
                 path_len *
                 HOP_SIZE;
 
-            let transaction = new saito.transaction();
+            const transaction = new saito.transaction();
             transaction.deserialize(this.app, buffer, start_of_transaction_data);
             this.transactions.push(transaction);
             start_of_transaction_data = end_of_transaction_data;
@@ -217,13 +217,13 @@ export default class Block {
         //
         // find winning nolan
         //
-        let x = BigInt('0x' + random_number);
+        const x = BigInt('0x' + random_number);
 
         //
         // fee calculation should be the same used in block when
         // generating the fee transaction.
         //
-        let y = BigInt(this.returnFeesTotal());
+        const y = BigInt(this.returnFeesTotal());
 
         //
         // if there are no fees, payout to no-one
@@ -232,7 +232,7 @@ export default class Block {
             return "";
         }
 
-        let winning_nolan = x % y;
+        const winning_nolan = x % y;
 
         //
         // winning tx is either fee-paying or ATR transaction
@@ -250,8 +250,8 @@ export default class Block {
         // if winner is atr, take inside TX
         //
         if (winning_tx.transaction.type === TransactionType.ATR) {
-            let buffer = winning_tx.returnMessage();
-            let winning_tx_placeholder: Transaction = new saito.transaction();
+            const buffer = winning_tx.returnMessage();
+            const winning_tx_placeholder: Transaction = new saito.transaction();
             winning_tx_placeholder.deserialize(this.app, buffer, 0);
             winning_tx = winning_tx_placeholder;
         }
@@ -259,7 +259,7 @@ export default class Block {
         //
         // hash random number to pick routing node
         //
-        let rn = this.app.crypto.hash(random_number);
+        const rn = this.app.crypto.hash(random_number);
 
         //
         // and pick from path, if exists
@@ -289,12 +289,12 @@ export default class Block {
         //
         // this is also set in blockchain.js
         //
-        let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
+        const MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
         //
         // return obj w/ default values
         //
-        let cv = {
+        const cv = {
             total_fees: BigInt(0),
             ft_num: 0,
             gt_num: 0,
@@ -350,10 +350,10 @@ export default class Block {
         //
         // burn-fee
         //
-        let previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
+        const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
         if (previous_block) {
 
-            let difficulty = previous_block.returnDifficulty();
+            const difficulty = previous_block.returnDifficulty();
 
             if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
                 if (difficulty > 0) {
@@ -378,11 +378,11 @@ export default class Block {
         //
         if (this.block.id > (this.app.blockchain.returnGenesisPeriod() + 1)) {
 
-            let pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
-            let pruned_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
+            const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
+            const pruned_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
             console.log("pruned block id: " + pruned_block_id);
             console.log("pruned block hash: " + pruned_block_hash);
-            let pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
+            const pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
 
             //
             // generate metadata should have prepared us with a pre-prune block
@@ -396,12 +396,12 @@ export default class Block {
                 //
                 for (let i = 0; i < pruned_block.transactions.length; i++) {
 
-                    let tx = pruned_block.transactions[i];
+                    const tx = pruned_block.transactions[i];
 
                     for (let k = 0; k < tx.transaction.to.length; k++) {
 
-                        let output = tx.transaction.to[k];
-                        let REBROADCAST_FEE = BigInt(200000000);
+                        const output = tx.transaction.to[k];
+                        const REBROADCAST_FEE = BigInt(200000000);
 
                         //
                         // valid means spendable and non-zero
@@ -422,7 +422,7 @@ export default class Block {
                                 //
                                 // TODO - floating fee based on previous block average
                                 //
-                                let rebroadcast_transaction = new saito.transaction();
+                                const rebroadcast_transaction = new saito.transaction();
                                 rebroadcast_transaction.generateRebroadcastTransaction(this.app, output, REBROADCAST_FEE);
 
                                 //
@@ -453,24 +453,24 @@ export default class Block {
         //
         if (cv.gt_idx > 0) {
 
-            let golden_ticket_transaction = this.transactions[cv.gt_idx];
-            let gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
+            const golden_ticket_transaction = this.transactions[cv.gt_idx];
+            const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
             let next_random_number = this.app.crypto.hash(gt.random_hash);
-            let miner_publickey = gt.creator;
+            const miner_publickey = gt.creator;
 
             //
             // miner payout is fees from previous block, no staking treasury
             //
             if (previous_block) {
 
-                let miner_payment = previous_block.returnFeesTotal() / BigInt(2);
-                let router_payment = previous_block.returnFeesTotal() / BigInt(2);
+                const miner_payment = previous_block.returnFeesTotal() / BigInt(2);
+                const router_payment = previous_block.returnFeesTotal() / BigInt(2);
 
                 //
                 // calculate miner and router payments
                 //
-                let block_payout = {
+                const block_payout = {
                     miner: "",
                     staker: "",
                     router: "",
@@ -522,7 +522,7 @@ export default class Block {
                     if (loop_idx >= MAX_STAKER_RECURSION) {
                         cont = 0;
                     } else {
-                        let staking_block = await this.app.blockchain.loadBlockAsync(staking_block_hash);
+                        const staking_block = await this.app.blockchain.loadBlockAsync(staking_block_hash);
                         if (staking_block) {
 
                             //
@@ -546,10 +546,10 @@ export default class Block {
                                 // be withheld for the staker treasury, which is what previous_staker_
                                 // payment is measuring.
                                 //
-                                let sp = staking_block.returnFeesTotal() / BigInt(2);
-                                let rp = staking_block.returnFeesTotal() - sp;
+                                const sp = staking_block.returnFeesTotal() / BigInt(2);
+                                const rp = staking_block.returnFeesTotal() - sp;
 
-                                let block_payout = {
+                                const block_payout = {
                                     miner: "",
                                     staker: "",
                                     router: "",
@@ -570,7 +570,7 @@ export default class Block {
                                 next_random_number = this.app.crypto.hash(next_random_number);
                                 next_random_number = this.app.crypto.hash(next_random_number);
 
-                                let staker_slip = this.app.staking.findWinningStaker(next_random_number);
+                                const staker_slip = this.app.staking.findWinningStaker(next_random_number);
                                 if (staker_slip) {
                                     let slip_was_spent = 0;
 
@@ -588,7 +588,7 @@ export default class Block {
                                     //
                                     // check to see if staker slip already spent/withdrawn
                                     //
-                                    if (!!this.slips_spent_this_block[staker_slip.returnKey()]) {
+                                    if (this.slips_spent_this_block[staker_slip.returnKey()]) {
                                         slip_was_spent = 1;
                                     }
 
@@ -616,13 +616,13 @@ export default class Block {
             // now create fee transaction using the block payouts
             //
             let slip_ordinal = 0;
-            let transaction = new saito.transaction();
+            const transaction = new saito.transaction();
 
             transaction.transaction.type = TransactionType.Fee;
 
             for (let i = 0; i < cv.block_payouts.length; i++) {
                 if (cv.block_payout[i].miner !== "") {
-                    let output = new saito.slip();
+                    const output = new saito.slip();
                     output.add = cv.block_payout[i].miner;
                     output.amt = cv.block_payout[i].miner_payout;
                     output.type = SlipType.MinerOutput;
@@ -631,7 +631,7 @@ export default class Block {
                     slip_ordinal += 1;
                 }
                 if (cv.block_payout[i].router !== "") {
-                    let output = new saito.slip();
+                    const output = new saito.slip();
                     output.add = cv.block_payout[i].router;
                     output.amt = cv.block_payout[i].router_payout;
                     output.type = SlipType.RouterOutput;
@@ -640,7 +640,7 @@ export default class Block {
                     slip_ordinal += 1;
                 }
                 if (cv.block_payout[i].staker !== "") {
-                    let output = new saito.slip();
+                    const output = new saito.slip();
                     output.add = cv.block_payout[i].staker;
                     output.amt = cv.block_payout[i].staker_payout;
                     output.type = SlipType.StakerOutput;
@@ -669,10 +669,10 @@ export default class Block {
                     break;
                 }
 
-                let bid = this.returnId() - i;
-                let previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
+                const bid = this.returnId() - i;
+                const previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
                 if (previous_block_hash !== "") {
-                    let previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
+                    const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
                     if (previous_block) {
                         if (previous_block.hasGoldenTicket()) {
                             break;
@@ -706,9 +706,9 @@ export default class Block {
         let previous_block_burnfee = BigInt(0);
         let previous_block_treasury = BigInt(0);
         let previous_block_staking_treasury = BigInt(0);
-        let current_timestamp = new Date().getTime();
+        const current_timestamp = new Date().getTime();
 
-        let previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
+        const previous_block = await mempool.app.blockchain.loadBlockAsync(previous_block_hash);
 
         if (previous_block) {
             previous_block_id = previous_block.block.id;
@@ -719,7 +719,7 @@ export default class Block {
             previous_block_staking_treasury = previous_block.block.staking_treasury;
         }
 
-        let current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, current_timestamp, previous_block_timestamp);
+        const current_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block_burnfee, current_timestamp, previous_block_timestamp);
 
         //
         // set our values
@@ -751,7 +751,7 @@ export default class Block {
         console.log("how many gts to check? " + mempool.mempool.golden_tickets.length);
         for (let i = 0; i < mempool.mempool.golden_tickets.length; i++) {
             console.log("checking GT: " + i);
-            let gt = this.app.goldenticket.deserializeFromTransaction(mempool.mempool.golden_tickets[i]);
+            const gt = this.app.goldenticket.deserializeFromTransaction(mempool.mempool.golden_tickets[i]);
             console.log("comparing " + gt.target_hash + " -- " + previous_block_hash);
             if (gt.target_hash === previous_block_hash) {
                 console.log("ADDING GT TX TO BLOCK");
@@ -766,12 +766,12 @@ export default class Block {
         //
         // contextual values
         //
-        let cv = await this.generateConsensusValues();
+        const cv = await this.generateConsensusValues();
 
         //
         // ATR transactions - TODO, make more efficient?
         //
-        let rlen = cv.rebroadcasts.length;
+        const rlen = cv.rebroadcasts.length;
         for (let i = 0; i < rlen; i++) {
             cv.rebroadcasts[i].generateMetadata(this.app.wallet.returnPublicKey());
             this.transactions.push(cv.rebroadcasts[i]);
@@ -822,7 +822,7 @@ export default class Block {
         if (cv.staking_treasury !== BigInt(0)) {
             let adjusted_staking_treasury = previous_block_staking_treasury;
             if (cv.staking_treasury < 0) {
-                let x = cv.staking_treasury * BigInt(-1);
+                const x = cv.staking_treasury * BigInt(-1);
                 if (adjusted_staking_treasury > x) {
                     adjusted_staking_treasury -= x;
                 } else {
@@ -863,7 +863,7 @@ export default class Block {
         // publickey of the block creator when we calculate the fees
         // and the routing work.
         //
-        let creator_publickey = this.returnCreator();
+        const creator_publickey = this.returnCreator();
         this.transactions.map(tx => tx.generateMetadata());
 
         //
@@ -892,7 +892,7 @@ export default class Block {
         //
         for (let i = 0; i < this.transactions.length; i++) {
 
-            let transaction = this.transactions[i];
+            const transaction = this.transactions[i];
 
             cumulative_fees = transaction.generateMetadataCumulativeFees();
             cumulative_work = transaction.generateMetadataCumulativeWork();
@@ -914,7 +914,7 @@ export default class Block {
 
                 if (transaction.transaction.type !== TransactionType.Fee) {
                     for (let i = 0; i < transaction.transaction.from.length; i++) {
-                        let key = transaction.transaction.from[i].returnKey();
+                        const key = transaction.transaction.from[i].returnKey();
                         this.slips_spent_this_block[key] = 1;
                     }
                     this.has_hashmap_of_slips_spent_this_block = true;
@@ -940,11 +940,11 @@ export default class Block {
                 case TransactionType.ATR: {
 
                     // TODO : move to another method
-                    let bytes = Buffer.concat([Buffer.from(this.rebroadcast_hash, "hex"), transaction.serializeForSignature(this.app)]);
+                    const bytes = Buffer.concat([Buffer.from(this.rebroadcast_hash, "hex"), transaction.serializeForSignature(this.app)]);
                     this.rebroadcast_hash = this.app.crypto.hash(bytes.toString());
 
                     for (let i = 0; i < transaction.transaction.from.length; i++) {
-                        let input = transaction.transaction.from[i];
+                        const input = transaction.transaction.from[i];
                         this.total_rebroadcast_slips += 1;
                         this.total_rebroadcast_nolan += input.returnAmount();
                     }
@@ -988,7 +988,7 @@ export default class Block {
     }
 
     onChainReorganization(lc) {
-        let block_id = this.returnId();
+        const block_id = this.returnId();
         for (let i = 0; i < this.transactions.length; i++) {
             this.transactions[i].onChainReorganization(this.app, lc, block_id);
         }
@@ -1113,7 +1113,7 @@ export default class Block {
 
         while (mr === "") {
 
-            let tx2 = [];
+            const tx2 = [];
 
             if (txs.length <= 2) {
                 if (txs.length === 1) {
@@ -1167,34 +1167,34 @@ export default class Block {
         //
         // ensure strings have appropriate number of bytes if empty
         //
-        let block_previous_block_hash = this.block.previous_block_hash;
+        const block_previous_block_hash = this.block.previous_block_hash;
         // if (block_previous_block_hash === "") { block_previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"; }
 
         //
         // TODO - there is a cleaner way to do this
         //
-        let block_merkle = this.block.merkle;
-        let block_creator = this.block.creator;
-        let block_signature = this.block.signature;
+        const block_merkle = this.block.merkle;
+        const block_creator = this.block.creator;
+        const block_signature = this.block.signature;
 
         let transactions_length = this.app.binary.u32AsBytes(0);
         if (this.transactions.length > 0) {
             transactions_length = this.app.binary.u32AsBytes(this.transactions.length);
         }
-        let id = this.app.binary.u64AsBytes(this.block.id);
-        let timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
+        const id = this.app.binary.u64AsBytes(this.block.id);
+        const timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
 
-        let previous_block_hash = this.app.binary.hexToSizedArray(block_previous_block_hash, 32);
-        let creator = this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(block_creator).toString(), 33);
-        let merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
-        let signature = this.app.binary.hexToSizedArray(block_signature, 64);
+        const previous_block_hash = this.app.binary.hexToSizedArray(block_previous_block_hash, 32);
+        const creator = this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(block_creator).toString(), 33);
+        const merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
+        const signature = this.app.binary.hexToSizedArray(block_signature, 64);
 
-        let treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
-        let staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
-        let burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
-        let difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
+        const treasury = this.app.binary.u64AsBytes(this.block.treasury.toString());
+        const staking_treasury = this.app.binary.u64AsBytes(this.block.staking_treasury.toString());
+        const burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
+        const difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
-        let block_header_data = new Uint8Array([
+        const block_header_data = new Uint8Array([
             ...transactions_length,
             ...id,
             ...timestamp,
@@ -1210,7 +1210,7 @@ export default class Block {
 
 
         if (block_type === BlockType.Header) {
-            let ret = new Uint8Array(BLOCK_HEADER_SIZE);
+            const ret = new Uint8Array(BLOCK_HEADER_SIZE);
             ret.set(block_header_data, 0);
             return ret;
         }
@@ -1219,14 +1219,14 @@ export default class Block {
         // add transactions for FULL blocks
         //
         let total_tx_length = 0;
-        let transactions = [];
+        const transactions = [];
         for (let i = 0; i < this.transactions.length; i++) {
-            let next_tx_data = this.transactions[i].serialize(this.app);
+            const next_tx_data = this.transactions[i].serialize(this.app);
             total_tx_length += next_tx_data.length;
             transactions.push(next_tx_data);
         }
 
-        let ret = new Uint8Array(BLOCK_HEADER_SIZE + total_tx_length);
+        const ret = new Uint8Array(BLOCK_HEADER_SIZE + total_tx_length);
         ret.set(block_header_data, 0);
         let next_tx_location = BLOCK_HEADER_SIZE;
         for (let i = 0; i < transactions.length; i++) {
@@ -1263,7 +1263,7 @@ export default class Block {
         // TODO - lite-client validation
         //
         if (this.app.BROWSER == 1) {
-            let cv = await this.generateConsensusValues();
+            const cv = await this.generateConsensusValues();
             return true;
         }
 
@@ -1287,7 +1287,7 @@ export default class Block {
         //
         // generate consensus values
         //
-        let cv = await this.generateConsensusValues();
+        const cv = await this.generateConsensusValues();
 
 
         //
@@ -1301,7 +1301,7 @@ export default class Block {
         //
         // checks against previous block
         //
-        let previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
+        const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
         if (previous_block) {
 
 
@@ -1318,9 +1318,9 @@ export default class Block {
             // staking treasury
             //
             let adjusted_staking_treasury = previous_block.returnStakingTreasury();
-            let cv_st = cv.staking_treasury;
+            const cv_st = cv.staking_treasury;
             if (cv_st < BigInt(0)) {
-                let x = cv_st * BigInt(-1);
+                const x = cv_st * BigInt(-1);
                 if (adjusted_staking_treasury < x) {
                     adjusted_staking_treasury = adjusted_staking_treasury - x;
                 } else {
@@ -1338,7 +1338,7 @@ export default class Block {
             //
             // burn fee
             //
-            let new_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block.returnBurnFee(),
+            const new_burnfee = this.app.burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(previous_block.returnBurnFee(),
                 this.returnTimestamp(),
                 previous_block.returnTimestamp()
             );
@@ -1351,7 +1351,7 @@ export default class Block {
             //
             // validate routing work required
             //
-            let amount_of_routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(previous_block.returnBurnFee(),
+            const amount_of_routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(previous_block.returnBurnFee(),
                 this.returnTimestamp(),
                 previous_block.returnTimestamp()
             );
@@ -1377,11 +1377,13 @@ export default class Block {
             //
             if (cv.gt_idx > 0) {
 
-                let golden_ticket_transaction = this.transactions[cv.gt_idx];
-                let gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
+                const golden_ticket_transaction = this.transactions[cv.gt_idx];
+                const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
                 // TODO : couldn't find these methods anywhere. might want to implement or remove these
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                let solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_hash, gt.creator);
+                const solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_hash, gt.creator);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 if (!this.app.goldenticket.isValidSolution(solution, previous_block.returnDifficulty())) {
                     console.log("ERROR 801923: golden ticket included in block is invalid");
@@ -1451,7 +1453,7 @@ export default class Block {
                 return false;
             }
 
-            let fee_transaction = this.transactions[cv.ft_idx];
+            const fee_transaction = this.transactions[cv.ft_idx];
 
             //
             // the fee transaction we receive from the CV needs to be updated with
@@ -1460,8 +1462,8 @@ export default class Block {
             //
             cv.fee_transaction.generateMetadata(this.returnCreator());
 
-            let hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app).toString());
-            let hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
+            const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app).toString());
+            const hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
 
             if (hash1 !== hash2) {
                 console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
@@ -1515,7 +1517,7 @@ export default class Block {
         // debugging output works.
         //
         for (let i = 0; i < this.transactions.length; i++) {
-            let is_valid = this.transactions[i].validate(this.app);
+            const is_valid = this.transactions[i].validate(this.app);
             if (!is_valid) {
                 console.log("ERROR 579128: transaction is invalid");
                 return false;
@@ -1542,7 +1544,7 @@ export default class Block {
         //
         if (block_type === "Full") {
 
-            let block: Block = await this.app.storage.loadBlockByFilename(this.app.storage.generateBlockFilename(this));
+            const block: Block = await this.app.storage.loadBlockByFilename(this.app.storage.generateBlockFilename(this));
             block.generateHashes();
 
             this.transactions = block.transactions;

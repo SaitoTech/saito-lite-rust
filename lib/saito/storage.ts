@@ -1,15 +1,16 @@
 import Block from "./block";
 import {Saito} from "../../apps/core";
 
-const saito = require('./saito');
-const JSON = require('json-bigint');
+import saito from "./saito";
+
+import * as JSON from "json-bigint";
 
 export default class Storage {
     public app: Saito;
     public active_tab: any;
 
-    constructor(app) {
-        this.app = app || {};
+    constructor(app: Saito) {
+        this.app = app;
         this.active_tab = 1; 		// TODO - only active tab saves, move to Browser class
     }
 
@@ -21,12 +22,12 @@ export default class Storage {
 
     async loadOptions() {
         if (typeof (Storage) !== "undefined") {
-            let data = localStorage.getItem("options");
+            const data = localStorage.getItem("options");
             if (data != "null" && data != null) {
                 this.app.options = JSON.parse(data);
             } else {
                 try {
-                    let response = await fetch(`/options`);
+                    const response = await fetch(`/options`);
                     this.app.options = await response.json();
                     this.saveOptions();
                 } catch (err) {
@@ -38,8 +39,8 @@ export default class Storage {
 
     loadTransactions(type = "all", num = 50, mycallback) {
 
-        let message = "archive";
-        let data = {
+        const message = "archive";
+        const data = {
             request: "load",
             publickey: this.app.wallet.returnPublicKey(),
             type: type,
@@ -59,10 +60,14 @@ export default class Storage {
 
     }
 
+    returnClientOptions(): any {
+        return null;
+    }
+
     loadTransactionsByKeys(keys, type = "all", num = 50, mycallback) {
 
-        let message = "archive";
-        let data = {
+        const message = "archive";
+        const data = {
             request: "load_keys",
             keys: keys,
             type: type,
@@ -98,7 +103,7 @@ export default class Storage {
 
     async resetOptions() {
         try {
-            let response = await fetch(`/options`);
+            const response = await fetch(`/options`);
             this.app.options = await response.json();
             this.saveOptions();
         } catch (err) {
@@ -138,16 +143,17 @@ export default class Storage {
 
     saveTransaction(tx) {
 
-        let txmsg = tx.returnMessage();
+        const txmsg = tx.returnMessage();
 
-        let message = "archive";
-        let data = {
+        const message = "archive";
+        const data = {
             request: "save",
             tx: tx,
             type: txmsg.module
         };
 
-        this.app.network.sendRequestWithCallback(message, data, function (res) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        this.app.network.sendRequestWithCallback(message, data, res => {
         });
 
     }
@@ -155,16 +161,17 @@ export default class Storage {
 
     saveTransactionByKey(key, tx) {
 
-        let txmsg = tx.returnMessage();
+        const txmsg = tx.returnMessage();
 
-        let message = "archive";
-        let data = {
+        const message = "archive";
+        const data = {
             request: "save_key",
             tx: tx,
             key: key,
             type: txmsg.module
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.app.network.sendRequestWithCallback(message, data, function (res) {
         });
 
@@ -174,15 +181,19 @@ export default class Storage {
     /**
      * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
      **/
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     deleteBlockFromDisk(filename) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockById(bid) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockByHash(bsh) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockFromDisk(filename) {
     }
 
@@ -190,6 +201,7 @@ export default class Storage {
         return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async loadBlocksFromDisk(maxblocks = 0) {
     }
 
@@ -201,6 +213,7 @@ export default class Storage {
         return "";
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     saveClientOptions() {
     }
 
@@ -208,15 +221,19 @@ export default class Storage {
         return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async returnBlockFilenameByHash(block_hash, mycallback) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     returnBlockFilenameByHashPromise(block_hash) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async queryDatabase(sql, params, database) {
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async executeDatabase(sql, params, database, mycallback = null) {
     }
 

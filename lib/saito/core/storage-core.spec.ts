@@ -10,10 +10,10 @@ test("write_read_empty_block_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -21,14 +21,14 @@ test("write_read_empty_block_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let block = new saito.block(mockApp);
+    const block = new saito.block(mockApp);
     block.generateMetadata();
 
-    let storage = new Storage(mockApp);
-    let result = await storage.saveBlock(block);
+    const storage = new Storage(mockApp);
+    const result = await storage.saveBlock(block);
     expect(result).toBeTruthy();
 
-    let block2 = await storage.loadBlockFromDisk(result);
+    const block2 = await storage.loadBlockFromDisk(result);
     expect(block2).toBeTruthy();
     expect(block2.block.id).toEqual(block.block.id);
     expect(block2.hash).toEqual(block.hash);
@@ -39,11 +39,11 @@ test("write_read_block_with_data_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
-    let wallet = new saito.wallet(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -55,7 +55,7 @@ test("write_read_block_with_data_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let block = new saito.block(mockApp);
+    const block = new saito.block(mockApp);
     block.block.id = 10;
     block.block.timestamp = 1637034582666;
     block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -68,7 +68,7 @@ test("write_read_block_with_data_to_file", async () => {
     block.block.signature =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
-    let tx = new saito.transaction();
+    const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = saito.transaction.TransactionType.ATR;
     tx.transaction.sig =
@@ -77,11 +77,11 @@ test("write_read_block_with_data_to_file", async () => {
 
     block.generateMetadata();
 
-    let storage = new Storage(mockApp);
-    let result = await storage.saveBlock(block);
+    const storage = new Storage(mockApp);
+    const result = await storage.saveBlock(block);
     expect(result).toBeTruthy();
 
-    let block2 = await storage.loadBlockFromDisk(result);
+    const block2 = await storage.loadBlockFromDisk(result);
     expect(block2).toBeTruthy();
     expect(block2.block.id).toEqual(block.block.id);
     expect(block2.block.timestamp).toEqual(block.block.timestamp);
@@ -99,7 +99,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     expect(block2.transactions.length).toEqual(block.transactions.length);
 
-    let tx2 = block2.transactions[0];
+    const tx2 = block2.transactions[0];
     expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
     expect(tx2.transaction.type).toEqual(tx.transaction.type);
     expect(tx2.transaction.sig).toEqual(tx.transaction.sig);
@@ -107,10 +107,10 @@ test("write_read_block_with_data_to_file", async () => {
 
 test.skip("read_block_from_disk (from rust generated block)", async () => {
     // @ts-ignore
-    let mockApp: Saito = {};
-    let networkApi = new saito.networkApi(mockApp);
-    let crypto = new saito.crypto(mockApp);
-    let binary = new saito.binary(mockApp);
+    const mockApp: Saito = {};
+    const networkApi = new saito.networkApi(mockApp);
+    const crypto = new saito.crypto(mockApp);
+    const binary = new saito.binary(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -118,11 +118,11 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    let storage = new saito.storage(mockApp);
+    const storage = new saito.storage(mockApp);
 
-    let block = new saito.block(mockApp);
+    const block = new saito.block(mockApp);
 
-    let block2 = await storage.loadBlockFromDisk("./data/blocks/0000017d22813455-bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b.sai");
+    const block2 = await storage.loadBlockFromDisk("./data/blocks/0000017d22813455-bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b.sai");
     console.log(process.cwd())
     expect(block2).toBeTruthy();
     expect(block2.block.id).toEqual(block.block.id);

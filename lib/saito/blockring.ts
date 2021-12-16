@@ -33,9 +33,9 @@ export default class Blockring {
 
     addBlock(block) {
         console.debug("blockring.addBlock : " + block.hash);
-        let insert_pos = block.returnId() % this.ring_buffer_length;
-        let block_id = block.returnId();
-        let block_hash = block.returnHash();
+        const insert_pos = block.returnId() % this.ring_buffer_length;
+        const block_id = block.returnId();
+        const block_hash = block.returnHash();
         if (!this.containsBlockHashAtBlockId(block_id, block_hash)) {
             this.ring[insert_pos].block_hashes.push(block_hash);
             this.ring[insert_pos].block_ids.push(block_id);
@@ -43,33 +43,32 @@ export default class Blockring {
     }
 
     containsBlockHashAtBlockId(block_id, block_hash) {
-        console.debug("containsBlockHashAtBlockId", arguments);
-        let insert_pos = block_id % this.ring_buffer_length;
+        const insert_pos = block_id % this.ring_buffer_length;
         console.debug("block hashes", this.ring[insert_pos].block_hashes);
         return this.ring[insert_pos].block_hashes.includes(block_hash);
     }
 
     deleteBlock(block) {
-        let insert_pos = block.returnId() % this.ring_buffer_length;
-        let block_id = block.returnId();
-        let block_hash = block.returnHash();
+        const insert_pos = block.returnId() % this.ring_buffer_length;
+        const block_id = block.returnId();
+        const block_hash = block.returnHash();
         if (this.containsBlockHashAtBlockId(block_id, block_hash)) {
 
-            let new_block_hashes = [];
-            let new_block_ids = [];
+            const new_block_hashes = [];
+            const new_block_ids = [];
             let idx_loop = 0;
             let new_lc_pos = 0;
 
             for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
                 if (this.ring[insert_pos].block_ids[i] == block_id && this.ringp[insert_pos].block_hashes[i] == block_hash) {
-                } else {
-                    new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
-                    new_block_ids.push(this.ring[insert_pos].block_ids[i]);
-                    if (this.lc_pos == i) {
-                        new_lc_pos = idx_loop;
-                    }
-                    idx_loop += 1;
+                    continue;
                 }
+                new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
+                new_block_ids.push(this.ring[insert_pos].block_ids[i]);
+                if (this.lc_pos == i) {
+                    new_lc_pos = idx_loop;
+                }
+                idx_loop += 1;
             }
 
             this.ring[insert_pos].block_hashes = new_block_hashes;
@@ -92,7 +91,7 @@ export default class Blockring {
 
     onChainReorganization(block_id, block_hash, lc) {
 
-        let insert_pos = block_id % this.ring_buffer_length;
+        const insert_pos = block_id % this.ring_buffer_length;
 
         for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
             if (this.ring[insert_pos].block_hashes[i] === block_hash) {
@@ -115,8 +114,8 @@ export default class Blockring {
     }
 
     returnBlockHashesAtBlockId(block_id) {
-        let insert_pos = block_id % this.ring_buffer_length;
-        let v = [];
+        const insert_pos = block_id % this.ring_buffer_length;
+        const v = [];
         for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
             v.push(this.ring[insert_pos].block_hashes[i]);
         }
@@ -124,7 +123,7 @@ export default class Blockring {
     }
 
     returnLongestChainBlockHashAtBlockId(block_id) {
-        let insert_pos = block_id % this.ring_buffer_length;
+        const insert_pos = block_id % this.ring_buffer_length;
         if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
             return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
         }
@@ -152,7 +151,7 @@ export default class Blockring {
     }
 
     returnLatestBlock() {
-        let block_hash = this.returnLatestBlockHash();
+        const block_hash = this.returnLatestBlockHash();
         if (this.app.blockchain.isBlockIndexed(block_hash)) {
             return this.app.blockchain.blocks[block_hash];
         }
@@ -160,7 +159,7 @@ export default class Blockring {
     }
 
     returnLongestChainBlockHashByBlockId(block_id) {
-        let insert_pos = block_id % this.ring_buffer_length;
+        const insert_pos = block_id % this.ring_buffer_length;
         if (this.ring[insert_pos].block_hashes.length > this.ring[insert_pos].lc_pos) {
             return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
         }

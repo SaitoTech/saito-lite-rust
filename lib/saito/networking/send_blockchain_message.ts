@@ -3,7 +3,7 @@ import {Saito} from "../../../apps/core";
 export enum SyncType {
     Full = 0,
     Lite = 1,
-};
+}
 
 const BlockchainBlockDataSize = 84;
 
@@ -38,18 +38,18 @@ export default class SendBlockchainMessage {
 
     static deserialize(bytes, app) {
         console.debug("SendBlockchainMessage.deserialize", bytes);
-        let sync_type = Number(bytes[0]);
-        let starting_hash = Buffer.from(bytes.slice(1, 33));
-        let blocks_data_len = app.binary.u32FromBytes(Buffer.from(bytes.slice(33, 37)));
-        let blocks_data = [];
-        let start_of_block_data = 37;
+        const sync_type = Number(bytes[0]);
+        const starting_hash = Buffer.from(bytes.slice(1, 33));
+        const blocks_data_len = app.binary.u32FromBytes(Buffer.from(bytes.slice(33, 37)));
+        const blocks_data = [];
+        const start_of_block_data = 37;
         for (let i = 0; i < blocks_data_len; ++i) {
-            let start_of_data = start_of_block_data + i * BlockchainBlockDataSize;
-            let block_id = app.binary.u64FromBytes(bytes.slice(start_of_data, start_of_data + 8));
-            let block_hash = Buffer.from(bytes.slice(start_of_data + 8, start_of_data + 40));
-            let timestamp = Number(app.binary.u64FromBytes(bytes.slice(start_of_data + 40, start_of_data + 48)));
-            let pre_hash = Buffer.from(bytes.slice(start_of_data + 48, start_of_data + 80));
-            let number_of_transactions = app.binary.u32FromBytes(bytes.slice(start_of_data + 80, start_of_data + 84));
+            const start_of_data = start_of_block_data + i * BlockchainBlockDataSize;
+            const block_id = app.binary.u64FromBytes(bytes.slice(start_of_data, start_of_data + 8));
+            const block_hash = Buffer.from(bytes.slice(start_of_data + 8, start_of_data + 40));
+            const timestamp = Number(app.binary.u64FromBytes(bytes.slice(start_of_data + 40, start_of_data + 48)));
+            const pre_hash = Buffer.from(bytes.slice(start_of_data + 48, start_of_data + 80));
+            const number_of_transactions = app.binary.u32FromBytes(bytes.slice(start_of_data + 80, start_of_data + 84));
 
             blocks_data.push(new SendBlockchainBlockData(block_id, block_hash, timestamp, pre_hash, number_of_transactions));
         }
@@ -62,7 +62,7 @@ export default class SendBlockchainMessage {
         let bytes = Buffer.concat([Buffer.from([this.app.binary.u8AsByte(this.sync_type)]),
             Buffer.from(this.starting_hash),
             Buffer.from(this.app.binary.u32AsBytes(this.blocks_data.length))]);
-        for (let block of this.blocks_data) {
+        for (const block of this.blocks_data) {
             bytes = Buffer.concat([bytes,
                 Buffer.from(this.app.binary.u64AsBytes(block.block_id)),
                 Buffer.from(block.block_hash),

@@ -18,9 +18,9 @@ class RequestBlockMessage {
     }
 
     static deserialize(bytes, app) {
-        let has_block_id = BlockIdMask & bytes[0];
-        let has_block_hash = BlockHashMask & bytes[0];
-        let has_sync_type = SyncTypeMask & bytes[0];
+        const has_block_id = BlockIdMask & bytes[0];
+        const has_block_hash = BlockHashMask & bytes[0];
+        const has_sync_type = SyncTypeMask & bytes[0];
 
         let block_id = undefined;
         let block_hash = undefined;
@@ -40,7 +40,7 @@ class RequestBlockMessage {
     }
 
     serialize() {
-        let array = [
+        const array = [
             Buffer.from([(this.block_id === undefined ? BlockIdMask : 0) + (this.block_hash === undefined ? BlockHashMask : 0) + (this.sync_type === undefined ? SyncTypeMask : 0)]),
         ];
         if (this.block_id !== undefined) {
@@ -62,4 +62,4 @@ class RequestBlockMessage {
     }
 }
 
-module.exports = RequestBlockMessage;
+export default RequestBlockMessage;
