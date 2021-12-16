@@ -6,7 +6,7 @@
 // the default if it exists and can be found.
 //
 if (typeof (Storage) !== "undefined") {
-
+ 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mySource = document.currentScript.src;

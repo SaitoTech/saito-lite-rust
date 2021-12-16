@@ -1,26 +1,26 @@
 const path = require('path');
 const webpack = require('webpack');
 
-let devtool = false;
-let entrypoint = './../bundler/default/apps/lite/index.js';
+let devtool = "source-map";
+let entrypoint = './../bundler/default/apps/lite/index.ts';
 let outputfile = 'saito.js';
-if(process.argv.includes("dev")) {
-  devtool = "cheap-module-eval-source-map";
+if (process.argv.includes("dev")) {
+    devtool = "cheap-module-eval-source-map";
 }
-if(process.argv.includes("web3")) {
-  //TODO: build a separate saito.js for web3
-  entrypoint = './../bundler/default/apps/lite/web3index.js';
-  outputfile = 'web3saito.js';
+if (process.argv.includes("web3")) {
+    //TODO: build a separate saito.js for web3
+    entrypoint = './../bundler/default/apps/lite/web3index.ts';
+    outputfile = 'web3saito.js';
 }
 webpack({
-  optimization: {
-     minimize: true
-  },
-  target: 'web',
-  node: {
-    fs: "empty",
-  },
-  externals: [
+    optimization: {
+        minimize: true
+    },
+    target: 'web',
+    node: {
+        fs: "empty",
+    },
+    externals: [
         {
             archiver: 'archiver'
         },
@@ -58,15 +58,23 @@ webpack({
         /\.zip$/,
         /\/web\//,
         /\/www\//
-  ],
-  // Path to your entry point. From this file Webpack will begin his work
-  entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
-  output: {
-    path: path.resolve(__dirname, './../web/saito'),
-    filename: outputfile
-  },
-  module: {
+    ],
+    // Path to your entry point. From this file Webpack will begin his work
+    entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
+    output: {
+        path: path.resolve(__dirname, './../web/saito'),
+        filename: outputfile
+    },
+    resolve: {
+        // Add '.ts' and '.tsx' as resolvable extensions.
+        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+    },
+    module: {
         rules: [
+            // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
+            {test: /\.tsx?$/, loader: "ts-loader"},
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {test: /\.js$/, loader: "source-map-loader"},
             {
                 test: /\.mjs$/,
                 include: /(node_modules)/,
@@ -74,7 +82,7 @@ webpack({
             },
             {
                 test: /html$/,
-                exclude: [ /(mods)/, /(email)/ ],
+                exclude: [/(mods)/, /(email)/],
             },
             {
                 test: /\.js$/,
@@ -103,7 +111,7 @@ webpack({
                     publicPath: "dist/"
                 }
             },
-	    {
+            {
                 test: /\.zip$/,
                 exclude: [
                     path.resolve(__dirname, '../mods/appstore/bundler'),
@@ -111,23 +119,23 @@ webpack({
                 ]
             },
         ]
-  },
+    },
 
-  mode: 'production',
-  devtool: devtool,
+    mode: 'production',
+    devtool: devtool,
 
-  }, (err, stats) => {
-  if (err || stats.hasErrors()) {
-    console.log(err);
-    if (stats) {
-      let info = stats.toJson();
-      console.log(info.errors);
+}, (err, stats) => {
+    if (err || stats.hasErrors()) {
+        console.log(err);
+        if (stats) {
+            let info = stats.toJson();
+            console.log(info.errors);
+        }
     }
-  }
-  //
-  // Done processing
-  //
-  console.log("Bundle Success!");
+    //
+    // Done processing
+    //
+    console.log("Bundle Success!");
 });
 
 

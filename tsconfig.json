@@ -20,6 +20,7 @@
   ],
   "include": [
     "./lib/**/*",
-    "start.ts"
+    "start.ts",
+    "./bundler/default/apps/**/*"
   ]
 }

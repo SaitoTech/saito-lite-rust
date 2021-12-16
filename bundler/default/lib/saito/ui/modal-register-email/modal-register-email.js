@@ -17,18 +17,18 @@ class ModalRegisterEmail {
     }
 
     render(app, mod, mode=MODES.NEWSLETTER) {
-      this.mode = mode;  
+      this.mode = mode;
       this.modal_overlay_email = new SaitoOverlay(app);
       this.modal_overlay_email.render(app, mod);
       this.modal_overlay_email.attachEvents(app, mod);
 
-      if (!document.querySelector(".add-user")) { 
+      if (!document.querySelector(".add-user")) {
         this.modal_overlay_email.showOverlay(app, mod, ModalRegisterEmailTemplate(mode, MODES));
       }
-      
-      
+
+
     }
-    
+
     attachEvents(app, mod) {
 
       document.querySelectorAll('.tutorial-skip').forEach( el => {
@@ -73,7 +73,7 @@ class ModalRegisterEmail {
       if (!re.test(String(submitted_email).toLowerCase()) || submitted_email === "email@domain.com") {
         salert("Invalid email address!");
         return false;
-      };
+      }
       return true;
     }
     sendServiceRequest(submitted_email, request_type) {
@@ -97,7 +97,7 @@ class ModalRegisterEmail {
             }
           });
         },
-        
+
       );
     }
     doRegisterEmail(app, mod, submitted_email, subscribe_newsletter) {

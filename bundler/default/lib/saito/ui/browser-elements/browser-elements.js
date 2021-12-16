@@ -283,7 +283,7 @@ if (typeof window !== "undefined") {
     el.classList.add('saito-slct');
     el.parentNode.insertBefore(wrapper, el);
     wrapper.appendChild(el);
-  };
+  }
 
   window.addStyleSheet = function (fileName) {
     var head = document.head;
@@ -442,4 +442,4 @@ if (typeof window !== "undefined") {
 
   };
 
-};
+}

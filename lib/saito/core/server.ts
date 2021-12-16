@@ -352,7 +352,7 @@ export default class Server {
         });
 
 
-        app.get('/saito/saito.js', function (req, res) {
+        app.get('/saito/saito.js', (req, res) => {
 
             //
             // may be useful in the future, if we gzip
