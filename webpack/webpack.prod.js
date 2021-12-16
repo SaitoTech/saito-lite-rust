@@ -18,7 +18,7 @@ webpack({
     },
     target: 'web',
     node: {
-        fs: "empty",
+        // fs: "empty",
     },
     externals: [
         {
