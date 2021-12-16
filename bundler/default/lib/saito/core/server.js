@@ -64,7 +64,6 @@ class Server {
 
             console.log("new connection received by server", request);
             this.app.network.addRemotePeer(wsocket);
-            this.app.networkApi.initiateHandshake(wsocket);
 
         });
     }

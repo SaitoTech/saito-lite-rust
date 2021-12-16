@@ -23,6 +23,7 @@ class Saito {
     this.connection   = new saito_lib.connection();
     this.browser      = new saito_lib.browser(this);
     this.storage      = new saito_lib.storage(this);
+    this.handshake    = new saito_lib.handshake(this);
     this.goldenticket = new saito_lib.goldenticket(this);
     this.utxoset      = new saito_lib.utxoset(this);
     this.mempool      = new saito_lib.mempool(this);

@@ -171,6 +171,12 @@ class Network {
         this.peers.push(peer);
         this.peers_connected++;
 
+	//
+	//
+	//
+        this.app.handshake.initiateHandshake(socket);
+
+
         return peer;
     }
 
@@ -225,7 +231,7 @@ class Network {
 
             peer.socket.onopen = (event) => {
                 console.log("connected to network", event);
-                this.app.networkApi.initiateHandshake(peer.socket);
+                this.app.handshake.initiateHandshake(peer.socket);
             };
             peer.socket.onclose = (event) => {
                 console.log(`[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`);
@@ -237,7 +243,6 @@ class Network {
             peer.socket.onmessage = async (event) => {
                 let data = await event.data.arrayBuffer();
                 let api_message = this.app.networkApi.deserializeAPIMessage(data);
-console.log("received an abstract message over the network... handling");
                 if (api_message.message_name === "RESULT__") {
                     this.app.networkApi.receiveAPIResponse(api_message);
                 } else if (api_message.message_name === "ERROR___") {
@@ -267,7 +272,7 @@ console.log("received an abstract message over the network... handling");
 	    // default ws websocket
 	    //
             peer.socket.on('open', async (event) => {
-                await this.app.networkApi.initiateHandshake(peer.socket);
+                await this.app.handshake.initiateHandshake(peer.socket);
             });
             peer.socket.on('close', (event) => {
                 console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
@@ -399,6 +404,34 @@ console.log("received an abstract message over the network... handling");
 
     }
 
+
+    isPrivateNetwork() {
+        for (let i = 0; i < this.peers.length; i++) {
+            if (this.peers[i].isConnected()) {
+                return false;
+            }
+        }
+        if (this.app.options.peers != null) {
+            return false;
+        }
+        return true;
+    }
+
+    isProductionNetwork() {
+        if (this.app.BROWSER === 0) {
+            // no peers, ok?
+            if (this.peers.length === 0) {
+                return true;
+            }
+            return process.env.NODE_ENV === 'prod'
+        } else {
+            return false
+        }
+    }
+
+
+
+
     async receivePeerRequest(peer, message) {
 
 	let block;
@@ -412,7 +445,7 @@ console.log("Received Peer Message: " + message.message_name);
 
             case "SHAKINIT":
 
-                challenge = await peer.buildSerializedChallenge(message);
+                challenge = await this.app.handshake.handleIncomingHandshakeRequest(peer, message.message_data);
                 await peer.sendResponse(message.message_id, challenge);
                 break;
 
@@ -588,30 +621,6 @@ console.log("received block hash: " + block_hash);
         this.dead_peers = [];
     }
 
-
-    isPrivateNetwork() {
-        for (let i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].isConnected()) {
-                return false;
-            }
-        }
-        if (this.app.options.peers != null) {
-            return false;
-        }
-        return true;
-    }
-
-    isProductionNetwork() {
-        if (this.app.BROWSER === 0) {
-            // no peers, ok?
-            if (this.peers.length === 0) {
-                return true;
-            }
-            return process.env.NODE_ENV === 'prod'
-        } else {
-            return false
-        }
-    }
 
 
     //
