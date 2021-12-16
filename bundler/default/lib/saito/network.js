@@ -2,15 +2,6 @@ const saito = require('./saito');
 const JSON = require('json-bigint');
 const fetch = require('node-fetch');
 const {set} = require('numeral');
-const Base58 = require("base-58");
-const secp256k1 = require('secp256k1');
-
-//const SendBlockHeadMessage = require("./networking/send_block_head_message");
-//const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
-//const RequestBlockMessage = require("./networking/request_block_message");
-//const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
-//const RequestBlockchainMessage = require("./networking/request_blockchain_message");
-//const SendBlockchainMessage = require("./networking/send_blockchain_message");
 
 class Network {
 
@@ -459,8 +450,6 @@ class Network {
 	let is_block_indexed;
 	let tx;
 
-console.log("Received Peer Message: " + message.message_name);
-
 	switch (message.message_name) {
 
             case "SHAKINIT":
@@ -516,28 +505,18 @@ console.log("Received Peer Message: " + message.message_name);
 
 		let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(block_id, fork_id);
 
-console.log("we received a request to sync the blockchain with this info: ");
-console.log("block id: " + block_id);
-console.log("block hash: " + block_hash);
-console.log("fork_id: " + fork_id);
-console.log("last shared ancestor: " + last_shared_ancestor);
-
 		//
 		// notify peer of longest-chain after this amount
 		//
 		for (let i = last_shared_ancestor; i < this.app.blockring.returnLatestBlockId(); i++) {
-console.log("sending " + i);
 		    block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
 		    if (block_hash !== "") {
-console.log("block hash is " + block_hash);
 		        block = await this.app.blockchain.loadBlockAsync(block_hash);
 		        if (block) {
-console.log("and sending!");
 			    this.propagateBlock(block, peer);
 			}
 		    }
 		}
-
 
 		break;
 
@@ -581,8 +560,6 @@ console.log("and sending!");
 
 		block_hash = Buffer.from(message.message_data, 'hex').toString('hex');;
 
-console.log("received block: " + block_hash);
-
                 is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
                 if (is_block_indexed) {
                     console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
@@ -621,8 +598,6 @@ console.log("received block: " + block_hash);
 
 
             case "SENDMESG":
-
-		console.log("received SENDMESG application message...");
 
 	        let mdata;
         	let reconstructed_obj;
@@ -813,11 +788,6 @@ console.log("received block: " + block_hash);
        let latest_block_id = this.app.blockring.returnLatestBlockId(); 
        let latest_block_hash = this.app.blockring.returnLatestBlockHash(); 
        let fork_id = this.app.blockchain.blockchain.fork_id;
-
-console.log("about to request blockchain: ");
-console.log("block id: " + latest_block_id);
-console.log("block hash: " + latest_block_hash);
-console.log("fork_id: " + fork_id);
 
        let buffer_to_send = Buffer.concat([this.app.binary.u64AsBytes(latest_block_id), Buffer.from(latest_block_hash, 'hex'), Buffer.from(fork_id, 'hex')]);
 
