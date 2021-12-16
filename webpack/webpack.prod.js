@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
 
 let devtool = "source-map";
@@ -17,9 +19,9 @@ webpack({
         minimize: true
     },
     target: 'web',
-    node: {
-        // fs: "empty",
-    },
+    // node: {
+    //     fs: "empty",
+    // },
     externals: [
         {
             archiver: 'archiver'
