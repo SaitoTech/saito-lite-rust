@@ -2,16 +2,16 @@ const io = require('socket.io-client');
 const saito = require('./saito');
 const JSON = require('json-bigint');
 
-const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
+//const HandshakeChallengeMessage = require('./networking/handshake_challenge_message');
 const Network = require('./network');
 const Transaction = require('./transaction');
-const RequestBlockMessage = require("./networking/request_block_message");
+//const RequestBlockMessage = require("./networking/request_block_message");
 const Block = require("./block");
-const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
-const SendBlockchainMessage = require("./networking/send_blockchain_message");
-const RequestBlockchainMessage = require("./networking/request_blockchain_message");
+//const {SendBlockchainBlockData, SyncType} = require("./networking/send_blockchain_message");
+//const SendBlockchainMessage = require("./networking/send_blockchain_message");
+//const RequestBlockchainMessage = require("./networking/request_blockchain_message");
 
-const SendBlockHeadMessage = require("./networking/send_block_head_message");
+//const SendBlockHeadMessage = require("./networking/send_block_head_message");
 const fetch = require("node-fetch");
 
 class Peer {
@@ -147,219 +147,8 @@ class Peer {
     }
 
 
-    async handleApplicationMessage(msg) {
-
-        let mdata;
-        let reconstructed_obj;
-        let reconstructed_message = "";
-        let reconstructed_data = "";
-
-        try {
-            mdata = msg.message_data.toString();
-            reconstructed_obj = JSON.parse(mdata);
-            reconstructed_message = reconstructed_obj.message;
-            reconstructed_data = reconstructed_obj.data;
-        } catch (err) {
-            //try {
-            //} catch (err) {
-                console.log("Error reconstructing data: " + JSON.stringify(mdata));
-                console.error(err);
-	    //}
-        }
-
-        let message = {};
-        message.request = "";
-        message.data = {};
-
-        if (reconstructed_message) {
-            message.request = reconstructed_message;
-        }
-        if (reconstructed_data) {
-            message.data = reconstructed_data;
-        }
-        let peer = this;
-        let mycallback = function (response_object) {
-            peer.sendResponse(msg.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
-        }
-
-        switch (msg.message_name) {
-            case 'block':
-                console.log("old block request");
-                //this.handleBlockRequest(message);
-                break;
-            case 'missing block':
-                console.log("old missing block request");
-                //this.handleMissingBlockRequest(message, mycallback);
-                break;
-            case 'blockchain':
-                console.log("old blockchain request");
-                //this.handleBlockchainRequest(message);
-                break;
-            case 'transaction':
-                console.log("old transaction request");
-                //this.handleTransactionRequest(message, mycallback);
-                break;
-            case 'keylist':
-                console.log("old keyist request");
-                //this.handleKeylistRequest(message);
-                break;
-            default:
-                //
-                // if the attached data is a transaction, ensure MSG field exists
-                //
-                // transaction.msg included for backwards compatibility
-                //
-                if (reconstructed_data) {
-                    if (reconstructed_data.transaction) {
-                        if (reconstructed_data.transaction.m) {
-                            // backwards compatible - in case modules try the old fashioned way
-                            message.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
-                            message.data.msg = message.data.transaction.msg;
-                        }
-                    }
-                }
-
-                this.app.modules.handlePeerRequest(message, this, mycallback);
-                break;
-        }
-
-        //
-        // send callback?
-        //
-        // TODO : handle application messages here !!!
-
-    }
-
-    buildSerializedChallenge(message) {
-        //console.debug("buildSerializedChallenge", message);
-        let my_pubkey = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.wallet.publickey), 'hex');
-        let my_privkey = this.app.wallet.returnPrivateKey();
-
-        //console.log("public key", this.app.wallet.wallet.publickey);
-        //console.log("private key", this.app.wallet.wallet.privatekey);
-
-        let peer_octets = message.message_data.slice(0, 4);
-        let peer_pubkey = message.message_data.slice(4, 37);
-        let my_octets = Buffer.from([127, 0, 0, 1]);
-        let challenge = new HandshakeChallengeMessage(my_octets, my_pubkey, peer_octets, peer_pubkey, this.app);
-        let buffer = challenge.serializeWithSig(my_privkey);
-        //console.log("serialized challenge", buffer);
-        //console.log("serialized challenge length = " + buffer.length);
-        //console.log("public key : ", this.app.crypto.fromBase58(this.app.wallet.wallet.publickey));
-        return buffer;
-    }
-
-    socketHandshakeVerify(message_data) {
-        let challenge = HandshakeChallengeMessage.deserialize(message_data, this.app);
-        //console.debug("socketHandshakeVerify", challenge);
-        if (challenge.timestamp < Date.now() - Network.ChallengeExpirationTime) {
-            console.error("Error validating timestamp for handshake complete");
-            return null;
-        }
-        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize + 64)),
-                                        Buffer.from(challenge.opponent_node.sig).toString("hex"),
-                                        this.app.crypto.toBase58(Buffer.from(challenge.opponent_node.public_key).toString('hex'))
-        )) {
-            console.error("Error with validating opponent sig");
-            return null;
-        }
-        if (!this.app.crypto.verifyHash(this.app.crypto.hash(message_data.slice(0, Network.ChallengeSize)),
-                                        Buffer.from(challenge.challenger_node.sig).toString("hex"),
-                                        this.app.crypto.toBase58(Buffer.from(challenge.challenger_node.public_key).toString('hex'))
-        )) {
-            console.error("Error with validating challenger sig");
-            return null;
-        }
-        return challenge;
-    }
-
-    async buildRequestBlockResponse(message) {
-        let request_block_message = RequestBlockMessage.deserialize(message.message_data, this.app);
-        if (request_block_message.block_id) {
-            // TODO : port this correctly
-        } else if (request_block_message.block_hash) {
-            let block_hash = request_block_message.block_hash;
-
-            if (this.app.blockchain.getBlock(block_hash)) {
-                // TODO : handle APIMessage line here
-            } else {
-                // TODO : handle APIMessage line here
-            }
-        } else {
-            // TODO : handle APIMessage line here
-        }
-    }
-
-    buildRequestBlockchainMessage(latest_block_id, latest_block_hash, fork_id) {
-        //console.debug("buildRequestBlockchainMessage", arguments);
-        return new RequestBlockchainMessage(this.app, latest_block_id, latest_block_hash, fork_id);
-    }
-
-    /**
-     *
-     * @param {RequestBlockchainMessage} request_blockchain_message
-     * @returns Promise<SendBlockchainMessage>
-     */
-    async buildSendBlockchainMessage(request_blockchain_message) {
-        //console.debug("peer.buildSendBlockchainMessage", request_blockchain_message);
-
-        let block_zero_hash = Buffer.alloc(32, 0);
-
-        let peers_latest_hash = block_zero_hash;
-        if (request_blockchain_message.latest_block_id !== 0 ||
-            request_blockchain_message.latest_block_hash.toString("hex") !== block_zero_hash.toString("hex")) {
-            if (!this.app.blockchain.blockring.containsBlockHashAtBlockId(request_blockchain_message.latest_block_id,
-                                                                          request_blockchain_message.latest_block_hash.toString("hex")
-            )) {
-                console.log("block hash is not in the longest chain : " + request_blockchain_message.latest_block_hash.toString("hex"));
-                // The latest hash from our peer is not in the longest chain
-                return null;
-            }
-            peers_latest_hash = request_blockchain_message.latest_block_hash;
-        }
-
-        let blocks_data = [];
-        let latest_block = this.app.blockchain.returnLatestBlock();
-        if (latest_block) {
-            let previous_block_hash = latest_block.hash;
-            console.debug("previous_block_hash = " + previous_block_hash);
-
-            let this_block;
-            let block_count = 0;
-            while (!!previous_block_hash && previous_block_hash !== peers_latest_hash.toString("hex")
-            && block_count < this.app.blockchain.blockchain.genesis_period) {
-                console.debug("adding block hash : " + previous_block_hash);
-
-                block_count += 1;
-                this_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
-                blocks_data.push(new SendBlockchainBlockData(this_block.block.id,
-                                                             Buffer.from(this_block.hash, "hex"),
-                                                             this_block.block.timestamp,
-                                                             Buffer.alloc(32, 0),
-                                                             0
-                ));
-                previous_block_hash = this_block.block.previous_block_hash;
-            }
-            return new SendBlockchainMessage(SyncType.Full, Buffer.from(peers_latest_hash, "hex"), blocks_data, this.app);
-        } else {
-            //console.debug("No blocks in the blockchain");
-            return new SendBlockchainMessage(SyncType.Full, block_zero_hash, blocks_data, this.app);
-        }
-    }
-
     //
-    // we do not check socket conditions as the socket is open if we have received
-    // a response. on initialization it is possible for us not to know the socket
-    // is open yet, even though it is.
-    //
-    async sendResponseFromStr(message_id, data) {
-        await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, Buffer.from(data, 'utf-8'));
-    }
-
-    //
-    // we do not check socket conditions as the socket is open if we have received
-    // a response. on initialization it is possible for us not to know the socket
-    // is open yet, even though it is.
+    // no checks on socket state necessary when sending response
     //
     async sendResponse(message_id, data) {
         await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
@@ -389,6 +178,11 @@ class Peer {
 	// transaction as Transaction.serialize()
         if (message === "SNDTRANS") {
             this.app.networkApi.sendAPICall(this.socket, "SNDTRANS", data);
+            return;
+        }
+	// transaction as Transaction.serialize()
+        if (message === "REQCHAIN") {
+            this.app.networkApi.sendAPICall(this.socket, "REQCHAIN", data);
             return;
         }
 

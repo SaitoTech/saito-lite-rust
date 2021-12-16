@@ -667,6 +667,8 @@ class Blockchain {
         let mbid = my_latest_block_id;
         let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
+console.log("PLBI " + peer_latest_block_id);
+
         //
         // peer is further ahead
         //
