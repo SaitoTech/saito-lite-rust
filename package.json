@@ -5,7 +5,7 @@
   "main": "start.js",
   "scripts": {
     "start dev": "ts-node-dev --max_old_space_size=8144 start.ts",
-    "start": "NODE_ENV=prod node --max_old_space_size=8144 start.js",
+    "start": "NODE_ENV=prod node --max_old_space_size=8144 start.ts",
     "init": " ./compile init",
     "nuke": " ./compile nuke",
     "reset": " ./compile reset",

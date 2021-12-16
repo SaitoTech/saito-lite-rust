@@ -224,6 +224,10 @@ if [ "$1" == "init" ]; then
 fi
 
 
+echo "$1"
+echo "$2"
+echo "$3"
+
 
 if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
 
