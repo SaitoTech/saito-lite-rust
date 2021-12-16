@@ -1,4 +1,5 @@
 import * as Base58 from "base-58";
+import {Saito} from "../../apps/core";
 
 const crypto = require('crypto-browserify');
 const sha256 = require('sha256');
@@ -14,11 +15,11 @@ const stringify = require('fastest-stable-stringify');
  * Crypto Constructor
  */
 export default class Crypto {
-    public app: any;
+    public app: Saito;
 
     constructor(app) {
 
-        this.app = app || {};
+        this.app = app;
 
         return this;
     }

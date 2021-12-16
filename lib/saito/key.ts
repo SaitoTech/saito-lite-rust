@@ -1,21 +1,17 @@
 const saito = require('./saito');
 
 export default class Key {
-    public publickey: any;
+    public publickey: string;
     public tags: any;
     public identifiers: any;
     public watched: any;
     public lock_block: any;
-    public aes_publickey: any;
-    public aes_privatekey: any;
-    public aes_secret: any;
+    public aes_publickey: string;
+    public aes_privatekey: string;
+    public aes_secret: string;
     public data: any;
 
     constructor() {
-        if (!(this instanceof Key)) {
-            return new Key();
-        }
-
         this.publickey = "";
         this.tags = [];
         this.identifiers = [];
@@ -45,10 +41,8 @@ export default class Key {
 
 
     hasSharedSecret() {
-        if (this.aes_secret != "") {
-            return true;
-        }
-        return false;
+        return this.aes_secret != "";
+
     }
 
     isIdentifier(identifier) {

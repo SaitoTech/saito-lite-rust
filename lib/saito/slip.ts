@@ -1,26 +1,26 @@
 'use strict';
 const saito = require('./saito');
 
-export const SlipType = {
-    Normal: 0,
-    ATR: 1,
-    VipInput: 2,
-    VipOutput: 3,
-    MinerInput: 4,
-    MinerOutput: 5,
-    RouterInput: 6,
-    RouterOutput: 7,
-    StakerOutput: 8,
-    StakerDeposit: 9,
-    StakerWithdrawalPending: 10,
-    StakerWithdrawalStaking: 11,
-    Other: 12,
+export enum SlipType {
+    Normal = 0,
+    ATR = 1,
+    VipInput = 2,
+    VipOutput = 3,
+    MinerInput = 4,
+    MinerOutput = 5,
+    RouterInput = 6,
+    RouterOutput = 7,
+    StakerOutput = 8,
+    StakerDeposit = 9,
+    StakerWithdrawalPending = 10,
+    StakerWithdrawalStaking = 11,
+    Other = 12,
 };
 
 export default class Slip {
-    public add: any;
-    public amt: any;
-    public type: any;
+    public add: string;
+    public amt: bigint;
+    public type: SlipType;
     public uuid: any;
     public sid: any;
     public lc: any;
@@ -29,7 +29,7 @@ export default class Slip {
     public key: any;
 
     // amount can be a string in NOLAN or a BigInt
-    constructor(publickey = "", amount = "0", type = SlipType.Normal, uuid = "", slip_ordinal = 0, payout = 0, lc = 1) {
+    constructor(publickey = "", amount: bigint | string = "0", type = SlipType.Normal, uuid = "", slip_ordinal = 0, payout = 0, lc = 1) {
 
         //
         // consensus variables

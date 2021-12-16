@@ -1,5 +1,6 @@
 import saito from "./saito";
 import {SlipType} from "./slip";
+import {Saito} from "../../apps/core";
 
 const JSON = require('json-bigint');
 
@@ -21,7 +22,19 @@ export enum TransactionType {
 }
 
 export default class Transaction {
-    public transaction: any;
+    public transaction = {
+        to: [],
+        from: [],
+        ts: 0,
+        sig: "",
+        path: [],
+        r: 1, // replaces
+        type: TransactionType.Normal,
+        m: "",
+        fto: undefined,
+        cumulative_fees: BigInt(0),
+        id: undefined
+    };
     public fees_total: any;
     public work_available_to_me: any;
     public work_available_to_creator: any;
@@ -38,15 +51,7 @@ export default class Transaction {
         /////////////////////////
         // consensus variables //
         /////////////////////////
-        this.transaction = {};
-        this.transaction.to = [];
-        this.transaction.from = [];
-        this.transaction.ts = 0;
-        this.transaction.sig = "";
-        this.transaction.path = [];
-        this.transaction.r = 1; // replaces
-        this.transaction.type = TransactionType.Normal;
-        this.transaction.m = "";
+
 
         this.fees_total = BigInt(0);
         this.work_available_to_me = BigInt(0);
@@ -80,13 +85,11 @@ export default class Transaction {
             }
             for (let i = 0; i < this.transaction.from.length; i++) {
                 let fslip = this.transaction.from[i];
-                let fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
-                this.transaction.from[i] = fslipobj;
+                this.transaction.from[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
             for (let i = 0; i < this.transaction.to.length; i++) {
                 let fslip = this.transaction.to[i];
-                let fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
-                this.transaction.to[i] = fslipobj;
+                this.transaction.to[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
         }
 
@@ -146,11 +149,12 @@ export default class Transaction {
 
     /**
      * Deserialize Transaction
+     * @param app
      * @param {array} buffer - raw bytes, perhaps an entire block
      * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
      * @returns {Transaction}
      */
-    deserialize(app, buffer, start_of_transaction_data) {
+    deserialize(app: Saito, buffer, start_of_transaction_data) {
 
         let inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
         let outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
@@ -629,7 +633,7 @@ export default class Transaction {
     }
 
 
-    serializeForSignature(app) {
+    serializeForSignature(app: Saito) {
 
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
@@ -702,12 +706,11 @@ export default class Transaction {
         // at the bottom is the validation criteria applied to ALL
         // transaction types.
         //
-        if (
-            this.transaction.type !== TransactionType.Fee
+        // @ts-ignore
+        if (this.transaction.type !== TransactionType.Fee
             && this.transaction.type !== TransactionType.ATR
             && this.transaction.type !== TransactionType.Vip
-            && this.transaction.type !== TransactionType.Issuance
-        ) {
+            && this.transaction.type !== TransactionType.Issuance) {
 
             //
             // validate sender exists
@@ -744,11 +747,8 @@ export default class Transaction {
             for (let i = 0; i < this.transaction.to.length; i++) {
                 total_out += this.transaction.to[i].returnAmount();
             }
-            if (
-                total_out > total_in &&
-                this.transaction.type !== TransactionType.Fee &&
-                this.transaction.type !== TransactionType.Vip
-            ) {
+            // @ts-ignore
+            if (total_out > total_in && this.transaction.type !== TransactionType.Fee && this.transaction.type !== TransactionType.Vip) {
                 console.log("ERROR 802394: transaction spends more than it has available");
                 return false;
             }
@@ -758,6 +758,7 @@ export default class Transaction {
         //
         // fee transactions
         //
+        // @ts-ignore
         if (this.transaction.type === TransactionType.Fee) {
         }
 

@@ -80,7 +80,7 @@ export default class Binary {
      */
     u32AsBytes(val: number | bigint) {
         val = BigInt(val);
-        let bytes: Uint8Array = new Uint8Array();
+        let bytes: Uint8Array = Uint8Array.of(0, 0, 0, 0);
         let i = 4;
         do {
             bytes[--i] = Number(val & BigInt(255));

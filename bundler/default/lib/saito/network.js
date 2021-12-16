@@ -398,7 +398,7 @@ class Network {
                     console.error("BAD TX: " + JSON.stringify(tx.transaction));
                     return;
                 } else {
-                    console.log(" ... added transaftion");
+                    console.log(" ... added transaction");
                 }
                 if (this.app.mempool.canBundleBlock() === 1) {
                     return 1;

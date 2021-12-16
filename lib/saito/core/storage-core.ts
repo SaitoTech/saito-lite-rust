@@ -51,9 +51,9 @@ export default class StorageCore extends Storage {
     }
 
 
-    async returnDatabaseByName(dbname) {
+    async returnDatabaseByName(dbname: string): Promise<any> {
         for (let i = 0; i < this.dbname.length; i++) {
-            if (dbname == this.dbname[i]) {
+            if (dbname === this.dbname[i]) {
                 return this.db[i];
             }
         }
@@ -190,9 +190,7 @@ export default class StorageCore extends Storage {
     async deleteBlock(bid, bsh, lc) {
 
         const blk = await this.loadBlockByHash(bsh);
-        if (blk == null) {
-        } else {
-
+        if (blk) {
             //
             // delete txs
             //
@@ -477,18 +475,19 @@ export default class StorageCore extends Storage {
      *
      * @param {*} sql
      * @param {*} params
-     * @param {*} callback
+     * @param database
+     * @param mycallback
      */
-    async executeDatabase(sql, params, database, mycallback = null) {
+    async executeDatabase(sql, params, database: string, mycallback = null) {
         try {
             let db = await this.returnDatabaseByName(database);
-            if (mycallback == null) {
+            if (!mycallback) {
                 return await db.run(sql, params);
             } else {
                 return await db.run(sql, params, mycallback);
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 

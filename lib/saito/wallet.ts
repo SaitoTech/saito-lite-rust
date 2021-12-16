@@ -1,5 +1,7 @@
 'use strict';
 import {Saito} from "../../apps/core";
+import Transaction from "./transaction";
+import Slip, {SlipType} from "./slip";
 
 const saito = require('./saito');
 const JSON = require('json-bigint');
@@ -197,7 +199,7 @@ export default class Wallet {
             throw "Inadequate SAITO to make requested transaction";
             return null;
         }
-        var tx = new saito.transaction();
+        var tx = new Transaction();
 
         //
         // check to-address is ok -- this just keeps a server
@@ -224,13 +226,13 @@ export default class Wallet {
         //
         if (total_fees == BigInt(0)) {
             tx.transaction.from = [];
-            tx.transaction.from.push(new saito.slip(this.returnPublicKey()));
+            tx.transaction.from.push(new Slip(this.returnPublicKey()));
         } else {
             tx.transaction.from = this.returnAdequateInputs(total_fees);
         }
         tx.transaction.ts = new Date().getTime();
-        tx.transaction.to.push(new saito.slip(publickey, amount));
-        tx.transaction.to[tx.transaction.to.length - 1].type = saito.slip.SlipType.Normal
+        tx.transaction.to.push(new Slip(publickey, amount));
+        tx.transaction.to[tx.transaction.to.length - 1].type = SlipType.Normal
         if (tx.transaction.from == null) {
 
             //
