@@ -458,28 +458,6 @@ class Network {
                 await peer.sendResponse(message.message_id, challenge);
                 break;
 
-            case "SHAKCOMP":
-
-                challenge = peer.socketHandshakeVerify(message.message_data);
-                if (challenge) {
-                    peer.has_completed_handshake = true;
-                    peer.peer.publickey = challenge.opponent_pubkey;
-                    await peer.sendResponse(message.message_id, Buffer.from("OK", "utf-8"));
-                    await peer.app.networkApi.sendAPICall(peer.socket, "REQCHAIN",
-                              peer.buildRequestBlockchainMessage(
-				  this.app.blockchain.blockchain.last_block_id,
-                                  Buffer.from(this.app.blockchain.blockchain.last_block_hash,
-                                  "hex"
-                               ),
-                               Buffer.from(this.app.blockchain.blockchain.fork_id, "hex")
-                          ).serialize()
-                    );
-                } else {
-                    console.error("Error verifying peer handshake signature");
-                }
-
-                break;
-
             case "REQBLOCK":
 
 		// NOT YET IMPLEMENTED -- send FULL block
@@ -569,22 +547,6 @@ class Network {
                 }
                 break;
 
-	    //
-	    // this delivers the block as NetworkAPI object
-	    //
-            case "SNDBLKHD":
-
-                let send_block_head_message = SendBlockHeadMessage.deserialize(message.message_data, this.app);
-                block_hash = Buffer.from(send_block_head_message.block_hash).toString("hex");
-                is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
-                if (is_block_indexed) {
-                    console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
-                } else {
-                    let block = await network.fetchBlock(block_hash);
-                    this.app.mempool.addBlock(block);
-                }
-                break;
-
             case "SNDTRANS":
 
         	tx = new saito.transaction();
@@ -634,10 +596,11 @@ class Network {
                 	        if (reconstructed_data.transaction.m) {
                 	            // backwards compatible - in case modules try the old fashioned way
                 	            msg.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
-                	            msg.data.msg = message.data.transaction.msg;
+                	            msg.data.msg = msg.data.transaction.msg;
                 	        }
                 	    }
                 	}
+console.log("SENDMESG handle peer request");
                 	this.app.modules.handlePeerRequest(msg, this, mycallback);
         	}
                 break;
@@ -705,7 +668,6 @@ class Network {
 		this.sendPeerRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
 	    } else {
                 if (this.peers[i].peer.sendblks === 1) {
-	    	    //this.sendPeerRequest("SNDBLKHD", message.serialize(), this.peers[i]);
 		    //this.sendPeerRequest("SNDBLOCK", blk.serialize(saito.block.BlockType.Header), this.peers[i]);
 		    this.sendPeerRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
                 }
@@ -840,9 +802,6 @@ class Network {
     }
 
 }
-
-Network.ChallengeSize = 82;
-Network.ChallengeExpirationTime = 60000;
 
 module.exports = Network;
 

@@ -147,15 +147,9 @@ class Peer {
         // respect prohibitions
         //
 
-
 	// block as Block.serialize(BlockType.Header)
         if (message === "SNDBLOCK") {
             this.app.networkApi.sendAPICall(this.socket, "SNDBLOCK", data);
-            return;
-        }
-	// block as NetworkAPI Block
-        if (message === "SNDBLKHD") {
-            this.app.networkApi.sendAPICall(this.socket, "SNDBLKHD", data);
             return;
         }
 	// block as block_hash
@@ -174,6 +168,8 @@ class Peer {
             return;
         }
 
+console.log("HERE WE ARE SENDING REQUEST");
+
 	//
 	// alternately, we have a legacy transmission format, which is sent
 	// as a JSON object for reconstruction and manipulation by apps on 
@@ -183,6 +179,7 @@ class Peer {
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
+console.log("HERE WE ARE SENDING REQUEST 2");
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then(() => {
                     //console.debug("message sent with sendRequest");
