@@ -1,7 +1,3 @@
-const saito = require('./saito');
-const Big = require('big.js');
-
-
 export default class GoldenTicket {
     public app: any;
 

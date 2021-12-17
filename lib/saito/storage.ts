@@ -1,9 +1,8 @@
 import Block from "./block";
 import {Saito} from "../../apps/core";
 
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
+import Transaction from "./transaction";
 
 export default class Storage {
     public app: Saito;
@@ -51,7 +50,7 @@ export default class Storage {
             if (obj) {
                 if (obj.txs) {
                     if (obj.txs.length > 0) {
-                        txs = obj.txs.map(tx => new saito.transaction(JSON.parse(tx)));
+                        txs = obj.txs.map(tx => new Transaction(JSON.parse(tx)));
                     }
                 }
             }
@@ -91,7 +90,7 @@ export default class Storage {
             if (obj) {
                 if (obj.txs) {
                     if (obj.txs.length > 0) {
-                        txs = obj.txs.map(tx => new saito.transaction(JSON.parse(tx)));
+                        txs = obj.txs.map(tx => new Transaction(JSON.parse(tx)));
                     }
                 }
             }

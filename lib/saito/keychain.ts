@@ -1,6 +1,5 @@
 import {Saito} from "../../apps/core";
-
-import SaitoCommon from "./saito";
+import Key from "./key";
 
 const JSON = require('json-bigint');
 const modtemplate = require('./../templates/modtemplate');
@@ -39,7 +38,7 @@ export default class Keychain {
 
             const tk = this.app.options.keys[i];
 
-            const k = new SaitoCommon.key();
+            const k = new Key();
             k.publickey = tk.publickey;
             k.watched = tk.watched;
             // @ts-ignore
@@ -88,7 +87,7 @@ export default class Keychain {
         let added_tag = 0;
 
         if (tmpkey == null) {
-            tmpkey = new SaitoCommon.key();
+            tmpkey = new Key();
             tmpkey.publickey = publickey;
             tmpkey.watched = watched;
             tmpkey.bid = bid;
@@ -581,8 +580,8 @@ export default class Keychain {
 
         const where_statement = `publickey in (${missing_keys.join(',')})`;
         const sql = `select *
-                   from records
-                   where ${where_statement}`;
+                     from records
+                     where ${where_statement}`;
 
         this.modtemplate.sendPeerDatabaseRequestWithFilter(
             "Registry",

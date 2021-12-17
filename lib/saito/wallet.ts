@@ -3,8 +3,6 @@ import {Saito} from "../../apps/core";
 import Transaction, {TransactionType} from "./transaction";
 import Slip, {SlipType} from "./slip";
 
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
 
 /**
@@ -236,7 +234,7 @@ export default class Wallet {
             // take a hail-mary pass and try to send this as a free transaction
             //
             tx.transaction.from = [];
-            tx.transaction.from.push(new saito.slip(this.returnPublicKey(), BigInt(0)));
+            tx.transaction.from.push(new Slip(this.returnPublicKey(), BigInt(0)));
 
         }
         if (tx.transaction.to == null) {
@@ -245,7 +243,7 @@ export default class Wallet {
             // take a hail-mary pass and try to send this as a free transaction
             //
             tx.transaction.to = [];
-            tx.transaction.to.push(new saito.slip(publickey, BigInt(0)));
+            tx.transaction.to.push(new Slip(publickey, BigInt(0)));
             //return null;
 
         }
@@ -278,9 +276,9 @@ export default class Wallet {
                 // by making sure there are usually at least 3
                 // utxo available for spending.
                 //
-                tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change1));
+                tx.transaction.to.push(new Slip(this.returnPublicKey(), change1));
                 tx.transaction.to[tx.transaction.to.length - 1].type = SlipType.Normal;
-                tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change2));
+                tx.transaction.to.push(new Slip(this.returnPublicKey(), change2));
                 tx.transaction.to[tx.transaction.to.length - 1].type = SlipType.Normal;
 
             } else {
@@ -288,7 +286,7 @@ export default class Wallet {
                 //
                 // single change address
                 //
-                tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change_amount));
+                tx.transaction.to.push(new Slip(this.returnPublicKey(), change_amount));
                 tx.transaction.to[tx.transaction.to.length - 1].type = SlipType.Normal;
             }
         }
@@ -550,7 +548,7 @@ console.log("---------------------");
 
                     for (let i = 0; i < this.wallet.pending.length; i++) {
 
-                        const ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
+                        const ptx = new Transaction(JSON.parse(this.wallet.pending[i]));
 
                         if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
                             this.wallet.pending.splice(i, 1);
@@ -674,7 +672,7 @@ console.log("---------------------");
         //
         if (this.wallet.pending.length > 0) {
             for (let i = 0; i < this.wallet.pending.length; i++) {
-                const pendingtx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
+                const pendingtx = new Transaction(JSON.parse(this.wallet.pending[i]));
                 for (let k = 0; k < pendingtx.transaction.from.length; k++) {
                     const slipIndex = pendingtx.transaction.from[k].returnKey();
                     for (let m = 0; m < this.wallet.inputs; m++) {

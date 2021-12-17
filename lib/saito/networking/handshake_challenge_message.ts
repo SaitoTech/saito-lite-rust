@@ -1,6 +1,6 @@
 import {Saito} from "../../../apps/core";
 
-import Network, {ChallengeSize} from "../network";
+import {ChallengeSize} from "../network";
 
 class HandshakeNode {
     ip_address = [];
@@ -44,7 +44,7 @@ class HandshakeChallengeMessage {
             handshake_challenge.challenger_node.sig = bytes.slice(ChallengeSize, ChallengeSize + 64);
         }
         if (bytes.byteLength > ChallengeSize) {
-            handshake_challenge.opponent_node.sig = bytes.slice(ChallengeSize + 64,ChallengeSize + 128);
+            handshake_challenge.opponent_node.sig = bytes.slice(ChallengeSize + 64, ChallengeSize + 128);
         }
 
         return handshake_challenge;

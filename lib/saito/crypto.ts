@@ -1,16 +1,18 @@
 import * as Base58 from "base-58";
 import {Saito} from "../../apps/core";
 
-const crypto = require('crypto-browserify');
-const sha256 = require('sha256');
-const node_cryptojs = require('node-cryptojs-aes');
-const {randomBytes} = require('crypto');
-const secp256k1 = require('secp256k1');
+import {randomBytes} from "crypto";
+
+import crypto from "crypto-browserify";
+
+import * as node_cryptojs from "node-cryptojs-aes";
+
+import * as secp256k1 from "secp256k1";
+
+import stringify from "fastest-stable-stringify";
+
 const CryptoJS = node_cryptojs.CryptoJS;
 const JsonFormatter = node_cryptojs.JsonFormatter;
-const stringify = require('fastest-stable-stringify');
-
-
 /**
  * Crypto Constructor
  */
@@ -66,15 +68,16 @@ export default class Crypto {
     // this needs to be replaced by a more secure commutive encryption algorithm
     //
     xor(a, b) {
+        let i;
         if (!Buffer.isBuffer(a)) a = new Buffer(a)
         if (!Buffer.isBuffer(b)) b = new Buffer(b)
         const res = [];
         if (a.length > b.length) {
-            for (var i = 0; i < b.length; i++) {
+            for (i = 0; i < b.length; i++) {
                 res.push(a[i] ^ b[i])
             }
         } else {
-            for (var i = 0; i < a.length; i++) {
+            for (i = 0; i < a.length; i++) {
                 res.push(a[i] ^ b[i])
             }
         }
@@ -128,7 +131,9 @@ export default class Crypto {
      * @returns {string} compressed publickey
      */
     compressPublicKey(pubkey) {
-        return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, 'hex'), true).toString('hex'));
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, 'hex'), true).toString("hex"));
     }
 
 
@@ -161,10 +166,10 @@ export default class Crypto {
      * @returns {string} private key
      */
     generateKeys() {
-        let privateKey;
+        let privateKey: Uint8Array | Buffer;
         do {
             privateKey = randomBytes(32)
-        } while (!secp256k1.privateKeyVerify(privateKey, false))
+        } while (!secp256k1.privateKeyVerify(privateKey))
         return privateKey.toString('hex');
     }
 
@@ -185,7 +190,9 @@ export default class Crypto {
      * @returns {string} public key (hex)
      */
     returnPublicKey(privkey) {
-        return this.compressPublicKey(secp256k1.publicKeyCreate(Buffer.from(privkey, 'hex'), false).toString('hex'));
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return this.compressPublicKey(secp256k1.publicKeyCreate(Buffer.from(privkey, 'hex'), false).toString("hex"));
     }
 
 
@@ -207,6 +214,8 @@ export default class Crypto {
      * @returns {string}
      */
     signBuffer(buffer, privatekey) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const signature = secp256k1.sign(Buffer.from(this.hash(buffer), 'hex'), Buffer.from(privatekey, 'hex')).signature.toString('hex');
         return signature;
     }
@@ -221,6 +230,8 @@ export default class Crypto {
      */
     verifyHash(buffer, sig, pubkey) {
         try {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             return secp256k1.verify(Buffer.from(buffer, 'hex'), Buffer.from(sig, 'hex'), Buffer.from(this.fromBase58(pubkey), 'hex'));
         } catch (err) {
             console.error(err);
@@ -255,7 +266,7 @@ export default class Crypto {
      * @returns {string} public key (hex)
      */
     uncompressPublicKey(pubkey) {
-        return secp256k1.publicKeyConvert(Buffer.from(this.fromBase58(pubkey), 'hex'), false).toString('hex');
+        return secp256k1.publicKeyConvert(Buffer.from(this.fromBase58(pubkey), 'hex'), false).toString();
     }
 
 
@@ -267,8 +278,7 @@ export default class Crypto {
      */
     isPublicKey(publickey) {
         if (publickey.length == 44 || publickey.length == 45) {
-            if (publickey.indexOf("@") > 0) {
-            } else {
+            if (publickey.indexOf("@") <= 0) {
                 return 1;
             }
         }

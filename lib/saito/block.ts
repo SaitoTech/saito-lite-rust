@@ -1,5 +1,3 @@
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
 import {Saito} from "../../apps/core";
 import Transaction, {HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType} from "./transaction";
@@ -177,7 +175,7 @@ export default class Block {
                 path_len *
                 HOP_SIZE;
 
-            const transaction = new saito.transaction();
+            const transaction = new Transaction();
             transaction.deserialize(this.app, buffer, start_of_transaction_data);
             this.transactions.push(transaction);
             start_of_transaction_data = end_of_transaction_data;
@@ -251,7 +249,7 @@ export default class Block {
         //
         if (winning_tx.transaction.type === TransactionType.ATR) {
             const buffer = winning_tx.returnMessage();
-            const winning_tx_placeholder: Transaction = new saito.transaction();
+            const winning_tx_placeholder: Transaction = new Transaction();
             winning_tx_placeholder.deserialize(this.app, buffer, 0);
             winning_tx = winning_tx_placeholder;
         }
@@ -422,7 +420,7 @@ export default class Block {
                                 //
                                 // TODO - floating fee based on previous block average
                                 //
-                                const rebroadcast_transaction = new saito.transaction();
+                                const rebroadcast_transaction = new Transaction();
                                 rebroadcast_transaction.generateRebroadcastTransaction(this.app, output, REBROADCAST_FEE);
 
                                 //
@@ -616,13 +614,13 @@ export default class Block {
             // now create fee transaction using the block payouts
             //
             let slip_ordinal = 0;
-            const transaction = new saito.transaction();
+            const transaction = new Transaction();
 
             transaction.transaction.type = TransactionType.Fee;
 
             for (let i = 0; i < cv.block_payouts.length; i++) {
                 if (cv.block_payout[i].miner !== "") {
-                    const output = new saito.slip();
+                    const output = new Slip();
                     output.add = cv.block_payout[i].miner;
                     output.amt = cv.block_payout[i].miner_payout;
                     output.type = SlipType.MinerOutput;
@@ -631,7 +629,7 @@ export default class Block {
                     slip_ordinal += 1;
                 }
                 if (cv.block_payout[i].router !== "") {
-                    const output = new saito.slip();
+                    const output = new Slip();
                     output.add = cv.block_payout[i].router;
                     output.amt = cv.block_payout[i].router_payout;
                     output.type = SlipType.RouterOutput;
@@ -640,7 +638,7 @@ export default class Block {
                     slip_ordinal += 1;
                 }
                 if (cv.block_payout[i].staker !== "") {
-                    const output = new saito.slip();
+                    const output = new Slip();
                     output.add = cv.block_payout[i].staker;
                     output.amt = cv.block_payout[i].staker_payout;
                     output.type = SlipType.StakerOutput;

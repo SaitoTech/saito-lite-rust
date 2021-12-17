@@ -73,7 +73,7 @@ export default class Server {
 
         server.on('connection', (wsocket, request) => {
 
-            console.log("new connection received by server", request);
+            console.log("new connection received by server", request.headers);
 
             this.app.network.addRemotePeer(wsocket);
 

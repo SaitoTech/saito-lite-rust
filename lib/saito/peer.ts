@@ -2,13 +2,11 @@ import HandshakeChallengeMessage from "./networking/handshake_challenge_message"
 
 import {ChallengeExpirationTime, ChallengeSize} from "./network";
 
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
 
 import RequestBlockMessage from "./networking/request_block_message";
 
-import {BlockType} from "./block";
+import Block, {BlockType} from "./block";
 
 import SendBlockchainMessage, {SendBlockchainBlockData, SyncType} from "./networking/send_blockchain_message";
 
@@ -18,6 +16,8 @@ import SendBlockHeadMessage from "./networking/send_block_head_message";
 
 import fetch from "node-fetch";
 import {Saito} from "../../apps/core";
+import Hop from "./hop";
+import Transaction from "./transaction";
 
 export default class Peer {
     public app: Saito;
@@ -79,7 +79,7 @@ export default class Peer {
         const tmptx = tx.clone();
 
         // add our path
-        const hop = new saito.hop();
+        const hop = new Hop();
         hop.from = this.app.wallet.returnPublicKey();
         hop.to = this.returnPublicKey();
         hop.sig = this.app.crypto.signMessage(hop.to, this.app.wallet.returnPrivateKey());
@@ -266,7 +266,7 @@ export default class Peer {
             if (res.ok) {
                 const base64Buffer = await res.arrayBuffer();
                 const buffer = Buffer.from(Buffer.from(base64Buffer).toString('utf-8'), "base64");
-                const block = new saito.block(this.app);
+                const block = new Block(this.app);
                 block.deserialize(buffer);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
@@ -415,7 +415,7 @@ export default class Peer {
     }
 
     socketReceiveTransaction(message) {
-        const tx = new saito.transaction();
+        const tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         return tx;
     }

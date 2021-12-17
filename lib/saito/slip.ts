@@ -1,5 +1,3 @@
-import saito from "./saito";
-
 export enum SlipType {
     Normal = 0,
     ATR = 1,
@@ -93,7 +91,7 @@ export default class Slip {
     }
 
     clone() {
-        return new saito.slip(this.add, this.amt.toString(), this.type, this.uuid, this.sid, this.payout, this.lc);
+        return new Slip(this.add, this.amt.toString(), this.type, this.uuid, this.sid, this.payout, this.lc);
     }
 
     deserialize(app, buffer) {

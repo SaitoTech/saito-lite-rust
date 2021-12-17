@@ -1,8 +1,8 @@
 import Server from "./lib/saito/core/server";
 import StorageCore from "./lib/saito/core/storage-core";
-import {Saito} from "./apps/core/index";
+import {Saito} from "./apps/core";
 
-const mods_config = require('./config/modules.config');
+import mods_config from './config/modules.config';
 
 async function initSaito() {
     const app = new Saito({
@@ -10,6 +10,7 @@ async function initSaito() {
     });
 
     app.server = new Server(app);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     app.storage = new StorageCore(app);
 

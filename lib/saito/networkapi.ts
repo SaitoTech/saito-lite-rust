@@ -1,9 +1,8 @@
-import saito from "./saito";
-
-import Base58 from "base-58";
+import * as Base58 from "base-58";
 
 import HandshakeChallengeMessage from "./networking/handshake_challenge_message";
 import {ChallengeSize} from "./network";
+import Block from "./block";
 
 /**
  * An APIMessage
@@ -388,7 +387,7 @@ export default class NetworkAPI {
             const res = await fetch(url);
             if (res.ok) {
                 const buffer = await res.buffer();
-                const block = new saito.block(this.app);
+                const block = new Block(this.app);
                 block.deserialize(buffer);
                 console.log(`GOT BLOCK ${block.block.id} ${block.block.timestamp}`)
             } else {

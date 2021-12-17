@@ -1,15 +1,12 @@
 import Peer from "./peer";
+import {Saito} from "../../apps/core";
 
-const saito = require('./saito');
-const JSON = require('json-bigint');
-const fetch = require('node-fetch');
-const {set} = require('numeral');
-const Base58 = require("base-58");
-const secp256k1 = require('secp256k1');
-const SendBlockHeadMessage = require("./networking/send_block_head_message");
+import * as JSON from "json-bigint";
+
+import SendBlockHeadMessage from "./networking/send_block_head_message";
 
 export default class Network {
-    public app: any;
+    public app: Saito;
     public peers: Peer[];
     public peers_connected: any;
     public peers_connected_limit: any;
@@ -118,7 +115,7 @@ export default class Network {
         //
         // create peer and add it
         //
-        const peer = new saito.peer(this.app, JSON.stringify(peerobj));
+        const peer = new Peer(this.app, JSON.stringify(peerobj));
 
         //
         // we connect to them
@@ -157,7 +154,7 @@ export default class Network {
         //
         // add peer
         //
-        const peer = new saito.peer(this.app);
+        const peer = new Peer(this.app);
         peer.socket = socket;
         //
         // manually setting, used so the socket knows which peer
@@ -408,7 +405,7 @@ export default class Network {
             //
             // is this a transaction we can use to make a block
             //
-            if (this.app.mempool.containsTransaction(tx) !== 1) {
+            if (!this.app.mempool.containsTransaction(tx)) {
 
                 //
                 // return if we can create a transaction

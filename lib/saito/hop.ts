@@ -1,5 +1,4 @@
 import {Saito} from "../../apps/core";
-import saito from "./saito";
 
 export default class Hop {
     public from: string;
@@ -30,7 +29,7 @@ export default class Hop {
     }
 
     clone() {
-        return new saito.hop(this.from, this.to, this.sig);
+        return new Hop(this.from, this.to, this.sig);
     }
 
     /**

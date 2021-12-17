@@ -1,8 +1,8 @@
-import saito from "./saito";
-import {SlipType} from "./slip";
+import Slip, {SlipType} from "./slip";
 import {Saito} from "../../apps/core";
 
 import * as JSON from "json-bigint";
+import Hop from "./hop";
 
 export const TRANSACTION_SIZE = 89;
 export const SLIP_SIZE = 75;
@@ -86,11 +86,11 @@ export default class Transaction {
             }
             for (let i = 0; i < this.transaction.from.length; i++) {
                 const fslip = this.transaction.from[i];
-                this.transaction.from[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                this.transaction.from[i] = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
             for (let i = 0; i < this.transaction.to.length; i++) {
                 const fslip = this.transaction.to[i];
-                this.transaction.to[i] = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                this.transaction.to[i] = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
             }
         }
 
@@ -107,7 +107,7 @@ export default class Transaction {
 
     clone() {
 
-        const tx = new saito.transaction();
+        const tx = new Transaction();
         tx.transaction.from = [];
         tx.transaction.to = [];
         for (let i = 0; i < this.transaction.from.length; i++) {
@@ -174,7 +174,7 @@ export default class Transaction {
         for (let i = 0; i < inputs_len; i++) {
             const start_of_slip = start_of_inputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const input = new saito.slip();
+            const input = new Slip();
             input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             inputs.push(input);
         }
@@ -182,7 +182,7 @@ export default class Transaction {
         for (let i = 0; i < outputs_len; i++) {
             const start_of_slip = start_of_outputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const output = new saito.slip();
+            const output = new Slip();
             output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             outputs.push(output);
         }
@@ -192,7 +192,7 @@ export default class Transaction {
         for (let i = 0; i < path_len; i++) {
             const start_of_data = start_of_path + (i * HOP_SIZE);
             const end_of_data = start_of_data + HOP_SIZE;
-            const hop = new saito.hop();
+            const hop = new Hop();
             hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
             path.push(hop);
         }
@@ -219,7 +219,7 @@ export default class Transaction {
 
     generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee) {
 
-        const transaction = new saito.transaction();
+        const transaction = new Transaction();
 
         let output_payment = BigInt(0);
         if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
@@ -228,7 +228,7 @@ export default class Transaction {
 
         transaction.transaction.type = TransactionType.ATR;
 
-        const output = new saito.slip();
+        const output = new Slip();
         output.add = output_slip_to_rebroadcast.add;
         output.amt = output_payment;
         output.type = SlipType.ATR;

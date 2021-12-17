@@ -44,7 +44,7 @@ class Saito {
     burnfee: BurnFee;
     blockchain: Blockchain;
     blockring: Blockring;
-    hash: (data) => any;
+    hash: (data) => any = (data) => "";
     server: Server;
 
     constructor(config = {}) {
@@ -104,16 +104,28 @@ class Saito {
             //
             if (!this.BROWSER) {
                 // eslint-disable-next-line @typescript-eslint/no-var-requires
-                const blake3 = require('blake3');
-                this.hash = (data) => {
-                    return blake3.hash(data).toString('hex');
-                };
+                // const blake3 = require('blake3');
+                await import ("blake3").then(blake3 => {
+                    this.hash = (data) => {
+                        return blake3.hash(data).toString('hex');
+                    };
+                });
+
             } else {
+                // await import("blake3-js").then(blake3 => {
+                //     this.hash = (data) => {
+                //         return blake3.newRegular().update(data).finalize();
+                //     }
+                // });
+
+                await import ("blake3/browser").then(blake3 => {
+                    this.hash = (data) => {
+                        return blake3.hash(data).toString('hex');
+                    };
+                });
                 // eslint-disable-next-line @typescript-eslint/no-var-requires
-                const blake3 = require("blake3-js");
-                this.hash = (data) => {
-                    return blake3.newRegular().update(data).finalize();
-                }
+                // const blake3 = require("blake3-js");
+
             }
 
             this.wallet.initialize();

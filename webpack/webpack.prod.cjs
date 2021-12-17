@@ -1,14 +1,14 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
+// const __dirname = path.resolve();
 let devtool = "source-map";
 let entrypoint = './../bundler/default/apps/lite/index.ts';
 let outputfile = 'saito.js';
-if (process.argv.includes("dev")) {
-    devtool = "cheap-module-eval-source-map";
-}
+// if (process.argv.includes("dev")) {
+//     devtool = "cheap-module-eval-source-map";
+// }
 if (process.argv.includes("web3")) {
     //TODO: build a separate saito.js for web3
     entrypoint = './../bundler/default/apps/lite/web3index.ts';
@@ -71,6 +71,19 @@ webpack({
         // Add '.ts' and '.tsx' as resolvable extensions.
         //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+        fallback: {
+            "fs": false,
+            "tls": false,
+            "net": false,
+            "path": require.resolve("path-browserify"),
+            "zlib": false,
+            "http": false,
+            "https": false,
+            "stream": require.resolve("stream-browserify"),
+            "buffer": require.resolve("buffer"),
+            "crypto": require.resolve("crypto-browserify"),
+            "crypto-browserify": require.resolve('crypto-browserify')
+        }
     },
     module: {
         rules: [
@@ -123,7 +136,32 @@ webpack({
             },
         ]
     },
-
+    plugins: [
+        // Work around for Buffer is undefined:
+        // https://github.com/webpack/changelog-v5/issues/10
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
+        new CircularDependencyPlugin({
+            // exclude detection of files based on a RegExp
+            exclude: /a\.js|node_modules/,
+            // include specific files based on a RegExp
+            include: /lib/,
+            // add errors to webpack instead of warnings
+            failOnError: false,
+            // allow import cycles that include an asyncronous import,
+            // e.g. via import(/* webpackMode: "weak" */ './file.js')
+            allowAsyncCycles: false,
+            // set the current working directory for displaying module paths
+            cwd: process.cwd(),
+        })
+    ],
+    experiments: {
+        asyncWebAssembly: true
+    },
     mode: 'production',
     devtool: devtool,
 

@@ -1,9 +1,9 @@
 export default class Mods {
-	public app: any;
-	public mods: any;
-	public uimods: any;
-	public mods_list: any;
-	public lowest_sync_bid: any;
+    public app: any;
+    public mods: any[];
+    public uimods: any;
+    public mods_list: any[];
+    public lowest_sync_bid: any;
 
     constructor(app, config) {
         this.app = app;

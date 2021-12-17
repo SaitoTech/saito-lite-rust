@@ -75,10 +75,10 @@ export default class Browser {
 
                 document.addEventListener("visibilitychange", () => {
                     if (document.hidden) {
-                        channel.postMessage({active: 0, publickey: browser_self.app.wallet.returnPublicKey()});
+                        channel.postMessage({active: 0, publickey: this.app.wallet.returnPublicKey()});
                     } else {
                         this.setActiveTab(1);
-                        channel.postMessage({active: 1, publickey: browser_self.app.wallet.returnPublicKey()});
+                        channel.postMessage({active: 1, publickey: this.app.wallet.returnPublicKey()});
                     }
                 }, false);
 

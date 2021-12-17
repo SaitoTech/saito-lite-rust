@@ -1,5 +1,3 @@
-const saito = require('./saito');
-
 export default class Key {
     public publickey: string;
     public tags: any;

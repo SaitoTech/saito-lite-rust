@@ -1,7 +1,7 @@
-import saito from "./saito";
-
 import UtxoSet from "./utxoset";
 import Block from "./block";
+import Staking from "./staking";
+import Blockring from "./blockring";
 
 export default class Blockchain {
     public app: any;
@@ -50,8 +50,8 @@ export default class Blockchain {
         //
         // core components
         //
-        this.blockring = new saito.blockring(this.app, this.blockchain.genesis_period);
-        this.staking = new saito.staking(this.app);
+        this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
+        this.staking = new Staking(this.app);
         this.blocks = {}; // hashmap of block_hash => block
         this.utxoset = new UtxoSet();
 
@@ -730,7 +730,7 @@ export default class Blockchain {
     //
     // TODO - fetch from disk if needed, ergo async
     //
-    async loadBlockAsync(block_hash) :Promise<Block>{
+    async loadBlockAsync(block_hash): Promise<Block> {
         if (this.blocks[block_hash]) {
             return this.blocks[block_hash];
         }

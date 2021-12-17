@@ -1,4 +1,6 @@
 'use strict';
+import Block from "./block";
+
 const Big = require('big.js')
 const saito = require('./saito');
 const path = require('path');
@@ -247,7 +249,7 @@ export default class Mempool {
             //
             // create the block
             //
-            const block = new saito.block(this.app);
+            const block = new Block(this.app);
             const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
             //
@@ -388,13 +390,13 @@ export default class Mempool {
     containsTransaction(tx) {
 
         if (tx == null) {
-            return 0;
+            return false;
         }
         if (tx.transaction == null) {
-            return 0;
+            return false;
         }
         if (tx.transaction.from == null) {
-            return 0;
+            return false;
         }
 
         if (this.transactions_hmap[tx.transaction.sig] === 1) {
