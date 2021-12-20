@@ -273,7 +273,7 @@ console.log("peer handshake complete with: " + peer.peer.publickey);
         // our ability to validate the chat messages.
         //
         let modified_tx_obj = JSON.parse(JSON.stringify(tx.transaction));
-        let modified_tx = new saito.transaction(modified_tx_obj);
+        let modified_tx = new saito.default.transaction(modified_tx_obj);
         modified_tx.transaction.ts = new Date().getTime();
 
         app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
@@ -302,11 +302,11 @@ console.log("peer handshake complete with: " + peer.peer.publickey);
 
           //
           let modified_tx_obj = JSON.parse(JSON.stringify(tx.transaction));
-          let modified_tx = new saito.transaction(modified_tx_obj);
+          let modified_tx = new saito.default.transaction(modified_tx_obj);
           modified_tx.transaction.ts = new Date().getTime();
 
 	  // decrypt if needed
-	  let tx2 = new saito.transaction(tx.transaction);	  
+	  let tx2 = new saito.default.transaction(tx.transaction);	  
 	  tx2.decryptMessage(app);
           this.receiveMessage(app, tx2);
           this.app.storage.saveTransaction(modified_tx);
@@ -316,7 +316,7 @@ console.log("peer handshake complete with: " + peer.peer.publickey);
 
         case "chat broadcast message":
 
-           let routed_tx = new saito.transaction(tx.transaction);
+           let routed_tx = new saito.default.transaction(tx.transaction);
            routed_tx.decryptMessage(this.app);
            let routed_tx_msg = routed_tx.returnMessage();
            routed_tx.transaction.ts = new Date().getTime();
@@ -334,7 +334,7 @@ console.log("peer handshake complete with: " + peer.peer.publickey);
            // our ability to validate the chat messages.
            //
            let modified_routed_tx_obj = JSON.parse(JSON.stringify(routed_tx.transaction));
-           let modified_routed_tx = new saito.transaction(modified_routed_tx_obj);
+           let modified_routed_tx = new saito.default.transaction(modified_routed_tx_obj);
            modified_routed_tx.transaction.ts = new Date().getTime();
 
            //

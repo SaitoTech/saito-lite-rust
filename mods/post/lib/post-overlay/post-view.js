@@ -31,7 +31,7 @@ module.exports = PostView = {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
                 let add_this_comment = 1;
-                let tx = new saito.transaction(JSON.parse(res.rows[i].tx));
+                let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                 let txmsg = tx.returnMessage();
                 for (let z = 0; z < mod.comments.length; z++) {
                   if (mod.comments[z].transaction.sig == tx.transaction.sig) { add_this_comment = 0; }

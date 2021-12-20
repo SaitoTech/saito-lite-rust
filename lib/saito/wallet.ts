@@ -1,15 +1,14 @@
-'use strict';
 import {Saito} from "../../apps/core";
-import Transaction, {TransactionType} from "./transaction";
-import Slip, {SlipType} from "./slip";
 
-import * as JSON from "json-bigint";
+import * as  JSON from "json-bigint";
+import Slip, {SlipType} from "./slip";
+import Transaction, {TransactionType} from "./transaction";
 
 /**
  * A Saito-lite wallet.
  * @param {*} app
  */
-export default class Wallet {
+class Wallet {
     public app: Saito;
     public wallet: any;
     public inputs_hmap: any;
@@ -40,7 +39,7 @@ export default class Wallet {
         this.wallet.spends = [];		// TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
         this.wallet.pending = [];		// slips pending broadcast
         this.wallet.default_fee = 2;
-        this.wallet.version = 4.001;
+        this.wallet.version = 4.009;
 
         this.wallet.preferred_crypto = "SAITO";
         this.wallet.preferred_txs = [];
@@ -152,29 +151,25 @@ export default class Wallet {
 
     containsInput(s) {
         const hmi = s.returnKey();
-        if (this.inputs_hmap[hmi] == 1) {
-            return true;
-        }
-        return false;
+        return this.inputs_hmap[hmi] == 1;
+
     }
 
 
     containsOutput(s) {
         const hmi = s.returnKey();
-        if (this.outputs_hmap[hmi] == 1) {
-            return true;
-        }
-        return false;
+        return this.outputs_hmap[hmi] == 1;
+
     }
 
-    createUnsignedTransactionWithDefaultFee(publickey = "", amount = 0.0) {
+    createUnsignedTransactionWithDefaultFee(publickey = "", amount = BigInt(0)) {
         if (publickey == "") {
             publickey = this.returnPublicKey();
         }
-        return this.createUnsignedTransaction(publickey, amount, 0);
+        return this.createUnsignedTransaction(publickey, amount, BigInt(0));
     }
 
-    createUnsignedTransaction(publickey = "", amount: number | bigint = 0, fee: number | bigint = 0, force_merge = 0) {
+    createUnsignedTransaction(publickey = "", amount = BigInt(0), fee = BigInt(0), force_merge = 0) {
 
         // convert from human-readable to NOLAN
         amount = BigInt(amount) * BigInt(100000000);
@@ -188,11 +183,10 @@ export default class Wallet {
         if (fee > wallet_avail) {
             fee = BigInt(0);
         }
-        const total_fees = amount + fee;
+        const total_fees: bigint = amount + fee;
         if (total_fees > wallet_avail) {
-            console.warn("Inadequate funds in wallet to create transaction w/: " + total_fees);
+            console.log("Inadequate funds in wallet to create transaction w/: " + total_fees);
             throw "Inadequate SAITO to make requested transaction";
-            return null;
         }
         const tx = new Transaction();
 
@@ -213,7 +207,6 @@ export default class Wallet {
         if (!this.app.crypto.isPublicKey(publickey)) {
             console.log("trying to send message to invalid address");
             throw "Invalid address " + publickey;
-            return null;
         }
 
         //
@@ -237,15 +230,13 @@ export default class Wallet {
             tx.transaction.from.push(new Slip(this.returnPublicKey(), BigInt(0)));
 
         }
-        if (tx.transaction.to == null) {
-
+        if (!tx.transaction.to) {
             //
             // take a hail-mary pass and try to send this as a free transaction
             //
             tx.transaction.to = [];
             tx.transaction.to.push(new Slip(publickey, BigInt(0)));
             //return null;
-
         }
 
         // add change input
@@ -314,7 +305,7 @@ console.log("---------------------");
       //
       if (this.wallet.pending.length > 0) {
         for (let i = 0; i < this.wallet.pending.length; i++) {
-          let ptx = new saito.default.transaction(JSON.parse(this.wallet.pending[i]));
+          let ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
           for (let k = 0; k < ptx.transaction.from.length; k++) {
             let slipIndex = ptx.transaction.from[k].returnSignatureSource();
             for (let m = 0; m < this.wallet.inputs; m++) {
@@ -348,7 +339,7 @@ console.log("---------------------");
       }
 
       // add new output
-      tx.transaction.to.push(new saito.default.slip(this.returnPublicKey(), output_amount.toFixed(8)));
+      tx.transaction.to.push(new Slip(this.returnPublicKey(), output_amount.toFixed(8)));
       tx.transaction.to[tx.transaction.to.length-1].type = 0;
 
     }
@@ -366,7 +357,7 @@ console.log("---------------------");
 
     initialize() {
 
-        if (this.wallet.privatekey == "") {
+        if (this.wallet.privatekey === "") {
             if (this.app.options.wallet != null) {
 
                 /////////////
@@ -453,6 +444,7 @@ console.log("---------------------");
     }
 
     onChainReorganization(block, lc) {
+
         const block_id = block.returnId();
         const block_hash = block.returnHash();
 
@@ -598,7 +590,6 @@ console.log("---------------------");
                         if (to_slips[m].isNonZeroAmount()) {
                             if (!this.containsInput(to_slips[m])) {
                                 if (!this.containsOutput(to_slips[m])) {
-                                    // TODO : what's this type ???
                                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                     // @ts-ignore
                                     if (to_slips[m].type != SlipType.StakerOutput || to_slips[m].type != SlipType.StakerWithdrawal) {
@@ -882,7 +873,7 @@ console.log("---------------------");
 
     }
 
-    calculateBalance() {
+    calculateBalance(): bigint {
         let bal = BigInt(0);
         this.wallet.inputs.forEach((input, index) => {
             if (this.isSlipValid(input, index)) {
@@ -903,4 +894,7 @@ console.log("---------------------");
 
 
 }
+
+export default Wallet;
+
 

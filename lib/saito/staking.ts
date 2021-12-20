@@ -1,16 +1,15 @@
-import saito from "./saito";
-import {Saito} from "../../apps/core";
 import {SlipType} from "./slip";
 import {TransactionType} from "./transaction";
 
-export default class Staking {
-    public app: Saito;
+class Staking {
+    public app: any;
     public deposits: any;
     public stakers: any;
     public pending: any;
 
-    constructor(app: Saito) {
-        this.app = app;
+    constructor(app) {
+
+        this.app = app || {};
 
         this.deposits = [];
         this.stakers = [];
@@ -163,7 +162,12 @@ export default class Staking {
             if (is_there_a_staker_output == false || fee_transaction.transaction.transaction.from.length == 0) {
                 return {res_spend: res_spend, res_unspend: res_unspend, res_delete: res_delete}
             }
-
+            //
+            // process outbound staking payments
+            //
+            const slips_to_remove_from_staking = [];
+            const slips_to_add_to_pending = [];
+            let staker_slip_num = 0;
             //
             // roll forward
             //
@@ -183,12 +187,6 @@ export default class Staking {
                     res_unspend = return_value.res_unspend;
                     res_delete = return_value.res_delete;
 
-                    //
-                    // process outbound staking payments
-                    //
-                    const slips_to_remove_from_staking = [];
-                    const slips_to_add_to_pending = [];
-                    let staker_slip_num = 0;
 
                     for (let k = 0; k < fee_transaction.transaction.to.length; k++) {
 
@@ -220,17 +218,17 @@ export default class Staking {
                         next_random_number = this.app.crypto.hash(next_random_number);
 
                     }
+                }
 
-                    //
-                    // we handle the slips together like this as we can occasionally
-                    // get duplicates if the same slip is selected recursively, but
-                    // we do not pay out duplicates. so we only add to pending if we
-                    // successfully remove from the staker table.
-                    //
-                    for (let k = 0; k < slips_to_remove_from_staking.length; k++) {
-                        if (this.removeStaker(slips_to_remove_from_staking[k].clone()) == true) {
-                            this.addPending(slips_to_add_to_pending[k].clone());
-                        }
+                //
+                // we handle the slips together like this as we can occasionally
+                // get duplicates if the same slip is selected recursively, but
+                // we do not pay out duplicates. so we only add to pending if we
+                // successfully remove from the staker table.
+                //
+                for (let k = 0; k < slips_to_remove_from_staking.length; k++) {
+                    if (this.removeStaker(slips_to_remove_from_staking[k].clone()) == true) {
+                        this.addPending(slips_to_add_to_pending[k].clone());
                     }
                 }
 
@@ -252,7 +250,7 @@ export default class Staking {
                 //
                 // reset pending if necessary
                 //
-                if (this.pending.length === 0) {
+                if (this.pending.length == 0) {
 
                     this.pending = [];
                     this.deposits = [];
@@ -298,7 +296,6 @@ export default class Staking {
                     }
                 }
 
-                // TODO : @david: is this copy pasted from above? or redundant code?
                 //
                 // reset pending if necessary
                 //
@@ -535,5 +532,6 @@ export default class Staking {
 
 }
 
+export default Staking;
 
 

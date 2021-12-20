@@ -1,5 +1,7 @@
-export default class Server {
-    public app: any;
+import {Saito} from "../../apps/core";
+
+class Server {
+    public app: Saito;
 
     constructor(app) {
         this.app = app || {};
@@ -9,6 +11,9 @@ export default class Server {
     initialize() {
 
     }
+
 }
 
+
+export default Server;
 

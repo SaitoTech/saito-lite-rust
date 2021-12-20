@@ -1,26 +1,31 @@
 // const saito = require('./../saito');
 
+import {Saito} from "../../../apps/core";
+
+import express from "express";
+
+import {Server as Ser} from "http";
+
+
 // const io          = require('socket.io')(webserver, {
 //   cors: {
 //     origin: "*.*",
 //     methods: ["GET", "POST"]
 //   }
 // });
-import * as fs from "fs";
-import {Saito} from "../../../apps/core";
-import * as path from "path";
-import * as ws from 'ws';
-import * as bodyParser from "body-parser";
+import fs from "fs";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const express = require('express');
+import path from "path";
+
+import bodyParser from "body-parser";
+
 const app = express();
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const webserver = require('http').Server(app);
+const webserver = new Ser(app);
+
 /**
  * Constructor
  */
-export default class Server {
+class Server {
     public app: Saito;
     public blocks_dir: any;
     public web_dir: any;
@@ -58,6 +63,8 @@ export default class Server {
     }
 
     initializeWebSocketServer(app) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const ws = require("ws");
 
         const server = new ws.Server({
             noServer: true,
@@ -73,37 +80,15 @@ export default class Server {
 
         server.on('connection', (wsocket, request) => {
 
-            console.log("new connection received by server", request.headers);
-
+            //console.log("new connection received by server", request);
             this.app.network.addRemotePeer(wsocket);
-
-            wsocket.on("message", async (message) => {
-                const api_message = this.app.networkApi.deserializeAPIMessage(message);
-                //console.debug("message received by server", api_message);
-                if (api_message.message_name === "RESULT__") {
-                    this.app.networkApi.receiveAPIResponse(api_message);
-                } else if (api_message.message_name === "ERROR___") {
-                    this.app.networkApi.receiveAPIError(api_message);
-                } else {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    if (wsocket.peer) {
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        await wsocket.peer.handlePeerCommand(api_message);
-                    } else {
-                        console.error("peer not found");
-                    }
-                }
-            });
-
-            this.app.networkApi.initiateHandshake(wsocket);
 
         });
     }
 
 
     initialize() {
+
 
         if (this.app.BROWSER === 1) {
             return;
@@ -312,7 +297,8 @@ export default class Server {
                 console.warn("block not found for : " + hash);
                 return res.sendStatus(404); // Not Found
             }
-            const buffer = Buffer.from(block.serialize()).toString('base64');
+            let buffer = block.serialize();
+            buffer = Buffer.from(buffer, 'binary').toString('base64');
 
             res.status(200);
             res.end(buffer);
@@ -329,6 +315,8 @@ export default class Server {
             const client_options_file = this.web_dir + "client.options";
             if (!fs.existsSync(client_options_file)) {
                 const fd = fs.openSync(client_options_file, 'w');
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
                 fs.closeSync(fd);
             }
@@ -415,4 +403,4 @@ export default class Server {
 }
 
 
-
+export default Server;

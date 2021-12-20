@@ -1,9 +1,3 @@
-import * as Base58 from "base-58";
-
-import HandshakeChallengeMessage from "./networking/handshake_challenge_message";
-import {ChallengeSize} from "./network";
-import Block from "./block";
-
 /**
  * An APIMessage
  * @typedef {Object} APIMessage
@@ -12,11 +6,12 @@ import Block from "./block";
  * @property {array} message_data - the data being send to the remote procedure
  */
 export class APIMessage {
-    message_name = "";
-    message_id = 0;
-    message_data: Buffer;
 
-    constructor(message_name: string, message_id: number, message_data: Buffer) {
+    message_name: string;
+    message_id = 0;
+    message_data = [];
+
+    constructor(message_name, message_id, message_data) {
         this.message_name = message_name;
         this.message_id = message_id;
         this.message_data = message_data;
@@ -40,7 +35,7 @@ export class APIMessage {
  * which can be passed things like a socket or binary data to process them
  * into JS objects or wrap the socket in async functions for easier integration.
  */
-export default class NetworkAPI {
+class NetworkAPI {
     public app: any;
     public api_call_index: any;
     public api_callbacks: any;
@@ -57,152 +52,20 @@ export default class NetworkAPI {
         this.socket_counter = 0;
     }
 
-    async connectAsWebClient(protocol, host, port) {
-        //
-        // TODO - must connect to proper peer
-        //
-        //console.log("connectAsWebClient");
-        //let socket = new WebSocket("ws://127.0.0.1:12101/wsopen");
-        //tmp hack to handle websocket protocol
-        let wsProtocol = 'ws';
-        if (protocol === 'https') {
-            wsProtocol = 'wss';
-        }
-        const socket = new WebSocket(`${wsProtocol}://${host}:${port}/wsopen`);
-
-        socket.onopen = (event) => {
-            console.log("connected to network", event);
-            // socket.peer = this.app.network.addRemotePeer(socket); // TODO : HACK : till a suitable socket id is found
-            this.initiateHandshake(socket);
-        };
-        socket.onclose = (event) => {
-            console.log(`[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`);
-            this.app.network.cleanupDisconnectedSocket(socket);
-        };
-        socket.onerror = (event: Event) => {
-            console.log(`[error]`, event);
-        };
-        socket.onmessage = async (event) => {
-
-            const data = await event.data.arrayBuffer();
-            const api_message = this.app.networkApi.deserializeAPIMessage(data);
-            //console.debug("message received by web client", api_message);
-            if (api_message.message_name === "RESULT__") {
-                this.receiveAPIResponse(api_message);
-            } else if (api_message.message_name === "ERROR___") {
-                this.receiveAPIError(api_message);
-            } else {
-                // let peer = this.app.network.findPeer(socket); // TODO : HACK : fix with about socket id comment
-                // if (peer) {
-                //     await peer.handlePeerCommand(api_message);
-                // }
-                //console.log("handling peer command - receiving peer id " + socket.peer.id);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                await socket.peer.handlePeerCommand(api_message);
-            }
-        };
-
-        return socket;
-
-    }
-
-    async initiateHandshake(ws) {
-        //console.debug("initiateHandshake");
-
-        const init_handshake_message = Buffer.concat([
-            Buffer.from(new Uint8Array([127, 0, 0, 1])),
-            Buffer.from(Base58.decode(this.app.wallet.returnPublicKey()))
-        ]);
-        const handshake_init_response_data: Buffer = await this.sendAPICall(ws, "SHAKINIT", init_handshake_message);
-        const handshake_challenge = HandshakeChallengeMessage.deserialize(handshake_init_response_data, this.app);
-
-        //
-        // update peer publickey
-        //
-        ws.peer.peer.publickey = this.app.crypto.toBase58(Buffer.from(handshake_challenge.challenger_node.public_key).toString('hex'));
-
-        const is_sig_valid = this.app.crypto.verifyHash(this.app.crypto.hash(handshake_init_response_data.slice(0, ChallengeSize)),
-            Buffer.from(handshake_challenge.challenger_node.sig).toString("hex"),
-            this.app.crypto.toBase58(Buffer.from(handshake_challenge.challenger_node.public_key)
-                .toString("hex"))
-        );
-
-        // TODO : take a decision on is_sig_valid ???
-
-        const signature = this.app.crypto.signBuffer(Buffer.from(handshake_init_response_data), this.app.wallet.returnPrivateKey());
-
-        //console.debug("handshake_challenge ", handshake_challenge);
-        const bytes = Buffer.concat([Buffer.from(handshake_init_response_data), Buffer.from(signature, 'hex')]);
-        const handshake_complete_response_data = await this.sendAPICall(ws, "SHAKCOMP", bytes);
-        // console.debug("handshake complete response data", handshake_complete_response_data);
-
-        this.app.connection.emit("handshake_complete", ws.peer);
-    }
-
-    //
-    // Connect and Initialize
-    //
-    async wsConnectAndInitialize(protocol, host, port) {
-
-        if (this.app.BROWSER) {
-            return await this.connectAsWebClient(protocol, host, port);
-        }
-        let wsProtocol = 'ws';
-        if (protocol === 'https') {
-            wsProtocol = 'wss';
-        }
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const WebSocket = require('ws');
-        const ws = new WebSocket(`${wsProtocol}://${host}:${port}/wsopen`);
-
-        ws.on('open', async (event) => {
-            //console.debug("connection opened", event);
-
-            await this.initiateHandshake(ws);
-        });
-        ws.on('message', async (data) => {
-            const api_message = this.deserializeAPIMessage(data);
-            console.debug("message received on socket", api_message);
-            if (api_message.message_name === "RESULT__") {
-                this.receiveAPIResponse(api_message);
-            } else if (api_message.message_name === "ERROR___") {
-                this.receiveAPIError(api_message);
-            } else {
-                // let peer = this.app.network.findPeer(socket); // TODO : HACK : fix with about socket id comment
-                // if (peer) {
-                //     await peer.handlePeerCommand(api_message);
-                // }
-                console.debug("handling peer command - receiving peer id " + ws.peer.id, api_message);
-                await ws.peer.handlePeerCommand(api_message);
-            }
-        });
-        ws.on('error', (event) => {
-            console.log(`[error] ${event.message}`);
-        });
-        ws.on('close', (event) => {
-            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-        });
-
-        return ws;
-
-    }
-
-
     /**
-     * Initialization function. Sometimes needed if constructor is too early, i.e.
-     * other parts of the system may not be ready yet.
+     * Non-Async function -- just emits a message on the websocket. If it arrives it arrives
+     * if it doesn't arrive it doesn't arrive. Broadcast-only with no fancy expectation of a
+     * response.
+     *
+     * @param {WebSocket} ws - a websocket
+     * @param {string} command - 8-char string - the API command(remote procedure)
+     * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
+     * @returns
      */
-    initialize() {
-        // Demo of how to connect to Rust here:
-        // Disabling these, they are not meant to be shipped.
-        if (!this.app.BROWSER) {
-            console.log("Connect to Rust client!");
-            this.wsConnectToRustPeer();
-            console.log("Connect to Rust client!");
-            this.getDemoBlockFromRust();
-            console.log("Connect to Rust client!");
-        }
+    send(ws, command, message_bytes) {
+        const serialized_api_message = this.serializeAPIMessage(command, this.api_call_index, message_bytes);
+        this.api_call_index += 1;
+        ws.send(serialized_api_message);
     }
 
     /**
@@ -215,7 +78,7 @@ export default class NetworkAPI {
      * @param {array} message_bytes - byte Vector - the message to be passed to the procedure.
      * @returns
      */
-    sendAPICall(ws: WebSocket, command: string, message_bytes: Buffer): Promise<Buffer> {
+    sendAPICall(ws, command, message_bytes) {
         //console.debug("sendAPICall : " + command);
         return new Promise((resolve, reject) => {
             this.api_callbacks[this.api_call_index] = {
@@ -239,9 +102,9 @@ export default class NetworkAPI {
      * function is called and automatically dispatches the returned
      * data to the appropriate resolve().
      * @private
-     * @param api_message
+     * @param {array} bytes
      */
-    receiveAPIResponse(api_message: APIMessage) {
+    receiveAPIResponse(api_message) {
         //console.log("receiveAPIResponse : " + api_message.message_id);
 
         if (this.api_callbacks[api_message.message_id]) {
@@ -258,9 +121,9 @@ export default class NetworkAPI {
      * function is called and automatically dispatches the returned
      * data to the appropriate reject().
      * @private
-     * @param message
+     * @param {message} bytes vector
      */
-    receiveAPIError(message: APIMessage) { // TODO : is this working or need fixing?
+    receiveAPIError(message) { // TODO : is this working or need fixing?
         console.log("receiveAPIError", message);
         const index = this.app.binary.u32FromBytes(message.message_id);
         if (this.api_callbacks[index]) {
@@ -277,7 +140,7 @@ export default class NetworkAPI {
      * @param {array} data - data to be sent
      * @returns array - bytes for the wire
      */
-    serializeAPIMessage(command: string, index: number, data: Buffer): Uint8Array {
+    serializeAPIMessage(command, index, data) {
         const enc = new TextEncoder();
         const command_bytes = enc.encode(command);
         const data_bytes = new Uint8Array(data);
@@ -330,73 +193,7 @@ export default class NetworkAPI {
         }
     }
 
-
-    //
-    // DEMO TEST FUNCTION, SHOULD BE REFACTORED
-    //
-    async wsConnectToRustPeer(protocol?, host?, port?) {
-
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const WebSocket = require('ws');
-        const ws = new WebSocket('http://127.0.0.1:3000/wsopen');
-
-        ws.on('open', async (event) => {
-
-            console.log("initing rust Peer Socket");
-
-            const init_handshake_message = Buffer.concat([Buffer.from(new Uint8Array([127, 0, 0, 1])),
-                Buffer.from(Base58.decode(this.app.wallet.returnPublicKey()))]);
-            await this.initiateHandshake(ws);
-
-            console.log("handshake complete");
-
-        });
-        ws.on('message', async (data) => {
-            const api_message = this.deserializeAPIMessage(data);
-            console.debug("message received on socket (peer)", api_message);
-            if (api_message.message_name === "RESULT__") {
-                this.receiveAPIResponse(api_message);
-            } else if (api_message.message_name === "ERROR___") {
-                this.receiveAPIError(api_message);
-            } else {
-                // let peer = this.app.network.findPeer(socket); // TODO : HACK : fix with about socket id comment
-                // if (peer) {
-                //     await peer.handlePeerCommand(api_message);
-                // }
-                console.debug("handling peer command - receiving peer id " + ws.peer.id);
-                await ws.peer.handlePeerCommand(api_message);
-            }
-        });
-        ws.on('error', (event) => {
-            console.log(`[error] ${event.message}`);
-        });
-        ws.on('close', (event) => {
-            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-        });
-    }
-
-
-    //
-    // DEMO TEST FUNCTION, SHOULD BE REFACTORED
-    //
-    async getDemoBlockFromRust() {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const fetch = require('node-fetch');
-        try {
-            const url = `http://127.0.0.1:3000/block/403fa38a30aa0028f3d7020c4856474eaaf4e6e9b8346142ee83624352ae069d`;
-            const res = await fetch(url);
-            if (res.ok) {
-                const buffer = await res.buffer();
-                const block = new Block(this.app);
-                block.deserialize(buffer);
-                console.log(`GOT BLOCK ${block.block.id} ${block.block.timestamp}`)
-            } else {
-                console.log(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
-            }
-        } catch (err) {
-            console.log(`Error fetching block:`);
-            console.error(err);
-        }
-    }
 }
 
+
+export default NetworkAPI;

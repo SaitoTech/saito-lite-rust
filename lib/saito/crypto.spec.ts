@@ -1,12 +1,13 @@
 import {Saito} from "../../apps/core";
-import Wallet from "./wallet";
-import Binary from "./binary";
-import Crypto from './crypto'
-import NetworkAPI from "./networkapi";
 
-const blake3 = require("blake3");
+import * as blake3 from "blake3";
+import NetworkAPI from "./networkapi";
+import Binary from "./binary";
+import Wallet from "./wallet";
+import Crypto from './crypto';
 
 test("signBuffer", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new NetworkAPI(mockApp);

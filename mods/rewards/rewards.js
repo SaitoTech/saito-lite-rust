@@ -620,7 +620,7 @@ class Rewards extends ModTemplate {
 
     try {
       let total_fees = Big(amount + 2);
-      let newtx = new saito.transaction();
+      let newtx = new saito.default.transaction();
 
       newtx.transaction.from = this.app.wallet.returnAdequateInputs(total_fees.toString());
 

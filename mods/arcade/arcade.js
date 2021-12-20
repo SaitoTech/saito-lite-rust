@@ -143,7 +143,7 @@ class Arcade extends ModTemplate {
 
         (res) => {
           if (res.rows) {
-            this.addGamesToOpenList(res.rows.map((row) => {return new saito.transaction(JSON.parse(row.tx))}))
+            this.addGamesToOpenList(res.rows.map((row) => {return new saito.default.transaction(JSON.parse(row.tx))}))
           }
         }
     );
@@ -565,7 +565,7 @@ class Arcade extends ModTemplate {
     //
     if (message.request === 'arcade spv update') {
 
-      let tx = new saito.transaction(message.data.tx.transaction);
+      let tx = new saito.default.transaction(message.data.tx.transaction);
       let txmsg = tx.returnMessage();
       let conf = 0;
       let blk = null;
@@ -1167,7 +1167,7 @@ class Arcade extends ModTemplate {
 
         if (arcade_self.app.wallet.wallet.pending.length > 0) {
           for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
-            let thistx = new saito.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
+            let thistx = new saito.default.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
             let thistxmsg = thistx.returnMessage();
             if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
               if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
@@ -1362,7 +1362,7 @@ class Arcade extends ModTemplate {
 
   createGameTXFromOptionsGame(game) {
 
-    let game_tx = new saito.transaction();
+    let game_tx = new saito.default.transaction();
 
     //
     // ignore games that are over
@@ -1837,7 +1837,7 @@ console.log("AND CONTINUING");
     // purge old transactions
     for (let i = 0; i < game_mod.game.future.length; i++) {
 
-      let queued_tx = new saito.transaction(JSON.parse(game_mod.game.future[i]));
+      let queued_tx = new saito.default.transaction(JSON.parse(game_mod.game.future[i]));
       let queued_txmsg = queued_tx.returnMessage();
 
       if (queued_txmsg.step.game <= game_mod.game.step.game && queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.transaction.from[0].add]) {
@@ -1856,7 +1856,7 @@ console.log("data length: " + data.length);
 	for (let i = 0; i < data.length; i++) {
 
 console.log("i: " + i + " --- tx id: " + data[i].id);
-	  let future_tx = new saito.transaction(JSON.parse(data[i].tx));
+	  let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
 	  future_tx.msg = future_tx.returnMessage();
 	  future_tx.msg.game_state = {};
 	  //
@@ -1870,7 +1870,7 @@ console.log("i: " + i + " --- tx id: " + data[i].id);
 	  let already_contains_move = 0;
 	  for (let z = 0; z < game_mod.game.future.length; z++) {
 
-	    let tmptx = new saito.transaction(JSON.parse(game_mod.game.future[z]));
+	    let tmptx = new saito.default.transaction(JSON.parse(game_mod.game.future[z]));
 
 console.log("steps comparison: " + future_tx.msg.step.game + " -- vs -- " + game_mod.game.step.game);
 
@@ -1917,7 +1917,7 @@ console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
 	//
 	// single transaction
 	//
-	let future_tx = new saito.transaction(JSON.parse(data[0].tx));
+	let future_tx = new saito.default.transaction(JSON.parse(data[0].tx));
 	    future_tx.msg = future_tx.returnMessage();
 	    future_tx.msg.game_state = {};
 	    future_tx.msg.last_move = data[0].last_move;
@@ -2007,7 +2007,7 @@ console.log("AA2");
 	    first_tx_fetched = 1;
 console.log("AA3");
 
-	    let future_tx = new saito.transaction(JSON.parse(data[i].tx));
+	    let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
 	    future_tx.msg = future_tx.returnMessage();
 	    future_tx.msg.game_state = {};
 	    future_tx.msg.last_move = data[i].last_move;
@@ -2021,7 +2021,7 @@ console.log("AAA");
 	  } else {
 console.log("BB1");
 
-	    let future_tx = new saito.transaction(JSON.parse(data[i].tx));
+	    let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
 	    future_tx.msg = future_tx.returnMessage();
 	    future_tx.msg.game_state = {};
 	    future_tx.msg.last_move = data[i].last_move;

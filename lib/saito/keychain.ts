@@ -1,11 +1,13 @@
+import saito from "./saito";
+
+import modtemplate from "./../templates/modtemplate";
+
+import * as JSON from "json-bigint";
+
+import Identicon from "identicon.js";
 import {Saito} from "../../apps/core";
-import Key from "./key";
 
-const JSON = require('json-bigint');
-const modtemplate = require('./../templates/modtemplate');
-const Identicon = require('identicon.js');
-
-export default class Keychain {
+class Keychain {
     public app: Saito;
     public keys: any;
     public groups: any;
@@ -38,13 +40,16 @@ export default class Keychain {
 
             const tk = this.app.options.keys[i];
 
-            const k = new Key();
+            const k = new saito.key();
             k.publickey = tk.publickey;
             k.watched = tk.watched;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             k.bid = tk.bid;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             k.bsh = tk.bsh;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             k.lc = tk.lc;
             k.aes_publickey = tk.aes_publickey;
@@ -55,6 +60,7 @@ export default class Keychain {
             for (let m = 0; m < tk.identifiers.length; m++) {
                 k.identifiers[m] = tk.identifiers[m];
                 if (m == 0) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     k.name = tk.identifiers[m];
                 }
@@ -77,7 +83,7 @@ export default class Keychain {
 
     addKey(publickey = "", identifier = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
 
-        if (publickey == "") {
+        if (publickey === "") {
             return;
         }
         publickey = publickey.trim();
@@ -87,7 +93,7 @@ export default class Keychain {
         let added_tag = 0;
 
         if (tmpkey == null) {
-            tmpkey = new Key();
+            tmpkey = new saito.key();
             tmpkey.publickey = publickey;
             tmpkey.watched = watched;
             tmpkey.bid = bid;
@@ -794,3 +800,6 @@ export default class Keychain {
     }
 
 }
+
+export default Keychain;
+

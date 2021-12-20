@@ -1,28 +1,28 @@
 'use strict';
 
+import saito from "../saito";
+
 import Storage from "../storage";
 
-import saito from "../saito";
-import Block from "../block";
-
-import * as fs from "fs-extra";
-
-import * as path from "path";
-
-import * as sqlite from "sqlite";
+import fs from "fs-extra";
 
 import * as JSON from "json-bigint";
 
-export default class StorageCore extends Storage {
-    public data_dir: string;
-    public config_dir: string;
-    public dest: string;
+import path from "path";
+
+import sqlite from "sqlite";
+import {Saito} from "../../../apps/core";
+
+class StorageCore extends Storage {
+    public data_dir: any;
+    public config_dir: any;
+    public dest: any;
     public db: any;
     public dbname: any;
-    public loading_active: boolean;
+    public loading_active: any;
     public file_encoding_save: any;
     public file_encoding_load: any;
-    public app: any;
+    public app: Saito;
 
     constructor(app, data?, dest = "blocks") {
         super(app);
@@ -51,9 +51,9 @@ export default class StorageCore extends Storage {
     }
 
 
-    async returnDatabaseByName(dbname: string): Promise<any> {
+    async returnDatabaseByName(dbname) {
         for (let i = 0; i < this.dbname.length; i++) {
-            if (dbname === this.dbname[i]) {
+            if (dbname == this.dbname[i]) {
                 return this.db[i];
             }
         }
@@ -83,7 +83,7 @@ export default class StorageCore extends Storage {
         return filename;
     }
 
-    loadBlockFromDisk(filename): Block {
+    loadBlockFromDisk(filename) {
         try {
             if (fs.existsSync(filename)) {
                 const buffer = fs.readFileSync(filename);
@@ -145,13 +145,12 @@ export default class StorageCore extends Storage {
                         console.log("block is null: " + fileID);
                         return null;
                     }
-                    // TODO : couldn't find variable
-                    // if (blk.is_valid == 0) {
-                    //     console.log("We have saved an invalid block: " + fileID);
-                    //     return null;
-                    // }
+                    if (blk.is_valid == 0) {
+                        console.log("We have saved an invalid block: " + fileID);
+                        return null;
+                    }
 
-                    await this.app.blockchain.addBlockToBlockchain(blk, true);
+                    await this.app.blockchain.addBlockToBlockchain(blk, 1);
                     console.log("Loaded block " + i + " of " + files.length);
 
                 }
@@ -190,7 +189,8 @@ export default class StorageCore extends Storage {
     async deleteBlock(bid, bsh, lc) {
 
         const blk = await this.loadBlockByHash(bsh);
-        if (blk) {
+        if (blk != null) {
+
             //
             // delete txs
             //
@@ -200,8 +200,9 @@ export default class StorageCore extends Storage {
                         blk.transactions[b].transaction.to[bb].bid = bid;
                         blk.transactions[b].transaction.to[bb].bhash = bsh;
                         blk.transactions[b].transaction.to[bb].tid = blk.transactions[b].transaction.id;
-                        // TODO: what's shashmap ???
-                        // shashmap.delete_slip(blk.transactions[b].transaction.to[bb].returnIndex());
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        shashmap.delete_slip(blk.transactions[b].transaction.to[bb].returnIndex());
                     }
                 }
             }
@@ -211,7 +212,7 @@ export default class StorageCore extends Storage {
             //
             const block_filename = await this.returnBlockFilenameByHashPromise(bsh);
 
-            fs.unlink(block_filename, function (err) {
+            fs.unlink(block_filename.toString(), function (err) {
                 if (err) {
                     console.error(err);
                 }
@@ -221,7 +222,11 @@ export default class StorageCore extends Storage {
 
 
     async loadBlockById(bid) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const bsh = this.app.blockchain.bid_bsh_hmap[bid];
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const ts = this.app.blockchain.bsh_ts_hmap[bsh];
         const filename = ts + "-" + bsh + ".blk";
         const blk = await this.loadBlockByFilename(filename);
@@ -229,13 +234,15 @@ export default class StorageCore extends Storage {
     }
 
     async loadBlockByHash(bsh) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const ts = this.app.blockchain.bsh_ts_hmap[bsh];
         const filename = ts + "-" + bsh + ".blk";
         const blk = await this.loadBlockByFilename(filename);
         return blk;
     }
 
-    async loadBlockByFilename(filename): Promise<Block> {
+    async loadBlockByFilename(filename) {
 
         const block_filename = `${this.data_dir}/${this.dest}/${filename}`;
 
@@ -342,8 +349,10 @@ export default class StorageCore extends Storage {
     }
 
     // overwrite to stop the server from attempting to reset options live
-    async resetOptions() {
-        return null;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    resetOptions() {
     }
 
 
@@ -371,18 +380,15 @@ export default class StorageCore extends Storage {
         // block_id is and send them information on where our
         // server is located so that they can sync to it.
         //
-        const t = {
-            keys: [],
-            peers: [],
-            services: this.app.options.services,
-            dns: [],
-            blockchain: {},
-            registry: this.app.options.registry,
-            appstore: {
-                default: this.app.wallet.returnPublicKey()
-            }
-        };
-
+        const t: any = {};
+        t.keys = [];
+        t.peers = [];
+        t.services = this.app.options.services;
+        t.dns = [];
+        t.blockchain = {};
+        t.registry = this.app.options.registry;
+        t.appstore = {};
+        t.appstore.default = this.app.wallet.returnPublicKey();
         t.peers.push(client_peer);
 
         //
@@ -398,7 +404,7 @@ export default class StorageCore extends Storage {
 
     }
 
-    returnClientOptions(): any {
+    returnClientOptions() {
 
         if (this.app.BROWSER == 1) {
             return;
@@ -415,17 +421,15 @@ export default class StorageCore extends Storage {
         // block_id is and send them information on where our
         // server is located so that they can sync to it.
         //
-        const t = {
-            keys: [],
-            peers: [],
-            services: this.app.options.services,
-            dns: [],
-            runtime: this.app.options.runtime,
-            blockchain: {},
-            wallet: {},
-            registry: this.app.options.registry
-        };
-
+        const t: any = {};
+        t.keys = [];
+        t.peers = [];
+        t.services = this.app.options.services;
+        t.dns = [];
+        t.runtime = this.app.options.runtime;
+        t.blockchain = {};
+        t.wallet = {};
+        t.registry = this.app.options.registry;
         //t.appstore             = {};
         //t.appstore.default     = this.app.wallet.returnPublicKey();
         t.peers.push(client_peer);
@@ -460,7 +464,7 @@ export default class StorageCore extends Storage {
 
     }
 
-    returnBlockFilenameByHashPromise(block_hash): Promise<string> {
+    returnBlockFilenameByHashPromise(block_hash) {
         return new Promise((resolve, reject) => {
             this.returnBlockFilenameByHash(block_hash, (filename, err) => {
                 if (err) {
@@ -476,26 +480,25 @@ export default class StorageCore extends Storage {
      *
      * @param {*} sql
      * @param {*} params
-     * @param database
-     * @param mycallback
+     * @param {*} callback
      */
-    async executeDatabase(sql, params, database: string, mycallback = null) {
+    async executeDatabase(sql, params, database, mycallback = null) {
         try {
             const db = await this.returnDatabaseByName(database);
-            if (!mycallback) {
+            if (mycallback == null) {
                 return await db.run(sql, params);
             } else {
                 return await db.run(sql, params, mycallback);
             }
         } catch (err) {
-            console.error(err);
+            console.log(err);
         }
     }
 
     async queryDatabase(sql, params, database) {
         try {
             const db = await this.returnDatabaseByName(database);
-            const rows = await db.all(sql, params);
+            const rows = await db.all(sql, params)
             if (rows == undefined) {
                 return [];
             }
@@ -507,3 +510,6 @@ export default class StorageCore extends Storage {
     }
 
 }
+
+export default StorageCore;
+

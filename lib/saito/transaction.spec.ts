@@ -1,20 +1,23 @@
 import {Saito} from "../../apps/core";
 
 import saito from "./saito";
-
+import NetworkAPI from "./networkapi";
+import Crypto from "./crypto";
+import Binary from "./binary";
+import Wallet from "./wallet";
 import * as blake3 from "blake3";
-import {TransactionType} from "./transaction";
-import {SlipType} from "./slip";
+import Transaction, {TransactionType} from "./transaction";
+import Slip, {SlipType} from "./slip";
 
 test("tx serialize deserialze", () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
-    const wallet = new saito.wallet(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    const wallet = new Wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -26,7 +29,7 @@ test("tx serialize deserialze", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const tx = new saito.transaction();
+    const tx = new Transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
@@ -34,7 +37,7 @@ test("tx serialize deserialze", () => {
 
     const buffer = tx.serialize(mockApp);
 
-    const tx2 = new saito.transaction();
+    const tx2 = new Transaction();
     tx2.deserialize(mockApp, buffer, 0);
 
     expect(tx2.transaction.ts).toEqual(tx.transaction.ts);
@@ -128,10 +131,10 @@ test("sign", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
-    const wallet = new saito.wallet(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    const wallet = new Wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -143,12 +146,12 @@ test("sign", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const tx = new saito.transaction();
+    const tx = new Transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = TransactionType.ATR;
     tx.msg = {test: "test"};
 
-    const input_slip = new saito.slip(wallet.wallet.publickey);
+    const input_slip = new Slip(wallet.wallet.publickey);
     input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
     input_slip.amt = BigInt(123);
     input_slip.sid = 10;

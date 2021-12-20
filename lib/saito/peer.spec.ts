@@ -1,15 +1,19 @@
 import {Saito} from "../../apps/core";
+import NetworkAPI from "./networkapi";
 
-const saito = require("./saito");
-const blake3 = require("blake3");
+import * as blake3 from "blake3";
+import Crypto from "./crypto";
+import Wallet from "./wallet";
+import Binary from "./binary";
 
 test("", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.default.networkApi(mockApp);
-    const crypto = new saito.default.crypto(mockApp);
-    const binary = new saito.default.binary(mockApp);
-    const wallet = new saito.default.wallet(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    const wallet = new Wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;

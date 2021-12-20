@@ -17,7 +17,8 @@ class Settlers extends GameTemplate {
     this.app             = app;
 
     this.name  		 = "Settlers";
-    this.description     = `German-style building game - island colonization.`;
+    this.gamename  		 = "Settlers of Saito";
+    this.description     = `Island colonization and settlement game. Collect resources and build your way to dominance.`;
     this.categories      = "Games Arcade Entertainment";
     this.type       	 = "Strategy Boardgame";
     this.status     = "Beta";

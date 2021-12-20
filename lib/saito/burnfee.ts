@@ -1,6 +1,4 @@
-'use strict'
-
-export default class BurnFee {
+class BurnFee {
     public heartbeat: any;
 
     constructor() {
@@ -8,10 +6,10 @@ export default class BurnFee {
         this.heartbeat = 5_000;
     }
 
-    returnRoutingWorkNeededToProduceBlockInNolan(burn_fee_previous_block, current_block_timestamp: number, previous_block_timestamp: number) {
+    returnRoutingWorkNeededToProduceBlockInNolan(burn_fee_previous_block, current_block_timestamp, previous_block_timestamp) {
 
         if (previous_block_timestamp >= current_block_timestamp) {
-            return BigInt("10000000000000000000");
+            return 10_000_000_000_000_000_000;
         }
 
         let elapsed_time = current_block_timestamp - previous_block_timestamp;
@@ -19,11 +17,11 @@ export default class BurnFee {
             elapsed_time = 1;
         }
         if (elapsed_time >= (2 * this.heartbeat)) {
-            return BigInt(0);
+            return 0;
         }
 
         // convert to float for division
-        const elapsed_time_float = elapsed_time;
+        const elapsed_time_float = parseFloat(elapsed_time + "");
         const burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
         const work_needed_float = burn_fee_previous_block_as_float / elapsed_time_float;
 
@@ -46,7 +44,7 @@ export default class BurnFee {
         // impossible if times misordered
         //
         if (previous_block_timestamp >= current_block_timestamp) {
-            return BigInt("10_000_000_000_000_000_000");
+            return 10_000_000_000_000_000_000;
         }
 
         let timestamp_difference = current_block_timestamp - previous_block_timestamp;
@@ -56,17 +54,18 @@ export default class BurnFee {
 
         // algorithm fails if burn fee last block is 0, so default to low value
         if (burn_fee_previous_block == BigInt(0)) {
-            return BigInt(50_000_000);
+            return 50_000_000;
         }
 
-        // TODO : check whether overflow occurs
-        const burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100000000.0;
-        const res1 = burn_fee_previous_block_as_float * Math.sqrt(parseFloat(this.heartbeat) / timestamp_difference);
-        const new_burnfee = Math.round(res1 * 100000000);
+        const burn_fee_previous_block_as_float = parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
+        const res1 = burn_fee_previous_block_as_float * Math.sqrt((parseFloat(this.heartbeat) / timestamp_difference));
+        const new_burnfee = Math.round(res1 * 100_000_000.0);
         return BigInt(new_burnfee);
 
     }
 
 
 }
+
+export default BurnFee;
 

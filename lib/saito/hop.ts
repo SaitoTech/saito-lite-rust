@@ -1,9 +1,10 @@
 import {Saito} from "../../apps/core";
+import saito from "./saito";
 
-export default class Hop {
-    public from: string;
-    public to: string;
-    public sig: string;
+class Hop {
+    public from: any;
+    public to: any;
+    public sig: any;
 
     constructor(from = "", to = "", sig = "") {
         this.from = from;
@@ -14,10 +15,10 @@ export default class Hop {
 
     /**
      * Serialize Hop
+     * @param {Hop} hop
      * @returns {array} raw bytes
-     * @param app
      */
-    serialize(app: Saito) {
+    serialize(app) {
         const from = app.binary.hexToSizedArray(this.from, 33);
         const to = app.binary.hexToSizedArray(this.to, 32);
         const sig = app.binary.hexToSizedArray(this.sig, 64);
@@ -29,36 +30,34 @@ export default class Hop {
     }
 
     clone() {
-        return new Hop(this.from, this.to, this.sig);
+        return new saito.hop(this.from, this.to, this.sig);
     }
 
     /**
      * Deserialize Hop
-     * @param app
      * @param {array} buffer
      * @returns {Hop}
      */
     deserialize(app: Saito, buffer) {
-        const from = Buffer.from(buffer.slice(0, 33)).toString("hex");
-        const to = Buffer.from(buffer.slice(33, 66)).toString("hex");
-        const sig = Buffer.from(buffer.slice(66, 130)).toString("hex");
-        return {
-            from: from,
-            to: to,
-            sig: sig,
-        }
+        this.from = Buffer.from(buffer.slice(0, 33)).toString("hex");
+        this.to = Buffer.from(buffer.slice(33, 66)).toString("hex");
+        this.sig = Buffer.from(buffer.slice(66, 130)).toString("hex");
+        return this;
     }
 
-    returnFrom(): string {
+    returnFrom() {
         return this.from;
     }
 
-    returnSig(): string {
+    returnSig() {
         return this.sig;
     }
 
-    returnTo(): string {
+    returnTo() {
         return this.to;
     }
 
 }
+
+export default Hop;
+

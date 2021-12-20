@@ -20,6 +20,7 @@ import Network from "../../lib/saito/network";
 import Staking from "../../lib/saito/staking";
 
 import hash_loader from './hash-loader';
+import Handshake from "../../lib/saito/handshake";
 
 const path = require("path");
 
@@ -46,6 +47,7 @@ class Saito {
     burnfee: BurnFee;
     blockchain: Blockchain;
     blockring: Blockring;
+    handshake: Handshake;
     hash: (data) => string;
     server: Server;
 
@@ -84,7 +86,7 @@ class Saito {
         this.blockchain = new Blockchain(this);
         this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
         this.staking = new Staking(this);
-
+        this.handshake = new Handshake(this);
     }
 
     async init() {

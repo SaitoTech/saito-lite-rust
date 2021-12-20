@@ -14,10 +14,10 @@ export enum SlipType {
     Other = 12,
 }
 
-export default class Slip {
-    public add: string;
-    public amt: bigint;
-    public type: SlipType;
+class Slip {
+    public add: any;
+    public amt: BigInt;
+    public type: any;
     public uuid: any;
     public sid: any;
     public lc: any;
@@ -26,7 +26,7 @@ export default class Slip {
     public key: any;
 
     // amount can be a string in NOLAN or a BigInt
-    constructor(publickey = "", amount: bigint | string = "0", type = SlipType.Normal, uuid = "", slip_ordinal = 0, payout = 0, lc = 1) {
+    constructor(publickey = "", amount = BigInt(0), type = SlipType.Normal, uuid = "", slip_ordinal = 0, payout = 0, lc = 1) {
 
         //
         // consensus variables
@@ -45,6 +45,10 @@ export default class Slip {
         this.payout = BigInt(payout);	// calculated for staking slips
         this.key = "";			// index in utxoset hashmap
 
+    }
+
+    returnAmount() {
+        return this.amt;
     }
 
 
@@ -91,7 +95,7 @@ export default class Slip {
     }
 
     clone() {
-        return new Slip(this.add, this.amt.toString(), this.type, this.uuid, this.sid, this.payout, this.lc);
+        return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.uuid, this.sid, this.payout, this.lc);
     }
 
     deserialize(app, buffer) {
@@ -102,7 +106,7 @@ export default class Slip {
         this.type = app.binary.u32FromBytes(buffer.slice(74, 78));
 
         // convert to BigInts
-        this.amt = BigInt(this.amt);
+        this.amt = BigInt(this.amt.toString());
 
     }
 
@@ -124,9 +128,6 @@ export default class Slip {
         return `         ${this.sid} | ${this.add} | ${this.amt.toString()}`;
     }
 
-    returnAmount() {
-        return this.amt;
-    }
 
     returnKey() {
         return this.add + this.uuid + this.amt.toString() + this.sid;
@@ -184,7 +185,7 @@ export default class Slip {
     }
 
     validate(app) {
-        if (this.amt > 0) {
+        if (this.amt > BigInt(0)) {
             if (app.utxoset.isSpendable(this.returnKey())) {
                 return true;
             } else {
@@ -197,3 +198,5 @@ export default class Slip {
 
 }
 
+
+export default Slip;

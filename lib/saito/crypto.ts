@@ -1,29 +1,28 @@
-import * as Base58 from "base-58";
-import {Saito} from "../../apps/core";
+import crypto from "crypto-browserify";
+
+import node_cryptojs from "node-cryptojs-aes";
 
 import {randomBytes} from "crypto";
 
-import crypto from "crypto-browserify";
-
-import * as node_cryptojs from "node-cryptojs-aes";
-
 import * as secp256k1 from "secp256k1";
 
+import * as Base58 from "base-58";
+
 import stringify from "fastest-stable-stringify";
+import {Saito} from "../../apps/core";
 
 const CryptoJS = node_cryptojs.CryptoJS;
 const JsonFormatter = node_cryptojs.JsonFormatter;
+
 /**
  * Crypto Constructor
  */
-export default class Crypto {
+class Crypto {
     public app: Saito;
 
-    constructor(app) {
+    constructor(app: Saito) {
 
         this.app = app;
-
-        return this;
     }
 
     ///////////////////////////////////
@@ -71,7 +70,7 @@ export default class Crypto {
         let i;
         if (!Buffer.isBuffer(a)) a = new Buffer(a)
         if (!Buffer.isBuffer(b)) b = new Buffer(b)
-        const res = [];
+        const res = []
         if (a.length > b.length) {
             for (i = 0; i < b.length; i++) {
                 res.push(a[i] ^ b[i])
@@ -102,6 +101,19 @@ export default class Crypto {
             key = key + key;
         }
         return this.xor(Buffer.from(str, 'hex'), Buffer.from(key, 'hex')).toString('hex');
+    }
+
+    toSizedArray(value, size) {
+        let value_buffer: Buffer;
+        if (value.toString() !== "0") {
+            value_buffer = Buffer.from(value.toString(), "hex");
+        } else {
+            value_buffer = Buffer.from("");
+        }
+        const new_buffer = Buffer.alloc(size);
+        console.assert(size >= value_buffer.length, "unhandled value ranges found");
+        value_buffer.copy(new_buffer, size - value_buffer.length);
+        return new_buffer;
     }
 
     stringToHex(str) {
@@ -143,7 +155,7 @@ export default class Crypto {
      * @param {string} t string to convertches
      * @returns {string} converted string
      */
-    fromBase58(t): string {
+    fromBase58(t) {
         return Buffer.from(Base58.decode(t)).toString('hex');
     }
 
@@ -166,7 +178,7 @@ export default class Crypto {
      * @returns {string} private key
      */
     generateKeys() {
-        let privateKey: Uint8Array | Buffer;
+        let privateKey;
         do {
             privateKey = randomBytes(32)
         } while (!secp256k1.privateKeyVerify(privateKey))
@@ -229,7 +241,6 @@ export default class Crypto {
      * @returns {boolean} is signature valid?
      */
     verifyHash(buffer, sig, pubkey) {
-        console.debug("verifying hash : " + Buffer.from(buffer, "hex").toString("hex"));
         try {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -251,7 +262,7 @@ export default class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-            const hash = this.hash(Buffer.from(msg, 'utf-8').toString());
+            const hash = this.hash(Buffer.from(msg, 'utf-8').toString("hex"));
             //let hash = this.hash(Buffer.from(msg).toString('hex'));
             return this.verifyHash(hash, sig, pubkey);
         } catch (err) {
@@ -267,6 +278,8 @@ export default class Crypto {
      * @returns {string} public key (hex)
      */
     uncompressPublicKey(pubkey) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         return secp256k1.publicKeyConvert(Buffer.from(this.fromBase58(pubkey), 'hex'), false).toString();
     }
 
@@ -334,10 +347,9 @@ export default class Crypto {
      * @returns {object} object with keys
      */
     returnDiffieHellmanKeys(dh) {
-        const keys = {
-            pubkey: dh.getPublicKey(null, "compressed"),
-            privkey: dh.getPrivateKey(null, "compressed")
-        };
+        const keys: any = {};
+        keys.pubkey = dh.getPublicKey(null, "compressed");
+        keys.privkey = dh.getPrivateKey(null, "compressed");
         return keys;
     }
 
@@ -405,4 +417,6 @@ export default class Crypto {
     }
 
 }
+
+export default Crypto;
 

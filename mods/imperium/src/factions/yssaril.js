@@ -6,6 +6,7 @@
       homeworld		: 	"sector75",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","pds","spacedock"],
+      action_cards	:	["leadership-rider", "trade-rider"],
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,

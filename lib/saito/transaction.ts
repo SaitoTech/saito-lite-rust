@@ -1,8 +1,7 @@
-import Slip, {SlipType} from "./slip";
-import {Saito} from "../../apps/core";
+import saito from "./saito";
 
 import * as JSON from "json-bigint";
-import Hop from "./hop";
+import Slip, {SlipType} from "./slip";
 
 export const TRANSACTION_SIZE = 89;
 export const SLIP_SIZE = 75;
@@ -21,20 +20,8 @@ export enum TransactionType {
     SPV = 9,
 }
 
-export default class Transaction {
-    public transaction = {
-        to: [],
-        from: [],
-        ts: 0,
-        sig: "",
-        path: [],
-        r: 1, // replaces
-        type: TransactionType.Normal,
-        m: "",
-        fto: undefined,
-        cumulative_fees: BigInt(0),
-        id: undefined
-    };
+class Transaction {
+    public transaction: any;
     public fees_total: any;
     public work_available_to_me: any;
     public work_available_to_creator: any;
@@ -51,7 +38,15 @@ export default class Transaction {
         /////////////////////////
         // consensus variables //
         /////////////////////////
-
+        this.transaction = {};
+        this.transaction.to = [];
+        this.transaction.from = [];
+        this.transaction.ts = 0;
+        this.transaction.sig = "";
+        this.transaction.path = [];
+        this.transaction.r = 1; // replaces
+        this.transaction.type = TransactionType.Normal;
+        this.transaction.m = "";
 
         this.fees_total = BigInt(0);
         this.work_available_to_me = BigInt(0);
@@ -86,11 +81,13 @@ export default class Transaction {
             }
             for (let i = 0; i < this.transaction.from.length; i++) {
                 const fslip = this.transaction.from[i];
-                this.transaction.from[i] = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                const fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                this.transaction.from[i] = fslipobj;
             }
             for (let i = 0; i < this.transaction.to.length; i++) {
                 const fslip = this.transaction.to[i];
-                this.transaction.to[i] = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                const fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                this.transaction.to[i] = fslipobj;
             }
         }
 
@@ -143,7 +140,6 @@ export default class Transaction {
             this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
         } catch (e) {
             this.dmsg = "";
-            console.error(e);
         }
         return;
     }
@@ -151,12 +147,11 @@ export default class Transaction {
 
     /**
      * Deserialize Transaction
-     * @param app
      * @param {array} buffer - raw bytes, perhaps an entire block
      * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
      * @returns {Transaction}
      */
-    deserialize(app: Saito, buffer, start_of_transaction_data) {
+    deserialize(app, buffer, start_of_transaction_data) {
 
         const inputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data, start_of_transaction_data + 4));
         const outputs_len = app.binary.u32FromBytes(buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8));
@@ -175,7 +170,7 @@ export default class Transaction {
         for (let i = 0; i < inputs_len; i++) {
             const start_of_slip = start_of_inputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const input = new Slip();
+            const input = new saito.slip();
             input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             inputs.push(input);
         }
@@ -183,7 +178,7 @@ export default class Transaction {
         for (let i = 0; i < outputs_len; i++) {
             const start_of_slip = start_of_outputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const output = new Slip();
+            const output = new saito.slip();
             output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             outputs.push(output);
         }
@@ -193,7 +188,7 @@ export default class Transaction {
         for (let i = 0; i < path_len; i++) {
             const start_of_data = start_of_path + (i * HOP_SIZE);
             const end_of_data = start_of_data + HOP_SIZE;
-            const hop = new Hop();
+            const hop = new saito.hop();
             hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
             path.push(hop);
         }
@@ -213,8 +208,7 @@ export default class Transaction {
             }
 //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
         } catch (err) {
-            // console.log("error trying to parse this.msg: " + reconstruct);
-            console.error(err);
+            console.error("error trying to parse this.msg: ", err);
         }
     }
 
@@ -246,12 +240,15 @@ export default class Transaction {
         // the message field with the original transaction (which is
         // by definition already in the previous TX message space.
         //
-        // TODO : commenting out since cannot find transaction_to_rebroadcast
-        // if (output_slip_to_rebroadcast.type === SlipType.ATR) {
-        //     transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
-        // } else {
-        //     transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
-        // }
+        if (output_slip_to_rebroadcast.type === SlipType.ATR) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            transaction.transaction.m = transaction_to_rebroadcast.transaction.m;
+        } else {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            transaction.transaction.m = transaction_to_rebroadcast.serialize(app);
+        }
 
         transaction.addOutput(output);
 
@@ -368,7 +365,10 @@ export default class Transaction {
                 //
                 // do not count outputs in GT and FEE txs create outputs that cannot be counted.
                 //
-                if (this.transaction.to[v].type !== TransactionType.Fee && this.transaction.to[v].type !== TransactionType.GoldenTicket) {
+                if (this.transaction.to[v].type !==
+                    TransactionType.Fee &&
+                    this.transaction.to[v].type !==
+                    TransactionType.GoldenTicket) {
                     outputs += this.transaction.to[v].returnAmount();
                 }
             }
@@ -445,7 +445,9 @@ export default class Transaction {
     }
 
     returnSlipsToAndFrom(publickey) {
-        const x = {from: [], to: []};
+        const x: any = {};
+        x.from = [];
+        x.to = [];
         if (this.transaction.from != null) {
             for (let v = 0; v < this.transaction.from.length; v++) {
                 if (this.transaction.from[v].add === publickey) {
@@ -636,7 +638,7 @@ export default class Transaction {
     }
 
 
-    serializeForSignature(app: Saito) {
+    serializeForSignature(app) {
 
         let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
@@ -709,12 +711,12 @@ export default class Transaction {
         // at the bottom is the validation criteria applied to ALL
         // transaction types.
         //
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (this.transaction.type !== TransactionType.Fee
+        if (
+            this.transaction.type !== TransactionType.Fee
             && this.transaction.type !== TransactionType.ATR
             && this.transaction.type !== TransactionType.Vip
-            && this.transaction.type !== TransactionType.Issuance) {
+            && this.transaction.type !== TransactionType.Issuance
+        ) {
 
             //
             // validate sender exists
@@ -751,9 +753,11 @@ export default class Transaction {
             for (let i = 0; i < this.transaction.to.length; i++) {
                 total_out += this.transaction.to[i].returnAmount();
             }
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (total_out > total_in && this.transaction.type !== TransactionType.Fee && this.transaction.type !== TransactionType.Vip) {
+            if (
+                total_out > total_in &&
+                this.transaction.type !== TransactionType.Fee &&
+                this.transaction.type !== TransactionType.Vip
+            ) {
                 console.log("ERROR 802394: transaction spends more than it has available");
                 return false;
             }
@@ -763,28 +767,26 @@ export default class Transaction {
         //
         // fee transactions
         //
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // if (this.transaction.type === TransactionType.Fee) {
-        // }
+        if (this.transaction.type === TransactionType.Fee) {
+        }
 
         //
         // atr transactions
         //
-        // if (this.transaction.type === TransactionType.ATR) {
-        // }
+        if (this.transaction.type === TransactionType.ATR) {
+        }
 
         //
         // normal transactions
         //
-        // if (this.transaction.type === TransactionType.Normal) {
-        // }
+        if (this.transaction.type === TransactionType.Normal) {
+        }
 
         //
         // golden ticket transactions
         //
-        // if (this.transaction.type === TransactionType.GoldenTicket) {
-        // }
+        if (this.transaction.type === TransactionType.GoldenTicket) {
+        }
 
         //
         // Staking Withdrawal Transactions
@@ -859,7 +861,6 @@ export default class Transaction {
 
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     generateMetadata() {
     }
 
@@ -883,4 +884,6 @@ export default class Transaction {
 
 }
 
+
+export default Transaction;
 

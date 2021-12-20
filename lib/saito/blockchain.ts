@@ -1,9 +1,8 @@
-import UtxoSet from "./utxoset";
-import Block from "./block";
-import Staking from "./staking";
-import Blockring from "./blockring";
+import saito from "./saito";
 
-export default class Blockchain {
+import UtxoSet from "./utxoset";
+
+class Blockchain {
     public app: any;
     public blockchain: any;
     public blockring: any;
@@ -36,7 +35,7 @@ export default class Blockchain {
         //
         // earliest in epoch
         //
-        this.blockchain.genesis_period = 10;
+        this.blockchain.genesis_period = 100;
         this.blockchain.genesis_block_id = 0;
         this.blockchain.genesis_timestamp = 0;
 
@@ -50,8 +49,8 @@ export default class Blockchain {
         //
         // core components
         //
-        this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
-        this.staking = new Staking(this.app);
+        this.blockring = new saito.blockring(this.app, this.blockchain.genesis_period);
+        this.staking = new saito.staking(this.app);
         this.blocks = {}; // hashmap of block_hash => block
         this.utxoset = new UtxoSet();
 
@@ -120,20 +119,7 @@ export default class Blockchain {
         // check if previous block exists and if not fetch that block.
         const parent_block_hash = block.block.previous_block_hash;
         if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
-            const parent_block = await this.loadBlockAsync(parent_block_hash);
-            if (parent_block) {
-                const block = await this.app.network.requestMissingBlock(parent_block_hash);
-                if (!block) {
-                    console.error("previous block not found");
-                    return;
-                }
-                if (block.block.timestamp > this.blockchain.lowest_acceptable_timestamp
-                    && block.block.id > (this.returnLatestBlockId() - this.returnGenesisPeriod())) {
-                    if (!this.app.mempool.addBlock(block)) {
-                        return;
-                    }
-                }
-            }
+            this.app.network.fetchBlock(parent_block_hash);
         }
 
         // pre-validation
@@ -212,7 +198,7 @@ export default class Blockchain {
         // get old chain
         //
         if (shared_ancestor_found) {
-            while (1) {
+            while (true) {
                 if (new_chain_hash === old_chain_hash) {
                     break;
                 }
@@ -444,43 +430,6 @@ export default class Blockchain {
     }
 
 
-    //
-    // deletes a single block
-    //
-    async deleteBlock(delete_block_id, delete_block_hash) {
-        //
-        // ask block to delete itself / utxo-wise
-        //
-        const pblock = await this.loadBlockAsync(delete_block_hash);
-
-        //
-        // remove slips from wallet
-        //
-
-        //
-        // removes utxoset data
-        //
-        //await pblock.delete();
-
-        //
-        // deletes block from disk
-        //
-        //await this.app.storage.deleteBlock(pblock);
-
-        //
-        // ask blockring to remove
-        //
-        //this.app.blockring.deleteBlock(delete_block_id, delete_block_hash);
-
-        //
-        // remove from block index
-        //
-        if (this.isBlockIndexed(delete_block_hash)) {
-            delete this.blocks[delete_block_hash];
-        }
-    }
-
-
     async downgradeBlockchainData() {
 
         //
@@ -558,6 +507,41 @@ export default class Blockchain {
         return fork_id.toString();
     }
 
+
+    // deletes a single block
+    async deleteBlock(deletedBlockId, deletedBlockHash) {
+        //
+        // ask block to delete itself / utxo-wise
+        // -- need to load data as async
+        const block = this.blocks[deletedBlockHash];
+
+        const blockFilename = this.app.storage.generateBlockFilename(block);
+
+        //
+        // loop backwards through blockchain
+        //
+
+        //
+        // remove slips from wallet
+        //
+        const wallet = this.app.wallet;
+        wallet.deleteBlock(block);
+
+        // removes utxoset data
+        await block.delete(this.utxoset);
+
+        // deletes block from disk
+        this.app.storage.deleteBlockFromDisk(blockFilename);
+
+        // ask blockring to remove
+        this.blockring.deleteBlock(deletedBlockId, deletedBlockHash);
+
+        // remove from block index
+        if (this.isBlockIndexed(deletedBlockHash)) {
+            delete this.blocks[deletedBlockHash];
+        }
+    }
+
     generateLastSharedAncestor(peer_latest_block_id, fork_id) {
 
         const my_latest_block_id = this.app.blockring.returnLatestBlockId();
@@ -575,8 +559,8 @@ export default class Blockchain {
             // roll back to last even 10 blocks
             //
             for (let i = 0; i < 10; i++) {
-                if ((pbid - i) % 10 === 0) {
-                    pbid -= i;
+                if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
+                    pbid -= BigInt(i);
                     break;
                 }
             }
@@ -588,7 +572,7 @@ export default class Blockchain {
             //
             for (let i = 0; i < 16; ++i) {
 
-                current_block_id -= weights[i];
+                current_block_id -= BigInt(weights[i]);
 
                 //
                 // do not loop around if block id < 0
@@ -730,7 +714,7 @@ export default class Blockchain {
     //
     // TODO - fetch from disk if needed, ergo async
     //
-    async loadBlockAsync(block_hash): Promise<Block> {
+    async loadBlockAsync(block_hash) {
         if (this.blocks[block_hash]) {
             return this.blocks[block_hash];
         }
@@ -846,6 +830,7 @@ export default class Blockchain {
     async unwindChain(new_chain, old_chain, current_unwind_index, wind_failure) {
 
         const block = await this.loadBlockAsync(old_chain[current_unwind_index]);
+
 
         // utxoset update
         block.onChainReorganization(false);
@@ -970,7 +955,7 @@ export default class Blockchain {
 
                 const block = this.blocks[latest_block_hash];
 
-                console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
+                //console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
 
                 if (i === 0) {
                     if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
@@ -1003,7 +988,12 @@ export default class Blockchain {
 
         if (golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR && search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR) {
             console.log("not enough golden tickets: " + golden_tickets_found + " --- " + search_depth_idx);
-            return false;
+            //
+            // TODO - browsers might want to implement this check somehow
+            //
+            if (this.app.BROWSER != 1 && this.app.SPVMODE == 0) {
+                return false;
+            }
         }
 
         return true;
@@ -1038,8 +1028,6 @@ export default class Blockchain {
     }
 
     async windChain(new_chain, old_chain, current_wind_index, wind_failure) {
-
-        console.log("wind chain...");
 
         //
         // if we are winding a non-existent chain with a wind_failure it
@@ -1086,8 +1074,6 @@ export default class Blockchain {
 
 
         const does_block_validate = await block.validate();
-
-        console.log("does block validate? " + does_block_validate);
 
         if (does_block_validate) {
 
@@ -1214,4 +1200,5 @@ export default class Blockchain {
 
 }
 
+export default Blockchain;
 

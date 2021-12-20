@@ -1,15 +1,13 @@
-import Block from "./block";
-import {Saito} from "../../apps/core";
-
+'use strict';
 import * as JSON from "json-bigint";
 import Transaction from "./transaction";
 
-export default class Storage {
-    public app: Saito;
+class Storage {
+    public app: any;
     public active_tab: any;
 
-    constructor(app: Saito) {
-        this.app = app;
+    constructor(app) {
+        this.app = app || {};
         this.active_tab = 1; 		// TODO - only active tab saves, move to Browser class
     }
 
@@ -39,12 +37,12 @@ export default class Storage {
     loadTransactions(type = "all", num = 50, mycallback) {
 
         const message = "archive";
-        const data = {
-            request: "load",
-            publickey: this.app.wallet.returnPublicKey(),
-            type: type,
-            num: num
-        };
+        const data: any = {};
+        data.request = "load";
+        data.type = type;
+        data.num = num;
+        data.publickey = this.app.wallet.returnPublicKey();
+
         this.app.network.sendRequestWithCallback(message, data, function (obj) {
             let txs = [];
             if (obj) {
@@ -59,19 +57,14 @@ export default class Storage {
 
     }
 
-    returnClientOptions(): any {
-        return null;
-    }
-
     loadTransactionsByKeys(keys, type = "all", num = 50, mycallback) {
 
         const message = "archive";
-        const data = {
-            request: "load_keys",
-            keys: keys,
-            type: type,
-            num: num
-        };
+        const data: any = {};
+        data.request = "load_keys";
+        data.keys = keys;
+        data.type = type;
+        data.num = num;
 
         this.app.network.sendRequestWithCallback(message, data, function (obj) {
             if (obj == undefined) {
@@ -145,14 +138,12 @@ export default class Storage {
         const txmsg = tx.returnMessage();
 
         const message = "archive";
-        const data = {
-            request: "save",
-            tx: tx,
-            type: txmsg.module
-        };
+        const data: any = {};
+        data.request = "save";
+        data.tx = tx;
+        data.type = txmsg.module;
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        this.app.network.sendRequestWithCallback(message, data, res => {
+        this.app.network.sendRequestWithCallback(message, data, function (res) {
         });
 
     }
@@ -163,14 +154,12 @@ export default class Storage {
         const txmsg = tx.returnMessage();
 
         const message = "archive";
-        const data = {
-            request: "save_key",
-            tx: tx,
-            key: key,
-            type: txmsg.module
-        };
+        const data: any = {};
+        data.request = "save_key";
+        data.tx = tx;
+        data.key = key;
+        data.type = txmsg.module;
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.app.network.sendRequestWithCallback(message, data, function (res) {
         });
 
@@ -180,27 +169,21 @@ export default class Storage {
     /**
      * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
      **/
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     deleteBlockFromDisk(filename) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockById(bid) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockByHash(bsh) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     loadBlockFromDisk(filename) {
     }
 
-    async loadBlockByFilename(filename): Promise<Block | null> {
-        return null;
+    loadBlockByFilename(filename) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async loadBlocksFromDisk(maxblocks = 0) {
     }
 
@@ -212,7 +195,6 @@ export default class Storage {
         return "";
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     saveClientOptions() {
     }
 
@@ -220,25 +202,19 @@ export default class Storage {
         return null;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async returnBlockFilenameByHash(block_hash, mycallback) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     returnBlockFilenameByHashPromise(block_hash) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async queryDatabase(sql, params, database) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async executeDatabase(sql, params, database, mycallback = null) {
     }
 
-    generateBlockFilename(block: Block): string {
-        return "";
-    }
 }
 
+export default Storage;
 

@@ -1,8 +1,8 @@
-'use strict';
 import {TransactionType} from "./transaction";
 import {Saito} from "../../apps/core";
 
-export default class Miner {
+
+class Miner {
     public app: Saito;
     public mining_active: any;
     public mining_speed: any;
@@ -11,7 +11,7 @@ export default class Miner {
     public difficulty: any;
 
     constructor(app) {
-        this.app = app || {};
+        this.app = app;
 
         this.mining_active = false;
         this.mining_speed = 100;
@@ -28,6 +28,7 @@ export default class Miner {
             this.startMining(msg.block_hash, msg.difficulty);
         });
     }
+
 
     startMining(previous_block_hash, difficulty) {
 
@@ -69,4 +70,6 @@ export default class Miner {
     }
 
 }
+
+export default Miner;
 

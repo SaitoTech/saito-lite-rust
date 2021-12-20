@@ -1,13 +1,12 @@
 import saito from "./saito";
+
+import * as  blake3 from "blake3";
 import {Saito} from "../../apps/core";
 import Transaction, {TransactionType} from "./transaction";
-import Block from "./block";
-import NetworkAPI from "./networkapi";
 import Crypto from './crypto';
+import Block from "./block";
 import Binary from "./binary";
-import Wallet from "./wallet";
-
-const blake3 = require("blake3");
+import NetworkAPI from "./networkapi";
 
 test("write_read_empty_block_to_file", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -23,12 +22,12 @@ test("write_read_empty_block_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const block = new saito.block(mockApp);
+    const block = new Block(mockApp);
     block.generateMetadata();
 
     const buffer = block.serialize();
 
-    const block2 = new saito.block(mockApp);
+    const block2 = new Block(mockApp);
     block2.deserialize(buffer);
     block2.generateMetadata();
 
@@ -45,7 +44,7 @@ test("write_read_block_with_data_to_file", async () => {
     const networkApi = new NetworkAPI(mockApp);
     const crypto = new Crypto(mockApp);
     const binary = new Binary(mockApp);
-    const wallet = new Wallet(mockApp);
+    const wallet = new saito.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -81,7 +80,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     const buffer = block.serialize();
 
-    const block2 = new saito.block(mockApp);
+    const block2 = new Block(mockApp);
     block2.deserialize(buffer);
     block2.generateMetadata();
 
@@ -123,7 +122,7 @@ describe('serializeForSignature', function () {
             return blake3.hash(data).toString('hex');
         };
 
-        const block = new saito.block(mockApp);
+        const block = new Block(mockApp);
 
         const buffer = block.serializeForSignature();
         expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(145)));
@@ -143,13 +142,13 @@ describe('serializeForSignature', function () {
             return blake3.hash(data).toString('hex');
         };
 
-        const block = new saito.block(mockApp);
+        const block = new Block(mockApp);
         block.block.id = 10;
         block.block.timestamp = 1637034582666;
         block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         block.block.merkle = "ccf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         block.block.creator = crypto.toBase58("dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc");
-        block.block.burnfee = BigInt(50000000);
+        block.block.burnfee = 50000000;
         block.block.difficulty = 0;
         block.block.treasury = BigInt(0);
         block.block.staking_treasury = BigInt(0);

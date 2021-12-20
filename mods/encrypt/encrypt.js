@@ -47,7 +47,7 @@ class Encrypt extends ModTemplate {
 
     if (message.request === "diffie hellman key exchange") {
 
-      let tx = new saito.transaction(message.data.tx);
+      let tx = new saito.default.transaction(message.data.tx);
 
       let sender = tx.transaction.from[0].add;
       let receiver = tx.transaction.to[0].add;
@@ -71,7 +71,7 @@ class Encrypt extends ModTemplate {
 
     if (message.request === "diffie hellman key response") {
 
-      let tx = new saito.transaction(message.data.tx);
+      let tx = new saito.default.transaction(message.data.tx);
 
       let sender = tx.transaction.from[0].add;
       let receiver = tx.transaction.to[0].add;

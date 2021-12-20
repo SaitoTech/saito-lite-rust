@@ -1,16 +1,14 @@
-import {Saito} from "../../apps/core";
-
-export default class Blockring {
+class Blockring {
+    public app: any;
+    public ring_buffer_length: any;
     public ring: any;
     public is_empty: any;
     public lc_pos: any;
     public ringp: any;
-    private ring_buffer_length: number;
-    private app: Saito;
 
-    constructor(app: Saito, genesis_period: number) {
+    constructor(app, genesis_period) {
 
-        this.app = app;
+        this.app = app || {};
 
         //
         // consensus variables
@@ -61,14 +59,14 @@ export default class Blockring {
 
             for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
                 if (this.ring[insert_pos].block_ids[i] == block_id && this.ringp[insert_pos].block_hashes[i] == block_hash) {
-                    continue;
+                } else {
+                    new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
+                    new_block_ids.push(this.ring[insert_pos].block_ids[i]);
+                    if (this.lc_pos == i) {
+                        new_lc_pos = idx_loop;
+                    }
+                    idx_loop += 1;
                 }
-                new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
-                new_block_ids.push(this.ring[insert_pos].block_ids[i]);
-                if (this.lc_pos == i) {
-                    new_lc_pos = idx_loop;
-                }
-                idx_loop += 1;
             }
 
             this.ring[insert_pos].block_hashes = new_block_hashes;
@@ -82,10 +80,15 @@ export default class Blockring {
     }
 
     print() {
-        let idx = this.lc_pos;
-        while (this.ring[idx].block_hashes.length > 0) {
-            console.log("block " + this.ring[idx].block_ids[this.ring[idx].lc_pos] + ": " + this.ring[idx].block_hashes[this.ring[idx].lc_pos]);
-            idx--;
+        let idx = this.lc_pos % this.ring_buffer_length;
+        let cont = true;
+        while (idx >= 0 && cont == true) {
+            cont = false;
+            if (this.ring[idx].block_hashes.length > 0) {
+                console.log("block " + this.ring[idx].block_ids[this.ring[idx].lc_pos] + ": " + this.ring[idx].block_hashes[this.ring[idx].lc_pos]);
+                idx--;
+                cont = true;
+            }
         }
     }
 
@@ -102,9 +105,9 @@ export default class Blockring {
         if (lc) {
             this.lc_pos = insert_pos;
         } else {
-            let previous_insert_pos = insert_pos - 1;
+            const previous_insert_pos = insert_pos - 1;
             if (previous_insert_pos < 0) {
-                previous_insert_pos = this.ring_buffer_length - 1;
+                previous_insert_pos === this.ring_buffer_length - 1;
             }
             if (this.ring[previous_insert_pos].block_hashes.length > 0) {
                 this.lc_pos = previous_insert_pos;
@@ -168,5 +171,6 @@ export default class Blockring {
 
 }
 
+export default Blockring;
 
 

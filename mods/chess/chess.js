@@ -11,6 +11,7 @@ class Chessgame extends GameTemplate {
     super(app);
 
     this.name = "Chess";
+    this.gamename = "Chess";
     this.description = "Chess is a two-player strategy board game played on a checkered board with 64 squares arranged in an 8×8 grid."
     this.board = null;
     this.engine = null;

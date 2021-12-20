@@ -2437,8 +2437,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
   $('.buildchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+      //salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+      //return;
     }
 
     let id = $(this).attr("id");
@@ -2538,8 +2538,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
   $('.buildchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2596,8 +2596,8 @@ playerBuyTokens(stage = 0, resolve = 1) {
   $('.buildchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2653,8 +2653,8 @@ playerResearchTechnology(mycallback) {
   $('.option').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2718,8 +2718,8 @@ playerScoreActionStageVictoryPoints(imperium_self, mycallback, stage = 0) {
   $('.option').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2817,8 +2817,8 @@ playerScoreSecretObjective(imperium_self, mycallback, stage = 0) {
   $('.option').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2855,8 +2855,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     $('.option').on('click', function () {
 
       if (!imperium_self.mayUnlockInterface()) {
-        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-        return;
+//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//        return;
       }
       imperium_self.unlockInterface();
       mycallback(imperium_self, 0, "");
@@ -2902,8 +2902,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   $('.option').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -2958,8 +2958,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
   $('.buildchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
     $('.buildchoice').off();
@@ -3099,8 +3099,8 @@ console.log("Calculated Production Limit: " + calculated_production_limit);
   $('.buildchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
 
     let id = $(this).attr("id");
@@ -3729,8 +3729,8 @@ playerSelectInfluence(cost, mycallback) {
     if (cost <= selected_cost) {
 
       if (!imperium_self.mayUnlockInterface()) {
-        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-        return;
+//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//        return;
       }
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
@@ -3782,10 +3782,11 @@ playerSelectStrategyAndCommandTokens(cost, mycallback) {
       }
     }
 
+
     if (cost <= selected_cost) { 
       if (!imperium_self.mayUnlockInterface()) {
-        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-        return;
+//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//        return;
       }
       imperium_self.unlockInterface();
       $('.textchoice').off();
@@ -3863,8 +3864,8 @@ playerSelectResources(cost, mycallback) {
     if (cost <= selected_cost) { 
 
       if (!imperium_self.mayUnlockInterface()) {
-        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-        return;
+//        salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//        return;
       }
       imperium_self.unlockInterface();
       $('.cardchoice , .textchoice').off();
@@ -5385,8 +5386,8 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5443,8 +5444,8 @@ playerSelectSectorWithFilter(msg, filter_func, mycallback = null, cancel_func = 
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5505,8 +5506,8 @@ playerSelectChoice(msg, choices, elect = "other", mycallback = null) {
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5567,8 +5568,8 @@ playerSelectPlanetWithFilter(msg, filter_func, mycallback = null, cancel_func = 
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5650,8 +5651,8 @@ playerSelectUnitInSectorWithFilter(msg, sector, filter_func, mycallback = null, 
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5747,8 +5748,8 @@ console.log("p k: " + p + " - " + k);
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 
@@ -5838,8 +5839,8 @@ playerSelectOpponentUnitInSectorWithFilter(msg, sector, filter_func, mycallback 
   $('.textchoice').on('click', function () {
 
     if (!imperium_self.mayUnlockInterface()) {
-      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
-      return;
+//      salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+//      return;
     }
     imperium_self.unlockInterface();
 

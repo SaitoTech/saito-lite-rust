@@ -1,13 +1,15 @@
 import {Saito} from "../../../apps/core";
-
-import saito from "../saito";
+import StorageCore from "./storage-core";
 
 import fs from "fs-extra";
 
 import * as blake3 from "blake3";
-
-import Storage from "./storage-core";
-import {TransactionType} from "../transaction";
+import Transaction, {TransactionType} from "../transaction";
+import NetworkAPI from "../networkapi";
+import Crypto from '../crypto';
+import Binary from "../binary";
+import Wallet from "../wallet";
+import Block from "../block";
 
 test("write_read_empty_block_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
@@ -15,9 +17,9 @@ test("write_read_empty_block_to_file", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -25,10 +27,10 @@ test("write_read_empty_block_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const block = new saito.block(mockApp);
+    const block = new Block(mockApp);
     block.generateMetadata();
 
-    const storage = new Storage(mockApp);
+    const storage = new StorageCore(mockApp);
     const result = await storage.saveBlock(block);
     expect(result).toBeTruthy();
 
@@ -45,10 +47,10 @@ test("write_read_block_with_data_to_file", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
-    const wallet = new saito.wallet(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    const wallet = new Wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -60,7 +62,7 @@ test("write_read_block_with_data_to_file", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const block = new saito.block(mockApp);
+    const block = new Block(mockApp);
     block.block.id = 10;
     block.block.timestamp = 1637034582666;
     block.block.previous_block_hash = "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -73,7 +75,7 @@ test("write_read_block_with_data_to_file", async () => {
     block.block.signature =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
-    const tx = new saito.transaction();
+    const tx = new Transaction();
     tx.transaction.ts = 1637034582666;
     tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
@@ -82,7 +84,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     block.generateMetadata();
 
-    const storage = new Storage(mockApp);
+    const storage = new StorageCore(mockApp);
     const result = await storage.saveBlock(block);
     expect(result).toBeTruthy();
 
@@ -114,9 +116,9 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
@@ -124,9 +126,9 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const storage = new Storage(mockApp);
+    const storage = new StorageCore(mockApp);
 
-    const block = new saito.block(mockApp);
+    const block = new Block(mockApp);
 
     const block2 = await storage.loadBlockFromDisk("./data/blocks/0000017d22813455-bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b.sai");
     console.log(process.cwd())

@@ -827,7 +827,7 @@ console.log(" .. add future move " + gametx.transaction.sig);
       tx_processed = 0;
 
       for (let ii = 0; ii < loop_size; ii++) {
-        let ftx = new saito.transaction(JSON.parse(game_self.game.future[ii]));
+        let ftx = new saito.default.transaction(JSON.parse(game_self.game.future[ii]));
         let ftxmsg = ftx.returnMessage();
         if (game_self.isUnprocessedMove(game_self.game.player, ftxmsg)) {
           game_self.game.future.splice(ii, 1);
@@ -1418,7 +1418,7 @@ console.log(" .. add future move " + gametx.transaction.sig);
 
 console.log("received relay move");
 
-        let gametx = new saito.transaction(message.data.transaction);
+        let gametx = new saito.default.transaction(message.data.transaction);
         let gametxmsg = gametx.returnMessage();
         if (gametxmsg.module == this.name) { 
 	   

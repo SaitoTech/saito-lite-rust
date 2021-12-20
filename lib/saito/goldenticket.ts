@@ -1,6 +1,5 @@
-export default class GoldenTicket {
+class GoldenTicket {
     public app: any;
-
 
     constructor(app) {
         this.app = app || {};
@@ -56,10 +55,49 @@ export default class GoldenTicket {
         const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), 'hex');
 
         return Buffer.concat([th, rh, cr]).toString("base64");
-
+        // let th2 = this.app.binary.hexToSizedArray(th.toString('hex'), 32);
+        // let rh2 = this.app.binary.hexToSizedArray(rh.toString('hex'), 32);
+        //
+        // console.log("serializing th: " + th2.toString('hex'));
+        // console.log("serializing rh: " + rh2.toString('hex'));
+        // console.log("serializing cr: " + this.app.wallet.returnPublicKey());
+        //
+        // //
+        // // miner converts to base64
+        // //
+        // return new Uint8Array([
+        //                           ...th2,
+        //                           ...rh2,
+        //                           ...cr,
+        //                       ]);
     }
 
     deserialize(base64buf) {
+
+        // console.log("HERE WITH: " + base64buf);
+        //
+        // let b = this.app.crypto.base64ToString(base64buf);
+        // console.log("HERE WITH: " + b);
+        //
+        // //
+        // // buffer is base64, and needs conversion to binary
+        // //
+        // console.log("Deserialize Base64: " + base64buf);
+        // console.log("BL : " + base64buf.length);
+        // //let buffer = Buffer.from(base64buf, 'base64');
+        // let buffer = base64buf;
+        // let buffer2 = Buffer.from(base64buf, 'base64');
+        //
+        // console.log("BL2: " + buffer2.toString('utf-8'));
+        //
+        // let target_hash = buffer.slice(0, 32).toString('hex');
+        // let random_hash = buffer.slice(32, 64).toString('hex');
+        // let creator = this.app.crypto.toBase58(buffer.slice(64, 97));
+        //
+        // console.log("reconstructing th: " + target_hash);
+        // console.log("reconstructing rh: " + random_hash);
+        // console.log("reconstructing cr: " + creator);
+
         const buffer = Buffer.from(base64buf, "base64");
 
         return {
@@ -75,4 +113,5 @@ export default class GoldenTicket {
 
 }
 
+export default GoldenTicket;
 

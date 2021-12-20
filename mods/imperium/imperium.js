@@ -1,4 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const JSON = require('json-bigint');
+
 class Imperium extends GameTemplate {
   
   constructor(app) {
@@ -1389,7 +1391,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["experimental-battlestation"],
+      action_cards	:	["warfare-rider", "technology-rider"],
       //objectives	:	["close-the-trap"],
       tech		: 	["pds-ii","sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -3219,6 +3221,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       homeworld		: 	"sector75",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","pds","spacedock"],
+      action_cards	:	["leadership-rider", "trade-rider"],
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
@@ -7456,7 +7459,7 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
 	  //
 	  // repeal any laws in plan
 	  //
-	  for (let i = imperium_self.game.state.laws.length-1; i > 0; i--) {
+	  for (let i = imperium_self.game.state.laws.length-1; i >= 0; i--) {
 	    let saved_agenda = imperium_self.game.state.laws[i].agenda;
 	    imperium_self.agenda_cards[saved_agenda].repealAgenda(imperium_self);
 	  }
@@ -11238,8 +11241,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -12286,31 +12289,25 @@ handleSystemsMenuItem() {
   };
   unloadUnitFromShip(player, sector, ship_idx, unitname) {
     let sys = this.returnSectorAndPlanets(sector);
-console.log("unloading 1 "+unitname+" from ship...");
     for (let i = 0; i < sys.s.units[player - 1][ship_idx].storage.length; i++) {
       if (sys.s.units[player - 1][ship_idx].storage[i].type === unitname) {
-console.log("found an appropriate unit.");
         let unitjson = JSON.stringify(sys.s.units[player-1][ship_idx].storage[i]);
         sys.s.units[player-1][ship_idx].storage.splice(i, 1);
         this.saveSystemAndPlanets(sys);
         return unitjson;
       }
     }
-console.log("did not find unit...");
     return "";
   };
   unloadUnitByJSONFromShip(player, sector, ship_idx, unitjson) {
     let sys = this.returnSectorAndPlanets(sector);
-console.log("unloading 1 unit from ship... 2");
     for (let i = 0; i < sys.s.units[player - 1][ship_idx].storage.length; i++) {
       if (JSON.stringify(sys.s.units[player - 1][ship_idx].storage[i]) === unitjson) {
-console.log("found appropriate unit.");
         sys.s.units[player-1][ship_idx].storage.splice(i, 1);
         this.saveSystemAndPlanets(sys);
         return unitjson;
       }
     }
-console.log("did not find appropriate unit.");
     return "";
   };
   unloadUnitFromShipByJSON(player, sector, shipjson, unitname) {
@@ -12590,31 +12587,33 @@ console.log("did not find appropriate unit.");
 
       if (this.game.board[i] != null) {
 
-      let sys = this.returnSectorAndPlanets(i);
+        let sys = this.returnSectorAndPlanets(i);
 
-      if (sys.s) {
-        for (let i = 0; i < sys.s.units.length; i++) {
-          for (let ii = 0; ii < sys.s.units[i].length; ii++) {
-	    if (sys.s.units[i][ii].max_strenth > sys.s.units[i][ii].strength) {
-              sys.s.units[i][ii].strength = sys.s.units[i][ii].max_strength;
-  	    }
+        if (sys.s) {
+          for (let i = 0; i < sys.s.units.length; i++) {
+            for (let ii = 0; ii < sys.s.units[i].length; ii++) {
+	      if (sys.s.units[i][ii].max_strenth > sys.s.units[i][ii].strength) {
+                sys.s.units[i][ii].strength = sys.s.units[i][ii].max_strength;
+  	      }
+            }
           }
         }
-      }
-      if (sys.p) {
-        for (let i = 0; i < sys.p.length; i++) {
-          for (let ii = 0; ii < sys.p[i].units; ii++) {
-            for (let iii = 0; iii < sys.p[i].units[ii].length; iii++) {
-	      if (sys.p[i].units[ii][iii].max_strenth > sys.p[i].units[ii][iii].strength) {
-                sys.p[i].units[ii][iii].strength = sys.p[i].units[ii][iii].max_strength;
+
+        if (sys.p) {
+          for (let i = 0; i < sys.p.length; i++) {
+            for (let ii = 0; ii < sys.p[i].units.length; ii++) {
+              for (let iii = 0; iii < sys.p[i].units[ii].length; iii++) {
+	        if (sys.p[i].units[ii][iii].max_strenth > sys.p[i].units[ii][iii].strength) {
+                  sys.p[i].units[ii][iii].strength = sys.p[i].units[ii][iii].max_strength;
+                }
               }
             }
           }
         }
-      }
-      this.saveSystemAndPlanets(sys);
-      }
 
+        this.saveSystemAndPlanets(sys);
+
+      }
     }
 
   }
@@ -14492,13 +14491,12 @@ this.game.state.end_round_scoring = 0;
 	//
 	// ENABLE TESTINGvMODE
 	//
-        //this.game.queue.push("is_testing");
+        this.game.queue.push("is_testing");
 
   
   	//
   	// STRATEGY CARDS
   	//
-// is_testing
         this.game.queue.push("playerschoosestrategycards_after");
         this.game.queue.push("playerschoosestrategycards");
         this.game.queue.push("playerschoosestrategycards_before");

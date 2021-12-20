@@ -1,9 +1,8 @@
 import * as JSON from "json-bigint";
-import {Saito} from "../../apps/core";
-import Transaction, {HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType} from "./transaction";
 import Slip, {SlipType} from "./slip";
+import Transaction, {HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType} from "./transaction";
 
-export const BLOCK_HEADER_SIZE = 213;
+const BLOCK_HEADER_SIZE = 213;
 
 export enum BlockType {
     Ghost = 0,
@@ -12,73 +11,50 @@ export enum BlockType {
     Full = 3
 }
 
-export default class Block {
+class Block {
+    public app: any;
+    public block: any;
+    public lc: any;
+    public force: any;
+    public transactions: any;
+    public block_type: any;
+    public hash: any;
+    public prehash: any;
+    public filename: any;
+    public total_fees: any;
+    public total_work: any;
+    public routing_work_for_creator: any;
+    public is_valid: any;
+    public has_golden_ticket: any;
+    public has_fee_transaction: any;
+    public ft_idx: any;
+    public gt_idx: any;
+    public has_issuance_transaction: any;
+    public has_hashmap_of_slips_spent_this_block: any;
+    public slips_spent_this_block: any;
+    public rebroadcast_hash: any;
+    public total_rebroadcast_slips: any;
+    public total_rebroadcast_nolan: any;
+    public callbacks: any;
+    public callbackTxs: any;
+    public confirmations: any;
     public add_transaction: any;
-    public created_hashmap_of_slips_spent_this_block: boolean;
-    public bundling_active: boolean;
-    public has_fee_tranasction: boolean;
-    public fee_transaction_idx: number;
-    public golden_ticket_idx: number;
-    public issuance_transaction_idx: number;
+    public created_hashmap_of_slips_spent_this_block: any;
+    public bundling_active: any;
+    public has_fee_tranasction: any;
+    public fee_transaction_idx: any;
+    public golden_ticket_idx: any;
+    public issuance_transaction_idx: any;
     public get_id: any;
-    private app: Saito;
-    block: {
-        transactions: Transaction[];
-        signature: string;
-        staking_treasury: bigint;
-        treasury: bigint;
-        difficulty: number;
-        burnfee: bigint;
-        creator: string;
-        merkle: string;
-        previous_block_hash: string;
-        timestamp: number;
-        id: number;
-    } = {
-        transactions: [],
-        signature: "",
-        staking_treasury: BigInt(0),
-        treasury: BigInt(0),
-        difficulty: 0,
-        burnfee: BigInt(0),
-        creator: "",
-        merkle: "",
-        previous_block_hash: "",
-        timestamp: 0,
-        id: 0
-    };
-    private lc: number;
-    private force: number;
-    transactions: Transaction[];
-    private block_type: BlockType;
-    hash: string;
-    prehash: string;
-    private filename: string;
-    private total_fees: bigint;
-    private total_work: bigint;
-    private routing_work_for_creator: bigint;
-    private is_valid: number;
-    private has_golden_ticket: boolean;
-    private has_fee_transaction: boolean;
-    private ft_idx: number;
-    private gt_idx: number;
-    private has_issuance_transaction: boolean;
-    private has_hashmap_of_slips_spent_this_block: boolean;
-    private slips_spent_this_block: Map<string, Slip>;
-    private rebroadcast_hash: string;
-    private total_rebroadcast_slips: number;
-    private total_rebroadcast_nolan: bigint;
-    private callbacks: any[];
-    private callbackTxs: any[];
-    private confirmations: number;
 
-    constructor(app: Saito, blkobj = null, confirmations = -1) {
+    constructor(app, blkobj = null, confirmations = -1) {
 
-        this.app = app;
+        this.app = app || {};
 
         //
         // consensus variables
         //
+        this.block = {};
         this.block.id = 0;
         this.block.timestamp = 0;
         this.block.previous_block_hash = "";
@@ -111,7 +87,7 @@ export default class Block {
         this.gt_idx = 0;
         this.has_issuance_transaction = false;
         this.has_hashmap_of_slips_spent_this_block = false;
-        this.slips_spent_this_block = new Map<string, Slip>();
+        this.slips_spent_this_block = {};
         this.rebroadcast_hash = "";
         this.total_rebroadcast_slips = 0;
         this.total_rebroadcast_nolan = BigInt(0);
@@ -128,7 +104,7 @@ export default class Block {
         for (let z = 0; z < this.transactions.length; z++) {
             if (this.transactions[z].transaction.type === TransactionType.Normal) {
                 const txmsg = this.transactions[z].returnMessage();
-                this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs);
+                this.app.modules.affixCallbacks(this.transactions[z], z, txmsg, this.callbacks, this.callbackTxs, this.app);
             }
         }
     }
@@ -153,7 +129,7 @@ export default class Block {
         this.block.staking_treasury = BigInt(this.app.binary.u64FromBytes(buffer.slice(189, 197)));
         this.block.burnfee = BigInt(this.app.binary.u64FromBytes(buffer.slice(197, 205)));
 
-        this.block.difficulty = Number(this.app.binary.u64FromBytes(buffer.slice(205, 213)));
+        this.block.difficulty = parseInt(this.app.binary.u64FromBytes(buffer.slice(205, 213)));
         let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
         //
@@ -259,9 +235,9 @@ export default class Block {
         //
         // if winner is atr, take inside TX
         //
-        if (winning_tx.transaction.type === TransactionType.ATR) {
+        if (winning_tx.returnTransactionType === TransactionType.ATR) {
             const buffer = winning_tx.returnMessage();
-            const winning_tx_placeholder: Transaction = new Transaction();
+            const winning_tx_placeholder = new Transaction();
             winning_tx_placeholder.deserialize(this.app, buffer, 0);
             winning_tx = winning_tx_placeholder;
         }
@@ -304,27 +280,26 @@ export default class Block {
         //
         // return obj w/ default values
         //
-        const cv = {
-            total_fees: BigInt(0),
-            ft_num: 0,
-            gt_num: 0,
-            it_num: 0,
-            ft_idx: 0,
-            gt_idx: 0,
-            it_idx: 0,
-            expected_difficulty: 1,
-            total_rebroadcast_nolan: BigInt(0),
-            total_rebroadcast_fees_nolan: BigInt(0),
-            total_rebroadcast_slips: 0,
-            nolan_falling_off_chain: BigInt(0),
-            rebroadcast_hash: "",
-            staking_treasury: BigInt(0),
-            rebroadcasts: [],
-            block_payouts: [],
-            fee_transaction: null,
-            block_payout: []
+        const cv: any = {};
 
-        };
+        cv.total_fees = BigInt(0);
+
+        cv.ft_num = 0;
+        cv.gt_num = 0;
+        cv.it_num = 0;
+        cv.ft_idx = 0;
+        cv.gt_idx = 0;
+        cv.it_idx = 0;
+        cv.expected_difficulty = 1;
+        cv.total_rebroadcast_nolan = BigInt(0);
+        cv.total_rebroadcast_fees_nolan = BigInt(0);
+        cv.total_rebroadcast_slips = 0;
+        cv.nolan_falling_off_chain = BigInt(0);
+        cv.rebroadcast_hash = "";
+        cv.staking_treasury = BigInt(0);
+        cv.rebroadcasts = [];
+        cv.block_payouts = [];
+        cv.fee_transaction = null;
 
         //
         // total fees and indices
@@ -352,8 +327,8 @@ export default class Block {
                     this.has_issuance_transaction = true;
                 }
             } catch (err) {
+                console.log("ERROR: " + err);
                 console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
-                console.error(err);
             }
         }
 
@@ -438,7 +413,7 @@ export default class Block {
                                 //
                                 // update cryptographic hash of all ATRs
                                 //
-                                cv.rebroadcast_hash = this.app.crypto.hash(cv.rebroadcast_hash + rebroadcast_transaction.serializeForSignature(this.app).toString());
+                                cv.rebroadcast_hash = this.app.crypto.hash(cv.rebroadcast_hash + rebroadcast_transaction.serializeForSignature(this.app));
 
                             } else {
 
@@ -466,7 +441,7 @@ export default class Block {
             const golden_ticket_transaction = this.transactions[cv.gt_idx];
             const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-            let next_random_number = this.app.crypto.hash(gt.random_hash);
+            let next_random_number = this.app.crypto.hash(gt.random_bytes);
             const miner_publickey = gt.creator;
 
             //
@@ -598,7 +573,7 @@ export default class Block {
                                     //
                                     // check to see if staker slip already spent/withdrawn
                                     //
-                                    if (this.slips_spent_this_block[staker_slip.returnKey()]) {
+                                    if (this.slips_spent_this_block.includes(staker_slip.returnKey())) {
                                         slip_was_spent = 1;
                                     }
 
@@ -636,6 +611,15 @@ export default class Block {
                     output.add = cv.block_payout[i].miner;
                     output.amt = cv.block_payout[i].miner_payout;
                     output.type = SlipType.MinerOutput;
+                    output.sid = slip_ordinal;
+                    transaction.addOutput(output.clone());
+                    slip_ordinal += 1;
+                }
+                if (cv.block_payout[i].router !== "") {
+                    const output = new Slip();
+                    output.add = cv.block_payout[i].router;
+                    output.amt = cv.block_payout[i].router_payout;
+                    output.type = SlipType.RouterOutput;
                     output.sid = slip_ordinal;
                     transaction.addOutput(output.clone());
                     slip_ordinal += 1;
@@ -766,7 +750,7 @@ export default class Block {
             if (gt.target_hash === previous_block_hash) {
                 console.log("ADDING GT TX TO BLOCK");
                 this.transactions.unshift(mempool.mempool.golden_tickets[i]);
-                this.has_golden_ticket = true;
+                this.has_golden_ticket = 1;
                 mempool.mempool.golden_tickets.splice(i, 1);
                 i = mempool.mempool.golden_tickets.length + 2;
             }
@@ -822,17 +806,17 @@ export default class Block {
         //
         // set treasury
         //
-        if (cv.nolan_falling_off_chain !== BigInt(0)) {
+        if (cv.nolan_falling_off_chain !== 0) {
             this.block.treasury = previous_block_treasury + cv.nolan_falling_off_chain;
         }
 
         //
         // set staking treasury
         //
-        if (cv.staking_treasury !== BigInt(0)) {
+        if (cv.staking_treasury !== 0) {
             let adjusted_staking_treasury = previous_block_staking_treasury;
             if (cv.staking_treasury < 0) {
-                const x = cv.staking_treasury * BigInt(-1);
+                const x: bigint = cv.staking_treasury * BigInt(-1);
                 if (adjusted_staking_treasury > x) {
                     adjusted_staking_treasury -= x;
                 } else {
@@ -874,14 +858,14 @@ export default class Block {
         // and the routing work.
         //
         const creator_publickey = this.returnCreator();
-        this.transactions.map(tx => tx.generateMetadata());
+        this.transactions.map(tx => tx.generateMetadata(creator_publickey));
 
         //
         // we need to calculate the cumulative figures AFTER the
         // original figures.
         //
-        let cumulative_fees = BigInt(0);
-        let cumulative_work = BigInt(0);
+        let cumulative_fees = 0;
+        let cumulative_work = 0;
 
         let has_golden_ticket = false;
         let has_fee_transaction = false;
@@ -904,8 +888,8 @@ export default class Block {
 
             const transaction = this.transactions[i];
 
-            cumulative_fees = transaction.generateMetadataCumulativeFees();
-            cumulative_work = transaction.generateMetadataCumulativeWork();
+            cumulative_fees = transaction.generateMetadataCumulativeFees(cumulative_fees);
+            cumulative_work = transaction.generateMetadataCumulativeWork(cumulative_work);
 
             //
             // update slips_spent_this_block so that we have a record of
@@ -950,8 +934,8 @@ export default class Block {
                 case TransactionType.ATR: {
 
                     // TODO : move to another method
-                    const bytes = Buffer.concat([Buffer.from(this.rebroadcast_hash, "hex"), transaction.serializeForSignature(this.app)]);
-                    this.rebroadcast_hash = this.app.crypto.hash(bytes.toString());
+                    const bytes = new Uint8Array([...this.rebroadcast_hash, ...transaction.serializeForSignature(this.app)]);
+                    this.rebroadcast_hash = this.app.crypto.hash(bytes);
 
                     for (let i = 0; i < transaction.transaction.from.length; i++) {
                         const input = transaction.transaction.from[i];
@@ -1070,7 +1054,7 @@ export default class Block {
         if (this.hash) {
             return this.hash;
         }
-        this.prehash = this.app.crypto.hash(this.serializeForSignature().toString());
+        this.prehash = this.app.crypto.hash(this.serializeForSignature());
         this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
         return this.hash;
     }
@@ -1117,7 +1101,7 @@ export default class Block {
             if (this.transactions[i].transaction.type === TransactionType.SPV) {
                 txs.push(this.transactions[i].transaction.sig);
             } else {
-                txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app).toString()));
+                txs.push(this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app)));
             }
         }
 
@@ -1195,7 +1179,7 @@ export default class Block {
         const timestamp = this.app.binary.u64AsBytes(this.block.timestamp);
 
         const previous_block_hash = this.app.binary.hexToSizedArray(block_previous_block_hash, 32);
-        const creator = this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(block_creator).toString(), 33);
+        const creator = this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(block_creator).toString('hex'), 33);
         const merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
         const signature = this.app.binary.hexToSizedArray(block_signature, 64);
 
@@ -1252,7 +1236,7 @@ export default class Block {
             this.app.binary.u64AsBytes(this.block.id),
             this.app.binary.u64AsBytes(this.block.timestamp),
             this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
-            this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator), 33),
+            this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(this.block.creator).toString('hex'), 33),
             this.app.binary.hexToSizedArray(this.block.merkle, 32),
             this.app.binary.u64AsBytes(this.block.treasury.toString()),
             this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
@@ -1289,7 +1273,7 @@ export default class Block {
         //
         // verify creator signed
         //
-        if (!this.app.crypto.verifyHash(this.app.crypto.hash(this.serializeForSignature().toString()), this.block.signature, this.block.creator)) {
+        if (!this.app.crypto.verifyHash(this.app.crypto.hash(this.serializeForSignature()), this.block.signature, this.block.creator)) {
             console.log("ERROR 582039: block is not signed by creator or signature does not validate",);
             return false;
         }
@@ -1330,14 +1314,15 @@ export default class Block {
             let adjusted_staking_treasury = previous_block.returnStakingTreasury();
             const cv_st = cv.staking_treasury;
             if (cv_st < BigInt(0)) {
-                const x = cv_st * BigInt(-1);
+                const x = cv_st * -1;
                 if (adjusted_staking_treasury < x) {
                     adjusted_staking_treasury = adjusted_staking_treasury - x;
                 } else {
                     adjusted_staking_treasury = BigInt(0);
                 }
             } else {
-                adjusted_staking_treasury = adjusted_staking_treasury + cv_st;
+                const x = cv_st;
+                adjusted_staking_treasury = adjusted_staking_treasury + x;
             }
             if (this.returnStakingTreasury().toString() !== adjusted_staking_treasury.toString()) {
                 console.log("ERROR 820391: staking treasury does not validate");
@@ -1389,12 +1374,7 @@ export default class Block {
 
                 const golden_ticket_transaction = this.transactions[cv.gt_idx];
                 const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
-                // TODO : couldn't find these methods anywhere. might want to implement or remove these
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                const solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_hash, gt.creator);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
+                const solution = this.app.goldenticket.generateSolution(previous_block.returnHash(), gt.target_hash, gt.random_bytes, gt.creator);
                 if (!this.app.goldenticket.isValidSolution(solution, previous_block.returnDifficulty())) {
                     console.log("ERROR 801923: golden ticket included in block is invalid");
                     return false;
@@ -1472,7 +1452,7 @@ export default class Block {
             //
             cv.fee_transaction.generateMetadata(this.returnCreator());
 
-            const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app).toString());
+            const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature());
             const hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
 
             if (hash1 !== hash2) {
@@ -1554,7 +1534,7 @@ export default class Block {
         //
         if (block_type === "Full") {
 
-            const block: Block = await this.app.storage.loadBlockByFilename(this.app.storage.generateBlockFilename(this));
+            const block = await this.app.storage.loadBlockByFilename(this.app.storage.generateBlockFilename(this));
             block.generateHashes();
 
             this.transactions = block.transactions;
@@ -1568,5 +1548,7 @@ export default class Block {
 
 }
 
+
+export default Block;
 
 

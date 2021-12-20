@@ -1,5 +1,5 @@
-export default class UtxoSet {
-    private slips: any[];
+class UtxoSet {
+    public slips: any;
 
     constructor() {
         this.slips = [];
@@ -17,4 +17,6 @@ export default class UtxoSet {
     }
 
 }
+
+export default UtxoSet;
 

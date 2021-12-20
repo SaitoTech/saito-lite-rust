@@ -1,12 +1,8 @@
-'use strict';
 import Block from "./block";
+import {Saito} from "../../apps/core";
 
-const Big = require('big.js')
-const saito = require('./saito');
-const path = require('path');
-
-export default class Mempool {
-    public app: any;
+class Mempool {
+    public app: Saito;
     public mempool: any;
     public routing_work_needed: any;
     public routing_work_in_mempool: any;
@@ -34,7 +30,7 @@ export default class Mempool {
 
     constructor(app) {
 
-        this.app = app || {};
+        this.app = app;
 
         //
         // data stores
@@ -301,6 +297,8 @@ export default class Mempool {
             console.log("CANNOT PRODUCE AS MEMPOOL BUNDLING ACTIVE");
             return false;
         }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (this.mempool.transactions.length === 0 && this.app.blockchain.last_bid > 1) {
             console.log("CANNOT PRODUCE AS MEMPOLL HAS NO TXS AND LAST_BID > 1");
             return false;
@@ -309,6 +307,8 @@ export default class Mempool {
             console.log("CANNOT PRODUCE AS BLOCKCHAIN ACTIVELY INDEXING BLOCK");
             return false;
         }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (this.app.blockchain.loading_blocks_from_disk_active === true) {
             console.log("CANNOT PRODUCE AS BLOCKCHAIN LOADING FROM DISK");
             return false;
@@ -390,13 +390,13 @@ export default class Mempool {
     containsTransaction(tx) {
 
         if (tx == null) {
-            return false;
+            return 0;
         }
         if (tx.transaction == null) {
-            return false;
+            return 0;
         }
         if (tx.transaction.from == null) {
-            return false;
+            return 0;
         }
 
         if (this.transactions_hmap[tx.transaction.sig] === 1) {
@@ -435,7 +435,7 @@ export default class Mempool {
     }
 
 
-    initialize() {
+    async initialize() {
 
         if (this.app.BROWSER === 1) {
             return;
@@ -551,3 +551,6 @@ export default class Mempool {
     }
 
 }
+
+export default Mempool;
+

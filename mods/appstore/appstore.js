@@ -601,7 +601,7 @@ console.log(name + " is included? " + featured_app);
 
       for (let i = 0; i < rows.length; i++) {
         let tx = JSON.parse(rows[i].tx);
-        let { module_zip } = new saito.transaction(tx).returnMessage();
+        let { module_zip } = new saito.default.transaction(tx).returnMessage();
         modules_selected.push(
           {
             name: rows[i].name,
@@ -622,7 +622,7 @@ console.log(name + " is included? " + featured_app);
 
       for (let i = 0; i < rows.length; i++) {
         let tx = JSON.parse(rows[i].tx);
-        let { module_zip } = new saito.transaction(tx).returnMessage();
+        let { module_zip } = new saito.default.transaction(tx).returnMessage();
         modules_selected.push(
           {
             name: rows[i].name,

@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
 
-export default class Connection extends EventEmitter {
+class Connection extends EventEmitter {
     public setMaxListeners: any;
 
     constructor() {
@@ -29,4 +29,6 @@ export default class Connection extends EventEmitter {
         // }, 1000);
     }
 }
+
+export default Connection;
 
