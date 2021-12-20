@@ -14,12 +14,12 @@ export enum BlockType {
 
 export default class Block {
     public add_transaction: any;
-    public created_hashmap_of_slips_spent_this_block: any;
-    public bundling_active: any;
-    public has_fee_tranasction: any;
-    public fee_transaction_idx: any;
-    public golden_ticket_idx: any;
-    public issuance_transaction_idx: any;
+    public created_hashmap_of_slips_spent_this_block: boolean;
+    public bundling_active: boolean;
+    public has_fee_tranasction: boolean;
+    public fee_transaction_idx: number;
+    public golden_ticket_idx: number;
+    public issuance_transaction_idx: number;
     public get_id: any;
     private app: Saito;
     block: {
@@ -34,6 +34,18 @@ export default class Block {
         previous_block_hash: string;
         timestamp: number;
         id: number;
+    } = {
+        transactions: [],
+        signature: "",
+        staking_treasury: BigInt(0),
+        treasury: BigInt(0),
+        difficulty: 0,
+        burnfee: BigInt(0),
+        creator: "",
+        merkle: "",
+        previous_block_hash: "",
+        timestamp: 0,
+        id: 0
     };
     private lc: number;
     private force: number;
