@@ -60,6 +60,7 @@ module.exports = ArcadeGameDetails = {
       } catch (err) {}
     };
 
+/***
     if (gamemod.status) {
       var html =  `
       <h3>Development Status: ${gamemod.status}.</h3>
@@ -68,6 +69,7 @@ module.exports = ArcadeGameDetails = {
       </p>`;
       document.querySelector(".game-wizard-status").innerHTML = html;
     }
+***/
 
     if (gamemod.publisher_message) {
       document.querySelector('.game-wizard-publisher-message').innerHTML = `<span style="font-weight:bold">NOTE: </span>${gamemod.publisher_message}`;

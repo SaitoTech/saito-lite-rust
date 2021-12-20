@@ -37,6 +37,7 @@ class Peer {
         this.peer.keylist = [];
 
         if (peerjson !== "") {
+	  try {
             let peerobj = JSON.parse(peerjson);
             if (peerobj.peer.endpoint == null) {
                 peerobj.peer.endpoint = {};
@@ -45,6 +46,9 @@ class Peer {
                 peerobj.peer.endpoint.protocol = peerobj.peer.protocol;
             }
             this.peer = peerobj.peer;
+	  } catch (err) {
+	    console.log("err: " + err);
+	  }
         }
     }
 
@@ -61,30 +65,6 @@ class Peer {
 
         tmptx.transaction.path.push(hop);
         return tmptx;
-
-    }
-
-
-    //
-    // delete before we close
-    //
-    disconnect() {
-
-        try {
-
-            let socket_id = this.socket.id;
-
-            try {
-                this.socket.close();
-            } catch (err) {
-                console.log("error with socket.close on " + socket_id);
-            }
-
-            delete this.socket;
-
-        } catch (err) {
-            console.log("ERROR 582034: error closing websocket: " + err);
-        }
 
     }
 
@@ -122,14 +102,6 @@ class Peer {
     }
 
 
-    async connect(attempt = 0) {
-	if (this.app.BROWSER == 1) {
-            this.socket = await this.app.network.initializeWebSocket(this, false, true);
-	} else {
-            this.socket = await this.app.network.initializeWebSocket(this, false, false);
-	}
-    }
-
     returnPublicKey() {
         return this.peer.publickey;
     }
@@ -143,32 +115,31 @@ class Peer {
     }
 
     sendRequest(message, data = "") {
+
         //
         // respect prohibitions
         //
 
 	// block as Block.serialize(BlockType.Header)
         if (message === "SNDBLOCK") {
-            this.app.networkApi.sendAPICall(this.socket, "SNDBLOCK", data);
+            this.app.networkApi.send(this.socket, "SNDBLOCK", data);
             return;
         }
 	// block as block_hash
         if (message === "SNDBLKHH") {
-            this.app.networkApi.sendAPICall(this.socket, "SNDBLKHH", data);
+            this.app.networkApi.send(this.socket, "SNDBLKHH", data);
             return;
         }
 	// transaction as Transaction.serialize()
         if (message === "SNDTRANS") {
-            this.app.networkApi.sendAPICall(this.socket, "SNDTRANS", data);
+            this.app.networkApi.send(this.socket, "SNDTRANS", data);
             return;
         }
 	// transaction as Transaction.serialize()
         if (message === "REQCHAIN") {
-            this.app.networkApi.sendAPICall(this.socket, "REQCHAIN", data);
+            this.app.networkApi.send(this.socket, "REQCHAIN", data);
             return;
         }
-
-console.log("HERE WE ARE SENDING REQUEST");
 
 	//
 	// alternately, we have a legacy transmission format, which is sent
@@ -179,7 +150,6 @@ console.log("HERE WE ARE SENDING REQUEST");
         let buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("HERE WE ARE SENDING REQUEST 2");
             this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer)
                 .then(() => {
                     //console.debug("message sent with sendRequest");

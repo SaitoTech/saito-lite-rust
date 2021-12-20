@@ -54,6 +54,8 @@ class Network {
         let peerobj = {};
         peerobj.peer = JSON.parse(peerjson);
 
+console.log("ADD OUTGOING PEER!");
+
         if (peerobj.peer.protocol == null) {
             peerobj.peer.protocol = "http";
         }
@@ -97,23 +99,16 @@ class Network {
         //
         let peer = new saito.peer(this.app, JSON.stringify(peerobj));
 
-	//
-	//
-	//
-
         //
         // we connect to them
         //
-        peer.connect();
+        peer.socket = this.app.network.initializeWebSocket(peer, false, (this.app.BROWSER == 1));
         this.peers.push(peer);
         this.peers_connected++;
-
 
 	//
 	// initiate the handshake (verifying peers)
 	//
-
-
 
     }
 
@@ -125,6 +120,8 @@ class Network {
     //
     addRemotePeer(socket) {
 
+console.log("ADD INCOMING PEER!");
+
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
             console.log("ERROR 757594: denying request to remote peer as server overloaded...");
@@ -134,12 +131,12 @@ class Network {
         //
         // sanity check
         //
-        for (let i = 0; i < this.peers.length; i++) {
-            // if (this.peers[i].socket_id === socket.id) { // TODO : add a valid check. these fields are undefined in websockets
-            //     console.log("error adding socket: already in pool [" + this.peers[i].socket_id + " - " + socket.id + "]");
-            //     return;
-            // }
-        }
+        //for (let i = 0; i < this.peers.length; i++) {
+        //    if (this.peers[i].socket_id === socket.id) { // TODO : add a valid check. these fields are undefined in websockets
+        //         console.log("error adding socket: already in pool [" + this.peers[i].socket_id + " - " + socket.id + "]");
+        //         return;
+        //    }
+        //}
 
 
         //
@@ -161,10 +158,6 @@ class Network {
         // if the handshake is not attaching data such as publickey, etc.
         // to the peer socket, then how we do we handle not adding dupes,
         // etc.
-        //
-        //peer.connect(1);
-        //
-        //
         //
         this.peers.push(peer);
         this.peers_connected++;
@@ -191,10 +184,9 @@ class Network {
      * @param {string} block_hash
      * @param {string} preferred peer (if exists); // TODO - remove duplicate function and update blockchain.js
      */
-    async requestMissingBlock(block_hash, peer = null) { return await fetchBlock(block_hash, peer); }
     async fetchBlock(block_hash, peer=null) {
 
-	if (peer == null) {
+	if (peer === null) {
 	    if (this.peers.length == 0) { return; }
 	    peer = this.peers[0];
 	}
@@ -229,9 +221,13 @@ class Network {
 	//
         if (browser == true) {
 
+console.log("PEER IS: " + JSON.stringify(peer.peer));
+
             let wsProtocol = 'ws';
-            if (peer.peer.protocol === 'https') { wsProtocol = 'wss'; }
-            peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
+	    if (peer.peer?.protocol) {
+                if (peer.peer.protocol === 'https') { wsProtocol = 'wss'; }
+            }
+	    peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
             peer.socket.peer = peer;
 
             peer.socket.onopen = (event) => {
@@ -254,7 +250,7 @@ class Network {
                 } else if (api_message.message_name === "ERROR___") {
                     this.app.networkApi.receiveAPIError(api_message);
                 } else {
-                    await this.receivePeerRequest(peer, api_message);
+                    await this.receiveRequest(peer, api_message);
                 }
             };
 
@@ -299,8 +295,8 @@ class Network {
             } else if (api_message.message_name === "ERROR___") {
                 this.app.networkApi.receiveAPIError(api_message);
             } else {
-                console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
-                await this.receivePeerRequest(peer, api_message);
+                //console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
+                await this.receiveRequest(peer, api_message);
             }
         });
 
@@ -309,7 +305,7 @@ class Network {
     
 
 
-    cleanupDisconnectedSocket(peer) {
+    cleanupDisconnectedSocket(peer, force=0) {
 
         for (let c = 0; c < this.peers.length; c++) {
             if (this.peers[c] === peer) {
@@ -353,6 +349,14 @@ class Network {
                         }
                     }
                 }
+	
+
+		//
+		// respect our arbitrary force-kill ability
+		//
+		if (force !== 0) { keep_peer = 0; }
+
+
                 if (keep_peer >= 0) {
                     //
                     // we push onto dead peers list, which will
@@ -364,7 +368,11 @@ class Network {
                 //
                 // close and destroy socket, and stop timers
                 //
-                this.peers[c].disconnect();
+	        try {
+		    this.peers[c].socket.close();
+		} catch (err) {
+            	    console.log("ERROR 582034: error closing websocket: " + err);
+		}
                 this.peers.splice(c, 1);
                 c--;
                 this.peers_connected--;
@@ -439,7 +447,7 @@ class Network {
 
 
 
-    async receivePeerRequest(peer, message) {
+    async receiveRequest(peer, message) {
 
 	let block;
 	let block_hash;
@@ -456,6 +464,20 @@ class Network {
 
                 challenge = await this.app.handshake.handleIncomingHandshakeRequest(peer, message.message_data);
                 await peer.sendResponse(message.message_id, challenge);
+
+		//
+		// prune older peers
+		//
+		let publickey = peer.peer.publickey;
+		let count = 0;
+		for (let i = this.peers.length-1; i >= 0; i--) {
+		    if (this.peers[i].peer.publickey === publickey) { count++; }
+		    if (count > 1) {
+			this.cleanupDisconnectedSocket(this.peers[i], 1);
+			i--;
+		    }
+		}
+
                 break;
 
             case "REQBLOCK":
@@ -539,9 +561,7 @@ class Network {
 		block_hash = Buffer.from(message.message_data, 'hex').toString('hex');;
 
                 is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
-                if (is_block_indexed) {
-                    console.info("SNDBLKHD hash already known: " + Buffer.from(send_block_head_message.block_hash).toString("hex"));
-                } else {
+                if (!is_block_indexed) {
                     block = await this.fetchBlock(block_hash);
                     this.app.mempool.addBlock(block);
                 }
@@ -600,7 +620,7 @@ class Network {
                 	        }
                 	    }
                 	}
-console.log("SENDMESG handle peer request");
+console.log("SENDMESG received handle peer request!");
                 	this.app.modules.handlePeerRequest(msg, this, mycallback);
         	}
                 break;
@@ -665,11 +685,10 @@ console.log("SENDMESG handle peer request");
         const data = {bhash: blk.returnHash(), bid: blk.block.id};
         for (let i = 0; i < this.peers.length; i++) {
 	    if (peer === this.peers[i]) {
-		this.sendPeerRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
+		this.sendRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
 	    } else {
                 if (this.peers[i].peer.sendblks === 1) {
-		    //this.sendPeerRequest("SNDBLOCK", blk.serialize(saito.block.BlockType.Header), this.peers[i]);
-		    this.sendPeerRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
+		    this.sendRequest("SNDBLKHH", Buffer.from(blk.returnHash(), 'hex'), this.peers[i]);
                 }
             }
         }
@@ -736,7 +755,7 @@ console.log("SENDMESG handle peer request");
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 let tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
-		    this.sendPeerRequest("SNDTRANS", tx.serialize(this.app), peer);
+		    this.sendRequest("SNDTRANS", tx.serialize(this.app), peer);
                 } else {
                     console.error("socket not found");
                 }
@@ -755,40 +774,41 @@ console.log("SENDMESG handle peer request");
 
         for (let x = this.peers.length - 1; x >= 0; x--) {
             if (this.peers[x] === peer) {
-		this.sendPeerRequest("REQCHAIN", buffer_to_send, peer);
+		this.sendRequest("REQCHAIN", buffer_to_send, peer);
 		return;
             }
         }
 
 	if (this.peers.length > 0) {
-	    this.sendPeerRequest("REQCHAIN", buffer_to_send, this.peers[0]);
+	    this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
 	}
 
     }
 
-    sendPeerRequest(message, data = "", peer) {
-        for (let x = this.peers.length - 1; x >= 0; x--) {
-            if (this.peers[x] === peer) {
-                this.peers[x].sendRequest(message, data);
-            }
-        }
-    }
 
-    sendPeerRequestWithCallback(message, data = "", peer) {
-        for (let x = this.peers.length - 1; x >= 0; x--) {
-            if (this.peers[x] === peer) {
-                this.peers[x].sendRequestWithCallback(message, data, callback);
+    sendRequest(message, data = "", peer=null) {
+	if (peer !== null) {
+            for (let x = this.peers.length - 1; x >= 0; x--) {
+		if (this.peers[x] === peer) {
+                    this.peers[x].sendRequest(message, data);
+                }
             }
-        }
-    }
-
-    sendRequest(message, data = "") {
+	    return;
+	}
         for (let x = this.peers.length - 1; x >= 0; x--) {
             this.peers[x].sendRequest(message, data);
         }
     }
 
-    sendRequestWithCallback(message, data = "", callback) {
+    sendRequestWithCallback(message, data = "", callback, peer=null) {
+	if (peer !== null) {
+            for (let x = this.peers.length - 1; x >= 0; x--) {
+		if (this.peers[x] === peer) {
+                    this.peers[x].sendRequestWithCallback(message, data, callback);
+                }
+            }
+	    return;
+	}
         for (let x = this.peers.length - 1; x >= 0; x--) {
             this.peers[x].sendRequestWithCallback(message, data, callback);
         }

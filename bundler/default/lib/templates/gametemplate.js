@@ -2104,7 +2104,7 @@ setTimeout(() => {
 	// TEST -- screwing with gaming active?load game if this is not accurate
 	//
 	//if (!game_self.game?.id && this.name === gametxmsg.module) {
-console.log("loading game...");
+	//console.log("loading game...");
 	//  game_self.game = game_self.loadGame(gametxmsg.id);
 	//}
 

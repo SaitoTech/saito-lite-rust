@@ -75,6 +75,7 @@ class Relay extends ModTemplate {
         //
         // forward to peer
         //
+console.log("FORWARDING TO PEER IN RELAY MOD");
         peer.sendRequest("relay peer message", tx.transaction);
 
       }
@@ -97,6 +98,8 @@ class Relay extends ModTemplate {
 
       if (message.request === "relay peer message") {
 
+console.log("RECEIVED RELAY PEER MESSAGE!");
+
         //
         // sanity check on tx
         //
@@ -117,7 +120,7 @@ class Relay extends ModTemplate {
         if (tx.isTo(app.wallet.returnPublicKey())) {
 // && !tx.isFrom(app.wallet.returnPublicKey())) {
 
-	  console.log("processing txmsg.request: " + JSON.stringify(txmsg.request));
+	  console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
           app.modules.handlePeerRequest(txmsg, peer, mycallback);
 	  return;
 
@@ -126,20 +129,21 @@ class Relay extends ModTemplate {
 	//
 	} else {
 
-console.log("not for me, so relay to peer!");
-
 	  //
 	  // check to see if original tx is for a peer
 	  //
           let peer_found = 0;
 
+console.log("number of peers: " + app.network.peers.length);
+
           for (let i = 0; i < app.network.peers.length; i++) {
+
             //if (!tx.isFrom(app.network.peers[i].peer.publickey)) {
               if (tx.isTo(app.network.peers[i].peer.publickey)) {
 
                 peer_found = 1;
 
-console.log("peer found, relaying to them!");
+console.log("relaying to: " + app.network.peers[i].peer.publickey);
                 app.network.peers[i].sendRequest("relay peer message", message.data, function() {
 	          if (mycallback != null) {
                     mycallback({ err : "" , success : 1 });

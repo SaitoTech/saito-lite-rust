@@ -107,20 +107,7 @@ class Blockchain {
         // check if previous block exists and if not fetch that block.
         let parent_block_hash = block.block.previous_block_hash;
         if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
-            let parent_block = await this.loadBlockAsync(parent_block_hash);
-            if (parent_block) {
-                let block = await this.app.network.requestMissingBlock(parent_block_hash);
-                if (!block) {
-                    console.error("previous block not found");
-                    return;
-                }
-                if (block.block.timestamp > this.blockchain.lowest_acceptable_timestamp
-                    && block.block.id > (this.returnLatestBlockId() - this.returnGenesisPeriod())) {
-                    if (!this.app.mempool.addBlock(block)) {
-                        return;
-                    }
-                }
-            }
+            this.app.network.fetchBlock(parent_block_hash);
         }
 
         // pre-validation
@@ -646,7 +633,7 @@ class Blockchain {
 
         let prune_block_id = this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
         let block_hashes_copy = [];
-        let block_hashes = this.blockring.returnBlockHashesAtBlockId(pruneBlocksAtBlockId);
+        let block_hashes = this.blockring.returnBlockHashesAtBlockId(prune_block_id);
 
         for (let hash of block_hashes) {
             blockHashesCopy.push([...hash]);
@@ -1074,7 +1061,7 @@ console.log("PLBI " + peer_latest_block_id);
 
                 let block = this.blocks[latest_block_hash];
 
-                console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
+                //console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
 
                 if (i === 0) {
                     if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
@@ -1148,8 +1135,6 @@ console.log("PLBI " + peer_latest_block_id);
 
     async windChain(new_chain, old_chain, current_wind_index, wind_failure) {
 
-        console.log("wind chain...");
-
         //
         // if we are winding a non-existent chain with a wind_failure it
         // means our wind attempt failed and we should move directly into
@@ -1195,8 +1180,6 @@ console.log("PLBI " + peer_latest_block_id);
 
 
         let does_block_validate = await block.validate();
-
-        console.log("does block validate? " + does_block_validate);
 
         if (does_block_validate) {
 
