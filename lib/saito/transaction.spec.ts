@@ -1,10 +1,14 @@
 import {Saito} from "../../apps/core";
 
-const saito = require("./saito");
-const blake3 = require("blake3");
+import saito from "./saito";
+
+import * as blake3 from "blake3";
+import {TransactionType} from "./transaction";
+import {SlipType} from "./slip";
 
 test("tx serialize deserialze", () => {
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new saito.networkApi(mockApp);
@@ -24,7 +28,7 @@ test("tx serialize deserialze", () => {
 
     const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
-    tx.transaction.type = saito.transaction.TransactionType.ATR;
+    tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
 
@@ -121,6 +125,7 @@ describe("serializeForSignature", () => {
 });
 
 test("sign", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new saito.networkApi(mockApp);
@@ -140,20 +145,20 @@ test("sign", () => {
 
     const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
-    tx.transaction.type = saito.transaction.TransactionType.ATR;
+    tx.transaction.type = TransactionType.ATR;
     tx.msg = {test: "test"};
 
     const input_slip = new saito.slip(wallet.wallet.publickey);
     input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
-    input_slip.amt = "123";
+    input_slip.amt = BigInt(123);
     input_slip.sid = 10;
-    input_slip.type = saito.slip.SlipType.ATR;
+    input_slip.type = SlipType.ATR;
 
     const output_slip = new saito.slip(wallet.wallet.publickey);
     output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
-    output_slip.amt = "345";
+    output_slip.amt = BigInt(345);
     output_slip.sid = 23;
-    output_slip.type = saito.slip.SlipType.Normal;
+    output_slip.type = SlipType.Normal;
 
     tx.transaction.from.push(input_slip);
     tx.transaction.to.push(output_slip);

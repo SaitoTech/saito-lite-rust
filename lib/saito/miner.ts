@@ -1,9 +1,5 @@
 'use strict';
 import {TransactionType} from "./transaction";
-
-import saito from "./saito";
-
-import Big from "big.js";
 import {Saito} from "../../apps/core";
 
 export default class Miner {
@@ -27,15 +23,11 @@ export default class Miner {
     }
 
     initialize() {
-
         this.app.connection.on('BlockchainNewLongestChainBlock', (msg) => {
             this.stopMining();
             this.startMining(msg.block_hash, msg.difficulty);
         });
-
-
     }
-
 
     startMining(previous_block_hash, difficulty) {
 

@@ -83,7 +83,7 @@ export default class StorageCore extends Storage {
         return filename;
     }
 
-    loadBlockFromDisk(filename) {
+    loadBlockFromDisk(filename): Block {
         try {
             if (fs.existsSync(filename)) {
                 const buffer = fs.readFileSync(filename);

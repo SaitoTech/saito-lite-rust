@@ -6,10 +6,10 @@ const blake3 = require("blake3");
 test("", () => {
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
-    const wallet = new saito.wallet(mockApp);
+    const networkApi = new saito.default.networkApi(mockApp);
+    const crypto = new saito.default.crypto(mockApp);
+    const binary = new saito.default.binary(mockApp);
+    const wallet = new saito.default.wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;

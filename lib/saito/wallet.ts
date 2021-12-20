@@ -314,7 +314,7 @@ console.log("---------------------");
       //
       if (this.wallet.pending.length > 0) {
         for (let i = 0; i < this.wallet.pending.length; i++) {
-          let ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
+          let ptx = new saito.default.transaction(JSON.parse(this.wallet.pending[i]));
           for (let k = 0; k < ptx.transaction.from.length; k++) {
             let slipIndex = ptx.transaction.from[k].returnSignatureSource();
             for (let m = 0; m < this.wallet.inputs; m++) {
@@ -348,7 +348,7 @@ console.log("---------------------");
       }
 
       // add new output
-      tx.transaction.to.push(new saito.slip(this.returnPublicKey(), output_amount.toFixed(8)));
+      tx.transaction.to.push(new saito.default.slip(this.returnPublicKey(), output_amount.toFixed(8)));
       tx.transaction.to[tx.transaction.to.length-1].type = 0;
 
     }

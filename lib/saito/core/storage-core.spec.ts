@@ -1,14 +1,18 @@
 import {Saito} from "../../../apps/core";
 
-const saito = require('../saito');
-const fs = require("fs-extra");
-const blake3 = require("blake3");
-const Big = require("big.js");
-const Storage = require('./storage-core');
+import saito from "../saito";
+
+import fs from "fs-extra";
+
+import * as blake3 from "blake3";
+
+import Storage from "./storage-core";
+import {TransactionType} from "../transaction";
 
 test("write_read_empty_block_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new saito.networkApi(mockApp);
@@ -38,6 +42,7 @@ test("write_read_empty_block_to_file", async () => {
 test("write_read_block_with_data_to_file", async () => {
     fs.emptyDirSync("../data/blocks");
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new saito.networkApi(mockApp);
@@ -70,7 +75,7 @@ test("write_read_block_with_data_to_file", async () => {
 
     const tx = new saito.transaction();
     tx.transaction.ts = 1637034582666;
-    tx.transaction.type = saito.transaction.TransactionType.ATR;
+    tx.transaction.type = TransactionType.ATR;
     tx.transaction.sig =
         "c9a6c2d0bf884be6933878577171a3c8094c2bf6e0bc1b4ec3535a4a55224d186d4d891e254736cae6c0d2002c8dfc0ddfc7fcdbe4bc583f96fa5b273b9d63f4";
     block.transactions.push(tx);
@@ -106,6 +111,7 @@ test("write_read_block_with_data_to_file", async () => {
 });
 
 test.skip("read_block_from_disk (from rust generated block)", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const mockApp: Saito = {};
     const networkApi = new saito.networkApi(mockApp);
@@ -118,7 +124,7 @@ test.skip("read_block_from_disk (from rust generated block)", async () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const storage = new saito.storage(mockApp);
+    const storage = new Storage(mockApp);
 
     const block = new saito.block(mockApp);
 

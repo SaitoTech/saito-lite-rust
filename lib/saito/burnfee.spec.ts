@@ -1,8 +1,8 @@
-import saito from "./saito";
+import BurnFee from "./burnfee";
 
 test("burnfee routing work needed tests", () => {
 
-    const burnfee = new saito.burnfee();
+    const burnfee = new BurnFee();
 
     const bf1 = burnfee.returnRoutingWorkNeededToProduceBlockInNolan(BigInt(10), 2 * burnfee.heartbeat, 0);
     const bf2 = burnfee.returnRoutingWorkNeededToProduceBlockInNolan(BigInt(1000000000), 0, 0);

@@ -1,15 +1,18 @@
-import saito from "./saito";
 import {Saito} from "../../apps/core";
+import Wallet from "./wallet";
+import Binary from "./binary";
+import Crypto from './crypto'
+import NetworkAPI from "./networkapi";
 
 const blake3 = require("blake3");
 
 test("signBuffer", () => {
     // @ts-ignore
     const mockApp: Saito = {};
-    const networkApi = new saito.networkApi(mockApp);
-    const crypto = new saito.crypto(mockApp);
-    const binary = new saito.binary(mockApp);
-    const wallet = new saito.wallet(mockApp);
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    const wallet = new Wallet(mockApp);
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;

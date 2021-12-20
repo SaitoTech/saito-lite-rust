@@ -229,6 +229,7 @@ export default class Crypto {
      * @returns {boolean} is signature valid?
      */
     verifyHash(buffer, sig, pubkey) {
+        console.debug("verifying hash : " + Buffer.from(buffer, "hex").toString("hex"));
         try {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

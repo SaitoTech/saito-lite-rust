@@ -435,7 +435,7 @@ export default class Mempool {
     }
 
 
-    async initialize() {
+    initialize() {
 
         if (this.app.BROWSER === 1) {
             return;

@@ -2,7 +2,7 @@ export default {
     core: [
         'arcade/arcade.js',
         'archive/archive.js',
-        // 'blackjack/blackjack.js',
+        'blackjack/blackjack.js',
         'chat/chat.js',
         // 'chess/chess.js',
         'email/email.js',
@@ -23,7 +23,7 @@ export default {
     lite: [
         'arcade/arcade.js',
         'archive/archive.js',
-        // 'blackjack/blackjack.js',
+        'blackjack/blackjack.js',
         // 'chess/chess.js',
         'chat/chat.js',
         'email/email.js',
