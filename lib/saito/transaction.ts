@@ -143,6 +143,7 @@ export default class Transaction {
             this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
         } catch (e) {
             this.dmsg = "";
+            console.error(e);
         }
         return;
     }

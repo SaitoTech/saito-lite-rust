@@ -160,7 +160,8 @@ webpack({
         })
     ],
     experiments: {
-        asyncWebAssembly: true
+        // asyncWebAssembly: true,
+        syncWebAssembly: true
     },
     mode: 'production',
     devtool: devtool,

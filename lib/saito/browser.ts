@@ -242,6 +242,7 @@ export default class Browser {
         try {
             Function("() => {};");
         } catch (err) {
+            console.error(err);
             return 0;
         }
 
@@ -836,6 +837,7 @@ export default class Browser {
                 throw "key not found in hash";
             }
         } catch (err) {
+            console.error(err);
             return Number(0);
         }
     }

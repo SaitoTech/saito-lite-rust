@@ -19,6 +19,8 @@ import NetworkAPI from "../../lib/saito/networkapi";
 import Network from "../../lib/saito/network";
 import Staking from "../../lib/saito/staking";
 
+import hash_loader from './hash-loader';
+
 const path = require("path");
 
 class Saito {
@@ -44,7 +46,7 @@ class Saito {
     burnfee: BurnFee;
     blockchain: Blockchain;
     blockring: Blockring;
-    hash: (data) => any = (data) => "";
+    hash: (data) => string;
     server: Server;
 
     constructor(config = {}) {
@@ -102,31 +104,36 @@ class Saito {
             // function can invoke whichever one is being used in that specific
             // configuration (server / browser);
             //
-            if (!this.BROWSER) {
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
-                // const blake3 = require('blake3');
-                await import ("blake3").then(blake3 => {
-                    this.hash = (data) => {
-                        return blake3.hash(data).toString('hex');
-                    };
-                });
-
-            } else {
-                // await import("blake3-js").then(blake3 => {
-                //     this.hash = (data) => {
-                //         return blake3.newRegular().update(data).finalize();
-                //     }
-                // });
-
-                await import ("blake3/browser").then(blake3 => {
-                    this.hash = (data) => {
-                        return blake3.hash(data).toString('hex');
-                    };
-                });
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
-                // const blake3 = require("blake3-js");
-
-            }
+            await hash_loader(this);
+            // if (!this.BROWSER) {
+            //     // eslint-disable-next-line @typescript-eslint/no-var-requires
+            //     // const blake3 = require('blake3');
+            //     const blake3 = await import ("blake3");
+            //     this.hash = (data) => {
+            //         return blake3.hash(data).toString('hex');
+            //     };
+            //
+            // } else {
+            //     // await import("blake3-js").then(blake3 => {
+            //     //     this.hash = (data) => {
+            //     //         return blake3.newRegular().update(data).finalize();
+            //     //     }
+            //     // });
+            //     // eslint-disable-next-line @typescript-eslint/no-var-requires
+            //     const blake3 = require("blake3-js");
+            //
+            //     this.hash = (data) => {
+            //         return blake3.newRegular().update(data).finalize();
+            //         // return blake3.hash(data).toString('hex');
+            //     };
+            //     //
+            //     // this.hash = (data) => {
+            //     //     return blake3.hash(data).toString('hex');
+            //     // };
+            //     // eslint-disable-next-line @typescript-eslint/no-var-requires
+            //     // const blake3 = require("blake3-js");
+            //
+            // }
 
             this.wallet.initialize();
             this.mempool.initialize();
