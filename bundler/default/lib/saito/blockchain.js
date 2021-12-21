@@ -23,7 +23,7 @@ class Blockchain {
         //
         // earliest in epoch
         //
-        this.blockchain.genesis_period = 4;
+        this.blockchain.genesis_period = 100;
         this.blockchain.genesis_block_id = 0;
         this.blockchain.genesis_timestamp = 0;
 
@@ -46,7 +46,7 @@ class Blockchain {
         //
         // downgrade blocks after N blocks
         //
-        this.prune_after_blocks = 8;
+        this.prune_after_blocks = 20;
 
         //
         // set to true when adding blocks to disk (must be done one at a time!)

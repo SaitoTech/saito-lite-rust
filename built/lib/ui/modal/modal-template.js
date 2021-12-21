@@ -1,0 +1,5 @@
+module.exports = ModalTemplate = function (_a) {
+    var id = _a.id, title = _a.title, content = _a.content;
+    return "\n    <div id=\"".concat(id, "-modal\" class=\"modal\" style=\"font-family: visuelt-medium;\">\n      <div id=\"").concat(id, "-modal-content\" class=\"modal-content modal-med-size\">\n        <div style=\"display: grid; grid-gap: 1em\">\n          <div style=\"display: grid; grid-template-columns: auto 1em;\">\n            <h1 style=\"color: black; margin: 0\">").concat(title, "</h1>\n            <i id=\"modal-close\" class=\"close fas fa-times\" style=\"justify-self: end;\"></i>\n          </div>\n          <div style=\"display: grid;grid-gap: 1em;color: black;\">\n            ").concat(content, "\n          </div>\n        </div>\n      </div>\n    </div>\n  ");
+};
+//# sourceMappingURL=modal-template.js.map
