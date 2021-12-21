@@ -3,7 +3,7 @@
 
 function post_compile {
 
-  cp ./lib/saito/boot.js ./web/saito/saito2.js
+  cp ./built/lib/saito/boot.js ./web/saito/saito2.js
   cat ./web/saito/saito.js >> ./web/saito/saito2.js
   mv -f ./web/saito/saito2.js ./web/saito/saito.js
 
@@ -28,7 +28,7 @@ echo ""
     copy_lite_mods_to_bundler_directory
 
 echo ""
-echo "Compiling Lite-Client JS..." 
+echo "Compiling Lite-Client JS..."
 
     rm -rf bundler/default/mods/appstore/bundler/dist
 
@@ -38,6 +38,7 @@ echo "Compiling Lite-Client JS..."
       rm -rf "$md/www"
       rm -rf "$md/src"
       rm -rf "$md/docs"
+      rm -rf "$md/compile"
       rm -rf "$md/DESCRIPTION.txt"
       rm -rf "$md/BUGS.txt"
       rm -rf "$md/README.txt"
@@ -84,9 +85,9 @@ function reset_nonpersistent {
 
   rm -rf ./mods/appstore/mods
   mkdir ./mods/appstore/mods
-  # 
+  #
   # do not delete compiled software
-  # 
+  #
   # rm -rf ./mods/appstore/bundler/dist/
 
   rm -f ./mods/forum/web/img/thumbnails/*.png
@@ -106,7 +107,7 @@ function reset_nonpersistent {
   if [ ! -f ./config/modules.config.js ]; then
     cp ./config/modules.default.js ./config/modules.config.js
   fi
-  
+
   if [ -f config/options.conf ]; then
     cp config/options.conf config/options
   fi
@@ -225,6 +226,10 @@ if [ "$1" == "init" ]; then
 fi
 
 
+echo "$1"
+echo "$2"
+echo "$3"
+
 
 if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
 
@@ -238,9 +243,9 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   echo "     '''--. . , ; .--'''     "
   echo "          | |   |            "
   echo "       .-=||  | |=-.         "
-  echo "        -=#$%&%$#=-'         "
+  echo "        -=#$%&%$/=-'         "
   echo "          | ;  :|            "
-  echo "      .,-#%&$@%#&#~,         "
+  echo "      .,-#%&$/#@%#&#~,         "
   echo "  -------------------------  "
   echo "  NUKING YOUR SAITO INSTALL  "
   echo "  -------------------------  "
@@ -252,7 +257,7 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   reset_persistent
   reset_bundler
 
-  node webpack/webpack.prod.js $2 $3
+  node webpack/webpack.prod.cjs $2 $3
 
   post_compile
 
@@ -272,7 +277,7 @@ if [ "$1" == "reset" ]; then
   reset_nonpersistent
   reset_bundler
 
-  node webpack/webpack.prod.js $2 $3
+  node webpack/webpack.prod.cjs $2 $3
 
   post_compile
 
@@ -296,8 +301,8 @@ if [ "$1" == "recompile" ]; then
 
   reset_bundler
 
-  node webpack/webpack.prod.js $2 $3
-  
+  node webpack/webpack.prod.cjs $2 $3
+
   post_compile
 
 fi

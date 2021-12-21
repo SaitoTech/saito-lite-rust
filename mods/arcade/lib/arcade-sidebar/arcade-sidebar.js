@@ -66,7 +66,7 @@ module.exports = ArcadeSidebar = {
         let gameName = e.currentTarget.id;
         app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", gameName);
         let doGameDetails = () => {
-          let tx = new saito.transaction();
+          let tx = new saito.default.transaction();
           tx.msg.game = gameName;
           ArcadeGameDetails.render(app, mod, tx);
           ArcadeGameDetails.attachEvents(app, mod, tx);

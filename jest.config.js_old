@@ -1,0 +1,23 @@
+module.exports = {
+    preset: 'ts-jest',
+    verbose: true,
+    moduleFileExtensions: [
+        'js',
+        'node',
+    ],
+    collectCoverage: true,
+    coverageDirectory: '<rootDir>/test/unit/coverage',
+    collectCoverageFrom: [
+        'tests/**/*.{ts}',
+    ],
+    testPathIgnorePatterns: [
+        "/node_modules/",
+        "/mods/",
+        "/bundler/"
+    ],
+    coverageReporters: [
+        'json',
+        'lcov',
+        'text-summary'
+    ],
+}

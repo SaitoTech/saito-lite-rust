@@ -10,6 +10,7 @@ class Wordblocks extends GameTemplate {
     super(app);
 
     this.name = "Wordblocks";
+    this.gamename = "Wordblocks";
 
     this.wordlist="";
     this.letterset= {};
