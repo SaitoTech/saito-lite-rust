@@ -1,0 +1,406 @@
+// const saito = require('./../saito');
+
+import {Saito} from "../../../apps/core";
+
+import express from "express";
+
+import {Server as Ser} from "http";
+
+
+// const io          = require('socket.io')(webserver, {
+//   cors: {
+//     origin: "*.*",
+//     methods: ["GET", "POST"]
+//   }
+// });
+import fs from "fs";
+
+import path from "path";
+
+import bodyParser from "body-parser";
+
+const app = express();
+const webserver = new Ser(app);
+
+/**
+ * Constructor
+ */
+class Server {
+    public app: Saito;
+    public blocks_dir: any;
+    public web_dir: any;
+    public server: any;
+    public webserver: any;
+    public server_file_encoding: any;
+    public host: any;
+    public port: any;
+    public protocol: any;
+    public publickey: any;
+
+    constructor(app) {
+
+        this.app = app || {};
+
+        this.blocks_dir = path.join(__dirname, '../../../data/blocks/');
+        this.web_dir = path.join(__dirname, '../../../web/');
+
+        this.server = {};
+        this.server.host = "";
+        this.server.port = 0;
+        this.server.publickey = "";
+        this.server.protocol = "";
+        this.server.name = "";
+
+        this.server.endpoint = {};
+        this.server.endpoint.host = "";
+        this.server.endpoint.port = 0;
+        this.server.endpoint.protocol = "";
+
+        this.webserver = null;
+        //this.io                         = null;
+        this.server_file_encoding = 'utf8';
+
+    }
+
+    initializeWebSocketServer(app) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const ws = require("ws");
+
+        const server = new ws.Server({
+            noServer: true,
+            // port:5001, // TODO : setup this correctly
+            path: "/wsopen"
+        });
+
+        app.on('upgrade', (request, socket, head) => {
+            server.handleUpgrade(request, socket, head, (websocket) => {
+                server.emit("connection", websocket, request);
+            });
+        });
+
+        server.on('connection', (wsocket, request) => {
+
+            //console.log("new connection received by server", request);
+            this.app.network.addRemotePeer(wsocket);
+
+        });
+    }
+
+
+    initialize() {
+
+
+        if (this.app.BROWSER === 1) {
+            return;
+        }
+
+        //
+        // update server information from options file
+        //
+        if (this.app.options.server != null) {
+
+            this.server.host = this.app.options.server.host;
+            this.server.port = this.app.options.server.port;
+            this.server.protocol = this.app.options.server.protocol;
+            this.server.name = this.app.options.server.name || "";
+
+            this.server.sendblks = (typeof this.app.options.server.sendblks == "undefined") ? 1 : this.app.options.server.sendblks;
+            this.server.sendtxs = (typeof this.app.options.server.sendtxs == "undefined") ? 1 : this.app.options.server.sendtxs;
+            this.server.sendgts = (typeof this.app.options.server.sendgts == "undefined") ? 1 : this.app.options.server.sendgts;
+            this.server.receiveblks = (typeof this.app.options.server.receiveblks == "undefined") ? 1 : this.app.options.server.receiveblks;
+            this.server.receivetxs = (typeof this.app.options.server.receivetxs == "undefined") ? 1 : this.app.options.server.receivetxs;
+            this.server.receivegts = (typeof this.app.options.server.receivegts == "undefined") ? 1 : this.app.options.server.receivegts;
+        }
+
+        //
+        // sanity check
+        //
+        if (this.server.host === "" || this.server.port === 0) {
+            console.log("Not starting local server as no hostname / port in options file");
+            return;
+        }
+
+        //
+        // init endpoint
+        //
+        if (this.app.options.server.endpoint != null) {
+            this.server.endpoint.port = this.app.options.server.endpoint.port;
+            this.server.endpoint.host = this.app.options.server.endpoint.host;
+            this.server.endpoint.protocol = this.app.options.server.endpoint.protocol;
+            this.server.endpoint.publickey = this.app.options.server.publickey;
+        } else {
+            const {host, port, protocol, publickey} = this.server
+            this.server.endpoint = {host, port, protocol, publickey};
+            this.app.options.server.endpoint = {host, port, protocol, publickey};
+            this.app.storage.saveOptions();
+        }
+
+        //
+        // save options
+        //
+        this.app.options.server = this.server;
+        this.app.storage.saveOptions();
+
+
+        //
+        // enable cross origin polling for socket.io
+        // - FEB 16 - replaced w/ upgrade to v3
+        //
+        //io.origins('*:*');
+
+        // body-parser
+        app.use(bodyParser.urlencoded({extended: true}));
+        app.use(bodyParser.json());
+
+
+        /////////////////
+        // full blocks //
+        /////////////////
+        app.get('/blocks/:bhash/:pkey', (req, res) => {
+
+            const bhash = req.params.bhash;
+            if (bhash == null) {
+                return;
+            }
+
+            try {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const ts = this.app.blockchain.bsh_ts_hmap[bhash];
+                const filename = `${ts}-${bhash}.blk`;
+                if (ts > 0) {
+
+                    res.writeHead(200, {
+                        "Content-Type": "text/plain",
+                        "Content-Transfer-Encoding": "utf8"
+                    });
+
+                    // const src = fs.createReadStream(this.blocks_dir + filename, {encoding: 'binary'});
+                    // spv errors if we server different from server in SPV/Lite
+                    const src = fs.createReadStream(this.blocks_dir + filename, {encoding: 'utf8'});
+                    src.pipe(res);
+                }
+            } catch (err) {
+
+                //
+                // file does not exist on disk, check in memory
+                //
+                //let blk = await this.app.blockchain.returnBlockByHash(bsh);
+
+                console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+                res.status(400)
+                res.send({
+                    error: {
+                        message: `FAILED SERVER REQUEST: could not find block: ${bhash}`
+                    }
+                })
+            }
+        });
+
+
+        /////////////////
+        // lite-blocks //
+        /////////////////
+        app.get('/lite-blocks/:bhash/:pkey', async (req, res) => {
+
+            if (req.params.bhash == null) {
+                return;
+            }
+            if (req.params.pkey == null) {
+                return;
+            }
+
+            const bsh = req.params.bhash;
+            const pkey = req.params.pkey;
+            let keylist = [];
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const peer = this.app.network.returnPeerByPublicKey(pkey);
+
+            if (peer == null) {
+                keylist.push(pkey);
+            } else {
+                keylist = peer.peer.keylist;
+            }
+
+            //
+            // SHORTCUT hasKeylistTranactions returns (1 for yes, 0 for no, -1 for unknown)
+            // if we have this block but there are no transactions for it in the block hashmap
+            // then we just fetch the block header from memory and serve that.
+            //
+            // this avoids the need to run blk.returnLiteBlock because we know there are no
+            // transactions and thus no need for lite-clients that are not fully-validating
+            // the entire block to calculate the merkle root.
+            //
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (this.app.blockchain.hasKeylistTransactions(bsh, keylist) === 0) {
+                res.writeHead(200, {
+                    "Content-Type": "text/plain",
+                    "Content-Transfer-Encoding": "utf8"
+                });
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const blk = this.app.blockchain.returnBlockByHashFromBlockIndex(bsh, 0); // 0 indicates we want in-memory
+                res.write(Buffer.from(blk.returnBlockHeaderData(), 'utf8'), 'utf8');
+                res.end();
+                return;
+            }
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const blk = await this.app.blockchain.returnBlockByHashFromMemoryOrDisk(bsh, 1);
+
+            if (blk == null) {
+                res.send("{}");
+                return;
+            } else {
+                const newblk = blk.returnLiteBlock(bsh, keylist);
+                //
+                // formerly binary / binary, but that results in different encoding push than full blocks, so SPV fails
+                //
+                //res.end(Buffer.from(newblk.returnBlockFileData(), 'utf8'), 'binary');
+
+                res.writeHead(200, {
+                    "Content-Type": "text/plain",
+                    "Content-Transfer-Encoding": "utf8"
+                });
+
+                res.write(Buffer.from(newblk.returnBlockHeaderData(), 'utf8'), 'utf8');
+                for (let i = 0; i < blk.transactions.length; i++) {
+                    res.write(Buffer.from("\n", 'utf8'), 'utf8');
+                    res.write(Buffer.from(JSON.stringify(blk.transactions[i]), 'utf8'), 'utf8');
+                }
+                res.end();
+
+//        fs.closeSync(fd);
+
+                //res.end(Buffer.from(newblk.returnBlockFileData(), 'binary'), 'binary');
+                return;
+            }
+
+            return;
+
+        });
+
+        app.get("/block/:hash", async (req, res) => {
+            const hash = req.params.hash;
+            if (!hash) {
+                console.warn("hash not provided");
+                return res.sendStatus(400); // Bad request
+            }
+            console.log("requesting block : " + hash);
+
+            const block = await this.app.blockchain.loadBlockAsync(hash);
+            if (!block) {
+                console.warn("block not found for : " + hash);
+                return res.sendStatus(404); // Not Found
+            }
+            let buffer = block.serialize();
+            buffer = Buffer.from(buffer, 'binary').toString('base64');
+
+            res.status(200);
+            res.end(buffer);
+        });
+
+        /////////
+        // web //
+        /////////
+        app.get('/options', (req, res) => {
+            //this.app.storage.saveClientOptions();
+            // res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+            // res.setHeader("expires","-1");
+            // res.setHeader("pragma","no-cache");
+            const client_options_file = this.web_dir + "client.options";
+            if (!fs.existsSync(client_options_file)) {
+                const fd = fs.openSync(client_options_file, 'w');
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
+                fs.closeSync(fd);
+            }
+            res.sendFile(client_options_file);
+            //res.send(this.app.storage.returnClientOptions());
+            return;
+        });
+
+        app.get('/runtime', (req, res) => {
+            res.writeHead(200, {
+                "Content-Type": "text/json",
+                "Content-Transfer-Encoding": "utf8"
+            });
+            res.write(Buffer.from(JSON.stringify(this.app.options.runtime)), 'utf8');
+            res.end();
+        });
+
+        app.get('/r', (req, res) => {
+            res.sendFile(this.web_dir + "refer.html");
+            return;
+        });
+
+
+        app.get('/saito/saito.js', (req, res) => {
+
+            //
+            // may be useful in the future, if we gzip
+            // files before releasing for production
+            //
+            // gzipped, cached
+            //
+            //res.setHeader("Cache-Control", "public");
+            //res.setHeader("Content-Encoding", "gzip");
+            //res.setHeader("Content-Length", "368432");
+            //res.sendFile(server_self.web_dir + 'saito.js.gz');
+            //
+            // non-gzipped, cached
+            //
+            //res.setHeader("Cache-Control", "public");
+            //res.setHeader("expires","72000");
+            //res.sendFile(server_self.web_dir + '/dist/saito.js');
+            //
+            // caching in prod
+            //
+            const caching = process.env.NODE_ENV === 'prod' ? "private max-age=31536000" : "private, no-cache, no-store, must-revalidate";
+            res.setHeader("Cache-Control", caching);
+            res.setHeader("expires", "-1");
+            res.setHeader("pragma", "no-cache");
+            res.sendFile(this.web_dir + '/saito/saito.js');
+            return;
+        });
+
+        //
+        // make root directory recursively servable
+        app.use(express.static(this.web_dir));
+        //
+
+        /////////////
+        // modules //
+        /////////////
+        this.app.modules.webServer(app, express);
+
+        app.get('*', (req, res) => {
+            res.status(404).sendFile(`${this.web_dir}404.html`);
+            res.status(404).sendFile(`${this.web_dir}tabs.html`);
+        });
+
+
+//     io.on('connection', (socket) => {
+// console.log("IO CONNECTION on SERVER: ");
+//       this.app.network.addRemotePeer(socket);
+//     });
+        this.initializeWebSocketServer(webserver);
+
+        webserver.listen(this.server.port);
+        // try webserver.listen(this.server.port, {cookie: false});
+        this.webserver = webserver;
+    }
+
+    close() {
+        this.webserver.close();
+    }
+
+}
+
+
+export default Server;

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "outDir": "./built",
+    "allowJs": true,
+    "downlevelIteration": true,
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2020.bigint"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "./lib/templates",
+    "*.spec.ts"
+  ],
+  "include": [
+    "./lib/**/*",
+    "start.ts",
+    "./bundler/default/apps/**/*"
+  ]
+}

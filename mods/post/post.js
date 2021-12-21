@@ -149,7 +149,7 @@ class Post extends ModTemplate {
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
-                this.posts.push(new saito.transaction(JSON.parse(res.rows[i].lite_tx)));
+                this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
                 this.posts[this.posts.length-1].children = res.rows[i].children;
                 this.posts[this.posts.length-1].img = res.rows[i].img;
               }
@@ -241,7 +241,7 @@ class Post extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);
-    let plitetx = new saito.transaction(JSON.parse(JSON.stringify(tx.transaction)));
+    let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
         plitetx = this.app.wallet.signTransaction(plitetx);
@@ -343,7 +343,7 @@ class Post extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);   
-    let plitetx = new saito.transaction(JSON.parse(JSON.stringify(tx.transaction)));
+    let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
         plitetx = this.app.wallet.signTransaction(plitetx);
@@ -565,7 +565,7 @@ class Post extends ModTemplate {
     //
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);   
-    let plitetx = new saito.transaction(JSON.parse(JSON.stringify(tx.transaction)));
+    let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
         plitetx = this.app.wallet.signTransaction(plitetx);
@@ -724,7 +724,7 @@ class Post extends ModTemplate {
     expressapp.get('/post/delete/:serialized_tx', async (req, res) => {
       try {
         let decoded_tx = JSON.parse(Buffer.from(Base58.decode(req.params.serialized_tx)).toString("utf-8"));
-        this.receiveDeleteTransaction(new saito.transaction(decoded_tx));
+        this.receiveDeleteTransaction(new saito.default.transaction(decoded_tx));
         res.setHeader('Content-type', 'text/javascript');
         res.write("OK");
         res.charset = 'UTF-8';
