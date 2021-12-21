@@ -1413,8 +1413,8 @@ class Arcade extends ModTemplate {
     }
 
     if (game.players) {
-      game_tx.transaction.to = game.players.map(player => new saito.slip(player));
-      game_tx.transaction.from = game.players.map(player => new saito.slip(player));
+      game_tx.transaction.to = game.players.map(player => new saito.default.slip(player));
+      game_tx.transaction.from = game.players.map(player => new saito.default.slip(player));
     } else {
       game_tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
       game_tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
