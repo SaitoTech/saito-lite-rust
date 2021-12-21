@@ -1,7 +1,5 @@
 import {Saito} from "../../apps/core";
 
-import saito from "./saito";
-
 import * as blake3 from "blake3";
 import NetworkAPI from "./networkapi";
 import Crypto from "./crypto";
@@ -30,7 +28,7 @@ test("slip serialize deserialze", () => {
         return blake3.hash(data).toString('hex');
     };
 
-    const slip = new saito.slip(wallet.wallet.privatekey);
+    const slip = new Slip(wallet.wallet.privatekey);
     slip.add = mockApp.crypto.toBase58("02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74");
     slip.amt = BigInt(1234);
     slip.sid = 2;
@@ -38,7 +36,7 @@ test("slip serialize deserialze", () => {
 
     const buffer = slip.serialize(mockApp, "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b");
 
-    const slip2 = new saito.slip(wallet.wallet.privatekey);
+    const slip2 = new Slip(wallet.wallet.privatekey);
     slip2.deserialize(mockApp, buffer);
 
     console.log("SLIP 2");

@@ -1,6 +1,4 @@
 import {Saito} from "../../apps/core";
-
-import saito from "./saito";
 import NetworkAPI from "./networkapi";
 import Crypto from "./crypto";
 import Binary from "./binary";
@@ -157,7 +155,7 @@ test("sign", () => {
     input_slip.sid = 10;
     input_slip.type = SlipType.ATR;
 
-    const output_slip = new saito.slip(wallet.wallet.publickey);
+    const output_slip = new Slip(wallet.wallet.publickey);
     output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
     output_slip.amt = BigInt(345);
     output_slip.sid = 23;

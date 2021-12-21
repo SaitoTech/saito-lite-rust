@@ -77,7 +77,7 @@ async function initSaito() {
     For inquiries please visit our website: https://saito.io
 
   `);
-
+   
     function shutdownSaito() {
         console.log("Shutting down Saito");
         app.server.close();

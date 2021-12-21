@@ -8,7 +8,6 @@ module.exports = async (saito) => {
         };
 
     } else {
-
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         // const blake3 = require("blake3-js");
         // import('blake3/browser').then(blake3 => {

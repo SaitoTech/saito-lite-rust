@@ -81,12 +81,12 @@ class Transaction {
             }
             for (let i = 0; i < this.transaction.from.length; i++) {
                 const fslip = this.transaction.from[i];
-                const fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                const fslipobj = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
                 this.transaction.from[i] = fslipobj;
             }
             for (let i = 0; i < this.transaction.to.length; i++) {
                 const fslip = this.transaction.to[i];
-                const fslipobj = new saito.slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
+                const fslipobj = new Slip(fslip.add, fslip.amt, fslip.type, fslip.uuid, fslip.sid, fslip.payout, fslip.lc);
                 this.transaction.to[i] = fslipobj;
             }
         }
@@ -170,7 +170,7 @@ class Transaction {
         for (let i = 0; i < inputs_len; i++) {
             const start_of_slip = start_of_inputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const input = new saito.slip();
+            const input = new Slip();
             input.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             inputs.push(input);
         }
@@ -178,7 +178,7 @@ class Transaction {
         for (let i = 0; i < outputs_len; i++) {
             const start_of_slip = start_of_outputs + (i * SLIP_SIZE);
             const end_of_slip = start_of_slip + SLIP_SIZE;
-            const output = new saito.slip();
+            const output = new Slip();
             output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
             outputs.push(output);
         }
