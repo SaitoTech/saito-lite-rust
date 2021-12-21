@@ -239,7 +239,7 @@ class GameTemplate extends ModTemplate {
 		console.log("Error sending zero-fee newptx transaction: resend old");
 
                 for (let ii = 0; ii < this.game.opponents.length; ii++) {
-                  newptx.transaction.to.push(new saito.slip(this.game.opponents[i], 0.0));
+                  newptx.transaction.to.push(new saito.default.slip(this.game.opponents[i], 0.0));
                 }
 
                 newptx.msg = ptx.msg;

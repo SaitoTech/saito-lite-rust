@@ -394,7 +394,7 @@ module.exports = ArcadeMain = {
     let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
     let my_publickey = app.wallet.returnPublicKey();
 
-    for (let i = 0; i < players.length; i++) { if (players[i] != my_publickey) newtx.transaction.to.push(new saito.slip(players[i])); }
+    for (let i = 0; i < players.length; i++) { if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i])); }
 
     let msg = {
       sig: sig,
