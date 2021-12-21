@@ -643,7 +643,7 @@ class Network {
                                 if (reconstructed_data.transaction.m) {
                                     // backwards compatible - in case modules try the old fashioned way
                                     console.log("aaa message : ", message);
-                                    msg.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
+                                    msg.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(msg.data.transaction.m));
                                     msg.data.msg = msg.data.transaction.msg;
                                 }
                             }
