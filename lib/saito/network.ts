@@ -642,13 +642,14 @@ class Network {
                             if (reconstructed_data.transaction) {
                                 if (reconstructed_data.transaction.m) {
                                     // backwards compatible - in case modules try the old fashioned way
+                                    console.log("aaa message : ", message);
                                     msg.data.transaction.msg = JSON.parse(this.app.crypto.base64ToString(message.data.transaction.m));
                                     msg.data.msg = msg.data.transaction.msg;
                                 }
                             }
                         }
                         console.log("SENDMESG received handle peer request!");
-                        this.app.modules.handlePeerRequest(msg, this, mycallback);
+                        await this.app.modules.handlePeerRequest(msg, peer, mycallback);
                 }
                 break;
             }

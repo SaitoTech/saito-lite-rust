@@ -6,45 +6,43 @@ import * as JSON from "json-bigint";
 
 class Peer {
     public app: Saito;
-    public id: any;
-    public peer: any;
+    public id: number;
+    public peer = {
+        host: "localhost",
+        port: "12101",
+        publickey: "",
+        version: "",
+        protocol: "http",
+        synctype: "full",         // full : full blocks
+        // lite : lite blocks
+        endpoint: {
+            host: "localhost",
+            port: "12101",
+            publickey: "",
+            protocol: "http",
+        },
+        receiveblks: 1,
+        receivetxs: 1,
+        receivegts: 1,
+        sendblks: 1,
+        sendtxs: 1,
+        sendgts: 1,
+        minfee: 0.001,    // minimum propagation fee
+        socket: {},
+        modules: [],
+        keylist: [],
+    };
     public socket: any;
 
-    constructor(app, peerjson = "") {
+    constructor(app: Saito, peerjson = "") {
 
-        this.app = app || {};
+        this.app = app;
 
         this.id = new Date().getTime();
 
-        this.peer = {};
-        this.peer.host = "localhost";
-        this.peer.port = "12101";
-        this.peer.publickey = "";
-        this.peer.version = "";
-        this.peer.protocol = "http";
-        this.peer.synctype = "full";         // full = full blocks
-                                             // lite = lite blocks
-        this.peer.endpoint = {};
-        this.peer.endpoint.host = "localhost";
-        this.peer.endpoint.port = "12101";
-        this.peer.endpoint.publickey = "";
-        this.peer.endpoint.protocol = "http";
-
-        this.peer.receiveblks = 1;
-        this.peer.receivetxs = 1;
-        this.peer.receivegts = 1;
-        this.peer.sendblks = 1;
-        this.peer.sendtxs = 1;
-        this.peer.sendgts = 1;
-
-        this.peer.minfee = 0.001;    // minimum propagation fee
-        this.peer.socket = {};
-        this.peer.modules = [];
-        this.peer.keylist = [];
-
         if (peerjson !== "") {
             try {
-                const peerobj = JSON.parse(peerjson);
+                const peerobj: any = JSON.parse(peerjson);
                 if (peerobj.peer.endpoint == null) {
                     peerobj.peer.endpoint = {};
                     peerobj.peer.endpoint.host = peerobj.peer.host;
@@ -53,7 +51,7 @@ class Peer {
                 }
                 this.peer = peerobj.peer;
             } catch (err) {
-                console.log("err: " + err);
+                console.error(err);
             }
         }
     }
