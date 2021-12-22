@@ -18,11 +18,10 @@
   "exclude": [
     "node_modules",
     "./lib/templates",
-    "*.spec.ts"
+    "bundler"
   ],
   "include": [
     "./lib/**/*",
-    "start.ts",
-    "./bundler/default/apps/**/*"
+    "start.ts"
   ]
 }
