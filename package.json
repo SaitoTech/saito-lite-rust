@@ -105,6 +105,7 @@
     "jest": "^27.0.6",
     "jsdoc": "^3.6.6",
     "path-browserify": "^1.0.1",
+    "prettier": "^2.5.1",
     "source-map-loader": "^3.0.0",
     "stream-browserify": "^3.0.0",
     "ts-jest": "^27.1.2",
