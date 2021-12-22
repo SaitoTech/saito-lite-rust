@@ -1588,7 +1588,6 @@ class Arcade extends ModTemplate {
   }
 
   addGameToOpenList(tx) {
-    console.log("addGameToOpenList");
     let valid_game = this.validateGame(tx);
     if (valid_game) {
       let for_us = this.isForUs(tx);

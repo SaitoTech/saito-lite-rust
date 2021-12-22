@@ -77,8 +77,6 @@ class Network {
         const peerobj: any = {};
         peerobj.peer = JSON.parse(peerjson);
 
-        console.log("ADD OUTGOING PEER!");
-
         if (peerobj.peer.protocol == null) {
             peerobj.peer.protocol = "http";
         }
@@ -142,8 +140,6 @@ class Network {
     // server sends us a websocket
     //
     addRemotePeer(socket) {
-
-        console.log("ADD INCOMING PEER!");
 
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
@@ -217,6 +213,7 @@ class Network {
 
         try {
             const url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
+console.log("URL: " + url);
             const res = await fetch(url);
             if (res.ok) {
                 const base64Buffer = await res.arrayBuffer();
@@ -226,7 +223,7 @@ class Network {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 block.peer = this;
-                return block;
+		this.app.mempool.addBlock(block);
             } else {
                 console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
             }
@@ -244,8 +241,6 @@ class Network {
         // browsers can only use w3c sockets
         //
         if (browser == true) {
-
-            console.log("PEER IS: " + JSON.stringify(peer.peer));
 
             let wsProtocol = 'ws';
             if (peer.peer?.protocol) {
@@ -524,6 +519,8 @@ class Network {
                 fork_id = "";
                 bytes = message.message_data;
 
+console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+
                 block_id = this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
                 if (!block_id) {
                     block_hash = Buffer.from(bytes.slice(8, 40), 'hex').toString('hex');
@@ -532,10 +529,12 @@ class Network {
 
                 const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(block_id, fork_id);
 
+console.log("last shared ancestor generated at: " + last_shared_ancestor);
+
                 //
                 // notify peer of longest-chain after this amount
                 //
-                for (let i = last_shared_ancestor; i < this.app.blockring.returnLatestBlockId(); i++) {
+                for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
                     block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
                     if (block_hash !== "") {
                         block = await this.app.blockchain.loadBlockAsync(block_hash);
@@ -555,9 +554,7 @@ class Network {
             //await peer.sendResponse(message.message_id, Buffer.from("OK", "utf-8"));
             //let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
             //for (let data of send_blockchain_message.blocks_data) {
-            //    let block = await network.fetchBlock(data.block_hash.toString("hex"));
-            //    console.log(`block fetched ${block.returnId()} ${block.returnTimestamp()}`);
-            //    this.app.mempool.addBlock(block);
+            //    await network.fetchBlock(data.block_hash.toString("hex"));
             //}
             //break;
 
@@ -575,8 +572,7 @@ class Network {
                 if (is_block_indexed) {
                     console.info("SNDBLOCK hash already known: " + block_hash);
                 } else {
-                    block = await this.fetchBlock(block_hash, peer);
-                    this.app.mempool.addBlock(block);
+                    this.fetchBlock(block_hash, peer);
                 }
                 break;
 
@@ -590,8 +586,7 @@ class Network {
 
                 is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
                 if (!is_block_indexed) {
-                    block = await this.fetchBlock(block_hash);
-                    this.app.mempool.addBlock(block);
+                    this.fetchBlock(block_hash);
                 }
                 break;
 
@@ -648,7 +643,6 @@ class Network {
                                 }
                             }
                         }
-                        console.log("SENDMESG received handle peer request!");
                         await this.app.modules.handlePeerRequest(msg, peer, mycallback);
                 }
                 break;

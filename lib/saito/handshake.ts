@@ -50,9 +50,6 @@ class Handshake {
 
         socket.peer.peer.publickey = h2.publickey;
 
-        console.log("INITIATING HANDSHAKE!");
-        console.log("setting peer publickey to " + socket.peer.peer.publickey);
-
     }
 
 
@@ -61,9 +58,6 @@ class Handshake {
         const h2 = this.deserializeHandshake(buffer);
 
         peer.peer.publickey = h2.publickey;
-
-        console.log("INCOMING HANDSHAKE REQUEST");
-        console.log("setting publickey to " + h2.publickey);
 
         this.app.connection.emit("handshake_complete", peer);
 
