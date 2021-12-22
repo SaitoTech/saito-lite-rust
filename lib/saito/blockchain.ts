@@ -1,6 +1,6 @@
 import saito from "./saito";
-
 import UtxoSet from "./utxoset";
+import * as JSON from "json-bigint";
 
 class Blockchain {
     public app: any;
@@ -119,6 +119,7 @@ class Blockchain {
         // check if previous block exists and if not fetch that block.
         const parent_block_hash = block.block.previous_block_hash;
         if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
+console.log("fetching unknown block: " + parent_block_hash);
             this.app.network.fetchBlock(parent_block_hash);
         }
 
@@ -231,6 +232,7 @@ class Blockchain {
                 // connection or network issues.
                 //
                 console.log("potential edge case requires handling: blocks received out-of-order");
+		console.log("blkchn: " + JSON.stringify(this.blockchain));
             }
         }
 
