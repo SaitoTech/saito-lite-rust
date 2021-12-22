@@ -63,8 +63,8 @@ class Peer {
 
         // add our path
         const hop = new saito.hop();
-        hop.from = this.app.wallet.returnPublicKey();
-        hop.to = this.returnPublicKey();
+        hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
+        hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
         hop.sig = this.app.crypto.signMessage(hop.to, this.app.wallet.returnPrivateKey());
 
         tmptx.transaction.path.push(hop);

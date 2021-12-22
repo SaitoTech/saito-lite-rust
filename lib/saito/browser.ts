@@ -171,10 +171,10 @@ class Browser {
             this.checkForMultipleWindows();
             //this.isFirstVisit();
 
-            if ('serviceWorker' in navigator) {
-                await navigator.serviceWorker
-                    .register('/sw.js');
-            }
+            //if ('serviceWorker' in navigator) {
+            //    await navigator.serviceWorker
+            //        .register('/sw.js');
+            //}
 
             this.browser_active = 1;
 
@@ -257,7 +257,7 @@ class Browser {
 
 
     async sendNotification(title, message, event) {
-
+/***
         if (this.app.BROWSER == 0) {
             return;
         }
@@ -288,6 +288,7 @@ class Browser {
                     }
                 });
         }
+***/
     }
 
     checkForMultipleWindows() {

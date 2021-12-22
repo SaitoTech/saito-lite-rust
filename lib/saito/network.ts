@@ -776,7 +776,7 @@ console.log("last shared ancestor generated at: " + last_shared_ancestor);
             if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
                 const tmptx = peer.addPathToTransaction(tx);
                 if (peer.socket) {
-                    this.sendRequest("SNDTRANS", tx.serialize(this.app), peer);
+                    this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
                 } else {
                     console.error("socket not found");
                 }
