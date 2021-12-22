@@ -103,7 +103,6 @@ class Blockchain {
         const block_hash = block.returnHash();
         const block_id = block.returnId();
         const block_difficulty = block.returnDifficulty();
-
         const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
         //
@@ -231,8 +230,27 @@ console.log("fetching unknown block: " + parent_block_hash);
                 // next block and we are getting blocks out-of-order because of
                 // connection or network issues.
                 //
+		if (previous_block_hash === this.blockchain.last_block_hash && block.block.previous_block_hash !== "") {
+
+		    let disconnected_block_id = this.app.blockring.returnLatestBlockId();
+
+		    for (let i = block.returnId()+1; i < disconnected_block_id; i++) {
+			let disconnected_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+			if (disconnected_block_hash) {
+			    this.app.blockring.onChainReorganization(disconected_block_hash, i, false);
+			    let disconnected_block = this.loadBlockAsync(disconnected_block_hash);
+			    if (disconnected_block) { disconnected_block.lc = 0; }
+			}
+		    }
+
+		}
+
                 console.log("potential edge case requires handling: blocks received out-of-order");
 		console.log("blkchn: " + JSON.stringify(this.blockchain));
+
+
+
+
             }
         }
 
