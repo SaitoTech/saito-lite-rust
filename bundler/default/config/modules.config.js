@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-module.exports = {
+export default {
   core: [
     'arcade/arcade.js',
     'archive/archive.js',
@@ -43,50 +42,4 @@ module.exports = {
     'wordblocks/wordblocks.js',
     //'website/website.js',
   ]
-=======
-export default {
-    core: [
-        'arcade/arcade.js',
-        'archive/archive.js',
-        'blackjack/blackjack.js',
-        'chat/chat.js',
-        'chess/chess.js',
-        'email/email.js',
-        'encrypt/encrypt.js',
-        'explorer/explorer.js',
-        // 'his/his.js',
-        // 'imperium/imperium.js',
-        'myqrcode/myqrcode.js',
-        'poker/poker.js',
-        'qrscanner/qrscanner.js',
-        'relay/relay.js',
-        'settings/settings.js',
-        'solitrio/solitrio.js',
-        // 'twilight/twilight.js',
-        'wordblocks/wordblocks.js',
-        'website/website.js',
-    ],
-    lite: [
-        'arcade/arcade.js',
-        'archive/archive.js',
-        'blackjack/blackjack.js',
-        'chess/chess.js',
-        'chat/chat.js',
-        'email/email.js',
-        'debug/debug.js',
-        'encrypt/encrypt.js',
-        // 'his/his.js',
-        // 'imperium/imperium.js',
-        'myqrcode/myqrcode.js',
-        'qrscanner/qrscanner.js',
-        'poker/poker.js',
-        'relay/relay.js',
-        'registry/registry.js',
-        'settings/settings.js',
-        'solitrio/solitrio.js',
-        // 'twilight/twilight.js',
-        'wordblocks/wordblocks.js',
-        'website/website.js',
-    ]
->>>>>>> master
 }
