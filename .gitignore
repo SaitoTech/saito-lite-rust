@@ -35,6 +35,7 @@ data/shashmaps/*.smap
 bundler
 bundler/*
 built
+built/*
 
 lib/saito/*.swp
 lib/saito/web/browser.js

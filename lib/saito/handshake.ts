@@ -1,74 +1,72 @@
 /**
  * Handshake Constructor
  */
-import { Saito } from "../../apps/core";
+import {Saito} from "../../apps/core";
 
 class Handshake {
-  public app: Saito;
+    public app: Saito;
 
-  constructor(app) {
-    this.app = app || {};
+    constructor(app) {
 
-    return this;
-  }
+        this.app = app || {};
 
-  newHandshake() {
-    const h: any = {};
-    h.publickey = this.app.wallet.returnPublicKey();
-    h.challenge = Math.floor(Math.random() * 100_000_000_000_000);
-    return h;
-  }
+        return this;
+    }
 
-  //
-  // TODO - base58 conversion through app.crypto
-  //
-  serializeHandshake(h) {
-    return Buffer.concat([
-      Buffer.from(this.app.crypto.fromBase58(h.publickey), "hex"),
-      this.app.binary.u64AsBytes(h.challenge),
-    ]);
-  }
+    newHandshake() {
+        const h: any = {};
+        h.publickey = this.app.wallet.returnPublicKey();
+        h.challenge = Math.floor(Math.random() * 100_000_000_000_000);
+        return h;
+    }
 
-  deserializeHandshake(buffer) {
-    const h2 = this.newHandshake();
+    //
+    // TODO - base58 conversion through app.crypto
+    //
+    serializeHandshake(h) {
+        return Buffer.concat([
+            Buffer.from(this.app.crypto.fromBase58(h.publickey), 'hex'),
+            this.app.binary.u64AsBytes(h.challenge)
+        ]);
+    }
 
-    h2.publickey = this.app.crypto.toBase58(
-      Buffer.from(buffer.slice(0, 33)).toString("hex")
-    );
-    h2.challenge = this.app.binary.u64FromBytes(buffer.slice(33, 41));
+    deserializeHandshake(buffer) {
 
-    return h2;
-  }
+        const h2 = this.newHandshake();
 
-  async initiateHandshake(socket) {
-    const h = this.newHandshake();
+        h2.publickey = this.app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString('hex'));
+        h2.challenge = this.app.binary.u64FromBytes(buffer.slice(33, 41));
 
-    const peer_response = await this.app.networkApi.sendAPICall(
-      socket,
-      "SHAKINIT",
-      this.serializeHandshake(h)
-    );
-    const h2 = this.deserializeHandshake(peer_response);
+        return h2;
 
-    socket.peer.peer.publickey = h2.publickey;
+    }
 
-    console.log("INITIATING HANDSHAKE!");
-    console.log("setting peer publickey to " + socket.peer.peer.publickey);
-  }
+    async initiateHandshake(socket) {
 
-  async handleIncomingHandshakeRequest(peer, buffer) {
-    const h2 = this.deserializeHandshake(buffer);
+        const h = this.newHandshake();
 
-    peer.peer.publickey = h2.publickey;
+        const peer_response = await this.app.networkApi.sendAPICall(socket, "SHAKINIT", this.serializeHandshake(h));
+        const h2 = this.deserializeHandshake(peer_response);
 
-    console.log("INCOMING HANDSHAKE REQUEST");
-    console.log("setting publickey to " + h2.publickey);
+        socket.peer.peer.publickey = h2.publickey;
 
-    this.app.connection.emit("handshake_complete", peer);
+    }
 
-    const h = this.newHandshake();
-    return this.serializeHandshake(h);
-  }
+
+    async handleIncomingHandshakeRequest(peer, buffer) {
+
+        const h2 = this.deserializeHandshake(buffer);
+
+        peer.peer.publickey = h2.publickey;
+
+        this.app.connection.emit("handshake_complete", peer);
+
+        const h = this.newHandshake();
+        return this.serializeHandshake(h);
+
+    }
+
 }
 
 export default Handshake;
+

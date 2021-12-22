@@ -107,17 +107,17 @@ describe("serializeForSignature", function () {
         tx.transaction.type = saito.transaction.TransactionType.ATR;
         tx.msg = {test: "test"};
 
-        let input_slip = new saito.default.slip(wallet.wallet.publickey);
+        let input_slip = new saito.slip(wallet.wallet.publickey);
         input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         input_slip.amt = "123";
         input_slip.sid = 10;
-        input_slip.type = saito.default.slip.SlipType.ATR;
+        input_slip.type = saito.slip.SlipType.ATR;
 
-        let output_slip = new saito.default.slip(wallet.wallet.publickey);
+        let output_slip = new saito.slip(wallet.wallet.publickey);
         output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
         output_slip.amt = "345";
         output_slip.sid = 23;
-        output_slip.type = saito.default.slip.SlipType.Normal;
+        output_slip.type = saito.slip.SlipType.Normal;
 
         tx.transaction.from.push(input_slip);
         tx.transaction.to.push(output_slip);

@@ -74,8 +74,6 @@ var Handshake = /** @class */ (function () {
                         peer_response = _a.sent();
                         h2 = this.deserializeHandshake(peer_response);
                         socket.peer.peer.publickey = h2.publickey;
-                        console.log("INITIATING HANDSHAKE!");
-                        console.log("setting peer publickey to " + socket.peer.peer.publickey);
                         return [2 /*return*/];
                 }
             });
@@ -87,8 +85,6 @@ var Handshake = /** @class */ (function () {
             return __generator(this, function (_a) {
                 h2 = this.deserializeHandshake(buffer);
                 peer.peer.publickey = h2.publickey;
-                console.log("INCOMING HANDSHAKE REQUEST");
-                console.log("setting publickey to " + h2.publickey);
                 this.app.connection.emit("handshake_complete", peer);
                 h = this.newHandshake();
                 return [2 /*return*/, this.serializeHandshake(h)];
