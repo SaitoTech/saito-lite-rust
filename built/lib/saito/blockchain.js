@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -41,6 +60,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var saito_1 = __importDefault(require("./saito"));
 var utxoset_1 = __importDefault(require("./utxoset"));
+var JSON = __importStar(require("json-bigint"));
 var Blockchain = /** @class */ (function () {
     function Blockchain(app) {
         this.app = app || {};
@@ -122,6 +142,7 @@ var Blockchain = /** @class */ (function () {
                         }
                         parent_block_hash = block.block.previous_block_hash;
                         if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
+                            console.log("fetching unknown block: " + parent_block_hash);
                             this.app.network.fetchBlock(parent_block_hash);
                         }
                         // pre-validation
@@ -227,6 +248,7 @@ var Blockchain = /** @class */ (function () {
                                 // connection or network issues.
                                 //
                                 console.log("potential edge case requires handling: blocks received out-of-order");
+                                console.log("blkchn: " + JSON.stringify(this.blockchain));
                             }
                         }
                         am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);

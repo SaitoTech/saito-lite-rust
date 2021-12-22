@@ -253,6 +253,7 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   echo ""
   echo ""
 
+  tsc
   reset_nonpersistent
   reset_persistent
   reset_bundler

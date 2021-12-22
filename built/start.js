@@ -55,7 +55,7 @@ function initSaito() {
             switch (_b.label) {
                 case 0:
                     app = new core_1.Saito({
-                        mod_paths: modules_config_1.default.core
+                        mod_paths: modules_config_1.default.core,
                     });
                     app.server = new server_1.default(app);
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -76,12 +76,12 @@ function initSaito() {
                     /////////////////////
                     // Cntl-C to Close //
                     /////////////////////
-                    process.on('SIGTERM', function () {
+                    process.on("SIGTERM", function () {
                         shutdownSaito();
                         console.log("Network Shutdown");
                         process.exit(0);
                     });
-                    process.on('SIGINT', function () {
+                    process.on("SIGINT", function () {
                         shutdownSaito();
                         console.log("Network Shutdown");
                         process.exit(0);

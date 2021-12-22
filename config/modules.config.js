@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   core: [
     'arcade/arcade.js',
     'archive/archive.js',

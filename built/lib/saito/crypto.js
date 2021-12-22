@@ -251,7 +251,7 @@ var Crypto = /** @class */ (function () {
      */
     Crypto.prototype.verifyMessage = function (msg, sig, pubkey) {
         try {
-            var hash = this.hash(Buffer.from(msg, 'utf-8'));
+            var hash = this.hash(Buffer.from(msg, 'utf-8').toString());
             return this.verifyHash(hash, sig, pubkey);
         }
         catch (err) {
