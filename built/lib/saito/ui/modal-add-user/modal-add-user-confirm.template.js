@@ -1,4 +1,0 @@
-module.exports = ModalAddUserTemplate = function () {
-    return "  \n  <div class=\"welcome-modal-wrapper confirm-modal-wrapper\">\n    You and your friend are now negotiating a shared secret via Saito's blockchain. This requires two blocks to be mined. Once the process is complete your friend will be added to your chat list and you will be able to chat through the encrypted channel.\n    <div id=\"confirm-box\" class=\"welcome-invite-box\"><div>OK</div></div>\n  </div>\n  <style>\n    .confirm-modal-wrapper {\n      font-size: 1.5em;\n      padding: 1.5em;\n      color: white;\n      font-weight: bold;\n    }\n  </style>\n  ";
-};
-//# sourceMappingURL=modal-add-user-confirm.template.js.map

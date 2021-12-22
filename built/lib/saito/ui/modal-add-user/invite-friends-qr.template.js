@@ -1,4 +1,0 @@
-module.exports = InviteFriendsQRTemplate = function () {
-    return "\n    <div class=\"add-contact-modal-qr\">\n      <div id=\"qr-hud-target\" style=\"\n        position: absolute;\n        width: 10em;\n        height: 10em;\n        border: 2px solid red;\n        background-color: transparent;\n        margin: 2em 8.5em;\"></div>\n      <div class=\"video-container\">\n        <video playsinline autoplay style=\"width: 100%; max-width: 26em\"></video>\n      </div>\n      <canvas style=\"display: none\" id=\"qr-canvas\"></canvas>\n    </div>\n  ";
-};
-//# sourceMappingURL=invite-friends-qr.template.js.map

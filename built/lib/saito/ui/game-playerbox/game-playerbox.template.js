@@ -1,4 +1,0 @@
-module.exports = GamePlayerBoxTemplate = function (player_num) {
-    return "\n    <div class=\"player-box\" id=\"player-box-".concat(player_num, "\">\n      <div class=\"player-box-graphic\" id=\"player-box-graphic-").concat(player_num, "\"></div> \n      <div class=\"player-box-head\" id=\"player-box-head-").concat(player_num, "\"></div>\n      <div class=\"player-box-info\" id=\"player-box-info-").concat(player_num, "\"></div>\n      <div class=\"plog\" id=\"player-box-log-").concat(player_num, "\"></div>\n      </div>\n    </div>\n  ");
-};
-//# sourceMappingURL=game-playerbox.template.js.map
