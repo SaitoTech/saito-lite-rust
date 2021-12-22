@@ -1,0 +1,4 @@
+module.exports = GameCryptoTransferManagerReceive = function (app, sobj) {
+    return "  \n  <div class=\"game-crypto-transfer-manager-container\">\n    \n    <h2 class=\"auth_title\">Waiting for Transfer</h2>\n\n    <div class=\"amount\">".concat(sobj.amount, " ").concat(sobj.ticker, "</div>\n\n    <img class=\"spinner\" src=\"/website/img/spinner.svg\" />\n\n    <div class=\"transfer-details\">\n      <div class=\"send_to\">from</div>\n      <div class=\"from_address\">").concat(sobj.from, "</div>\n      <div class=\"send_to\">to</div>\n      <div class=\"to_address\">").concat(sobj.to, "</div>\n    </div>\n\n  </div>\n  ");
+};
+//# sourceMappingURL=game-crypto-transfer-manager-receive.template.js.map
