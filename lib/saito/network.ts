@@ -787,9 +787,18 @@ console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
     requestBlockchain(peer = null) {
 
-        const latest_block_id = this.app.blockring.returnLatestBlockId();
-        const latest_block_hash = this.app.blockring.returnLatestBlockHash();
-        const fork_id = this.app.blockchain.blockchain.fork_id;
+        let latest_block_id = this.app.blockring.returnLatestBlockId();
+        let latest_block_hash = this.app.blockring.returnLatestBlockHash();
+        let fork_id = this.app.blockchain.blockchain.fork_id;
+
+	if (this.app.BROWSER == 1) {
+	  if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
+	    latest_block_id = this.app.blockchain.blockchain.last_block_id;
+	    latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
+	  }
+	}
+
+console.log("req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id);
 
         const buffer_to_send = Buffer.concat([this.app.binary.u64AsBytes(latest_block_id), Buffer.from(latest_block_hash, 'hex'), Buffer.from(fork_id, 'hex')]);
 

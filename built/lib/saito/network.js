@@ -774,6 +774,13 @@ var Network = /** @class */ (function () {
         var latest_block_id = this.app.blockring.returnLatestBlockId();
         var latest_block_hash = this.app.blockring.returnLatestBlockHash();
         var fork_id = this.app.blockchain.blockchain.fork_id;
+        if (this.app.BROWSER == 1) {
+            if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
+                latest_block_id = this.app.blockchain.blockchain.last_block_id;
+                latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
+            }
+        }
+        console.log("req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id);
         var buffer_to_send = Buffer.concat([this.app.binary.u64AsBytes(latest_block_id), Buffer.from(latest_block_hash, 'hex'), Buffer.from(fork_id, 'hex')]);
         for (var x = this.peers.length - 1; x >= 0; x--) {
             if (this.peers[x] === peer) {

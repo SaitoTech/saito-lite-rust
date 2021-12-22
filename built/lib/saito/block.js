@@ -144,6 +144,10 @@ var Block = /** @class */ (function () {
             }
         }
     };
+    // called when a block is deleted from the chain for good
+    Block.prototype.deleteBlock = function (utxoset) {
+        // remove from disk, etc.
+    };
     /**
      * deserialize block
      * @param {array} buffer -

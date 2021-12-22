@@ -482,7 +482,7 @@ var Blockchain = /** @class */ (function () {
     Blockchain.prototype.generateForkId = function (block_id) {
         var fork_id = [];
         for (var i = 0; i < 32; i++) {
-            fork_id.push(0);
+            fork_id[i] = "0";
         }
         var current_block_id = block_id;
         //
@@ -510,10 +510,17 @@ var Blockchain = /** @class */ (function () {
             //
             var idx = 2 * i;
             var block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+            console.log("current_block_id: " + current_block_id);
+            console.log(idx + " --- " + block_hash);
             fork_id[idx] = block_hash[idx];
             fork_id[idx + 1] = block_hash[idx + 1];
         }
-        return fork_id.toString();
+        var fork_id_str = "";
+        console.log("fid length: " + fork_id.length);
+        for (var i = 0; i < fork_id.length; i++) {
+            fork_id_str += fork_id[i];
+        }
+        return fork_id_str;
     };
     // deletes a single block
     Blockchain.prototype.deleteBlock = function (deletedBlockId, deletedBlockHash) {
@@ -527,7 +534,7 @@ var Blockchain = /** @class */ (function () {
                         wallet = this.app.wallet;
                         wallet.deleteBlock(block);
                         // removes utxoset data
-                        return [4 /*yield*/, block.delete(this.utxoset)];
+                        return [4 /*yield*/, block.deleteBlock(this.utxoset)];
                     case 1:
                         // removes utxoset data
                         _a.sent();
@@ -618,14 +625,22 @@ var Blockchain = /** @class */ (function () {
         }
     };
     Blockchain.prototype.initialize = function () {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         //
                         // TODO - remove when ready
                         //
-                        this.resetBlockchain();
+                        //this.resetBlockchain();
+                        //
+                        // load blockchain from options if exists
+                        //
+                        if ((_b = (_a = this.app) === null || _a === void 0 ? void 0 : _a.options) === null || _b === void 0 ? void 0 : _b.blockchain) {
+                            this.blockchain = this.app.options.blockchain;
+                        }
+                        console.log("BLOCKCHAIN INFO: " + JSON.stringify(this.blockchain));
                         //
                         // prevent mempool from producing blocks while we load
                         //
@@ -639,7 +654,7 @@ var Blockchain = /** @class */ (function () {
                         //
                         // load blocks from disk
                         //
-                        _a.sent();
+                        _c.sent();
                         //
                         // and start mining
                         //
@@ -709,7 +724,9 @@ var Blockchain = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        console.log("on chain reorg!");
                         if (!lc) return [3 /*break*/, 2];
+                        console.log("updating consensus variables!");
                         //
                         // update consensus variables
                         //
@@ -738,6 +755,7 @@ var Blockchain = /** @class */ (function () {
                         // generate fork_id
                         //
                         this.blockchain.fork_id = this.generateForkId(block.returnId());
+                        console.log("saving this: " + JSON.stringify(this.blockchain));
                         //
                         // save options
                         //
@@ -793,6 +811,7 @@ var Blockchain = /** @class */ (function () {
         return this.app.blockring.returnLatestBlockId();
     };
     Blockchain.prototype.saveBlockchain = function () {
+        console.log("saving blockchain!");
         this.app.options.blockchain = this.blockchain;
         this.app.storage.saveOptions();
     };

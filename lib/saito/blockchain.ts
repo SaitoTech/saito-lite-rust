@@ -465,9 +465,9 @@ console.log("fetching unknown block: " + parent_block_hash);
 
     generateForkId(block_id) {
 
-        const fork_id = [];
+        let fork_id = [];
         for (let i = 0; i < 32; i++) {
-            fork_id.push(0);
+            fork_id[i] = "0";
         }
         let current_block_id = block_id;
 
@@ -502,11 +502,20 @@ console.log("fetching unknown block: " + parent_block_hash);
             const idx = 2 * i;
             const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
+console.log("current_block_id: " + current_block_id);
+console.log(idx + " --- " + block_hash);
+
             fork_id[idx] = block_hash[idx];
             fork_id[idx + 1] = block_hash[idx + 1];
 
         }
-        return fork_id.toString();
+
+	let fork_id_str = "";
+console.log("fid length: " + fork_id.length);
+        for (let i = 0; i < fork_id.length; i++) {
+	  fork_id_str += fork_id[i];
+	}
+        return fork_id_str;
     }
 
 
@@ -530,7 +539,7 @@ console.log("fetching unknown block: " + parent_block_hash);
         wallet.deleteBlock(block);
 
         // removes utxoset data
-        await block.delete(this.utxoset);
+        await block.deleteBlock(this.utxoset);
 
         // deletes block from disk
         this.app.storage.deleteBlockFromDisk(blockFilename);
@@ -645,7 +654,16 @@ console.log("fetching unknown block: " + parent_block_hash);
         //
         // TODO - remove when ready
         //
-        this.resetBlockchain();
+        //this.resetBlockchain();
+
+	//
+	// load blockchain from options if exists
+	//
+	if (this.app?.options?.blockchain) {
+	  this.blockchain = this.app.options.blockchain;
+	}
+
+console.log("BLOCKCHAIN INFO: " + JSON.stringify(this.blockchain));
 
         //
         // prevent mempool from producing blocks while we load
@@ -730,7 +748,11 @@ console.log("fetching unknown block: " + parent_block_hash);
     //
     async onChainReorganization(block, lc = false) {
 
+console.log("on chain reorg!");
+
         if (lc) {
+
+console.log("updating consensus variables!");
 
             //
             // update consensus variables
@@ -759,6 +781,7 @@ console.log("fetching unknown block: " + parent_block_hash);
             //
             this.blockchain.fork_id = this.generateForkId(block.returnId());
 
+console.log("saving this: " + JSON.stringify(this.blockchain));
 
             //
             // save options
@@ -825,6 +848,7 @@ console.log("fetching unknown block: " + parent_block_hash);
     }
 
     saveBlockchain() {
+console.log("saving blockchain!");
         this.app.options.blockchain = this.blockchain;
         this.app.storage.saveOptions();
     }
