@@ -101,7 +101,6 @@ var Network = /** @class */ (function () {
         var peerport = "";
         var peerobj = {};
         peerobj.peer = JSON.parse(peerjson);
-        console.log("ADD OUTGOING PEER!");
         if (peerobj.peer.protocol == null) {
             peerobj.peer.protocol = "http";
         }
@@ -158,7 +157,6 @@ var Network = /** @class */ (function () {
     // server sends us a websocket
     //
     Network.prototype.addRemotePeer = function (socket) {
-        console.log("ADD INCOMING PEER!");
         // deny excessive connections
         if (this.peers_connected >= this.peers_connected_limit) {
             console.log("ERROR 757594: denying request to remote peer as server overloaded...");
@@ -225,6 +223,7 @@ var Network = /** @class */ (function () {
                     case 1:
                         _a.trys.push([1, 6, , 7]);
                         url = "".concat(peer.peer.protocol, "://").concat(peer.peer.host, ":").concat(peer.peer.port, "/block/").concat(block_hash);
+                        console.log("URL: " + url);
                         return [4 /*yield*/, (0, node_fetch_1.default)(url)];
                     case 2:
                         res = _a.sent();
@@ -238,7 +237,8 @@ var Network = /** @class */ (function () {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
                         block.peer = this;
-                        return [2 /*return*/, block];
+                        this.app.mempool.addBlock(block);
+                        return [3 /*break*/, 5];
                     case 4:
                         console.error("Error fetching block: Status ".concat(res.status, " -- ").concat(res.statusText));
                         _a.label = 5;
@@ -262,7 +262,6 @@ var Network = /** @class */ (function () {
         // browsers can only use w3c sockets
         //
         if (browser == true) {
-            console.log("PEER IS: " + JSON.stringify(peer.peer));
             var wsProtocol = 'ws';
             if ((_a = peer.peer) === null || _a === void 0 ? void 0 : _a.protocol) {
                 if (peer.peer.protocol === 'https') {
@@ -505,12 +504,12 @@ var Network = /** @class */ (function () {
                             case "REQCHAIN": return [3 /*break*/, 6];
                             case "SNDCHAIN": return [3 /*break*/, 11];
                             case "SNDBLOCK": return [3 /*break*/, 12];
-                            case "SNDBLKHH": return [3 /*break*/, 16];
-                            case "SNDTRANS": return [3 /*break*/, 19];
-                            case "SNDKYLST": return [3 /*break*/, 21];
-                            case "SENDMESG": return [3 /*break*/, 22];
+                            case "SNDBLKHH": return [3 /*break*/, 13];
+                            case "SNDTRANS": return [3 /*break*/, 14];
+                            case "SNDKYLST": return [3 /*break*/, 16];
+                            case "SENDMESG": return [3 /*break*/, 17];
                         }
-                        return [3 /*break*/, 26];
+                        return [3 /*break*/, 21];
                     case 1: return [4 /*yield*/, this.app.handshake.handleIncomingHandshakeRequest(peer, message.message_data)];
                     case 2:
                         challenge = _c.sent();
@@ -528,28 +527,30 @@ var Network = /** @class */ (function () {
                                 i--;
                             }
                         }
-                        return [3 /*break*/, 28];
+                        return [3 /*break*/, 23];
                     case 4: 
                     // NOT YET IMPLEMENTED -- send FULL block
-                    return [3 /*break*/, 28];
+                    return [3 /*break*/, 23];
                     case 5: 
                     // NOT YET IMPLEMENTED -- send HEADER block
-                    return [3 /*break*/, 28];
+                    return [3 /*break*/, 23];
                     case 6:
                         block_id = 0;
                         block_hash = "";
                         fork_id = "";
                         bytes = message.message_data;
+                        console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
                         block_id = this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)));
                         if (!block_id) {
                             block_hash = Buffer.from(bytes.slice(8, 40), 'hex').toString('hex');
                             fork_id = Buffer.from(bytes.slice(40, 72), 'hex').toString('hex');
                         }
                         last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(block_id, fork_id);
+                        console.log("last shared ancestor generated at: " + last_shared_ancestor);
                         i = last_shared_ancestor;
                         _c.label = 7;
                     case 7:
-                        if (!(i < this.app.blockring.returnLatestBlockId())) return [3 /*break*/, 10];
+                        if (!(i <= this.app.blockring.returnLatestBlockId())) return [3 /*break*/, 10];
                         block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
                         if (!(block_hash !== "")) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.app.blockchain.loadBlockAsync(block_hash)];
@@ -562,45 +563,40 @@ var Network = /** @class */ (function () {
                     case 9:
                         i++;
                         return [3 /*break*/, 7];
-                    case 10: return [3 /*break*/, 28];
+                    case 10: return [3 /*break*/, 23];
                     case 11: 
                     // NOT YET IMPLEMENTED -- send chain
-                    return [3 /*break*/, 28];
+                    return [3 /*break*/, 23];
                     case 12:
                         block = new saito_1.default.block(this.app);
                         block.deserialize(message.message_data);
                         block_hash = block.returnHash();
                         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
-                        if (!is_block_indexed) return [3 /*break*/, 13];
-                        console.info("SNDBLOCK hash already known: " + block_hash);
-                        return [3 /*break*/, 15];
-                    case 13: return [4 /*yield*/, this.fetchBlock(block_hash, peer)];
-                    case 14:
-                        block = _c.sent();
-                        this.app.mempool.addBlock(block);
-                        _c.label = 15;
-                    case 15: return [3 /*break*/, 28];
-                    case 16:
+                        if (is_block_indexed) {
+                            console.info("SNDBLOCK hash already known: " + block_hash);
+                        }
+                        else {
+                            this.fetchBlock(block_hash, peer);
+                        }
+                        return [3 /*break*/, 23];
+                    case 13:
                         block_hash = Buffer.from(message.message_data, 'hex').toString('hex');
                         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
-                        if (!!is_block_indexed) return [3 /*break*/, 18];
-                        return [4 /*yield*/, this.fetchBlock(block_hash)];
-                    case 17:
-                        block = _c.sent();
-                        this.app.mempool.addBlock(block);
-                        _c.label = 18;
-                    case 18: return [3 /*break*/, 28];
-                    case 19:
+                        if (!is_block_indexed) {
+                            this.fetchBlock(block_hash);
+                        }
+                        return [3 /*break*/, 23];
+                    case 14:
                         tx = new transaction_1.default();
                         tx.deserialize(this.app, message.message_data, 0);
                         return [4 /*yield*/, this.app.mempool.addTransaction(tx)];
-                    case 20:
+                    case 15:
                         _c.sent();
-                        return [3 /*break*/, 28];
-                    case 21: 
+                        return [3 /*break*/, 23];
+                    case 16: 
                     //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
-                    return [3 /*break*/, 28];
-                    case 22:
+                    return [3 /*break*/, 23];
+                    case 17:
                         mdata = void 0;
                         reconstructed_obj = void 0;
                         reconstructed_message = "";
@@ -627,8 +623,8 @@ var Network = /** @class */ (function () {
                             peer.sendResponse(message.message_id, Buffer.from(JSON.stringify(response_object), 'utf-8'));
                         };
                         _b = message.message_name;
-                        return [3 /*break*/, 23];
-                    case 23:
+                        return [3 /*break*/, 18];
+                    case 18:
                         if (reconstructed_data) {
                             if (reconstructed_data.transaction) {
                                 if (reconstructed_data.transaction.m) {
@@ -639,19 +635,18 @@ var Network = /** @class */ (function () {
                                 }
                             }
                         }
-                        console.log("SENDMESG received handle peer request!");
                         return [4 /*yield*/, this.app.modules.handlePeerRequest(msg, peer, mycallback)];
-                    case 24:
+                    case 19:
                         _c.sent();
-                        _c.label = 25;
-                    case 25: return [3 /*break*/, 28];
-                    case 26:
+                        _c.label = 20;
+                    case 20: return [3 /*break*/, 23];
+                    case 21:
                         console.error("Unhandled command received by client... " + message.message_name);
                         return [4 /*yield*/, this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("NO SUCH", "utf-8"))];
-                    case 27:
+                    case 22:
                         _c.sent();
-                        return [3 /*break*/, 28];
-                    case 28: return [2 /*return*/];
+                        return [3 /*break*/, 23];
+                    case 23: return [2 /*return*/];
                 }
             });
         });
