@@ -1,13 +1,8 @@
 import crypto from "crypto-browserify";
-
 import node_cryptojs from "node-cryptojs-aes";
-
 import {randomBytes} from "crypto";
-
 import * as secp256k1 from "secp256k1";
-
 import * as Base58 from "base-58";
-
 import stringify from "fastest-stable-stringify";
 import {Saito} from "../../apps/core";
 
@@ -262,8 +257,7 @@ class Crypto {
      */
     verifyMessage(msg, sig, pubkey) {
         try {
-            const hash = this.hash(Buffer.from(msg, 'utf-8').toString("hex"));
-            //let hash = this.hash(Buffer.from(msg).toString('hex'));
+            let hash = this.hash(Buffer.from(msg, 'utf-8').toString());
             return this.verifyHash(hash, sig, pubkey);
         } catch (err) {
             console.log(err);
@@ -271,6 +265,7 @@ class Crypto {
         }
         return false;
     }
+
 
     /**
      * Returns an uncompressed public key from publickey
