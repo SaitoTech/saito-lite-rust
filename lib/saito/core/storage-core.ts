@@ -392,9 +392,9 @@ class StorageCore extends Storage {
     }
   }
 
-  returnClientOptions() {
+  returnClientOptions(): string {
     if (this.app.BROWSER == 1) {
-      return;
+      return "";
     }
     if (this.app.options) {
       if (this.app.options.client_options) {

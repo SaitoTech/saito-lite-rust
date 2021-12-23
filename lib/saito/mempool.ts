@@ -311,7 +311,7 @@ class Mempool {
     // @ts-ignore
     if (
       this.mempool.transactions.length === 0 &&
-      this.app.blockchain.last_bid > 1
+      this.app.blockchain.returnLatestBlockId() > 1
     ) {
       console.log("CANNOT PRODUCE AS MEMPOLL HAS NO TXS AND LAST_BID > 1");
       return false;
