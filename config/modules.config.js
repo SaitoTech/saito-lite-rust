@@ -42,6 +42,7 @@ export default {
     'relay/relay.js',
     //'registry/registry.js',
     'settings/settings.js',
+    'settlers/settlers.js',
     'solitrio/solitrio.js',
     'twilight/twilight.js',
     'thirteen/thirteen.js',

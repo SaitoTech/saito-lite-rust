@@ -1192,6 +1192,9 @@ class Arcade extends ModTemplate {
             if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
               if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
                 ready_to_go = 0;
+                if (thistxmsg.step.game <= arcade_self.app.options.games[game_idx].step.game) {
+                  ready_to_go = 1;
+                }
               }
             }
           }
