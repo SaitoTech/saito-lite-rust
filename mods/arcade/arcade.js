@@ -1164,7 +1164,7 @@ class Arcade extends ModTemplate {
         // check we don't have a pending TX for this game...
         //
         let ready_to_go = 1;
-	let game_step_needing_processing = 0;
+      	let game_step_needing_processing = 0;
 
         if (arcade_self.app.wallet.wallet.pending.length > 0) {
           for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
@@ -1173,10 +1173,9 @@ class Arcade extends ModTemplate {
             if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
               if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
                 ready_to_go = 0;
-		// if we have already processed the move it is ok
-		if (thistxmsg.step.game <= arcade_self.app.options.games[game_idx].step.game) {
-		  ready_to_go = 1;
-		}
+                if (thistxmsg.step.game <= arcade_self.app.options.games[game_idx].step.game) {
+                  ready_to_go = 1;
+                }
               }
             }
           }
