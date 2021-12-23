@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import saito from "../saito";
 
@@ -11,505 +11,488 @@ import * as JSON from "json-bigint";
 import path from "path";
 
 import sqlite from "sqlite";
-import {Saito} from "../../../apps/core";
+import { Saito } from "../../../apps/core";
 
 class StorageCore extends Storage {
-    public data_dir: any;
-    public config_dir: any;
-    public dest: any;
-    public db: any;
-    public dbname: any;
-    public loading_active: any;
-    public file_encoding_save: any;
-    public file_encoding_load: any;
-    public app: Saito;
+  public data_dir: any;
+  public config_dir: any;
+  public dest: any;
+  public db: any;
+  public dbname: any;
+  public loading_active: any;
+  public file_encoding_save: any;
+  public file_encoding_load: any;
+  public app: Saito;
 
-    constructor(app, data?, dest = "blocks") {
-        super(app);
+  constructor(app, data?, dest = "blocks") {
+    super(app);
 
-        this.data_dir = data || path.join(__dirname, '../../../data');
-        this.config_dir = path.join(__dirname, '../../../config');
-        this.dest = dest;
-        this.db = [];
-        this.dbname = [];
-        this.loading_active = false;
+    this.data_dir = data || path.join(__dirname, "../../../data");
+    this.config_dir = path.join(__dirname, "../../../config");
+    this.dest = dest;
+    this.db = [];
+    this.dbname = [];
+    this.loading_active = false;
 
-        this.file_encoding_save = 'utf8';
-        this.file_encoding_load = 'utf8';
-//    this.file_encoding_load    = 'binary';
-        //this.file_encoding         = 'binary';
+    this.file_encoding_save = "utf8";
+    this.file_encoding_load = "utf8";
+    //    this.file_encoding_load    = 'binary';
+    //this.file_encoding         = 'binary';
+  }
 
+  deleteBlockFromDisk(filename) {
+    return fs.unlinkSync(filename);
+  }
+
+  returnFileSystem() {
+    return fs;
+  }
+
+  async returnDatabaseByName(dbname) {
+    for (let i = 0; i < this.dbname.length; i++) {
+      if (dbname == this.dbname[i]) {
+        return this.db[i];
+      }
+    }
+    try {
+      const db = await sqlite.open(this.data_dir + "/" + dbname + ".sq3");
+
+      this.dbname.push(dbname);
+      this.db.push(db);
+
+      return this.db[this.db.length - 1];
+    } catch (err) {
+      console.log("Error creating database for db-name: " + dbname);
+      return null;
+    }
+  }
+
+  generateBlockFilename(block) {
+    let filename = this.data_dir + "/" + this.dest + "/";
+    filename += Buffer.from(
+      this.app.binary.u64AsBytes(block.block.timestamp).toString("hex")
+    );
+    filename += "-";
+    filename += Buffer.from(block.hash).toString("hex");
+    filename += ".sai";
+    return filename;
+  }
+
+  loadBlockFromDisk(filename) {
+    try {
+      if (fs.existsSync(filename)) {
+        const buffer = fs.readFileSync(filename);
+        const block = new saito.block(this.app);
+        block.deserialize(buffer);
+        block.generateMetadata();
+        return block;
+      }
+    } catch (error) {
+      console.log("Error reading block from disk");
+      console.error(error);
+    }
+    return null;
+  }
+
+  async loadBlocksFromDisk(maxblocks = 0) {
+    this.loading_active = true;
+
+    //
+    // sort files by creation date, and then name
+    // if two files have the same creation date
+    //
+    const dir = `${this.data_dir}/${this.dest}/`;
+
+    //
+    // if this takes a long time, our server can
+    // just refuse to sync the initial connection
+    // as when it starts to connect, currently_reindexing
+    // will be set at 1
+    //
+    const files = fs.readdirSync(dir);
+
+    //
+    // "empty" file only
+    //
+    if (files.length == 1) {
+      this.loading_active = false;
+      return;
     }
 
-    deleteBlockFromDisk(filename) {
-        return fs.unlinkSync(filename);
-    }
+    files.sort(function (a, b) {
+      const compres =
+        fs.statSync(dir + a).mtime.getTime() -
+        fs.statSync(dir + b).mtime.getTime();
+      if (compres == 0) {
+        return parseInt(a) - parseInt(b);
+      }
+      return compres;
+    });
 
-
-    returnFileSystem() {
-        return fs;
-    }
-
-
-    async returnDatabaseByName(dbname) {
-        for (let i = 0; i < this.dbname.length; i++) {
-            if (dbname == this.dbname[i]) {
-                return this.db[i];
-            }
-        }
-        try {
-
-            const db = await sqlite.open(this.data_dir + '/' + dbname + '.sq3');
-
-            this.dbname.push(dbname);
-            this.db.push(db);
-
-            return this.db[this.db.length - 1];
-
-        } catch (err) {
-
-            console.log("Error creating database for db-name: " + dbname);
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const fileID = files[i];
+        if (fileID !== "empty") {
+          const blk = await this.loadBlockByFilename(fileID);
+          if (blk == null) {
+            console.log("block is null: " + fileID);
             return null;
+          }
+          if (blk.is_valid == 0) {
+            console.log("We have saved an invalid block: " + fileID);
+            return null;
+          }
 
+          await this.app.blockchain.addBlockToBlockchain(blk, 1);
+          console.log("Loaded block " + i + " of " + files.length);
         }
+      } catch (err) {
+        console.log("ERROR");
+        console.log(err);
+      }
     }
+  }
 
-    generateBlockFilename(block) {
-        let filename = this.data_dir + "/" + this.dest + "/";
-        filename += Buffer.from(this.app.binary.u64AsBytes(block.block.timestamp).toString('hex'));
-        filename += "-";
-        filename += Buffer.from(block.hash).toString("hex");
-        filename += ".sai";
-        return filename;
+  /**
+   * Saves a block to database and disk and shashmap
+   *
+   * @param {saito.block} block block
+   */
+  async saveBlock(block) {
+    // try {
+    const filename = this.generateBlockFilename(block);
+    if (!fs.existsSync(filename)) {
+      const fd = fs.openSync(filename, "w");
+      const buffer = block.serialize();
+      fs.writeSync(fd, buffer);
+      fs.fsyncSync(fd);
+      fs.closeSync(fd);
     }
+    return filename;
+    // } catch (err) {
+    //   console.log("ERROR 285029: error saving block to disk " + err);
+    // }
+    // return "";
+  }
 
-    loadBlockFromDisk(filename) {
-        try {
-            if (fs.existsSync(filename)) {
-                const buffer = fs.readFileSync(filename);
-                const block = new saito.block(this.app);
-                block.deserialize(buffer);
-                block.generateMetadata();
-                return block;
-            }
-        } catch (error) {
-            console.log("Error reading block from disk");
-            console.error(error);
+  /* deletes block from shashmap and disk */
+  async deleteBlock(bid, bsh, lc) {
+    const blk = await this.loadBlockByHash(bsh);
+    if (blk != null) {
+      //
+      // delete txs
+      //
+      if (blk.transactions != undefined) {
+        for (let b = 0; b < blk.transactions.length; b++) {
+          for (
+            let bb = 0;
+            bb < blk.transactions[b].transaction.to.length;
+            bb++
+          ) {
+            blk.transactions[b].transaction.to[bb].bid = bid;
+            blk.transactions[b].transaction.to[bb].bhash = bsh;
+            blk.transactions[b].transaction.to[bb].tid =
+              blk.transactions[b].transaction.id;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            shashmap.delete_slip(
+              blk.transactions[b].transaction.to[bb].returnIndex()
+            );
+          }
         }
-        return null;
-    }
+      }
 
-    async loadBlocksFromDisk(maxblocks = 0) {
+      //
+      // deleting file
+      //
+      const block_filename = await this.returnBlockFilenameByHashPromise(bsh);
 
-        this.loading_active = true;
-
-        //
-        // sort files by creation date, and then name
-        // if two files have the same creation date
-        //
-        const dir = `${this.data_dir}/${this.dest}/`;
-
-        //
-        // if this takes a long time, our server can
-        // just refuse to sync the initial connection
-        // as when it starts to connect, currently_reindexing
-        // will be set at 1
-        //
-        const files = fs.readdirSync(dir);
-
-        //
-        // "empty" file only
-        //
-        if (files.length == 1) {
-            this.loading_active = false;
-            return;
+      fs.unlink(block_filename.toString(), function (err) {
+        if (err) {
+          console.error(err);
         }
-
-        files.sort(function (a, b) {
-            const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
-            if (compres == 0) {
-                return parseInt(a) - parseInt(b);
-            }
-            return compres;
-        });
-
-        for (let i = 0; i < files.length; i++) {
-
-            try {
-
-                const fileID = files[i];
-                if (fileID !== "empty") {
-
-                    const blk = await this.loadBlockByFilename(fileID);
-                    if (blk == null) {
-                        console.log("block is null: " + fileID);
-                        return null;
-                    }
-                    if (blk.is_valid == 0) {
-                        console.log("We have saved an invalid block: " + fileID);
-                        return null;
-                    }
-
-                    await this.app.blockchain.addBlockToBlockchain(blk, 1);
-                    console.log("Loaded block " + i + " of " + files.length);
-
-                }
-            } catch (err) {
-                console.log("ERROR");
-                console.log(err);
-            }
-        }
+      });
     }
+  }
 
-
-    /**
-     * Saves a block to database and disk and shashmap
-     *
-     * @param {saito.block} block block
-     */
-    async saveBlock(block) {
-        // try {
-        const filename = this.generateBlockFilename(block);
-        if (!fs.existsSync(filename)) {
-            const fd = fs.openSync(filename, 'w');
-            const buffer = block.serialize();
-            fs.writeSync(fd, buffer);
-            fs.fsyncSync(fd);
-            fs.closeSync(fd);
-        }
-        return filename;
-        // } catch (err) {
-        //   console.log("ERROR 285029: error saving block to disk " + err);
-        // }
-        // return "";
-    }
-
-
-    /* deletes block from shashmap and disk */
-    async deleteBlock(bid, bsh, lc) {
-
-        const blk = await this.loadBlockByHash(bsh);
-        if (blk != null) {
-
-            //
-            // delete txs
-            //
-            if (blk.transactions != undefined) {
-                for (let b = 0; b < blk.transactions.length; b++) {
-                    for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
-                        blk.transactions[b].transaction.to[bb].bid = bid;
-                        blk.transactions[b].transaction.to[bb].bhash = bsh;
-                        blk.transactions[b].transaction.to[bb].tid = blk.transactions[b].transaction.id;
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        shashmap.delete_slip(blk.transactions[b].transaction.to[bb].returnIndex());
-                    }
-                }
-            }
-
-            //
-            // deleting file
-            //
-            const block_filename = await this.returnBlockFilenameByHashPromise(bsh);
-
-            fs.unlink(block_filename.toString(), function (err) {
-                if (err) {
-                    console.error(err);
-                }
-            });
-        }
-    }
-
-
-    async loadBlockById(bid) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const bsh = this.app.blockchain.bid_bsh_hmap[bid];
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const ts = this.app.blockchain.bsh_ts_hmap[bsh];
-        const filename = ts + "-" + bsh + ".blk";
-        const blk = await this.loadBlockByFilename(filename);
-        return blk;
-    }
-
-    async loadBlockByHash(bsh) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const ts = this.app.blockchain.bsh_ts_hmap[bsh];
-        const filename = ts + "-" + bsh + ".blk";
-        const blk = await this.loadBlockByFilename(filename);
-        return blk;
-    }
-
-    async loadBlockByFilename(filename) {
-
-        const block_filename = `${this.data_dir}/${this.dest}/${filename}`;
-
-        console.log("trying to load: " + block_filename);
-
-        try {
-            if (fs.existsSync(block_filename)) {
-
-                const data = fs.readFileSync(block_filename);
-                const block = new saito.block(this.app);
-
-                block.deserialize(data);
-                block.generateMetadata();
-                block.generateHashes();
-
-                return block;
-
-            } else {
-
-                console.error(`cannot open: ${block_filename} as it does not exist on disk`)
-                return null;
-
-            }
-        } catch (err) {
-            console.log("Error reading block from disk");
-            console.error(err);
-        }
-
-        console.log("Block not being returned... returning null");
-        return null;
-    }
-
-
-    /**
-     * Load the options file
-     */
-    async loadOptions() {
-
-        if (fs.existsSync(`${this.config_dir}/options`)) {
-
-            //
-            // open options file
-            //
-            try {
-                const optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
-                this.app.options = JSON.parse(optionsfile.toString());
-            } catch (err) {
-                // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
-                console.error(err);
-                process.exit();
-            }
-
-        } else {
-
-            //
-            // default options file
-            //
-            this.app.options = JSON.parse('{"server":{"host":"localhost","port":12101,"protocol":"http"}}');
-
-        }
-    }
-
-    async loadRuntimeOptions() {
-
-        if (fs.existsSync(`${this.config_dir}/runtime.config.js`)) {
-
-            //
-            // open runtime config file
-            //
-            try {
-                const configfile = fs.readFileSync(`${this.config_dir}/runtime.config.js`, this.file_encoding_load);
-                this.app.options.runtime = JSON.parse(configfile.toString());
-            } catch (err) {
-                // this.app.logger.logError("Error Reading Runtime Config File", {message:"", stack: err});
-                console.error(err);
-                process.exit();
-            }
-
-        } else {
-
-            //
-            // default options file
-            //
-            this.app.options.runtime = {};
-
-        }
-    }
-
-    /**
-     * Save the options file
-     */
-    saveOptions() {
-
-        this.app.options = Object.assign({}, this.app.options);
-
-        try {
-            fs.writeFileSync(`${this.config_dir}/options`, JSON.stringify(this.app.options), null);
-        } catch (err) {
-            // this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
-            console.error(err);
-            return;
-        }
-
-    }
-
-    // overwrite to stop the server from attempting to reset options live
+  async loadBlockById(bid) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    resetOptions() {
+    const bsh = this.app.blockchain.bid_bsh_hmap[bid];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const ts = this.app.blockchain.bsh_ts_hmap[bsh];
+    const filename = ts + "-" + bsh + ".blk";
+    const blk = await this.loadBlockByFilename(filename);
+    return blk;
+  }
+
+  async loadBlockByHash(bsh) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const ts = this.app.blockchain.bsh_ts_hmap[bsh];
+    const filename = ts + "-" + bsh + ".blk";
+    const blk = await this.loadBlockByFilename(filename);
+    return blk;
+  }
+
+  async loadBlockByFilename(filename) {
+    const block_filename = `${this.data_dir}/${this.dest}/${filename}`;
+
+    console.log("trying to load: " + block_filename);
+
+    try {
+      if (fs.existsSync(block_filename)) {
+        const data = fs.readFileSync(block_filename);
+        const block = new saito.block(this.app);
+
+        block.deserialize(data);
+        block.generateMetadata();
+        block.generateHashes();
+
+        return block;
+      } else {
+        console.error(
+          `cannot open: ${block_filename} as it does not exist on disk`
+        );
+        return null;
+      }
+    } catch (err) {
+      console.log("Error reading block from disk");
+      console.error(err);
     }
 
+    console.log("Block not being returned... returning null");
+    return null;
+  }
 
-    ///////////////////////
-    // saveClientOptions //
-    ///////////////////////
+  /**
+   * Load the options file
+   */
+  async loadOptions() {
+    if (fs.existsSync(`${this.config_dir}/options`)) {
+      //
+      // open options file
+      //
+      try {
+        const optionsfile = fs.readFileSync(
+          `${this.config_dir}/options`,
+          this.file_encoding_load
+        );
+        this.app.options = JSON.parse(optionsfile.toString());
+      } catch (err) {
+        // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
+        console.error(err);
+        process.exit();
+      }
+    } else {
+      //
+      // default options file
+      //
+      this.app.options = JSON.parse(
+        '{"server":{"host":"localhost","port":12101,"protocol":"http"}}'
+      );
+    }
+  }
+
+  async loadRuntimeOptions() {
+    if (fs.existsSync(`${this.config_dir}/runtime.config.js`)) {
+      //
+      // open runtime config file
+      //
+      try {
+        const configfile = fs.readFileSync(
+          `${this.config_dir}/runtime.config.js`,
+          this.file_encoding_load
+        );
+        this.app.options.runtime = JSON.parse(configfile.toString());
+      } catch (err) {
+        // this.app.logger.logError("Error Reading Runtime Config File", {message:"", stack: err});
+        console.error(err);
+        process.exit();
+      }
+    } else {
+      //
+      // default options file
+      //
+      this.app.options.runtime = {};
+    }
+  }
+
+  /**
+   * Save the options file
+   */
+  saveOptions() {
+    this.app.options = Object.assign({}, this.app.options);
+
+    try {
+      fs.writeFileSync(
+        `${this.config_dir}/options`,
+        JSON.stringify(this.app.options),
+        null
+      );
+    } catch (err) {
+      // this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
+      console.error(err);
+      return;
+    }
+  }
+
+  // overwrite to stop the server from attempting to reset options live
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  resetOptions() {}
+
+  ///////////////////////
+  // saveClientOptions //
+  ///////////////////////
+  //
+  // when browsers connect to our server, we check to see
+  // if the client.options file exists in our web directory
+  // and generate one here if it does not.
+  //
+  // this is fed out to client browsers and serves as their
+  // default options, specifying us as the node to which they
+  // should connect and through which they can route their
+  // transactions. :D
+  //
+  saveClientOptions() {
+    if (this.app.BROWSER == 1) {
+      return;
+    }
+    const client_peer = Object.assign({}, this.app.server.server.endpoint, {
+      synctype: "lite",
+    });
     //
-    // when browsers connect to our server, we check to see
-    // if the client.options file exists in our web directory
-    // and generate one here if it does not.
+    // mostly empty, except that we tell them what our latest
+    // block_id is and send them information on where our
+    // server is located so that they can sync to it.
     //
-    // this is fed out to client browsers and serves as their
-    // default options, specifying us as the node to which they
-    // should connect and through which they can route their
-    // transactions. :D
+    const t: any = {};
+    t.keys = [];
+    t.peers = [];
+    t.services = this.app.options.services;
+    t.dns = [];
+    t.blockchain = {};
+    t.registry = this.app.options.registry;
+    t.appstore = {};
+    t.appstore.default = this.app.wallet.returnPublicKey();
+    t.peers.push(client_peer);
+
     //
-    saveClientOptions() {
+    // write file
+    //
+    try {
+      fs.writeFileSync(`${__dirname}/web/client.options`, JSON.stringify(t));
+    } catch (err) {
+      console.log(err);
+      console.error(err);
+      // this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
+    }
+  }
 
-        if (this.app.BROWSER == 1) {
-            return;
-        }
-        const client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
-        //
-        // mostly empty, except that we tell them what our latest
-        // block_id is and send them information on where our
-        // server is located so that they can sync to it.
-        //
-        const t: any = {};
-        t.keys = [];
-        t.peers = [];
-        t.services = this.app.options.services;
-        t.dns = [];
-        t.blockchain = {};
-        t.registry = this.app.options.registry;
-        t.appstore = {};
-        t.appstore.default = this.app.wallet.returnPublicKey();
-        t.peers.push(client_peer);
-
-        //
-        // write file
-        //
-        try {
-            fs.writeFileSync(`${__dirname}/web/client.options`, JSON.stringify(t));
-        } catch (err) {
-            console.log(err);
-            console.error(err);
-            // this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
-        }
-
+  returnClientOptions() {
+    if (this.app.BROWSER == 1) {
+      return;
+    }
+    if (this.app.options) {
+      if (this.app.options.client_options) {
+        return JSON.stringify(this.app.options.client_options, null, 2);
+      }
     }
 
-    returnClientOptions() {
+    const client_peer = Object.assign({}, this.app.server.server.endpoint, {
+      synctype: "lite",
+    });
+    //
+    // mostly empty, except that we tell them what our latest
+    // block_id is and send them information on where our
+    // server is located so that they can sync to it.
+    //
+    const t: any = {};
+    t.keys = [];
+    t.peers = [];
+    t.services = this.app.options.services;
+    t.dns = [];
+    t.runtime = this.app.options.runtime;
+    t.blockchain = {};
+    t.wallet = {};
+    t.registry = this.app.options.registry;
+    //t.appstore             = {};
+    //t.appstore.default     = this.app.wallet.returnPublicKey();
+    t.peers.push(client_peer);
 
-        if (this.app.BROWSER == 1) {
-            return;
-        }
-        if (this.app.options) {
-            if (this.app.options.client_options) {
-                return JSON.stringify(this.app.options.client_options, null, 2);
-            }
-        }
+    //
+    // return json
+    //
+    return JSON.stringify(t, null, 2);
+  }
 
-        const client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
-        //
-        // mostly empty, except that we tell them what our latest
-        // block_id is and send them information on where our
-        // server is located so that they can sync to it.
-        //
-        const t: any = {};
-        t.keys = [];
-        t.peers = [];
-        t.services = this.app.options.services;
-        t.dns = [];
-        t.runtime = this.app.options.runtime;
-        t.blockchain = {};
-        t.wallet = {};
-        t.registry = this.app.options.registry;
-        //t.appstore             = {};
-        //t.appstore.default     = this.app.wallet.returnPublicKey();
-        t.peers.push(client_peer);
+  /**
+   * TODO: uses a callback and should be moved to await / async promise
+   **/
+  async returnBlockFilenameByHash(block_hash, mycallback) {
+    const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
+    const params = { $block_hash: block_hash };
 
-        //
-        // return json
-        //
-        return JSON.stringify(t, null, 2);
-
+    try {
+      const row = await this.db.get(sql, params);
+      if (row == undefined) {
+        mycallback(null, "Block not found on this server");
+        return;
+      }
+      const filename = `${row.ts}-${block_hash}.blk`;
+      mycallback(filename, null);
+    } catch (err) {
+      console.log("ERROR getting block filename in storage: " + err);
+      mycallback(null, err);
     }
+  }
 
-    /**
-     * TODO: uses a callback and should be moved to await / async promise
-     **/
-    async returnBlockFilenameByHash(block_hash, mycallback) {
-
-        const sql = "SELECT id, ts, block_id FROM blocks WHERE hash = $block_hash";
-        const params = {$block_hash: block_hash};
-
-        try {
-            const row = await this.db.get(sql, params)
-            if (row == undefined) {
-                mycallback(null, "Block not found on this server");
-                return
-            }
-            const filename = `${row.ts}-${block_hash}.blk`;
-            mycallback(filename, null);
-        } catch (err) {
-            console.log("ERROR getting block filename in storage: " + err);
-            mycallback(null, err);
+  returnBlockFilenameByHashPromise(block_hash) {
+    return new Promise((resolve, reject) => {
+      this.returnBlockFilenameByHash(block_hash, (filename, err) => {
+        if (err) {
+          reject(err);
         }
+        resolve(filename);
+      });
+    });
+  }
 
+  /**
+   *
+   * @param {*} sql
+   * @param {*} params
+   * @param {*} callback
+   */
+  async executeDatabase(sql, params, database, mycallback = null) {
+    try {
+      const db = await this.returnDatabaseByName(database);
+      if (mycallback == null) {
+        return await db.run(sql, params);
+      } else {
+        return await db.run(sql, params, mycallback);
+      }
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    returnBlockFilenameByHashPromise(block_hash) {
-        return new Promise((resolve, reject) => {
-            this.returnBlockFilenameByHash(block_hash, (filename, err) => {
-                if (err) {
-                    reject(err)
-                }
-                resolve(filename);
-            })
-        })
+  async queryDatabase(sql, params, database) {
+    try {
+      const db = await this.returnDatabaseByName(database);
+      const rows = await db.all(sql, params);
+      if (rows == undefined) {
+        return [];
+      }
+      return rows;
+    } catch (err) {
+      console.log(err);
+      return [];
     }
-
-
-    /**
-     *
-     * @param {*} sql
-     * @param {*} params
-     * @param {*} callback
-     */
-    async executeDatabase(sql, params, database, mycallback = null) {
-        try {
-            const db = await this.returnDatabaseByName(database);
-            if (mycallback == null) {
-                return await db.run(sql, params);
-            } else {
-                return await db.run(sql, params, mycallback);
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    async queryDatabase(sql, params, database) {
-        try {
-            const db = await this.returnDatabaseByName(database);
-            const rows = await db.all(sql, params)
-            if (rows == undefined) {
-                return [];
-            }
-            return rows;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    }
-
+  }
 }
 
 export default StorageCore;
-

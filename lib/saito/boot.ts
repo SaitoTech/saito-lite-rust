@@ -6,8 +6,7 @@
 // is not the default software, and swaps it in instead of
 // the default if it exists and can be found.
 //
-if (typeof (Storage) !== "undefined") {
-
+if (typeof Storage !== "undefined") {
   const mySource = document.currentScript.src;
   const sscript = document.getElementById("saito");
   let data = null;
@@ -22,20 +21,16 @@ if (typeof (Storage) !== "undefined") {
     bundle = options.bundle;
   }
 
-
   if (bundle != null && bundle != "") {
     if (bundle != mySource) {
       document.body.removeChild(sscript);
 
-      const sscript2 = document.createElement('script');
-      sscript2.onload = function () {
-      };
+      const sscript2 = document.createElement("script");
+      sscript2.onload = function () {};
       sscript2.src = bundle;
       document.body.appendChild(sscript2);
 
-      throw new Error('Exiting before we load bad javascript...!');
+      throw new Error("Exiting before we load bad javascript...!");
     }
   }
-
 }
-
