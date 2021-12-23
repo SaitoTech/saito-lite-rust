@@ -3850,8 +3850,6 @@ if (this.game.player == 0) {
           }
           twilight_self.playerPlaceInfluence(player, (country, player) => {
 
-alert("SHOULD BE UPDATED!");
-
             j--;
 
             //
