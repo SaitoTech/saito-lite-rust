@@ -2,6 +2,8 @@ import saito from "./saito";
 
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
+import Hop from "./hop";
+import { Saito } from "../../apps/core";
 
 export const TRANSACTION_SIZE = 89;
 export const SLIP_SIZE = 75;
@@ -22,15 +24,15 @@ export enum TransactionType {
 
 class Transaction {
   public transaction: any;
-  public fees_total: any;
-  public work_available_to_me: any;
-  public work_available_to_creator: any;
-  public work_cumulative: any;
+  public fees_total: bigint;
+  public work_available_to_me: bigint;
+  public work_available_to_creator: bigint;
+  public work_cumulative: bigint;
   public msg: any;
   public dmsg: any;
-  public size: any;
+  public size: number;
   public is_valid: any;
-  public path: any;
+  public path: Hop[];
   public returnTotalFees: any;
 
   constructor(jsonobj = null) {
@@ -82,7 +84,7 @@ class Transaction {
       }
       for (let i = 0; i < this.transaction.from.length; i++) {
         const fslip = this.transaction.from[i];
-        const fslipobj = new Slip(
+        this.transaction.from[i] = new Slip(
           fslip.add,
           fslip.amt,
           fslip.type,
@@ -91,11 +93,10 @@ class Transaction {
           fslip.payout,
           fslip.lc
         );
-        this.transaction.from[i] = fslipobj;
       }
       for (let i = 0; i < this.transaction.to.length; i++) {
         const fslip = this.transaction.to[i];
-        const fslipobj = new Slip(
+        this.transaction.to[i] = new Slip(
           fslip.add,
           fslip.amt,
           fslip.type,
@@ -104,7 +105,6 @@ class Transaction {
           fslip.payout,
           fslip.lc
         );
-        this.transaction.to[i] = fslipobj;
       }
     }
 
@@ -165,11 +165,12 @@ class Transaction {
 
   /**
    * Deserialize Transaction
+   * @param app
    * @param {array} buffer - raw bytes, perhaps an entire block
    * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
    * @returns {Transaction}
    */
-  deserialize(app, buffer, start_of_transaction_data) {
+  deserialize(app: Saito, buffer, start_of_transaction_data) {
     const inputs_len = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
     );
@@ -309,39 +310,23 @@ class Transaction {
   }
 
   isGoldenTicket() {
-    if (this.transaction.type === TransactionType.GoldenTicket) {
-      //            console.log("is this a golden ticket: yes");
-      return true;
-    }
-    return false;
+    return this.transaction.type === TransactionType.GoldenTicket;
   }
 
   isFeeTransaction() {
-    if (this.transaction.type === TransactionType.Fee) {
-      return true;
-    }
-    return false;
+    return this.transaction.type === TransactionType.Fee;
   }
 
   isIssuanceTransaction() {
-    if (this.transaction.type === TransactionType.Issuance) {
-      return true;
-    }
-    return false;
+    return this.transaction.type === TransactionType.Issuance;
   }
 
   isFrom(senderPublicKey) {
-    if (this.returnSlipsFrom(senderPublicKey).length !== 0) {
-      return true;
-    }
-    return false;
+    return this.returnSlipsFrom(senderPublicKey).length !== 0;
   }
 
   isTo(receiverPublicKey) {
-    if (this.returnSlipsTo(receiverPublicKey).length > 0) {
-      return true;
-    }
-    return false;
+    return this.returnSlipsTo(receiverPublicKey).length > 0;
   }
 
   onChainReorganization(app, lc, block_id) {
@@ -385,7 +370,7 @@ class Transaction {
     return html;
   }
 
-  returnFeesTotal(app?) {
+  returnFeesTotal() {
     if (this.fees_total === BigInt(0)) {
       //
       // sum inputs
@@ -453,8 +438,8 @@ class Transaction {
         }
     */
 
-  returnRoutingWorkAvailableToPublicKey(app) {
-    let uf = this.returnFeesTotal(app);
+  returnRoutingWorkAvailableToPublicKey() {
+    let uf = this.returnFeesTotal();
     for (let i = 0; i < this.transaction.path.length; i++) {
       let d = 1;
       for (let j = i; j > 0; j--) {
@@ -580,10 +565,10 @@ class Transaction {
 
   /**
    * Serialize TX
-   * @param {TransactionV2} transaction
    * @returns {array} raw bytes
+   * @param app
    */
-  serialize(app) {
+  serialize(app: Saito) {
     //console.log("tx.serialize", this.transaction);
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
@@ -825,24 +810,28 @@ class Transaction {
     // fee transactions
     //
     if (this.transaction.type === TransactionType.Fee) {
+      // TODO
     }
 
     //
     // atr transactions
     //
     if (this.transaction.type === TransactionType.ATR) {
+      // TODO
     }
 
     //
     // normal transactions
     //
     if (this.transaction.type === TransactionType.Normal) {
+      // TODO
     }
 
     //
     // golden ticket transactions
     //
     if (this.transaction.type === TransactionType.GoldenTicket) {
+      // TODO
     }
 
     //
@@ -921,7 +910,9 @@ class Transaction {
     return true;
   }
 
-  generateMetadata() {}
+  generateMetadata() {
+    // TODO
+  }
 
   generateMetadataCumulativeFees() {
     return BigInt(0);

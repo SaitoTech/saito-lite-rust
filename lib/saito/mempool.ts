@@ -563,10 +563,8 @@ class Mempool {
 
     for (let i = 0; i < this.mempool.transactions.length; i++) {
       if (this.mempool.transactions[i].is_valid === 1) {
-        v += this.mempool.transactions[i].returnRoutingWorkAvailableToPublicKey(
-          this.app,
-          this.app.wallet.returnPublicKey()
-        );
+        v +=
+          this.mempool.transactions[i].returnRoutingWorkAvailableToPublicKey();
       }
     }
     return v;
