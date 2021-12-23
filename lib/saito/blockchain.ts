@@ -454,50 +454,57 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
-    const fork_id = [];
-    for (let i = 0; i < 32; i++) {
-      fork_id.push(0);
-    }
-    let current_block_id = block_id;
 
-    //
-    // roll back to last even 10 blocks
-    //
-    for (let i = 0; i < 10; i++) {
-      if ((current_block_id - i) % 10 === 0) {
-        current_block_id -= i;
-      }
-    }
 
-    const weights = [
-      0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000,
-      100000,
-    ];
+        let fork_id = [];
+        for (let i = 0; i < 32; i++) {
+            fork_id[i] = "0";
+        }
+        let current_block_id = block_id;
 
-    //
-    // loop backwards through blockchain
-    //
-    for (let i = 0; i < 16; ++i) {
-      current_block_id -= weights[i];
+        //
+        // roll back to last even 10 blocks
+        //
+        for (let i = 0; i < 10; i++) {
+            if ((current_block_id - i) % 10 === 0) {
+                current_block_id -= i;
+            }
+        }
 
-      //
-      // do not loop around if block id < 0
-      //
-      if (current_block_id > block_id || current_block_id === 0) {
-        break;
-      }
+        const weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
-      //
-      // index to update
-      //
-      const idx = 2 * i;
-      const block_hash =
-        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+        //
+        // loop backwards through blockchain
+        //
+        for (let i = 0; i < 16; ++i) {
 
-      fork_id[idx] = block_hash[idx];
-      fork_id[idx + 1] = block_hash[idx + 1];
-    }
-    return fork_id.toString();
+            current_block_id -= weights[i];
+
+            //
+            // do not loop around if block id < 0
+            //
+            if (current_block_id > block_id || current_block_id === 0) {
+                break;
+            }
+
+            //
+            // index to update
+            //
+            const idx = 2 * i;
+            const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+
+            fork_id[idx] = block_hash[idx];
+            fork_id[idx + 1] = block_hash[idx + 1];
+
+        }
+
+        let fork_id_str = "";
+        for (let i = 0; i < fork_id.length; i++) {
+          fork_id_str += fork_id[i];
+        }
+        return fork_id_str;
+
+
   }
 
   // deletes a single block
