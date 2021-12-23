@@ -1,9 +1,9 @@
-"use strict";
 import * as JSON from "json-bigint";
 import Transaction from "./transaction";
+import { Saito } from "../../apps/core";
 
 class Storage {
-  public app: any;
+  public app: Saito;
   public active_tab: any;
 
   constructor(app) {
@@ -33,7 +33,9 @@ class Storage {
       }
     }
   }
-
+  returnClientOptions(): string {
+    throw new Error("Method not implemented.");
+  }
   loadTransactions(type = "all", num = 50, mycallback) {
     const message = "archive";
     const data: any = {};

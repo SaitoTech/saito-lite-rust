@@ -567,11 +567,10 @@ console.log("---------------------");
             if (to_slips[m].isNonZeroAmount()) {
               if (!this.containsInput(to_slips[m])) {
                 if (!this.containsOutput(to_slips[m])) {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
                   if (
                     to_slips[m].type != SlipType.StakerOutput ||
-                    to_slips[m].type != SlipType.StakerWithdrawal
+                    (to_slips[m].type != SlipType.StakerWithdrawalPending &&
+                      to_slips[m].type != SlipType.StakerWithdrawalStaking)
                   ) {
                     this.addInput(to_slips[m]);
                   }

@@ -546,7 +546,7 @@ class Network {
         // NOT YET IMPLEMENTED -- send HEADER block
         break;
 
-      case "REQCHAIN":
+      case "REQCHAIN": {
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -591,7 +591,7 @@ class Network {
         }
 
         break;
-
+      }
       case "SNDCHAIN":
         // NOT YET IMPLEMENTED -- send chain
         break;
@@ -840,7 +840,7 @@ class Network {
   requestBlockchain(peer = null) {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
-    let fork_id = this.app.blockchain.blockchain.fork_id;
+    const fork_id = this.app.blockchain.blockchain.fork_id;
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {

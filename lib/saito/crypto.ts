@@ -139,13 +139,10 @@ class Crypto {
    * @returns {string} compressed publickey
    */
   compressPublicKey(pubkey) {
+    // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.toBase58(
-      secp256k1
-        .publicKeyConvert(Buffer.from(pubkey, "hex"), true)
-        .toString("hex")
-    );
+    return this.toBase58(secp256k1.publicKeyConvert(Buffer.from(pubkey, "hex"), true).toString("hex"));
   }
 
   /**
@@ -198,13 +195,10 @@ class Crypto {
    * @returns {string} public key (hex)
    */
   returnPublicKey(privkey) {
+    // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.compressPublicKey(
-      secp256k1
-        .publicKeyCreate(Buffer.from(privkey, "hex"), false)
-        .toString("hex")
-    );
+    return this.compressPublicKey(secp256k1.publicKeyCreate(Buffer.from(privkey, "hex"), false).toString("hex"));
   }
 
   /**
@@ -225,14 +219,10 @@ class Crypto {
    * @returns {string}
    */
   signBuffer(buffer, privatekey) {
+    // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const signature = secp256k1
-      .sign(
-        Buffer.from(this.hash(buffer), "hex"),
-        Buffer.from(privatekey, "hex")
-      )
-      .signature.toString("hex");
+    const signature = secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
     return signature;
   }
 
@@ -269,7 +259,7 @@ class Crypto {
    */
   verifyMessage(msg, sig, pubkey) {
     try {
-      let hash = this.hash(Buffer.from(msg, "utf-8").toString());
+      const hash = this.hash(Buffer.from(msg, "utf-8").toString());
       return this.verifyHash(hash, sig, pubkey);
     } catch (err) {
       console.log(err);
