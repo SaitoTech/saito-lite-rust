@@ -19,7 +19,7 @@ class Hop {
    */
   serialize(app) {
     const from = app.binary.hexToSizedArray(this.from, 33);
-    const to = app.binary.hexToSizedArray(this.to, 32);
+    const to = app.binary.hexToSizedArray(this.to, 33);
     const sig = app.binary.hexToSizedArray(this.sig, 64);
     return new Uint8Array([...from, ...to, ...sig]);
   }
