@@ -15,15 +15,15 @@ export enum SlipType {
 }
 
 class Slip {
-  public add: any;
+  public add: string;
   public amt: BigInt;
-  public type: any;
-  public uuid: any;
-  public sid: any;
-  public lc: any;
-  public timestamp: any;
-  public payout: any;
-  public key: any;
+  public type: SlipType;
+  public uuid: string;
+  public sid: number;
+  public lc: number;
+  public timestamp: number;
+  public payout: bigint;
+  public key: string;
 
   // amount can be a string in NOLAN or a BigInt
   constructor(
@@ -32,7 +32,7 @@ class Slip {
     type = SlipType.Normal,
     uuid = "",
     slip_ordinal = 0,
-    payout = 0,
+    payout = BigInt(0),
     lc = 1
   ) {
     //
@@ -153,8 +153,9 @@ class Slip {
 
   /**
    * Serialize Slip
-   * @param {Slip} slip
    * @returns {Uint8Array} raw bytes
+   * @param app
+   * @param uuid
    */
   serialize(app, uuid = "") {
     if (uuid === "") {
@@ -198,11 +199,7 @@ class Slip {
 
   validate(app) {
     if (this.amt > BigInt(0)) {
-      if (app.utxoset.isSpendable(this.returnKey())) {
-        return true;
-      } else {
-        return false;
-      }
+      return !!app.utxoset.isSpendable(this.returnKey());
     } else {
       return true;
     }
