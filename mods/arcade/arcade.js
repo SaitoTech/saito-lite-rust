@@ -1528,7 +1528,6 @@ class Arcade extends ModTemplate {
 
   }
   addGameToOpenList(tx) {
-    console.log("addGameToOpenList");
     let valid_game = this.validateGame(tx);
     if (valid_game) {
       let for_us = this.isForUs(tx);
@@ -1587,7 +1586,6 @@ try {
     if (txmsg.game_state) { game_state = txmsg.game_state; }
 } catch (err) {
   console.log("error saving game state, so quitting...");
-  console.log("is this: " + JSON.stringify(txmsg));
   return;
 }
 
@@ -1822,12 +1820,10 @@ try {
           games.splice(i, 1);
         }
       }
-console.log("ABOUT TO KICK INTO OBSERVER MODE!");
 
       arcade_self.app.options.games = games;
       arcade_self.initializeObserverMode(game_id, watch_live);
 
-console.log("AND CONTINUING");
 //    }
 
   }
@@ -1850,16 +1846,16 @@ console.log("AND CONTINUING");
       }
     }
 
-    console.log(` NEXT MOVES: /arcade/observer_multi/${game_mod.game.id}/${game_mod.game.step.bid}/${game_mod.game.step.tid}/${game_mod.game.step.ts}`);
+    //console.log(` NEXT MOVES: /arcade/observer_multi/${game_mod.game.id}/${game_mod.game.step.bid}/${game_mod.game.step.tid}/${game_mod.game.step.ts}`);
 
     fetch(`/arcade/observer_multi/${game_mod.game.id}/${game_mod.game.step.bid}/${game_mod.game.step.tid}/${game_mod.game.step.ts}`).then(response => {
       response.json().then(data => {
 
-console.log("data length: " + data.length);
+//console.log("data length: " + data.length);
 
 	for (let i = 0; i < data.length; i++) {
 
-console.log("i: " + i + " --- tx id: " + data[i].id);
+//console.log("i: " + i + " --- tx id: " + data[i].id);
 	  let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
 	  future_tx.msg = future_tx.returnMessage();
 	  future_tx.msg.game_state = {};
@@ -1876,7 +1872,7 @@ console.log("i: " + i + " --- tx id: " + data[i].id);
 
 	    let tmptx = new saito.default.transaction(JSON.parse(game_mod.game.future[z]));
 
-console.log("steps comparison: " + future_tx.msg.step.game + " -- vs -- " + game_mod.game.step.game);
+//console.log("steps comparison: " + future_tx.msg.step.game + " -- vs -- " + game_mod.game.step.game);
 
 	    if (future_tx.msg.step.game <= game_mod.game.step.game && future_tx.msg.step.game <= game_mod.game.step.players[future_tx.transaction.from[0].add]) {
 	      already_contains_move = 1;
@@ -1907,15 +1903,15 @@ console.log("steps comparison: " + future_tx.msg.step.game + " -- vs -- " + game
 
     let first_tx = null;;
 
-    console.log(`FETCHING: /arcade/observer_prev/${game_id}/${starting_move}`);
+    //console.log(`FETCHING: /arcade/observer_prev/${game_id}/${starting_move}`);
 
     fetch(`/arcade/observer_prev/${game_id}/${starting_move}`).then(response => {
       response.json().then(data => {
 
         first_tx = JSON.parse(data[0].game_state);
 
-console.log("UPDATED GAME TS to: " + JSON.stringify(first_tx.step));
-console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
+//console.log("UPDATED GAME TS to: " + JSON.stringify(first_tx.step));
+//console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
 
 
 	//
