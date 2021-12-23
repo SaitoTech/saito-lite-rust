@@ -1,6 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const helpers = require('../../lib/helpers/index');
-
+const JSON = require('json-bigint');
 
 
 //
@@ -3849,8 +3849,6 @@ if (this.game.player == 0) {
             twilight_self.uneventOpponentControlledCountries(player, card);
           }
           twilight_self.playerPlaceInfluence(player, (country, player) => {
-
-alert("SHOULD BE UPDATED!");
 
             j--;
 
