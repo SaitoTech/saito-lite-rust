@@ -364,7 +364,10 @@ class Blockchain {
     //
     // run callbacks if desired
     //
-    if (this.run_callbacks === 1) {
+    let already_processed_callbacks = 0;
+    // skip if already processed last time
+    if (block_id < this.blockchain.last_block_id) { already_processed_callbacks = 1; }
+    if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
       //
@@ -670,10 +673,13 @@ class Blockchain {
   }
 
   async initialize() {
+
     //
     // TODO - remove when ready
     //
-    //this.resetBlockchain();
+    if (this.app.BROWSER == 1) {
+      this.resetBlockchain();
+    }
 
     //
     // load blockchain from options if exists
@@ -766,10 +772,15 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
-    console.log("on chain reorg!");
+
+    //
+    // skip out if earlier than we need to be vis-a-vis last_block_id
+    //
+    if (this.blockchain.last_block_id >= block.returnId()) { 
+	return; 
+    }
 
     if (lc) {
-      console.log("updating consensus variables!");
 
       //
       // update consensus variables
@@ -798,8 +809,6 @@ class Blockchain {
       //
       this.blockchain.fork_id = this.generateForkId(block.returnId());
 
-      console.log("saving this: " + JSON.stringify(this.blockchain));
-
       //
       // save options
       //
@@ -814,7 +823,7 @@ class Blockchain {
     // last in longest_chain
     //
     this.blockchain.last_block_hash = "";
-    this.blockchain.last_block_id = "";
+    this.blockchain.last_block_id = 0;
     this.blockchain.last_timestamp = new Date().getTime();
     this.blockchain.last_burnfee = 0;
 
@@ -861,7 +870,6 @@ class Blockchain {
   }
 
   saveBlockchain() {
-    console.log("saving blockchain!");
     this.app.options.blockchain = this.blockchain;
     this.app.storage.saveOptions();
   }

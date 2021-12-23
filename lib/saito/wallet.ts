@@ -37,7 +37,7 @@ class Wallet {
     this.wallet.spends = []; // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     this.wallet.pending = []; // slips pending broadcast
     this.wallet.default_fee = 2;
-    this.wallet.version = 4.009;
+    this.wallet.version = 4.011;
 
     this.wallet.preferred_crypto = "SAITO";
     this.wallet.preferred_txs = [];
