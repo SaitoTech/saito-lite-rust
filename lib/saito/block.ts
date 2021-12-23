@@ -117,6 +117,11 @@ class Block {
     }
   }
 
+  // called when a block is deleted from the chain for good
+  deleteBlock(utxoset) {
+    // remove from disk, etc.
+  }
+
   /**
    * deserialize block
    * @param {array} buffer -

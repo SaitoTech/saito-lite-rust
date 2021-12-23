@@ -179,9 +179,10 @@ class Browser {
       this.checkForMultipleWindows();
       //this.isFirstVisit();
 
-      if ("serviceWorker" in navigator) {
-        await navigator.serviceWorker.register("/sw.js");
-      }
+      //if ('serviceWorker' in navigator) {
+      //    await navigator.serviceWorker
+      //        .register('/sw.js');
+      //}
 
       this.browser_active = 1;
     } catch (err) {
@@ -261,35 +262,38 @@ class Browser {
   }
 
   async sendNotification(title, message, event) {
-    if (this.app.BROWSER == 0) {
-      return;
-    }
-
-    if (!this.isMobileBrowser(navigator.userAgent)) {
-      if (Notification.permission === "default") {
-        Notification.requestPermission();
-      }
-      if (Notification.permission === "granted") {
-        notify = new Notification(title, {
-          body: message,
-          iconURL: "/saito/img/touch/pwa-192x192.png",
-          icon: "/saito/img/touch/pwa-192x192.png",
-        });
-      }
-    } else {
-      Notification.requestPermission().then(function (result) {
-        if (result === "granted" || result === "default") {
-          navigator.serviceWorker.ready.then(function (registration) {
-            registration.showNotification(title, {
-              body: message,
-              icon: "/saito/img/touch/pwa-192x192.png",
-              vibrate: [200, 100, 200, 100, 200, 100, 200],
-              tag: event,
-            });
-          });
+    /***
+        if (this.app.BROWSER == 0) {
+            return;
         }
-      });
-    }
+
+        if (!this.isMobileBrowser(navigator.userAgent)) {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            if (Notification.permission === 'granted') {
+                notify = new Notification(title, {
+                    body: message,
+                    iconURL: "/saito/img/touch/pwa-192x192.png",
+                    icon: "/saito/img/touch/pwa-192x192.png"
+                });
+            }
+        } else {
+            Notification.requestPermission()
+                .then(function (result) {
+                    if (result === 'granted' || result === 'default') {
+                        navigator.serviceWorker.ready.then(function (registration) {
+                            registration.showNotification(title, {
+                                body: message,
+                                icon: '/saito/img/touch/pwa-192x192.png',
+                                vibrate: [200, 100, 200, 100, 200, 100, 200],
+                                tag: event
+                            });
+                        });
+                    }
+                });
+        }
+***/
   }
 
   checkForMultipleWindows() {

@@ -546,7 +546,7 @@ class Network {
         // NOT YET IMPLEMENTED -- send HEADER block
         break;
 
-      case "REQCHAIN":
+      case "REQCHAIN": {
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -591,7 +591,7 @@ class Network {
         }
 
         break;
-
+      }
       case "SNDCHAIN":
         // NOT YET IMPLEMENTED -- send chain
         break;
@@ -829,7 +829,7 @@ class Network {
       if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
         const tmptx = peer.addPathToTransaction(tx);
         if (peer.socket) {
-          this.sendRequest("SNDTRANS", tx.serialize(this.app), peer);
+          this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
           console.error("socket not found");
         }
@@ -838,9 +838,25 @@ class Network {
   }
 
   requestBlockchain(peer = null) {
-    const latest_block_id = this.app.blockring.returnLatestBlockId();
-    const latest_block_hash = this.app.blockring.returnLatestBlockHash();
+    let latest_block_id = this.app.blockring.returnLatestBlockId();
+    let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     const fork_id = this.app.blockchain.blockchain.fork_id;
+
+    if (this.app.BROWSER == 1) {
+      if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
+        latest_block_id = this.app.blockchain.blockchain.last_block_id;
+        latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
+      }
+    }
+
+    console.log(
+      "req blockchain with: " +
+        latest_block_id +
+        " and " +
+        latest_block_hash +
+        " and " +
+        fork_id
+    );
 
     const buffer_to_send = Buffer.concat([
       this.app.binary.u64AsBytes(latest_block_id),

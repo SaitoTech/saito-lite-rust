@@ -100,7 +100,6 @@ class Blockchain {
     const block_hash = block.returnHash();
     const block_id = block.returnId();
     const block_difficulty = block.returnDifficulty();
-
     const previous_block_hash = this.app.blockring.returnLatestBlockHash();
 
     //
@@ -171,11 +170,12 @@ class Blockchain {
     //
     // find shared ancestor
     //
-    const new_chain = [];
-    const old_chain = [];
+    let new_chain = [];
+    let old_chain = [];
     let shared_ancestor_found = false;
     let new_chain_hash = block_hash;
     let old_chain_hash = previous_block_hash;
+    let am_i_the_longest_chain = 0;
 
     while (!shared_ancestor_found) {
       if (this.blocks[new_chain_hash]) {
@@ -231,10 +231,41 @@ class Blockchain {
         // next block and we are getting blocks out-of-order because of
         // connection or network issues.
         //
-        console.log(
-          "potential edge case requires handling: blocks received out-of-order"
-        );
-        console.log("blkchn: " + JSON.stringify(this.blockchain));
+        if (
+          previous_block_hash === this.blockchain.last_block_hash &&
+          block.block.previous_block_hash !== ""
+        ) {
+          //
+          // NOTE - requires testing
+          //
+          console.log(
+            "potential edge case requires handling: blocks received out-of-order"
+          );
+
+          let disconnected_block_id = this.app.blockring.returnLatestBlockId();
+
+          for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
+            let disconnected_block_hash =
+              this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            if (disconnected_block_hash) {
+              this.app.blockring.onChainReorganization(
+                i,
+                disconnected_block_hash,
+                false
+              );
+              let disconnected_block = await this.loadBlockAsync(
+                disconnected_block_hash
+              );
+              if (disconnected_block) {
+                disconnected_block.lc = 0;
+              }
+            }
+          }
+
+          new_chain = [];
+          new_chain.push(block.returnHash());
+          am_i_the_longest_chain = 1;
+        }
       }
     }
 
@@ -243,10 +274,11 @@ class Blockchain {
     //
     // does this block require validation?
     //
-    const am_i_the_longest_chain = this.isNewChainTheLongestChain(
-      new_chain,
-      old_chain
-    );
+    if (!am_i_the_longest_chain) {
+      if (this.isNewChainTheLongestChain(new_chain, old_chain)) {
+        am_i_the_longest_chain = 1;
+      }
+    }
     if (am_i_the_longest_chain) {
       block.lc = 1;
     }
@@ -455,7 +487,6 @@ class Blockchain {
 
   generateForkId(block_id) {
 
-
         let fork_id = [];
         for (let i = 0; i < 32; i++) {
             fork_id[i] = "0";
@@ -504,7 +535,6 @@ class Blockchain {
         }
         return fork_id_str;
 
-
   }
 
   // deletes a single block
@@ -527,7 +557,7 @@ class Blockchain {
     wallet.deleteBlock(block);
 
     // removes utxoset data
-    await block.delete(this.utxoset);
+    await block.deleteBlock(this.utxoset);
 
     // deletes block from disk
     this.app.storage.deleteBlockFromDisk(blockFilename);
@@ -644,7 +674,16 @@ class Blockchain {
     //
     // TODO - remove when ready
     //
-    this.resetBlockchain();
+    //this.resetBlockchain();
+
+    //
+    // load blockchain from options if exists
+    //
+    if (this.app?.options?.blockchain) {
+      this.blockchain = this.app.options.blockchain;
+    }
+
+    console.log("BLOCKCHAIN INFO: " + JSON.stringify(this.blockchain));
 
     //
     // prevent mempool from producing blocks while we load
@@ -728,7 +767,11 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
+    console.log("on chain reorg!");
+
     if (lc) {
+      console.log("updating consensus variables!");
+
       //
       // update consensus variables
       //
@@ -755,6 +798,8 @@ class Blockchain {
       // generate fork_id
       //
       this.blockchain.fork_id = this.generateForkId(block.returnId());
+
+      console.log("saving this: " + JSON.stringify(this.blockchain));
 
       //
       // save options
@@ -817,6 +862,7 @@ class Blockchain {
   }
 
   saveBlockchain() {
+    console.log("saving blockchain!");
     this.app.options.blockchain = this.blockchain;
     this.app.storage.saveOptions();
   }
