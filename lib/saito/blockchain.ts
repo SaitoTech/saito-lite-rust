@@ -171,7 +171,7 @@ class Blockchain {
     // find shared ancestor
     //
     let new_chain = [];
-    const old_chain = [];
+    let old_chain = [];
     let shared_ancestor_found = false;
     let new_chain_hash = block_hash;
     let old_chain_hash = previous_block_hash;
@@ -198,7 +198,10 @@ class Blockchain {
     // get old chain
     //
     if (shared_ancestor_found) {
-      while (new_chain_hash !== old_chain_hash) {
+      while (true) {
+        if (new_chain_hash === old_chain_hash) {
+          break;
+        }
         if (this.blocks[old_chain_hash]) {
           old_chain.push(old_chain_hash);
           old_chain_hash =
@@ -239,11 +242,10 @@ class Blockchain {
             "potential edge case requires handling: blocks received out-of-order"
           );
 
-          const disconnected_block_id =
-            this.app.blockring.returnLatestBlockId();
+          let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
           for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
-            const disconnected_block_hash =
+            let disconnected_block_hash =
               this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (disconnected_block_hash) {
               this.app.blockring.onChainReorganization(
@@ -251,7 +253,7 @@ class Blockchain {
                 disconnected_block_hash,
                 false
               );
-              const disconnected_block = await this.loadBlockAsync(
+              let disconnected_block = await this.loadBlockAsync(
                 disconnected_block_hash
               );
               if (disconnected_block) {
@@ -484,7 +486,7 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
-    const fork_id = [];
+    let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
     }
