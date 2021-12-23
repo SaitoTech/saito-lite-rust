@@ -170,11 +170,12 @@ console.log("fetching unknown block: " + parent_block_hash);
         //
         // find shared ancestor
         //
-        const new_chain = [];
-        const old_chain = [];
+        let new_chain = [];
+        let old_chain = [];
         let shared_ancestor_found = false;
         let new_chain_hash = block_hash;
         let old_chain_hash = previous_block_hash;
+	let am_i_the_longest_chain = 0;
 
         while (!shared_ancestor_found) {
             if (this.blocks[new_chain_hash]) {
@@ -232,25 +233,27 @@ console.log("fetching unknown block: " + parent_block_hash);
                 //
 		if (previous_block_hash === this.blockchain.last_block_hash && block.block.previous_block_hash !== "") {
 
+		    //
+		    // NOTE - requires testing
+		    //
+                    console.log("potential edge case requires handling: blocks received out-of-order");
+
 		    let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
 		    for (let i = block.returnId()+1; i < disconnected_block_id; i++) {
 			let disconnected_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
 			if (disconnected_block_hash) {
-			    this.app.blockring.onChainReorganization(disconected_block_hash, i, false);
-			    let disconnected_block = this.loadBlockAsync(disconnected_block_hash);
+			    this.app.blockring.onChainReorganization(i, disconnected_block_hash, false);
+			    let disconnected_block = await this.loadBlockAsync(disconnected_block_hash);
 			    if (disconnected_block) { disconnected_block.lc = 0; }
 			}
 		    }
 
+		    new_chain = [];
+		    new_chain.push(block.returnHash());
+		    am_i_the_longest_chain = 1;
+
 		}
-
-                console.log("potential edge case requires handling: blocks received out-of-order");
-		console.log("blkchn: " + JSON.stringify(this.blockchain));
-
-
-
-
             }
         }
 
@@ -260,8 +263,10 @@ console.log("fetching unknown block: " + parent_block_hash);
         //
         // does this block require validation?
         //
-        const am_i_the_longest_chain = this.isNewChainTheLongestChain(new_chain, old_chain);
-        if (am_i_the_longest_chain) {
+	if (!am_i_the_longest_chain) {
+            if (this.isNewChainTheLongestChain(new_chain, old_chain)) { am_i_the_longest_chain = 1; }
+        }
+	if (am_i_the_longest_chain) {
             block.lc = 1;
         }
         block.force = force;
@@ -520,16 +525,12 @@ console.log("fetching unknown block: " + parent_block_hash);
             const idx = 2 * i;
             const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
-console.log("current_block_id: " + current_block_id);
-console.log(idx + " --- " + block_hash);
-
             fork_id[idx] = block_hash[idx];
             fork_id[idx + 1] = block_hash[idx + 1];
 
         }
 
 	let fork_id_str = "";
-console.log("fid length: " + fork_id.length);
         for (let i = 0; i < fork_id.length; i++) {
 	  fork_id_str += fork_id[i];
 	}
