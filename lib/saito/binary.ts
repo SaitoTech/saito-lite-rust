@@ -36,7 +36,7 @@ class Binary {
    * @param {Array} bytes - array of bytes
    * @returns BigInt
    */
-  u64FromBytes(bytes) {
+  u64FromBytes(bytes): bigint {
     const top = BigInt(this.u32FromBytes(bytes.slice(0, 4)));
     const bottom = BigInt(this.u32FromBytes(bytes.slice(4, 8)));
     const max_u32 = BigInt(4294967296);

@@ -198,10 +198,7 @@ class Blockchain {
     // get old chain
     //
     if (shared_ancestor_found) {
-      while (true) {
-        if (new_chain_hash === old_chain_hash) {
-          break;
-        }
+      while (new_chain_hash !== old_chain_hash) {
         if (this.blocks[old_chain_hash]) {
           old_chain.push(old_chain_hash);
           old_chain_hash =

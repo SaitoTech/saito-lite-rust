@@ -50,7 +50,7 @@ class BurnFee {
     // impossible if times misordered
     //
     if (previous_block_timestamp >= current_block_timestamp) {
-      return 10_000_000_000_000_000_000;
+      return BigInt(10_000_000_000_000_000_000);
     }
 
     let timestamp_difference =
@@ -61,7 +61,7 @@ class BurnFee {
 
     // algorithm fails if burn fee last block is 0, so default to low value
     if (burn_fee_previous_block == BigInt(0)) {
-      return 50_000_000;
+      return BigInt(50_000_000);
     }
 
     const burn_fee_previous_block_as_float =

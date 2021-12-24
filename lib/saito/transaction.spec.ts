@@ -139,10 +139,8 @@ test("sign", () => {
   mockApp.binary = binary;
   mockApp.wallet = wallet;
   wallet.wallet.privatekey =
-    "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
-  wallet.wallet.publickey = mockApp.crypto.toBase58(
-    "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc"
-  );
+    "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
+  wallet.wallet.publickey = "28Mh8nEhxymH9bFMhSKU51pnSQAnqURuPYkXTUqY2ueDM";
 
   mockApp.hash = (data) => {
     return blake3.hash(data).toString("hex");
@@ -172,6 +170,6 @@ test("sign", () => {
 
   tx.sign(mockApp);
   expect(tx.transaction.sig).toEqual(
-    "78387536e0f909b897f3ef3af5203401986b45ccdbd9252bd5acf93fe332342150d253f6efd5b0a7b343c877bfdc802a5542a08cd24e28b13c6321e7cf8face0"
+    "190738f6085516ca669935bb6baf33ce5682acdb0f3b21f930cb0ac8a02198632f1947e6b557f99e704040b4e104aeb4ebf38d9fc92ec02a0ee82fae67a6e728"
   );
 });

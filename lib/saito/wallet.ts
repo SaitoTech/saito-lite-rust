@@ -21,12 +21,8 @@ class Wallet {
   public recreate_pending_transactions: any;
   public isSlipInPendingTransactions: any;
 
-  constructor(app) {
-    if (!(this instanceof Wallet)) {
-      return new Wallet(app);
-    }
-
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
     this.wallet = {};
     this.wallet.balance = "0";
     this.wallet.publickey = "";

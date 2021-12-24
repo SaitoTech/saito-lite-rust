@@ -1,6 +1,7 @@
 import * as JSON from "json-bigint";
 import Transaction from "./transaction";
 import { Saito } from "../../apps/core";
+import Block from "./block";
 
 class Storage {
   public app: Saito;
@@ -164,15 +165,19 @@ class Storage {
 
   loadBlockFromDisk(filename) {}
 
-  loadBlockByFilename(filename) {}
+  async loadBlockByFilename(filename): Promise<Block> {
+    return null;
+  }
 
-  async loadBlocksFromDisk(maxblocks = 0) {}
+  async loadBlocksFromDisk(maxblocks = 0): Promise<Block> {
+    return null;
+  }
 
   returnFileSystem() {
     return null;
   }
 
-  async saveBlock(block) {
+  async saveBlock(block: Block): Promise<string> {
     return "";
   }
 
@@ -189,6 +194,10 @@ class Storage {
   async queryDatabase(sql, params, database) {}
 
   async executeDatabase(sql, params, database, mycallback = null) {}
+
+  generateBlockFilename(block: Block) {
+    // empty
+  }
 }
 
 export default Storage;

@@ -48,7 +48,7 @@ class Saito {
   blockchain: Blockchain;
   blockring: Blockring;
   handshake: Handshake;
-  hash: (data) => string;
+  hash: (data: string) => string;
   server: Server;
 
   constructor(config = {}) {

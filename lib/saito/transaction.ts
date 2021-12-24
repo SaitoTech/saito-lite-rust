@@ -666,7 +666,7 @@ class Transaction {
     return ret;
   }
 
-  serializeForSignature(app) {
+  serializeForSignature(app): Buffer {
     let buffer = Buffer.from(app.binary.u64AsBytes(this.transaction.ts));
 
     for (let i = 0; i < this.transaction.from.length; i++) {
@@ -691,7 +691,7 @@ class Transaction {
     const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
     buffer = Buffer.concat([buffer, tm]);
 
-    return Uint8Array.from(buffer);
+    return buffer;
   }
 
   sign(app) {
@@ -764,7 +764,7 @@ class Transaction {
       //
       if (
         !app.crypto.verifyHash(
-          app.crypto.hash(this.serializeForSignature(app)),
+          app.crypto.hash(this.serializeForSignature(app).toString("hex")),
           this.transaction.sig,
           this.transaction.from[0].add
         )

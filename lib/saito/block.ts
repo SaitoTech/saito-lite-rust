@@ -6,6 +6,7 @@ import Transaction, {
   TRANSACTION_SIZE,
   TransactionType,
 } from "./transaction";
+import { Saito } from "../../apps/core";
 
 const BLOCK_HEADER_SIZE = 213;
 
@@ -17,58 +18,57 @@ export enum BlockType {
 }
 
 class Block {
-  public app: any;
-  public block: any;
-  public lc: any;
+  public app: Saito;
+  public block = {
+    id: 0,
+    timestamp: 0,
+    previous_block_hash: "",
+    merkle: "",
+    creator: "",
+    burnfee: BigInt(0),
+    difficulty: 0,
+    treasury: BigInt(0),
+    staking_treasury: BigInt(0),
+    signature: "",
+  };
+  public lc: number;
   public force: any;
-  public transactions: any;
-  public block_type: any;
-  public hash: any;
-  public prehash: any;
-  public filename: any;
-  public total_fees: any;
-  public total_work: any;
-  public routing_work_for_creator: any;
-  public is_valid: any;
-  public has_golden_ticket: any;
-  public has_fee_transaction: any;
-  public ft_idx: any;
-  public gt_idx: any;
-  public has_issuance_transaction: any;
-  public has_hashmap_of_slips_spent_this_block: any;
+  public transactions: Transaction[];
+  public block_type: BlockType;
+  public hash: string;
+  public prehash: string;
+  public filename: string;
+  public total_fees: bigint;
+  public total_work: bigint;
+  public routing_work_for_creator: bigint;
+  public is_valid: boolean;
+  public has_golden_ticket: boolean;
+  public has_fee_transaction: boolean;
+  public ft_idx: number;
+  public gt_idx: number;
+  public has_issuance_transaction: boolean;
+  public has_hashmap_of_slips_spent_this_block: boolean;
   public slips_spent_this_block: any;
-  public rebroadcast_hash: any;
-  public total_rebroadcast_slips: any;
-  public total_rebroadcast_nolan: any;
+  public rebroadcast_hash: string;
+  public total_rebroadcast_slips: number;
+  public total_rebroadcast_nolan: bigint;
   public callbacks: any;
   public callbackTxs: any;
   public confirmations: any;
   public add_transaction: any;
-  public created_hashmap_of_slips_spent_this_block: any;
-  public bundling_active: any;
-  public has_fee_tranasction: any;
-  public fee_transaction_idx: any;
-  public golden_ticket_idx: any;
-  public issuance_transaction_idx: any;
+  public created_hashmap_of_slips_spent_this_block: boolean;
+  public bundling_active: boolean;
+  public fee_transaction_idx: number;
+  public golden_ticket_idx: number;
+  public issuance_transaction_idx: number;
   public get_id: any;
 
-  constructor(app, blkobj = null, confirmations = -1) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     //
     // consensus variables
     //
-    this.block = {};
-    this.block.id = 0;
-    this.block.timestamp = 0;
-    this.block.previous_block_hash = "";
-    this.block.merkle = "";
-    this.block.creator = "";
-    this.block.burnfee = BigInt(0);
-    this.block.difficulty = 0;
-    this.block.treasury = BigInt(0);
-    this.block.staking_treasury = BigInt(0);
-    this.block.signature = "";
 
     this.lc = 0;
     this.force = 0; // set to 1 if "force" loaded -- used to avoid duplicating callbacks
@@ -84,7 +84,7 @@ class Block {
     this.total_work = BigInt(0);
     this.routing_work_for_creator = BigInt(0);
 
-    this.is_valid = 1;
+    this.is_valid = true;
     this.has_golden_ticket = false;
     this.has_fee_transaction = false;
     this.ft_idx = 0;
@@ -110,8 +110,7 @@ class Block {
           z,
           txmsg,
           this.callbacks,
-          this.callbackTxs,
-          this.app
+          this.callbackTxs
         );
       }
     }
@@ -141,9 +140,7 @@ class Block {
     this.block.merkle = Buffer.from(buffer.slice(85, 117)).toString("hex");
     this.block.signature = Buffer.from(buffer.slice(117, 181)).toString("hex");
 
-    this.block.treasury = BigInt(
-      this.app.binary.u64FromBytes(buffer.slice(181, 189))
-    );
+    this.block.treasury = this.app.binary.u64FromBytes(buffer.slice(181, 189));
     this.block.staking_treasury = BigInt(
       this.app.binary.u64FromBytes(buffer.slice(189, 197))
     );
@@ -152,7 +149,7 @@ class Block {
     );
 
     this.block.difficulty = parseInt(
-      this.app.binary.u64FromBytes(buffer.slice(205, 213))
+      this.app.binary.u64FromBytes(buffer.slice(205, 213)).toString()
     );
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
@@ -232,15 +229,10 @@ class Block {
     }
 
     if (block_type === "Pruned") {
-      this.block.transactions = [];
       this.block_type = BlockType.Pruned;
       return true;
     }
     return false;
-  }
-
-  deserializeFromNet(buffer) {
-    return this.deserialize();
   }
 
   findWinningRouter(random_number) {
@@ -278,7 +270,7 @@ class Block {
     //
     // if winner is atr, take inside TX
     //
-    if (winning_tx.returnTransactionType === TransactionType.ATR) {
+    if (winning_tx.transaction.type === TransactionType.ATR) {
       const buffer = winning_tx.returnMessage();
       const winning_tx_placeholder = new Transaction();
       winning_tx_placeholder.deserialize(this.app, buffer, 0);
@@ -458,7 +450,9 @@ class Block {
                 //
                 cv.rebroadcast_hash = this.app.crypto.hash(
                   cv.rebroadcast_hash +
-                    rebroadcast_transaction.serializeForSignature(this.app)
+                    rebroadcast_transaction
+                      .serializeForSignature(this.app)
+                      .toString("hex")
                 );
               } else {
                 //
@@ -485,7 +479,7 @@ class Block {
         golden_ticket_transaction
       );
 
-      let next_random_number = this.app.crypto.hash(gt.random_bytes);
+      let next_random_number = this.app.crypto.hash(gt.random_hash);
       const miner_publickey = gt.creator;
 
       //
@@ -678,15 +672,6 @@ class Block {
           transaction.addOutput(output.clone());
           slip_ordinal += 1;
         }
-        if (cv.block_payout[i].router !== "") {
-          const output = new Slip();
-          output.add = cv.block_payout[i].router;
-          output.amt = cv.block_payout[i].router_payout;
-          output.type = SlipType.RouterOutput;
-          output.sid = slip_ordinal;
-          transaction.addOutput(output.clone());
-          slip_ordinal += 1;
-        }
         if (cv.block_payout[i].staker !== "") {
           const output = new Slip();
           output.add = cv.block_payout[i].staker;
@@ -815,7 +800,7 @@ class Block {
       if (gt.target_hash === previous_block_hash) {
         console.log("ADDING GT TX TO BLOCK");
         this.transactions.unshift(mempool.mempool.golden_tickets[i]);
-        this.has_golden_ticket = 1;
+        this.has_golden_ticket = true;
         mempool.mempool.golden_tickets.splice(i, 1);
         i = mempool.mempool.golden_tickets.length + 2;
       }
@@ -926,14 +911,14 @@ class Block {
     // and the routing work.
     //
     const creator_publickey = this.returnCreator();
-    this.transactions.map((tx) => tx.generateMetadata(creator_publickey));
+    this.transactions.map((tx) => tx.generateMetadata());
 
     //
     // we need to calculate the cumulative figures AFTER the
     // original figures.
     //
-    let cumulative_fees = 0;
-    let cumulative_work = 0;
+    let cumulative_fees = BigInt(0);
+    let cumulative_work = BigInt(0);
 
     let has_golden_ticket = false;
     let has_fee_transaction = false;
@@ -955,10 +940,8 @@ class Block {
     for (let i = 0; i < this.transactions.length; i++) {
       const transaction = this.transactions[i];
 
-      cumulative_fees =
-        transaction.generateMetadataCumulativeFees(cumulative_fees);
-      cumulative_work =
-        transaction.generateMetadataCumulativeWork(cumulative_work);
+      cumulative_fees += transaction.generateMetadataCumulativeFees();
+      cumulative_work += transaction.generateMetadataCumulativeWork();
 
       //
       // update slips_spent_this_block so that we have a record of
@@ -1000,12 +983,11 @@ class Block {
           golden_ticket_idx = i;
           break;
         case TransactionType.ATR: {
-          // TODO : move to another method
-          const bytes = new Uint8Array([
-            ...this.rebroadcast_hash,
-            ...transaction.serializeForSignature(this.app),
+          const bytes = Buffer.concat([
+            Buffer.from(this.rebroadcast_hash, "hex"),
+            transaction.serializeForSignature(this.app),
           ]);
-          this.rebroadcast_hash = this.app.crypto.hash(bytes);
+          this.rebroadcast_hash = this.app.crypto.hash(bytes.toString("hex"));
 
           for (let i = 0; i < transaction.transaction.from.length; i++) {
             const input = transaction.transaction.from[i];
@@ -1019,7 +1001,7 @@ class Block {
       }
     }
 
-    this.has_fee_tranasction = has_fee_transaction;
+    this.has_fee_transaction = has_fee_transaction;
     this.has_golden_ticket = has_golden_ticket;
     this.has_issuance_transaction = has_issuance_transaction;
     this.fee_transaction_idx = fee_transaction_idx;
@@ -1122,7 +1104,9 @@ class Block {
     if (this.hash) {
       return this.hash;
     }
-    this.prehash = this.app.crypto.hash(this.serializeForSignature());
+    this.prehash = this.app.crypto.hash(
+      this.serializeForSignature().toString("hex")
+    );
     this.hash = this.app.crypto.hash(
       this.prehash + this.block.previous_block_hash
     );
@@ -1179,7 +1163,7 @@ class Block {
       } else {
         txs.push(
           this.app.crypto.hash(
-            this.transactions[i].serializeForSignature(this.app)
+            this.transactions[i].serializeForSignature(this.app).toString("hex")
           )
         );
       }
@@ -1228,8 +1212,8 @@ class Block {
 
   /**
    * Serialize Block
-   * @param {Block} block
    * @returns {array} - raw bytes
+   * @param block_type
    */
   serialize(block_type = BlockType.Full) {
     //
@@ -1259,7 +1243,7 @@ class Block {
       32
     );
     const creator = this.app.binary.hexToSizedArray(
-      this.app.crypto.fromBase58(block_creator).toString("hex"),
+      this.app.crypto.fromBase58(block_creator),
       33
     );
     const merkle_root = this.app.binary.hexToSizedArray(block_merkle, 32);
@@ -1314,30 +1298,27 @@ class Block {
     return ret;
   }
 
-  serializeForSignature() {
-    return Uint8Array.from(
-      Buffer.concat([
-        this.app.binary.u64AsBytes(this.block.id),
-        this.app.binary.u64AsBytes(this.block.timestamp),
-        this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
-        this.app.binary.hexToSizedArray(
-          this.app.crypto.fromBase58(this.block.creator).toString("hex"),
-          33
-        ),
-        this.app.binary.hexToSizedArray(this.block.merkle, 32),
-        this.app.binary.u64AsBytes(this.block.treasury.toString()),
-        this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
-        this.app.binary.u64AsBytes(this.block.burnfee.toString()),
-        this.app.binary.u64AsBytes(this.block.difficulty),
-      ])
-    );
+  serializeForSignature(): Buffer {
+    return Buffer.concat([
+      this.app.binary.u64AsBytes(this.block.id),
+      this.app.binary.u64AsBytes(this.block.timestamp),
+      this.app.binary.hexToSizedArray(this.block.previous_block_hash, 32),
+      this.app.binary.hexToSizedArray(
+        this.app.crypto.fromBase58(this.block.creator),
+        33
+      ),
+      this.app.binary.hexToSizedArray(this.block.merkle, 32),
+      this.app.binary.u64AsBytes(this.block.treasury.toString()),
+      this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
+      this.app.binary.u64AsBytes(this.block.burnfee.toString()),
+      this.app.binary.u64AsBytes(this.block.difficulty),
+    ]);
   }
 
-  sign(publickey, privatekey) {
-    //console.log("block::sign", privatekey);
+  sign(publickey: string, privatekey: string) {
     this.block.creator = publickey;
     this.block.signature = this.app.crypto.signBuffer(
-      Buffer.from(this.serializeForSignature()),
+      this.serializeForSignature(),
       privatekey
     );
   }
@@ -1365,7 +1346,7 @@ class Block {
     //
     if (
       !this.app.crypto.verifyHash(
-        this.app.crypto.hash(this.serializeForSignature()),
+        this.app.crypto.hash(this.serializeForSignature().toString("hex")),
         this.block.signature,
         this.block.creator
       )
@@ -1422,8 +1403,7 @@ class Block {
           adjusted_staking_treasury = BigInt(0);
         }
       } else {
-        const x = cv_st;
-        adjusted_staking_treasury = adjusted_staking_treasury + x;
+        adjusted_staking_treasury = adjusted_staking_treasury + cv_st;
       }
       if (
         this.returnStakingTreasury().toString() !==
@@ -1484,23 +1464,24 @@ class Block {
         const gt = this.app.goldenticket.deserializeFromTransaction(
           golden_ticket_transaction
         );
-        const solution = this.app.goldenticket.generateSolution(
-          previous_block.returnHash(),
-          gt.target_hash,
-          gt.random_bytes,
-          gt.creator
-        );
-        if (
-          !this.app.goldenticket.isValidSolution(
-            solution,
-            previous_block.returnDifficulty()
-          )
-        ) {
-          console.log(
-            "ERROR 801923: golden ticket included in block is invalid"
-          );
-          return false;
-        }
+        // TODO : david
+        // const solution = this.app.goldenticket.generateSolution(
+        //   previous_block.returnHash(),
+        //   gt.target_hash,
+        //   gt.random_bytes,
+        //   gt.creator
+        // );
+        // if (
+        //   !this.app.goldenticket.isValidSolution(
+        //     solution,
+        //     previous_block.returnDifficulty()
+        //   )
+        // ) {
+        //   console.log(
+        //     "ERROR 801923: golden ticket included in block is invalid"
+        //   );
+        //   return false;
+        // }
       }
     } else {
       //
@@ -1573,7 +1554,7 @@ class Block {
       cv.fee_transaction.generateMetadata(this.returnCreator());
 
       const hash1 = this.app.crypto.hash(
-        fee_transaction.serializeForSignature()
+        fee_transaction.serializeForSignature(this.app).toString("hex")
       );
       const hash2 = this.app.crypto.hash(
         cv.fee_transaction.serialize_for_signature()
