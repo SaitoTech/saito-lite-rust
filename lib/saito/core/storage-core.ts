@@ -12,6 +12,7 @@ import path from "path";
 
 import sqlite from "sqlite";
 import { Saito } from "../../../apps/core";
+import Block from "../block";
 
 class StorageCore extends Storage {
   public data_dir: any;
@@ -138,7 +139,7 @@ class StorageCore extends Storage {
             console.log("block is null: " + fileID);
             return null;
           }
-          if (blk.is_valid == 0) {
+          if (!blk.is_valid) {
             console.log("We have saved an invalid block: " + fileID);
             return null;
           }
@@ -147,8 +148,7 @@ class StorageCore extends Storage {
           console.log("Loaded block " + i + " of " + files.length);
         }
       } catch (err) {
-        console.log("ERROR");
-        console.log(err);
+        console.error(err);
       }
     }
   }
@@ -158,21 +158,21 @@ class StorageCore extends Storage {
    *
    * @param {saito.block} block block
    */
-  async saveBlock(block) {
-    // try {
-    const filename = this.generateBlockFilename(block);
-    if (!fs.existsSync(filename)) {
-      const fd = fs.openSync(filename, "w");
-      const buffer = block.serialize();
-      fs.writeSync(fd, buffer);
-      fs.fsyncSync(fd);
-      fs.closeSync(fd);
+  async saveBlock(block: Block): Promise<string> {
+    try {
+      const filename = this.generateBlockFilename(block);
+      if (!fs.existsSync(filename)) {
+        const fd = fs.openSync(filename, "w");
+        const buffer = block.serialize();
+        fs.writeSync(fd, buffer);
+        fs.fsyncSync(fd);
+        fs.closeSync(fd);
+      }
+      return filename;
+    } catch (err) {
+      console.error("ERROR 285029: error saving block to disk ", err);
     }
-    return filename;
-    // } catch (err) {
-    //   console.log("ERROR 285029: error saving block to disk " + err);
-    // }
-    // return "";
+    return "";
   }
 
   /* deletes block from shashmap and disk */

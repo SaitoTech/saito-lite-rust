@@ -126,14 +126,14 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
-    mockApp.hash = (data) => {
+    mockApp.hash = (data: string) => {
       return blake3.hash(data).toString("hex");
     };
 
     const block = new Block(mockApp);
 
     const buffer = block.serializeForSignature();
-    expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(145)));
+    expect(buffer).toEqual(Buffer.alloc(145));
   });
 
   test("block with data", () => {
@@ -160,7 +160,7 @@ describe("serializeForSignature", function () {
     block.block.creator = crypto.toBase58(
       "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc"
     );
-    block.block.burnfee = 50000000;
+    block.block.burnfee = BigInt(50000000);
     block.block.difficulty = 0;
     block.block.treasury = BigInt(0);
     block.block.staking_treasury = BigInt(0);

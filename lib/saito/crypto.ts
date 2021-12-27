@@ -41,7 +41,7 @@ class Crypto {
    * initialization.
    */
 
-  hash(data = "") {
+  hash(data: string) {
     //
     // 64-bit hash
     //
@@ -151,7 +151,7 @@ class Crypto {
    * @param {string} t string to convertches
    * @returns {string} converted string
    */
-  fromBase58(t) {
+  fromBase58(t: string): string {
     return Buffer.from(Base58.decode(t)).toString("hex");
   }
 
@@ -161,7 +161,7 @@ class Crypto {
    * @param {string} t string to convert
    * @returns {string} converted string
    */
-  toBase58(t) {
+  toBase58(t: string): string {
     return Base58.encode(Buffer.from(t, "hex"));
   }
 
@@ -204,42 +204,40 @@ class Crypto {
   /**
    * Signs a message with a private key, and returns the message
    * @param {string} msg message to sign
-   * @param {string} privkey private key (hex)
+   * @param privatekey
    * @returns {string} hex signed message
    */
-  signMessage(msg, privatekey) {
-    const signature = this.signBuffer(Buffer.from(msg, "utf-8"), privatekey);
-    return signature;
+  signMessage(msg: string, privatekey: string): string {
+    return this.signBuffer(Buffer.from(msg, "utf-8"), privatekey);
   }
 
   /**
    * Signs a message buffer
    * @param {Buffer} buffer
-   * @param {Buffer} privatekey
+   * @param {String} privatekey
    * @returns {string}
    */
-  signBuffer(buffer, privatekey) {
+  signBuffer(buffer: Buffer, privatekey: string) {
     // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const signature = secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
-    return signature;
+    return secp256k1.sign(Buffer.from(this.hash(buffer.toString("hex")), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
   }
 
   /**
    * Confirms that a message was signed by the private
    * key associated with a providded public key
-   * @param {string} buffer
+   * @param hash
    * @param {string} sig
    * @param {string} pubkey
    * @returns {boolean} is signature valid?
    */
-  verifyHash(buffer, sig, pubkey) {
+  verifyHash(hash: string, sig: string, pubkey: string) {
     try {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return secp256k1.verify(
-        Buffer.from(buffer, "hex"),
+        Buffer.from(hash, "hex"),
         Buffer.from(sig, "hex"),
         Buffer.from(this.fromBase58(pubkey), "hex")
       );
@@ -257,15 +255,14 @@ class Crypto {
    * @param {string} pubkey
    * @returns {boolean} is signature valid?
    */
-  verifyMessage(msg, sig, pubkey) {
+  verifyMessage(msg: string, sig: string, pubkey: string) {
     try {
-      const hash = this.hash(Buffer.from(msg, "utf-8").toString());
+      const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
       return this.verifyHash(hash, sig, pubkey);
     } catch (err) {
       console.log(err);
       return false;
     }
-    return false;
   }
 
   /**
@@ -273,7 +270,7 @@ class Crypto {
    * @param {string} pubkey public key (base-58)
    * @returns {string} public key (hex)
    */
-  uncompressPublicKey(pubkey) {
+  uncompressPublicKey(pubkey: string) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return secp256k1
@@ -287,7 +284,7 @@ class Crypto {
    * @param {string} publickey
    * @returns {boolean} does publickey fit the criteria?
    */
-  isPublicKey(publickey) {
+  isPublicKey(publickey: string) {
     if (publickey.length == 44 || publickey.length == 45) {
       if (publickey.indexOf("@") <= 0) {
         return 1;

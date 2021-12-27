@@ -27,19 +27,16 @@ test("signBuffer", () => {
   };
 
   const testBuffer = Buffer.from("testing 123", "utf-8");
-  const result = crypto.signBuffer(
-    testBuffer,
-    Buffer.from(wallet.wallet.privatekey, "hex")
-  );
+  const result = crypto.signBuffer(testBuffer, wallet.wallet.privatekey);
 
   const signedBuffer = Buffer.concat([testBuffer, Buffer.from(result, "hex")]);
 
   expect(result).toEqual(
-    "2e4a69e9d538ee32bf44d486b7130a8971c051946184ae27a4e5bbbbe9f85bf16370595e252204d5857659959046f3b374821f08b8f35d824cd7b2010f4987ef"
+    "0125bcc960bcd9d31129a9ec93d31f40a65ad853b3799ccea5a238e6e2ccc67715575eb886fd642548951102b3137f3aadd57b742f0c08a1ab007c7c8042e989"
   );
 
   const verificationResult = crypto.verifyHash(
-    crypto.hash(testBuffer.toString()),
+    crypto.hash(testBuffer.toString("hex")),
     result,
     wallet.wallet.publickey
   );
