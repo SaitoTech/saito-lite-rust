@@ -266,9 +266,10 @@ class Block {
     //
     let winning_tx = this.transactions[0];
     for (let i = 0; i < this.transactions.length; i++) {
-      if (this.transactions[i].transaction.cumulative_fees > winning_nolan) {
-        break;
-      }
+      // TODO : @david : no field in transaction
+      // if (this.transactions[i].transaction.cumulative_fees > winning_nolan) {
+      //   break;
+      // }
       winning_tx = this.transactions[i];
     }
 

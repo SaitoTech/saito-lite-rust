@@ -6,8 +6,8 @@ import { Saito } from "../../apps/core";
 class Handshake {
   public app: Saito;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     return this;
   }
