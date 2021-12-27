@@ -23,7 +23,16 @@ export enum TransactionType {
 }
 
 class Transaction {
-  public transaction: any;
+  public transaction = {
+    to: [],
+    from: [],
+    ts: 0,
+    sig: "",
+    path: [],
+    r: 1, // replaces
+    type: TransactionType.Normal,
+    m: "",
+  };
   public fees_total: bigint;
   public work_available_to_me: bigint;
   public work_available_to_creator: bigint;
@@ -39,15 +48,6 @@ class Transaction {
     /////////////////////////
     // consensus variables //
     /////////////////////////
-    this.transaction = {};
-    this.transaction.to = [];
-    this.transaction.from = [];
-    this.transaction.ts = 0;
-    this.transaction.sig = "";
-    this.transaction.path = [];
-    this.transaction.r = 1; // replaces
-    this.transaction.type = TransactionType.Normal;
-    this.transaction.m = "";
 
     this.fees_total = BigInt(0);
     this.work_available_to_me = BigInt(0);
@@ -116,7 +116,7 @@ class Transaction {
   }
 
   addOutput(slip) {
-    this.transaction.fto.push(slip);
+    this.transaction.to.push(slip);
   }
 
   clone() {
@@ -746,7 +746,6 @@ class Transaction {
     // transaction types.
     //
     if (
-      this.transaction.type !== TransactionType.Fee &&
       this.transaction.type !== TransactionType.ATR &&
       this.transaction.type !== TransactionType.Vip &&
       this.transaction.type !== TransactionType.Issuance
@@ -794,23 +793,12 @@ class Transaction {
       for (let i = 0; i < this.transaction.to.length; i++) {
         total_out += this.transaction.to[i].returnAmount();
       }
-      if (
-        total_out > total_in &&
-        this.transaction.type !== TransactionType.Fee &&
-        this.transaction.type !== TransactionType.Vip
-      ) {
+      if (total_out > total_in) {
         console.log(
           "ERROR 802394: transaction spends more than it has available"
         );
         return false;
       }
-    }
-
-    //
-    // fee transactions
-    //
-    if (this.transaction.type === TransactionType.Fee) {
-      // TODO
     }
 
     //
