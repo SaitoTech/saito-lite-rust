@@ -370,12 +370,11 @@ console.log("---------------------");
       returnPrivateKey() {
         return this.app.wallet.returnPrivateKey();
       }
-      async send(amount, to_address) {
-        let newtx = this.app.wallet.returnBalance() > 0 ?
-          this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount) :
-          this.app.wallet.createUnsignedTransaction(to_address, amount, 0.0);
+      async sendPayment(amount, to_address) {
+        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         this.app.network.propagateTransaction(newtx);
+	return newtx.transaction.sig;
       }
       async hasPayment(howMuch, from, to, timestamp) {
         let from_from = 0;
@@ -1099,7 +1098,7 @@ console.log("---------------------");
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
           try {
-            let hash = await cryptomod.transfer(amounts[i], receivers[i]);
+            let hash = await cryptomod.send(amounts[i], receivers[i]);
             // execute callback if exists
             mycallback({hash: hash});
             break;
