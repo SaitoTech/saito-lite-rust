@@ -3,7 +3,7 @@ import saito from "./saito";
 import * as JSON from "json-bigint";
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
-
+import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
 
@@ -303,7 +303,7 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       }
-      peer.socket = new WebSocket(
+      peer.socket = new WSWebSocket(
         `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
       );
       peer.socket.peer = peer;

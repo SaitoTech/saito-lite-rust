@@ -265,7 +265,7 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
 
 fi
 
-if [ "$1" == "reset" ]; then
+if [ "$1" == "reset" ] || [ "$1" == "dev" ]; then
 
   echo ""
   echo ""
@@ -276,6 +276,7 @@ if [ "$1" == "reset" ]; then
   echo ""
   echo ""
 
+  tsc
   reset_nonpersistent
   reset_bundler
 

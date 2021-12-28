@@ -329,7 +329,9 @@ class Arcade extends ModTemplate {
   //
   async onConfirmation(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    
+
+try {    
+
     if (conf == 0) {
 
       this.purgeBadGames(app)
@@ -555,6 +557,11 @@ class Arcade extends ModTemplate {
       }
 
     }
+
+
+} catch (err) {
+  console.log("ERROR in arcade: " + err);
+}
   }
 
 

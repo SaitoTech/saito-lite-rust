@@ -363,7 +363,9 @@ class Blockchain {
     //
     let already_processed_callbacks = 0;
     // skip if already processed last time
-    if (block_id < this.blockchain.last_block_id) { already_processed_callbacks = 1; }
+    if (block_id < this.blockchain.last_block_id) {
+      already_processed_callbacks = 1;
+    }
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
@@ -670,7 +672,6 @@ class Blockchain {
   }
 
   async initialize() {
-
     //
     // TODO - remove when ready
     //
@@ -769,16 +770,14 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
-
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
-    if (this.blockchain.last_block_id >= block.returnId()) { 
-	return; 
+    if (this.blockchain.last_block_id >= block.returnId()) {
+      return;
     }
 
     if (lc) {
-
       //
       // update consensus variables
       //
