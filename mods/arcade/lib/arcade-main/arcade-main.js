@@ -268,7 +268,11 @@ module.exports = ArcadeMain = {
       //
       if (app.options.games) {
 
+console.log("A");
+
         let existing_game = app.options.games.find(g => g.id == game_id);
+
+console.log("B");
 
         if (existing_game != -1 && existing_game) {
           if (existing_game.initializing == 1) {

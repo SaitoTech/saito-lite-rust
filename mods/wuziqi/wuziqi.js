@@ -1,7 +1,6 @@
 const { timingSafeEqual } = require('crypto');
 const saito = require('../../lib/saito/saito');
 const GameTemplate = require('../../lib/templates/gametemplate');
-const { update } = require('../../lib/templates/lib/game-hammer-mobile/game-hammer-mobile');
 
 class Wuziqi extends GameTemplate {
 
