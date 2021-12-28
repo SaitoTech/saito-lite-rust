@@ -3,7 +3,7 @@ import saito from "./saito";
 import * as JSON from "json-bigint";
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
-import WSWebSocket from 'ws';
+import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
 
@@ -250,12 +250,10 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
-
     //
     // browsers can only use w3c sockets
     //
     if (browser == true) {
-
       let wsProtocol = "ws";
       if (peer.peer?.protocol) {
         if (peer.peer.protocol === "https") {
@@ -301,7 +299,6 @@ class Network {
     // have their socket code added by the server class.
     //
     if (remote_socket == false) {
-
       let wsProtocol = "ws";
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
