@@ -258,7 +258,6 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   reset_nonpersistent
   reset_persistent
   reset_bundler
-
   node webpack/webpack.prod.cjs $2 $3
 
   post_compile
