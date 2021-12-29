@@ -160,9 +160,11 @@ class Blockchain {
     // the block next, so we insert it into our BlockRing first as that will avoid
     // needing to borrow the value back for insertion into the BlockRing.
     //
+    console.log("ABTB: 1-1 " + block.returnHash());
     if (!this.app.blockring.containsBlockHashAtBlockId(block_id, block_hash)) {
       this.app.blockring.addBlock(block);
     }
+    console.log("ABTB: 1-2 " + block.returnHash());
 
     //
     // blocks are stored in a hashmap indexed by the block_hash. we expect all
@@ -183,6 +185,11 @@ class Blockchain {
     let old_chain_hash = previous_block_hash;
     let am_i_the_longest_chain = 0;
 
+    console.log("ABTB: 1-3 " + block.returnHash());
+
+console.log("NCH: " + new_chain_hash);
+console.log("OCH: " + old_chain_hash);
+
     while (!shared_ancestor_found) {
       if (this.blocks[new_chain_hash]) {
         if (this.blocks[new_chain_hash].lc === 1) {
@@ -199,11 +206,16 @@ class Blockchain {
         break;
       }
     }
+    console.log("ABTB: 1-4 " + block.returnHash());
 
     //
     // get old chain
     //
     if (shared_ancestor_found) {
+    console.log("ABTB: 1-5 " + block.returnHash());
+console.log("NCH 2: " + new_chain_hash);
+console.log("OCH 2: " + old_chain_hash);
+
       while (new_chain_hash !== old_chain_hash) {
         if (this.blocks[old_chain_hash]) {
           old_chain.push(old_chain_hash);
@@ -215,12 +227,19 @@ class Blockchain {
           if (new_chain_hash === old_chain_hash) {
             break;
           }
-        }
+        } else {
+	  //
+	  // this is an edge case where we simply do not have the old block 
+	  // in our case. we should be a lite-client that is syncing to the 
+	  // chain and does not have the block synced.
+	  break;
+	}
       }
     } else {
       //
       // we have a block without a parent.
       //
+    console.log("ABTB: 1-5-2 " + block.returnHash());
       if (this.app.blockring.isEmpty()) {
         //
         // no need for action as fall-through will result in proper default
@@ -272,6 +291,8 @@ class Blockchain {
       }
     }
 
+    console.log("ABTB: 2 " + block.returnHash());
+
     //
     // at this point we should have a shared ancestor or not
     //
@@ -309,6 +330,8 @@ class Blockchain {
     // with the BlockRing. We fail if the newly-preferred chain is not
     // viable.
     //
+    console.log("ABTB: 3 " + block.returnHash());
+
     if (am_i_the_longest_chain) {
       const does_new_chain_validate = await this.validate(new_chain, old_chain);
 
@@ -339,6 +362,8 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
+
+
     this.app.blockring.print();
 
     const block_id = block.returnId();
@@ -493,6 +518,7 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
+
     let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
@@ -530,10 +556,13 @@ class Blockchain {
       // index to update
       //
       const idx = 2 * i;
-      const block_hash =
-        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
-      fork_id[idx] = block_hash[idx];
-      fork_id[idx + 1] = block_hash[idx + 1];
+      const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+
+      if (block_hash[idx]) {
+        fork_id[idx] = block_hash[idx];
+        fork_id[idx + 1] = block_hash[idx + 1];
+      }
+
     }
 
     let fork_id_str = "";
@@ -595,8 +624,10 @@ class Blockchain {
       // roll back to last even 10 blocks
       //
       for (let i = 0; i < 10; i++) {
-        if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
-          pbid -= BigInt(i);
+        //if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
+        //  pbid -= BigInt(i);
+        if (((pbid - i) % 10) === 0) {
+          pbid -= i;
           break;
         }
       }
@@ -607,7 +638,7 @@ class Blockchain {
       // loop backwards through blockchain
       //
       for (let i = 0; i < 16; ++i) {
-        current_block_id -= BigInt(weights[i]);
+        current_block_id -= weights[i];
 
         //
         // do not loop around if block id < 0
