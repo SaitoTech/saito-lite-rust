@@ -216,7 +216,7 @@ module.exports = ArcadeMain = {
           crypto_transfer_manager.hideOverlay();    
           
           let current_balance = await cryptoMod.returnBalance();            
-          if (current_balance < game_options.stake) {
+          if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough "+game_options.crypto+"! Balance: "+current_balance);
               return;
           }
