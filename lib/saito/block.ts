@@ -378,7 +378,7 @@ class Block {
     }
 
     //
-    // burn-fee
+    // difficulty
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(
       this.block.previous_block_hash
@@ -397,7 +397,7 @@ class Block {
       }
     } else {
       //
-      // if there is no previous block, the burn fee is not adjusted. validation
+      // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
       //
     }

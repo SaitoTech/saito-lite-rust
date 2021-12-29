@@ -28,6 +28,7 @@ class Blockchain {
     //
     this.blockchain.last_block_hash = "";
     this.blockchain.last_block_id = 0;
+    this.blockchain.last_callback_block_id = 0;
     this.blockchain.last_timestamp = new Date().getTime();
     this.blockchain.last_burnfee = 0;
 
@@ -44,6 +45,11 @@ class Blockchain {
     this.blockchain.lowest_acceptable_timestamp = 0;
     this.blockchain.lowest_acceptable_block_hash = "";
     this.blockchain.lowest_acceptable_block_id = 0;
+
+    //
+    // set dynamically on load to avoid duplicating callbacks
+    //
+    this.blockchain.last_callback_block_id = 0;
 
     //
     // core components
@@ -365,8 +371,7 @@ class Blockchain {
     // run callbacks if desired
     //
     let already_processed_callbacks = 0;
-    // skip if already processed last time
-    if (block_id < this.blockchain.last_block_id) {
+    if (block_id <= this.blockchain.last_callback_block_id) {
       already_processed_callbacks = 1;
     }
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
@@ -675,18 +680,13 @@ class Blockchain {
   }
 
   async initialize() {
-    //
-    // TODO - remove when ready
-    //
-    if (this.app.BROWSER == 1) {
-      this.resetBlockchain();
-    }
 
     //
     // load blockchain from options if exists
     //
     if (this.app?.options?.blockchain) {
       this.blockchain = this.app.options.blockchain;
+      this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
     console.log("BLOCKCHAIN INFO: " + JSON.stringify(this.blockchain));
