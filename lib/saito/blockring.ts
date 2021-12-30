@@ -1,5 +1,4 @@
 class Blockring {
-
   public app: any;
   public ring_buffer_length: any;
   public ring: any;
@@ -171,7 +170,6 @@ class Blockring {
   }
 
   returnLongestChainBlockHashByBlockId(block_id) {
-
     const insert_pos = block_id % this.ring_buffer_length;
 
     if (
