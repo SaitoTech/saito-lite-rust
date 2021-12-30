@@ -4,6 +4,7 @@
     "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
+//    "skipLibCheck": true,
     "esModuleInterop": true,
     "outDir": "./built",
     "allowJs": true,

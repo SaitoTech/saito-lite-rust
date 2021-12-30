@@ -8,7 +8,7 @@ let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
   console.log("dev mode source map used");
-  devtool = "source-map";
+  devtool = "eval-cheap-source-map";
 }
 if (process.argv.includes("web3")) {
   //TODO: build a separate saito.js for web3
@@ -89,23 +89,29 @@ webpack({
   module: {
     rules: [
       // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
-      { test: /\.tsx?$/, loader: "ts-loader", exclude: /(node_modules)/ },
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /(node_modules)/
+      },
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
-        test: /\.js$/, use: [
+        test: /\.js$/,
+        use: [
+          "source-map-loader",
           {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-env"],
-              // sourceMaps: true
+              sourceMaps: true
             }
-          },
-          "source-map-loader",
-        ], exclude: /(node_modules)/
+          }
+        ],
+        exclude: /(node_modules)/
       },
       {
         test: /\.mjs$/,
-        include: /(node_modules)/,
+        exclude: /(node_modules)/,
         type: "javascript/auto"
       },
       {
@@ -157,7 +163,7 @@ webpack({
     }),
     new webpack.ProvidePlugin({
       process: "process/browser"
-    }),
+    })
     // new CircularDependencyPlugin({
     //     // exclude detection of files based on a RegExp
     //     exclude: /a\.js|node_modules/,
