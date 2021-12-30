@@ -552,7 +552,9 @@ class Network {
         fork_id = "";
         bytes = message.message_data;
 
-        block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
+        block_id = Number(
+          this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)))
+        );
         if (!block_id) {
           block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
           fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
@@ -564,7 +566,6 @@ class Network {
             " and block_id " +
             block_id
         );
-
 
         const last_shared_ancestor =
           this.app.blockchain.generateLastSharedAncestor(block_id, fork_id);

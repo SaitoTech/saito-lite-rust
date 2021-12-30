@@ -187,8 +187,8 @@ class Blockchain {
 
     console.log("ABTB: 1-3 " + block.returnHash());
 
-console.log("NCH: " + new_chain_hash);
-console.log("OCH: " + old_chain_hash);
+    console.log("NCH: " + new_chain_hash);
+    console.log("OCH: " + old_chain_hash);
 
     while (!shared_ancestor_found) {
       if (this.blocks[new_chain_hash]) {
@@ -212,9 +212,9 @@ console.log("OCH: " + old_chain_hash);
     // get old chain
     //
     if (shared_ancestor_found) {
-    console.log("ABTB: 1-5 " + block.returnHash());
-console.log("NCH 2: " + new_chain_hash);
-console.log("OCH 2: " + old_chain_hash);
+      console.log("ABTB: 1-5 " + block.returnHash());
+      console.log("NCH 2: " + new_chain_hash);
+      console.log("OCH 2: " + old_chain_hash);
 
       while (new_chain_hash !== old_chain_hash) {
         if (this.blocks[old_chain_hash]) {
@@ -228,18 +228,18 @@ console.log("OCH 2: " + old_chain_hash);
             break;
           }
         } else {
-	  //
-	  // this is an edge case where we simply do not have the old block 
-	  // in our case. we should be a lite-client that is syncing to the 
-	  // chain and does not have the block synced.
-	  break;
-	}
+          //
+          // this is an edge case where we simply do not have the old block
+          // in our case. we should be a lite-client that is syncing to the
+          // chain and does not have the block synced.
+          break;
+        }
       }
     } else {
       //
       // we have a block without a parent.
       //
-    console.log("ABTB: 1-5-2 " + block.returnHash());
+      console.log("ABTB: 1-5-2 " + block.returnHash());
       if (this.app.blockring.isEmpty()) {
         //
         // no need for action as fall-through will result in proper default
@@ -362,8 +362,6 @@ console.log("OCH 2: " + old_chain_hash);
   }
 
   async addBlockSuccess(block) {
-
-
     this.app.blockring.print();
 
     const block_id = block.returnId();
@@ -518,7 +516,6 @@ console.log("OCH 2: " + old_chain_hash);
   }
 
   generateForkId(block_id) {
-
     let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
@@ -556,13 +553,13 @@ console.log("OCH 2: " + old_chain_hash);
       // index to update
       //
       const idx = 2 * i;
-      const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+      const block_hash =
+        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
       if (block_hash[idx]) {
         fork_id[idx] = block_hash[idx];
         fork_id[idx + 1] = block_hash[idx + 1];
       }
-
     }
 
     let fork_id_str = "";
@@ -626,7 +623,7 @@ console.log("OCH 2: " + old_chain_hash);
       for (let i = 0; i < 10; i++) {
         //if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
         //  pbid -= BigInt(i);
-        if (((pbid - i) % 10) === 0) {
+        if ((pbid - i) % 10 === 0) {
           pbid -= i;
           break;
         }
@@ -708,7 +705,6 @@ console.log("OCH 2: " + old_chain_hash);
   }
 
   async initialize() {
-
     //
     // load blockchain from options if exists
     //
