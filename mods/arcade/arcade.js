@@ -331,7 +331,6 @@ class Arcade extends ModTemplate {
     let txmsg = tx.returnMessage();
 
 try {    
-console.log("Arcade received: " +txmsg.request);
 
     if (conf == 0) {
 
@@ -372,7 +371,6 @@ console.log("Arcade received: " +txmsg.request);
       if (txmsg.module == "Arcade" && txmsg.request == "close") {
         this.receiveCloseRequest(blk, tx, conf, app);
         this.receiveGameoverRequest(blk, tx, conf, app);
-console.log("CLOSING GAME: " + JSON.stringify(txmsg));
 
         if (txmsg.sig) {
 	  this.removeGameFromOpenList(txmsg.sig);
@@ -582,10 +580,8 @@ console.log("CLOSING GAME: " + JSON.stringify(txmsg));
 
       let tx = null;
 
-console.log("HERE: " + JSON.stringify(message.data));
       if (!message.data.tx) {
         if (message.data.transaction) { 
-console.log("CREATING TX HERE!");
           tx = new saito.default.transaction(message.data.transaction);
 	}
       }
@@ -597,8 +593,6 @@ console.log("CREATING TX HERE!");
       let txmsg = tx.returnMessage();
       let conf = 0;
       let blk = null;
-
-console.log("RECEIVED ARCADE SPV UPDATE: " + JSON.stringify(txmsg));
 
       //
       // open msgs -- public invitations
@@ -645,24 +639,16 @@ console.log("RECEIVED ARCADE SPV UPDATE: " + JSON.stringify(txmsg));
         // try to give game over message
         // this.receiveGameoverRequest();
 
-console.log("RECEIVED CLOSE!");
-
         if (tx.isFrom(this.app.wallet.returnPublicKey())) {
-console.log("RECEIVED CLOSE 2!");
           this.removeGameFromOpenList(tx.returnMessage().sig);
         } else {
 
-console.log("NOTIFY PEERS?");
-console.log("TX: " + JSON.stringify(tx.transaction));
-
 	  // NOTIFY MY PEERS -- server notifying clients
           if (!tx.isTo(this.app.wallet.returnPublicKey())) {
-console.log("YES, notifying peers!");
 	    if (tx.transaction.relayed != 1) {
 	      tx.transaction.relayed = 1;
 	      this.notifyPeers(app, tx);
 	    }
-console.log("DONE notifying peers!");
 	  }
 
           if (this.app.options) {
@@ -982,7 +968,6 @@ console.log("DONE notifying peers!");
     let txmsg = tx.returnMessage();
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`
     let params = { $status: 'close', $game_id: txmsg.sig };
-console.log("UPDATING GAMES DB TO CLOSE!");
     let resp = await app.storage.executeDatabase(sql, params, "arcade");
   }
 

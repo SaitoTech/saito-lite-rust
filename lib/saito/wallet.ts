@@ -32,9 +32,6 @@ class Wallet {
     this.wallet.publickey = "";
     this.wallet.privatekey = "";
 
-    this.wallet.preferred_crypto = "SAITO";
-    this.wallet.preferred_txs = [];
-
     this.wallet.inputs = []; // slips available
     this.wallet.outputs = []; // slips spenr
     this.wallet.spends = []; // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
