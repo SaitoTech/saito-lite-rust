@@ -1,7 +1,6 @@
 const path        = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-
 const RegistryModal = require('./lib/modal/registry-modal');
 
 
@@ -56,7 +55,6 @@ class Registry extends ModTemplate {
     return null;
   }
 
-
   showModal() {
     RegistryModal.render(this.app, this);
     RegistryModal.attachEvents(this.app, this);
@@ -89,7 +87,6 @@ class Registry extends ModTemplate {
         throw TypeError("identifier must be a string");
       }
 
-    
   }
 
   // DEPRECATED, USE tryRegisterIdentifier()
@@ -144,8 +141,6 @@ class Registry extends ModTemplate {
 	// this is to us, and we are the main registry server
 	//
         if (tx.isTo(registry_self.publickey) && app.wallet.returnPublicKey() === registry_self.publickey) {
-
-console.log(registry_self.publickey + " -- " + app.wallet.returnPublicKey());
 
           let request = txmsg.request;
           let identifier = txmsg.identifier;
@@ -212,11 +207,8 @@ console.log(registry_self.publickey + " -- " + app.wallet.returnPublicKey());
               let sig		 = tx.msg.sig;
 
 	      try {
-console.log("a");
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-console.log("b");
                   registry_self.app.keys.addKey(tx.transaction.to[0].add, identifier, true, "", blk.block.id, blk.returnHash(), 1);
-console.log("c");
                 }
   	      } catch (err) {
 		console.log("ERROR verifying username registration message: " + err);
@@ -227,7 +219,6 @@ console.log("c");
       }
     }
   }
-
 
   async addRecord(identifier="", publickey="", unixtime=0, bid=0, bsh="", lock_block=0, sig="", signer="", lc=1) {
 
@@ -267,10 +258,6 @@ console.log("c");
 
     sql = "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
     let rows = await this.app.storage.queryDatabase(sql, params, "registry");
-console.log(sql);
-console.log(params);
-console.log("\n\n\nRES: " + JSON.stringify(rows));
-// console.log("ROWS: " + rows.length);
     if (rows.length == 0) {
       return 0;
     } else {
@@ -280,18 +267,14 @@ console.log("\n\n\nRES: " + JSON.stringify(rows));
   }
 
 
-
-
   async onChainReorganization(bid, bsh, lc) {
 
     var sql    = "UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh";
     var params = { $bid : bid , $bsh : bsh }
     await this.app.storage.executeDatabase(sql, params, "registry");
-
     return;
 
   }
-
 
 
   shouldAffixCallbackToModule(modname) {
@@ -299,7 +282,6 @@ console.log("\n\n\nRES: " + JSON.stringify(rows));
     if (modname == "Email") { return 1; }
     return 0;
   }
-
 
 
   sendSuccessResponse(tx) {
@@ -321,9 +303,6 @@ console.log("\n\n\nRES: " + JSON.stringify(rows));
 
   }
 
-
-
-
   sendFailureResponse(tx) {
 
     let fee = tx.returnPaymentTo(this.app.wallet.returnPublicKey());
@@ -342,9 +321,6 @@ console.log("\n\n\nRES: " + JSON.stringify(rows));
     this.app.network.propagateTransaction(newtx); 
 
   }
-
-
-
 
 }
 module.exports = Registry;

@@ -174,21 +174,16 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const ts = this.app.blockchain.bsh_ts_hmap[bhash];
-        const filename = `${ts}-${bhash}.blk`;
-        if (ts > 0) {
+        const blk = this.app.blockchain.blocks[bhash];
+        if (!blk) { return; }
+        const filename = blk.returnFilename();
+console.log("SERVING FILE: " + filename);
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
           });
-
-          // const src = fs.createReadStream(this.blocks_dir + filename, {encoding: 'binary'});
-          // spv errors if we server different from server in SPV/Lite
-          const src = fs.createReadStream(this.blocks_dir + filename, {
-            encoding: "utf8",
-          });
+          const src = fs.createReadStream(filename, { encoding: "utf8" });
           src.pipe(res);
-        }
       } catch (err) {
         //
         // file does not exist on disk, check in memory

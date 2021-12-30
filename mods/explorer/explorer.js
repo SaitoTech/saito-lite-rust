@@ -136,7 +136,7 @@ class ExplorerCore extends ModTemplate {
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">'+ this.app.wallet.returnPublicKey() + '</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance().toString().split(".")[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + this.app.wallet.returnBalance().toString().split(".")[1] + '</div> \
-          <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">'+ this.app.mempool.transactions.length + ' txs</a></div> \
+          <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">'+ this.app.mempool.mempool.transactions.length + ' txs</a></div> \
         </div>' + '\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
@@ -164,7 +164,7 @@ class ExplorerCore extends ModTemplate {
     html += this.returnHeader()
     html += '<div class="explorer-main">'
     html += '<a class="button" href="/explorer/"><i class="fas fa-cubes"></i> back to blocks</a>'
-    html += '<h3>Mempool Transactions:</h3><div data-json="' + encodeURI(JSON.stringify(this.app.mempool.transactions, null, 4)) + '" class="json">' + JSON.stringify(this.app.mempool.transactions) + '</div></div>'
+    html += '<h3>Mempool Transactions:</h3><div data-json="' + encodeURI(JSON.stringify(this.app.mempool.mempool.transactions, null, 4)) + '" class="json">' + JSON.stringify(this.app.mempool.mempool.transactions) + '</div></div>'
     html += this.returnInvokeJSONTree();
     html += this.returnPageClose();
     return html;
@@ -196,20 +196,32 @@ class ExplorerCore extends ModTemplate {
   listBlocks() {
 
     var explorer_self = this;
+    let latest_block_id = explorer_self.app.blockring.returnLatestBlockId();
 
     var html = '<div class="blockchain-table">';
     html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
-    for (var mb = explorer_self.app.blockchain.index.blocks.length - 1; mb >= 0 && mb > explorer_self.app.blockchain.index.blocks.length - 200; mb--) {
-      if (explorer_self.app.blockchain.lc_pos == mb) {
-        html += '<div>*</div>';
-      } else {
-        html += '<div></div>';
+    for (var mb = latest_block_id; mb >= 0 && mb > latest_block_id - 200; mb--) {
+      let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
+      let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
+
+      for (var mb2 = 0; mb2 < hashes_at_block_id.length; mb2++) {
+	let txs_in_block = 0;
+	let previous_block_hash = "";
+ 	if (explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]]) {
+	  txs_in_block = explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]].transactions.length;
+	  previous_block_hash = explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]].returnHash();
+	}
+        if (longest_chain_hash === hashes_at_block_id[mb2]) {
+          html += '<div>*</div>';
+        } else {
+          html += '<div></div>';
+        }
+        html += '<div><a href="/explorer/block?hash=' + hashes_at_block_id[mb2] + '">' + hashes_at_block_id[mb2] + '</a></div>';
+        html += '<div><a href="/explorer/block?hash=' + hashes_at_block_id[mb2] + '">' + hashes_at_block_id[mb2] + '</a></div>';
+        html += '<div>' + txs_in_block + '</div>';
+        html += '<div class="elipsis">' + previous_block_hash + '</div>';
+        //html += '</tr>';
       }
-      html += '<div><a href="/explorer/block?hash=' + explorer_self.app.blockchain.index.blocks[mb].returnHash('hex') + '">' + explorer_self.app.blockchain.index.blocks[mb].block.id + '</a></div>';
-      html += '<div><a href="/explorer/block?hash=' + explorer_self.app.blockchain.index.blocks[mb].returnHash('hex') + '">' + explorer_self.app.blockchain.index.blocks[mb].returnHash() + '</a></div>';
-      html += '<div>' + explorer_self.app.blockchain.index.blocks[mb].transactions.length + '</div>';
-      html += '<div class="elipsis">' + explorer_self.app.blockchain.index.blocks[mb].block.prevbsh + '</div>';
-      //html += '</tr>';
     }
     html += '</div>';
     return html;
