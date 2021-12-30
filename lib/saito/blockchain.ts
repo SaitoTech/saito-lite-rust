@@ -216,12 +216,12 @@ class Blockchain {
             break;
           }
         } else {
-	  //
-	  // this is an edge case where we simply do not have the old block 
-	  // in our case. we should be a lite-client that is syncing to the 
-	  // chain and does not have the block synced.
-	  break;
-	}
+          //
+          // this is an edge case where we simply do not have the old block
+          // in our case. we should be a lite-client that is syncing to the
+          // chain and does not have the block synced.
+          break;
+        }
       }
     } else {
       //
@@ -346,8 +346,6 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
-
-
     this.app.blockring.print();
 
     const block_id = block.returnId();
@@ -502,7 +500,6 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
-
     let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
@@ -540,13 +537,13 @@ class Blockchain {
       // index to update
       //
       const idx = 2 * i;
-      const block_hash = this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+      const block_hash =
+        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
       if (block_hash[idx]) {
         fork_id[idx] = block_hash[idx];
         fork_id[idx + 1] = block_hash[idx + 1];
       }
-
     }
 
     let fork_id_str = "";
@@ -610,7 +607,7 @@ class Blockchain {
       for (let i = 0; i < 10; i++) {
         //if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
         //  pbid -= BigInt(i);
-        if (((pbid - i) % 10) === 0) {
+        if ((pbid - i) % 10 === 0) {
           pbid -= i;
           break;
         }
@@ -692,7 +689,6 @@ class Blockchain {
   }
 
   async initialize() {
-
     //
     // load blockchain from options if exists
     //

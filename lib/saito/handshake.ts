@@ -54,14 +54,18 @@ class Handshake {
     const h2 = this.deserializeHandshake(peer_response);
 
     socket.peer.peer.publickey = h2.publickey;
-    if (h2.lite === 1) { socket.peer.peer.synctype = "lite"; }
+    if (h2.lite === 1) {
+      socket.peer.peer.synctype = "lite";
+    }
   }
 
   async handleIncomingHandshakeRequest(peer, buffer) {
     const h2 = this.deserializeHandshake(buffer);
 
     peer.peer.publickey = h2.publickey;
-    if (h2.lite === 1) { peer.peer.synctype = "lite"; }
+    if (h2.lite === 1) {
+      peer.peer.synctype = "lite";
+    }
 
     this.app.connection.emit("handshake_complete", peer);
 
