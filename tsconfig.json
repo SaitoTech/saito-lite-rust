@@ -4,9 +4,13 @@
     "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
+//    "skipLibCheck": true,
     "esModuleInterop": true,
     "outDir": "./built",
     "allowJs": true,
+//    "declaration": true,
+//    "declarationMap": true,
+//    "inlineSourceMap": true,
     "downlevelIteration": true,
     "lib": [
       "dom",
@@ -18,10 +22,11 @@
   "exclude": [
     "node_modules",
     "./lib/templates",
-    "bundler"
+    "bundler",
+    "./lib/saito/ui/**/*"
   ],
   "include": [
-    "./lib/**/*",
+    "./lib/**/*.ts",
     "start.ts"
   ]
 }

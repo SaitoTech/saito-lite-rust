@@ -9,6 +9,7 @@ const ArcadeInviteTemplate = require('./templates/arcade-invite.template');
 const ArcadeObserveTemplate = require('./templates/arcade-observe.template');
 const GameCryptoTransferManager = require('./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const JSON = require('json-bigint');
+const saito = require("../../../../lib/saito/saito");
 
 let tabNames = ["arcade", "observables", "tournaments"];
 module.exports = ArcadeMain = {
@@ -131,7 +132,7 @@ module.exports = ArcadeMain = {
             }
 
           }
-        });	
+        });
       } catch(err){}
     });
 
@@ -213,15 +214,16 @@ module.exports = ArcadeMain = {
           let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
           crypto_transfer_manager.balance(app, mod, my_address, game_options.crypto, function() {});
-          crypto_transfer_manager.hideOverlay();    
-          
-          let current_balance = await cryptoMod.returnBalance();            
+
+          crypto_transfer_manager.hideOverlay();
+
+          let current_balance = await cryptoMod.returnBalance();
           if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough "+game_options.crypto+"! Balance: "+current_balance);
               return;
           }
         }
-      
+
       }
 
     } catch (err) {

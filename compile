@@ -3,10 +3,10 @@
 
 function post_compile {
 
-  cp ./built/lib/saito/boot.js ./web/saito/saito2.js
-  cat ./web/saito/saito.js >> ./web/saito/saito2.js
-  mv -f ./web/saito/saito2.js ./web/saito/saito.js
-
+  #cp ./built/lib/saito/boot.js ./web/saito/saito2.js
+  #cat ./web/saito/saito.js >> ./web/saito/saito2.js
+  #mv -f ./web/saito/saito2.js ./web/saito/saito.js
+  echo "ignore..."
 }
 
 function reset_bundler {
@@ -258,7 +258,6 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   reset_nonpersistent
   reset_persistent
   reset_bundler
-
   node webpack/webpack.prod.cjs $2 $3
 
   post_compile
