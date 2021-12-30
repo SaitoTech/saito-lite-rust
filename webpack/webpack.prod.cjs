@@ -8,7 +8,7 @@ let entrypoint = "./../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
   console.log("dev mode source map used");
-  devtool = "eval-cheap-source-map";
+  devtool = "eval";
 }
 if (process.argv.includes("web3")) {
   //TODO: build a separate saito.js for web3
