@@ -4,6 +4,9 @@ import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { TransactionType } from "./transaction";
 
+const CryptoModule = require("../templates/cryptomodule");
+const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto");
+
 /**
  * A Saito-lite wallet.
  * @param {*} app
@@ -20,6 +23,7 @@ class Wallet {
   public outputs_prune_limit: any;
   public recreate_pending_transactions: any;
   public isSlipInPendingTransactions: any;
+  public saitoCrypto: any;
 
   constructor(app: Saito) {
     this.app = app;
@@ -27,6 +31,9 @@ class Wallet {
     this.wallet.balance = "0";
     this.wallet.publickey = "";
     this.wallet.privatekey = "";
+
+    this.wallet.preferred_crypto = "SAITO";
+    this.wallet.preferred_txs = [];
 
     this.wallet.inputs = []; // slips available
     this.wallet.outputs = []; // slips spenr
@@ -45,6 +52,8 @@ class Wallet {
     this.outputs_hmap_counter = 0;
     this.outputs_hmap_counter_limit = 10000;
     this.outputs_prune_limit = 100;
+
+    this.saitoCrypto = null;
 
     this.recreate_pending_transactions = 0;
   }
@@ -337,6 +346,93 @@ console.log("---------------------");
   }
 
   initialize() {
+    //
+    // add ghost crypto module so Saito interface available
+    //
+    class SaitoCrypto extends CryptoModule {
+      constructor(app) {
+        super(app, "SAITO");
+        this.name = "Saito";
+        this.description = "Saito";
+      }
+      async returnBalance() {
+        return parseFloat(this.app.wallet.returnBalance());
+      }
+      returnAddress() {
+        return this.app.wallet.returnPublicKey();
+      }
+      returnPrivateKey() {
+        return this.app.wallet.returnPrivateKey();
+      }
+      async sendPayment(amount, to_address) {
+        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
+          to_address,
+          amount
+        );
+        newtx = this.app.wallet.signAndEncryptTransaction(newtx);
+        this.app.network.propagateTransaction(newtx);
+        return newtx.transaction.sig;
+      }
+      async hasPayment(howMuch, from, to, timestamp) {
+        let from_from = 0;
+        let to_to = 0;
+        if (to == this.app.wallet.returnPublicKey()) {
+          for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
+            if (this.app.wallet.wallet.inputs[i].amt === howMuch) {
+              if (
+                parseInt(this.app.wallet.wallet.inputs[i].ts) >=
+                parseInt(timestamp)
+              ) {
+                if (this.app.wallet.wallet.inputs[i].add == to) {
+                  return true;
+                }
+              }
+            }
+          }
+          for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
+            if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
+              if (
+                parseInt(this.app.wallet.wallet.outputs[i].ts) >=
+                parseInt(timestamp)
+              ) {
+                if (this.app.wallet.wallet.outputs[i].add == to) {
+                  return true;
+                }
+              }
+            }
+          }
+          return false;
+        } else {
+          if (from == this.app.wallet.returnPublicKey()) {
+            for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
+              //console.log("OUTPUT");
+              //console.log(this.app.wallet.wallet.outputs[i]);
+              if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
+                if (
+                  parseInt(this.app.wallet.wallet.outputs[i].ts) >=
+                  parseInt(timestamp)
+                ) {
+                  if (this.app.wallet.wallet.outputs[i].add == to) {
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+          return false;
+        }
+      }
+      returnIsActivated() {
+        return true;
+      }
+      onIsActivated() {
+        return new Promise((resolve, reject) => {
+          resolve(null);
+        });
+      }
+    }
+    this.saitoCrypto = new SaitoCrypto(this.app);
+
     if (this.wallet.privatekey === "") {
       if (this.app.options.wallet != null) {
         /////////////
@@ -858,6 +954,444 @@ console.log("---------------------");
       this.app.connection.emit("update_balance", this);
     }
   }
+
+  /////////////////////////
+  // WEB3 CRYPTO MODULES //
+  /////////////////////////
+
+  returnInstalledCryptos() {
+    let cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
+    if (this.saitoCrypto !== null) {
+      cryptoModules.push(this.saitoCrypto);
+    }
+    return cryptoModules;
+  }
+
+  returnActivatedCryptos() {
+    let allMods = this.returnInstalledCryptos();
+    let activeMods = [];
+    for (let i = 0; i < allMods.length; i++) {
+      if (allMods[i].returnIsActivated()) {
+        activeMods.push(allMods[i]);
+      }
+    }
+    return activeMods;
+  }
+
+  returnCryptoModuleByTicker(ticker) {
+    let mods = this.returnInstalledCryptos();
+    for (let i = 0; i < mods.length; i++) {
+      if (mods[i].ticker === ticker) {
+        return mods[i];
+      }
+    }
+    throw "Module Not Found: " + ticker;
+  }
+
+  setPreferredCrypto(ticker, show_overlay = 0) {
+    let can_we_do_this = 0;
+    let mods = this.returnInstalledCryptos();
+    let cryptomod = null;
+    for (let i = 0; i < mods.length; i++) {
+      if (mods[i].ticker === ticker) {
+        cryptomod = mods[i];
+        can_we_do_this = 1;
+      }
+    }
+    if (ticker == "SAITO") {
+      can_we_do_this = 1;
+    }
+
+    if (can_we_do_this == 1) {
+      this.wallet.preferred_crypto = ticker;
+      this.saveWallet();
+      this.app.connection.emit("set_preferred_crypto", ticker);
+    }
+
+    if (cryptomod != null && show_overlay == 1) {
+      if (cryptomod.renderModalSelectCrypto() != null) {
+        let modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
+        modal_select_crypto.render(this.app, cryptomod);
+        modal_select_crypto.attachEvents(this.app, cryptomod);
+      }
+    }
+
+    return;
+  }
+
+  returnPreferredCrypto() {
+    try {
+      return this.returnCryptoModuleByTicker(this.wallet.preferred_crypto);
+    } catch (err) {
+      if (err.startsWith("Module Not Found:")) {
+        this.setPreferredCrypto("SAITO");
+        return this.returnCryptoModuleByTicker(this.wallet.preferred_crypto);
+      } else {
+        throw err;
+      }
+    }
+  }
+  returnPreferredCryptoTicker() {
+    try {
+      let pc = this.returnPreferredCrypto();
+      if (pc != null && pc != undefined) {
+        return pc.ticker;
+      }
+    } catch (err) {
+      return "";
+    }
+  }
+
+  returnCryptoAddressByTicker(ticker = "SAITO") {
+    try {
+      if (ticker === "SAITO") {
+        return this.returnPublicKey();
+      } else {
+        let cmod = this.returnCryptoModuleByTicker(ticker);
+        return cmod.returnAddress();
+      }
+    } catch (err) {}
+    return "";
+  }
+
+  async returnPreferredCryptoBalances(
+    addresses = [],
+    mycallback = null,
+    ticker = ""
+  ) {
+    if (ticker == "") {
+      ticker = this.wallet.preferred_crypto;
+    }
+    let cryptomod = this.returnCryptoModuleByTicker(ticker);
+    let returnObj = [];
+    let balancePromises = [];
+    for (let i = 0; i < addresses.length; i++) {
+      balancePromises.push(cryptomod.returnBalance(addresses[i]));
+    }
+    let balances = await Promise.all(balancePromises);
+    for (let i = 0; i < addresses.length; i++) {
+      returnObj.push({ address: addresses[i], balance: balances[i] });
+    }
+    if (mycallback != null) {
+      mycallback(returnObj);
+    }
+    return returnObj;
+  }
+  /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
+  async checkBalance(address, ticker) {
+    let robj = await this.returnPreferredCryptoBalances(
+      [address],
+      null,
+      ticker
+    );
+    if (robj.length < 1) {
+      return 0;
+    }
+    if (robj[0].balance) {
+      return robj[0].balance;
+    }
+    return 0;
+  }
+  async returnPreferredCryptoBalance() {
+    let cryptomod = this.returnPreferredCrypto();
+    return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
+  }
+  /**
+   * Sends payments to the addresses provided if this user is the corresponding
+   * sender. Will not send if similar payment was found after the given timestamp.
+   * @param {Array} senders - Array of addresses
+   * @param {Array} receivers - Array of addresses
+   * @param {Array} amounts - Array of amounts to send
+   * @param {Int} timestamp - Timestamp of time after which payment should be made
+   * @param {Function} mycallback - ({hash: {String}}) -> {...}
+   * @param {String} ticker - Ticker of install crypto module
+   */
+  async sendPayment(
+    senders = [],
+    receivers = [],
+    amounts = [],
+    timestamp,
+    mycallback,
+    ticker
+  ) {
+    // validate inputs
+    if (
+      senders.length != receivers.length ||
+      senders.length != amounts.length
+    ) {
+      console.log(
+        "Lengths of senders, receivers, and amounts must be the same"
+      );
+      //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
+    }
+    if (senders.length !== 1) {
+      // We have no code which exercises multiple senders/receivers so can't implement it yet.
+      console.log("sendPayment ERROR: Only supports one transaction");
+      //mycallback({err: "Only supports one transaction"});
+    }
+    // only send if hasn't been sent before
+    if (
+      !this.doesPreferredCryptoTransactionExist(
+        senders,
+        receivers,
+        amounts,
+        timestamp,
+        ticker
+      )
+    ) {
+      let cryptomod = this.returnCryptoModuleByTicker(ticker);
+      for (let i = 0; i < senders.length; i++) {
+        if (senders[i] === cryptomod.returnAddress()) {
+          // Need to save before we await, otherwise there is a race condition
+          this.savePreferredCryptoTransaction(
+            senders,
+            receivers,
+            amounts,
+            timestamp,
+            ticker
+          );
+          try {
+            let hash = await cryptomod.send(amounts[i], receivers[i]);
+            // execute callback if exists
+            mycallback({ hash: hash });
+            break;
+          } catch (err) {
+            // it failed, delete the transaction
+            console.log("sendPayment ERROR: payment failed....\n" + err);
+            this.deletePreferredCryptoTransaction(
+              senders,
+              receivers,
+              amounts,
+              timestamp,
+              ticker
+            );
+            //mycallback({err: err});
+            break;
+          }
+        }
+      }
+    } else {
+      console.log("sendPayment ERROR: already sent");
+      //mycallback({err: "already sent"});
+    }
+  }
+  /**
+   * Checks that a payment has been received if the current user is the receiver.
+   * @param {Array} senders - Array of addresses
+   * @param {Array} receivers - Array of addresses
+   * @param {Array} amounts - Array of amounts to send
+   * @param {Int} timestamp - Timestamp of time after which payment should be made
+   * @param {Function} mycallback - (Array of {address: {String}, balance: {Int}}) -> {...}
+   * @param {String} ticker - Ticker of install crypto module
+   * @param {Int} tries - (default: 36) Number of tries to query the underlying crypto API before giving up. Sending -1 will cause infinite retries.
+   * @param {Int} pollWaitTime - (default: 5000) Amount of time to wait between tries
+   * @return {Array} Array of {address: {String}, balance: {Int}}
+   */
+  async receivePayment(
+    senders = [],
+    receivers = [],
+    amounts = [],
+    timestamp,
+    mycallback,
+    ticker,
+    tries = 36,
+    pollWaitTime = 5000
+  ) {
+    // original design of this interface was to use async/await by returning a promise.
+    // Instead there was an insistence on using mycallback. The consumer of this interface does not use
+    // async/await or .then(...) so this is being abandoned(i.e. i'm removing the promise) but leaving it
+    // here in case someone wants to refactor this or wonders why this interface is this way.
+    //return new Promise(async(resolve, reject) => {
+
+    if (
+      senders.length != receivers.length ||
+      senders.length != amounts.length
+    ) {
+      // There is no way to handle errors with the interface of receivePayment as it's been designed.
+      // We will swallow this error and log it to the console and return.
+      // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
+      // some hope of figuring out why the game isn't progressing.
+      console.log(
+        "receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same"
+      );
+      return;
+      // mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
+    }
+    if (senders.length !== 1) {
+      // There is no way to handle errors with the interface of receivePayment as it's been designed.
+      // We will swallow this error and log it to the console and return.
+      // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
+      // some hope of figuring out why the game isn't progressing.
+      console.log("receivePayment ERROR. Only supports one transaction");
+      return;
+      //mycallback({err: "Only supports one transaction"});
+    }
+
+    //
+    // if payment already received, return
+    //
+    if (
+      this.doesPreferredCryptoTransactionExist(
+        senders,
+        receivers,
+        amounts,
+        timestamp,
+        ticker
+      )
+    ) {
+      mycallback();
+      return;
+    }
+
+    let cryptomod = this.returnCryptoModuleByTicker(ticker);
+    await cryptomod.onIsActivated();
+
+    //
+    // create a function we can loop through to check if the payment has come in....
+    //
+    let check_payment_function = async () => {
+      return await cryptomod.hasPayment(
+        amounts[0],
+        senders[0],
+        receivers[0],
+        timestamp - 3
+      ); // subtract 3 seconds in case system time is slightly off
+    };
+
+    let poll_check_payment_function = async () => {
+      console.log("poll_check_payment_function remaining tries: " + tries);
+      let result = null;
+      try {
+        result = await check_payment_function();
+      } catch (err) {
+        // if check_payment_function throws an error, we want to bail out,
+        // there's no point trying another 100 times.
+        // There is no way to handle errors with the interface of receivePayment as it's been designed.
+        // We will swallow this error and log it to the console and return.
+        // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
+        // some hope of figuring out why the game isn't progressing.
+        console.log("receivePayment ERROR." + err);
+        return;
+        //mycallback({err: err});
+      }
+      did_complete_payment(result);
+    };
+
+    let did_complete_payment = (result) => {
+      if (result) {
+        // The transaction was found, we're done.
+        console.log("TRANSACTION FOUND");
+        this.savePreferredCryptoTransaction(
+          senders,
+          receivers,
+          amounts,
+          timestamp,
+          ticker
+        );
+        mycallback(result);
+      } else {
+        // The transaction was not found.
+        tries--;
+        // This is === rather than < because sending -1 is a way to do infinite polling
+        if (tries != 0) {
+          setTimeout(() => {
+            poll_check_payment_function();
+          }, pollWaitTime);
+        } else {
+          // There is no way to handle errors with the interface of receivePayment as it's been designed.
+          // We will swallow this error and log it to the console and return.
+          // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
+          // some hope of figuring out why the game isn't progressing.
+          console.log(
+            "Did not receive payment after " +
+              (pollWaitTime * tries) / 1000 +
+              " seconds"
+          );
+          return;
+          // mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
+        }
+      }
+    };
+    poll_check_payment_function();
+    //});
+  }
+
+  savePreferredCryptoTransaction(
+    senders = [],
+    receivers = [],
+    amounts,
+    timestamp,
+    ticker
+  ) {
+    let sig = this.app.crypto.hash(
+      JSON.stringify(senders) +
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        timestamp +
+        ticker
+    );
+    this.wallet.preferred_txs.push({
+      sig: sig,
+      ts: new Date().getTime(),
+    });
+
+    for (let i = this.wallet.preferred_txs.length - 1; i >= 0; i--) {
+      // delete references after ~30 hours
+      if (this.wallet.ts < new Date().getTime() - 100000000) {
+        this.wallet.preferred_txs.splice(i, 1);
+      }
+    }
+
+    this.saveWallet();
+
+    return 1;
+  }
+
+  doesPreferredCryptoTransactionExist(
+    senders = [],
+    receivers = [],
+    amounts,
+    timestamp,
+    ticker
+  ) {
+    let sig = this.app.crypto.hash(
+      JSON.stringify(senders) +
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        timestamp +
+        ticker
+    );
+    for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
+      if (this.wallet.preferred_txs[i].sig === sig) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  deletePreferredCryptoTransaction(
+    senders = [],
+    receivers = [],
+    amounts,
+    timestamp,
+    ticker
+  ) {
+    let sig = this.app.crypto.hash(
+      JSON.stringify(senders) +
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        timestamp +
+        ticker
+    );
+    for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
+      if (this.wallet.preferred_txs[i].sig === sig) {
+        this.wallet.preferred_txs.splice(i, 1);
+      }
+    }
+  }
+  /////////////////////
+  // END WEB3 CRYPTO //
+  /////////////////////
 }
 
 export default Wallet;
