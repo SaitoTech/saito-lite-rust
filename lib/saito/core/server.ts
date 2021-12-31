@@ -1,10 +1,8 @@
-// const saito = require('./../saito');
-
+import Block from "./../block";
 import { Saito } from "../../../apps/core";
-
 import express from "express";
-
 import { Server as Ser } from "http";
+
 
 // const io          = require('socket.io')(webserver, {
 //   cors: {
@@ -13,11 +11,10 @@ import { Server as Ser } from "http";
 //   }
 // });
 import fs from "fs";
-
 import path from "path";
-
 import bodyParser from "body-parser";
 
+const JSON = require('json-bigint');
 const app = express();
 const webserver = new Ser(app);
 
@@ -82,6 +79,9 @@ class Server {
   }
 
   initialize() {
+
+    const server_self = this;
+
     if (this.app.BROWSER === 1) {
       return;
     }
@@ -177,13 +177,54 @@ class Server {
         const blk = this.app.blockchain.blocks[bhash];
         if (!blk) { return; }
         const filename = blk.returnFilename();
-console.log("SERVING FILE: " + filename);
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
           });
           const src = fs.createReadStream(filename, { encoding: "utf8" });
           src.pipe(res);
+      } catch (err) {
+        //
+        // file does not exist on disk, check in memory
+        //
+        //let blk = await this.app.blockchain.returnBlockByHash(bsh);
+
+        console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+        res.status(400);
+        res.send({
+          error: {
+            message: `FAILED SERVER REQUEST: could not find block: ${bhash}`,
+          },
+        });
+      }
+    });
+
+    //////////////////////
+    // full json blocks //
+    //////////////////////
+    app.get("/json-blocks/:bhash/:pkey", (req, res) => {
+      const bhash = req.params.bhash;
+      if (bhash == null) {
+        return;
+      }
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        let blk = server_self.app.blockchain.blocks[bhash];
+        if (!blk) { return; }
+console.log("BLOCK IS: " + blk.returnHash());
+        let blkwtx = new Block(server_self.app);
+	blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+	blkwtx.transactions = blk.transactions;
+        blkwtx.app = null;
+
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
+          res.write(Buffer.from(JSON.stringify(blkwtx), 'utf8'), 'utf8');
+          res.end();
       } catch (err) {
         //
         // file does not exist on disk, check in memory

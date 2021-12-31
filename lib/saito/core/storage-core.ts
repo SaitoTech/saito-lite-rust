@@ -231,10 +231,11 @@ class StorageCore extends Storage {
   async loadBlockByHash(bsh) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const ts = this.app.blockchain.bsh_ts_hmap[bsh];
-    const filename = ts + "-" + bsh + ".blk";
-    const blk = await this.loadBlockByFilename(filename);
-    return blk;
+    if (!this.app.blockchain.blocks[bsh]) { return null; }
+    let blk = this.app.blockchain.blocks[bsh];
+    const filename = blk.returnFilename();
+    const block = await this.loadBlockByFilename(filename);
+    return block;
   }
 
   async loadBlockByFilename(filename) {

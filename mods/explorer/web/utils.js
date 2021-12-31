@@ -7,8 +7,10 @@ HTMLElement.prototype.toggleClass = function toggleClass(className) {
 };
 
 async function fetchBlock(hash) {
-    var url = window.location.origin + "/blocks/" + hash + "/blk";
-    
+    var url = window.location.origin + "/json-blocks/" + hash + "/blk";
+
+console.log("URL: " + url); 
+   
     var block = [];
     for await (let line of makeTextFileLineIterator(url)) {
         block.push(JSON.parse(line));
@@ -19,15 +21,12 @@ async function fetchBlock(hash) {
 }
 
 async function fetchRawBlock(hash){
-  var url = window.location.origin + "/blocks/" + hash + "/blk";
-    
+  var url = window.location.origin + "/json-blocks/" + hash + "/blk";
     var block = [];
     for await (let line of makeTextFileLineIterator(url)) {
         block.push(JSON.parse(line));
     }
-
     drawRawBlock(block, hash);
-
 }
 
 function drawRawBlock(blk, hash) {

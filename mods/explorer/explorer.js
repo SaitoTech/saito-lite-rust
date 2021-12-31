@@ -127,7 +127,7 @@ class ExplorerCore extends ModTemplate {
     return '<body> \
         \
         <div class="header header-home"> \
-        <img class="logo" src="saito/img/logo.svg"> \
+        <img class="logo" src="/saito/img/logo.svg"> \
     </div>';
   }
 
@@ -177,7 +177,7 @@ class ExplorerCore extends ModTemplate {
     html += '<a class="button" href="/explorer/block?hash=' + hash + '"><i class="fas fa-cubes"></i> back to block</a>'
     html += '<h3>Block Source (' + hash + '):</h3><div class="blockJson"><div class="loader"></div></div>';
     html += '<script> \
-        fetchRawBlock("' + hash + '"); \
+        fetchBlock("' + hash + '"); \
       </script>';
     html += this.returnPageClose();
     return html;
