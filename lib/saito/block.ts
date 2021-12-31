@@ -1266,15 +1266,15 @@ class Block {
             //delete spv.transaction.ts;
             //delete spv.transaction.path;
 
-            //delete spv.fees_total;
-            //delete spv.work_available_to_me;
-            //delete spv.work_available_to_creator;
-            //delete spv.work_cumulative;
-            //delete spv.msg;
-            //delete spv.dmsg;
-            //delete spv.size;
-            //delete spv.is_valid;
-            //delete spv.path;
+            delete spv.fees_total;
+            delete spv.work_available_to_me;
+            delete spv.work_available_to_creator;
+            delete spv.work_cumulative;
+            delete spv.msg;
+            delete spv.dmsg;
+            delete spv.size;
+            delete spv.is_valid;
+            delete spv.path;
         pruned_transactions.push(spv);
 
       }

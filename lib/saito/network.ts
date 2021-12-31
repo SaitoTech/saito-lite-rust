@@ -228,19 +228,14 @@ class Network {
       }
       console.log("URL: " + url);
       const res = await fetch(url);
-console.log("downloaded!");
       if (res.ok) {
         const base64Buffer = await res.arrayBuffer();
         const buffer = Buffer.from(
           Buffer.from(base64Buffer).toString("utf-8"),
           "base64"
         );
-console.log("about to create block!");
         const block = new saito.block(this.app);
-console.log("1: " + JSON.stringify(block.block));
-console.log("buffer as hex: " + buffer.toString('hex'));
         block.deserialize(buffer);
-console.log("2: " + JSON.stringify(block.block));
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;

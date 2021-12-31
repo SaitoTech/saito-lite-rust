@@ -258,6 +258,8 @@ console.log("Here we are!");
 	pkey = req.params.pkey;
       }
 
+console.log("PKEY IS: " + pkey);
+
       const bsh = req.params.bhash;
       let keylist = [];
       let peer = null;
@@ -276,9 +278,13 @@ console.log("Here we are2!");
         keylist.push(pkey);
       } else {
         keylist = peer.peer.keylist;
+        if (!keylist.includes(pkey)) {
+	  keylist.push(pkey);
+	}
       }
 
 console.log("lite-block");
+console.log("keylist: " + JSON.stringify(keylist));
 
       //
       // SHORTCUT hasKeylistTransactions returns (1 for yes, 0 for no, -1 for unknown)
