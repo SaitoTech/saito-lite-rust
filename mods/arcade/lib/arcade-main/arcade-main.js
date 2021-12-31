@@ -270,11 +270,7 @@ module.exports = ArcadeMain = {
       //
       if (app.options.games) {
 
-console.log("A");
-
         let existing_game = app.options.games.find(g => g.id == game_id);
-
-console.log("B");
 
         if (existing_game != -1 && existing_game) {
           if (existing_game.initializing == 1) {
@@ -363,7 +359,15 @@ console.log("B");
 
   continueGame(app, mod, game_id) {
 
-    let existing_game = app.options.games.find(g => g.id == game_id);
+    let existing_game = -1;
+
+    if (app.options?.games) {
+      for (let i = 0; i < app.options.games.length; i++) {
+        if (app.options.games[i].transaction.sig === game_id || app.options.games[i].id === game_id) {
+	  existing_game = app.options.games[i];
+        }
+      }
+    }
 
     if (existing_game != -1 && existing_game) {
       if (existing_game.initializing == 1) {
@@ -397,7 +401,7 @@ console.log("B");
     var testsig = "";
     let players = [];
 
-    if (app.options.games) {
+    if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
         if (typeof (app.options.games[i].transaction) != 'undefined') {
           testsig = app.options.games[i].transaction.sig;
@@ -415,6 +419,10 @@ console.log("B");
 
     let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
     let my_publickey = app.wallet.returnPublicKey();
+    let peers = [];
+    for (let i = 0; i < app.network.peers.length; i++) {
+      peers.push(app.network.peers[i].returnPublicKey());
+    }
 
     for (let i = 0; i < players.length; i++) { if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i])); }
 
@@ -428,8 +436,15 @@ console.log("B");
 
     newtx.msg = msg;
     newtx = app.wallet.signTransaction(newtx);
-    app.network.propagateTransaction(newtx);
 
+    let relay_mod = app.modules.returnModule('Relay');
+    if (relay_mod != null) {
+console.log("sending CLOSE relay message");
+      relay_mod.sendRelayMessage(players, 'arcade spv update', newtx);
+      relay_mod.sendRelayMessage(peers, 'arcade spv update', newtx);
+    }
+
+    app.network.propagateTransaction(newtx);
     this.removeGameFromList(sig);
   },
 
@@ -464,7 +479,6 @@ console.log("B");
 
 
   observeGame(app, mod, encryptedgamejson) {
-console.log("ABOUT TO JOIN GAME");
     mod.observeGame(encryptedgamejson);
   },
 

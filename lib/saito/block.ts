@@ -1102,7 +1102,10 @@ class Block {
     return this.block.difficulty;
   }
 
-  returnFilename() {
+  returnFilename(): string {
+    if (this.filename === "") {
+      this.filename = this.app.storage.generateBlockFilename(this);
+    }
     return this.filename;
   }
 

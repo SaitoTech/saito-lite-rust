@@ -42,6 +42,7 @@ export default class Wallet {
     this.app = app;
 
     this.inputs_hmap = new Map<string, boolean>();
+
     this.inputs_hmap_counter = 0;
     this.inputs_hmap_counter_limit = 10000;
     this.outputs_hmap = new Map<string, boolean>();

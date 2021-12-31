@@ -160,11 +160,9 @@ class Blockchain {
     // the block next, so we insert it into our BlockRing first as that will avoid
     // needing to borrow the value back for insertion into the BlockRing.
     //
-    console.log("ABTB: 1-1 " + block.returnHash());
     if (!this.app.blockring.containsBlockHashAtBlockId(block_id, block_hash)) {
       this.app.blockring.addBlock(block);
     }
-    console.log("ABTB: 1-2 " + block.returnHash());
 
     //
     // blocks are stored in a hashmap indexed by the block_hash. we expect all
@@ -185,11 +183,6 @@ class Blockchain {
     let old_chain_hash = previous_block_hash;
     let am_i_the_longest_chain = 0;
 
-    console.log("ABTB: 1-3 " + block.returnHash());
-
-    console.log("NCH: " + new_chain_hash);
-    console.log("OCH: " + old_chain_hash);
-
     while (!shared_ancestor_found) {
       if (this.blocks[new_chain_hash]) {
         if (this.blocks[new_chain_hash].lc === 1) {
@@ -206,16 +199,11 @@ class Blockchain {
         break;
       }
     }
-    console.log("ABTB: 1-4 " + block.returnHash());
 
     //
     // get old chain
     //
     if (shared_ancestor_found) {
-      console.log("ABTB: 1-5 " + block.returnHash());
-      console.log("NCH 2: " + new_chain_hash);
-      console.log("OCH 2: " + old_chain_hash);
-
       while (new_chain_hash !== old_chain_hash) {
         if (this.blocks[old_chain_hash]) {
           old_chain.push(old_chain_hash);
@@ -239,7 +227,6 @@ class Blockchain {
       //
       // we have a block without a parent.
       //
-      console.log("ABTB: 1-5-2 " + block.returnHash());
       if (this.app.blockring.isEmpty()) {
         //
         // no need for action as fall-through will result in proper default
@@ -291,8 +278,6 @@ class Blockchain {
       }
     }
 
-    console.log("ABTB: 2 " + block.returnHash());
-
     //
     // at this point we should have a shared ancestor or not
     //
@@ -330,7 +315,6 @@ class Blockchain {
     // with the BlockRing. We fail if the newly-preferred chain is not
     // viable.
     //
-    console.log("ABTB: 3 " + block.returnHash());
 
     if (am_i_the_longest_chain) {
       const does_new_chain_validate = await this.validate(new_chain, old_chain);
