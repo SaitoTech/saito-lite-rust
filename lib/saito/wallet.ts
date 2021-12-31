@@ -11,41 +11,41 @@ const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto"
  * A Saito-lite wallet.
  * @param {*} app
  */
-class Wallet {
+export default class Wallet {
   public app: Saito;
-  public wallet: any;
-  public inputs_hmap: any;
-  public inputs_hmap_counter: any;
-  public inputs_hmap_counter_limit: any;
-  public outputs_hmap: any;
-  public outputs_hmap_counter: any;
-  public outputs_hmap_counter_limit: any;
-  public outputs_prune_limit: any;
+  public wallet = {
+    balance: "0",
+    publickey: "",
+    privatekey: "",
+
+    preferred_crypto: "SAITO",
+    preferred_txs: [],
+
+    inputs: [], // slips available
+    outputs: [], // slips spenr
+    spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
+    pending: [], // slips pending broadcast
+    default_fee: 2,
+    version: 4.015,
+  };
+  public inputs_hmap: Map<string, boolean>;
+  public inputs_hmap_counter: number;
+  public inputs_hmap_counter_limit: number;
+  public outputs_hmap: Map<string, boolean>;
+  public outputs_hmap_counter: number;
+  public outputs_hmap_counter_limit: number;
+  public outputs_prune_limit: number;
   public recreate_pending_transactions: any;
-  public isSlipInPendingTransactions: any;
   public saitoCrypto: any;
 
   constructor(app: Saito) {
     this.app = app;
-    this.wallet = {};
-    this.wallet.balance = "0";
-    this.wallet.publickey = "";
-    this.wallet.privatekey = "";
 
-    this.wallet.inputs = []; // slips available
-    this.wallet.outputs = []; // slips spenr
-    this.wallet.spends = []; // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
-    this.wallet.pending = []; // slips pending broadcast
-    this.wallet.default_fee = 2;
-    this.wallet.version = 4.015;
+    this.inputs_hmap = new Map<string, boolean>();
 
-    this.wallet.preferred_crypto = "SAITO";
-    this.wallet.preferred_txs = [];
-
-    this.inputs_hmap = [];
     this.inputs_hmap_counter = 0;
     this.inputs_hmap_counter_limit = 10000;
-    this.outputs_hmap = [];
+    this.outputs_hmap = new Map<string, boolean>();
     this.outputs_hmap_counter = 0;
     this.outputs_hmap_counter_limit = 10000;
     this.outputs_prune_limit = 100;
@@ -76,7 +76,7 @@ class Wallet {
     this.wallet.spends.splice(pos, 0, 0);
 
     const hmi = x.returnKey();
-    this.inputs_hmap[hmi] = 1;
+    this.inputs_hmap.set(hmi, true);
     this.inputs_hmap_counter++;
 
     ////////////////////////
@@ -89,19 +89,19 @@ class Wallet {
     // to maintain reasonable accuracy.
     //
     if (this.inputs_hmap_counter > this.inputs_hmap_counter_limit) {
-      this.inputs_hmap = [];
-      this.outputs_hmap = [];
+      this.inputs_hmap = new Map<string, boolean>();
+      this.outputs_hmap = new Map<string, boolean>();
       this.inputs_hmap_counter = 0;
       this.outputs_hmap_counter = 0;
 
       for (let i = 0; i < this.wallet.inputs.length; i++) {
         const hmi = this.wallet.inputs[i].returnKey();
-        this.inputs_hmap[hmi] = 1;
+        this.inputs_hmap.set(hmi, true);
       }
 
       for (let i = 0; i < this.wallet.outputs.length; i++) {
         const hmi = this.wallet.outputs[i].returnKey();
-        this.outputs_hmap[hmi] = 1;
+        this.outputs_hmap.set(hmi, true);
       }
     }
     return;
@@ -113,7 +113,7 @@ class Wallet {
     //////////////
     this.wallet.outputs.push(x);
     const hmi = x.returnKey();
-    this.outputs_hmap[hmi] = 1;
+    this.outputs_hmap.set(hmi, true);
     this.outputs_hmap_counter++;
 
     ///////////////////////
@@ -143,12 +143,12 @@ class Wallet {
 
   containsInput(s) {
     const hmi = s.returnKey();
-    return this.inputs_hmap[hmi] == 1;
+    return this.inputs_hmap.get(hmi);
   }
 
   containsOutput(s) {
     const hmi = s.returnKey();
-    return this.outputs_hmap[hmi] == 1;
+    return this.outputs_hmap.get(hmi);
   }
 
   createUnsignedTransactionWithDefaultFee(publickey = "", amount = BigInt(0)) {
@@ -371,8 +371,8 @@ console.log("---------------------");
         return newtx.transaction.sig;
       }
       async hasPayment(howMuch, from, to, timestamp) {
-        let from_from = 0;
-        let to_to = 0;
+        const from_from = 0;
+        const to_to = 0;
         if (to == this.app.wallet.returnPublicKey()) {
           for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
             if (this.app.wallet.wallet.inputs[i].amt === howMuch) {
@@ -732,7 +732,7 @@ console.log("---------------------");
         const pendingtx = new Transaction(JSON.parse(this.wallet.pending[i]));
         for (let k = 0; k < pendingtx.transaction.from.length; k++) {
           const slipIndex = pendingtx.transaction.from[k].returnKey();
-          for (let m = 0; m < this.wallet.inputs; m++) {
+          for (let m = 0; m < this.wallet.inputs.length; m++) {
             const thisSlipIndex = this.wallet.inputs[m].returnKey();
             // if the input in the wallet is already in a pending tx...
             // then set spends[m] to 1
@@ -957,7 +957,7 @@ console.log("---------------------");
   /////////////////////////
 
   returnInstalledCryptos() {
-    let cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
+    const cryptoModules = this.app.modules.returnModulesBySubType(CryptoModule);
     if (this.saitoCrypto !== null) {
       cryptoModules.push(this.saitoCrypto);
     }
@@ -965,8 +965,8 @@ console.log("---------------------");
   }
 
   returnActivatedCryptos() {
-    let allMods = this.returnInstalledCryptos();
-    let activeMods = [];
+    const allMods = this.returnInstalledCryptos();
+    const activeMods = [];
     for (let i = 0; i < allMods.length; i++) {
       if (allMods[i].returnIsActivated()) {
         activeMods.push(allMods[i]);
@@ -976,7 +976,7 @@ console.log("---------------------");
   }
 
   returnCryptoModuleByTicker(ticker) {
-    let mods = this.returnInstalledCryptos();
+    const mods = this.returnInstalledCryptos();
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
         return mods[i];
@@ -987,7 +987,7 @@ console.log("---------------------");
 
   setPreferredCrypto(ticker, show_overlay = 0) {
     let can_we_do_this = 0;
-    let mods = this.returnInstalledCryptos();
+    const mods = this.returnInstalledCryptos();
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
@@ -1007,7 +1007,7 @@ console.log("---------------------");
 
     if (cryptomod != null && show_overlay == 1) {
       if (cryptomod.renderModalSelectCrypto() != null) {
-        let modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
+        const modal_select_crypto = new ModalSelectCrypto(this.app, cryptomod);
         modal_select_crypto.render(this.app, cryptomod);
         modal_select_crypto.attachEvents(this.app, cryptomod);
       }
@@ -1030,7 +1030,7 @@ console.log("---------------------");
   }
   returnPreferredCryptoTicker() {
     try {
-      let pc = this.returnPreferredCrypto();
+      const pc = this.returnPreferredCrypto();
       if (pc != null && pc != undefined) {
         return pc.ticker;
       }
@@ -1044,10 +1044,12 @@ console.log("---------------------");
       if (ticker === "SAITO") {
         return this.returnPublicKey();
       } else {
-        let cmod = this.returnCryptoModuleByTicker(ticker);
+        const cmod = this.returnCryptoModuleByTicker(ticker);
         return cmod.returnAddress();
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+    }
     return "";
   }
 
@@ -1059,13 +1061,13 @@ console.log("---------------------");
     if (ticker == "") {
       ticker = this.wallet.preferred_crypto;
     }
-    let cryptomod = this.returnCryptoModuleByTicker(ticker);
-    let returnObj = [];
-    let balancePromises = [];
+    const cryptomod = this.returnCryptoModuleByTicker(ticker);
+    const returnObj = [];
+    const balancePromises = [];
     for (let i = 0; i < addresses.length; i++) {
       balancePromises.push(cryptomod.returnBalance(addresses[i]));
     }
-    let balances = await Promise.all(balancePromises);
+    const balances = await Promise.all(balancePromises);
     for (let i = 0; i < addresses.length; i++) {
       returnObj.push({ address: addresses[i], balance: balances[i] });
     }
@@ -1076,7 +1078,7 @@ console.log("---------------------");
   }
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
   async checkBalance(address, ticker) {
-    let robj = await this.returnPreferredCryptoBalances(
+    const robj = await this.returnPreferredCryptoBalances(
       [address],
       null,
       ticker
@@ -1090,7 +1092,7 @@ console.log("---------------------");
     return 0;
   }
   async returnPreferredCryptoBalance() {
-    let cryptomod = this.returnPreferredCrypto();
+    const cryptomod = this.returnPreferredCrypto();
     return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
   }
   /**
@@ -1136,7 +1138,7 @@ console.log("---------------------");
         ticker
       )
     ) {
-      let cryptomod = this.returnCryptoModuleByTicker(ticker);
+      const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
@@ -1148,7 +1150,7 @@ console.log("---------------------");
             ticker
           );
           try {
-            let hash = await cryptomod.send(amounts[i], receivers[i]);
+            const hash = await cryptomod.send(amounts[i], receivers[i]);
             // execute callback if exists
             mycallback({ hash: hash });
             break;
@@ -1240,13 +1242,13 @@ console.log("---------------------");
       return;
     }
 
-    let cryptomod = this.returnCryptoModuleByTicker(ticker);
+    const cryptomod = this.returnCryptoModuleByTicker(ticker);
     await cryptomod.onIsActivated();
 
     //
     // create a function we can loop through to check if the payment has come in....
     //
-    let check_payment_function = async () => {
+    const check_payment_function = async () => {
       return await cryptomod.hasPayment(
         amounts[0],
         senders[0],
@@ -1255,7 +1257,7 @@ console.log("---------------------");
       ); // subtract 3 seconds in case system time is slightly off
     };
 
-    let poll_check_payment_function = async () => {
+    const poll_check_payment_function = async () => {
       console.log("poll_check_payment_function remaining tries: " + tries);
       let result = null;
       try {
@@ -1274,7 +1276,7 @@ console.log("---------------------");
       did_complete_payment(result);
     };
 
-    let did_complete_payment = (result) => {
+    const did_complete_payment = (result) => {
       if (result) {
         // The transaction was found, we're done.
         console.log("TRANSACTION FOUND");
@@ -1320,7 +1322,7 @@ console.log("---------------------");
     timestamp,
     ticker
   ) {
-    let sig = this.app.crypto.hash(
+    const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
         JSON.stringify(amounts) +
@@ -1334,7 +1336,7 @@ console.log("---------------------");
 
     for (let i = this.wallet.preferred_txs.length - 1; i >= 0; i--) {
       // delete references after ~30 hours
-      if (this.wallet.ts < new Date().getTime() - 100000000) {
+      if (this.wallet.preferred_txs[i].ts < new Date().getTime() - 100000000) {
         this.wallet.preferred_txs.splice(i, 1);
       }
     }
@@ -1351,7 +1353,7 @@ console.log("---------------------");
     timestamp,
     ticker
   ) {
-    let sig = this.app.crypto.hash(
+    const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
         JSON.stringify(amounts) +
@@ -1373,7 +1375,7 @@ console.log("---------------------");
     timestamp,
     ticker
   ) {
-    let sig = this.app.crypto.hash(
+    const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
         JSON.stringify(amounts) +
@@ -1386,9 +1388,11 @@ console.log("---------------------");
       }
     }
   }
+  // TODO : @david to implement
+  private isSlipInPendingTransactions(input: Slip): boolean {
+    return false;
+  }
   /////////////////////
   // END WEB3 CRYPTO //
   /////////////////////
 }
-
-export default Wallet;
