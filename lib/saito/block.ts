@@ -62,6 +62,8 @@ class Block {
   public golden_ticket_idx: number;
   public issuance_transaction_idx: number;
   public get_id: any;
+  public txs_hmap: any;
+  public txs_hmap_generated: boolean;
 
   constructor(app: Saito) {
     this.app = app;
@@ -96,6 +98,9 @@ class Block {
     this.total_rebroadcast_slips = 0;
     this.total_rebroadcast_nolan = BigInt(0);
 
+    this.txs_hmap = [];
+    this.txs_hmap_generated = false;
+
     this.callbacks = [];
     this.callbackTxs = [];
     this.confirmations = -1; // set to +1 when we start callbacks
@@ -127,9 +132,11 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer?) {
+
     const transactions_length = this.app.binary.u32FromBytes(
       buffer.slice(0, 4)
     );
+
     this.block.id = parseInt(
       this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()
     ); // TODO : fix this to support correct ranges.
@@ -911,6 +918,8 @@ class Block {
     //
     this.generateHashes();
 
+    this.generateTransactionsHashmap();
+
     //
     // if we are generating the metadata for a block, we use the
     // publickey of the block creator when we calculate the fees
@@ -1027,6 +1036,16 @@ class Block {
     this.hash = this.returnHash();
   }
 
+  generateTransactionsHashmap() {
+    if (!this.txs_hmap_generated) {
+      for (let i = 0; i < this.transactions.length; i++) {
+        for (let ii = 0; ii < this.transactions[i].transaction.from.length; ii++) { this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1; }
+        for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) { this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1; }
+      }
+      this.txs_hmap_generated = true;
+    }
+  }
+
   hasFeeTransaction() {
     return this.has_fee_transaction;
   }
@@ -1037,6 +1056,14 @@ class Block {
 
   hasIssuanceTransaction() {
     return this.has_issuance_transaction;
+  }
+
+  hasKeylistTransactions(keylist) {
+    if (!this.txs_hmap_generated) { this.generateTransactionsHashmap(); }
+    for (let i = 0; i < keylist.length; i++) {
+      if (this.txs_hmap[keylist[i]] == 1) { return true; }
+    }
+    return false;
   }
 
   onChainReorganization(lc) {
@@ -1202,6 +1229,91 @@ class Block {
     }
     return mr;
   }
+
+  //
+  // returns a lite-version of the block
+  //
+  returnLiteBlock(keylist=[]): any {
+
+    let pruned_transactions = [];
+
+    //
+    // generate lite-txs
+    //
+    for (let i = 0; i < this.transactions.length; i++) {
+
+      let add_this_tx = 0;
+      for (let k = 0; k < keylist.length; k++) {
+        if (this.transactions[i].hasPublicKey(keylist[k])) {
+          add_this_tx = 1;
+          k = keylist.length;
+        }
+      }
+
+      if (add_this_tx == 1) {
+        pruned_transactions.push(this.transactions[i]);
+      } else {
+
+        let spv = new Transaction();
+            spv.transaction.type = 9;
+            spv.transaction.r    = 1;
+	    // the sig contains the hash of this TX
+            spv.transaction.sig  = this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app).toString("hex"));
+
+            //delete spv.transaction.to;
+            //delete spv.transaction.from;
+            //delete spv.transaction.m;
+            //delete spv.transaction.ts;
+            //delete spv.transaction.path;
+
+            //delete spv.fees_total;
+            //delete spv.work_available_to_me;
+            //delete spv.work_available_to_creator;
+            //delete spv.work_cumulative;
+            //delete spv.msg;
+            //delete spv.dmsg;
+            //delete spv.size;
+            //delete spv.is_valid;
+            //delete spv.path;
+        pruned_transactions.push(spv);
+
+      }
+    }
+
+    //
+    // prune unnecessary txs into merkle-tree
+    //
+    let no_simplification_needed = 0;
+/*****
+    while (no_simplification_needed == 0) {
+      let action_taken = 0;
+      for (let i = 1; i < pruned_transactions.length; i++) {
+        if (pruned_transactions[i].transaction.type == 9 && pruned_transactions[i-1].transaction.type == 9) {
+          if (pruned_transactions[i].transaction.r == pruned_transactions[i-1].transaction.r) {
+            pruned_transactions[i].transaction.r *= 2;
+            pruned_transactions[i].transaction.sig = this.app.crypto.hash(pruned_transactions[i-1].transaction.sig + pruned_transactions[i].transaction.sig);
+            pruned_transactions.splice(i-1, 0);
+            action_taken = 1;
+          }
+        }
+      }
+      if (action_taken == 0) {
+        no_simplification_needed = 1;
+      }
+    }
+****/
+
+    let newblk = new Block(this.app);
+        newblk.block = Object.assign({}, this.block);
+        newblk.transactions = pruned_transactions;
+
+console.log("PRUNED TXS LENGTH: " + newblk.transactions.length);
+
+    return newblk;
+
+  }
+
+
 
   returnPreviousBlockHash() {
     return this.block.previous_block_hash;

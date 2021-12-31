@@ -222,17 +222,25 @@ class Network {
     }
 
     try {
-      const url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
+      let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
+      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
+      }
       console.log("URL: " + url);
       const res = await fetch(url);
+console.log("downloaded!");
       if (res.ok) {
         const base64Buffer = await res.arrayBuffer();
         const buffer = Buffer.from(
           Buffer.from(base64Buffer).toString("utf-8"),
           "base64"
         );
+console.log("about to create block!");
         const block = new saito.block(this.app);
+console.log("1: " + JSON.stringify(block.block));
+console.log("buffer as hex: " + buffer.toString('hex'));
         block.deserialize(buffer);
+console.log("2: " + JSON.stringify(block.block));
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;

@@ -42,7 +42,6 @@ class Transaction {
   public size: number;
   public is_valid: any;
   public path: Hop[];
-  public returnTotalFees: any;
 
   constructor(jsonobj = null) {
     /////////////////////////
@@ -534,7 +533,7 @@ class Transaction {
     // of routing work that it is possible for this transaction
     // to contain (2x the fee).
     //
-    let aggregate_routing_work = this.returnTotalFees();
+    let aggregate_routing_work = this.returnFeesTotal();
     let routing_work_this_hop = aggregate_routing_work;
     const work_by_hop = [];
     work_by_hop.push(aggregate_routing_work);
@@ -914,6 +913,12 @@ class Transaction {
 
   generateMetadataCumulativeWork() {
     return BigInt(0);
+  }
+
+  hasPublicKey(publickey) {
+    let slips = this.returnSlipsToAndFrom(publickey);
+    if (slips.to.length > 0 || slips.from.length > 0) { return true; }
+    return false;
   }
 
   /* stolen from app crypto to avoid including app */

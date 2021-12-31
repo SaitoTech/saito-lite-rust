@@ -215,7 +215,6 @@ class Server {
         // @ts-ignore
         let blk = server_self.app.blockchain.blocks[bhash];
         if (!blk) { return; }
-console.log("BLOCK IS: " + blk.returnHash());
         let blkwtx = new Block(server_self.app);
 	blkwtx.block = JSON.parse(JSON.stringify(blk.block));
 	blkwtx.transactions = blk.transactions;
@@ -246,21 +245,32 @@ console.log("BLOCK IS: " + blk.returnHash());
     /////////////////
     // lite-blocks //
     /////////////////
-    app.get("/lite-blocks/:bhash/:pkey", async (req, res) => {
+    app.get("/lite-block/:bhash/:pkey", async (req, res) => {
+
+console.log("Here we are!");
+
       if (req.params.bhash == null) {
         return;
       }
-      if (req.params.pkey == null) {
-        return;
+
+      let pkey = server_self.app.wallet.returnPublicKey();
+      if (req.params.pkey != null) {
+	pkey = req.params.pkey;
       }
 
       const bsh = req.params.bhash;
-      const pkey = req.params.pkey;
       let keylist = [];
+      let peer = null;
+
+console.log("Here we are2!");
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const peer = this.app.network.returnPeerByPublicKey(pkey);
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+        if (this.app.network.peers[i].returnPublicKey() === pkey) {
+	  peer = this.app.network.peers[i];
+	}
+      }
 
       if (peer == null) {
         keylist.push(pkey);
@@ -268,8 +278,10 @@ console.log("BLOCK IS: " + blk.returnHash());
         keylist = peer.peer.keylist;
       }
 
+console.log("lite-block");
+
       //
-      // SHORTCUT hasKeylistTranactions returns (1 for yes, 0 for no, -1 for unknown)
+      // SHORTCUT hasKeylistTransactions returns (1 for yes, 0 for no, -1 for unknown)
       // if we have this block but there are no transactions for it in the block hashmap
       // then we just fetch the block header from memory and serve that.
       //
@@ -279,59 +291,57 @@ console.log("BLOCK IS: " + blk.returnHash());
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      if (this.app.blockchain.hasKeylistTransactions(bsh, keylist) === 0) {
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
+      let block = this.app.blockchain.blocks[bsh];
+      if (block) {
+
+console.log("block exists");
+
+        if (block.hasKeylistTransactions(bsh, keylist) === 0) {
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+	  let liteblock = block.returnLiteBlock(keylist);
+          let buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+
+          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+          res.write(buffer, "utf8");
+          res.end();
+          return;
+        }
+
+        //
+        // TODO - load from disk to ensure we have txs -- slow.
+        //
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = this.app.blockchain.returnBlockByHashFromBlockIndex(bsh, 0); // 0 indicates we want in-memory
-        res.write(Buffer.from(blk.returnBlockHeaderData(), "utf8"), "utf8");
-        res.end();
-        return;
-      }
+        let blk = await this.app.storage.loadBlockByHash(bsh);
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const blk = await this.app.blockchain.returnBlockByHashFromMemoryOrDisk(
-        bsh,
-        1
-      );
+        if (blk == null) {
+console.log("SENDING AN EMPTY BLOCK AS NOT LOADED!");
+          res.send("{}");
+          return;
+        } else {
+          const newblk = blk.returnLiteBlock(keylist);
 
-      if (blk == null) {
-        res.send("{}");
-        return;
-      } else {
-        const newblk = blk.returnLiteBlock(bsh, keylist);
-        //
-        // formerly binary / binary, but that results in different encoding push than full blocks, so SPV fails
-        //
-        //res.end(Buffer.from(newblk.returnBlockFileData(), 'utf8'), 'binary');
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
 
-        res.writeHead(200, {
-          "Content-Type": "text/plain",
-          "Content-Transfer-Encoding": "utf8",
-        });
-
-        res.write(Buffer.from(newblk.returnBlockHeaderData(), "utf8"), "utf8");
-        for (let i = 0; i < blk.transactions.length; i++) {
-          res.write(Buffer.from("\n", "utf8"), "utf8");
-          res.write(
-            Buffer.from(JSON.stringify(blk.transactions[i]), "utf8"),
-            "utf8"
-          );
+  	  let liteblock = block.returnLiteBlock(keylist);
+          let buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+          res.write(buffer, "utf8");
+          //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
+          res.end();
+          return;
         }
-        res.end();
-
-        //        fs.closeSync(fd);
-
-        //res.end(Buffer.from(newblk.returnBlockFileData(), 'binary'), 'binary');
         return;
       }
-
-      return;
     });
+
 
     app.get("/block/:hash", async (req, res) => {
       const hash = req.params.hash;
