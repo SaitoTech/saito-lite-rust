@@ -371,6 +371,14 @@ try {
       if (txmsg.module == "Arcade" && txmsg.request == "close") {
         this.receiveCloseRequest(blk, tx, conf, app);
         this.receiveGameoverRequest(blk, tx, conf, app);
+
+        if (txmsg.sig) {
+	  this.removeGameFromOpenList(txmsg.sig);
+          // try
+          if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
+            this.renderArcadeMain(this.app, this);
+          }
+        }
       }
 
       //
@@ -555,9 +563,7 @@ try {
           this.launchGame(txmsg.game_id);
         }
       }
-
     }
-
 
 } catch (err) {
   console.log("ERROR in arcade: " + err);
@@ -572,7 +578,18 @@ try {
     //
     if (message.request === 'arcade spv update') {
 
-      let tx = new saito.default.transaction(message.data.tx.transaction);
+      let tx = null;
+
+      if (!message.data.tx) {
+        if (message.data.transaction) { 
+          tx = new saito.default.transaction(message.data.transaction);
+	}
+      }
+ 
+      if (tx == null) {
+        tx = new saito.default.transaction(message.data.tx.transaction);
+      }
+
       let txmsg = tx.returnMessage();
       let conf = 0;
       let blk = null;
@@ -625,6 +642,15 @@ try {
         if (tx.isFrom(this.app.wallet.returnPublicKey())) {
           this.removeGameFromOpenList(tx.returnMessage().sig);
         } else {
+
+	  // NOTIFY MY PEERS -- server notifying clients
+          if (!tx.isTo(this.app.wallet.returnPublicKey())) {
+	    if (tx.transaction.relayed != 1) {
+	      tx.transaction.relayed = 1;
+	      this.notifyPeers(app, tx);
+	    }
+	  }
+
           if (this.app.options) {
             if (this.app.options.games) {
               for (let i = 0; i < this.app.options.games.length; i++) {
@@ -661,9 +687,10 @@ try {
         }
 
         this.removeGameFromOpenList(txmsg.sig);
-        // if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
-        //   this.renderArcadeMain(this.app, this);
-        // }
+	// try
+        if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
+          this.renderArcadeMain(this.app, this);
+        }
       }
       this.receiveCloseRequest(blk, tx, conf, app);
     } // end peer relayed txs
@@ -1373,12 +1400,14 @@ try {
 
   createGameTXFromOptionsGame(game) {
 
+console.log("we have an existing game!");
+
     let game_tx = new saito.default.transaction();
 
     //
     // ignore games that are over
     //
-    //console.info("GAME OVER + LAST BLOCK: " + game.over + " -- " + game.last_block + " -- " + game.id);
+    console.info("GAME OVER + LAST BLOCK: " + game.over + " -- " + game.last_block + " -- " + game.id);
 
     if (game.over) { if (game.last_block > 0) { return; } }
 
@@ -1404,7 +1433,8 @@ try {
 
     game_tx.transaction.sig = game.id;
     game_tx.msg = msg;
-    game_tx = this.app.wallet.signTransaction(game_tx);
+    // screws up sig
+    //game_tx = this.app.wallet.signTransaction(game_tx);
 
     return game_tx;
   }
@@ -1412,6 +1442,7 @@ try {
 
 
   removeOldGames() {
+
     let removed_old_games = 0;
 
     // if the game is very old, remove it
@@ -1542,7 +1573,7 @@ try {
         this.games.unshift(tx);
       }
       let removed_game = this.removeOldGames();
-      if(for_us || removed_game){
+      if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
     }
@@ -1552,6 +1583,7 @@ try {
     let for_us = false;
     txs.forEach((tx, i) => {
       let valid_game = this.validateGame(tx);
+console.log("is this a valid game? " + valid_game);
       if (valid_game){
         let this_game_is_for_us = this.isForUs(tx);
         if (this_game_is_for_us) {
@@ -1561,8 +1593,10 @@ try {
       }
       
     });
-    let removed_game = this.removeOldGames();
-    if(for_us || removed_game){
+    //let removed_game = this.removeOldGames();
+console.log("fu: " + for_us);
+    //if (for_us || removed_game){
+    if (for_us) {
       this.renderArcadeMain(this.app, this);
     }
     

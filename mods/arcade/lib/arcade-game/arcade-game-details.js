@@ -171,6 +171,12 @@ module.exports = ArcadeGameDetails = {
           document.getElementById('background-shim').destroy();
 
           let newtx = mod.createOpenTransaction(gamedata);
+
+          let arcade_mod = app.modules.returnModule('Arcade');
+	  if (arcade_mod) {
+            arcade_mod.addGameToOpenList(newtx);
+	  }
+
           mod.app.network.propagateTransaction(newtx);
           mod.renderArcadeMain(app, mod);
 

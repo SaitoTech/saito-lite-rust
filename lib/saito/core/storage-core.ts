@@ -68,7 +68,7 @@ class StorageCore extends Storage {
     }
   }
 
-  generateBlockFilename(block) {
+  generateBlockFilename(block): string {
     let filename = this.data_dir + "/" + this.dest + "/";
     filename += Buffer.from(
       this.app.binary.u64AsBytes(block.block.timestamp).toString("hex")

@@ -16,6 +16,7 @@ class Handshake {
     const h: any = {};
     h.publickey = this.app.wallet.returnPublicKey();
     h.challenge = Math.floor(Math.random() * 100_000_000_000_000);
+    h.lite = this.app.BROWSER;
     return h;
   }
 
@@ -26,6 +27,7 @@ class Handshake {
     return Buffer.concat([
       Buffer.from(this.app.crypto.fromBase58(h.publickey), "hex"),
       this.app.binary.u64AsBytes(h.challenge),
+      this.app.binary.u64AsBytes(h.lite),
     ]);
   }
 
@@ -36,6 +38,7 @@ class Handshake {
       Buffer.from(buffer.slice(0, 33)).toString("hex")
     );
     h2.challenge = this.app.binary.u64FromBytes(buffer.slice(33, 41));
+    h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(41, 49)));
 
     return h2;
   }
@@ -51,12 +54,18 @@ class Handshake {
     const h2 = this.deserializeHandshake(peer_response);
 
     socket.peer.peer.publickey = h2.publickey;
+    if (h2.lite === 1) {
+      socket.peer.peer.synctype = "lite";
+    }
   }
 
   async handleIncomingHandshakeRequest(peer, buffer) {
     const h2 = this.deserializeHandshake(buffer);
 
     peer.peer.publickey = h2.publickey;
+    if (h2.lite === 1) {
+      peer.peer.synctype = "lite";
+    }
 
     this.app.connection.emit("handshake_complete", peer);
 

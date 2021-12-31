@@ -422,21 +422,15 @@ class Transaction {
     return this.msg;
   }
 
-  /*
-        returnMessage() {
-            if (this.dmsg !== "") {
-                return this.dmsg;
-            }
-            if (this.msg !== {}) {
-                return this.msg;
-            }
-            try {
-                let x = Buffer.from(JSON.stringify(this.transaction.m), 'hex').toString('utf-8');
-                this.msg = JSON.parse(x);
-            } catch (err) {
-            }
-        }
-    */
+  returnPaymentTo(publickey) {
+    let slips = this.returnSlipsToAndFrom(publickey);
+    let x = BigInt(0);
+    for (var v = 0; v < slips.to.length; v++) {
+      if (slips.to[v].add === publickey) { x += BigInt(slips.to[v].amt); }
+    }
+    return x.toString();
+  }
+
 
   returnRoutingWorkAvailableToPublicKey() {
     let uf = this.returnFeesTotal();
