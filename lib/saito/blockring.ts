@@ -1,13 +1,15 @@
+import { Saito } from "../../apps/core";
+
 class Blockring {
-  public app: any;
-  public ring_buffer_length: any;
+  public app: Saito;
+  public ring_buffer_length: number;
   public ring: any;
-  public is_empty: any;
-  public lc_pos: any;
+  public is_empty: boolean;
+  public lc_pos: number;
   public ringp: any;
 
-  constructor(app, genesis_period) {
-    this.app = app || {};
+  constructor(app: Saito, genesis_period) {
+    this.app = app;
 
     //
     // consensus variables
@@ -55,10 +57,9 @@ class Blockring {
 
       for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
         if (
-          this.ring[insert_pos].block_ids[i] == block_id &&
-          this.ringp[insert_pos].block_hashes[i] == block_hash
+          this.ring[insert_pos].block_ids[i] !== block_id ||
+          this.ringp[insert_pos].block_hashes[i] !== block_hash
         ) {
-        } else {
           new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
           new_block_ids.push(this.ring[insert_pos].block_ids[i]);
           if (this.lc_pos == i) {

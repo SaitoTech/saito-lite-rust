@@ -1,10 +1,9 @@
 import { Saito } from "../../apps/core";
-import saito from "./saito";
 
-class Hop {
-  public from: any;
-  public to: any;
-  public sig: any;
+export default class Hop {
+  public from: string;
+  public to: string;
+  public sig: string;
 
   constructor(from = "", to = "", sig = "") {
     this.from = from;
@@ -14,10 +13,10 @@ class Hop {
 
   /**
    * Serialize Hop
-   * @param {Hop} hop
    * @returns {array} raw bytes
+   * @param app
    */
-  serialize(app) {
+  serialize(app: Saito): Uint8Array {
     const from = app.binary.hexToSizedArray(this.from, 33);
     const to = app.binary.hexToSizedArray(this.to, 33);
     const sig = app.binary.hexToSizedArray(this.sig, 64);
@@ -25,11 +24,12 @@ class Hop {
   }
 
   clone() {
-    return new saito.hop(this.from, this.to, this.sig);
+    return new Hop(this.from, this.to, this.sig);
   }
 
   /**
    * Deserialize Hop
+   * @param app
    * @param {array} buffer
    * @returns {Hop}
    */
@@ -40,17 +40,15 @@ class Hop {
     return this;
   }
 
-  returnFrom() {
+  returnFrom(): string {
     return this.from;
   }
 
-  returnSig() {
+  returnSig(): string {
     return this.sig;
   }
 
-  returnTo() {
+  returnTo(): string {
     return this.to;
   }
 }
-
-export default Hop;

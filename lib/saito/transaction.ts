@@ -426,11 +426,12 @@ class Transaction {
     let slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
     for (var v = 0; v < slips.to.length; v++) {
-      if (slips.to[v].add === publickey) { x += BigInt(slips.to[v].amt); }
+      if (slips.to[v].add === publickey) {
+        x += BigInt(slips.to[v].amt);
+      }
     }
     return x.toString();
   }
-
 
   returnRoutingWorkAvailableToPublicKey() {
     let uf = this.returnFeesTotal();

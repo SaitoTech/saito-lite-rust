@@ -1473,7 +1473,7 @@ class Block {
         const gt = this.app.goldenticket.deserializeFromTransaction(
           golden_ticket_transaction
         );
-        // TODO : david
+        // TODO : @david
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,

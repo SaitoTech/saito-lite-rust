@@ -4,8 +4,10 @@
  * and is included in this class mostly as it does not fall cleanly into
  * the crypto class.
  */
+import { Saito } from "../../apps/core";
+
 class Binary {
-  public app: any;
+  public app: Saito;
 
   constructor(app) {
     this.app = app;
@@ -14,10 +16,11 @@ class Binary {
   /**
    * Converts from big-endian binary encoded u64(from the wire)
    * into a BigInt
-   * @param {Array} bytes - array of bytes
    * @returns BigInt
+   * @param value
+   * @param size
    */
-  hexToSizedArray(value, size) {
+  hexToSizedArray(value: string | Buffer, size: number): Buffer {
     let value_buffer;
     if (value.toString() !== "0") {
       value_buffer = Buffer.from(value.toString(), "hex");

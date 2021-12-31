@@ -175,14 +175,16 @@ class Server {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const blk = this.app.blockchain.blocks[bhash];
-        if (!blk) { return; }
+        if (!blk) {
+          return;
+        }
         const filename = blk.returnFilename();
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          const src = fs.createReadStream(filename, { encoding: "utf8" });
-          src.pipe(res);
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        const src = fs.createReadStream(filename, { encoding: "utf8" });
+        src.pipe(res);
       } catch (err) {
         //
         // file does not exist on disk, check in memory
