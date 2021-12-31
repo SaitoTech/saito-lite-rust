@@ -235,8 +235,6 @@ class StorageCore extends Storage {
 
   async loadBlockByFilename(filename) {
 
-    console.log("trying to load: " + filename);
-
     try {
       if (fs.existsSync(filename)) {
         const data = fs.readFileSync(filename);

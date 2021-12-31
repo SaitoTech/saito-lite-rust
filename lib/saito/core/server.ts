@@ -247,8 +247,6 @@ class Server {
     /////////////////
     app.get("/lite-block/:bhash/:pkey", async (req, res) => {
 
-console.log("Here we are!");
-
       if (req.params.bhash == null) {
         return;
       }
@@ -258,13 +256,9 @@ console.log("Here we are!");
 	pkey = req.params.pkey;
       }
 
-console.log("PKEY IS: " + pkey);
-
       const bsh = req.params.bhash;
       let keylist = [];
       let peer = null;
-
-console.log("Here we are2!");
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -283,9 +277,6 @@ console.log("Here we are2!");
 	}
       }
 
-console.log("lite-block");
-console.log("keylist: " + JSON.stringify(keylist));
-
       //
       // SHORTCUT hasKeylistTransactions returns (1 for yes, 0 for no, -1 for unknown)
       // if we have this block but there are no transactions for it in the block hashmap
@@ -299,8 +290,6 @@ console.log("keylist: " + JSON.stringify(keylist));
       // @ts-ignore
       let block = this.app.blockchain.blocks[bsh];
       if (block) {
-
-console.log("block exists");
 
         if (block.hasKeylistTransactions(bsh, keylist) === 0) {
           res.writeHead(200, {
@@ -326,7 +315,6 @@ console.log("block exists");
         let blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
-console.log("SENDING AN EMPTY BLOCK AS NOT LOADED!");
           res.send("{}");
           return;
         } else {
@@ -355,7 +343,6 @@ console.log("SENDING AN EMPTY BLOCK AS NOT LOADED!");
         console.warn("hash not provided");
         return res.sendStatus(400); // Bad request
       }
-      console.log("requesting block : " + hash);
 
       const block = await this.app.blockchain.loadBlockAsync(hash);
       if (!block) {

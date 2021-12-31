@@ -193,7 +193,6 @@ class Block {
       this.block.signature = "";
     }
 
-    console.debug("transaction count = " + transactions_length);
     for (let i = 0; i < transactions_length; i++) {
       const inputs_len = this.app.binary.u32FromBytes(
         buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
@@ -1306,8 +1305,6 @@ class Block {
     let newblk = new Block(this.app);
         newblk.block = Object.assign({}, this.block);
         newblk.transactions = pruned_transactions;
-
-console.log("PRUNED TXS LENGTH: " + newblk.transactions.length);
 
     return newblk;
 
