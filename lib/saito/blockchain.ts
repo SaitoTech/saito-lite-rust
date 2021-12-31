@@ -1,64 +1,54 @@
-import saito from "./saito";
 import UtxoSet from "./utxoset";
 import * as JSON from "json-bigint";
+import { Saito } from "../../apps/core";
+import Blockring from "./blockring";
+import Staking from "./staking";
 
 class Blockchain {
-  public app: any;
-  public blockchain: any;
-  public blockring: any;
-  public staking: any;
+  public app: Saito;
+  public blockchain = {
+    fork_id: "",
+
+    // last in longest_chain
+    last_block_hash: "",
+    last_block_id: 0,
+    last_timestamp: new Date().getTime(),
+    last_burnfee: 0,
+
+    // earliest in epoch
+    genesis_period: 100,
+    genesis_block_id: 0,
+    genesis_timestamp: 0,
+    genesis_block_hash: "",
+
+    // first received this sync (used to prevent recursive fetch forever)
+    lowest_acceptable_timestamp: 0,
+    lowest_acceptable_block_hash: "",
+    lowest_acceptable_block_id: 0,
+
+    // set dynamically on load to avoid duplicating callbacks
+    last_callback_block_id: 0,
+  };
+  public blockring: Blockring;
+  public staking: Staking;
   public blocks: any;
   public utxoset: any;
-  public prune_after_blocks: any;
-  public indexing_active: any;
+  public prune_after_blocks: number;
+  public indexing_active: boolean;
   public run_callbacks: any;
-  public callback_limit: any;
+  public callback_limit: number;
   public res_spend: any;
   public res_unspend: any;
   public res_delete: any;
 
-  constructor(app) {
-    this.app = app || {};
-
-    this.blockchain = {};
-    this.blockchain.fork_id = "";
-
-    //
-    // last in longest_chain
-    //
-    this.blockchain.last_block_hash = "";
-    this.blockchain.last_block_id = 0;
-    this.blockchain.last_callback_block_id = 0;
-    this.blockchain.last_timestamp = new Date().getTime();
-    this.blockchain.last_burnfee = 0;
-
-    //
-    // earliest in epoch
-    //
-    this.blockchain.genesis_period = 100;
-    this.blockchain.genesis_block_id = 0;
-    this.blockchain.genesis_timestamp = 0;
-
-    //
-    // first received this sync (used to prevent recursive fetch forever)
-    //
-    this.blockchain.lowest_acceptable_timestamp = 0;
-    this.blockchain.lowest_acceptable_block_hash = "";
-    this.blockchain.lowest_acceptable_block_id = 0;
-
-    //
-    // set dynamically on load to avoid duplicating callbacks
-    //
-    this.blockchain.last_callback_block_id = 0;
+  constructor(app: Saito) {
+    this.app = app;
 
     //
     // core components
     //
-    this.blockring = new saito.blockring(
-      this.app,
-      this.blockchain.genesis_period
-    );
-    this.staking = new saito.staking(this.app);
+    this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
+    this.staking = new Staking(this.app);
     this.blocks = {}; // hashmap of block_hash => block
     this.utxoset = new UtxoSet();
 
@@ -125,7 +115,7 @@ class Blockchain {
       !this.isBlockIndexed(parent_block_hash)
     ) {
       console.log("fetching unknown block: " + parent_block_hash);
-      this.app.network.fetchBlock(parent_block_hash);
+      await this.app.network.fetchBlock(parent_block_hash);
     }
 
     // pre-validation
@@ -179,7 +169,7 @@ class Blockchain {
     // find shared ancestor
     //
     let new_chain = [];
-    let old_chain = [];
+    const old_chain = [];
     let shared_ancestor_found = false;
     let new_chain_hash = block_hash;
     let old_chain_hash = previous_block_hash;
@@ -264,10 +254,11 @@ class Blockchain {
             "potential edge case requires handling: blocks received out-of-order"
           );
 
-          let disconnected_block_id = this.app.blockring.returnLatestBlockId();
+          const disconnected_block_id =
+            this.app.blockring.returnLatestBlockId();
 
           for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
-            let disconnected_block_hash =
+            const disconnected_block_hash =
               this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (disconnected_block_hash) {
               this.app.blockring.onChainReorganization(
@@ -275,7 +266,7 @@ class Blockchain {
                 disconnected_block_hash,
                 false
               );
-              let disconnected_block = await this.loadBlockAsync(
+              const disconnected_block = await this.loadBlockAsync(
                 disconnected_block_hash
               );
               if (disconnected_block) {
@@ -516,7 +507,7 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
-    let fork_id = [];
+    const fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
     }
@@ -595,7 +586,7 @@ class Blockchain {
     this.app.storage.deleteBlockFromDisk(blockFilename);
 
     // ask blockring to remove
-    this.blockring.deleteBlock(deletedBlockId, deletedBlockHash);
+    this.blockring.deleteBlock(deletedBlockId);
 
     // remove from block index
     if (this.isBlockIndexed(deletedBlockHash)) {
@@ -767,18 +758,11 @@ class Blockchain {
     //
     // new chain must have more accumulated work AND be longer
     //
-    if (old_chain.length < new_chain.length && old_bf <= new_bf) {
-      return true;
-    }
-
-    return false;
+    return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
   isBlockIndexed(block_hash) {
-    if (this.blocks[block_hash]) {
-      return true;
-    }
-    return false;
+    return !!this.blocks[block_hash];
   }
 
   //
@@ -944,13 +928,12 @@ class Blockchain {
       // winding requires starting at the END of the vector and rolling
       // backwards until we have added block #5, etc.
       //
-      const res = await this.windChain(
+      return await this.windChain(
         new_chain,
         old_chain,
         new_chain.length - 1,
         wind_failure
       );
-      return res;
     } else {
       //
       // continue unwinding,, which means
@@ -958,13 +941,12 @@ class Blockchain {
       // unwinding requires moving FORWARD in our vector (and backwards in
       // the blockchain). So we increment our unwind index.
       //
-      const res = await this.unwindChain(
+      return await this.unwindChain(
         new_chain,
         old_chain,
         current_unwind_index + 1,
         wind_failure
       );
-      return res;
     }
   }
 
@@ -1215,18 +1197,14 @@ class Blockchain {
       // success.
       //
       if (current_wind_index === 0) {
-        if (wind_failure) {
-          return false;
-        }
-        return true;
+        return !wind_failure;
       }
-      const res = await this.windChain(
+      return await this.windChain(
         new_chain,
         old_chain,
         current_wind_index - 1,
         false
       );
-      return res;
     } else {
       //
       // we have had an error while winding the chain. this requires us to
@@ -1260,13 +1238,12 @@ class Blockchain {
         // which requires us to start at the END of the new chain vector.
         //
         if (old_chain.length > 0) {
-          const res = await this.windChain(
+          return await this.windChain(
             old_chain,
             new_chain,
             old_chain.len() - 1,
             true
           );
-          return res;
         } else {
           return false;
         }
@@ -1291,8 +1268,7 @@ class Blockchain {
         //
         // unwinding starts from the BEGINNING of the vector
         //
-        const res = await this.unwindChain(old_chain, chain_to_unwind, 0, true);
-        return res;
+        return await this.unwindChain(old_chain, chain_to_unwind, 0, true);
       }
     }
   }

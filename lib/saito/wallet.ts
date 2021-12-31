@@ -3,6 +3,7 @@ import { Saito } from "../../apps/core";
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { TransactionType } from "./transaction";
+import Block from "./block";
 
 const CryptoModule = require("../templates/cryptomodule");
 const ModalSelectCrypto = require("./ui/modal-select-crypto/modal-select-crypto");
@@ -1394,4 +1395,8 @@ console.log("---------------------");
   /////////////////////
   // END WEB3 CRYPTO //
   /////////////////////
+
+  deleteBlock(block: Block) {
+    // TODO : @david
+  }
 }
