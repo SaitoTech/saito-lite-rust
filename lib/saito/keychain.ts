@@ -13,14 +13,14 @@ class Keychain {
   public groups: any;
   public modtemplate: any;
   public fetched_keys: any;
-  public publickey: any;
-  public identifier: any;
+  public publickey: string;
+  public identifier: string;
   public bid: any;
   public bsh: any;
   public lc: any;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
     this.keys = [];
     this.groups = [];
     this.modtemplate = new modtemplate(this.app);
@@ -233,11 +233,10 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
         if (this.keys[x].aes_secret != "") {
-          const tmpmsg = this.app.crypto.aesDecrypt(
+          return this.app.crypto.aesDecrypt(
             encrypted_string,
             this.keys[x].aes_secret
           );
-          return tmpmsg;
         }
       }
     }
@@ -463,9 +462,7 @@ class Keychain {
       this.app.crypto.hash(publickey),
       options
     ).toString();
-    const img = "data:image/svg+xml;base64," + data;
-
-    return img;
+    return "data:image/svg+xml;base64," + data;
   }
 
   returnIdenticonColor(publickey) {

@@ -1,19 +1,15 @@
 class Key {
-  public publickey: any;
+  public publickey: string;
   public tags: any;
   public identifiers: any;
-  public watched: any;
-  public lock_block: any;
-  public aes_publickey: any;
-  public aes_privatekey: any;
+  public watched: boolean;
+  public lock_block: boolean;
+  public aes_publickey: string;
+  public aes_privatekey: string;
   public aes_secret: any;
   public data: any;
 
   constructor() {
-    if (!(this instanceof Key)) {
-      return new Key();
-    }
-
     this.publickey = "";
     this.tags = [];
     this.identifiers = [];
@@ -75,7 +71,7 @@ class Key {
     if (!this.isIdentifier(identifier)) {
       return;
     }
-    for (let x = this.identifiers.length - 1; x >= 0; x++) {
+    for (let x = this.identifiers.length - 1; x >= 0; x--) {
       if (this.identifiers[x] == identifier) {
         this.identifiers.splice(x, 1);
       }
@@ -86,7 +82,7 @@ class Key {
     if (!this.isTagged(tag)) {
       return;
     }
-    for (let x = this.tags.length - 1; x >= 0; x++) {
+    for (let x = this.tags.length - 1; x >= 0; x--) {
       if (this.tags[x] == tag) {
         this.tags.splice(x, 1);
       }
