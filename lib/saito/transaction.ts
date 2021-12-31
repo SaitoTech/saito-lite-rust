@@ -5,7 +5,7 @@ import Slip, { SlipType } from "./slip";
 import Hop from "./hop";
 import { Saito } from "../../apps/core";
 
-export const TRANSACTION_SIZE = 89;
+export const TRANSACTION_SIZE = 93;
 export const SLIP_SIZE = 75;
 export const HOP_SIZE = 130;
 
@@ -29,7 +29,7 @@ class Transaction {
     ts: 0,
     sig: "",
     path: [],
-    r: 1, // replaces
+    r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
     type: TransactionType.Normal,
     m: "",
   };
@@ -202,7 +202,13 @@ class Transaction {
         start_of_transaction_data + 88
       )
     );
-    const transaction_type = buffer[start_of_transaction_data + 88];
+    const r = app.binary.u32FromBytes(
+      buffer.slice(
+        start_of_transaction_data + 88,
+        start_of_transaction_data + 92
+      )
+    );
+    const transaction_type = buffer[start_of_transaction_data + 92];
     const start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     const start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
     const start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;
@@ -243,6 +249,7 @@ class Transaction {
     this.transaction.ts = Number(timestamp);
     this.transaction.sig = signature;
     this.transaction.path = path;
+    this.transaction.r = Number(r);
     this.transaction.type = transaction_type;
     this.transaction.m = Buffer.from(message).toString();
 
@@ -572,6 +579,7 @@ class Transaction {
     const path_len = app.binary.u32AsBytes(this.transaction.path.length);
     const signature = app.binary.hexToSizedArray(this.transaction.sig, 64);
     const timestamp = app.binary.u64AsBytes(this.transaction.ts);
+    const r = app.binary.u32AsBytes(this.transaction.r);
     const transaction_type = app.binary.u8AsByte(this.transaction.type);
     const inputs = [];
     const outputs = [];
@@ -586,6 +594,7 @@ class Transaction {
     /// [len of path - 4 bytes - u32]
     /// [signature - 64 bytes - Secp25k1 sig]
     /// [timestamp - 8 bytes - u64]
+    /// [transaction r - 4 bytes - u32]
     /// [transaction type - 1 byte]
     /// [input][input][input]...
     /// [output][output][output]...
@@ -616,6 +625,7 @@ class Transaction {
         ...path_len,
         ...signature,
         ...timestamp,
+        ...r,
         transaction_type,
       ]),
       0
@@ -679,6 +689,7 @@ class Transaction {
 
     buffer = Buffer.concat([
       buffer,
+      Buffer.from(app.binary.u32AsBytes(this.transaction.r)),
       Buffer.from(app.binary.u32AsBytes(this.transaction.type)),
     ]);
 
