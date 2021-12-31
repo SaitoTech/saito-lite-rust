@@ -4,19 +4,19 @@ import { Saito } from "../../apps/core";
 class Mempool {
   public app: Saito;
   public mempool: any;
-  public routing_work_needed: any;
-  public routing_work_in_mempool: any;
-  public transaction_size_cap: any;
-  public transaction_size_current: any;
-  public block_size_cap: any;
-  public block_size_current: any;
-  public clearing_active: any;
-  public accept_zero_fee_txs: any;
-  public processing_active: any;
-  public processing_speed: any;
+  public routing_work_needed: bigint;
+  public routing_work_in_mempool: bigint;
+  public transaction_size_cap: number;
+  public transaction_size_current: number;
+  public block_size_cap: number;
+  public block_size_current: number;
+  public clearing_active: boolean;
+  public accept_zero_fee_txs: boolean;
+  public processing_active: boolean;
+  public processing_speed: number;
   public processing_timer: any;
-  public bundling_active: any;
-  public bundling_speed: any;
+  public bundling_active: boolean;
+  public bundling_speed: number;
   public bundling_timer: any;
   public blocks_hmap: any;
   public transactions_hmap: any;
@@ -24,8 +24,8 @@ class Mempool {
   public downloads: any;
   public downloads_hmap: any;
   public downloading_active: any;
-  public transaction_size_limit: any;
-  public block_size_limit: any;
+  public transaction_size_limit: number;
+  public block_size_limit: number;
   public blocks: any;
 
   constructor(app) {
@@ -127,10 +127,10 @@ class Mempool {
     //
     // process queue
     //
-    if (this.processing_active === 1) {
+    if (this.processing_active) {
       return;
     }
-    this.processing_active = 1;
+    this.processing_active = true;
 
     //
     // sort our block queue before adding to chain
@@ -145,7 +145,7 @@ class Mempool {
             await this.app.blockchain.addBlockToBlockchain(block);
           }
         } else {
-          this.processing_active = 0;
+          this.processing_active = false;
           clearInterval(this.processing_timer);
         }
       }, this.processing_speed);
@@ -402,10 +402,7 @@ class Mempool {
       return 0;
     }
 
-    if (this.blocks_hmap[block.block.sig] === 1) {
-      return true;
-    }
-    return false;
+    return this.blocks_hmap[block.block.sig] === 1;
   }
 
   containsTransaction(tx) {
@@ -435,10 +432,7 @@ class Mempool {
   }
 
   containsGoldenTicket() {
-    if (this.mempool.golden_tickets.length > 0) {
-      return true;
-    }
-    return false;
+    return this.mempool.golden_tickets.length > 0;
   }
 
   containsValidGoldenTicket(target_hash) {

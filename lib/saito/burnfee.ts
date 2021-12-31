@@ -10,9 +10,9 @@ class BurnFee {
     burn_fee_previous_block,
     current_block_timestamp,
     previous_block_timestamp
-  ) {
+  ): bigint {
     if (previous_block_timestamp >= current_block_timestamp) {
-      return 10_000_000_000_000_000_000;
+      return BigInt(10_000_000_000_000_000_000);
     }
 
     let elapsed_time = current_block_timestamp - previous_block_timestamp;
@@ -20,7 +20,7 @@ class BurnFee {
       elapsed_time = 1;
     }
     if (elapsed_time >= 2 * this.heartbeat) {
-      return 0;
+      return BigInt(0);
     }
 
     // convert to float for division
