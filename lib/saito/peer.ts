@@ -1,8 +1,7 @@
 import { Saito } from "../../apps/core";
 
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
+import Hop from "./hop";
 
 class Peer {
   public app: Saito;
@@ -59,7 +58,7 @@ class Peer {
     const tmptx = tx.clone();
 
     // add our path
-    const hop = new saito.hop();
+    const hop = new Hop();
     hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
     hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
     hop.sig = this.app.crypto.signMessage(

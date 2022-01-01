@@ -1,11 +1,10 @@
-import saito from "./saito";
-
 import modtemplate from "./../templates/modtemplate";
 
 import * as JSON from "json-bigint";
 
 import Identicon from "identicon.js";
 import { Saito } from "../../apps/core";
+import Key from "./key";
 
 class Keychain {
   public app: Saito;
@@ -35,7 +34,7 @@ class Keychain {
     for (let i = 0; i < this.app.options.keys.length; i++) {
       const tk = this.app.options.keys[i];
 
-      const k = new saito.key();
+      const k = new Key();
       k.publickey = tk.publickey;
       k.watched = tk.watched;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -93,7 +92,7 @@ class Keychain {
     let added_tag = 0;
 
     if (tmpkey == null) {
-      tmpkey = new saito.key();
+      tmpkey = new Key();
       tmpkey.publickey = publickey;
       tmpkey.watched = watched;
       tmpkey.bid = bid;
