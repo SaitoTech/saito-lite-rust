@@ -233,7 +233,7 @@ class Transaction {
     for (let i = 0; i < path_len; i++) {
       const start_of_data = start_of_path + i * HOP_SIZE;
       const end_of_data = start_of_data + HOP_SIZE;
-      const hop = new saito.hop();
+      const hop = new Hop();
       hop.deserialize(app, buffer.slice(start_of_data, end_of_data));
       path.push(hop);
     }
@@ -423,9 +423,9 @@ class Transaction {
   }
 
   returnPaymentTo(publickey) {
-    let slips = this.returnSlipsToAndFrom(publickey);
+    const slips = this.returnSlipsToAndFrom(publickey);
     let x = BigInt(0);
-    for (var v = 0; v < slips.to.length; v++) {
+    for (let v = 0; v < slips.to.length; v++) {
       if (slips.to[v].add === publickey) {
         x += BigInt(slips.to[v].amt);
       }

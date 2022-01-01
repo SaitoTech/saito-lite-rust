@@ -83,7 +83,7 @@ class StorageCore extends Storage {
     try {
       if (fs.existsSync(filename)) {
         const buffer = fs.readFileSync(filename);
-        const block = new saito.block(this.app);
+        const block = new Block(this.app);
         block.deserialize(buffer);
         block.generateMetadata();
         return block;
@@ -231,8 +231,10 @@ class StorageCore extends Storage {
   async loadBlockByHash(bsh) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (!this.app.blockchain.blocks[bsh]) { return null; }
-    let blk = this.app.blockchain.blocks[bsh];
+    if (!this.app.blockchain.blocks[bsh]) {
+      return null;
+    }
+    const blk = this.app.blockchain.blocks[bsh];
     const filename = blk.returnFilename();
     const block = await this.loadBlockByFilename(filename);
     return block;
@@ -246,7 +248,7 @@ class StorageCore extends Storage {
     try {
       if (fs.existsSync(block_filename)) {
         const data = fs.readFileSync(block_filename);
-        const block = new saito.block(this.app);
+        const block = new Block(this.app);
 
         block.deserialize(data);
         block.generateMetadata();
