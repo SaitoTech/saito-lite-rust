@@ -1,11 +1,10 @@
-import saito from "./saito";
-
 import * as JSON from "json-bigint";
 import { Saito } from "../../apps/core";
 import Peer from "./peer";
 import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
+import Block from "./block";
 
 class Network {
   public app: Saito;
@@ -130,7 +129,7 @@ class Network {
     //
     // create peer and add it
     //
-    const peer = new saito.peer(this.app, JSON.stringify(peerobj));
+    const peer = new Peer(this.app, JSON.stringify(peerobj));
 
     //
     // we connect to them
@@ -175,7 +174,7 @@ class Network {
     //
     // add peer
     //
-    const peer = new saito.peer(this.app);
+    const peer = new Peer(this.app);
     peer.socket = socket;
 
     //
@@ -234,7 +233,7 @@ class Network {
           Buffer.from(base64Buffer).toString("utf-8"),
           "base64"
         );
-        const block = new saito.block(this.app);
+        const block = new Block(this.app);
         block.deserialize(buffer);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -612,7 +611,7 @@ class Network {
       // this delivers the block as BlockType.Header
       //
       case "SNDBLOCK":
-        block = new saito.block(this.app);
+        block = new Block(this.app);
         block.deserialize(message.message_data);
         block_hash = block.returnHash();
 

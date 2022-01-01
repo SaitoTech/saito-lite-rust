@@ -226,8 +226,10 @@ class StorageCore extends Storage {
   async loadBlockByHash(bsh) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (!this.app.blockchain.blocks[bsh]) { return null; }
-    let blk = this.app.blockchain.blocks[bsh];
+    if (!this.app.blockchain.blocks[bsh]) {
+      return null;
+    }
+    const blk = this.app.blockchain.blocks[bsh];
     const filename = blk.returnFilename();
     const block = await this.loadBlockByFilename(filename);
     return block;
@@ -239,11 +241,9 @@ class StorageCore extends Storage {
       if (fs.existsSync(filename)) {
         const data = fs.readFileSync(filename);
         const block = new Block(this.app);
-
         block.deserialize(data);
         block.generateMetadata();
         block.generateHashes();
-
         return block;
       } else {
         console.error(
