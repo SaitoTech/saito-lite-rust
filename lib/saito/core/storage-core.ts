@@ -1,15 +1,10 @@
 "use strict";
 
 import saito from "../saito";
-
 import Storage from "../storage";
-
 import fs from "fs-extra";
-
 import * as JSON from "json-bigint";
-
 import path from "path";
-
 import sqlite from "sqlite";
 import { Saito } from "../../../apps/core";
 import Block from "../block";
@@ -79,7 +74,7 @@ class StorageCore extends Storage {
     return filename;
   }
 
-  loadBlockFromDisk(filename) {
+  async loadBlockFromDisk(filename) {
     try {
       if (fs.existsSync(filename)) {
         const buffer = fs.readFileSync(filename);
@@ -156,7 +151,7 @@ class StorageCore extends Storage {
   /**
    * Saves a block to database and disk and shashmap
    *
-   * @param {saito.block} block block
+   * @param {Block} block block
    */
   async saveBlock(block: Block): Promise<string> {
     try {
@@ -241,24 +236,16 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByFilename(filename) {
-    const block_filename = `${this.data_dir}/${this.dest}/${filename}`;
-
-    console.log("trying to load: " + block_filename);
-
     try {
-      if (fs.existsSync(block_filename)) {
-        const data = fs.readFileSync(block_filename);
+      if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename);
         const block = new Block(this.app);
-
         block.deserialize(data);
         block.generateMetadata();
         block.generateHashes();
-
         return block;
       } else {
-        console.error(
-          `cannot open: ${block_filename} as it does not exist on disk`
-        );
+        console.error(`cannot open: ${filename} as it does not exist on disk`);
         return null;
       }
     } catch (err) {

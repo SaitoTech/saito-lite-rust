@@ -3,6 +3,7 @@ import * as JSON from "json-bigint";
 import { Saito } from "../../apps/core";
 import Blockring from "./blockring";
 import Staking from "./staking";
+import Transaction, { TransactionType } from "./transaction";
 
 class Blockchain {
   public app: Saito;

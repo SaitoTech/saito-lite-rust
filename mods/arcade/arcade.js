@@ -8,8 +8,7 @@ const getMockGames = require('./mockinvites.js');
 const ArcadeContainerTemplate = require('./lib/arcade-main/templates/arcade-container.template');
 const ModalRegisterEmail = require('../../lib/saito/ui/modal-register-email/modal-register-email');
 const JSON = require('json-bigint');
-
-fetch = require("node-fetch");
+const fetch = require("node-fetch");
 
 class Arcade extends ModTemplate {
 
@@ -531,7 +530,6 @@ try {
                 if (transaction.options.players_needed <= (transaction.players.length + 1)) {
                   console.info("ACCEPT MESSAGE SENT ON GAME WAITING FOR ONE PLAYER! -- deleting");
                   this.games.splice(i, 1);
-                  console.info("RE-RENDER");
                   this.renderArcadeMain(this.app, this);
                 }
               }

@@ -41,7 +41,6 @@ class Blockring {
 
   containsBlockHashAtBlockId(block_id, block_hash) {
     const insert_pos = block_id % this.ring_buffer_length;
-    console.debug("block hashes", this.ring[insert_pos].block_hashes);
     return this.ring[insert_pos].block_hashes.includes(block_hash);
   }
 
