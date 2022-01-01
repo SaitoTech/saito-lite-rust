@@ -159,11 +159,17 @@ class Storage {
    **/
   deleteBlockFromDisk(filename) {}
 
-  async loadBlockById(bid): Promise<Block> { return null; }
+  async loadBlockById(bid): Promise<Block> {
+    return null;
+  }
 
-  async loadBlockByHash(bsh): Promise<Block> { return null; }
+  async loadBlockByHash(bsh): Promise<Block> {
+    return null;
+  }
 
-  async loadBlockFromDisk(filename): Promise<Block> { return null; }
+  async loadBlockFromDisk(filename): Promise<Block> {
+    return null;
+  }
 
   async loadBlockByFilename(filename): Promise<Block> {
     return null;

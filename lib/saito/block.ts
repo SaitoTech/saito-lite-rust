@@ -132,7 +132,6 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer?) {
-
     const transactions_length = this.app.binary.u32FromBytes(
       buffer.slice(0, 4)
     );
@@ -1038,8 +1037,20 @@ class Block {
   generateTransactionsHashmap() {
     if (!this.txs_hmap_generated) {
       for (let i = 0; i < this.transactions.length; i++) {
-        for (let ii = 0; ii < this.transactions[i].transaction.from.length; ii++) { this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1; }
-        for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) { this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1; }
+        for (
+          let ii = 0;
+          ii < this.transactions[i].transaction.from.length;
+          ii++
+        ) {
+          this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
+        }
+        for (
+          let ii = 0;
+          ii < this.transactions[i].transaction.to.length;
+          ii++
+        ) {
+          this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
+        }
       }
       this.txs_hmap_generated = true;
     }
@@ -1058,9 +1069,13 @@ class Block {
   }
 
   hasKeylistTransactions(keylist) {
-    if (!this.txs_hmap_generated) { this.generateTransactionsHashmap(); }
+    if (!this.txs_hmap_generated) {
+      this.generateTransactionsHashmap();
+    }
     for (let i = 0; i < keylist.length; i++) {
-      if (this.txs_hmap[keylist[i]] == 1) { return true; }
+      if (this.txs_hmap[keylist[i]] == 1) {
+        return true;
+      }
     }
     return false;
   }
@@ -1232,15 +1247,13 @@ class Block {
   //
   // returns a lite-version of the block
   //
-  returnLiteBlock(keylist=[]): any {
-
+  returnLiteBlock(keylist = []): any {
     let pruned_transactions = [];
 
     //
     // generate lite-txs
     //
     for (let i = 0; i < this.transactions.length; i++) {
-
       let add_this_tx = 0;
       for (let k = 0; k < keylist.length; k++) {
         if (this.transactions[i].hasPublicKey(keylist[k])) {
@@ -1252,30 +1265,30 @@ class Block {
       if (add_this_tx == 1) {
         pruned_transactions.push(this.transactions[i]);
       } else {
-
         let spv = new Transaction();
-            spv.transaction.type = 9;
-            spv.transaction.r    = 1;
-	    // the sig contains the hash of this TX
-            spv.transaction.sig  = this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app).toString("hex"));
+        spv.transaction.type = 9;
+        spv.transaction.r = 1;
+        // the sig contains the hash of this TX
+        spv.transaction.sig = this.app.crypto.hash(
+          this.transactions[i].serializeForSignature(this.app).toString("hex")
+        );
 
-            //delete spv.transaction.to;
-            //delete spv.transaction.from;
-            //delete spv.transaction.m;
-            //delete spv.transaction.ts;
-            //delete spv.transaction.path;
+        //delete spv.transaction.to;
+        //delete spv.transaction.from;
+        //delete spv.transaction.m;
+        //delete spv.transaction.ts;
+        //delete spv.transaction.path;
 
-            delete spv.fees_total;
-            delete spv.work_available_to_me;
-            delete spv.work_available_to_creator;
-            delete spv.work_cumulative;
-            delete spv.msg;
-            delete spv.dmsg;
-            delete spv.size;
-            delete spv.is_valid;
-            delete spv.path;
+        delete spv.fees_total;
+        delete spv.work_available_to_me;
+        delete spv.work_available_to_creator;
+        delete spv.work_cumulative;
+        delete spv.msg;
+        delete spv.dmsg;
+        delete spv.size;
+        delete spv.is_valid;
+        delete spv.path;
         pruned_transactions.push(spv);
-
       }
     }
 
@@ -1283,7 +1296,7 @@ class Block {
     // prune unnecessary txs into merkle-tree
     //
     let no_simplification_needed = 0;
-/*****
+    /*****
     while (no_simplification_needed == 0) {
       let action_taken = 0;
       for (let i = 1; i < pruned_transactions.length; i++) {
@@ -1303,14 +1316,11 @@ class Block {
 ****/
 
     let newblk = new Block(this.app);
-        newblk.block = Object.assign({}, this.block);
-        newblk.transactions = pruned_transactions;
+    newblk.block = Object.assign({}, this.block);
+    newblk.transactions = pruned_transactions;
 
     return newblk;
-
   }
-
-
 
   returnPreviousBlockHash() {
     return this.block.previous_block_hash;

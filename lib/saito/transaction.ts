@@ -917,7 +917,9 @@ class Transaction {
 
   hasPublicKey(publickey) {
     let slips = this.returnSlipsToAndFrom(publickey);
-    if (slips.to.length > 0 || slips.from.length > 0) { return true; }
+    if (slips.to.length > 0 || slips.from.length > 0) {
+      return true;
+    }
     return false;
   }
 

@@ -236,7 +236,6 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByFilename(filename) {
-
     try {
       if (fs.existsSync(filename)) {
         const data = fs.readFileSync(filename);
@@ -246,9 +245,7 @@ class StorageCore extends Storage {
         block.generateHashes();
         return block;
       } else {
-        console.error(
-          `cannot open: ${filename} as it does not exist on disk`
-        );
+        console.error(`cannot open: ${filename} as it does not exist on disk`);
         return null;
       }
     } catch (err) {

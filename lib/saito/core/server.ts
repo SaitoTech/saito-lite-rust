@@ -3,7 +3,6 @@ import { Saito } from "../../../apps/core";
 import express from "express";
 import { Server as Ser } from "http";
 
-
 // const io          = require('socket.io')(webserver, {
 //   cors: {
 //     origin: "*.*",
@@ -14,7 +13,7 @@ import fs from "fs";
 import path from "path";
 import bodyParser from "body-parser";
 
-const JSON = require('json-bigint');
+const JSON = require("json-bigint");
 const app = express();
 const webserver = new Ser(app);
 
@@ -79,7 +78,6 @@ class Server {
   }
 
   initialize() {
-
     const server_self = this;
 
     if (this.app.BROWSER === 1) {
@@ -214,18 +212,20 @@ class Server {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         let blk = server_self.app.blockchain.blocks[bhash];
-        if (!blk) { return; }
+        if (!blk) {
+          return;
+        }
         let blkwtx = new Block(server_self.app);
-	blkwtx.block = JSON.parse(JSON.stringify(blk.block));
-	blkwtx.transactions = blk.transactions;
+        blkwtx.block = JSON.parse(JSON.stringify(blk.block));
+        blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
 
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          res.write(Buffer.from(JSON.stringify(blkwtx), 'utf8'), 'utf8');
-          res.end();
+        res.writeHead(200, {
+          "Content-Type": "text/plain",
+          "Content-Transfer-Encoding": "utf8",
+        });
+        res.write(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
+        res.end();
       } catch (err) {
         //
         // file does not exist on disk, check in memory
@@ -246,14 +246,13 @@ class Server {
     // lite-blocks //
     /////////////////
     app.get("/lite-block/:bhash/:pkey", async (req, res) => {
-
       if (req.params.bhash == null) {
         return;
       }
 
       let pkey = server_self.app.wallet.returnPublicKey();
       if (req.params.pkey != null) {
-	pkey = req.params.pkey;
+        pkey = req.params.pkey;
       }
 
       const bsh = req.params.bhash;
@@ -264,8 +263,8 @@ class Server {
       // @ts-ignore
       for (let i = 0; i < this.app.network.peers.length; i++) {
         if (this.app.network.peers[i].returnPublicKey() === pkey) {
-	  peer = this.app.network.peers[i];
-	}
+          peer = this.app.network.peers[i];
+        }
       }
 
       if (peer == null) {
@@ -273,8 +272,8 @@ class Server {
       } else {
         keylist = peer.peer.keylist;
         if (!keylist.includes(pkey)) {
-	  keylist.push(pkey);
-	}
+          keylist.push(pkey);
+        }
       }
 
       //
@@ -290,7 +289,6 @@ class Server {
       // @ts-ignore
       let block = this.app.blockchain.blocks[bsh];
       if (block) {
-
         if (block.hasKeylistTransactions(bsh, keylist) === 0) {
           res.writeHead(200, {
             "Content-Type": "text/plain",
@@ -298,8 +296,10 @@ class Server {
           });
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-	  let liteblock = block.returnLiteBlock(keylist);
-          let buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+          let liteblock = block.returnLiteBlock(keylist);
+          let buffer = Buffer.from(liteblock.serialize(), "binary").toString(
+            "base64"
+          );
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");
@@ -325,8 +325,10 @@ class Server {
             "Content-Transfer-Encoding": "utf8",
           });
 
-  	  let liteblock = block.returnLiteBlock(keylist);
-          let buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+          let liteblock = block.returnLiteBlock(keylist);
+          let buffer = Buffer.from(liteblock.serialize(), "binary").toString(
+            "base64"
+          );
           res.write(buffer, "utf8");
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.end();
@@ -335,7 +337,6 @@ class Server {
         return;
       }
     });
-
 
     app.get("/block/:hash", async (req, res) => {
       const hash = req.params.hash;

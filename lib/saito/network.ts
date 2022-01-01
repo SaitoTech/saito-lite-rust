@@ -223,7 +223,9 @@ class Network {
     try {
       let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
-        url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
+        url = `${peer.peer.protocol}://${peer.peer.host}:${
+          peer.peer.port
+        }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
       console.log("URL: " + url);
       const res = await fetch(url);
