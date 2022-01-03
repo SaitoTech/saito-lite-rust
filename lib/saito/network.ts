@@ -210,11 +210,12 @@ class Network {
 
   /**
    * @param {string} block_hash
-   * @param {string} preferred peer (if exists); // TODO - remove duplicate function and update blockchain.js
+   * @param peer
    */
-  async fetchBlock(block_hash, peer = null) {
+  async fetchBlock(block_hash: string, peer: Peer = null) {
+    console.debug("network.fetchBlock : " + block_hash);
     if (peer === null) {
-      if (this.peers.length == 0) {
+      if (this.peers.length === 0) {
         return;
       }
       peer = this.peers[0];
