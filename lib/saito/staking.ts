@@ -1,14 +1,15 @@
 import { SlipType } from "./slip";
 import { TransactionType } from "./transaction";
+import { Saito } from "../../apps/core";
 
 class Staking {
-  public app: any;
+  public app: Saito;
   public deposits: any;
   public stakers: any;
   public pending: any;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     this.deposits = [];
     this.stakers = [];
