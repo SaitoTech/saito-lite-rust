@@ -827,20 +827,15 @@ class Network {
 
     const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
-      if (peer === this.peers[i]) {
+      if (
+        peer === this.peers[i] ||
+        (!peer && this.peers[i].peer.sendblks === 1)
+      ) {
         this.sendRequest(
           "SNDBLKHH",
           Buffer.from(blk.returnHash(), "hex"),
           this.peers[i]
         );
-      } else {
-        if (this.peers[i].peer.sendblks === 1) {
-          this.sendRequest(
-            "SNDBLKHH",
-            Buffer.from(blk.returnHash(), "hex"),
-            this.peers[i]
-          );
-        }
       }
     }
   }
@@ -977,17 +972,13 @@ class Network {
     }
   }
 
-  sendRequest(message, data: any = "", peer = null) {
+  sendRequest(message, data: any = "", peer: Peer = null) {
     if (peer !== null) {
+      peer.sendRequest(message, data);
+    } else {
       for (let x = this.peers.length - 1; x >= 0; x--) {
-        if (this.peers[x] === peer) {
-          this.peers[x].sendRequest(message, data);
-        }
+        this.peers[x].sendRequest(message, data);
       }
-      return;
-    }
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequest(message, data);
     }
   }
 

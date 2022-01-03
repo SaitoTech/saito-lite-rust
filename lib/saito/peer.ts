@@ -117,7 +117,7 @@ class Peer {
     );
   }
 
-  sendRequest(message, data: any = "") {
+  sendRequest(message: string, data: any = "") {
     //
     // respect prohibitions
     //
