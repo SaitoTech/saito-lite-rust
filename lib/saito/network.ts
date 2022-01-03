@@ -516,6 +516,7 @@ class Network {
     let challenge;
     let is_block_indexed;
     let tx;
+    let publickey;
 
     switch (message.message_name) {
       case "SHAKINIT": {
@@ -550,10 +551,23 @@ class Network {
         // NOT YET IMPLEMENTED -- send HEADER block
         break;
 
+      case "SPVCHAIN": {
+
+console.log("RECEIVED SPVCHAIN");
+
+        let buffer = Buffer.from(message.message_data, 'utf8');;
+	let litechain = JSON.parse(buffer.toString('utf8'));
+
+console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
+	break;
+      }
+
       case "REQCHAIN": {
+
         block_id = 0;
         block_hash = "";
         fork_id = "";
+        publickey = "";
         bytes = message.message_data;
 
         block_id = Number(
@@ -578,6 +592,8 @@ class Network {
           "last shared ancestor generated at: " + last_shared_ancestor
         );
 
+
+/***
         //
         // notify peer of longest-chain after this amount
         //
@@ -590,14 +606,63 @@ class Network {
             this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
             block = await this.app.blockchain.loadBlockAsync(block_hash);
+
             if (block) {
               this.propagateBlock(block, peer);
             }
           }
         }
+***/
+
+	let blocks_to_send = [];
+
+        for (
+          let i = last_shared_ancestor;
+          i <= this.app.blockring.returnLatestBlockId();
+          i++
+        ) {
+          block_hash =
+            this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+          if (block_hash !== "") {
+	    if (this.app.blockchain.blocks[block_hash]) {
+	      let block = this.app.blockchain.blocks[block_hash];
+	      if (block.hasKeylistTransactions([publickey])) {
+		blocks_to_send.push( { hash : block_hash , type : "spv" } );
+	      } else {
+		blocks_to_send.push( { hash : block_hash , type : "hash" } );
+	      }
+	    }
+          }
+        }
+
+        let litechain = { start : "" , prehash : [] , id : [] , ts : [] };
+        let idx = 0;
+
+        for (let i = 0; i < blocks_to_send.length; i++) {
+	  // send lite-hashes
+          if (blocks_to_send[i].type === "hash") {
+	    let block_hash = blocks_to_send[i].hash;
+            litechain.id.push(this.app.blockchain.blocks[block_hash].returnId());
+            litechain.prehash.push(this.app.blockchain.blocks[block_hash].returnPreHash());
+            litechain.ts.push(this.app.blockchain.blocks[block_hash].returnTimestamp());
+	    idx++;
+	  // send spv blocks
+          } else {
+	    let block_hash = blocks_to_send[i].hash;
+            block = await this.app.blockchain.loadBlockAsync(block_hash);
+            if (block) {
+              this.propagateBlock(block, peer);
+	    }
+	  }
+	}
+
+	if (idx > 0) {
+	  this.propagateLiteChain(litechain, peer);
+	}
 
         break;
       }
+
       case "SNDCHAIN":
         // NOT YET IMPLEMENTED -- send chain
         break;
@@ -773,6 +838,32 @@ class Network {
             this.peers[i]
           );
         }
+      }
+    }
+  }
+
+  //
+  // propagate lite-chain
+  //
+  propagateLiteChain(litechain, peer = null) {
+
+console.log("in propagate lite chain..");
+
+    if (this.app.BROWSER) {
+      return;
+    }
+    if (peer == null) {
+      return;
+    }
+
+    for (let i = 0; i < this.peers.length; i++) {
+      if (peer === this.peers[i]) {
+console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
+        this.sendRequest(
+          "SPVCHAIN",
+          Buffer.from(JSON.stringify(litechain), "utf8"),
+          this.peers[i]
+        );
       }
     }
   }

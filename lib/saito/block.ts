@@ -1167,6 +1167,10 @@ class Block {
     return this.block.id;
   }
 
+  returnPreHash() {
+    return this.prehash;
+  }
+
   async runCallbacks(conf, run_callbacks = 1) {
     if (this.confirmations && this.callbacks) {
       for (let i = this.confirmations + 1; i <= conf; i++) {
