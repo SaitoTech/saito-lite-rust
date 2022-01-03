@@ -273,7 +273,7 @@ class Mempool {
     this.bundling_active = false;
   }
 
-  canBundleBlock() {
+  canBundleBlock(): boolean {
     if (
       this.app.mempool.mempool.golden_tickets.length == 0 &&
       this.app.blockring.returnLatestBlockId() > 2
@@ -386,9 +386,9 @@ class Mempool {
     );
 
     if (this.routing_work_in_mempool >= this.routing_work_needed) {
-      return 1;
+      return true;
     }
-    return 0;
+    return false;
   }
 
   containsBlock(block) {

@@ -316,7 +316,7 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.handshake.initiateHandshake(peer.socket);
+        await this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
       });
       peer.socket.on("close", (event) => {
@@ -508,6 +508,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
+    console.debug("network.receiveRequest : ", message);
     let block;
     let block_hash;
     let fork_id;
@@ -687,7 +688,7 @@ class Network {
         if (is_block_indexed) {
           console.info("SNDBLOCK hash already known: " + block_hash);
         } else {
-          this.fetchBlock(block_hash, peer);
+          await this.fetchBlock(block_hash, peer);
         }
         break;
 
@@ -699,7 +700,7 @@ class Network {
 
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          this.fetchBlock(block_hash);
+          await this.fetchBlock(block_hash);
         }
         break;
 
@@ -816,6 +817,7 @@ class Network {
     if (this.app.BROWSER) {
       return;
     }
+    console.debug("network.propagateBlock", blk);
     if (!blk) {
       return;
     }
@@ -872,12 +874,14 @@ class Network {
   // propagate transaction
   //
   propagateTransaction(tx, outbound_message = "transaction") {
-    if (tx == null) {
+    console.debug("network.propagateTransaction", tx);
+    if (tx === null) {
       return;
     }
     if (!tx.is_valid) {
       return;
     }
+    // TODO : @david to check. is this type===FEE(1) ? or should it be type===GT(2) ?
     if (tx.transaction.type === 1) {
       outbound_message = "golden ticket";
     }
@@ -905,7 +909,7 @@ class Network {
         } else {
           console.log(" ... added transaftion");
         }
-        if (this.app.mempool.canBundleBlock() === 1) {
+        if (this.app.mempool.canBundleBlock()) {
           return 1;
         }
       }
