@@ -88,6 +88,7 @@ class Blockchain {
     block.generateHashes();
 
     console.log("ABTB: " + block.returnHash());
+    console.debug(this);
 
     //
     // start by extracting some variables that we will use
@@ -103,7 +104,7 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block_hash)) {
-      console.log("ERROR 581023: block exists in blockchain index");
+      console.error("ERROR 581023: block exists in blockchain index");
       this.indexing_active = false;
       return;
     }
