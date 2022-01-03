@@ -869,7 +869,7 @@ class Network {
   //
   // propagate transaction
   //
-  propagateTransaction(tx, outbound_message = "transaction") {
+  propagateTransaction(tx: Transaction, outbound_message = "transaction") {
     console.debug("network.propagateTransaction", tx);
     if (tx === null) {
       return;
@@ -914,9 +914,9 @@ class Network {
     //
     // now send the transaction out with the appropriate routing hop
     //
-    let fees = tx.returnFeesTotal(this.app);
+    let fees = tx.returnFeesTotal();
     for (let i = 0; i < tx.transaction.path.length; i++) {
-      fees = fees / 2;
+      fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
       //&& fees >= peer.peer.minfee
