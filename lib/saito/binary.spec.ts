@@ -14,6 +14,8 @@ test("u64FromBytes", () => {
 });
 test("u32FromBytes", () => {
   const mockApp = {};
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const binary = new Binary(mockApp);
   const value = 123456;
   const buffer = binary.u32AsBytes(value);
@@ -23,6 +25,8 @@ test("u32FromBytes", () => {
 });
 test("u32FromBytes_2", () => {
   const mockApp = {};
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const binary = new Binary(mockApp);
   const value = 2288066026;
   const buffer = binary.u32AsBytes(value);
@@ -32,6 +36,8 @@ test("u32FromBytes_2", () => {
 });
 test("timestamp check", () => {
   const mockApp = {};
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const binary = new Binary(mockApp);
   const tested = BigInt(1638670605802);
   const testbytes = binary.u64AsBytes(tested.toString());
