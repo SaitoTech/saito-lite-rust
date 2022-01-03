@@ -1,5 +1,5 @@
 class BurnFee {
-  public heartbeat: any;
+  public heartbeat: number;
 
   constructor() {
     //this.heartbeat = 30_000;
@@ -60,7 +60,7 @@ class BurnFee {
     }
 
     // algorithm fails if burn fee last block is 0, so default to low value
-    if (burn_fee_previous_block == BigInt(0)) {
+    if (burn_fee_previous_block === BigInt(0)) {
       return BigInt(50_000_000);
     }
 
@@ -68,7 +68,7 @@ class BurnFee {
       parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
     const res1 =
       burn_fee_previous_block_as_float *
-      Math.sqrt(parseFloat(this.heartbeat) / timestamp_difference);
+      Math.sqrt(this.heartbeat / timestamp_difference);
     const new_burnfee = Math.round(res1 * 100_000_000.0);
     return BigInt(new_burnfee);
   }

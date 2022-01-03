@@ -1,6 +1,7 @@
 const EventEmitter = require("events");
 
 class Connection extends EventEmitter {
+  // TODO : @david to fix. no function defined
   public setMaxListeners: any;
 
   constructor() {

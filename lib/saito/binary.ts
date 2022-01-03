@@ -9,7 +9,7 @@ import { Saito } from "../../apps/core";
 class Binary {
   public app: Saito;
 
-  constructor(app) {
+  constructor(app: Saito) {
     this.app = app;
   }
 

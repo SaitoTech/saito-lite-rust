@@ -1,8 +1,10 @@
-class GoldenTicket {
-  public app: any;
+import { Saito } from "../../apps/core";
 
-  constructor(app) {
-    this.app = app || {};
+class GoldenTicket {
+  public app: Saito;
+
+  constructor(app: Saito) {
+    this.app = app;
   }
 
   validate(previous_block_hash, random_hash, publickey, difficulty) {

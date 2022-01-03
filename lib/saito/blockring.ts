@@ -8,7 +8,7 @@ class Blockring {
   public lc_pos: number;
   public ringp: any;
 
-  constructor(app: Saito, genesis_period) {
+  constructor(app: Saito, genesis_period: number) {
     this.app = app;
 
     //
