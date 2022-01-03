@@ -1,5 +1,6 @@
 import Block from "./block";
 import { Saito } from "../../apps/core";
+import Transaction from "./transaction";
 
 class Mempool {
   public app: Saito;
@@ -154,7 +155,8 @@ class Mempool {
     }
   }
 
-  addTransaction(transaction) {
+  addTransaction(transaction: Transaction) {
+    console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
       const new_gt =
         this.app.goldenticket.deserializeFromTransaction(transaction);
