@@ -169,6 +169,7 @@ class Mempool {
           this.mempool.golden_tickets[i]
         );
         if (gt.target_hash === new_gt.target_hash) {
+          console.debug("similar golden tickets already exists");
           return false;
         }
       }
@@ -180,6 +181,7 @@ class Mempool {
           this.mempool.transactions[i].transaction.sig ===
           transaction.transaction.sig
         ) {
+          console.debug("transaction already exists");
           return false;
         }
       }
