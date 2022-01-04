@@ -115,6 +115,7 @@ class Mempool {
     let insertme = true;
     for (let i = 0; i < this.mempool.blocks.length; i++) {
       if (this.mempool.blocks[i].returnHash() === hash) {
+        console.debug("block already exists");
         insertme = false;
       }
     }
