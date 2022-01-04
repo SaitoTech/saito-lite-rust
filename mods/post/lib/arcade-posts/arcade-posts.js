@@ -8,6 +8,8 @@ module.exports = ArcadePosts = {
 
   render(app, mod) {
 
+console.log("rendering AP");
+
     if (!document.getElementById("arcade-posts-container")) {
       app.browser.addElementToDom(ArcadePostsTemplate());
     }
@@ -25,6 +27,8 @@ module.exports = ArcadePosts = {
 
   attachEvents(app, mod) {
 
+console.log("events AP");
+
     document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {
       el.onclick = (e) => {
         let clickLocation = e.currentTarget.id.replace("arcade-post-", "");
@@ -41,6 +45,7 @@ module.exports = ArcadePosts = {
         PostCreate.attachEvents(app, mod);
       }
     } catch (err) {
+console.log("ERROR: " + err);
     }
 
   },

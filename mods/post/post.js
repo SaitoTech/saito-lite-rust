@@ -45,9 +45,13 @@ class Post extends ModTemplate {
   //
   respondTo(type) {
 
+console.log("post responding to: " + type);
+
     if (super.respondTo(type) != null) {
       return super.respondTo(type);
     }
+
+console.log("arcade posts?");
 
     if (type == "arcade-posts") {
       let obj = {};

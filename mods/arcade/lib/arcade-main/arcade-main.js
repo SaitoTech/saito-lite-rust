@@ -163,6 +163,8 @@ module.exports = ArcadeMain = {
 
   attachEvents(app, mod) {
 
+    ArcadePosts.attachEvents(app, mod);
+
   },
 
 
