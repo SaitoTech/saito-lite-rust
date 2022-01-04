@@ -9,8 +9,8 @@ import Block from "./block";
 class Network {
   public app: Saito;
   public peers: Peer[];
-  public peers_connected: any;
-  public peers_connected_limit: any;
+  public peers_connected: number;
+  public peers_connected_limit: number;
   public sendblks: any;
   public sendtxs: any;
   public sendgts: any;
@@ -26,8 +26,8 @@ class Network {
   public peer_monitor_timer_speed: any;
   public peer_monitor_connection_timeout: any;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     this.peers = [];
     this.peers_connected = 0;

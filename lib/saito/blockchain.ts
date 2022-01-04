@@ -87,7 +87,7 @@ class Blockchain {
     //
     block.generateHashes();
 
-    console.log("ABTB: " + block.returnHash());
+    console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
     console.debug(this);
 
     //
