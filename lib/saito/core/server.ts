@@ -22,18 +22,18 @@ const webserver = new Ser(app);
  */
 class Server {
   public app: Saito;
-  public blocks_dir: any;
-  public web_dir: any;
+  public blocks_dir: string;
+  public web_dir: string;
   public server: any;
   public webserver: any;
-  public server_file_encoding: any;
-  public host: any;
-  public port: any;
-  public protocol: any;
-  public publickey: any;
+  public server_file_encoding: string;
+  public host: string;
+  public port: number;
+  public protocol: string;
+  public publickey: string;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     this.blocks_dir = path.join(__dirname, "../../../data/blocks/");
     this.web_dir = path.join(__dirname, "../../../web/");
@@ -211,11 +211,11 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        let blk = server_self.app.blockchain.blocks[bhash];
+        const blk = server_self.app.blockchain.blocks[bhash];
         if (!blk) {
           return;
         }
-        let blkwtx = new Block(server_self.app);
+        const blkwtx = new Block(server_self.app);
         blkwtx.block = JSON.parse(JSON.stringify(blk.block));
         blkwtx.transactions = blk.transactions;
         blkwtx.app = null;
@@ -287,7 +287,7 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      let block = this.app.blockchain.blocks[bsh];
+      const block = this.app.blockchain.blocks[bsh];
       if (block) {
         if (block.hasKeylistTransactions(bsh, keylist) === 0) {
           res.writeHead(200, {
@@ -296,8 +296,8 @@ class Server {
           });
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          let liteblock = block.returnLiteBlock(keylist);
-          let buffer = Buffer.from(liteblock.serialize(), "binary").toString(
+          const liteblock = block.returnLiteBlock(keylist);
+          const buffer = Buffer.from(liteblock.serialize(), "binary").toString(
             "base64"
           );
 
@@ -312,7 +312,7 @@ class Server {
         //
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        let blk = await this.app.storage.loadBlockByHash(bsh);
+        const blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
           res.send("{}");
@@ -325,8 +325,8 @@ class Server {
             "Content-Transfer-Encoding": "utf8",
           });
 
-          let liteblock = block.returnLiteBlock(keylist);
-          let buffer = Buffer.from(liteblock.serialize(), "binary").toString(
+          const liteblock = block.returnLiteBlock(keylist);
+          const buffer = Buffer.from(liteblock.serialize(), "binary").toString(
             "base64"
           );
           res.write(buffer, "utf8");
@@ -340,6 +340,7 @@ class Server {
 
     app.get("/block/:hash", async (req, res) => {
       const hash = req.params.hash;
+      console.debug("fetching block : " + hash);
       if (!hash) {
         console.warn("hash not provided");
         return res.sendStatus(400); // Bad request

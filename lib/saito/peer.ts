@@ -2,6 +2,7 @@ import { Saito } from "../../apps/core";
 
 import * as JSON from "json-bigint";
 import Hop from "./hop";
+import Transaction from "./transaction";
 
 class Peer {
   public app: Saito;
@@ -47,14 +48,14 @@ class Peer {
           peerobj.peer.endpoint.port = peerobj.peer.port;
           peerobj.peer.endpoint.protocol = peerobj.peer.protocol;
         }
-        this.peer = peerobj.peer;
+        this.peer = { ...this.peer, ...peerobj.peer };
       } catch (err) {
         console.error(err);
       }
     }
   }
 
-  addPathToTransaction(tx) {
+  addPathToTransaction(tx: Transaction): Transaction {
     const tmptx = tx.clone();
 
     // add our path
@@ -117,11 +118,11 @@ class Peer {
     );
   }
 
-  sendRequest(message, data: any = "") {
+  sendRequest(message: string, data: any = "") {
     //
     // respect prohibitions
     //
-
+    console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
     if (message === "SNDBLOCK") {
       this.app.networkApi.send(this.socket, "SNDBLOCK", data);

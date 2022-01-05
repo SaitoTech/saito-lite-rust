@@ -2,6 +2,7 @@
  * Handshake Constructor
  */
 import { Saito } from "../../apps/core";
+import Peer from "./peer";
 
 class Handshake {
   public app: Saito;
@@ -13,11 +14,13 @@ class Handshake {
   }
 
   newHandshake() {
-    const h: any = {};
-    h.publickey = this.app.wallet.returnPublicKey();
-    h.challenge = Math.floor(Math.random() * 100_000_000_000_000);
-    h.lite = this.app.BROWSER;
-    return h;
+    return {
+      publickey: this.app.wallet.returnPublicKey(),
+      challenge: Math.floor(Math.random() * 100_000_000_000_000),
+      lite: this.app.BROWSER,
+      server_port: this.app.BROWSER ? 0 : this.app.server.server.port,
+      server_ip: this.app.BROWSER ? "" : this.app.server.server.host,
+    };
   }
 
   //
@@ -28,6 +31,9 @@ class Handshake {
       Buffer.from(this.app.crypto.fromBase58(h.publickey), "hex"),
       this.app.binary.u64AsBytes(h.challenge),
       this.app.binary.u64AsBytes(h.lite),
+      Buffer.from(this.app.binary.u32AsBytes(h.server_port)),
+      Buffer.from(this.app.binary.u32AsBytes(h.server_ip.length)),
+      Buffer.from(h.server_ip, "utf-8"),
     ]);
   }
 
@@ -37,8 +43,13 @@ class Handshake {
     h2.publickey = this.app.crypto.toBase58(
       Buffer.from(buffer.slice(0, 33)).toString("hex")
     );
-    h2.challenge = this.app.binary.u64FromBytes(buffer.slice(33, 41));
+    h2.challenge = Number(this.app.binary.u64FromBytes(buffer.slice(33, 41)));
     h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(41, 49)));
+
+    h2.server_port = this.app.binary.u32FromBytes(buffer.slice(49, 53));
+    const length = Number(this.app.binary.u32FromBytes(buffer.slice(53, 57)));
+
+    h2.server_ip = Buffer.from(buffer.slice(57, 57 + length)).toString("utf-8");
 
     return h2;
   }
@@ -59,12 +70,15 @@ class Handshake {
     }
   }
 
-  async handleIncomingHandshakeRequest(peer, buffer) {
+  async handleIncomingHandshakeRequest(peer: Peer, buffer: Buffer) {
     const h2 = this.deserializeHandshake(buffer);
 
     peer.peer.publickey = h2.publickey;
     if (h2.lite === 1) {
       peer.peer.synctype = "lite";
+    } else {
+      peer.peer.host = h2.server_ip;
+      peer.peer.port = h2.server_port;
     }
 
     this.app.connection.emit("handshake_complete", peer);

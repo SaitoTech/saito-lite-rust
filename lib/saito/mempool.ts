@@ -1,5 +1,6 @@
 import Block from "./block";
 import { Saito } from "../../apps/core";
+import Transaction from "./transaction";
 
 class Mempool {
   public app: Saito;
@@ -114,6 +115,7 @@ class Mempool {
     let insertme = true;
     for (let i = 0; i < this.mempool.blocks.length; i++) {
       if (this.mempool.blocks[i].returnHash() === hash) {
+        console.debug("block already exists");
         insertme = false;
       }
     }
@@ -154,7 +156,8 @@ class Mempool {
     }
   }
 
-  addTransaction(transaction) {
+  addTransaction(transaction: Transaction) {
+    console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
       const new_gt =
         this.app.goldenticket.deserializeFromTransaction(transaction);
@@ -167,6 +170,7 @@ class Mempool {
           this.mempool.golden_tickets[i]
         );
         if (gt.target_hash === new_gt.target_hash) {
+          console.debug("similar golden tickets already exists");
           return false;
         }
       }
@@ -178,6 +182,7 @@ class Mempool {
           this.mempool.transactions[i].transaction.sig ===
           transaction.transaction.sig
         ) {
+          console.debug("transaction already exists");
           return false;
         }
       }
@@ -273,7 +278,7 @@ class Mempool {
     this.bundling_active = false;
   }
 
-  canBundleBlock() {
+  canBundleBlock(): boolean {
     if (
       this.app.mempool.mempool.golden_tickets.length == 0 &&
       this.app.blockring.returnLatestBlockId() > 2
@@ -386,9 +391,9 @@ class Mempool {
     );
 
     if (this.routing_work_in_mempool >= this.routing_work_needed) {
-      return 1;
+      return true;
     }
-    return 0;
+    return false;
   }
 
   containsBlock(block) {

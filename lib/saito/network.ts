@@ -9,8 +9,8 @@ import Block from "./block";
 class Network {
   public app: Saito;
   public peers: Peer[];
-  public peers_connected: any;
-  public peers_connected_limit: any;
+  public peers_connected: number;
+  public peers_connected_limit: number;
   public sendblks: any;
   public sendtxs: any;
   public sendgts: any;
@@ -26,8 +26,8 @@ class Network {
   public peer_monitor_timer_speed: any;
   public peer_monitor_connection_timeout: any;
 
-  constructor(app) {
-    this.app = app || {};
+  constructor(app: Saito) {
+    this.app = app;
 
     this.peers = [];
     this.peers_connected = 0;
@@ -210,11 +210,12 @@ class Network {
 
   /**
    * @param {string} block_hash
-   * @param {string} preferred peer (if exists); // TODO - remove duplicate function and update blockchain.js
+   * @param peer
    */
-  async fetchBlock(block_hash, peer = null) {
+  async fetchBlock(block_hash: string, peer: Peer = null) {
+    console.debug("network.fetchBlock : " + block_hash);
     if (peer === null) {
-      if (this.peers.length == 0) {
+      if (this.peers.length === 0) {
         return;
       }
       peer = this.peers[0];
@@ -316,7 +317,7 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.handshake.initiateHandshake(peer.socket);
+        await this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
       });
       peer.socket.on("close", (event) => {
@@ -508,6 +509,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
+    console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -553,18 +555,16 @@ class Network {
         break;
 
       case "SPVCHAIN": {
+        console.log("RECEIVED SPVCHAIN");
 
-console.log("RECEIVED SPVCHAIN");
+        const buffer = Buffer.from(message.message_data, "utf8");
+        const litechain = JSON.parse(buffer.toString("utf8"));
 
-        let buffer = Buffer.from(message.message_data, 'utf8');;
-	let litechain = JSON.parse(buffer.toString('utf8'));
-
-console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
-	break;
+        console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
+        break;
       }
 
       case "REQCHAIN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -593,8 +593,6 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
           "last shared ancestor generated at: " + last_shared_ancestor
         );
 
-
-/***
         //
         // notify peer of longest-chain after this amount
         //
@@ -613,53 +611,58 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
             }
           }
         }
-***/
-
-	let blocks_to_send = [];
-
-        for (
-          let i = last_shared_ancestor;
-          i <= this.app.blockring.returnLatestBlockId();
-          i++
-        ) {
-          block_hash =
-            this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-	    if (this.app.blockchain.blocks[block_hash]) {
-	      let block = this.app.blockchain.blocks[block_hash];
-	      if (block.hasKeylistTransactions([publickey])) {
-		blocks_to_send.push( { hash : block_hash , type : "spv" } );
-	      } else {
-		blocks_to_send.push( { hash : block_hash , type : "hash" } );
-	      }
-	    }
-          }
-        }
-
-        let litechain = { start : "" , prehash : [] , id : [] , ts : [] };
-        let idx = 0;
-
-        for (let i = 0; i < blocks_to_send.length; i++) {
-	  // send lite-hashes
-          if (blocks_to_send[i].type === "hash") {
-	    let block_hash = blocks_to_send[i].hash;
-            litechain.id.push(this.app.blockchain.blocks[block_hash].returnId());
-            litechain.prehash.push(this.app.blockchain.blocks[block_hash].returnPreHash());
-            litechain.ts.push(this.app.blockchain.blocks[block_hash].returnTimestamp());
-	    idx++;
-	  // send spv blocks
-          } else {
-	    let block_hash = blocks_to_send[i].hash;
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-            if (block) {
-              this.propagateBlock(block, peer);
-	    }
-	  }
-	}
-
-	if (idx > 0) {
-	  this.propagateLiteChain(litechain, peer);
-	}
+        //
+        // const blocks_to_send = [];
+        //
+        // for (
+        //   let i = last_shared_ancestor;
+        //   i <= this.app.blockring.returnLatestBlockId();
+        //   i++
+        // ) {
+        //   block_hash =
+        //     this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+        //   if (block_hash !== "") {
+        //     if (this.app.blockchain.blocks[block_hash]) {
+        //       const block = this.app.blockchain.blocks[block_hash];
+        //       if (block.hasKeylistTransactions([publickey])) {
+        //         blocks_to_send.push({ hash: block_hash, type: "spv" });
+        //       } else {
+        //         blocks_to_send.push({ hash: block_hash, type: "hash" });
+        //       }
+        //     }
+        //   }
+        // }
+        //
+        // const litechain = { start: "", prehash: [], id: [], ts: [] };
+        // let idx = 0;
+        //
+        // for (let i = 0; i < blocks_to_send.length; i++) {
+        //   // send lite-hashes
+        //   if (blocks_to_send[i].type === "hash") {
+        //     const block_hash = blocks_to_send[i].hash;
+        //     litechain.id.push(
+        //       this.app.blockchain.blocks[block_hash].returnId()
+        //     );
+        //     litechain.prehash.push(
+        //       this.app.blockchain.blocks[block_hash].returnPreHash()
+        //     );
+        //     litechain.ts.push(
+        //       this.app.blockchain.blocks[block_hash].returnTimestamp()
+        //     );
+        //     idx++;
+        //     // send spv blocks
+        //   } else {
+        //     const block_hash = blocks_to_send[i].hash;
+        //     block = await this.app.blockchain.loadBlockAsync(block_hash);
+        //     if (block) {
+        //       this.propagateBlock(block, peer);
+        //     }
+        //   }
+        // }
+        //
+        // if (idx > 0) {
+        //   this.propagateLiteChain(litechain, peer);
+        // }
 
         break;
       }
@@ -687,7 +690,7 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
         if (is_block_indexed) {
           console.info("SNDBLOCK hash already known: " + block_hash);
         } else {
-          this.fetchBlock(block_hash, peer);
+          await this.fetchBlock(block_hash, peer);
         }
         break;
 
@@ -699,7 +702,8 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
 
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          this.fetchBlock(block_hash);
+          // TODO : added sending peer to this. @david to fix if there's a better way
+          await this.fetchBlock(block_hash, peer);
         }
         break;
 
@@ -762,8 +766,7 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
               }
             }
 
-
-console.log("received msg: " + JSON.stringify(msg));
+            console.log("received msg: " + JSON.stringify(msg));
 
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
@@ -820,6 +823,7 @@ console.log("received msg: " + JSON.stringify(msg));
     if (this.app.BROWSER) {
       return;
     }
+    console.debug("network.propagateBlock", blk);
     if (!blk) {
       return;
     }
@@ -829,20 +833,15 @@ console.log("received msg: " + JSON.stringify(msg));
 
     const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
-      if (peer === this.peers[i]) {
+      if (
+        peer === this.peers[i] ||
+        (!peer && this.peers[i].peer.sendblks === 1)
+      ) {
         this.sendRequest(
           "SNDBLKHH",
           Buffer.from(blk.returnHash(), "hex"),
           this.peers[i]
         );
-      } else {
-        if (this.peers[i].peer.sendblks === 1) {
-          this.sendRequest(
-            "SNDBLKHH",
-            Buffer.from(blk.returnHash(), "hex"),
-            this.peers[i]
-          );
-        }
       }
     }
   }
@@ -851,8 +850,7 @@ console.log("received msg: " + JSON.stringify(msg));
   // propagate lite-chain
   //
   propagateLiteChain(litechain, peer = null) {
-
-console.log("in propagate lite chain..");
+    console.log("in propagate lite chain..");
 
     if (this.app.BROWSER) {
       return;
@@ -863,7 +861,7 @@ console.log("in propagate lite chain..");
 
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i]) {
-console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
+        console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
         this.sendRequest(
           "SPVCHAIN",
           Buffer.from(JSON.stringify(litechain), "utf8"),
@@ -876,13 +874,15 @@ console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
   //
   // propagate transaction
   //
-  propagateTransaction(tx, outbound_message = "transaction") {
-    if (tx == null) {
+  propagateTransaction(tx: Transaction, outbound_message = "transaction") {
+    console.debug("network.propagateTransaction", tx);
+    if (tx === null) {
       return;
     }
     if (!tx.is_valid) {
       return;
     }
+    // TODO : @david to check. is this type===FEE(1) ? or should it be type===GT(2) ?
     if (tx.transaction.type === 1) {
       outbound_message = "golden ticket";
     }
@@ -910,7 +910,7 @@ console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
         } else {
           console.log(" ... added transaftion");
         }
-        if (this.app.mempool.canBundleBlock() === 1) {
+        if (this.app.mempool.canBundleBlock()) {
           return 1;
         }
       }
@@ -919,9 +919,9 @@ console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
     //
     // now send the transaction out with the appropriate routing hop
     //
-    let fees = tx.returnFeesTotal(this.app);
+    let fees = tx.returnFeesTotal();
     for (let i = 0; i < tx.transaction.path.length; i++) {
-      fees = fees / 2;
+      fees = fees / BigInt(2);
     }
     this.peers.forEach((peer) => {
       //&& fees >= peer.peer.minfee
@@ -978,17 +978,13 @@ console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
     }
   }
 
-  sendRequest(message, data: any = "", peer = null) {
+  sendRequest(message, data: any = "", peer: Peer = null) {
     if (peer !== null) {
+      peer.sendRequest(message, data);
+    } else {
       for (let x = this.peers.length - 1; x >= 0; x--) {
-        if (this.peers[x] === peer) {
-          this.peers[x].sendRequest(message, data);
-        }
+        this.peers[x].sendRequest(message, data);
       }
-      return;
-    }
-    for (let x = this.peers.length - 1; x >= 0; x--) {
-      this.peers[x].sendRequest(message, data);
     }
   }
 

@@ -376,7 +376,7 @@ class Transaction {
     return html;
   }
 
-  returnFeesTotal() {
+  returnFeesTotal(): bigint {
     if (this.fees_total === BigInt(0)) {
       //
       // sum inputs
@@ -916,7 +916,7 @@ class Transaction {
   }
 
   hasPublicKey(publickey) {
-    let slips = this.returnSlipsToAndFrom(publickey);
+    const slips = this.returnSlipsToAndFrom(publickey);
     if (slips.to.length > 0 || slips.from.length > 0) {
       return true;
     }

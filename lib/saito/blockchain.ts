@@ -87,7 +87,8 @@ class Blockchain {
     //
     block.generateHashes();
 
-    console.log("ABTB: " + block.returnHash());
+    console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
+    console.debug(this);
 
     //
     // start by extracting some variables that we will use
@@ -103,7 +104,7 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block_hash)) {
-      console.log("ERROR 581023: block exists in blockchain index");
+      console.error("ERROR 581023: block exists in blockchain index");
       this.indexing_active = false;
       return;
     }
@@ -338,6 +339,7 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
+    console.debug("blockchain.addBlockSuccess : ", block);
     this.app.blockring.print();
 
     const block_id = block.returnId();
