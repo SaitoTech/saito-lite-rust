@@ -701,7 +701,8 @@ class Network {
 
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          await this.fetchBlock(block_hash);
+          // TODO : added sending peer to this. @david to fix if there's a better way
+          await this.fetchBlock(block_hash, peer);
         }
         break;
 
