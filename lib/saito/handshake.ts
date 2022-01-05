@@ -2,6 +2,7 @@
  * Handshake Constructor
  */
 import { Saito } from "../../apps/core";
+import Peer from "./peer";
 
 class Handshake {
   public app: Saito;
@@ -69,12 +70,15 @@ class Handshake {
     }
   }
 
-  async handleIncomingHandshakeRequest(peer, buffer) {
+  async handleIncomingHandshakeRequest(peer: Peer, buffer: Buffer) {
     const h2 = this.deserializeHandshake(buffer);
 
     peer.peer.publickey = h2.publickey;
     if (h2.lite === 1) {
       peer.peer.synctype = "lite";
+    } else {
+      peer.peer.host = h2.server_ip;
+      peer.peer.port = h2.server_port;
     }
 
     this.app.connection.emit("handshake_complete", peer);
