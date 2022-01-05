@@ -596,24 +596,6 @@ class Network {
         //
         // notify peer of longest-chain after this amount
         //
-        for (
-          let i = last_shared_ancestor;
-          i <= this.app.blockring.returnLatestBlockId();
-          i++
-        ) {
-          block_hash =
-            this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-          if (block_hash !== "") {
-            block = await this.app.blockchain.loadBlockAsync(block_hash);
-
-            if (block) {
-              this.propagateBlock(block, peer);
-            }
-          }
-        }
-        //
-        // const blocks_to_send = [];
-        //
         // for (
         //   let i = last_shared_ancestor;
         //   i <= this.app.blockring.returnLatestBlockId();
@@ -622,47 +604,65 @@ class Network {
         //   block_hash =
         //     this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
         //   if (block_hash !== "") {
-        //     if (this.app.blockchain.blocks[block_hash]) {
-        //       const block = this.app.blockchain.blocks[block_hash];
-        //       if (block.hasKeylistTransactions([publickey])) {
-        //         blocks_to_send.push({ hash: block_hash, type: "spv" });
-        //       } else {
-        //         blocks_to_send.push({ hash: block_hash, type: "hash" });
-        //       }
-        //     }
-        //   }
-        // }
-        //
-        // const litechain = { start: "", prehash: [], id: [], ts: [] };
-        // let idx = 0;
-        //
-        // for (let i = 0; i < blocks_to_send.length; i++) {
-        //   // send lite-hashes
-        //   if (blocks_to_send[i].type === "hash") {
-        //     const block_hash = blocks_to_send[i].hash;
-        //     litechain.id.push(
-        //       this.app.blockchain.blocks[block_hash].returnId()
-        //     );
-        //     litechain.prehash.push(
-        //       this.app.blockchain.blocks[block_hash].returnPreHash()
-        //     );
-        //     litechain.ts.push(
-        //       this.app.blockchain.blocks[block_hash].returnTimestamp()
-        //     );
-        //     idx++;
-        //     // send spv blocks
-        //   } else {
-        //     const block_hash = blocks_to_send[i].hash;
         //     block = await this.app.blockchain.loadBlockAsync(block_hash);
+        //
         //     if (block) {
         //       this.propagateBlock(block, peer);
         //     }
         //   }
         // }
         //
-        // if (idx > 0) {
-        //   this.propagateLiteChain(litechain, peer);
-        // }
+        const blocks_to_send = [];
+
+        for (
+          let i = last_shared_ancestor;
+          i <= this.app.blockring.returnLatestBlockId();
+          i++
+        ) {
+          block_hash =
+            this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+          if (block_hash !== "") {
+            if (this.app.blockchain.blocks[block_hash]) {
+              const block = this.app.blockchain.blocks[block_hash];
+              if (block.hasKeylistTransactions([publickey])) {
+                blocks_to_send.push({ hash: block_hash, type: "spv" });
+              } else {
+                blocks_to_send.push({ hash: block_hash, type: "hash" });
+              }
+            }
+          }
+        }
+
+        const litechain = { start: "", prehash: [], id: [], ts: [] };
+        let idx = 0;
+
+        for (let i = 0; i < blocks_to_send.length; i++) {
+          // send lite-hashes
+          if (blocks_to_send[i].type === "hash") {
+            const block_hash = blocks_to_send[i].hash;
+            litechain.id.push(
+              this.app.blockchain.blocks[block_hash].returnId()
+            );
+            litechain.prehash.push(
+              this.app.blockchain.blocks[block_hash].returnPreHash()
+            );
+            litechain.ts.push(
+              this.app.blockchain.blocks[block_hash].returnTimestamp()
+            );
+            idx++;
+            // send spv blocks
+          } else {
+            const block_hash = blocks_to_send[i].hash;
+            block = await this.app.blockchain.loadBlockAsync(block_hash);
+            if (block) {
+              this.propagateBlock(block, peer);
+            }
+          }
+        }
+
+        if (idx > 0) {
+          this.propagateLiteChain(litechain, peer);
+        }
 
         break;
       }
