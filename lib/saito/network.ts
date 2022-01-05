@@ -508,6 +508,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
+
     let block;
     let block_hash;
     let fork_id;
@@ -760,6 +761,10 @@ console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain));
                 }
               }
             }
+
+
+console.log("received msg: " + JSON.stringify(msg));
+
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;

@@ -441,7 +441,6 @@ module.exports = ArcadeMain = {
 
     let relay_mod = app.modules.returnModule('Relay');
     if (relay_mod != null) {
-console.log("sending CLOSE relay message");
       relay_mod.sendRelayMessage(players, 'arcade spv update', newtx);
       relay_mod.sendRelayMessage(peers, 'arcade spv update', newtx);
     }
