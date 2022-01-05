@@ -340,6 +340,7 @@ class Server {
 
     app.get("/block/:hash", async (req, res) => {
       const hash = req.params.hash;
+      console.debug("fetching block : " + hash);
       if (!hash) {
         console.warn("hash not provided");
         return res.sendStatus(400); // Bad request
