@@ -48,7 +48,7 @@ class Peer {
           peerobj.peer.endpoint.port = peerobj.peer.port;
           peerobj.peer.endpoint.protocol = peerobj.peer.protocol;
         }
-        this.peer = peerobj.peer;
+        this.peer = { ...this.peer, ...peerobj.peer };
       } catch (err) {
         console.error(err);
       }
