@@ -510,6 +510,7 @@ class Network {
 
   async receiveRequest(peer, message) {
     console.debug("network.receiveRequest : ", message);
+
     let block;
     let block_hash;
     let fork_id;
@@ -764,6 +765,9 @@ class Network {
                 }
               }
             }
+
+            console.log("received msg: " + JSON.stringify(msg));
+
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;

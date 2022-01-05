@@ -135,6 +135,8 @@ class Post extends ModTemplate {
 
     if (this.renderMethod == "none") { return; }
 
+console.log("ON PEER HANDSHAKE COMPLETE!");
+
     //
     // fetch posts from server
     //
@@ -146,6 +148,9 @@ class Post extends ModTemplate {
         sql ,
 
         (res) => {
+
+console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
+
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
@@ -168,6 +173,7 @@ class Post extends ModTemplate {
               if (s.service === "post") { return 1; }
             }
           }
+          if (this.app.network.peers[0] == p) { return 1; }
           return 0;
         }
 
