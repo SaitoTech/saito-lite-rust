@@ -17,8 +17,8 @@ class Handshake {
       publickey: this.app.wallet.returnPublicKey(),
       challenge: Math.floor(Math.random() * 100_000_000_000_000),
       lite: this.app.BROWSER,
-      server_port: this.app.server.server.port,
-      server_ip: this.app.server.server.host,
+      server_port: this.app.BROWSER ? 0 : this.app.server.server.port,
+      server_ip: this.app.BROWSER ? "" : this.app.server.server.host,
     };
   }
 
