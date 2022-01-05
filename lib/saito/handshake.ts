@@ -48,7 +48,7 @@ class Handshake {
     h2.server_port = this.app.binary.u32FromBytes(buffer.slice(49, 53));
     const length = Number(this.app.binary.u32FromBytes(buffer.slice(53, 57)));
 
-    h2.server_ip = Buffer.from(buffer.slice(57, 57 + length));
+    h2.server_ip = Buffer.from(buffer.slice(57, 57 + length)).toString("utf-8");
 
     return h2;
   }
