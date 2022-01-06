@@ -1,5 +1,3 @@
-const GameHud = require('../../lib/templates/lib/game-hud/game-hud');
-const Cardfan = require('../../lib/templates/lib/game-cardfan/game-cardfan');
 const GameTemplate = require('../../lib/templates/gametemplate');
 const saito = require('../../lib/saito/saito');
 
@@ -29,8 +27,6 @@ class President extends GameTemplate {
 
     this.updateHTML = "";
 
-    //this.cardfan = new Cardfan(this.app, this);
-    this.hud = new GameHud(this.app, {});
     this.hud.mode = 0;
     this.hud.cardbox.cardfan = 1;
 

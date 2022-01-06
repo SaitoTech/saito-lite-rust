@@ -105,9 +105,6 @@ class AppStore extends ModTemplate {
         $squery2: squery2,
       };
 
-console.log(sql);
-console.log(JSON.stringify(params));
-
       let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
       let res = {};
@@ -236,6 +233,7 @@ console.log("##########################");
 
     let txmsg = tx.returnMessage();
 
+
     if (conf == 0) {
 
       switch (txmsg.request) {
@@ -268,6 +266,7 @@ console.log("##########################");
 	  }
           break;
         case 'request bundle':
+console.log("request bundle!");
           if (tx.isFrom(app.wallet.returnPublicKey())) {
             try {
               document.querySelector(".appstore-loading-text").innerHTML = "Your application is being processed by the network. Your upgrade should be complete within about <span class=\"time_remaining\">120</span> seconds.";
@@ -292,8 +291,10 @@ console.log("##########################");
             }
           }
           if (!tx.isTo(app.wallet.returnPublicKey())) { 
+console.log("not for us");
 	    return; 
 	  }
+console.log("requesting a bundle: " + JSON.stringify(tx.returnMessage()));
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
@@ -354,6 +355,7 @@ console.log("##########################");
         if (file.path.substr(-2) !== "js") { return; }
         //if (file.path.substr(2).indexOf("/") > -1) { return; }
         if (file.path.indexOf("web/") > -1) { return; }
+        if (file.path.indexOf("src/") > -1) { return; }
         if (file.path.indexOf("www/") > -1) { return; }
         if (file.path.indexOf("lib/") > -1) { return; }
         if (file.path.indexOf("license/") > -1) { return; }
@@ -633,10 +635,14 @@ console.log(name + " is included? " + featured_app);
       }
     }
 
+console.log("about to start bundling!");
+
     //
     // WEBPACK
     //
     let bundle_filename = await this.bundler(modules_selected);
+
+console.log("bundled through webpack filename: " + bundle_filename);
 
     //
     // insert resulting JS into our bundles database
@@ -720,6 +726,8 @@ console.log(name + " is included? " + featured_app);
     bash_script_create_dirs += 'mkdir  ' + __dirname + "/../../bundler/" + newappdir + "/mods" + "\n";
     bash_script_create_dirs += 'mkdir  ' + __dirname + "/../../bundler/" + newappdir + "/dist" + "\n";
 
+console.log("bash script create: " + bash_script_create_dirs);
+
     fs.writeFileSync(path.resolve(__dirname, bash_script_create), bash_script_create_dirs, { encoding: 'binary' });
     try {
       let cwdir = __dirname;
@@ -739,11 +747,11 @@ console.log(name + " is included? " + featured_app);
 
       let mod_path = `mods/${returnSlug(mod.name)}-${ts}-${hash}.zip`;
 
-
       bash_script_content += `unzip -o ${returnSlug(mod.name)}-${ts}-${hash}.zip -d ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)} \\*.js \\*.css \\*.html \\*.wasm` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/web` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/www` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/sql` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/src` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/DESCRIPTION.txt` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/BUGS.txt` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/README.txt` + "\n";
@@ -767,6 +775,9 @@ console.log(name + " is included? " + featured_app);
     // write our modules config file
     //
     let modules_config_filename = `modules.config-${ts}-${hash}.json`;
+
+console.log("mods config file: " + modules_config_filename);
+
     await fs.writeFile(path.resolve(__dirname, `../../bundler/${newappdir}/config/${modules_config_filename}`),
       JSON.stringify({ mod_paths: module_paths })
     );

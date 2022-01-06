@@ -5,5 +5,5 @@ echo $1
 echo $2
 echo $3
 
-node webpack.js $1 $2 $3
+node webpack.cjs $1 $2 $3
 

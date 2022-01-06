@@ -664,7 +664,6 @@ console.log(err);
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
-
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 

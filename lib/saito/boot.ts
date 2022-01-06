@@ -6,6 +6,9 @@
 // is not the default software, and swaps it in instead of
 // the default if it exists and can be found.
 //
+
+console.log("booting!");
+
 if (typeof Storage !== "undefined") {
   const mySource = document.currentScript.src;
   const sscript = document.getElementById("saito");
@@ -23,6 +26,9 @@ if (typeof Storage !== "undefined") {
 
   if (bundle != null && bundle != "") {
     if (bundle != mySource) {
+
+console.log("switching to child script!");
+
       document.body.removeChild(sscript);
 
       const sscript2 = document.createElement("script");
