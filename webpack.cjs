@@ -128,14 +128,14 @@ webpack({
       },
       // wasm files should not be processed but just be emitted and we want
       // to have their public URL.
-//      {
-//        test: /quirc\.wasm$/,
-//        type: "javascript/auto",
-//        loader: "file-loader",
-//        options: {
-//          publicPath: "dist/"
-//        }
-//        },
+      {
+        test: /quirc\.wasm$/,
+        type: "javascript/auto",
+        loader: "file-loader",
+        options: {
+          publicPath: "dist/"
+        }
+        },
       {
         test: /\.zip$/,
         exclude: [
