@@ -234,6 +234,7 @@ p {
   margin-left: 0.5em;
   max-width: 20em;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /** add contact module **/
@@ -287,9 +288,9 @@ p {
 .chat-box {
   bottom: 0px;
   right: 0px;
+  box-sizing: content-box;
   position: absolute;
   display: grid;
-  margin-left: 1em;
   background-color: white;
   border: 1px solid #a5a5a5;
   font-size: 0.8em;
@@ -329,24 +330,28 @@ p {
   font-size: 2em;
   z-index: 1000;
   color: white;
-  padding: 5px;
+  padding: 1px;
   background: white;
   background-image: url(/chat/img/chat_header.png);
-  width: 100%;
+  width: 16em;
   background-size: cover;
-  line-height: 1.4em;
+  line-height: 1.6em;
 }
 
 .chat-box-main {
   display: block;
   flex-direction: column;
-  /* height: 32em; */
+  width: 32em; 
   grid-area: chat_main;
   overflow-y: scroll;
   overflow-x: hidden;
   background: linear-gradient(135deg, #ffffff, #eaeaea);
 }
 
+.chat-box-default-message{
+  text-align: center;
+  margin-top: 1em;
+}
 .chat-room-message {
   display: flex;
 }
@@ -369,8 +374,8 @@ p {
 }
 
 .chat-room-message-identicon:hover {
-  width: 60px;
-  height: 60px;
+  width: 3.8em;
+  height: 3.8em;
 }
 
 .chat-message-text img {
@@ -386,11 +391,8 @@ p {
 }
 
 .chat-box-input {
-  position: absolute;
-  bottom: 0%;
   width: 32em;
   height: 3em;
-  margin-left: 0px;
   padding: 4px;
   border-top: 1px solid lightgrey;
   display: grid;
@@ -400,11 +402,11 @@ p {
 .chat-box-new-message-input {
   width: 100%;
   /* height: 100%; */
-  height: 30px;
+  height: 22px;
   min-height: unset;
   resize: none;
   margin: auto;
-  padding: 5px;
+  padding: 3px;
   font-size: 1.2em;
   border: none;
   box-shadow: none;
