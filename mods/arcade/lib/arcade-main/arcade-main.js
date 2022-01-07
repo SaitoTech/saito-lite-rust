@@ -361,19 +361,24 @@ module.exports = ArcadeMain = {
 
   continueGame(app, mod, game_id) {
 
-    let existing_game = -1;
+    let existing_game = null;
 
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-        if (app.options.games[i].transaction.sig === game_id || app.options.games[i].id === game_id) {
+	if (app.options.games[i].id === game_id) {
 	  existing_game = app.options.games[i];
-        }
+        } else {
+        if (app.options.games[i].transaction) { 
+	  if (app.options.games[i].transaction.sig === game_id) {
+	    existing_game = app.options.games[i];
+	  }
+	}
+	}
       }
     }
 
-    if (existing_game != -1 && existing_game) {
+    if (existing_game != null) {
       if (existing_game.initializing == 1) {
-
         salert("Accepted Game! It may take a minute for your browser to update -- please be patient!");
 
         GameLoader.render(app, data);
@@ -389,7 +394,7 @@ module.exports = ArcadeMain = {
         existing_game.ts = new Date().getTime();
         existing_game.initialize_game_run = 0;
         app.storage.saveOptions();
-        window.location = '/' + existing_game.module.toLowerCase();
+        window.location = '/' + existing_game.slug.toLowerCase();
         return;
 
       }
