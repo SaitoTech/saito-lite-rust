@@ -1,6 +1,6 @@
 # Description of Network
 
-This document attempts a straight-forward description of how the network works. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how the block reward is issued. The fourth explains the staking mechanism and other advanced functions.
+This document attempts a straight-forward description of how the network works. The first section discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how the block reward is issued. The fourth explains the staking mechanism and other advanced functions. The final contains minor addendums and future areas of interest.
 
 ## 1. PRUNING THE BLOCKCHAIN
 
