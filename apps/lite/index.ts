@@ -9,4 +9,7 @@ async function init() {
   await saito.init();
 }
 
-init();
+// init();
+window.onload = function () {
+  init();
+};
