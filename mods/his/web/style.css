@@ -1,5 +1,11 @@
 
 
+.faction_sheet {
+  width: 1240px;
+  height: 800px;
+  background-size: cover;
+}
+
 .gameboard {
   background-image: url("/his/img/gameboard-large.png");
   background-size: cover;
@@ -9,10 +15,32 @@
 
 .space {
   position: absolute;
-  background-color: green;
   z-index: 10;
   height: 100px;
   width: 100px;
+}
+
+.hextile {
+  position: absolute;
+  z-index: 10;
+  top: -10px;
+  height: 120px;
+  width: 100px;
+}
+.keytile {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  height: 122px;
+  width: 122px;
+}
+
+.space_view {
+  height: 60vh;
+  width: calc(60vh * 0.74);
+  background-color: whitesmoke;
+  border-radius: 10px;
+  font-size: 2em;
 }
 
 

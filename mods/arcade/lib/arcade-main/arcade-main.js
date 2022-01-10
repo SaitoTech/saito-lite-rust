@@ -447,7 +447,7 @@ module.exports = ArcadeMain = {
         existing_game.ts = new Date().getTime();
         existing_game.initialize_game_run = 0;
         app.storage.saveOptions();
-        window.location = '/' + existing_game.slug.toLowerCase();
+        window.location = '/' + existing_game.returnSlug().toLowerCase();
         return;
       }
     }
