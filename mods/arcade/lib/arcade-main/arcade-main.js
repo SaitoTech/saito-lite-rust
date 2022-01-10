@@ -327,7 +327,7 @@ module.exports = ArcadeMain = {
       if (app.options.games) {
         let existing_game = app.options.games.find((g) => g.id == game_id);
 
-        if (existing_game != -1 && existing_game) {
+        if (existing_game) { //find returns "undefined"
           if (existing_game.initializing == 1) {
             salert(
               "Accepted Game! It may take a minute for your browser to update -- please be patient!"
@@ -344,7 +344,14 @@ module.exports = ArcadeMain = {
             existing_game.ts = new Date().getTime();
             existing_game.initialize_game_run = 0;
             app.storage.saveOptions();
-            window.location = "/" + existing_game.returnSlug();
+            //Have to search list of modules in Saito to get the existing_game's slug (i.e. directory)
+            for (let z = 0; z < app.modules.mods.length; z++) {
+              if (app.modules.mods[z].name == existing_game.module) {
+                  window.location = '/' + app.modules.mods[z].returnSlug();
+                  return;
+                }
+              }
+            //window.location = "/" + existing_game.slug;
             return;
           }
         }
@@ -439,7 +446,7 @@ if (relay_mod != null) {
         }
       }
     }
-    console.log(existing_game);
+
     if (existing_game && existing_game !== -1) {
       if (existing_game.initializing == 1) {
         salert(
