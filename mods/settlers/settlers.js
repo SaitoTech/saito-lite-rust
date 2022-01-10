@@ -1,6 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const GameHexGrid = require('../../lib/saito/ui/game-hexgrid/game-hexgrid');
-const SettlersSkin = require('./settlers.skin');
+const SettlersSkin = require('./src/settlers.skin');
 const helpers = require('../../lib/helpers/index');
 
 
@@ -301,8 +301,8 @@ class Settlers extends GameTemplate {
         GameHammerMobile.render(this.app, this);
         GameHammerMobile.attachEvents(this.app, this, '.game-hexgrid-container');
       } else {
-        GameBoardSizer.render(this.app, this);
-        GameBoardSizer.attachEvents(this.app, this, '.game-hexgrid-container');
+        this.sizer.render(this.app, this);
+        this.sizer.attachEvents(this.app, this, '.game-hexgrid-container');
       }
 
       //

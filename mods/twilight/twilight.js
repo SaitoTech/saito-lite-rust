@@ -699,14 +699,12 @@ console.log(err);
         this.sizer.attachEvents(this.app, this, '.gameboard');
 
 
-        //GameBoardSizer.render(this.app, this);
-        //GameBoardSizer.attachEvents(this.app, this, '.gameboard');
 
         $('#gameboard').draggable({
 	  stop : function(event, ui) {
 	    twilight_self.saveGamePreference((twilight_self.returnSlug()+"-board-offset"), ui.offset);
 	  }
-	});
+	}); //Redundant code with this.sizer.attachEvents
 
       }
 
