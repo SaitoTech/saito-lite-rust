@@ -17,7 +17,7 @@ if (process.argv.includes("web3")) {
 }
 webpack({
   optimization: {
-    minimize: true
+    minimize: true,
   },
   target: "web",
   // node: {
@@ -147,6 +147,10 @@ webpack({
         }
       },
       {
+        test: /\.wasm$/,
+        type: "asset/inline",
+      },
+      {
         test: /\.zip$/,
         exclude: [
           path.resolve(__dirname, "../mods/appstore/bundler"),
@@ -179,7 +183,7 @@ webpack({
     // })
   ],
   experiments: {
-    // asyncWebAssembly: true,
+    asyncWebAssembly: true,
     syncWebAssembly: true
   },
   mode: "production",

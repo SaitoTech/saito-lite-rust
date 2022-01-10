@@ -141,6 +141,7 @@ class Network {
     );
     this.peers.push(peer);
     this.peers_connected++;
+    peer.keepAlive();
 
     //
     // initiate the handshake (verifying peers)
@@ -192,6 +193,7 @@ class Network {
     //
     this.peers.push(peer);
     this.peers_connected++;
+    peer.keepAlive();
 
     //
     // initiate the handshake (verifying peers)
@@ -546,6 +548,11 @@ class Network {
 
         break;
       }
+      case "PINGPING":
+console.log("received ping...");
+        // job already done!
+        break;
+
       case "REQBLOCK":
         // NOT YET IMPLEMENTED -- send FULL block
         break;

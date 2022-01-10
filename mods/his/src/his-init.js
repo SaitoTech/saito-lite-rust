@@ -119,7 +119,6 @@ console.log("\n\n\n\n");
       //$('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
 
 
-
       //
       // INITIALIZE GAME-OBJECTS
       //

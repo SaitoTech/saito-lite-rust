@@ -7,5 +7,12 @@
   height: 3164px;
 }
 
+.space {
+  position: absolute;
+  background-color: green;
+  z-index: 10;
+  height: 100px;
+  width: 100px;
+}
 
 

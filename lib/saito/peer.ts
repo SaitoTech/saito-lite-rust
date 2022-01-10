@@ -5,6 +5,8 @@ import Hop from "./hop";
 import Transaction from "./transaction";
 
 class Peer {
+
+  public keep_alive_timer: any;
   public app: Saito;
   public id: number;
   public peer = {
@@ -32,12 +34,14 @@ class Peer {
     modules: [],
     keylist: [],
   };
+
   public socket: any;
 
   constructor(app: Saito, peerjson = "") {
     this.app = app;
 
     this.id = new Date().getTime();
+    this.keep_alive_timer = null;
 
     if (peerjson !== "") {
       try {
@@ -102,6 +106,20 @@ class Peer {
     return false;
   }
 
+  //
+  // keepAlive
+  //
+  keepAlive() {
+
+    if (this.keep_alive_timer != null) { clearInterval(this.keep_alive_timer); }
+    this.keep_alive_timer = setInterval(() => {
+console.log("sending ping");
+      this.sendRequest("PINGPING");
+    }, 10000);
+
+  }
+
+
   returnPublicKey() {
     return this.peer.publickey;
   }
@@ -141,6 +159,10 @@ class Peer {
     // transaction as Transaction.serialize()
     if (message === "REQCHAIN") {
       this.app.networkApi.send(this.socket, "REQCHAIN", data);
+      return;
+    }
+    if (message === "PINGPING") {
+      this.app.networkApi.send(this.socket, "PINGPING", data);
       return;
     }
 

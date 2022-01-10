@@ -287,19 +287,26 @@ class Arcade extends ModTemplate {
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
     if (tx.transaction) {
+console.log("A");
       if (!tx.transaction.sig) { return; }
+console.log("B");
       if (tx.msg.over == 1) { return; }
+console.log("C");
 
       for (let i = 0; i < this.games.length; i++) {
+console.log("E");
         if (this.games[i].transaction.sig == txmsg.game_id) {
+console.log("F");
 
           let number_of_willing_players = this.games[i].msg.players.length;
           let number_of_players_needed  = this.games[i].msg.players_needed;
 
-          // console.log("NUMBER OF WILLING PLAYERS IN THIS GAME: " + number_of_willing_players);
-          // console.log("NUMBER OF PLAYERS NEEDED IN THIS GAME: " + number_of_players_needed);
+          console.log("NUMBER OF WILLING PLAYERS IN THIS GAME: " + number_of_willing_players);
+          console.log("NUMBER OF PLAYERS NEEDED IN THIS GAME: " + number_of_players_needed);
 
           if (number_of_willing_players >= number_of_players_needed) {
+
+console.log("starting player must kick off!");
 
             //
             // first player is the only one with a guaranteed consistent order in all 
@@ -339,6 +346,7 @@ try {
       // notify SPV clients of "open", "join" and "close"(, and "accept") messages
       //
       if (app.BROWSER == 0 && txmsg.request == "open" || txmsg.request == "join" || txmsg.request == "accept" || txmsg.request == "close") {
+console.log("NOTIFY PEERS OF: " + txmsg.request);
         this.notifyPeers(app, tx);
       }
 
