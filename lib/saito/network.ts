@@ -549,7 +549,7 @@ class Network {
         break;
       }
       case "PINGPING":
-console.log("received ping...");
+        // console.log("received ping...");
         // job already done!
         break;
 
