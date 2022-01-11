@@ -457,7 +457,11 @@ if (relay_mod != null) {
         existing_game.ts = new Date().getTime();
         existing_game.initialize_game_run = 0;
         app.storage.saveOptions();
-        window.location = '/' + existing_game.returnSlug().toLowerCase();
+
+        let game_mod = app.modules.returnModule(existing_game.module);
+	if (game_mod) {
+          window.location = '/' + game_mod.returnSlug().toLowerCase();
+        }
         return;
       }
     }

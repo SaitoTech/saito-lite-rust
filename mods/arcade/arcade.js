@@ -103,7 +103,10 @@ class Arcade extends ModTemplate {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
 
+console.log("CONSIDERING GAME");
+console.log(JSON.stringify(game));
         if (game.over == 1 || (game.players_set == 1 && !game.players.includes(app.wallet.returnPublicKey()))) {} else {
+console.log("ADDING GAME!");
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
       }
@@ -1567,9 +1570,26 @@ try {
 
     // if the game is very old, remove it
     for (let i = 0; i < this.games.length; i++) {
-      let gamets = parseInt(this.games[i].transaction.ts);
-      let timepassed = (new Date().getTime()) - gamets;
-      if (timepassed > this.old_game_removal_delay) {
+
+      let remove_this_game = 0;
+      let include_this_game = 0;
+
+console.log("PLAYERS: " + JSON.stringify(this.games[i].msg));
+
+      if (this.games[i].msg?.players?.includes(this.app.wallet.returnPublicKey())) {
+console.log("INCLUDING GAME!");
+	include_this_game = 1;
+      }
+
+      if (include_this_game == 0) {
+        let gamets = parseInt(this.games[i].transaction.ts);
+        let timepassed = (new Date().getTime()) - gamets;
+        if (timepassed > this.old_game_removal_delay) {
+	  remove_this_game = 1;
+        }
+      }
+
+      if (remove_this_game == 1 && include_this_game == 0) {
         this.games.splice(i, 1);
         removed_old_games = 1;
         i--;
@@ -1687,12 +1707,15 @@ try {
   }
   addGameToOpenList(tx) {
     let valid_game = this.validateGame(tx);
+console.log("is this a valid game: " + valid_game);
     if (valid_game) {
       let for_us = this.isForUs(tx);
       if (for_us) {
         this.games.unshift(tx);
       }
+console.log("about to run remove game!");
       let removed_game = this.removeOldGames();
+console.log("removed game? " + removed_game + " -- " + for_us);
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
