@@ -82,9 +82,6 @@ toggleIntro() {
       text : "Game",
       id : "game-game",
       class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
     });
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
@@ -144,9 +141,6 @@ toggleIntro() {
                 text : "Chat",
                 id : "game-chat",
                 class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
               })
               main_menu_added = 1;
             }

@@ -74,9 +74,6 @@ class Wordblocks extends GameTemplate {
       text: "Game",
       id: "game-game",
       class: "game-game",
-      callback: function (app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      },
     });
     this.menu.addSubMenuOption("game-game", {
       text: "How to Play",
@@ -135,9 +132,6 @@ class Wordblocks extends GameTemplate {
                 text: "Chat",
                 id: "game-chat",
                 class: "game-chat",
-                callback: function (app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                },
               });
               main_menu_added = 1;
             }
