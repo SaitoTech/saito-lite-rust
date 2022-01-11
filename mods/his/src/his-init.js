@@ -30,11 +30,7 @@ class HereIStand extends GameTemplate {
     //
     this.confirm_moves = 1;
 
-    //
-    // max log entries
-    //
-    this.log_length 	 = 150;
-
+    
     //
     // default zoom
     //
@@ -74,11 +70,7 @@ class HereIStand extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.log) { 
-      if (this.game.log.length > 0) { 
-        for (let i = this.game.log.length-1; i >= 0; i--) { this.updateLog(this.game.log[i]); }
-      }
-    }
+    this.restoreLog();
 
     //
     // initialize game objects

@@ -495,10 +495,10 @@ console.log("----------------------------");
 
   	if (planet_idx != -1) {
           this.addPlanetaryUnit(player, sector, planet_idx, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 120, 1);  // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 1);  // force message
  	} else {
           this.addSpaceUnit(player, sector, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 120, 1); // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
 

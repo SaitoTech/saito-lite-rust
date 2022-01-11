@@ -28,7 +28,6 @@ class Scotland extends GameTemplate {
 
     this.moves           = [];
 
-    this.log_length = 150;
     this.gameboardZoom  = 0.4;
     this.gameboardMobileZoom = 0.57;
 
@@ -149,7 +148,9 @@ class Scotland extends GameTemplate {
       }
     } catch (err) {}
 
-
+    this.log.render(app,this);
+    this.log.attachEvents(app,this);
+    this.restoreLog();
 
   }
 

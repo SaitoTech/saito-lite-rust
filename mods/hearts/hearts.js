@@ -250,8 +250,6 @@ class Hearts extends GameTemplate {
 
       } else {
 
-        let twilight_self = this;
-
         this.sizer.render(this.app, this);
         this.sizer.attachEvents(this.app, this, '.gameboard');
 

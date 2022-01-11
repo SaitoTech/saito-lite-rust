@@ -20,7 +20,7 @@ class Chessgame extends GameTemplate {
 
     this.useHUD = 0;
     this.useClock = 1;
-
+    this.log_length = 999;
     this.minPlayers = 2;
     this.maxPlayers = 2;
     this.type       = "Classic Boardgame";
@@ -183,7 +183,7 @@ console.log(JSON.stringify(msg));
       if (this.browser_active == 1) {
         this.setBoard(this.game.position);
         if (this.useClock) { this.startClock(); }
-        this.updateLog(data.move, 999);
+        this.updateLog(data.move);
         this.updateStatusMessage();
         if (this.engine.in_checkmate() === true) {
           this.resignGame();
@@ -218,7 +218,7 @@ console.log(JSON.stringify(msg));
     this.game.turn = [data_to_send];
     this.moves = [];
     this.sendMessage("game", extra);
-    this.updateLog(data.move, 999);
+    this.updateLog(data.move);
     this.updateStatusMessage();
     
   }

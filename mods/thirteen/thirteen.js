@@ -31,9 +31,7 @@ class Thirteen extends GameTemplate {
 
     this.moves           = [];
 
-    this.log_length = 150;
-
-    this.gameboardZoom  = 0.90;
+     this.gameboardZoom  = 0.90;
     this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;

@@ -103,6 +103,10 @@ class President extends GameTemplate {
     }
 
     this.hud.render(app, this);
+
+    this.log.render(app,this);
+    this.log.attachEvents(app,this);
+    this.restoreLog();
   }
 
 

@@ -373,13 +373,7 @@ console.log("error initing chat: " + err);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.log != "") { 
-      if (this.game.log.length > 0) {
-        for (let i = this.game.log.length-1; i >= 0; i--) {
-	  this.updateLog(this.game.log[i]);
-        }
-      }
-    }
+    this.restoreLog();
   
     //
     // specify players

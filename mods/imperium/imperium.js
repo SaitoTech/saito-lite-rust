@@ -11041,13 +11041,7 @@ console.log("error initing chat: " + err);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.log != "") { 
-      if (this.game.log.length > 0) {
-        for (let i = this.game.log.length-1; i >= 0; i--) {
-	  this.updateLog(this.game.log[i]);
-        }
-      }
-    }
+    this.restoreLog();
   
     //
     // specify players
@@ -13408,10 +13402,10 @@ console.log("----------------------------");
 
   	if (planet_idx != -1) {
           this.addPlanetaryUnit(player, sector, planet_idx, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 120, 1);  // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 1);  // force message
  	} else {
           this.addSpaceUnit(player, sector, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 120, 1); // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
 

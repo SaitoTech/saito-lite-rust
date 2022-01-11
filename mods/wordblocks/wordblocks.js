@@ -24,8 +24,7 @@ class Wordblocks extends GameTemplate {
     this.maxPlayers = 4;
     this.type = "Wordgame";
     this.useHUD = 1;
-    this.log_length = 100;
-
+  
     this.gameboardWidth = 2677;
     this.tileHeight = 163;
     this.tileWidth = 148;
@@ -198,6 +197,7 @@ class Wordblocks extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
+
     try {
       //Let's Try a PlayerBox instead of hud
       this.playerbox.render(app, this);
@@ -234,6 +234,12 @@ class Wordblocks extends GameTemplate {
     } catch (err) {
       console.error(err);
     }
+
+    if (this.game.status != "") {
+      this.updateStatus(this.game.status);
+    }
+    this.restoreLog();
+    
   }
 
   /** <<CHECK RULE ACCURACY >>**/
@@ -305,17 +311,6 @@ class Wordblocks extends GameTemplate {
 
     this.updateStatus("loading game...");
     this.loadGame(game_id);
-
-    if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }
-    if (this.game.log) {
-      if (this.game.log.length > 0) {
-        for (let i = this.game.log.length - 1; i >= 0; i--) {
-          this.updateLog(this.game.log[i]);
-        }
-      }
-    }
 
     var dictionary = this.game.options.dictionary;
     let durl =

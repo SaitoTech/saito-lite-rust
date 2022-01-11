@@ -56,7 +56,6 @@ class Twilight extends GameTemplate {
     //
     this.confirm_moves = 1;
 
-    this.log_length 	 = 150;
     this.interface 	 = 1;
 
     this.gameboardZoom   = 0.90;
@@ -742,11 +741,7 @@ initializeGame(game_id) {
   }
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  if (this.game.log) { 
-    if (this.game.log.length > 0) { 
-      for (let i = this.game.log.length-1; i >= 0; i--) { this.updateLog(this.game.log[i]); }
-    }
-  }
+  this.restoreLog();
 
   //
   // VP needed
@@ -2042,7 +2037,7 @@ try {
         if (mv[0] === "vp") {
           if (mv.length > 3) {
             if (parseInt(mv[3]) == 1) {
-              this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP", this.log_length, 1);
+              this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP", 1);
               if (mv[1] === "us") {
                 this.game.state.vp_outstanding += parseInt(mv[2]);
               } else {
@@ -5597,7 +5592,7 @@ this.startClock();
       this.countries[country].ussr = parseInt(this.countries[country].ussr) + parseInt(inf);
     }
 
-    this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, this.log_length, 1);
+    this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, 1);
 
     this.showInfluence(country, player, mycallback);
 
@@ -16143,7 +16138,19 @@ console.log("ROUND: " + this.game.state.round);
     return 0;
   }
 
-
+  //Rewrite updatelog to include logcardevents
+  updateLog(str, force = 0) {
+    if (str && this.game.log[0] !== str) {
+      this.game.log.unshift(str);
+      if (this.game.log.length > this.log_length){
+        this.game.log.splice(length);
+      }
+    }
+  
+    // update log and bind events
+    this.log.updateLog(str, force);
+    this.addLogCardEvents();
+  }
 
 
 
