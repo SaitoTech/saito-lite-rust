@@ -286,8 +286,8 @@ class Settlers extends GameTemplate {
       $(".player-box *").disableSelection();
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        GameHammerMobile.render(this.app, this);
-        GameHammerMobile.attachEvents(
+        this.hammer.render(this.app, this);
+        this.hammer.attachEvents(
           this.app,
           this,
           ".game-hexgrid-container"

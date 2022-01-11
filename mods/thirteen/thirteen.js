@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-//const GameHammerMobile = require('../../lib/saito/ui/game-hammer-mobile/game-hammer-mobile');
 const helpers = require('../../lib/helpers/index');
 
 

@@ -1,6 +1,5 @@
 const saito = require("../../lib/saito/saito");
 const GameTemplate = require("../../lib/templates/gametemplate");
-const GameHammerMobile = require("../../lib/saito/ui/game-hammer-mobile/game-hammer-mobile");
 
 class Wordblocks extends GameTemplate {
   constructor(app) {
@@ -219,8 +218,8 @@ class Wordblocks extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        GameHammerMobile.render(this.app, this);
-        GameHammerMobile.attachEvents(this.app, this, ".gameboard");
+        this.hammer.render(this.app, this);
+        this.hammer.attachEvents(this.app, this, ".gameboard");
       } else {
         this.sizer.render(this.app, this);
         this.sizer.attachEvents(this.app, this, ".gameboard");
