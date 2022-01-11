@@ -279,6 +279,23 @@
       }
     }
 
+    //
+    // position electorate display
+    //
+    let elec = this.returnElectorateDisplay();
+    for (let key in elec) {
+      if (elec.hasOwnProperty(key)) {
+        try {
+          let obj = document.getElementById(`ed_${key}`);
+          obj.style.top = elec[key].top + "px";
+          obj.style.left = elec[key].left + "px";
+        } catch (err) {
+        }
+      }
+    }
+
+
+
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {

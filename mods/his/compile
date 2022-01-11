@@ -17,6 +17,11 @@ do
   cat $file >> ./his.js
 done
 
+for file in ./src/units/*
+do
+  cat $file >> ./his.js
+done
+
 cat ./src/his-init2.js >> ./his.js
 
 
@@ -29,6 +34,7 @@ cat ./src/his-state.js >> ./his.js
 cat ./src/his-gameloop.js >> ./his.js
 cat ./src/his-player.js >> ./his.js
 cat ./src/his-factions.js >> ./his.js
+cat ./src/his-units.js >> ./his.js
 cat ./src/his-display.js >> ./his.js
 cat ./src/his-end.js >> ./his.js
 

@@ -74,6 +74,12 @@
   }
 
 
+  playerReformationAttempt(player) {
+    playerPickSpaceWithFilter() {
+
+    }
+  }
+
 
   playerTurn(selected_card=null) {
 

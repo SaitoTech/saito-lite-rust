@@ -32,29 +32,29 @@ console.log("handle game loop...");
 	  //
 	  // restore state
 	  //
-
-
-	  //
-	  // collect stats
-	  //
 	  if (this.game.state.round > 1) {
-	    //this.game.state.stats.round.push({});
-	    //this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+	    this.log.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	    this.convertSpace("protestant", "wittenberg");
+	    this.addUnit("regular", 1, "wittenberg");
+	    this.addUnit("regular", 1, "wittenberg");
+	    this.addUnit("luther", 1, "wittenberg");
 	  }
 
-	  //
-          // if we have come this far, move to the next turn
-          //
-          this.updateStatus("<div class='status-message' id='status-message'><span>Preparing for round</span> " + this.game.state.round+"</div>");
-
-          this.game.queue.push("turn");
-          for (let i = this.game.players.length; i > 0; i++) {
-            this.game.queue.push(`play\t${i}`);
-          }
 
           return 1;
         }
 
+        if (mv[0] === "event") {
+
+	  let player = mv[1];
+	  let card = mv[2];
+
+	  this.deck[card].triggerEvent(1);
+
+	  this.game.queue.splice(qe, 1);
+
+	}
 
         if (mv[0] === "play") {
 

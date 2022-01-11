@@ -6,6 +6,7 @@
   background-size: cover;
 }
 
+
 .gameboard {
   background-image: url("/his/img/gameboard-large.png");
   background-size: cover;
@@ -13,11 +14,36 @@
   height: 3164px;
 }
 
+.electorate_display {
+  position: absolute;
+  z-index: 10;
+  height: 100px;
+  width: 100px;
+}
 .space {
   position: absolute;
   z-index: 10;
   height: 100px;
   width: 100px;
+}
+
+.army_tile {
+  z-index: 20;
+  position: absolute;
+  top: 0px;
+  left: -10px;
+}
+.mercenary_tile {
+  z-index: 25;
+  position: absolute;
+  top: 10px;
+  left: 0px;
+}
+.debater_tile {
+  z-index: 30;
+  position: absolute;
+  top: 15px;
+  left: 20px;
 }
 
 .hextile {

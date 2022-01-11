@@ -42,7 +42,17 @@ console.log("\n\n\n\n");
     }
 
 
-
+    //
+    // add some units
+    //
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "worms");
+    this.addMercenary(2, "paris");
+    this.addDebater(2, "venice");
+console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
     //
     // and show the board

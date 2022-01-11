@@ -1,4 +1,24 @@
 
+
+  addRegular(player, space) {
+console.log("ADD REGULAR");
+    this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
+  }
+
+  addMercenary(player, space) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, "mercenary"));
+  }
+
+  addDebater(player, space) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, "debater"));
+  }
+
+  convertSpace(religion, space) {
+    this.spaces[space].religion = religion;
+    this.displayBoard();
+  }
+
+
   /////////////////////
   // Core Game State //
   /////////////////////
@@ -1374,9 +1394,52 @@
       type: "town"
     }
 
+
+    for (let key in spaces) {
+      spaces[key].units = [];
+      for (let i = 0; i < this.game.players.length; i++) {
+	spaces[key].units.push([]);
+      }
+    }
+
     return spaces;
 
   }
+
+
+  returnElectorateDisplay() {
+
+    let electorates = {};
+
+    electorates['augsburg'] = {
+      top: 190,
+      left: 3380,
+    }
+    electorates['trier'] = {
+      top: 190,
+      left: 3510,
+    }
+    electorates['cologne'] = {
+      top: 190,
+      left: 3642,
+    }
+    electorates['wittenberg'] = {
+      top: 376,
+      left: 3380,
+    }
+    electorates['mainz'] = {
+      top: 376,
+      left: 3510,
+    }
+    electorates['brandenburg'] = {
+      top: 376,
+      left: 3642,
+    }
+
+    return electorates;
+
+  }
+
   //
   // import space attaches events / functions to spaces if they do not exist
   //
@@ -1442,6 +1505,9 @@
     deck['008'] = { 
       img : "HIS-008.svg" , 
       name : "Card" ,
+      event : function(player) {
+alert("Luther's Event is Triggered!");
+      }
     }
     deck['009'] = { 
       img : "HIS-009.svg" , 

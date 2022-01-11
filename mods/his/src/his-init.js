@@ -84,5 +84,7 @@ class HereIStand extends GameTemplate {
     // initialize game objects
     //
     this.factions = {};
+    this.units = {};
+    this.deck = this.returnDeck();
 
 

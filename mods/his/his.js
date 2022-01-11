@@ -84,6 +84,8 @@ class HereIStand extends GameTemplate {
     // initialize game objects
     //
     this.factions = {};
+    this.units = {};
+    this.deck = this.returnDeck();
 
 
 
@@ -146,6 +148,28 @@ class HereIStand extends GameTemplate {
 
 
 
+    this.importUnit('regular', {
+      type		:	"regular" ,
+      name		: 	"Regular",
+    });
+ 
+    this.importUnit('mercenary', {
+      type		:	"mercenary" ,
+      name		: 	"Mercenary",
+    });
+ 
+    this.importUnit('cavalry', {
+      type		:	"cavalry" ,
+      name		: 	"Cavalry",
+    });
+ 
+    this.importUnit('debater', {
+      type		:	"debater" ,
+      name		: 	"Debater",
+    });
+ 
+
+
 
     //
     // initialize
@@ -189,7 +213,17 @@ console.log("\n\n\n\n");
     }
 
 
-
+    //
+    // add some units
+    //
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "london");
+    this.addRegular(1, "worms");
+    this.addMercenary(2, "paris");
+    this.addDebater(2, "venice");
+console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
     //
     // and show the board
@@ -480,6 +514,23 @@ console.log("\n\n\n\n");
       }
     }
 
+    //
+    // position electorate display
+    //
+    let elec = this.returnElectorateDisplay();
+    for (let key in elec) {
+      if (elec.hasOwnProperty(key)) {
+        try {
+          let obj = document.getElementById(`ed_${key}`);
+          obj.style.top = elec[key].top + "px";
+          obj.style.left = elec[key].left + "px";
+        } catch (err) {
+        }
+      }
+    }
+
+
+
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -526,6 +577,26 @@ console.log("\n\n\n\n");
   }
 
 
+
+
+
+  addRegular(player, space) {
+console.log("ADD REGULAR");
+    this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
+  }
+
+  addMercenary(player, space) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, "mercenary"));
+  }
+
+  addDebater(player, space) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, "debater"));
+  }
+
+  convertSpace(religion, space) {
+    this.spaces[space].religion = religion;
+    this.displayBoard();
+  }
 
 
   /////////////////////
@@ -1903,9 +1974,52 @@ console.log("\n\n\n\n");
       type: "town"
     }
 
+
+    for (let key in spaces) {
+      spaces[key].units = [];
+      for (let i = 0; i < this.game.players.length; i++) {
+	spaces[key].units.push([]);
+      }
+    }
+
     return spaces;
 
   }
+
+
+  returnElectorateDisplay() {
+
+    let electorates = {};
+
+    electorates['augsburg'] = {
+      top: 190,
+      left: 3380,
+    }
+    electorates['trier'] = {
+      top: 190,
+      left: 3510,
+    }
+    electorates['cologne'] = {
+      top: 190,
+      left: 3642,
+    }
+    electorates['wittenberg'] = {
+      top: 376,
+      left: 3380,
+    }
+    electorates['mainz'] = {
+      top: 376,
+      left: 3510,
+    }
+    electorates['brandenburg'] = {
+      top: 376,
+      left: 3642,
+    }
+
+    return electorates;
+
+  }
+
   //
   // import space attaches events / functions to spaces if they do not exist
   //
@@ -1971,6 +2085,9 @@ console.log("\n\n\n\n");
     deck['008'] = { 
       img : "HIS-008.svg" , 
       name : "Card" ,
+      event : function(player) {
+alert("Luther's Event is Triggered!");
+      }
     }
     deck['009'] = { 
       img : "HIS-009.svg" , 
@@ -2020,29 +2137,29 @@ console.log("handle game loop...");
 	  //
 	  // restore state
 	  //
-
-
-	  //
-	  // collect stats
-	  //
 	  if (this.game.state.round > 1) {
-	    //this.game.state.stats.round.push({});
-	    //this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+	    this.log.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	    this.convertSpace("protestant", "wittenberg");
+	    this.addUnit("regular", 1, "wittenberg");
+	    this.addUnit("regular", 1, "wittenberg");
+	    this.addUnit("luther", 1, "wittenberg");
 	  }
 
-	  //
-          // if we have come this far, move to the next turn
-          //
-          this.updateStatus("<div class='status-message' id='status-message'><span>Preparing for round</span> " + this.game.state.round+"</div>");
-
-          this.game.queue.push("turn");
-          for (let i = this.game.players.length; i > 0; i++) {
-            this.game.queue.push(`play\t${i}`);
-          }
 
           return 1;
         }
 
+        if (mv[0] === "event") {
+
+	  let player = mv[1];
+	  let card = mv[2];
+
+	  this.deck[card].triggerEvent(1);
+
+	  this.game.queue.splice(qe, 1);
+
+	}
 
         if (mv[0] === "play") {
 
@@ -2182,6 +2299,30 @@ console.log("importing faction " + name);
 
 
 
+
+  importUnit(name, obj) {
+
+    if (obj.type == null)               { obj.type = "unit"; }
+    if (obj.name == null)               { obj.name = "Unit"; }
+    if (obj.img == null)                { obj.img = ""; }
+
+    //obj = this.addEvents(obj);
+    this.units[name] = obj;
+
+  }
+
+  newUnit(player, type) {
+    for (let key in this.units) {
+      if (this.units[key].type === type) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = player;
+	return new_unit;
+      }
+    }
+    return null;
+  }
+
+
   displayFactionSheet(faction) {
     let html = this.factions[faction].returnFactionSheet(faction);
     this.overlay.showOverlay(this.app, this, html);
@@ -2193,13 +2334,14 @@ console.log("importing faction " + name);
 
       this.displayColony();
       this.displayConquest();
+      this.displayElectorateDisplay();
       this.displayNewWorld();
       this.displaySpaces();
       this.displayVictoryTrack();
 
     } catch (err) {
 
-      console.log("error displaying board...");
+      console.log("error displaying board... " + err);
 
     }
   }
@@ -2218,6 +2360,347 @@ console.log("importing faction " + name);
     this.overlay.showOverlay(this.app, this, html);
   }
 
+  displayElectorateDisplay() {
+
+    let elecs = this.returnElectorateDisplay();
+    for (let key in elecs) {
+      let obj = document.getElementById(`ed_${key}`);
+      let tile = this.returnSpaceTile(this.spaces[key]);
+      obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
+    }
+  }
+
+  returnSpaceTile(space) {
+
+    let owner = space.political;
+    if (owner == "") { owner = space.home; }
+    let tile = "";
+    let stype = "hex";
+
+    if (space.type == "town") { stype = "hex"; }
+    if (space.type == "key") { stype = "key"; }
+
+    if (owner != "") {
+      if (owner === "hapsburg") {
+        tile = "/his/img/tiles/hapsburg/";	  
+        if (space.religion === "protestant") {
+          tile += `Hapsburg_${stype}_back.svg`;
+        } else {
+          tile += `Hapsburg_${stype}.svg`;
+        }
+      }
+      if (owner === "england") {
+        tile = "/his/img/tiles/england/";	  
+        if (space.religion === "protestant") {
+          tile += `England_${stype}_back.svg`;
+        } else {
+          tile += `England_${stype}.svg`;
+        }
+      }
+      if (owner === "france") {
+        tile = "/his/img/tiles/france/";	  
+        if (space.religion === "protestant") {
+          tile += `France_${stype}_back.svg`;
+        } else {
+          tile += `France_${stype}.svg`;
+        }
+      }
+      if (owner === "papacy") {
+        tile = "/his/img/tiles/papacy/";	  
+        if (space.religion === "protestant") {
+          tile += `Papacy_${stype}_back.svg`;
+	} else {
+	  tile += `Papacy_${stype}.svg`;
+	}
+      }
+      if (owner === "protestant") {
+        tile = "/his/img/tiles/protestant/";	  
+        if (space.religion === "protestant") {
+          tile += `Protestant_${stype}_back.svg`;
+        } else {
+          tile += `Protestant_${stype}.svg`;
+        }
+      }
+      if (owner === "ottoman") {
+        tile = "/his/img/tiles/ottoman/";	  
+        if (space.religion === "protestant") {
+          tile += `Ottoman_${stype}_back.svg`;
+        } else {
+          tile += `Ottoman_${stype}.svg`;
+        }
+      }
+    }
+
+    return tile;
+
+  }
+
+  returnArmies(space) {
+
+    let html = '<div class="space_army" id="">';
+    let owner = space.political;
+    if (owner == "") { owner = space.home; }
+    let tile = "";
+
+
+    for (let z = 0; z < this.game.players.length; z++) {
+
+      let army = 0;
+      for (let zz = 0; zz < space.units[z].length; zz++) {
+	if (space.units[z][zz].type === "regular") {
+	  army++;
+	}
+      }
+
+      while (army >= 1) {
+        if (owner != "") {
+          if (owner === "hapsburg") {
+            tile = "/his/img/tiles/hapsburg/";	  
+	    if (army >= 4) {
+              tile += `HapsburgReg-4.svg`;
+	      army -= 4;
+	    }
+	    if (army >= 2) {
+              tile += `HapsburgReg-2.svg`;
+	      army -= 2;
+	    }
+	    if (army >= 1) {
+              tile += `HapsburgReg-1.svg`;
+	      army -= 1;
+	    }
+          }
+          if (owner === "england") {
+            tile = "/his/img/tiles/england/";	  
+	    if (army >= 4) {
+              tile += `EnglandReg-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `EnglandReg-2.svg`;
+	      army -= 4;
+            }
+	    if (army >= 1) {
+              tile += `EnglandReg-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "france") {
+            tile = "/his/img/tiles/france/";	  
+	    if (army >= 4) {
+              tile += `FrenchReg-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `FrenchReg-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `FrenchReg-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "papacy") {
+            tile = "/his/img/tiles/papacy/";	  
+	    if (army >= 4) {
+              tile += `PapacyReg-4.svg`;
+	      army -= 4;
+	    }
+	    if (army >= 2) {
+              tile += `PapacyReg-2.svg`;
+	      army -= 2;
+	    }
+	    if (army >= 1) {
+              tile += `PapacyReg-1.svg`;
+	      army -= 1;
+	    }
+          }
+          if (owner === "protestant") {
+            tile = "/his/img/tiles/protestant/";	  
+	    if (army >= 4) {
+              tile += `ProtestantReg-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `ProtestantReg-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `ProtestantReg-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "ottoman") {
+            tile = "/his/img/tiles/ottoman/";	  
+	    if (army >= 4) {
+              tile += `OttomanReg-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `OttomanReg-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `OttomanReg-1.svg`;
+	      army -= 1;
+            }
+          }
+        }
+        html += `<img class="army_tile" src="${tile}" />`;
+      }
+    }
+
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
+  returnMercenaries(space) {
+
+    let html = '<div class="space_mercenaries" id="">';
+    let owner = space.political;
+    if (owner == "") { owner = space.home; }
+    let tile = "";
+
+    for (let z = 0; z < this.game.players.length; z++) {
+
+      let army = 0;
+      for (let zz = 0; zz < space.units[z].length; zz++) {
+        if (space.units[z][zz].type === "mercenary") {
+          army++;
+        }
+      }
+
+      for (let i = 0; i < army; i+= 2) {
+        if (owner != "") {
+          if (owner === "hapsburg") {
+            tile = "/his/img/tiles/hapsburg/";	  
+	    if (army >= 4) {
+              tile += `HapsburgMerc-4.svg`;
+	      army -= 4;
+	    }
+	    if (army >= 2) {
+              tile += `HapsburgMerc-2.svg`;
+	      army -= 2;
+	    }
+	    if (army >= 1) {
+              tile += `HapsburgMerc-1.svg`;
+	      army -= 1;
+	    }
+          }
+          if (owner === "england") {
+            tile = "/his/img/tiles/england/";	  
+	    if (army >= 4) {
+              tile += `EnglandMerc-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `EnglandMerc-2.svg`;
+	      army -= 4;
+            }
+	    if (army >= 1) {
+              tile += `EnglandMerc-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "france") {
+            tile = "/his/img/tiles/france/";	  
+	    if (army >= 4) {
+              tile += `FrenchMerc-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `FrenchMerc-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `FrenchMerc-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "papacy") {
+            tile = "/his/img/tiles/papacy/";	  
+	    if (army >= 4) {
+              tile += `PapacyMerc-4.svg`;
+	      army -= 4;
+	    }
+	    if (army >= 2) {
+              tile += `PapacyMerc-2.svg`;
+	      army -= 2;
+	    }
+	    if (army >= 1) {
+              tile += `PapacyMerc-1.svg`;
+	      army -= 1;
+	    }
+          }
+          if (owner === "protestant") {
+            tile = "/his/img/tiles/protestant/";	  
+	    if (army >= 4) {
+              tile += `ProtestantMerc-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `ProtestantMerc-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `ProtestantMerc-1.svg`;
+	      army -= 1;
+            }
+          }
+          if (owner === "ottoman") {
+            tile = "/his/img/tiles/ottoman/";	  
+	    if (army >= 4) {
+              tile += `OttomanMerc-4.svg`;
+	      army -= 4;
+            }
+	    if (army >= 2) {
+              tile += `OttomanMerc-2.svg`;
+	      army -= 2;
+            }
+	    if (army >= 1) {
+              tile += `OttomanMerc-1.svg`;
+	      army -= 1;
+            }
+          }
+        }
+        html += `<img class="mercenary_tile" src="${tile}" />`;
+      }
+    }
+
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
+  returnDebaters(space) {
+
+    let html = '<div class="debater_tile" id="">';
+    let owner = space.political;
+    if (owner == "") { owner = space.home; }
+    let tile = "";
+
+    for (let z = 0; z < this.game.players.length; z++) {
+      for (let zz = 0; zz < space.units[z].length; zz++) {
+	if (space.units[z][zz].type === "debater") {
+          html += '<img src="/his/img/tiles/debaters/AleanderDebater_back.svg" />';
+	}
+      }
+    }
+
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
   displaySpaces() {
 
     //
@@ -2228,66 +2711,15 @@ console.log("importing faction " + name);
 
         let obj = document.getElementById(key);
 	let space = this.spaces[key];
+	let tile = this.returnSpaceTile(space);
+        let stype = "hex";
 
-	let owner = space.political;
-	if (owner == "") { owner = space.home; }
-	let tile = "";
-	let stype = "hex";
+        if (space.type == "town") { stype = "hex"; }
+        if (space.type == "key") { stype = "key"; }
 
-	if (space.type == "town") { stype = "hex"; }
-	if (space.type == "key") { stype = "key"; }
-
-	if (owner != "") {
-	  if (owner === "hapsburg") {
-	    tile = "/his/img/tiles/hapsburg/";	  
-	    if (space.religion === "protestant") {
-	      tile += `Hapsburg_${stype}_back.svg`;
-	    } else {
-	      tile += `Hapsburg_${stype}.svg`;
-	    }
-	  }
-	  if (owner === "england") {
-	    tile = "/his/img/tiles/england/";	  
-	    if (space.religion === "protestant") {
-	      tile += `England_${stype}_back.svg`;
-	    } else {
-	      tile += `England_${stype}.svg`;
-	    }
-	  }
-	  if (owner === "france") {
-	    tile = "/his/img/tiles/france/";	  
-	    if (space.religion === "protestant") {
-	      tile += `France_${stype}_back.svg`;
-	    } else {
-	      tile += `France_${stype}.svg`;
-	    }
-	  }
-	  if (owner === "papacy") {
-	    tile = "/his/img/tiles/papacy/";	  
-	    if (space.religion === "protestant") {
-	      tile += `Papacy_${stype}_back.svg`;
-	    } else {
-	      tile += `Papacy_${stype}.svg`;
-	    }
-	  }
-	  if (owner === "protestant") {
-	    tile = "/his/img/tiles/protestant/";	  
-	    if (space.religion === "protestant") {
-	      tile += `Protestant_${stype}_back.svg`;
-	    } else {
-	      tile += `Protestant_${stype}.svg`;
-	    }
-	  }
-	  if (owner === "ottoman") {
-	    tile = "/his/img/tiles/ottoman/";	  
-	    if (space.religion === "protestant") {
-	      tile += `Ottoman_${stype}_back.svg`;
-	    } else {
-	      tile += `Ottoman_${stype}.svg`;
-	    }
-	  }
-	}
-
+	//
+	// should we show the tile?
+	//
 	let show_tile = 1;
 
 	//
@@ -2302,11 +2734,16 @@ console.log("importing faction " + name);
 	if (space.home === "" && space.political !== "") { show_tile = 1; }
 	if (space.type === "key") { show_tile = 1; }
 
+	//
+	// sanity check
+	//
+	if (tile === "") { show_tile = 0; }
 
 	if (show_tile === 1) {
-	  obj.innerHTML = `
-	    <img class="${stype}tile" src="${tile}" />
-	  `;
+	  obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+	  obj.innerHTML += this.returnArmies(space);
+	  obj.innerHTML += this.returnMercenaries(space);
+	  obj.innerHTML += this.returnDebaters(space);
 	}
 
       }
