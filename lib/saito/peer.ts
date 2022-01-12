@@ -113,8 +113,11 @@ class Peer {
       clearInterval(this.keep_alive_timer);
     }
     this.keep_alive_timer = setInterval(() => {
-      // console.log("sending ping");
-      this.sendRequest("PINGPING");
+      try {
+        this.sendRequest("PINGPING");
+      } catch (err) {
+        console.log("ping is not working");
+      }
     }, 10000);
   }
 

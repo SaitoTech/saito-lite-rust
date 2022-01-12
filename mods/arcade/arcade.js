@@ -100,7 +100,16 @@ class Arcade extends ModTemplate {
     // add my own games (as fake txs)
     //
     if (this.app.options.games != null) {
-      this.addGamesToOpenList(this.app.options.games.map((game) => { return this.createGameTXFromOptionsGame(game);}));
+      for (let z = 0; z < this.app.options.games.length; z++) {
+        let game = this.app.options.games[z];
+
+console.log("CONSIDERING GAME");
+console.log(JSON.stringify(game));
+        if (game.over == 1 || (game.players_set == 1 && !game.players.includes(app.wallet.returnPublicKey()))) {} else {
+console.log("ADDING GAME!");
+          this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
+        }
+      }
     }
 
     //
@@ -287,16 +296,11 @@ class Arcade extends ModTemplate {
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
     if (tx.transaction) {
-console.log("A");
       if (!tx.transaction.sig) { return; }
-console.log("B");
       if (tx.msg.over == 1) { return; }
-console.log("C");
 
       for (let i = 0; i < this.games.length; i++) {
-console.log("E");
         if (this.games[i].transaction.sig == txmsg.game_id) {
-console.log("F");
 
           let number_of_willing_players = this.games[i].msg.players.length;
           let number_of_players_needed  = this.games[i].msg.players_needed;
@@ -305,8 +309,6 @@ console.log("F");
           console.log("NUMBER OF PLAYERS NEEDED IN THIS GAME: " + number_of_players_needed);
 
           if (number_of_willing_players >= number_of_players_needed) {
-
-console.log("starting player must kick off!");
 
             //
             // first player is the only one with a guaranteed consistent order in all 
@@ -346,7 +348,6 @@ try {
       // notify SPV clients of "open", "join" and "close"(, and "accept") messages
       //
       if (app.BROWSER == 0 && txmsg.request == "open" || txmsg.request == "join" || txmsg.request == "accept" || txmsg.request == "close") {
-console.log("NOTIFY PEERS OF: " + txmsg.request);
         this.notifyPeers(app, tx);
       }
 
@@ -426,8 +427,6 @@ console.log("NOTIFY PEERS OF: " + txmsg.request);
           return;
         }
 
-
-
         //
         // make sure game in options file
         //
@@ -467,7 +466,6 @@ console.log("NOTIFY PEERS OF: " + txmsg.request);
                   }
                 }
               }
-
               //
               // only load games that are for us
               //
@@ -629,11 +627,130 @@ console.log("NOTIFY PEERS OF: " + txmsg.request);
       // accept msgs -- remove games from list
       //
       if (txmsg.request == "accept") {
+
+        //
+        // multiplayer games might hit here without options.games
+        // in which case we need to import game details including
+        // options, etc.
+        //
+        if (this.app.BROWSER == 1) {
+
+
+          //
+          // do not process if transaction is not for us
+          //
+          if (!tx.isTo(app.wallet.returnPublicKey())) {
+            return;
+          }
+
+          //
+          // make sure game in options file
+          //
+          if (!this.app.options.games) {
+            this.app.options.games = [];
+          }
+
+          if (this.app.options.games) {
+            let game_found = false;
+            for (let i = 0; i < this.app.options.games.length; i++) {
+              if (this.app.options.games[i].id == txmsg.game_id) {
+                game_found = true;
+              }
+            }
+
+            if (game_found == false) {
+
+              //
+              // copied above reject all tx not to us NEW
+              //
+              if (!tx.isTo(app.wallet.returnPublicKey())) {
+                if (this.games.length > 0) {
+                  for (let i = 0; i < this.games.length; i++) {
+                    let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
+                    if (transaction.sig == txmsg.game_id) {
+                      //
+                      // remove game (accepted players are equal to number needed)
+                      //
+                      transaction.msg = Object.assign({ players_needed: 0, players: [] }, this.games[i].msg);
+                      if (parseInt(transaction.msg.players_needed) >= (transaction.msg.players.length + 1)) {
+                        this.removeGameFromOpenList(txmsg.game_id); //on confirmation
+                      }
+                    }
+                  }
+                }
+              }
+
+              //
+              // only load games that are for us
+              //
+              // this eliminates observer mode....
+              //
+              if (tx.isTo(app.wallet.returnPublicKey())) {
+                let gamemod = this.app.modules.returnModule(tx.msg.game);
+                if (gamemod) {
+                  gamemod.loadGame(tx.msg.game_id);
+                }
+              }
+            }
+          }
+
+
+          if (this.app.options != undefined) {
+            if (this.app.options.games != undefined) {
+              for (let i = 0; i < this.app.options.games.length; i++) {
+                if (this.app.options.games[i].id == txmsg.game_id) {
+                  if (this.app.options.games[i].initializing == 0) {
+
+                    //
+                    // is this old? exit
+                    //
+                    let currentTime = new Date().getTime();
+                    if ((currentTime - this.app.options.games[i].ts) > 5000) {
+                      //console.log(`${currentTime} ------- ${this.app.options.games[i].ts}`);
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          //
+          // also possible this is game in our displayed list
+          //
+          if (!tx.isTo(app.wallet.returnPublicKey())) {
+            if (this.games.length > 0) {
+              for (let i = 0; i < this.games.length; i++) {
+                let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
+                if (transaction.sig == txmsg.game_id) {
+                  transaction.msg = Object.assign({ players_needed: 0, players: [] }, this.games[i].msg);
+                  if (parseInt(transaction.msg.players_needed) == (transaction.msg.players.length + 1)) {
+                    this.removeGameFromOpenList(txmsg.game_id); // handle peer
+                  }
+                }
+              }
+            }
+          }
+
+
           this.removeGameFromOpenList(txmsg.game_id);
           if (txmsg.players.includes(app.wallet.returnPublicKey())) {
             siteMessage(txmsg.module + ' invite accepted.', 20000);
             app.browser.sendNotification('Game Accepted', txmsg.module + ' invite accepted.', 'game-acceptance-notification');
+
+            await this.receiveAcceptRequest(null, tx, 0, this.app);
+
+            //
+            // only launch game if it is for us -- observer mode?
+            //
+            console.info("THIS GAMEIS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
+            console.info("OUR GAMES: ", this.app.options.games);
+            // game is over, we don't care
+            if (tx.msg.over) { if (tx.msg.over == 1) { return; } }
+            this.launchGame(txmsg.game_id);
+
           }
+        }
       }
 
 
@@ -1406,8 +1523,6 @@ console.log("NOTIFY PEERS OF: " + txmsg.request);
 
   createGameTXFromOptionsGame(game) {
 
-console.log("we have an existing game!");
-
     let game_tx = new saito.default.transaction();
 
     //
@@ -1415,7 +1530,9 @@ console.log("we have an existing game!");
     //
     console.info("GAME OVER + LAST BLOCK: " + game.over + " -- " + game.last_block + " -- " + game.id);
 
-    if (game.over) { if (game.last_block > 0) { return; } }
+    if (game.over) { if (game.last_block > 0) { 
+      return; 
+    } }
 
     if (game.players) {
       game_tx.transaction.to = game.players.map(player => new saito.default.slip(player));
@@ -1453,9 +1570,26 @@ console.log("we have an existing game!");
 
     // if the game is very old, remove it
     for (let i = 0; i < this.games.length; i++) {
-      let gamets = parseInt(this.games[i].transaction.ts);
-      let timepassed = (new Date().getTime()) - gamets;
-      if (timepassed > this.old_game_removal_delay) {
+
+      let remove_this_game = 0;
+      let include_this_game = 0;
+
+console.log("PLAYERS: " + JSON.stringify(this.games[i].msg));
+
+      if (this.games[i].msg?.players?.includes(this.app.wallet.returnPublicKey())) {
+console.log("INCLUDING GAME!");
+	include_this_game = 1;
+      }
+
+      if (include_this_game == 0) {
+        let gamets = parseInt(this.games[i].transaction.ts);
+        let timepassed = (new Date().getTime()) - gamets;
+        if (timepassed > this.old_game_removal_delay) {
+	  remove_this_game = 1;
+        }
+      }
+
+      if (remove_this_game == 1 && include_this_game == 0) {
         this.games.splice(i, 1);
         removed_old_games = 1;
         i--;
@@ -1573,12 +1707,15 @@ console.log("we have an existing game!");
   }
   addGameToOpenList(tx) {
     let valid_game = this.validateGame(tx);
+console.log("is this a valid game: " + valid_game);
     if (valid_game) {
       let for_us = this.isForUs(tx);
       if (for_us) {
         this.games.unshift(tx);
       }
+console.log("about to run remove game!");
       let removed_game = this.removeOldGames();
+console.log("removed game? " + removed_game + " -- " + for_us);
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
@@ -1589,7 +1726,6 @@ console.log("we have an existing game!");
     let for_us = false;
     txs.forEach((tx, i) => {
       let valid_game = this.validateGame(tx);
-console.log("is this a valid game? " + valid_game);
       if (valid_game){
         let this_game_is_for_us = this.isForUs(tx);
         if (this_game_is_for_us) {
@@ -1600,7 +1736,6 @@ console.log("is this a valid game? " + valid_game);
       
     });
     //let removed_game = this.removeOldGames();
-console.log("fu: " + for_us);
     //if (for_us || removed_game){
     if (for_us) {
       this.renderArcadeMain(this.app, this);

@@ -296,7 +296,7 @@ module.exports = ArcadeMain = {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
-      /***** FAILS
+/***** FAILS
       // try to relay
       let relay_mod = app.modules.returnModule('Relay');
       if (relay_mod != null && accepted_game.initialize_game_offchain_if_possible == 1) {
@@ -390,12 +390,22 @@ module.exports = ArcadeMain = {
               let newtx = mod.createAcceptTransaction(accepted_game);
               mod.app.network.propagateTransaction(newtx);
 
-              /***** FAILS
-      let relay_mod = app.modules.returnModule('Relay');
-      if (relay_mod != null) {
-        relay_mod.sendRelayMessage(accepted_game.msg.players, 'game relay gamemove', newtx);
-      }
-******/
+
+              let my_publickey = app.wallet.returnPublicKey();
+              let { players } = accepted_game.returnMessage();
+              let peers = [];
+              for (let i = 0; i < app.network.peers.length; i++) {
+                peers.push(app.network.peers[i].returnPublicKey());
+              }
+
+	      //
+	      // try fast accept
+	      //
+let relay_mod = app.modules.returnModule("Relay");
+if (relay_mod != null) {
+  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+}
 
               GameLoader.render(app, mod);
               GameLoader.attachEvents(app, mod);
@@ -447,7 +457,11 @@ module.exports = ArcadeMain = {
         existing_game.ts = new Date().getTime();
         existing_game.initialize_game_run = 0;
         app.storage.saveOptions();
-        window.location = '/' + existing_game.slug.toLowerCase();
+
+        let game_mod = app.modules.returnModule(existing_game.module);
+	if (game_mod) {
+          window.location = '/' + game_mod.returnSlug().toLowerCase();
+        }
         return;
       }
     }
