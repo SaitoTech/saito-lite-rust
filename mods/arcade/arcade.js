@@ -674,6 +674,7 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
 		// launch init
 		//
 		this.launchGame(txmsg.game_id);
+		return;
 
               }
             }
