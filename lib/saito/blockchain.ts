@@ -746,6 +746,11 @@ class Blockchain {
     //
     // new chain must have more accumulated work AND be longer
     //
+    console.log(
+      `blockchain.isNewChainTheLongestChain : old_bf = ${old_bf} && new_bf = ${new_bf}`,
+      new_chain,
+      old_chain
+    );
     return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
