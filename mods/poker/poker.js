@@ -328,6 +328,14 @@ class Poker extends GameTemplate {
     this.log.render(app, this);
     this.log.attachEvents(app, this);
     this.restoreLog();
+
+    this.playerbox.render(app, this);
+    this.playerbox.attachEvents(app, this); //empty function
+    this.playerbox.addClassAll("poker-seat-",true);
+    //this.playerbox.addGraphicClass("hand");   
+    //this.playerbox.addGraphicClass("tinyhand");   
+    this.playerbox.addStatus(); //enable update Status to display in playerbox
+    
   }
 
 
@@ -680,7 +688,7 @@ console.log("A");
           } else {
 console.log("B");
             this.updateStatus("Waiting for " + this.game.state.player_names[mv[1] - 1]);
-            this.updatePlayerLog(parseInt(mv[1]), "player turn");
+            this.playerbox.refreshLog("player turn", parseInt(mv[1]));
             return 0;
           }
 
@@ -964,7 +972,7 @@ console.log("winners are all");
         let player = parseInt(mv[1]);
         let amount_to_call = 0;
 
-        this.updatePlayerLog(player, "call");
+        this.playerbox.refreshLog("call", player);
         if (this.game.state.required_pot > this.game.state.player_pot[player - 1]) {
           amount_to_call = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         }
@@ -998,7 +1006,8 @@ console.log("winners are all");
       if (mv[0] === "fold") {
 
         let player = parseInt(mv[1]);
-        this.updatePlayerLog(player, "fold");
+
+        this.playerbox.refreshLog("fold", player);
         this.updateLog(this.game.state.player_names[player - 1] + " folds");
 
         this.game.state.passed[player - 1] = 1;
@@ -1091,7 +1100,7 @@ console.log("plays since last raise is now 1 because of raise...");
 
           if (raise_portion > 0) {
             this.updateLog(this.game.state.player_names[player - 1] + " raises " + raise_portion + " to " + this.game.state.player_pot[player-1]);
-            this.updatePlayerLog(player, "raises " + raise_portion);
+            this.playerbox.refreshLog("raises " + raise_portion, player);
           } else {
             this.updateLog(this.game.state.player_names[player - 1] + " calls " + call_portion + ".");
           }
@@ -1105,7 +1114,7 @@ console.log("plays since last raise is now 1 because of raise...");
           this.game.state.last_raise = raise;
 
           this.updateLog(this.game.state.player_names[player - 1] + " raises " + raise + " to " + this.game.state.player_pot[player-1]);
-          this.updatePlayerLog(player, "raises " + raise);
+          this.playerbox.refreshLog("raises " + raise,player);
 
         }
         this.game.queue.splice(qe, 1);
@@ -1530,120 +1539,46 @@ console.log("STATE: " + JSON.stringify(state));
 
 
 
-  updatePlayerLog(player, msg) {
-
-    let divname = "#player-info-log-" + (player);
-    let logobj = document.querySelector(divname);
-    if (logobj) {
-      logobj.innerHTML = msg;
-    }
-
-  }
-
-
-  returnPlayersBoxArray() {
-
-    let player_box = [];
-
-    if (this.game.players.length == 2) { player_box = [1, 4]; }
-    if (this.game.players.length == 3) { player_box = [1, 3, 5]; }
-    if (this.game.players.length == 4) { player_box = [1, 3, 4, 5]; }
-    if (this.game.players.length == 5) { player_box = [1, 2, 3, 5, 6]; }
-    if (this.game.players.length == 6) { player_box = [1, 2, 3, 4, 5, 6]; }
-
-    return player_box;
-
-  }
-
-  returnViewBoxArray() {
-
-    let player_box = [];
-
-    if (this.game.players.length == 2) { player_box = [3, 5]; }
-    if (this.game.players.length == 3) { player_box = [3, 4, 5]; }
-    if (this.game.players.length == 4) { player_box = [2, 3, 5, 6]; }
-    if (this.game.players.length == 5) { player_box = [2, 3, 4, 5, 6]; }
-
-    return player_box;
-
-  }
 
   displayPlayers() {
 
-    let player_box = "";
-
+    /*let player_box = "";
     var prank = "";
-    if (this.game.players.includes(this.app.wallet.returnPublicKey())) {
-      player_box = this.returnPlayersBoxArray();
-      prank = this.game.players.indexOf(this.app.wallet.returnPublicKey());
-    } else {
-      //salert("You are not in or have been removed from this game.")
-      //return;
+    if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
       document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
       document.querySelector('.cardfan').classList.add('hidden');
       player_box = this.returnViewBoxArray();
-    }
+    }*/
 
-    //console.log("this is player: " + this.game.player + " - with key: " + this.app.wallet.returnPublicKey());
-    //console.log(this.game.players[this.game.player - 1] + " - " + this.app.wallet.returnPublicKey());
-    //console.log(this.game.players);
-
-    //var seat_adjust = (this.game.players.length-(this.game.player-1)); //+1?
-
-    for (let j = 2; j < 7; j++) {
-      let boxobj = document.querySelector("#player-info-" + j);
-      if (!player_box.includes(j)) {
-        boxobj.style.display = "none";
-      } else {
-        boxobj.style.display = "block";
-      }
-    }
-
-
-    for (let i = 0; i < this.game.players.length; i++) {
-
-      let seat = i - prank;
-      if (seat < 0) { seat += this.game.players.length }
-
-      let player_box_num = player_box[seat];
-      let divname = "#player-info-" + player_box_num;
-      let boxobj = document.querySelector(divname);
-
-      let newhtml = `
-      <div class="player-info-hand hand tinyhand" id="player-info-hand-${i + 1}">
-      `;
-
-      newhtml += `
-          <img class="card" src="${this.card_img_dir}/red_back.png">
-          <img class="card" src="${this.card_img_dir}/red_back.png">
-      `;
-      newhtml += `
-        </div>
-        <div class="player-info-name" id="player-info-name-${i + 1}">${this.game.state.player_names[i]}</div>
-        <div class="player-info-chips" id="player-info-chips-${i + 1}">${this.sizeNumber(this.game.state.player_credit[i])} ${this.game.crypto}</div> 
-        
-      `;
-      boxobj.querySelector(".info").innerHTML = newhtml;
-
-      if (boxobj.querySelector(".plog").innerHTML == "") {
-        boxobj.querySelector(".plog").innerHTML += `<div class="player-info-log" id="player-info-log-${i + 1}"></div>`;
-      }
-
-    }
-
-    //
-    // display dealer
-    //
-    document.querySelector('.dealer').innerHTML = this.game.state.big_blind_player;
-
+    
     var dealer = 1 + ((this.game.players.length + this.game.state.big_blind_player + 1) % this.game.players.length);
-    document.querySelector('#player-info-name-' + dealer).classList.add("dealerbutton");
-    document.querySelector('#player-info-name-' + this.game.state.big_blind_player).classList.add("bigblind");
-    document.querySelector('#player-info-name-' + this.game.state.small_blind_player).classList.add("smallblind");
-    //
-    // hide empty
-    //
+ 
+    for (let i = 1; i <= this.game.players.length; i++) {
+      let playerClass = "";
+      if (i === dealer){
+        playerClass = "dealerbutton";
+      }
+      if (i === this.game.state.big_blind_player){
+        playerClass = "bigblind";
+      }
+      if (i === this.game.state.small_blind_player){
+        playerClass = "smallblind";
+      }
 
+      this.playerbox.refreshName(i,"",playerClass);
+      this.playerbox.refreshInfo(`<div class="player-info-chips" id="player-info-chips-${i}">${this.sizeNumber(this.game.state.player_credit[i-1])} ${this.game.crypto}</div>`,i);
+      
+      //Show backs of cards
+      let newhtml = `
+        <div class="player-info-hand hand tinyhand">
+          <img class="card" src="${this.card_img_dir}/red_back.png">
+          <img class="card" src="${this.card_img_dir}/red_back.png">
+        </div>
+      `;
+      if (i != this.game.player){
+        this.playerbox.refreshGraphic(newhtml,i);  
+      }
+    }
 
   }
 
@@ -1657,6 +1592,7 @@ console.log("STATE: " + JSON.stringify(state));
     //
     // display flip pool (cards on table)
     //
+    document.querySelector('.dealer').innerHTML = this.game.state.big_blind_player; //is that right???
 
     document.querySelector('#deal').innerHTML = "";
 
@@ -2832,7 +2768,9 @@ console.log("STATE: " + JSON.stringify(state));
         status_obj.innerHTML = str;
       }
     }
-    } catch (err) { }
+    } catch (err) { 
+      console.error(err);
+      }
 
   }
 
