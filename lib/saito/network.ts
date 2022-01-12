@@ -230,7 +230,6 @@ class Network {
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
-      console.log("URL: " + url);
       const res = await fetch(url);
       if (res.ok) {
         const base64Buffer = await res.arrayBuffer();
@@ -511,7 +510,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.debug("network.receiveRequest : ", message);
+    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -772,8 +771,6 @@ console.log("received ping...");
                 }
               }
             }
-
-            console.log("received msg: " + JSON.stringify(msg));
 
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
