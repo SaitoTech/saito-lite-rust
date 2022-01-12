@@ -511,7 +511,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.debug("network.receiveRequest : ", message);
+    console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
