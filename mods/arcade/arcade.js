@@ -621,6 +621,64 @@ try {
       if (txmsg.request == "join") {
         this.joinGameOnOpenList(tx);
         this.receiveJoinRequest(blk, tx, conf, app);
+
+
+        //
+        // it is possible that we have multiple joins that bring us up to
+        // the required number of players, but that did not arrive in the
+        // one-by-one sequence needed for the last player to trigger an
+        // "accept" request instead of another "join".
+        //
+        // in this case the last player sends an accept request which triggers
+        // the start of the game automatically.
+        //
+        if (tx.transaction) {
+          if (!tx.transaction.sig) { return; }
+          if (tx.msg.over == 1) { return; }
+
+          for (let i = 0; i < this.games.length; i++) {
+            if (this.games[i].transaction.sig == txmsg.game_id) {
+
+              let number_of_willing_players = this.games[i].msg.players.length;
+              let number_of_players_needed  = this.games[i].msg.players_needed;
+
+              console.log("NUMBER OF WILLING PLAYERS IN THIS GAME: " + number_of_willing_players);
+              console.log("NUMBER OF PLAYERS NEEDED IN THIS GAME: " + number_of_players_needed);
+
+              if (number_of_willing_players >= number_of_players_needed) {
+
+                //
+                // first player is the only one with a guaranteed consistent order in all
+                // browsers -- cannot use last player to join as players may disagree on
+                // their order. so the first player is responsible for processing the "accept"
+                //
+
+console.log("WHO SHOULD KICK-OFF?");
+console.log(this.games[i].msg.players[0]);
+
+                if (this.games[i].msg.players[0] == this.app.wallet.returnPublicKey()) {
+
+console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
+
+                  // i should send an accept request to kick this all off
+                  this.games[i].msg.players.splice(0, 1);
+                  this.games[i].msg.players_sigs.splice(0, 1);
+
+                  let newtx = this.createAcceptTransaction(this.games[i]);
+                  this.app.network.propagateTransaction(newtx);
+
+                }
+
+
+		//
+		// launch init
+		//
+		this.launchGame(txmsg.game_id);
+
+              }
+            }
+          }
+        }
       }
 
       //
@@ -1153,6 +1211,8 @@ try {
   
   createAcceptTransaction(gametx) {
 
+console.log("CREATE ACCEPT TX");
+
     let txmsg = gametx.returnMessage();
 
     let accept_sig = this.app.crypto.signMessage(("invite_game_" + txmsg.ts), this.app.wallet.returnPrivateKey());
@@ -1299,7 +1359,11 @@ try {
 
   launchGame(game_id) {
 
+console.log("LAUNCH GAME 1");
+
     if (this.browser_active == 0) { return; }
+
+console.log("LAUNCH GAME 2");
 
     let arcade_self = this;
     arcade_self.is_initializing = true;
@@ -1313,7 +1377,22 @@ try {
         }
       }
 
-      if (game_idx == -1) { return; }
+console.log("LAUNCH GAME IDX: " + game_idx);
+
+      //
+      // we hit this if we have the sufficient number of joins but
+      // are waiting for the original creator to hit the accept tx
+      //
+      if (game_idx == -1) {
+
+        GameLoader.render(this.app, this, game_idx);
+        //GameLoading.attachEvents(this.app, this);
+        //this.viewing_arcade_initialization_page = 1;
+	return;
+
+      }
+
+console.log("LAUNCH GAME 3");
 
       if (arcade_self.app.options.games[game_idx].initializing == 0) {
 
@@ -1337,6 +1416,8 @@ try {
             }
           }
         }
+
+console.log("LAUNCH GAME 4");
         
         if (ready_to_go == 0) {
           console.log("transaction for this game still in pending...");
