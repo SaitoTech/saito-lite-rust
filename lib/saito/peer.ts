@@ -5,7 +5,6 @@ import Hop from "./hop";
 import Transaction from "./transaction";
 
 class Peer {
-
   public keep_alive_timer: any;
   public app: Saito;
   public id: number;
@@ -110,18 +109,17 @@ class Peer {
   // keepAlive
   //
   keepAlive() {
-
-    if (this.keep_alive_timer != null) { clearInterval(this.keep_alive_timer); }
+    if (this.keep_alive_timer != null) {
+      clearInterval(this.keep_alive_timer);
+    }
     this.keep_alive_timer = setInterval(() => {
       try {
         this.sendRequest("PINGPING");
       } catch (err) {
-	console.log("ping is not working");
+        console.log("ping is not working");
       }
     }, 10000);
-
   }
-
 
   returnPublicKey() {
     return this.peer.publickey;

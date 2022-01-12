@@ -4,6 +4,7 @@ import { Saito } from "../../apps/core";
 import Blockring from "./blockring";
 import Staking from "./staking";
 import Transaction, { TransactionType } from "./transaction";
+import Block from "./block";
 
 class Blockchain {
   public app: Saito;
@@ -745,6 +746,11 @@ class Blockchain {
     //
     // new chain must have more accumulated work AND be longer
     //
+    console.log(
+      `blockchain.isNewChainTheLongestChain : old_bf = ${old_bf} && new_bf = ${new_bf}`,
+      new_chain,
+      old_chain
+    );
     return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
@@ -998,7 +1004,7 @@ class Blockchain {
       search_depth_idx += 1;
 
       if (this.blocks[latest_block_hash]) {
-        const block = this.blocks[latest_block_hash];
+        const block: Block = this.blocks[latest_block_hash];
 
         //console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
 
@@ -1009,7 +1015,9 @@ class Blockchain {
           }
         }
 
-        console.log("does block have GT: " + block.hasGoldenTicket());
+        console.log(
+          `does block [${block.returnHash()}] have GT: ${block.hasGoldenTicket()}`
+        );
 
         if (block.hasGoldenTicket()) {
           golden_tickets_found += 1;
