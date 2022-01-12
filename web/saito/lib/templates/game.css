@@ -172,7 +172,7 @@ game-overlay-cardlist-button {
   border-radius: 5px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--saito-skyline-grey);
-  margin: 3px;
+  margin: 1px 1px 3px 3px;
   z-index: 50;
 }
 .game-menu ul {
@@ -619,6 +619,11 @@ ul li a {
 .player-box .plog {
   margin: 0.5em;
 }
+
+.player-box.active{
+  border: 3px solid silver;
+}
+
 
 .player-box-head{
    width: 100%;
