@@ -18,8 +18,11 @@ class Handshake {
       publickey: this.app.wallet.returnPublicKey(),
       challenge: Math.floor(Math.random() * 100_000_000_000_000),
       lite: this.app.BROWSER,
-      server_port: this.app.BROWSER ? 0 : this.app.server.server.port,
-      server_ip: this.app.BROWSER ? "" : this.app.server.server.host,
+      server_port: this.app.BROWSER ? 0 : this.app.server.server.endpoint.port,
+      server_ip: this.app.BROWSER ? "" : this.app.server.server.endpoint.host,
+      server_protocol: this.app.BROWSER
+        ? ""
+        : this.app.server.server.endpoint.protocol,
     };
   }
 
@@ -34,6 +37,8 @@ class Handshake {
       Buffer.from(this.app.binary.u32AsBytes(h.server_port)),
       Buffer.from(this.app.binary.u32AsBytes(h.server_ip.length)),
       Buffer.from(h.server_ip, "utf-8"),
+      Buffer.from(this.app.binary.u32AsBytes(h.server_protocol.length)),
+      Buffer.from(h.server_protocol),
     ]);
   }
 
@@ -47,9 +52,18 @@ class Handshake {
     h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(41, 49)));
 
     h2.server_port = this.app.binary.u32FromBytes(buffer.slice(49, 53));
-    const length = Number(this.app.binary.u32FromBytes(buffer.slice(53, 57)));
+    let length = Number(this.app.binary.u32FromBytes(buffer.slice(53, 57)));
 
     h2.server_ip = Buffer.from(buffer.slice(57, 57 + length)).toString("utf-8");
+
+    const offset = 57 + length;
+    length = Number(
+      this.app.binary.u32FromBytes(buffer.slice(offset, offset + 4))
+    );
+    h2.server_protocol = Buffer.from(
+      buffer.slice(offset + 4, offset + 4 + length),
+      "utf-8"
+    );
 
     return h2;
   }
@@ -79,6 +93,7 @@ class Handshake {
     } else {
       peer.peer.host = h2.server_ip;
       peer.peer.port = h2.server_port;
+      peer.peer.protocol = h2.server_protocol;
     }
 
     this.app.connection.emit("handshake_complete", peer);
