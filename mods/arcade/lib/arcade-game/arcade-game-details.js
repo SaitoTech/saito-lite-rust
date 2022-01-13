@@ -167,7 +167,7 @@ module.exports = ArcadeGameDetails = {
           mod.launchSinglePlayerGame(app, gamedata); 
           return;
         } else {
-          mod.overlay.hideOverlay();
+          mod.overlay.hide();
           document.getElementById('background-shim').destroy();
 
           let newtx = mod.createOpenTransaction(gamedata);

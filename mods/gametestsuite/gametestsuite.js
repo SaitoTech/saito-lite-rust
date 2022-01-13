@@ -579,7 +579,7 @@ class GameTestSuite extends GameTemplate {
 
     this.overlay.showOverlay(this.app, this, overlay_html);
     this.overlay.blockClose();
-    document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hideOverlay(); }
+    document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 
   }
 

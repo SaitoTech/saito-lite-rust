@@ -444,7 +444,7 @@ class Twilight extends GameTemplate {
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
-	twilight_self.overlay.hideOverlay();
+	twilight_self.overlay.hide();
         return;
       }
       if (action2 == "enable_hud_horizontal") {
@@ -454,7 +454,7 @@ class Twilight extends GameTemplate {
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
-	twilight_self.overlay.hideOverlay();
+	twilight_self.overlay.hide();
         return;
       }
 

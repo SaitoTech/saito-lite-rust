@@ -98,9 +98,6 @@ class Thirteen extends GameTemplate {
       mod.respondTo('chat-manager').attachEvents(app, this);
     });
 
-    this.overlay.render(app, this);
-    this.overlay.attachEvents(app, this);
-
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -659,7 +656,7 @@ class Thirteen extends GameTemplate {
 
 	  this.overlay.showCardSelectionOverlay(this.app, this, this.game.deck[0].hand, { columns : 3 , textAlign : "center" , cardlistWidth: "90vw" , title : html , subtitle : "earn points by beating your opponent in this domain by turn's end" , onCardSelect : function (card) {
 
-	    thirteen_self.overlay.hideOverlay();
+	    thirteen_self.overlay.hide();
 
 	    thirteen_self.addMove("RESOLVE");
 	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {

@@ -2921,7 +2921,7 @@ class Settlers extends GameTemplate {
   */
   stopTrading() {
     this.game.state.canTrade = false; //Once you spend resources, you can no longer trade
-    this.overlay.hideOverlay();
+    this.overlay.hide();
     let nodes = document.querySelectorAll(".pbtrade");
     for (let i = 0; i < nodes.length; i++) {
       nodes[i].remove();
@@ -2938,7 +2938,7 @@ class Settlers extends GameTemplate {
       if (this.game.confirms_needed[i]) {
         this.game.confirms_needed[i] = 0;
         if (this.game.player == i + 1) {
-          this.overlay.hideOverlay();
+          this.overlay.hide();
         }
       }
     }
@@ -3213,7 +3213,7 @@ class Settlers extends GameTemplate {
             )}\t${JSON.stringify(receiving)}`
           );
         }
-        settlers_self.overlay.hideOverlay();
+        settlers_self.overlay.hide();
         settlers_self.endTurn();
       });
     };
@@ -3302,7 +3302,7 @@ class Settlers extends GameTemplate {
           //Lazy way
           settlers_self.addMove(`advertisement\t${settlers_self.game.player}\t${JSON.stringify(offering)}\t${JSON.stringify(receiving)}`);
           settlers_self.endTurn();
-          settlers_self.overlay.hideOverlay();
+          settlers_self.overlay.hide();
           */
       //Old way
       let old_turn = settlers_self.game.turn;
@@ -3315,7 +3315,7 @@ class Settlers extends GameTemplate {
       settlers_self.sendMessage("game", {}, function () {
         settlers_self.game.turn = old_turn;
       });
-      settlers_self.overlay.hideOverlay();
+      settlers_self.overlay.hide();
     });
   }
 
@@ -3382,7 +3382,7 @@ class Settlers extends GameTemplate {
       let choice = $(this).attr("id");
 
       if (choice == "accept") {
-        settlers_self.overlay.hideOverlay();
+        settlers_self.overlay.hide();
         if (exclusive) {
           settlers_self.addMove(
             "accept_offer\t" +
@@ -3410,7 +3410,7 @@ class Settlers extends GameTemplate {
         settlers_self.endTurn();
       }
       if (choice == "reject") {
-        settlers_self.overlay.hideOverlay();
+        settlers_self.overlay.hide();
         //if (exclusive){
         settlers_self.addMove(
           "reject_offer\t" + settlers_self.game.player + "\t" + player
@@ -3422,7 +3422,7 @@ class Settlers extends GameTemplate {
       }
       //Short cut to chat window
       if (choice == "chat") {
-        settlers_self.overlay.hideOverlay(); //Have to close overlay because it blocks chat window
+        settlers_self.overlay.hide(); //Have to close overlay because it blocks chat window
         settlers_self.chatWith(player);
       }
     });

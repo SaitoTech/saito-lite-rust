@@ -1,5 +1,8 @@
 const AdvancedOverlayTemplate = require('./advanced-overlay.template');
 
+/*
+* For some reason we need a slightly different version of lib/saito/ui/gameOverlay or lib/saito/ui/saitoOverlay
+*/
 class AdvancedOverlay {
 
     constructor(app) {
@@ -35,12 +38,12 @@ class AdvancedOverlay {
       overlay_backdrop_el.style.backgroundColor = "#111";
 
       overlay_backdrop_el.onclick = (e) => {
-        overlay_self.hideOverlay(mycallback);
+        overlay_self.hide(mycallback);
       }
 
     }
 
-    hideOverlay(mycallback=null) {
+    hide(mycallback=null) {
 
       let overlay_el = document.querySelector(".game-overlay");
       let overlay_backdrop_el = document.querySelector(".game-overlay-backdrop");

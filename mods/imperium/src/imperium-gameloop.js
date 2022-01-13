@@ -1736,7 +1736,7 @@ this.game.state.end_round_scoring = 0;
 	  textAlign: "center",
 	  onContinue : function() {
 
-	    game_mod.overlay.hideOverlay();
+	    game_mod.overlay.hide();
 
 	    if (game_mod.game.planets['new-byzantium'].owner != -1 ) {
 
@@ -1754,10 +1754,10 @@ this.game.state.end_round_scoring = 0;
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {
-		  game_mod.overlay.hideOverlay();
+		  game_mod.overlay.hide();
 	        }
 	      }, function () {
-		game_mod.overlay.hideOverlay();
+		game_mod.overlay.hide();
 	      });
             }
 	  },
@@ -2669,7 +2669,7 @@ this.game.state.end_round_scoring = 0;
 
 	    this.overlay.showOverlay(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
 	    document.getElementById("close-action-cards-btn").onclick = (e) => {
-	      this.overlay.hideOverlay();
+	      this.overlay.hide();
 	      this.game.state.showing_action_cards_amounts = 0;
             }
 	  }
