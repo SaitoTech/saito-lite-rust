@@ -57,7 +57,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 20;
+    this.prune_after_blocks = 5;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -89,7 +89,7 @@ class Blockchain {
     block.generateHashes();
 
     console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
-    console.debug(this);
+    //console.debug(this);
 
     //
     // start by extracting some variables that we will use
@@ -340,7 +340,7 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
-    console.debug("blockchain.addBlockSuccess : ", block);
+    //console.debug("blockchain.addBlockSuccess : ", block);
     this.app.blockring.print();
 
     const block_id = block.returnId();
@@ -477,19 +477,23 @@ class Blockchain {
       return;
     }
 
-    const block_hashes_copy = [];
-    const block_hashes = this.app.blockring.returnBlockHashesAtBlockId(
+    let block_hashes_copy = [];
+    let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(
       prune_blocks_at_block_id
     );
-    for (const hash in block_hashes) {
-      block_hashes_copy.push(hash);
+
+    for (let i = 0; i < block_hashes.length; i++) {
+      block_hashes_copy.push(block_hashes[i]);
     }
 
-    for (const hash in block_hashes_copy) {
+    for (let i = 0; i < block_hashes_copy.length; i++) {
+
       //
       // ask block to remove its transactions
       //
-      const pblock = await this.loadBlockAsync(hash);
+      let hash = block_hashes_copy[i];
+
+      let pblock = await this.loadBlockAsync(hash);
       await pblock.downgradeBlockToBlockType("Pruned");
     }
   }
@@ -774,6 +778,7 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
+
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
@@ -800,6 +805,11 @@ class Blockchain {
       }
 
       //
+      // downgrade before update genesis period, as that deletes blocks
+      //
+      await this.downgradeBlockchainData();
+
+      //
       // update genesis period, purge old data
       //
       await this.updateGenesisPeriod(block);
@@ -813,9 +823,10 @@ class Blockchain {
       // save options
       //
       this.saveBlockchain();
+    } else {
+
     }
 
-    await this.downgradeBlockchainData();
   }
 
   resetBlockchain() {
@@ -968,17 +979,19 @@ class Blockchain {
       // lowest_block_id that we have found. we use the purge_id to
       // handle purges.
       //
-      await this.deleteBlocks(purge_bid);
+      if (purge_bid > 0) {
+        await this.deleteBlocks(purge_bid);
 
-      //
-      // update blockchain consensus variables
-      //
-      this.blockchain.genesis_block_id = purge_bid + 1;
-      this.blockchain.genesis_block_hash =
-        this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_bid + 1);
-      const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
-      if (genesis_block) {
-        this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
+        //
+        // update blockchain consensus variables
+        //
+        this.blockchain.genesis_block_id = purge_bid + 1;
+        this.blockchain.genesis_block_hash =
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_bid + 1);
+        const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
+        if (genesis_block) {
+          this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
+        }
       }
     }
   }
