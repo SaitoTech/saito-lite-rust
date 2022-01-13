@@ -10,13 +10,13 @@ import { Saito } from "../../../apps/core";
 import Block from "../block";
 
 class StorageCore extends Storage {
-  public data_dir: any;
-  public config_dir: any;
-  public dest: any;
+  public data_dir: string;
+  public config_dir: string;
+  public dest: string;
   public db: any;
   public dbname: any;
-  public loading_active: any;
-  public file_encoding_save: any;
+  public loading_active: boolean;
+  public file_encoding_save: string;
   public file_encoding_load: any;
   public app: Saito;
 
