@@ -129,7 +129,7 @@ class StorageCore extends Storage {
       try {
         const fileID = files[i];
         if (fileID !== "empty") {
-          const blk = await this.loadBlockByFilename(fileID);
+          const blk = await this.loadBlockByFilename(dir + fileID);
           if (blk == null) {
             console.log("block is null: " + fileID);
             return null;
