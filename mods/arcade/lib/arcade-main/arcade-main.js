@@ -236,7 +236,7 @@ module.exports = ArcadeMain = {
         } catch (err) {
           if (err.startsWith("Module Not Found")) {
             salert(
-              "This game requires " + game_options.crypto + " crypto to play!"
+              "This game requires " + game_options.crypto + " crypto to play! Not Found!"
             );
             return;
           } else {
@@ -244,7 +244,7 @@ module.exports = ArcadeMain = {
           }
         }
 
-        let c = confirm(
+        let c = sconfirm(
           "This game requires " + game_options.crypto + " crypto to play. OK?"
         );
         if (!c) {
@@ -256,9 +256,7 @@ module.exports = ArcadeMain = {
         //
 
         if (parseFloat(game_options.stake) > 0) {
-          let my_address = app.wallet
-            .returnPreferredCrypto(game_options.crypto)
-            .returnAddress();
+          let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
           crypto_transfer_manager.balance(
             app,
@@ -268,9 +266,10 @@ module.exports = ArcadeMain = {
             function () {}
           );
 
-          crypto_transfer_manager.hideOverlay();
-
           let current_balance = await cryptoMod.returnBalance();
+          
+          crypto_transfer_manager.hideOverlay();
+          
           if (BigInt(current_balance) < BigInt(game_options.stake)) {
             salert(
               "You do not have enough " +
