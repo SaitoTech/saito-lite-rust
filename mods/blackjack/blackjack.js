@@ -989,7 +989,6 @@ toggleIntro() {
 
 
   displayHand() {
-    //Make my own html because I don't like cardfan
     let cardhtml = "";
     for (let c of this.myCards()){
       cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;

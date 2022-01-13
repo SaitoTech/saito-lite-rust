@@ -813,8 +813,9 @@ ul li a {
 /*** Cardfan ***/
 /***************/
 .cardfan {
-  bottom: 0px;
-  left: 0px;
+  position: absolute;
+  top: 70vh;
+  left: 15vw;
   height: 100%;
   width: auto;
   padding-left: 0px;
@@ -822,20 +823,11 @@ ul li a {
   margin-left: auto;
   margin-right: auto;
 }
-.cardfan .card {
-  position: absolute;
-  width: 100%;
-  height: auto;
-}
-/** these are better defaults **/
-.cardfan {
-  position: absolute;
-  top: 70vh;
-  left: 15vw;
-}
+
 .cardfan .card {
   position: absolute;
   width: 17.5vh;
+  height: auto;
 }
 .cardfan .cardimg {
   width: 100%;
@@ -847,7 +839,7 @@ ul li a {
   left: 0px;
 }
 
-.cardfan>.cards:first-child:last-child {
+.cardfan>.card:first-child:last-child {
   transform: rotate(0deg);
   left: 0px;
 }

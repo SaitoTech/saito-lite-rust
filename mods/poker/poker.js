@@ -1941,7 +1941,7 @@ class Poker extends GameTemplate {
     var prank = "";
     if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
       document.querySelector('.status').innerHTML = "You are out of the game.<br />Feel free to hang out and chat.";
-      document.querySelector('.cardfan').classList.add('hidden');
+      this.cardfan.addClass("hidden");
       player_box = this.returnViewBoxArray();
     }*/
 

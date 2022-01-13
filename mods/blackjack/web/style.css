@@ -9,6 +9,9 @@ body {
   height: 100vh;
 }
 
+/* 
+  Make Larger than default
+*/
 .player-box{
   height: 25vh;
   width: 30vh;
