@@ -31,6 +31,7 @@ cat ./src/his-init2.js >> ./his.js
 #
 cat ./src/his-start.js >> ./his.js
 cat ./src/his-state.js >> ./his.js
+cat ./src/his-events.js >> ./his.js
 cat ./src/his-gameloop.js >> ./his.js
 cat ./src/his-player.js >> ./his.js
 cat ./src/his-factions.js >> ./his.js

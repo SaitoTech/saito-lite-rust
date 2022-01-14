@@ -32,6 +32,7 @@ console.log("\n\n\n\n");
 
     }
 
+console.log("INIT GAME SPACES!");
 
     //
     // attach events to spaces
@@ -41,6 +42,7 @@ console.log("\n\n\n\n");
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
 
+console.log("DONE INIT GAME SPACES!");
 
     //
     // add some units

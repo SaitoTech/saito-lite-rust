@@ -1,7 +1,11 @@
 
+  addUnit(player, space, type) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, type));
+console.log("ADDED " + type + " to " + space);
+console.log(JSON.stringify(this.spaces[space]));
+  }
 
   addRegular(player, space) {
-console.log("ADD REGULAR");
     this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
   }
 
@@ -26,9 +30,11 @@ console.log("ADD REGULAR");
 
     let state = {};
 
-    state.round = 1;
+    state.round = 0;
     state.players = [];
     state.events = {};
+
+    return state;
 
   }
 
@@ -1269,7 +1275,7 @@ console.log("ADD REGULAR");
       top: 1373,
       left: 2746,
       home: "independent",
-      political: "",
+      political: "france",
       religious: "catholic",
       type: "key"
     }
@@ -1301,7 +1307,7 @@ console.log("ADD REGULAR");
       top: 1530,
       left: 2585,
       home: "independent",
-      political: "",
+      political: "france",
       religious: "catholic",
       type: "town"
     }
@@ -1505,8 +1511,12 @@ console.log("ADD REGULAR");
     deck['008'] = { 
       img : "HIS-008.svg" , 
       name : "Card" ,
-      event : function(player) {
-alert("Luther's Event is Triggered!");
+      onEvent : function(game_mod, player) {
+	alert("The Reformation Happens");
+	return 1;
+      },
+      handleGameLoop : function(game_mod, qe, mv) {
+	return 1;
       }
     }
     deck['009'] = { 

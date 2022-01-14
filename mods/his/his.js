@@ -71,7 +71,7 @@ class HereIStand extends GameTemplate {
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
     this.restoreLog();
-    
+
     //
     // initialize game objects
     //
@@ -83,15 +83,18 @@ class HereIStand extends GameTemplate {
 
     this.importFaction('faction2', {
       id		:	"faction2" ,
+      key		:	"england" ,
       name		: 	"English",
       nickname		: 	"English",
       img		:	"england.png",
+      marital_status    :       0,
     });
  
 
 
     this.importFaction('faction3', {
       id		:	"faction3" ,
+      key		: 	"france",
       name		: 	"French",
       nickname		: 	"French",
       img		:	"france.png",
@@ -102,8 +105,9 @@ class HereIStand extends GameTemplate {
 
     this.importFaction('faction1', {
       id		:	"faction1" ,
-      name		: 	"Hapsburgs",
-      nickname		: 	"Hapsburgs",
+      key		: 	"hapsburg",
+      name		: 	"Hapsburg",
+      nickname		: 	"Hapsburg",
       img		:	"hapsburgs.png",
     });
  
@@ -112,6 +116,7 @@ class HereIStand extends GameTemplate {
 
     this.importFaction('faction5', {
       id		:	"faction5" ,
+      key		: 	"ottoman",
       name		: 	"Ottoman Empire",
       nickname		: 	"Ottoman",
       img		:	"ottoman.png",
@@ -122,6 +127,7 @@ class HereIStand extends GameTemplate {
 
     this.importFaction('faction4', {
       id		:	"faction4" ,
+      key		: 	"papacy",
       name		: 	"Papacy",
       nickname		: 	"Papacy",
       img		:	"papacy.png",
@@ -132,6 +138,7 @@ class HereIStand extends GameTemplate {
 
     this.importFaction('faction6', {
       id		:	"faction6" ,
+      key		: 	"protestant",
       name		: 	"Protestant",
       nickname		: 	"Protestant",
       img		:	"protestant.png",
@@ -195,6 +202,7 @@ console.log("\n\n\n\n");
 
     }
 
+console.log("INIT GAME SPACES!");
 
     //
     // attach events to spaces
@@ -204,6 +212,7 @@ console.log("\n\n\n\n");
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
 
+console.log("DONE INIT GAME SPACES!");
 
     //
     // add some units
@@ -571,9 +580,13 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
 
 
+  addUnit(player, space, type) {
+    this.spaces[space].units[player-1].push(this.newUnit(player, type));
+console.log("ADDED " + type + " to " + space);
+console.log(JSON.stringify(this.spaces[space]));
+  }
 
   addRegular(player, space) {
-console.log("ADD REGULAR");
     this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
   }
 
@@ -598,9 +611,11 @@ console.log("ADD REGULAR");
 
     let state = {};
 
-    state.round = 1;
+    state.round = 0;
     state.players = [];
     state.events = {};
+
+    return state;
 
   }
 
@@ -1841,7 +1856,7 @@ console.log("ADD REGULAR");
       top: 1373,
       left: 2746,
       home: "independent",
-      political: "",
+      political: "france",
       religious: "catholic",
       type: "key"
     }
@@ -1873,7 +1888,7 @@ console.log("ADD REGULAR");
       top: 1530,
       left: 2585,
       home: "independent",
-      political: "",
+      political: "france",
       religious: "catholic",
       type: "town"
     }
@@ -2077,8 +2092,12 @@ console.log("ADD REGULAR");
     deck['008'] = { 
       img : "HIS-008.svg" , 
       name : "Card" ,
-      event : function(player) {
-alert("Luther's Event is Triggered!");
+      onEvent : function(game_mod, player) {
+	alert("The Reformation Happens");
+	return 1;
+      },
+      handleGameLoop : function(game_mod, qe, mv) {
+	return 1;
       }
     }
     deck['009'] = { 
@@ -2097,12 +2116,63 @@ alert("Luther's Event is Triggered!");
 
 
 
+  returnEventObjects() {
+
+    let z = [];
+
+    //
+    // factions in-play
+    //
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.factions[this.game.players_info[i].faction] != undefined) {
+        z.push(this.factions[this.game.players_info[i].faction]);
+      }
+    }
+
+    return z;
+
+  }
+
+
+
+  addEvents(obj) {
+
+    ///////////////////////
+    // game state events //
+    ///////////////////////
+    //
+    // these events run at various points of the game. They are attached to objs
+    // on object initialization, so that the objects can have these events 
+    // triggered at various points of the game automatically.
+    //
+    //
+    // 
+    // 1 = fall through, 0 = halt game
+    //
+    if (obj.onEvent == null) {
+      obj.onEvent = function(his_self, player) { return 1; }
+    }
+    if (obj.handleGameLoop == null) {
+      obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
+    }
+    //
+    // synchronous -- must return 1
+    //
+    if (obj.postProduction == null) {
+      obj.postProduction = function(imperium_self, player, sector) { return 1; }
+    }
+  
+    return obj;
+
+  }
+
+
+
+
   //
   // Core Game Logic
   //
   handleGameLoop() {
-
-console.log("handle game loop...");
 
     let his_self = this;
 
@@ -2113,7 +2183,10 @@ console.log("handle game loop...");
 
         let qe = this.game.queue.length-1;
         let mv = this.game.queue[qe].split("\t");
+	let z = this.returnEventObjects();
         let shd_continue = 1;
+
+console.log("MOVE: " + mv[0]);
 
         //
         // round
@@ -2126,18 +2199,25 @@ console.log("handle game loop...");
 
         if (mv[0] === "round") {
 
+	  this.game.state.round++;
+
 	  //
 	  // restore state
 	  //
-	  if (this.game.state.round > 1) {
-	    this.log.updateLog("Luther's 95 Theses!");
+	  if (this.game.state.round == 1) {
+	    this.updateLog("Luther's 95 Theses!");
 	    this.game.queue.push("event\t1\t008");
+	    this.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
 	    this.convertSpace("protestant", "wittenberg");
-	    this.addUnit("regular", 1, "wittenberg");
-	    this.addUnit("regular", 1, "wittenberg");
-	    this.addUnit("luther", 1, "wittenberg");
-	  }
+	    this.addUnit(1, "wittenberg", "regular");
+	    this.addUnit(1, "wittenberg", "regular");
+	    this.addUnit(1, "wittenberg", "debater");
+	    this.displaySpace("wittenberg");
 
+console.log("this is what is in wittenberg");
+console.log(JSON.stringify(this.spaces["wittenberg"]));
+
+	  }
 
           return 1;
         }
@@ -2147,10 +2227,11 @@ console.log("handle game loop...");
 	  let player = mv[1];
 	  let card = mv[2];
 
-	  this.deck[card].triggerEvent(1);
-
 	  this.game.queue.splice(qe, 1);
 
+	  if (!this.deck[card].onEvent(this, player)) { return 0; }
+
+	  return 1;
 	}
 
         if (mv[0] === "play") {
@@ -2159,6 +2240,16 @@ console.log("handle game loop...");
           this.playMove();
           return 0;
         }
+
+
+	//
+	// objects and cards can add commands
+	//
+        // we half if we receive a 0/false from one
+        for (let i in z) {
+          if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
+        }
+
 
         //
         // avoid infinite loops
@@ -2250,6 +2341,9 @@ console.log("handle game loop...");
   }
 
 
+  playerReformationAttempt(player) {
+  }
+
 
   playerTurn(selected_card=null) {
 
@@ -2258,8 +2352,8 @@ console.log("handle game loop...");
     let his_self = this;
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    twilight_self.addShowCardEvents(function(card) {
-      twilight_self.playerTurnCardSelected(card, player);
+    his_self.addShowCardEvents(function(card) {
+      his_self.playerTurnCardSelected(card, player);
     });
 
   }
@@ -2269,21 +2363,19 @@ console.log("handle game loop...");
 
   importFaction(name, obj) {
 
-console.log("importing faction " + name);
-
     if (obj.id == null)                 { obj.id = "faction"; }
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
-	  <div class="faction_sheet" id="faction" style="background-image: url('/his/img/factions/${obj.img}')">
+	  <div class="faction_sheet" id="faction_sheet" style="background-image: url('/his/img/factions/${obj.img}')">
 	  </div>
 	`;
       }
     }
 
-    //obj = this.addEvents(obj);
+    obj = this.addEvents(obj);
     this.factions[name] = obj;
 
   }
@@ -2316,25 +2408,112 @@ console.log("importing faction " + name);
 
 
   displayFactionSheet(faction) {
-    let html = this.factions[faction].returnFactionSheet(faction);
-    this.overlay.showOverlay(this.app, this, html);
+
+    this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
+    let controlled_keys = 0;
+    
+    for (let key in this.spaces) {
+      if (this.spaces[key].type === "key") {
+        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+          controlled_keys++;
+	}
+      }
+    }
+    let keyboxen = '';
+ 
+    // ENGLAND
+    if (this.factions[faction].key === "england") {
+      let total_keys = 9;
+      let remaining_keys = total_keys - controlled_keys;
+      for (let i = this.factions[faction].marital_status; i < 7; i++) {
+          keyboxen += `<div class="faction_sheet_keytile england_marital_status${i+1}" id="england_marital_status_keytile${i+1}"></div>`;
+      }
+      for (let i = 1; i <= 9; i++) {
+        if (i > (9-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    // FRANCE
+    if (this.factions[faction].key === "france") {
+      let total_keys = 11;
+      let remaining_keys = total_keys - controlled_keys;
+      for (let i = 0; i < 7; i++) {
+          keyboxen += `<div class="faction_sheet_keytile france_chateaux_status${i+1}" id="france_chateaux_status_keytile${i+1}"></div>`;
+      }
+      for (let i = 1; i <= 11; i++) {
+        if (i > (11-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    // OTTOMAN
+    if (this.factions[faction].key === "ottoman") {
+      let total_keys = 11;
+      let remaining_keys = total_keys - controlled_keys;
+      for (let i = 0; i <= 10; i++) {
+          keyboxen += `<div class="faction_sheet_keytile ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
+      }
+      for (let i = 1; i <= 11; i++) {
+        if (i > (11-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    // PAPACY
+    if (this.factions[faction].key === "papacy") {
+      let total_keys = 7;
+      let remaining_keys = total_keys - controlled_keys;
+      for (let i = 0; i < 12; i++) {
+          keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${i+1}" id="papacy_construction_status_keytile${i+1}"></div>`;
+      }
+      for (let i = 1; i <= 7; i++) {
+        if (i >= (7-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    // PROTESTANTS
+    if (this.factions[faction].key === "protestant") {
+      let total_keys = 11;
+      let remaining_keys = total_keys - controlled_keys;
+      for (let i = 0; i <= 6; i++) {
+          keyboxen += `<div class="faction_sheet_keytile protestant_translation_status${i}" id="protestant_translation_status_keytile${i}"></div>`;
+      }
+      for (let i = 1; i <= 11; i++) {
+        if (i > (11-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    // HAPSBURG
+    if (this.factions[faction].key === "hapsburg") {
+      let total_keys = 14;
+      let remaining_keys = total_keys - controlled_keys;
+console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + controlled_keys);
+      for (let i = 1; i <= 14; i++) {
+        if (i > (14-remaining_keys)) {
+          keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+        }
+      }
+    }
+    document.getElementById("faction_sheet").innerHTML = keyboxen;
+  }
+
+  returnFactionSheetKeys() {
+    
   }
 
   displayBoard() {
-
     try {
-
       this.displayColony();
       this.displayConquest();
       this.displayElectorateDisplay();
       this.displayNewWorld();
       this.displaySpaces();
       this.displayVictoryTrack();
-
     } catch (err) {
-
       console.log("error displaying board... " + err);
-
     }
   }
 
@@ -2347,13 +2526,12 @@ console.log("importing faction " + name);
   displayNewWorld() {
   }
 
-  displaySpace(name) {
+  displaySpaceDetailedView(name) {
     let html = this.spaces[name].returnView();    
     this.overlay.showOverlay(this.app, this, html);
   }
 
   displayElectorateDisplay() {
-
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
       let obj = document.getElementById(`ed_${key}`);
@@ -2681,6 +2859,7 @@ console.log("importing faction " + name);
       for (let zz = 0; zz < space.units[z].length; zz++) {
 	if (space.units[z][zz].type === "debater") {
           html += '<img src="/his/img/tiles/debaters/AleanderDebater_back.svg" />';
+	  tile = html;
 	}
       }
     }
@@ -2693,6 +2872,48 @@ console.log("importing faction " + name);
 
   }
 
+  displaySpace(key) {
+
+    let obj = document.getElementById(key);
+    let space = this.spaces[key];
+    let tile = this.returnSpaceTile(space);
+    let stype = "hex";
+
+    if (space.type == "town") { stype = "hex"; }
+    if (space.type == "key") { stype = "key"; }
+
+    //
+    // should we show the tile?
+    //
+    let show_tile = 1;
+
+    //
+    // do not show under some conditions
+    //
+    if (space.political == space.home) { show_tile = 0; }
+    if (space.political === "") { show_tile = 0; }
+
+    //
+    // and force for keys
+    //
+    if (space.home === "" && space.political !== "") { show_tile = 1; }
+    if (space.type === "key") { show_tile = 1; }
+
+    //
+    // sanity check
+    //
+    if (tile === "") { show_tile = 0; }
+
+    if (show_tile === 1) {
+      obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+      obj.innerHTML += this.returnArmies(space);
+      obj.innerHTML += this.returnMercenaries(space);
+      obj.innerHTML += this.returnDebaters(space);
+    }
+
+  }
+
+
   displaySpaces() {
 
     //
@@ -2700,47 +2921,9 @@ console.log("importing faction " + name);
     //
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
-
-        let obj = document.getElementById(key);
-	let space = this.spaces[key];
-	let tile = this.returnSpaceTile(space);
-        let stype = "hex";
-
-        if (space.type == "town") { stype = "hex"; }
-        if (space.type == "key") { stype = "key"; }
-
-	//
-	// should we show the tile?
-	//
-	let show_tile = 1;
-
-	//
-	// do not show under some conditions
-	//
-	if (space.political == space.home) { show_tile = 0; }
-	if (space.political === "") { show_tile = 0; }
-
-	//
-	// and force for keys
-	//
-	if (space.home === "" && space.political !== "") { show_tile = 1; }
-	if (space.type === "key") { show_tile = 1; }
-
-	//
-	// sanity check
-	//
-	if (tile === "") { show_tile = 0; }
-
-	if (show_tile === 1) {
-	  obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
-	  obj.innerHTML += this.returnArmies(space);
-	  obj.innerHTML += this.returnMercenaries(space);
-	  obj.innerHTML += this.returnDebaters(space);
-	}
-
+	this.displaySpace(key);
       }
     }
-
 
     //
     // add click event
@@ -2748,7 +2931,7 @@ console.log("importing faction " + name);
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
         document.getElementById(key).onclick = (e) => {
-	  this.displaySpace(key);
+	  this.displaySpaceDetailedView(key);
         }
       }
     }

@@ -18,7 +18,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 100,
+    genesis_period: 10,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
