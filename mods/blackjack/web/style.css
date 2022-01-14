@@ -9,6 +9,9 @@ body {
   height: 100vh;
 }
 
+/* 
+  Make Larger than default
+*/
 .player-box{
   height: 25vh;
   width: 30vh;
@@ -55,10 +58,6 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-}
-
-.player-box.active{
-  border: 3px solid silver;
 }
 
 .player-notice {

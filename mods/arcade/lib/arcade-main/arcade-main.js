@@ -236,7 +236,7 @@ module.exports = ArcadeMain = {
         } catch (err) {
           if (err.startsWith("Module Not Found")) {
             salert(
-              "This game requires " + game_options.crypto + " crypto to play!"
+              "This game requires " + game_options.crypto + " crypto to play! Not Found!"
             );
             return;
           } else {
@@ -244,7 +244,7 @@ module.exports = ArcadeMain = {
           }
         }
 
-        let c = confirm(
+        let c = sconfirm(
           "This game requires " + game_options.crypto + " crypto to play. OK?"
         );
         if (!c) {
@@ -256,9 +256,7 @@ module.exports = ArcadeMain = {
         //
 
         if (parseFloat(game_options.stake) > 0) {
-          let my_address = app.wallet
-            .returnPreferredCrypto(game_options.crypto)
-            .returnAddress();
+          let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
           crypto_transfer_manager.balance(
             app,
@@ -268,9 +266,10 @@ module.exports = ArcadeMain = {
             function () {}
           );
 
-          crypto_transfer_manager.hideOverlay();
-
           let current_balance = await cryptoMod.returnBalance();
+          
+          crypto_transfer_manager.hideOverlay();
+          
           if (BigInt(current_balance) < BigInt(game_options.stake)) {
             salert(
               "You do not have enough " +
@@ -327,7 +326,7 @@ module.exports = ArcadeMain = {
       if (app.options.games) {
         let existing_game = app.options.games.find((g) => g.id == game_id);
 
-        if (existing_game != -1 && existing_game) {
+        if (existing_game) { //find returns "undefined"
           if (existing_game.initializing == 1) {
             salert(
               "Accepted Game! It may take a minute for your browser to update -- please be patient!"
@@ -344,7 +343,14 @@ module.exports = ArcadeMain = {
             existing_game.ts = new Date().getTime();
             existing_game.initialize_game_run = 0;
             app.storage.saveOptions();
-            window.location = "/" + existing_game.returnSlug();
+            //Have to search list of modules in Saito to get the existing_game's slug (i.e. directory)
+            for (let z = 0; z < app.modules.mods.length; z++) {
+              if (app.modules.mods[z].name == existing_game.module) {
+                  window.location = '/' + app.modules.mods[z].returnSlug();
+                  return;
+                }
+              }
+            //window.location = "/" + existing_game.slug;
             return;
           }
         }
@@ -439,7 +445,7 @@ if (relay_mod != null) {
         }
       }
     }
-    console.log(existing_game);
+
     if (existing_game && existing_game !== -1) {
       if (existing_game.initializing == 1) {
         salert(

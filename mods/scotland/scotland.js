@@ -1,6 +1,5 @@
 const GameHud = require('../../lib/templates/lib/game-hud/game-hud');
 const GameTemplate = require('../../lib/templates/gametemplate');
-//const GameBoardSizer = require('../../lib/templates/lib/game-board-sizer/game-board-sizer');
 const helpers = require('../../lib/helpers/index');
 
 
@@ -29,7 +28,6 @@ class Scotland extends GameTemplate {
 
     this.moves           = [];
 
-    this.log_length = 150;
     this.gameboardZoom  = 0.4;
     this.gameboardMobileZoom = 0.57;
 
@@ -142,15 +140,17 @@ class Scotland extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-        GameHammerMobile.render(this.app, this);
-        GameHammerMobile.attachEvents(this.app, this, '.gameboard');
+        this.hammer.render(this.app, this);
+        this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
-        GameBoardSizer.render(this.app, this);
-        GameBoardSizer.attachEvents(this.app, this, '.gameboard');
+        this.sizer.render(this.app, this);
+        this.sizer.attachEvents(this.app, this, '.gameboard');
       }
     } catch (err) {}
 
-
+    this.log.render(app,this);
+    this.log.attachEvents(app,this);
+    this.restoreLog();
 
   }
 

@@ -58,7 +58,7 @@ console.log("Submitted Title-->" + this.new_post.title + "<---");
       mod.posts.push(newtx);
       mod.render();
 
-      mod.overlay.hideOverlay();
+      mod.overlay.hide();
 
     }
 

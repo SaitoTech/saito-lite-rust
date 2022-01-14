@@ -1,8 +1,8 @@
 module.exports = AdvancedOverlayTemplate = () => {
 
   return `  
-    <div id="game-overlay" class="game-overlay"></div>
-    <div id="game-overlay-backdrop" class="game-overlay-backdrop"></div>
+    <div id="advanced-overlay" class="game-overlay"></div>
+    <div id="advanced-overlay-backdrop" class="game-overlay-backdrop"></div>
   `;
 
 }

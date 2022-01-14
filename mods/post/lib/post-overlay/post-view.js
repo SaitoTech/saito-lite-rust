@@ -211,7 +211,7 @@ console.log("error showing comment or gallery");
             }
           }
           mod.render();
-          mod.overlay.hideOverlay();
+          mod.overlay.hide();
 
           const newtx = mod.createReportTransaction(sig, title, text);
           app.network.propagateTransaction(newtx);

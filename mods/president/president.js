@@ -1,5 +1,3 @@
-const GameHud = require('../../lib/templates/lib/game-hud/game-hud');
-const Cardfan = require('../../lib/templates/lib/game-cardfan/game-cardfan');
 const GameTemplate = require('../../lib/templates/gametemplate');
 const saito = require('../../lib/saito/saito');
 
@@ -29,11 +27,8 @@ class President extends GameTemplate {
 
     this.updateHTML = "";
 
-    //this.cardfan = new Cardfan(this.app, this);
-    this.hud = new GameHud(this.app, {});
     this.hud.mode = 0;
-    this.hud.cardbox.cardfan = 1;
-
+    
     return this;
 
   }
@@ -90,19 +85,24 @@ class President extends GameTemplate {
     //
     // add card events -- text shown and callback run if there
     //
+    this.hud.render(app, this);
+
     this.hud.addCardType("logcard", "", null);
     this.hud.addCardType("showcard", "select", this.cardbox_callback);
     this.hud.addCardType("card", "select", this.cardbox_callback);
     if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.hud.cardbox.skip_card_prompt = 1;
+      //this.hud.cardbox.skip_card_prompt = 1;
       // we have to confirm as card select is not automatic in multi-card cardfan
-      this.hud.cardbox.skip_card_prompt = 0;
+      //this.hud.cardbox.skip_card_prompt = 0;
       this.hud.card_width = 80;
     } else {
       this.hud.card_width = 80;
     }
 
-    this.hud.render(app, this);
+    
+    this.log.render(app,this);
+    this.log.attachEvents(app,this);
+    this.restoreLog();
   }
 
 

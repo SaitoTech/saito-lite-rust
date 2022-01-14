@@ -4079,7 +4079,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
 		unselectableCards : unselect_scards,
                 backgroundImage : "/imperium/img/starscape_background3.jpg" ,
                 onCardSelect : function(cardname) {
-		  imperium_self.overlay.hideOverlay();
+		  imperium_self.overlay.hide();
 	   	  imperium_self.hideStrategyCard(cardname);
     		  mycallback(cardname);
                 }

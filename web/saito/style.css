@@ -1979,6 +1979,7 @@ i.fas.fa-times-circle {
 
 .tip {
   position: relative;
+  width: 100%;
 }
 
 /* tip text */

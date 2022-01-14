@@ -29,11 +29,8 @@ module.exports = ArcadeGameDetails = {
     }
 
     mod.overlay.showOverlay(app, mod, ArcadeGameDetailsTemplate(app, mod, invite), function() {
-
-      //
-      // on close, hide the shim
-      //
-      document.querySelector('.background-shim').destroy();
+    //on close, hide the shim
+      document.querySelector('#background-shim').destroy();
 
     });
     mod.meta_overlay = new AdvancedOverlay(app, gamemod);
@@ -49,12 +46,14 @@ module.exports = ArcadeGameDetails = {
     // move into advanced menu
     //
     document.querySelector('.game-wizard-options-toggle').onclick = (e) => {
-      mod.meta_overlay.showOverlay(app, gamemod, gamemod.returnGameOptionsHTML());
+      mod.meta_overlay.showOverlay(app, gamemod, gamemod.returnGameOptionsHTML(), function(){
+        document.querySelector("#game-wizard-advanced-options-overlay").destroy();
+      });
       document.querySelector('.game-wizard-advanced-options-overlay').style.display = "block";
       try {
         if (document.getElementById("game-wizard-advanced-return-btn")) {
           document.querySelector('.game-wizard-advanced-return-btn').onclick = (e) => {
-  	    document.getElementById("game-wizard-advanced-options-overlay").style.display = "none";
+  	       mod.meta_overlay.hide();
           }
         }
       } catch (err) {}
@@ -126,8 +125,8 @@ module.exports = ArcadeGameDetails = {
             let crypto_transfer_manager = new GameCryptoTransferManager(app);
             crypto_transfer_manager.balance(app, mod, my_address, options.crypto, function() {});
             let returnObj = await app.wallet.returnPreferredCryptoBalances([ my_address ], null, options.crypto);
-            crypto_transfer_manager.hideOverlay();
-
+            
+            
             let adequate_balance = 0;
             for (let i = 0; i < returnObj.length; i++) {
               if (returnObj[i].address == my_address) {
@@ -136,7 +135,8 @@ module.exports = ArcadeGameDetails = {
                 }
               }
             }    
-
+            crypto_transfer_manager.hideOverlay();
+            
             if (adequate_balance == 0) {
               salert("You don't have enough "+options.crypto+" to create this game!");
               return;
@@ -167,7 +167,7 @@ module.exports = ArcadeGameDetails = {
           mod.launchSinglePlayerGame(app, gamedata); 
           return;
         } else {
-          mod.overlay.hideOverlay();
+          mod.overlay.hide();
           document.getElementById('background-shim').destroy();
 
           let newtx = mod.createOpenTransaction(gamedata);

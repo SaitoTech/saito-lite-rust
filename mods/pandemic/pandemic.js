@@ -1657,7 +1657,7 @@ class Pandemic extends GameTemplate {
 	  if (this.game.state.welcome == 0) {
 	    this.overlay.showOverlay(this.app, this, this.returnWelcomeOverlay());
 	    document.querySelector(".close_welcome_overlay").onclick = (e) => {
-	      this.overlay.hideOverlay();
+	      this.overlay.hide();
             }
             this.game.state.welcome = 1;
           }
@@ -1729,8 +1729,8 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 	// show overlay
 	//
         this.overlay.showOverlay(this.app, this, this.returnEpidemicOverlay(city));
-	document.quertySelector(".close_epidemic_overlay").onclick = (e) => {
-	  this.overlay.hideOverlay();
+	document.querySelector(".close_epidemic_overlay").onclick = (e) => {
+	  this.overlay.hide();
         }
 
 

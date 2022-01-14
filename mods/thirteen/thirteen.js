@@ -1,6 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-//const GameBoardSizer = require('../../lib/saito/ui/game-board-sizer/game-board-sizer');
-//const GameHammerMobile = require('../../lib/saito/ui/game-hammer-mobile/game-hammer-mobile');
 const helpers = require('../../lib/helpers/index');
 
 
@@ -32,9 +30,7 @@ class Thirteen extends GameTemplate {
 
     this.moves           = [];
 
-    this.log_length = 150;
-
-    this.gameboardZoom  = 0.90;
+     this.gameboardZoom  = 0.90;
     this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;
@@ -101,9 +97,6 @@ class Thirteen extends GameTemplate {
       mod.respondTo('chat-manager').render(app, this);
       mod.respondTo('chat-manager').attachEvents(app, this);
     });
-
-    this.overlay.render(app, this);
-    this.overlay.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -663,7 +656,7 @@ class Thirteen extends GameTemplate {
 
 	  this.overlay.showCardSelectionOverlay(this.app, this, this.game.deck[0].hand, { columns : 3 , textAlign : "center" , cardlistWidth: "90vw" , title : html , subtitle : "earn points by beating your opponent in this domain by turn's end" , onCardSelect : function (card) {
 
-	    thirteen_self.overlay.hideOverlay();
+	    thirteen_self.overlay.hide();
 
 	    thirteen_self.addMove("RESOLVE");
 	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {

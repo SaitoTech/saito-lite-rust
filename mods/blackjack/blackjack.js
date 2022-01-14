@@ -82,9 +82,6 @@ toggleIntro() {
       text : "Game",
       id : "game-game",
       class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
     });
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
@@ -144,9 +141,6 @@ toggleIntro() {
                 text : "Chat",
                 id : "game-chat",
                 class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
               })
               main_menu_added = 1;
             }
@@ -199,7 +193,8 @@ toggleIntro() {
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
-  
+    
+    this.restoreLog();
   }
 
 
@@ -994,7 +989,6 @@ toggleIntro() {
 
 
   displayHand() {
-    //Make my own html because I don't like cardfan
     let cardhtml = "";
     for (let c of this.myCards()){
       cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
