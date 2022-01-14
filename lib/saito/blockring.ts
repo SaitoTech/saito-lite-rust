@@ -29,10 +29,10 @@ class Blockring {
   }
 
   addBlock(block) {
-    console.debug("blockring.addBlock : " + block.hash);
     const insert_pos = block.returnId() % this.ring_buffer_length;
     const block_id = block.returnId();
     const block_hash = block.returnHash();
+    //console.log("blockring.addBlock : " + block.hash + " at position " + block_id);
     if (!this.containsBlockHashAtBlockId(block_id, block_hash)) {
       this.ring[insert_pos].block_hashes.push(block_hash);
       this.ring[insert_pos].block_ids.push(block_id);

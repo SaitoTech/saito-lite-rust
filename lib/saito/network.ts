@@ -511,7 +511,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.debug("network.receiveRequest : ", message);
+    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -828,7 +828,7 @@ class Network {
     if (this.app.BROWSER) {
       return;
     }
-    console.debug("network.propagateBlock", blk);
+    //console.debug("network.propagateBlock", blk);
     if (!blk) {
       return;
     }
@@ -880,7 +880,7 @@ class Network {
   // propagate transaction
   //
   propagateTransaction(tx: Transaction, outbound_message = "transaction") {
-    console.debug("network.propagateTransaction", tx);
+    //console.debug("network.propagateTransaction", tx);
     if (tx === null) {
       return;
     }
