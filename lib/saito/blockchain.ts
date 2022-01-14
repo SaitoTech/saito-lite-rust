@@ -499,7 +499,7 @@ class Blockchain {
   }
 
   generateForkId(block_id) {
-    const fork_id = [];
+    let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
     }
@@ -514,7 +514,7 @@ class Blockchain {
       }
     }
 
-    const weights = [
+    let weights = [
       0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000,
       100000,
     ];
@@ -523,6 +523,7 @@ class Blockchain {
     // loop backwards through blockchain
     //
     for (let i = 0; i < 16; ++i) {
+
       current_block_id -= weights[i];
 
       //
@@ -535,8 +536,8 @@ class Blockchain {
       //
       // index to update
       //
-      const idx = 2 * i;
-      const block_hash =
+      let idx = 2 * i;
+      let block_hash =
         this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
       if (block_hash[idx]) {
