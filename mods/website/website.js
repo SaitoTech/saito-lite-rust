@@ -33,7 +33,7 @@ class Website extends ModTemplate {
         // https://zxing.org/w/decode
         // Then recreate a clear QR code and replace mods/website/web/img/wechat/weixin.png
         // https://www.the-qrcode-generator.com/
-        this.overlay.showOverlay(app, this, `<div id='weixinqr-overlay'><img src="/img/wechat/weixin.png" style="display: block;">
+        this.overlay.show(app, this, `<div id='weixinqr-overlay'><img src="/img/wechat/weixin.png" style="display: block;">
         </div>`, () => {})
       }
     });

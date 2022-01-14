@@ -56,7 +56,7 @@ class Pandemic extends GameTemplate {
     }
 
     html = `<div class="display-cards">${html}</div>`;
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.show(this.app, this, html);
 
   }
   
@@ -1655,7 +1655,7 @@ class Pandemic extends GameTemplate {
 
 	if (this.browser_active == 1) {
 	  if (this.game.state.welcome == 0) {
-	    this.overlay.showOverlay(this.app, this, this.returnWelcomeOverlay());
+	    this.overlay.show(this.app, this, this.returnWelcomeOverlay());
 	    document.querySelector(".close_welcome_overlay").onclick = (e) => {
 	      this.overlay.hide();
             }
@@ -1728,7 +1728,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 	//
 	// show overlay
 	//
-        this.overlay.showOverlay(this.app, this, this.returnEpidemicOverlay(city));
+        this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
 	document.querySelector(".close_epidemic_overlay").onclick = (e) => {
 	  this.overlay.hide();
         }
@@ -2909,7 +2909,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
   }
   
   hideCard(cardname="") {
-    this.cardbox.hideCardbox(cardname);
+    this.cardbox.hide(cardname);
   }
   
   showCard(cardname, cardtype="city") {

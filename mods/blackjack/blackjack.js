@@ -63,7 +63,7 @@ toggleIntro() {
     <p>Blackjacks--21 points with two cards--<strong>pay 2:1!</strong></p>
     </div>`;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
   }
 
 

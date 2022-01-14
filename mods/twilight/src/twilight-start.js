@@ -113,7 +113,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
     $('.menu-item').on('click', function() {
 
@@ -157,7 +157,7 @@ class Twilight extends GameTemplate {
         `;
       }
 
-      twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
     });
 
   }
@@ -177,7 +177,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
     $('.menu-item').on('click', function() {
 
@@ -190,7 +190,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
     });
 
   }
@@ -338,7 +338,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
   }
 
@@ -363,7 +363,7 @@ class Twilight extends GameTemplate {
 //          <li class="menu-item" id="text">Text Cards</li>
 //          <li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");
@@ -388,7 +388,7 @@ class Twilight extends GameTemplate {
 	let html  = '<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:';
 	html += '<div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">'+oblink+'/arcade/?i=watch&msg='+msg+'</div>';
 	html += '</div>';
-	twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+	twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
       }
 
@@ -477,7 +477,7 @@ class Twilight extends GameTemplate {
         </div>
       `;
 
-      this.overlay.showOverlay(this.app, this, user_message);
+      this.overlay.show(this.app, this, user_message);
 
     } catch (err) {
 console.log(err);
@@ -9604,7 +9604,7 @@ this.startClock();
   }
 
   hideCard() {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
     //$('#cardbox').hide();
     //$('.cardbox_event_blocker').css('height','0px');
     //$('.cardbox_event_blocker').css('width','0px');

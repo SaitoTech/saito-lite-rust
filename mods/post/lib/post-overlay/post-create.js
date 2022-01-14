@@ -17,7 +17,7 @@ module.exports = PostCreate = {
     mod.overlay.render(app, mod);
     mod.overlay.attachEvents(app, mod);
 
-    mod.overlay.showOverlay(app, mod, PostCreateTemplate(), function() {
+    mod.overlay.show(app, mod, PostCreateTemplate(), function() {
     });
 
     this.showTab("discussion");

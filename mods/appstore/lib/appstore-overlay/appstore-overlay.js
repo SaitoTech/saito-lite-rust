@@ -11,7 +11,7 @@ module.exports = AppStoreAppspace = {
     mod.overlay.render(app, mod);
     mod.overlay.attachEvents(app, mod);
 
-    mod.overlay.showOverlay(app, mod, AppStoreOverlayTemplate());
+    mod.overlay.show(app, mod, AppStoreOverlayTemplate());
 
     //
     // server also performs sanity checks, but we'll do basic ones here too

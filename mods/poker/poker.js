@@ -3469,7 +3469,7 @@ class Poker extends GameTemplate {
       </div>
     `;
 
-    poker_self.overlay.showOverlay(poker_self.app, poker_self, html);
+    poker_self.overlay.show(poker_self.app, poker_self, html);
   }
 
   increaseBlinds() {

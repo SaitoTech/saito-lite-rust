@@ -21,7 +21,7 @@ module.exports = AppStorePublishSuccess = {
     mod.overlay.render(app, mod);
     mod.overlay.attachEvents(app, mod);
 
-    mod.overlay.showOverlay(app, mod, AppStorePublishWaitingTemplate());
+    mod.overlay.show(app, mod, AppStorePublishWaitingTemplate());
 **/
 
 //    document.querySelector(".email-appspace").innerHTML = AppStorePublishSuccessTemplate();

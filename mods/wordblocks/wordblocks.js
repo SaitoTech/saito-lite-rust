@@ -80,7 +80,7 @@ class Wordblocks extends GameTemplate {
       class: "game-intro",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(
+        game_mod.overlay.show(
           game_mod.app,
           game_mod,
           game_mod.returnRulesOverlay()
@@ -103,7 +103,7 @@ class Wordblocks extends GameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(
+        game_mod.overlay.show(
           game_mod.app,
           game_mod,
           game_mod.returnStatsOverlay()
@@ -616,7 +616,7 @@ class Wordblocks extends GameTemplate {
             wordblocks_self.last_played_word[i - 1] &&
             wordblocks_self.last_played_word[i - 1].play
           ) {
-            wordblocks_self.overlay.showOverlay(
+            wordblocks_self.overlay.show(
               wordblocks_self.app,
               wordblocks_self,
               wordblocks_self.returnMath(

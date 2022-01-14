@@ -28,7 +28,7 @@ module.exports = ArcadeGameDetails = {
       app.browser.addElementToDom(`<div id="background-shim" class="background-shim" style=""><div id="background-shim-cover" class="background-shim-cover"></div></div>`); 
     }
 
-    mod.overlay.showOverlay(app, mod, ArcadeGameDetailsTemplate(app, mod, invite), function() {
+    mod.overlay.show(app, mod, ArcadeGameDetailsTemplate(app, mod, invite), function() {
     //on close, hide the shim
       document.querySelector('#background-shim').destroy();
 
@@ -46,7 +46,7 @@ module.exports = ArcadeGameDetails = {
     // move into advanced menu
     //
     document.querySelector('.game-wizard-options-toggle').onclick = (e) => {
-      mod.meta_overlay.showOverlay(app, gamemod, gamemod.returnGameOptionsHTML(), function(){
+      mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML(), function(){
         document.querySelector("#game-wizard-advanced-options-overlay").destroy();
       });
       document.querySelector('.game-wizard-advanced-options-overlay').style.display = "block";

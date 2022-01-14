@@ -462,7 +462,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html, function() {
+    this.overlay.show(this.app, this, overlay_html, function() {
       alert("Callback Optional on Close!");
     });
 
@@ -481,7 +481,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
     this.overlay.blockClose();
     document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 

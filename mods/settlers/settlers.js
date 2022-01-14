@@ -101,7 +101,7 @@ class Settlers extends GameTemplate {
   </div>
    `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
   }
 
   initializeHTML(app) {
@@ -3165,7 +3165,7 @@ class Settlers extends GameTemplate {
             <div class="trade_overlay_button button trade_overlay_broadcast_button">${submit}</div>
           </div></div>`;
 
-      settlers_self.overlay.showOverlay(
+      settlers_self.overlay.show(
         settlers_self.app,
         settlers_self.this,
         html
@@ -3273,7 +3273,7 @@ class Settlers extends GameTemplate {
             <div class="trade_overlay_button button trade_overlay_broadcast_button">Broadcast Offer</div>
           </div></div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.show(this.app, this, html);
 
     $(".trade_button.select").on("click", function () {
       $(this).toggleClass("selected");
@@ -3372,7 +3372,7 @@ class Settlers extends GameTemplate {
     //<div class="trade_overlay_button button" id="chat">Chat</div>
     html += `</div></div>`;
 
-    settlers_self.overlay.showOverlay(
+    settlers_self.overlay.show(
       settlers_self.app,
       settlers_self.this,
       html

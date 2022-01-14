@@ -53,7 +53,7 @@ class Solitrio extends GameTemplate {
   </div>
    `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
 
   }
 
