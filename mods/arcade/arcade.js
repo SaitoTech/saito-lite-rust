@@ -340,6 +340,8 @@ console.log("ADDING GAME!");
 
 try {    
 
+console.log("ONCONF: " + txmsg.request + " -- " + txmsg.module);
+
     if (conf == 0) {
 
       this.purgeBadGames(app)
@@ -562,7 +564,10 @@ try {
           console.info("OUR GAMES: ", this.app.options.games);
           // game is over, we don't care
           if (tx.msg.over) {
-            if (tx.msg.over == 1) { return; }
+            if (tx.msg.over == 1) {
+console.log("GAME IS OVER SO QUITTING!");
+	      return;
+	    }
           }
           this.launchGame(txmsg.game_id);
         }
@@ -580,6 +585,9 @@ try {
     //
     // this code doubles onConfirmation
     //
+
+console.log("HPR: " + message.request);
+
     if (message.request === 'arcade spv update') {
 
       let tx = null;
@@ -595,6 +603,7 @@ try {
       }
 
       let txmsg = tx.returnMessage();
+console.log("msg is: " + JSON.stringify(txmsg));
       let conf = 0;
       let blk = null;
 
@@ -699,6 +708,7 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
           // do not process if transaction is not for us
           //
           if (!tx.isTo(app.wallet.returnPublicKey())) {
+console.log("TX NOT FOR ME");
             return;
           }
 
@@ -766,6 +776,7 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
                     let currentTime = new Date().getTime();
                     if ((currentTime - this.app.options.games[i].ts) > 5000) {
                       //console.log(`${currentTime} ------- ${this.app.options.games[i].ts}`);
+console.log("TIME LIMIT: " + currentTime + " --- " + this.app.options.games[i].ts);
                       return;
                     }
                   }
@@ -794,9 +805,13 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
 
           this.removeGameFromOpenList(txmsg.game_id);
           if (txmsg.players.includes(app.wallet.returnPublicKey())) {
+
+	    let already_inited = this.viewing_arcade_initialization_page;
+console.log("ALREADY INITED? " + already_inited);
+
             siteMessage(txmsg.module + ' invite accepted.', 20000);
             app.browser.sendNotification('Game Accepted', txmsg.module + ' invite accepted.', 'game-acceptance-notification');
-
+console.log("RECEIVE ACCEPT REQUEST WITH NULL BLOCK AND 0 CONF");
             await this.receiveAcceptRequest(null, tx, 0, this.app);
 
             //
@@ -806,8 +821,15 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
             console.info("OUR GAMES: ", this.app.options.games);
             // game is over, we don't care
             if (tx.msg.over) { if (tx.msg.over == 1) { return; } }
-            this.launchGame(txmsg.game_id);
 
+	    if (txmsg.module) {
+	      let game_mod = this.app.modules.returnModule(txmsg.module);
+	      if (game_mod) {
+console.log("telling game module to receiveAcceptTx");
+		if (game_mod.receiveAcceptRequest(null, tx, 0, this.app) == 0) { return; }
+	      }
+	    }
+            this.launchGame(txmsg.game_id);
           }
         }
       }
@@ -1287,6 +1309,8 @@ console.log("CREATE ACCEPT TX");
 
   async receiveAcceptRequest(blk, tx, conf, app) {
 
+console.log("RECEIVE ACCEPT REQUEST!");
+
     if (this.browser_active == 1) {
       if (tx.isTo(app.wallet.returnPublicKey())) {
 
@@ -1299,6 +1323,7 @@ console.log("CREATE ACCEPT TX");
 	  for (let i = 0; i < app.options.games.length; i++) {
 	    if (app.options.games[i].id == tx.transaction.sig) {
 	      // game already accepted
+console.log("game already accepted so returning...");
 	      return;
 	    }
 	  }
@@ -1313,7 +1338,10 @@ console.log("CREATE ACCEPT TX");
 	//
 	// observers might get these when reloading the chain
 	//
-	if (this.game.player == 0) { return; }
+	if (this.game.player == 0) {
+console.log("i am player zero, returning...");
+	  return;
+	}
 
       }
     }
@@ -1360,11 +1388,7 @@ console.log("CREATE ACCEPT TX");
 
   launchGame(game_id) {
 
-console.log("LAUNCH GAME 1");
-
     if (this.browser_active == 0) { return; }
-
-console.log("LAUNCH GAME 2");
 
     let arcade_self = this;
     arcade_self.is_initializing = true;
@@ -1393,8 +1417,6 @@ console.log("LAUNCH GAME IDX: " + game_idx);
 
       }
 
-console.log("LAUNCH GAME 3");
-
       if (arcade_self.app.options.games[game_idx].initializing == 0) {
 
         //
@@ -1402,6 +1424,7 @@ console.log("LAUNCH GAME 3");
         //
         let ready_to_go = 1;
       	let game_step_needing_processing = 0;
+
 
         if (arcade_self.app.wallet.wallet.pending.length > 0) {
           for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
@@ -1418,8 +1441,6 @@ console.log("LAUNCH GAME 3");
           }
         }
 
-console.log("LAUNCH GAME 4");
-        
         if (ready_to_go == 0) {
           console.log("transaction for this game still in pending...");
           return;
