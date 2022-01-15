@@ -340,8 +340,6 @@ console.log("ADDING GAME!");
 
 try {    
 
-console.log("ONCONF: " + txmsg.request + " -- " + txmsg.module);
-
     if (conf == 0) {
 
       this.purgeBadGames(app)

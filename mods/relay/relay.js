@@ -72,7 +72,6 @@ class Relay extends ModTemplate {
                 //
                 // forward to peer
                 //
-                console.log("FORWARDING TO PEER IN RELAY MOD");
                 peer.sendRequest("relay peer message", tx.transaction);
 
             }
@@ -118,7 +117,7 @@ class Relay extends ModTemplate {
                 if (tx.isTo(app.wallet.returnPublicKey())) {
 // && !tx.isFrom(app.wallet.returnPublicKey())) {
 
-                    console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
+                    //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
                     app.modules.handlePeerRequest(txmsg, peer, mycallback);
                     return;
 
@@ -132,7 +131,7 @@ class Relay extends ModTemplate {
                     //
                     let peer_found = 0;
 
-                    console.log("number of peers: " + app.network.peers.length);
+                    //console.log("number of peers: " + app.network.peers.length);
 
                     for (let i = 0; i < app.network.peers.length; i++) {
 

@@ -8,7 +8,7 @@
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      action_cards	:	["warfare-rider", "technology-rider"],
+      //action_cards	:	["warfare-rider", "technology-rider"],
       //objectives	:	["close-the-trap"],
       tech		: 	["pds-ii","sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
