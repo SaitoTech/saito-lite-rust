@@ -135,8 +135,6 @@ class Post extends ModTemplate {
 
     if (this.renderMethod == "none") { return; }
 
-console.log("ON PEER HANDSHAKE COMPLETE!");
-
     //
     // fetch posts from server
     //
@@ -148,8 +146,6 @@ console.log("ON PEER HANDSHAKE COMPLETE!");
         sql ,
 
         (res) => {
-
-console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
 
           if (res) {
             if (res.rows) {
@@ -677,8 +673,8 @@ console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
     let delete_tx = this.createDeleteTransaction(txmsg.post_id);
     let base_58_tx = Base58.encode(Buffer.from(JSON.stringify(delete_tx)));
 
-    console.log(`POSTS MODERATION https://saito.io/post/delete/${base_58_tx}`);
-    console.log(JSON.stringify(txmsg)); // lets see who is this guy
+    //console.log(`POSTS MODERATION https://saito.io/post/delete/${base_58_tx}`);
+    //console.log(JSON.stringify(txmsg)); // lets see who is this guy
 
     this.app.network.sendRequest('send email', {
       from: 'network@saito.tech',
@@ -709,7 +705,7 @@ console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
     
     if (this.app.crypto.verifyHash(this.app.crypto.hash(tx.returnSignatureSource(this.app)), tx.transaction.sig, tx.transaction.from[0].add)) {
       let txmsg = tx.returnMessage();
-      console.log(txmsg);
+      //console.log(txmsg);
       let sql = `
           UPDATE 
             posts

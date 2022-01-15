@@ -585,9 +585,6 @@ console.log("GAME IS OVER SO QUITTING!");
     //
     // this code doubles onConfirmation
     //
-
-console.log("HPR: " + message.request);
-
     if (message.request === 'arcade spv update') {
 
       let tx = null;
@@ -603,7 +600,6 @@ console.log("HPR: " + message.request);
       }
 
       let txmsg = tx.returnMessage();
-console.log("msg is: " + JSON.stringify(txmsg));
       let conf = 0;
       let blk = null;
 
@@ -661,13 +657,7 @@ console.log("msg is: " + JSON.stringify(txmsg));
                 // browsers -- cannot use last player to join as players may disagree on
                 // their order. so the first player is responsible for processing the "accept"
                 //
-
-console.log("WHO SHOULD KICK-OFF?");
-console.log(this.games[i].msg.players[0]);
-
                 if (this.games[i].msg.players[0] == this.app.wallet.returnPublicKey()) {
-
-console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
 
                   // i should send an accept request to kick this all off
                   this.games[i].msg.players.splice(0, 1);
@@ -708,7 +698,6 @@ console.log("THAT IS ME, SO CREATE ACCEPT AND PROPAGATE!");
           // do not process if transaction is not for us
           //
           if (!tx.isTo(app.wallet.returnPublicKey())) {
-console.log("TX NOT FOR ME");
             return;
           }
 

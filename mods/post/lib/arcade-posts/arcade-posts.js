@@ -8,8 +8,6 @@ module.exports = ArcadePosts = {
 
   render(app, mod) {
 
-console.log("rendering AP");
-
     if (!document.getElementById("arcade-posts-container")) {
       app.browser.addElementToDom(ArcadePostsTemplate());
     }
@@ -26,8 +24,6 @@ console.log("rendering AP");
 
 
   attachEvents(app, mod) {
-
-console.log("events AP");
 
     document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {
       el.onclick = (e) => {

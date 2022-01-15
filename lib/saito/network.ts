@@ -281,7 +281,7 @@ class Network {
         console.log(
           `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
         );
-        this.app.network.cleanupDisconnectedSocket(peer.socket);
+        this.app.connection.emit("peer_disconnect", peer);
       };
       peer.socket.onerror = (event) => {
         console.log(`[error] ${event.message}`);
@@ -349,7 +349,7 @@ class Network {
     return peer.socket;
   }
 
-  cleanupDisconnectedSocket(peer, force = 0) {
+  cleanupDisconnectedPeer(peer, force = 0) {
     for (let c = 0; c < this.peers.length; c++) {
       if (this.peers[c] === peer) {
         let keep_peer = -1;
@@ -480,7 +480,7 @@ class Network {
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
-      this.cleanupDisconnectedSocket(peer);
+      this.cleanupDisconnectedPeer(peer);
     });
   }
 
@@ -541,7 +541,7 @@ class Network {
             count++;
           }
           if (count > 1) {
-            this.cleanupDisconnectedSocket(this.peers[i], 1);
+            this.cleanupDisconnectedPeer(this.peers[i], 1);
             i--;
           }
         }
@@ -549,7 +549,7 @@ class Network {
         break;
       }
       case "PINGPING":
-        // console.log("received ping...");
+        console.log("received ping...");
         // job already done!
         break;
 
@@ -792,20 +792,25 @@ class Network {
   }
 
   pollPeers(peers, app) {
+
     const this_network = app.network;
 
     //
     // loop through peers to see if disconnected
     //
     peers.forEach((peer) => {
+
       //
       // if disconnected, cleanupDisconnectedSocket
+      // or reconnect if they're in our list of peers
+      // to which to connect.
       //
       if (!peer.socket.connected) {
         if (!this.dead_peers.includes(peer)) {
-          this.cleanupDisconnectedSocket(peer);
+          this.cleanupDisconnectedPeer(peer);
         }
       }
+
     });
 
     //console.log('dead peers to add: ' + this.dead_peers.length);
@@ -815,6 +820,7 @@ class Network {
       this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
     this.dead_peers.forEach((peer) => {
       setTimeout(() => {
+console.log("Attempting to Connect to Peer!");
         this_network.connectToPeer(JSON.stringify(peer));
       }, peer_add_delay);
     });

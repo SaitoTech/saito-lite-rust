@@ -114,6 +114,7 @@ class Peer {
     }
     this.keep_alive_timer = setInterval(() => {
       try {
+console.log("send ping request...");
         this.sendRequest("PINGPING");
       } catch (err) {
         console.log("ping is not working");
