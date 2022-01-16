@@ -11,6 +11,7 @@ class Wuziqi extends GameTemplate {
         // Define static game parameters and add global variables.
 
         this.name = "Wuziqi";
+	this.gamename = "Wuziqi";
         this.title = "五子棋"
         this.description = "五子棋 aka Gokomu and Gobang! is a simple game where two players alternately place black and white tiles on a go board attempting to place 5 of them in adjacent positions."
         this.categories = "Boardgame Strategy";
