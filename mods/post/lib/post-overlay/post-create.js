@@ -1,7 +1,6 @@
 const PostCreateTemplate = require('./post-create.template');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
-
 module.exports = PostCreate = {
 
   render(app, mod) {
@@ -17,7 +16,7 @@ module.exports = PostCreate = {
     mod.overlay.render(app, mod);
     mod.overlay.attachEvents(app, mod);
 
-    mod.overlay.showOverlay(app, mod, PostCreateTemplate(), function() {
+    mod.overlay.showOverlay(app, mod, PostCreateTemplate(app, mod), function() {
     });
 
     this.showTab("discussion");
@@ -43,8 +42,6 @@ module.exports = PostCreate = {
       this.new_post.comment = document.querySelector('.post-create-textarea').innerHTML;
       this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
-
-console.log("Submitted Title-->" + this.new_post.title + "<---");
 
       if (this.new_post.title == "") {
         salert("Please provide a title for your post!");

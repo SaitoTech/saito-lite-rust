@@ -567,7 +567,7 @@ body {
     left: 0;
   }
   .arcade-sub {
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
     display: block;
     margin: 1em 0 0 0;
   }

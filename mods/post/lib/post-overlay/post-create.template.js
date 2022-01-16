@@ -1,4 +1,13 @@
 module.exports = PostCreateTemplate = (app, mod) => {
+
+  let subforum = "saito";
+  if (app.browser.returnURLParameter("game")) {
+    subforum = app.browser.returnURLParameter("game");
+  }
+  if (app.browser.returnURLParameter("forum")) {
+    subforum = app.browser.returnURLParameter("forum");
+  }
+
   return `
   <div id="post-create-container" class="post-create-container">
     <div id="post-create-header" class="post-create-header">
@@ -19,7 +28,7 @@ module.exports = PostCreateTemplate = (app, mod) => {
 
       <div id="post-create" class="post-create-textarea markdown medium-editor-element" placeholder="Your post..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true" data-medium-editor-editor-index="1" medium-editor-index="37877e4c-7415-e298-1409-7dca41eed3b8"></div>
 
-      <input type="hidden" class="post-create-forum" name="post-create-forum" />
+      <input type="hidden" class="post-create-forum" name="post-create-forum" value="${subforum}" />
 
       <div id="post-create-image-preview-container" class="post-create-image-preview-container">
       </div>

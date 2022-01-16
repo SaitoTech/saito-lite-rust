@@ -54,6 +54,9 @@ module.exports = ArcadeForumsTemplate = () => {
   display: grid;
   padding: 10px;
   grid-template-columns: 8fr minmax(50px, 1fr);
+  height: inherit;
+  max-height: inherit;
+  overflow: hidden;
 }
 .arcade-post-forum-topic-intro {
   display: grid;
@@ -94,14 +97,26 @@ module.exports = ArcadeForumsTemplate = () => {
 }
 .arcade-post-forum-topic-latest-post-title {
   font-size: 1.4em;
-  font-weight: bold;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: inherit;
+  font-style: italic;
 }
 .arcade-post-forum-topic-latest-post-info {
 }
+
+
+
+@media only screen and (max-width: 900px) {
+  .arcade-post-forum-topic {
+    grid-template-columns: 100px 3fr;
+  }
+  .arcade-post-forum-topic-latest-post {
+    display: none;
+  }
+}
+
 
 </style>
 

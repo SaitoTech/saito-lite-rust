@@ -1,7 +1,6 @@
-const ArcadeForumsTemplate = require('./templates/arcade-forums.template');
-const ArcadeForumsThreadTemplate = require('./templates/arcade-forums-thread.template');
+const PostForumsThreadTemplate = require('./post-forums-thread.template');
 
-module.exports = ArcadeForums = {
+module.exports = PostForums = {
 
   render(app, mod) {
 
@@ -10,7 +9,7 @@ module.exports = ArcadeForums = {
 	ft_img    : "/saito/img/background.png",
 	ft_mod    : "saito",
 	ft_title  : "Saito Discussion",
-	ft_desc   : "All about Saito and the Saito Arcade",
+	ft_desc   : "All about Saito and the Saito Post",
 	ft_pnum   : 1423,
 	ft_ptext  : "posts",
 	ft_ptitle : "DEFCON Suicide Misadventures",
@@ -55,8 +54,6 @@ module.exports = ArcadeForums = {
       });
     }
 
-
-
     //
     // listen for txs from arcade-supporting games
     //
@@ -88,28 +85,16 @@ module.exports = ArcadeForums = {
 
    
 
-    if (!document.querySelector(".arcade-posts")) { 
-
-      app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
-      app.browser.addElementToDom('<div class="arcade-post-header">Saito Discussion</div>', "arcade-posts");
+    if (document.querySelector(".post-forums")) { 
+      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "post-forums");
       for (let i = 0; i < sobj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts");
+        app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), "post-forums");
       }
-      app.browser.addElementToDom('<div class="arcade-post-header">Arcade Games</div>', "arcade-posts");
+      app.browser.addElementToDom('<div class="forum-post-header">Post Games</div>', "post-forums");
       for (let i = 0; i < obj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts");
+        app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), "post-forums");
       }
-
     }
-
-/***
-    app.modules.respondTo("arcade-posts").forEach(module => {
-      if (module != null) {
-        module.respondTo('arcade-posts').render(app, module);
-      }
-    });
-***/
-
 
   },
 
