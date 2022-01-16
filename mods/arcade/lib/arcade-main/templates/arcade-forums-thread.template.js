@@ -1,6 +1,7 @@
 module.exports = ArcadeForumsThreadTemplate = (obj) => {
 
   /**** OBJ **** 
+  let ft_link 	= "/saito/img/background.png";
   let ft_img 	= "/saito/img/background.png";
   let ft_mod  	= "twilight";
   let ft_title 	= "Saito Discussion";
@@ -23,11 +24,11 @@ module.exports = ArcadeForumsThreadTemplate = (obj) => {
   return `
       <div class="arcade-post-forum-topic">
         <div class="arcade-post-forum-topic-image">
-          <div class="arcade-image-header"><a href="?game=${obj.ft_mod}"><img class="arcade-image-header-image"  src="${obj.ft_img}" /></a></div>
+          <div class="arcade-image-header"><a href="${obj.ft_link}"><img class="arcade-image-header-image"  src="${obj.ft_img}" /></a></div>
 	</div>
 	<div class="arcade-post-forum-topic-center">
           <div class="arcade-post-forum-topic-intro">
-	    <a class="arcade-post-forum-link" href="?game=${obj.ft_mod}">
+	    <a class="arcade-post-forum-link" href="${obj.ft_link}">
             <div class="arcade-post-forum-topic-title">${obj.ft_title}</div>
             <div class="arcade-post-forum-topic-description">${obj.ft_desc}</div>
 	    </a>
@@ -40,7 +41,7 @@ module.exports = ArcadeForumsThreadTemplate = (obj) => {
         <div class="arcade-post-forum-topic-latest-post">
           <div class="arcade-post-forum-topic-latest-post-image"><i class="fas fa-user"></i></div>
 	  <div class="arcade-post-forum-topic-latest-post-details">
-	    <a class="arcade-post-forum-link" href="?game=${obj.ft_mod}">
+	    <a class="arcade-post-forum-link" href="${obj.ft_link}">
               <div class="arcade-post-forum-topic-latest-post-title">${ft_ptitle}</div>
               <div class="arcade-post-forum-topic-latest-post-info">By ${obj.ft_puser}, ${obj.ft_pdate}</div>
 	    </a>

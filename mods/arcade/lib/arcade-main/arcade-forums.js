@@ -7,6 +7,7 @@ module.exports = ArcadeForums = {
 
     let sobj = [];
     sobj.push({
+	ft_link   : "/post/?forum=saito",
 	ft_img    : "/saito/img/background.png",
 	ft_mod    : "saito",
 	ft_title  : "Saito Discussion",
@@ -18,6 +19,7 @@ module.exports = ArcadeForums = {
 	ft_pdate  :  "Jan 15",
     });
     sobj.push({
+	ft_link   : "/post/?forum=development",
 	ft_img    : "/saito/img/background.png",
 	ft_mod    : "development",
 	ft_title  : "Saito Development",
@@ -43,6 +45,7 @@ module.exports = ArcadeForums = {
       let title = modforums[i].name;
 
       sobj.push({
+	ft_link   : "/post/?forum="+modforums[i].returnSlug(),
 	ft_img    : img,
 	ft_mod    : modforums[i].returnSlug(),
 	ft_title  : title,
@@ -74,6 +77,7 @@ module.exports = ArcadeForums = {
       if (!title) { title = modgames[i].name; }
 
       obj.push({
+	ft_link   : "/arcade/?game="+modgames[i].returnSlug(),
 	ft_img    : `/${modgames[i].returnSlug()}/img/arcade.jpg`,
 	ft_mod    : modgames[i].returnSlug(),
 	ft_title  : title,
@@ -85,7 +89,6 @@ module.exports = ArcadeForums = {
 	ft_pdate  :  "Jan 12",
       });
     }
-
    
 
     if (!document.querySelector(".arcade-posts")) { 
@@ -101,15 +104,6 @@ module.exports = ArcadeForums = {
       }
 
     }
-
-/***
-    app.modules.respondTo("arcade-posts").forEach(module => {
-      if (module != null) {
-        module.respondTo('arcade-posts').render(app, module);
-      }
-    });
-***/
-
 
   },
 

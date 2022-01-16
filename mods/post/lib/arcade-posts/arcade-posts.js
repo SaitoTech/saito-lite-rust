@@ -14,7 +14,6 @@ module.exports = ArcadePosts = {
     }
   },
 
-
   attachEvents(app, mod) {
 
     document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {

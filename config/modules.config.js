@@ -26,6 +26,7 @@ export default {
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
+    'saitoforum/saitoforum.js',
   ],
   lite: [
     'arcade/arcade.js',
@@ -55,5 +56,6 @@ export default {
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
+    'saitoforum/saitoforum.js',
   ]
 }

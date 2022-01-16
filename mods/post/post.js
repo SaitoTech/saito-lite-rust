@@ -2,6 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PostMain = require('./lib/post-main/post-main');
 const PostSidebar = require('./lib/post-sidebar/post-sidebar');
+const PostCreate = require('./lib/post-overlay/post-create');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
@@ -54,6 +55,29 @@ class Post extends ModTemplate {
       obj.render = this.renderArcade;
       obj.attachEvents = function() {};
       return obj;
+    }
+
+    if (type == "header-menu") {
+      if (this.browser_active) {
+        let obj = {};
+        let post_self = this;
+        obj.returnMenu = function() {
+  	  return `
+            <div class="wallet-action-row" id="header-dropdown-post-new">
+              <span class="scan-qr-info"><i class="settings-fas-icon fas fa-file"></i> New Post</span>
+            </div>
+	  `;
+        }
+        obj.attachEvents = function() {
+          if (document.getElementById('header-dropdown-post-new')) {
+            document.getElementById('header-dropdown-post-new').onclick = () => {
+              PostCreate.render(post_self.app, post_self);
+              PostCreate.attachEvents(post_self.app, post_self);
+            };
+          }
+        }
+        return obj;
+      }
     }
 
     if (type == "header-dropdown") {

@@ -1,11 +1,13 @@
 module.exports = ArcadeGameSidebarTemplate = (game_mod) => {
+  let gamename = game_mod.name;
+  if (game_mod.gamename) { gamename = game_mod.gamename; }
   return `
   <div class="arcade-sidebar" id="arcade-sidebar">
     <div class="arcade-controls">
       <div class="arcade-bars-menu">
         <div class="arcade-navigator-bars-menu register-username-check">
           <div class="arcade-sidebar-active-games-header" style="display:flex; align-items:center;justify-content: space-between">
-            <h2>${game_mod.gamename}</h2>
+            <h2>${gamename}</h2>
           </div>
           <div class="arcade-apps-wrapper">
             <ul class="arcade-apps" id="arcade-apps">
