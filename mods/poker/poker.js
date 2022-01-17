@@ -13,11 +13,10 @@ class Poker extends GameTemplate {
     this.name = "Poker";
     this.gamename = "Poker";
     this.description =
-      "BETA version of Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory? This game is a playable demo under active development!";
+      "Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
     this.categories = "Games Arcade Entertainment";
     this.type = "Classic Cardgame";
     this.card_img_dir = "/poker/img/cards";
-    this.useHUD = 0;
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
@@ -3332,7 +3331,7 @@ class Poker extends GameTemplate {
 
   returnGameOptionsHTML() {
     let options_html = `
-      <h1 class="overlay-title">Start a Poker Game</h1>
+      <h1 class="overlay-title">Poker Options</h1>
           <div class="overlay-input">
             <label for="stake">Initial Stake:</label>
             <select name="stake">

@@ -18,9 +18,6 @@ class GameTestSuite extends GameTemplate {
     this.type            = "Education Development";
     this.card_img_dir = '/gametestsuite/img/cards';
 
-    // disable by default
-    this.useHUD = 0;
-
     // player numbers
     this.minPlayers = 2;
     this.maxPlayers = 6;

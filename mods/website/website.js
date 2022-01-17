@@ -23,7 +23,7 @@ class Website extends ModTemplate {
     this.description = "Module that creates a root website on a Saito node.";
     this.categories = "Utilities Communications";
     this.header = null;
-    this.overlay = new SaitoOverlay(app, this);
+    this.overlay = new SaitoOverlay(app);
     return this;
   }
   initializeHompage(app) {

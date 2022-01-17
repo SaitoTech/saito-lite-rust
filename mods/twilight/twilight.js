@@ -429,18 +429,14 @@ class Twilight extends GameTemplate {
       }
 
       if (action2 == "enable_hud_vertical") {
-        $('.hud').addClass('hud-vertical').removeClass('hud-long').removeClass('hud-square').removeAttr("style");
         twilight_self.hud.mode = 2;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
         return;
       }
       if (action2 == "enable_hud_square") {
-        $('.hud').addClass('hud-square').removeClass('hud-long').removeClass('hud-vertical').removeAttr("style");
         twilight_self.hud.mode = 1;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
@@ -448,9 +444,7 @@ class Twilight extends GameTemplate {
         return;
       }
       if (action2 == "enable_hud_horizontal") {
-        $('.hud').addClass('hud-long').removeClass('hud-vertical').removeClass('hud-square').removeAttr("style");
         twilight_self.hud.mode = 0;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);

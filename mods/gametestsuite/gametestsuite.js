@@ -23,9 +23,6 @@ class GameTestSuite extends GameTemplate {
     this.type = "Utilitty";
     this.status = "Demonstration";
 
-    // disable by default
-    this.useHUD = 0;
-
     // player numbers
     this.minPlayers = 2;
     this.maxPlayers = 6;

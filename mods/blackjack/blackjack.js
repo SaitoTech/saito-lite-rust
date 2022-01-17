@@ -20,8 +20,7 @@ class Blackjack extends GameTemplate {
     this.status     = "Beta";
 
     this.card_img_dir = '/blackjack/img/cards';
-    this.useHUD = 0;
-
+ 
     this.minPlayers = 2;
     this.maxPlayers = 6;
     this.interface = 1;
@@ -1227,6 +1226,8 @@ toggleIntro() {
   returnGameOptionsHTML() {
 
     let options_html = `
+      <h1 class="overlay-title">Blackjack Options</h1>
+      <div class="overlay-input">
       <label for="stake">Initial Stake:</label>
       <select name="stake">
               <option value="0.001">0.001</option>
@@ -1241,7 +1242,8 @@ toggleIntro() {
               <option value="5000" >5000</option>
               <option value="10000">10000</option>
       </select>
-
+      </div>
+      <div class="overlay-input">
       <label for="crypto">Crypto to stake:</label>
       <select name="crypto">
           <option value="" selected>none</option>
@@ -1255,7 +1257,8 @@ toggleIntro() {
     }
 
     options_html += `
-            </select>
+      </select>
+      </div>
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button" style="margin-top:20px;padding:30px;text-align:center">accept</div>
 
 

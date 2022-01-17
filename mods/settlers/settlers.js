@@ -26,7 +26,6 @@ class Settlers extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
 
-    this.useHUD = 0; //Turn off HUD? %%%
   }
   //
   // requestInterface(type) {
@@ -57,15 +56,18 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    let html = `
+    return "";
+    /*let html = `
+          <div class="overlay-input">
           <label for="theme">Game Version:</label>
           <select name="theme">
             <option value="classic" selected title="Familiar version of the game with ore, wheat, bricks, wood and sheep">Classic</option>`;
     //<option value="elements" title="Magical version of game where players cultivate the five elements (earth, fire, water, metal, and wood)">Elemental</option>
     html += `</select>
+          </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
-    return html;
+    return html;*/
   }
 
   /*

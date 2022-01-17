@@ -18,7 +18,7 @@ class HereIStand extends GameTemplate {
     this.description     = `Here I Stand is a boardgame based on the military, political and religious conflicts within Europe at the outbreak of the Protestant Reformation (1517-1555). Each player controls one or more major powers that dominated Europe: the Ottoman Empire, the Hapsburgs, England, France, the Papacy and the Protestant states.`;
     this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
     this.categories      = "Games Arcade Entertainment";
-
+    this.status = "alpha";
     //
     // this sets the ratio used for determining
     // the size of the original pieces
@@ -562,17 +562,15 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
   returnGameOptionsHTML() {
 
     return `
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
-	<div style="top:0;left:0;">
-            <label for="player1">Play as:</label>
-            <select name="player1">
-              <option value="random" selected>random</option>
-              <option value="ussr">Protestants</option>
-              <option value="us">Hapsburgs</option>
-            </select>
+      <div class="overlay-input">
+      <label for="player1">Play as:</label>
+      <select name="player1">
+        <option value="random" selected>random</option>
+        <option value="ussr">Protestants</option>
+        <option value="us">Hapsburgs</option>
+      </select>
+      </div>
 	    <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-	</div>
-    </div>
           `;
 
   }

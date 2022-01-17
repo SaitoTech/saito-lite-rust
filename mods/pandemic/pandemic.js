@@ -2946,41 +2946,36 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
     } catch (err) {}
 
     let html = `
-
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
-
-        <div style="top:0;left:0;margin-right: 20px;">
-
+      <h1 class="overlay-title">Pandemic Options</h1>
+        <div class="overlay-input">
           <label for="difficulty">Difficulty:</label>
           <select name="difficulty">
             <option value="easy">easy</option>
             <option value="medium" selected default>not so easy</option>
             <option value="hard">damn hard</option>
           </select>
-
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
         </div>
-        <div>
-
+      
     `;
 
      for (let i = 1; i <= player_upper_limit; i++) {
        html += `
+            <div class="overlay-input">
             <label for="player${i}" class="game-players-options game-players-options-${i}p">Player ${i}:</label>
             <select name="player${i}" id="game-players-select-${i}p" class="game-players-options game-players-options-${i}p">
-              <option value="random" default>random</option>
-              <option value="generalist" default>generalist</option>
+              <option value="random" selected default>random</option>
+              <option value="generalist">generalist</option>
               <option value="scientist">scientist</option>
               <option value="medic">medic</option>
               <option value="operationsexpert">operations expert</option>
             </select>
+            </div>
        `;
      }
 
      html += `
-        </div>
-      </div>
+     
+     <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
 
     return html;

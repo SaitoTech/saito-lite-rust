@@ -762,13 +762,20 @@ button.add-games {
 .game-wizard-title {
   font-size: 1.6em;
   font-weight: bold;
+  position: relative;
 }
 .game-wizard-description {
   font-size: 1.2em;
   line-height: 1.5em;
 }
 .game-wizard-status {
-  margin: 1em 0 0;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  font-size: 0.8em;
+  font-style: italic;
+  font-weight: normal;
+ 
 }
 
 .game-wizard-image {
@@ -785,6 +792,16 @@ button.add-games {
   padding: 10px;
   width: 100%;
 }
+
+.game-wizard-players-no-select{
+  width: 20em;
+  height: 3em;
+  line-height: 3;
+  width: 100%;
+  font-size: 1.2em;
+  padding: 0 1em;
+}
+
 .game-wizard-options-toggle {
   padding-top: 10px;
 }
