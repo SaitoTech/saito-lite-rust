@@ -2,6 +2,7 @@
   --saito-red: #639;
   --saito-nightscape: linear-gradient(-45deg, #324 50%, #1e1e1f 100%);
   --saito-jester: linear-gradient(-45deg, #426 50%, #213 100%);
+  --saito-reverse-jester: linear-gradient(-45deg, #213 5%, #426 50%);
   --tile-height: 8em;
   --saito-width: 1500px;
   --sidebar-width: 15em;
@@ -566,7 +567,7 @@ body {
     left: 0;
   }
   .arcade-sub {
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
     display: block;
     margin: 1em 0 0 0;
   }

@@ -1,17 +1,19 @@
 const saito = require('./../../../../lib/saito/saito');
-const ArcadeSidebarTemplate = require('./arcade-sidebar.template');
+const ArcadeGameSidebarTemplate = require('./arcade-game-sidebar.template');
 const ArcadeGamesFullListOverlayTemplate = require('./arcade-games-full-list-overlay.template');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
 const ArcadeGameDetails = require('../arcade-game/arcade-game-details');
 const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
-module.exports = ArcadeSidebar = {
-
+module.exports = ArcadeGameSidebar = {
 
   render(app, mod) {
 
+    let x = app.browser.returnURLParameter("game");
+    let game_mod = app.modules.returnModuleBySlug(x);
+
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
-    if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeSidebarTemplate(), "arcade-container"); }
+    if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeGameSidebarTemplate(game_mod), "arcade-container"); }
 
     app.modules.respondTo("email-chat").forEach(module => {
       if (module != null) {
@@ -19,21 +21,6 @@ module.exports = ArcadeSidebar = {
       }
     });
 
-    let games_menu = document.querySelector(".arcade-apps");
-    app.modules.respondTo("arcade-games").forEach(module => {
-      let title = module.name;
-      try {
-        if (module.gamename) { title = module.gamename; }
-      } catch (err) {}
-      let status = "";
-      try {
-        if (module.status) {status = '<div class="tiptext">This game is: ' + module.status + '.</div>';}
-      } catch (err) {}
-
-      if (!document.getElementById(module.name)) {
-        games_menu.innerHTML += `<li class="arcade-navigator-item tip" id="${module.name}">${title}${status}</li>`;
-      }
-    });
   },
 
   
@@ -50,8 +37,10 @@ module.exports = ArcadeSidebar = {
         }
       };
     }
+
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
+
         let gameName = e.currentTarget.id;
         app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", gameName);
         let doGameDetails = () => {
@@ -60,6 +49,7 @@ module.exports = ArcadeSidebar = {
           ArcadeGameDetails.render(app, mod, tx);
           ArcadeGameDetails.attachEvents(app, mod, tx);
         }
+
         //
         // not registered
         //

@@ -2,26 +2,17 @@ const ArcadePostsTemplate = require('./arcade-posts.template');
 const PostTeaserTemplate = require('./post-teaser.template');
 const PostView = require('./../post-overlay/post-view');
 const PostCreate = require('./../post-overlay/post-create');
-const PostStyle = require('./../style.template.js');
 
 module.exports = ArcadePosts = {
 
   render(app, mod) {
-
     if (!document.getElementById("arcade-posts-container")) {
       app.browser.addElementToDom(ArcadePostsTemplate());
     }
     for (let i = mod.posts.length-1; i >= 0; i--) {
       this.addPost(app, mod, mod.posts[i]);
     }
-
-    mod.renderMethod = "arcade";
-    if (!document.getElementById("posts-stylesheet")) {
-      app.browser.addElementToDom(PostStyle());  
-    }
-
   },
-
 
   attachEvents(app, mod) {
 
@@ -39,6 +30,16 @@ module.exports = ArcadePosts = {
       document.querySelector('.arcade-posts-add').onclick = (e) => {
         PostCreate.render(app, mod);
         PostCreate.attachEvents(app, mod);
+
+	// are we in a subforum
+	let x = app.browser.returnURLParameter("game");
+	if (x) {
+	  let obj = document.querySelector(".post-create-forum");
+	  if (obj) {
+	    obj.value = x;
+	  }
+	}
+
       }
     } catch (err) {
 console.log("ERROR: " + err);
