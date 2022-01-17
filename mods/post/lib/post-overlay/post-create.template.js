@@ -18,7 +18,7 @@ module.exports = PostCreateTemplate = (app, mod) => {
 
     <div id="post-create" class="post-create">
 
-      <input type="text" class="post-create-title" name="post-create-title" placeholder="Post Title">
+      <input type="text" class="post-create-title" name="post-create-title" placeholder="Title (optional)">
 
       <div id="post-create-link" class="post-create-link">
         <input type="text" class="post-create-link-input" name="post-create-link-input" placeholder="https://...">
@@ -32,6 +32,18 @@ module.exports = PostCreateTemplate = (app, mod) => {
 
       <div id="post-create-image-preview-container" class="post-create-image-preview-container">
       </div>
+
+
+      <div id="post-create-image-link-container" class="post-create-image-link-container" style="
+        float: right;
+        font-size: 1.5em;
+        border: 1px solid grey;
+        margin: auto;
+        padding: 10px;
+        padding-bottom: 5px;
+        position: relative;
+      "><i class="fas fa-link"></i></div>
+
 
       <button class="post-submit-btn">Submit</button>
 

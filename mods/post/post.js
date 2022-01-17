@@ -163,6 +163,15 @@ class Post extends ModTemplate {
     // fetch posts from server
     //
     let sql = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+    let forum = app.browser.returnURLParameter("forum");
+    if (forum) {
+      sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+    } else {
+      let forum = app.browser.returnURLParameter("game");
+      if (forum) {
+        sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+      }
+    }
     this.sendPeerDatabaseRequestWithFilter(
 
         "Post" ,

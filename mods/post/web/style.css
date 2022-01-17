@@ -90,12 +90,14 @@
 /*** Create ***/
 
 .post-create-container {
-  min-width: 80vw;
   background-color: whitesmoke;
   padding: 2em;
   border-radius: 3px;
   color: #444;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+  min-width: 55vw;
+  width:700px;
+  max-width: 80vw;
 }
 
 .post-create-header {

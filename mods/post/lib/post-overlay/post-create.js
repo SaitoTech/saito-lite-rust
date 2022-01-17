@@ -19,11 +19,14 @@ module.exports = PostCreate = {
     mod.overlay.showOverlay(app, mod, PostCreateTemplate(app, mod), function() {
     });
 
+    document.querySelector(".post-create-header").style.display = "none";
+
     this.showTab("discussion");
 
-    document.querySelector('.post-create-header-discussion').onclick = (e) => { this.showTab("discussion"); }
-    document.querySelector('.post-create-header-link').onclick = (e) =>       { this.showTab("link"); }
-    document.querySelector('.post-create-header-image').onclick = (e) =>      { this.showTab("image"); }
+    //document.querySelector('.post-create-header-discussion').onclick = (e) => { this.showTab("discussion"); }
+    //document.querySelector('.post-create-header-link').onclick = (e) =>       { this.showTab("link"); }
+    //document.querySelector('.post-create-header-image').onclick = (e) =>      { this.showTab("image"); }
+    document.querySelector('.post-create-image-link-container').onclick = (e) =>       { this.showTab("link"); }
 
     app.browser.addDragAndDropFileUploadToElement("post-create-image", (file) => {
       console.log(file);
@@ -31,6 +34,13 @@ module.exports = PostCreate = {
       app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
       this.attachEvents(app, mod);
     });
+
+    app.browser.addDragAndDropFileUploadToElement("post-create-container", (file) => {
+      console.log(file);
+      this.new_post.images.push(file);
+      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+      this.attachEvents(app, mod);
+    }, false);
 
   },
 
@@ -43,18 +53,26 @@ module.exports = PostCreate = {
       this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
-      if (this.new_post.title == "") {
-        salert("Please provide a title for your post!");
+
+      if (this.new_post.title === "" && this.new_post.content === "") {
+        salert("Cannot submit empty post!");
         return;
+      }
+
+      if (this.new_post.title === "") {
+	let maxlen = 50;
+	if (this.new_post.comment.length > 50) {
+	  this.new_post.title = this.new_post.comment.substr(0, 50) + "..."; 
+	} else {
+	  this.new_post.title = this.new_post.comment;
+	}
       }
 
       let newtx = mod.createPostTransaction(this.new_post.title, this.new_post.comment, this.new_post.link, this.new_post.forum, this.new_post.images);
       app.network.propagateTransaction(newtx);
-
       newtx.children = 0;
       mod.posts.push(newtx);
       mod.render();
-
       mod.overlay.hide();
 
     }
@@ -108,6 +126,19 @@ module.exports = PostCreate = {
       document.querySelector(".post-create-textarea").style.display = "none";
     }
 
+  },
+
+
+  isValidURL(string) {
+    let url;
+  
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;  
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
   }
 
 }
