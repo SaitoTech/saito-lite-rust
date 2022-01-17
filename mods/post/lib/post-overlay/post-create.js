@@ -13,11 +13,9 @@ module.exports = PostCreate = {
     this.new_post.link = "";
     this.new_post.forum = "";
 
-    mod.overlay = new SaitoOverlay(app, mod);
-    mod.overlay.render(app, mod);
-    mod.overlay.attachEvents(app, mod);
-
-    mod.overlay.showOverlay(app, mod, PostCreateTemplate(), function() {
+    mod.overlay = new SaitoOverlay(app);
+    
+    mod.overlay.show(app, mod, PostCreateTemplate(), function() {
     });
 
     this.showTab("discussion");

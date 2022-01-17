@@ -32,32 +32,32 @@ hideOverlays() {
 }
 
 handleMovementMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnMovementOverlay());
+  this.overlay.show(this.app, this, this.returnMovementOverlay());
 }
 handleCombatMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnCombatOverlay());
+  this.overlay.show(this.app, this, this.returnCombatOverlay());
 }
 handleFactionMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnFactionOverlay());
+  this.overlay.show(this.app, this, this.returnFactionOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
 }
 handleTechMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnTechOverlay());
+  this.overlay.show(this.app, this, this.returnTechOverlay());
 }
 
 handleAgendasMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnAgendasOverlay());
+  this.overlay.show(this.app, this, this.returnAgendasOverlay());
 }
 handleLawsMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnLawsOverlay());
+  this.overlay.show(this.app, this, this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnUnitsOverlay());
+  this.overlay.show(this.app, this, this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
     imperium_self.overlay.hide();
@@ -126,7 +126,7 @@ handleStrategyMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnObjectivesOverlay());
+  this.overlay.show(this.app, this, this.returnObjectivesOverlay());
 }
 
 handleInfoMenuItem() {

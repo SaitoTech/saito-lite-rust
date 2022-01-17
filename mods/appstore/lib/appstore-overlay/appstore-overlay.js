@@ -7,11 +7,9 @@ module.exports = AppStoreAppspace = {
 
   render(app, mod, search_options={}) {
 
-    mod.overlay = new SaitoOverlay(app, mod);
-    mod.overlay.render(app, mod);
-    mod.overlay.attachEvents(app, mod);
-
-    mod.overlay.showOverlay(app, mod, AppStoreOverlayTemplate());
+    mod.overlay = new SaitoOverlay(app);
+    
+    mod.overlay.show(app, mod, AppStoreOverlayTemplate());
 
     //
     // server also performs sanity checks, but we'll do basic ones here too

@@ -199,14 +199,11 @@ console.log("ADDING GAME!");
       this.header = new SaitoHeader(app, this);
     }
     if (this.overlay == null) {
-      this.overlay = new SaitoOverlay(app, this);
+      this.overlay = new SaitoOverlay(app);
     }
 
     this.header.render(app, this);
     this.header.attachEvents(app, this);
-
-    this.overlay.render(app, this);
-    this.overlay.attachEvents(app, this);
 
     ArcadeSidebar.render(app, this);
     ArcadeSidebar.attachEvents(app, this);

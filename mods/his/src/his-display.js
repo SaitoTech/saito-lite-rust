@@ -120,7 +120,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
   displaySpaceDetailedView(name) {
     let html = this.spaces[name].returnView();    
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.show(this.app, this, html);
   }
 
   displayElectorateDisplay() {

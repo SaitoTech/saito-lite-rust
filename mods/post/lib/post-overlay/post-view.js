@@ -8,9 +8,7 @@ module.exports = PostView = {
 
   render(app, mod, sig="") {
 
-    mod.overlay = new SaitoOverlay(app, mod);
-    mod.overlay.render(app, mod);
-    mod.overlay.attachEvents(app, mod);
+    mod.overlay = new SaitoOverlay(app);
     mod.comments = [];
 
     //
@@ -67,7 +65,7 @@ console.log("error showing comment or gallery");
           
         }
     );
-    mod.overlay.showOverlay(app, mod, PostViewTemplate(app, mod, sig), function() {});
+    mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig), function() {});
   },
   rerender(app, mod, sig) {
 

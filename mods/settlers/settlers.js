@@ -26,7 +26,6 @@ class Settlers extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
 
-    this.useHUD = 0; //Turn off HUD? %%%
   }
   //
   // requestInterface(type) {
@@ -57,15 +56,18 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    let html = `
+    return "";
+    /*let html = `
+          <div class="overlay-input">
           <label for="theme">Game Version:</label>
           <select name="theme">
             <option value="classic" selected title="Familiar version of the game with ore, wheat, bricks, wood and sheep">Classic</option>`;
     //<option value="elements" title="Magical version of game where players cultivate the five elements (earth, fire, water, metal, and wood)">Elemental</option>
     html += `</select>
+          </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
-    return html;
+    return html;*/
   }
 
   /*
@@ -101,7 +103,7 @@ class Settlers extends GameTemplate {
   </div>
    `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
   }
 
   initializeHTML(app) {
@@ -3165,7 +3167,7 @@ class Settlers extends GameTemplate {
             <div class="trade_overlay_button button trade_overlay_broadcast_button">${submit}</div>
           </div></div>`;
 
-      settlers_self.overlay.showOverlay(
+      settlers_self.overlay.show(
         settlers_self.app,
         settlers_self.this,
         html
@@ -3273,7 +3275,7 @@ class Settlers extends GameTemplate {
             <div class="trade_overlay_button button trade_overlay_broadcast_button">Broadcast Offer</div>
           </div></div>`;
 
-    this.overlay.showOverlay(this.app, this, html);
+    this.overlay.show(this.app, this, html);
 
     $(".trade_button.select").on("click", function () {
       $(this).toggleClass("selected");
@@ -3372,7 +3374,7 @@ class Settlers extends GameTemplate {
     //<div class="trade_overlay_button button" id="chat">Chat</div>
     html += `</div></div>`;
 
-    settlers_self.overlay.showOverlay(
+    settlers_self.overlay.show(
       settlers_self.app,
       settlers_self.this,
       html
