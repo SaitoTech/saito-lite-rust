@@ -25,7 +25,7 @@ class AdvancedOverlay {
     attachEvents(app, game_mod) {
     }
 
-    showOverlay(app, game_mod, html, mycallback=null) {
+    show(app, game_mod, html, mycallback=null) {
       this.render(app, game_mod);
 
       let overlay_self = this;

@@ -203,7 +203,7 @@ class Arcade extends ModTemplate {
       this.header = new SaitoHeader(app, this);
     }
     if (this.overlay == null) {
-      this.overlay = new SaitoOverlay(app, this);
+      this.overlay = new SaitoOverlay(app);
     }
 
     this.header.render(app, this);
@@ -214,7 +214,6 @@ class Arcade extends ModTemplate {
 
     let x = app.browser.returnURLParameter("game");
     if (x) {
-console.log("TESTING: " + x);
       ArcadeGameSidebar.render(app, this);
       ArcadeGameSidebar.attachEvents(app, this);
     } else {

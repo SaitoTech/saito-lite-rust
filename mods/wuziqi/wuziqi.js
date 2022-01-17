@@ -11,7 +11,7 @@ class Wuziqi extends GameTemplate {
         // Define static game parameters and add global variables.
 
         this.name = "Wuziqi";
-	this.gamename = "Wuziqi";
+        this.gamename = "Wuziqi";
         this.title = "五子棋"
         this.description = "五子棋 aka Gokomu and Gobang! is a simple game where two players alternately place black and white tiles on a go board attempting to place 5 of them in adjacent positions."
         this.categories = "Boardgame Strategy";
@@ -20,8 +20,6 @@ class Wuziqi extends GameTemplate {
 
         this.minPlayers = 2;
         this.maxPlayers = 2;
-
-        this.useHUD = 0;
 
         this.moves = [];
         this.bestof = 1;
@@ -69,7 +67,7 @@ class Wuziqi extends GameTemplate {
             class: "game-intro",
             callback: function (app, game_mod) {
                 game_mod.menu.hideSubMenus();
-                game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnRulesOverlay());
+                game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnRulesOverlay());
             }
         });
         this.menu.addSubMenuOption("game-game", {
@@ -629,6 +627,8 @@ class Wuziqi extends GameTemplate {
     // Add options to the game start wizard for different game parameters
     returnGameOptionsHTML() {
         return `
+        <h1 class="overlay-title">Wuziqi Options</h1>
+        <div class="overlay-input">
         <label for="best_of">Best of:</label>
         <select name="best_of">
           <option value="1">1</>
@@ -639,7 +639,8 @@ class Wuziqi extends GameTemplate {
           <option value="11">11</>
           <option value="13">13</>
           <option value="15">15</>
-        </select>
+        </select></div>
+        <div class="overlay-input">
         <label for="board_size">Board Size:</label>
         <select name="board_size">
         <option value="9">9</>
@@ -651,7 +652,7 @@ class Wuziqi extends GameTemplate {
         <option value="21">21</>
         <option value="23">23</>
         <option value="25">25</>
-      </select>
+      </select></div>
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
 

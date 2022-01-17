@@ -17,11 +17,9 @@ module.exports = AppStorePublishSuccess = {
 
 /**
 
-    mod.overlay = new SaitoOverlay(app, mod);
-    mod.overlay.render(app, mod);
-    mod.overlay.attachEvents(app, mod);
-
-    mod.overlay.showOverlay(app, mod, AppStorePublishWaitingTemplate());
+    mod.overlay = new SaitoOverlay(app);
+    
+    mod.overlay.show(app, mod, AppStorePublishWaitingTemplate());
 **/
 
 //    document.querySelector(".email-appspace").innerHTML = AppStorePublishSuccessTemplate();

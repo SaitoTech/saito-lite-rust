@@ -680,13 +680,6 @@ class President extends GameTemplate {
 
 
 
-  returnGameOptionsHTML() {
-
-    return `
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-    `;
-
-  }
 
   returnFormattedGameOptions(options) {
     let new_options = {};

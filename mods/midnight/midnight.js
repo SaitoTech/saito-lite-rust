@@ -20,8 +20,6 @@ class Midnight extends GameTemplate {
     this.minPlayers      = 1;
     this.type            = "Fiction";
 
-    this.useHUD = 0;
-
   }
 
 

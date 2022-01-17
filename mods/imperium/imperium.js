@@ -10728,7 +10728,7 @@ console.log("Active Agenda: " + active_agenda);
           </div>
         `;
 
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, html);
+        game_mod.overlay.show(game_mod.app, game_mod, html);
 
         $('.menu-item').on('click', function() {
 
@@ -10739,10 +10739,10 @@ console.log("Active Agenda: " + active_agenda);
 	      game_mod.handleHowToPlayMenuItem();
               break;
             case "movement":
-              game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+              game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
               break;
             case "production":
-	      game_mod.overlay.showOverlay(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
+	      game_mod.overlay.show(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
               break;
             case "combat":
 	      game_mod.handleCombatMenuItem();
@@ -10840,7 +10840,7 @@ console.log("Active Agenda: " + active_agenda);
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -10893,7 +10893,7 @@ console.log("Active Agenda: " + active_agenda);
 	  salert("There are currently no Active Laws");
 	  return;
 	}
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnLawsOverlay());
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnLawsOverlay());
       }
     });
 
@@ -11881,32 +11881,32 @@ hideOverlays() {
 }
 
 handleMovementMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnMovementOverlay());
+  this.overlay.show(this.app, this, this.returnMovementOverlay());
 }
 handleCombatMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnCombatOverlay());
+  this.overlay.show(this.app, this, this.returnCombatOverlay());
 }
 handleFactionMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnFactionOverlay());
+  this.overlay.show(this.app, this, this.returnFactionOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
 }
 handleHowToPlayMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnHowToPlayOverlay());
+  this.overlay.show(this.app, this, this.returnHowToPlayOverlay());
 }
 handleTechMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnTechOverlay());
+  this.overlay.show(this.app, this, this.returnTechOverlay());
 }
 
 handleAgendasMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnAgendasOverlay());
+  this.overlay.show(this.app, this, this.returnAgendasOverlay());
 }
 handleLawsMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnLawsOverlay());
+  this.overlay.show(this.app, this, this.returnLawsOverlay());
 }
 handleUnitsMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnUnitsOverlay());
+  this.overlay.show(this.app, this, this.returnUnitsOverlay());
   let imperium_self = this;
   $('#close-units-btn').on('click', function() {
     imperium_self.overlay.hide();
@@ -11975,7 +11975,7 @@ handleStrategyMenuItem() {
 }
 
 handleObjectivesMenuItem() {
-  this.overlay.showOverlay(this.app, this, this.returnObjectivesOverlay());
+  this.overlay.show(this.app, this, this.returnObjectivesOverlay());
 }
 
 handleInfoMenuItem() {
@@ -15574,7 +15574,7 @@ this.game.state.end_round_scoring = 0;
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.showOverlay(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
+	    this.overlay.show(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
 	    document.getElementById("close-action-cards-btn").onclick = (e) => {
 	      this.overlay.hide();
 	      this.game.state.showing_action_cards_amounts = 0;
@@ -15592,7 +15592,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.showOverlay(this.app, this, this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+	    this.overlay.show(this.app, this, this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
 	  }
 	  this.game.players_info[player-1].secret_objectives_in_hand += amount;
 	}
@@ -15672,7 +15672,7 @@ this.game.state.end_round_scoring = 0;
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
 // this likely causes disconnects as is not guaranteed to run on player turn
 //            this.playerAcknowledgeNotice("REMEMBER: use the trade strategy card to get trade goods. Commercial partnerships can be as valuable as large fleets in Red Imperium", function() {});
           }
@@ -15684,7 +15684,7 @@ this.game.state.end_round_scoring = 0;
 
 	  if (this.game.state.use_tutorials == 1 && !this.game.state.seen_commodities_tutorial) {
 	    this.game.state.seen_commodities_tutorial = 1;
-            this.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
 // this likely causes disconnects as is not guaranteed to run on player turn
 //            this.playerAcknowledgeNotice("REMEMBER: when you have commodities, trade them with a neighbouring player. They receive trade goods. Two players can trade commodities to each other and receive trade goods in return!", function() {});
 	  }
@@ -19146,7 +19146,7 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_move_ships") {
         imperium_self.tutorial_move_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
+        imperium_self.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/movement.png" style="width:100%; height:auto;" /></div>');
         imperium_self.playerAcknowledgeNotice("REMEMBER: to move ships select \"activate sector\" and pick the sector you are moving into. Most ships can only move 1-hex and you cannot move ships from sectors that are already activated. You will be able to choose the ships to move, and load infantry and fighters into units that can carry them.", function () {
           imperium_self.playerTurn();
         });
@@ -19155,7 +19155,7 @@ playerTurn(stage = "main") {
       if (action2 == "tutorial_produce_units") {
         imperium_self.tutorial_produce_clicked = 1;
         imperium_self.game.state.use_tutorials = 1;
-        imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
+        imperium_self.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;width:1200px;height:auto"><img src="/imperium/img/tutorials/production.png" style="width:100%; height:auto;" /></div>');
         imperium_self.playerAcknowledgeNotice("REMEMBER: to produce units, select \"activate sector\" and activate a sector with a space dock (like your home system). You are limited to producing +2 more units than the resources of the planet on which the Space Dock sits. And you can only have as many non-fighter ships in any sector as your fleet supply, so move your ships out before producing more!", function () {
           imperium_self.playerTurn();
         });
@@ -23846,10 +23846,10 @@ playerActivateSystem() {
       if (imperium_self.game.state.round == 1) {
         if (!imperium_self.canPlayerMoveShipsIntoSector(imperium_self.game.player, pid)) {
 	  if (imperium_self.hasPlayerActivatedSector(imperium_self.game.player) && !imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
-            imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnActivatedSectorsOverlay());
+            imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnActivatedSectorsOverlay());
 	  } else {
             if (!imperium_self.canPlayerProduceInSector(imperium_self.game.player, pid)) {
-              imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnFirstTurnOverlay());
+              imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnFirstTurnOverlay());
 	      return;
             }
           }
@@ -29094,7 +29094,7 @@ try {
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
-    imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
+    imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
   });
 } catch (err) {}
 }
@@ -30107,7 +30107,7 @@ displayFactionSheet(player) {
 
   let imperium_self = this;
   let html = imperium_self.returnFactionSheet(imperium_self, player);
-  imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, html);
+  imperium_self.overlay.show(imperium_self.app, imperium_self, html);
 
 }
 returnFactionSheet(imperium_self, player=null) {
@@ -30763,7 +30763,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML("", unit_popup, "", function() {});
   }
   hideUnit(unittype) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
   showSectorHighlight(sector) { this.addSectorHighlight(sector); }
@@ -30844,7 +30844,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(null, html);
   }
   hideHelpCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
   showActionCard(c) {
@@ -30858,7 +30858,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, html);
   }
   hideActionCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showStrategyCard(c) {
 
@@ -30887,7 +30887,7 @@ updateSectorGraphics(sector) {
   }
 
   hideStrategyCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showPlanetCard(sector, pid) {
     let planets = this.returnPlanets();
@@ -30898,7 +30898,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, '<img src="' + thiscard.img + '" style="width:100%" />');
   }
   hidePlanetCard(sector, pid) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showAgendaCard(agenda) {
     let thiscard = this.agenda_cards[agenda];
@@ -30911,13 +30911,13 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, html);
   }
   hideAgendaCard(sector, pid) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showTechCard(tech) {
     this.cardbox.showCardboxHTML(tech, this.tech[tech].returnCardImage());
   }
   hideTechCard(tech) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
 

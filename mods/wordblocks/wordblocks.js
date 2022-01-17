@@ -22,7 +22,6 @@ class Wordblocks extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
     this.type = "Wordgame";
-    this.useHUD = 1;
   
     this.gameboardWidth = 2677;
     this.tileHeight = 163;
@@ -61,10 +60,8 @@ class Wordblocks extends GameTemplate {
   }
 
   initializeHTML(app) {
-    this.hud.mode = 0; // square
-    this.hud.initial_render = 1; //turn off default sizing
-
     super.initializeHTML(app);
+
     this.app.modules.respondTo("chat-manager").forEach((mod) => {
       mod.respondTo("chat-manager").render(this.app, this);
     });
@@ -80,7 +77,7 @@ class Wordblocks extends GameTemplate {
       class: "game-intro",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(
+        game_mod.overlay.show(
           game_mod.app,
           game_mod,
           game_mod.returnRulesOverlay()
@@ -103,7 +100,7 @@ class Wordblocks extends GameTemplate {
       class: "game-stats",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(
+        game_mod.overlay.show(
           game_mod.app,
           game_mod,
           game_mod.returnStatsOverlay()
@@ -186,7 +183,9 @@ class Wordblocks extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.render(app, this);
+    
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -616,7 +615,7 @@ class Wordblocks extends GameTemplate {
             wordblocks_self.last_played_word[i - 1] &&
             wordblocks_self.last_played_word[i - 1].play
           ) {
-            wordblocks_self.overlay.showOverlay(
+            wordblocks_self.overlay.show(
               wordblocks_self.app,
               wordblocks_self,
               wordblocks_self.returnMath(
@@ -2359,6 +2358,8 @@ class Wordblocks extends GameTemplate {
       testHtml = `<option value="test">Test Dictionary</option>`;
     }
     return `
+          <h1 class="overlay-title">Wordblocks Options</h1>
+          <div class="overlay-input">
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
             <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
@@ -2367,14 +2368,15 @@ class Wordblocks extends GameTemplate {
             <option value="tagalog">Tagalog</option>
             ${testHtml}
           </select>
+          </div>
 
+          <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
             <option value="enable" selected>enable</option>
             <option value="disable">disable</option>
           </select>
-
-
+          </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
           `;
