@@ -344,11 +344,71 @@ class Post extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "post");
 
+    // delete
+    let csql = `DELETE FROM first_posts WHERE forum = $pforum`;
+    let cparams = { pforum : txmsg.forum };
+    await this.app.storage.executeDatabase(csql, cparams, "post");
 
-    //
-    // save a lite version without the content
-    //
+    // insert first_posts
+    let fpsql = `
+        INSERT INTO 
+            first_posts (
+                id,
+                thread_id,
+                parent_id, 
+                type,
+		publickey,
+                title,
+                img,
+                text,
+		forum,
+		link,
+                tx, 
+                lite_tx, 
+                ts,
+                children,
+                flagged,
+                deleted
+                ) 
+            VALUES (
+                $pid ,
+	        $pthread_id ,
+                $pparent_id ,
+                $ptype ,
+		$ppublickey ,
+		$ptitle ,
+		$pimg ,
+		$ptext ,
+		$pforum ,
+		$plink ,
+		$pfulltx ,
+		$plitetx ,
+		$pts ,
+		$pchildren ,
+		$pflagged ,
+		$pdeleted
+            );
+        `;
+    let fpparams = {
+	$pid 		: tx.transaction.sig ,
+	$pthread_id 	: tx.transaction.sig ,
+	$pparent_id	: '' ,
+	$ptype		: 'post' ,
+	$ppublickey	: tx.transaction.from[0].add ,
+	$ptitle		: txmsg.title ,
+	$pimg		: "" ,
+	$ptext		: txmsg.comment ,
+	$pforum		: txmsg.forum ,
+	$plink		: txmsg.link ,
+	$pfulltx	: pfulltx ,
+	$plitetx	: plitetx ,
+	$pts		: tx.transaction.ts ,
+	$pchildren	: 0 ,
+	$pflagged 	: 0 ,
+	$pdeleted	: 0 ,
+    };
 
+    await this.app.storage.executeDatabase(fpsql, fpparams, "post");
 
     //
     // fetch image if needed

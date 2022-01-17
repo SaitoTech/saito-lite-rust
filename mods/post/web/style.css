@@ -15,7 +15,7 @@
   display: grid;
   gap: 1em;
   grid-template-columns: var(--sidebar-width) auto;
-  font-size: 1em;
+  font-size: 1.2em;
   width: 100vw;
   max-width: var(--saito-width);
   margin-top: 115px;
@@ -98,6 +98,7 @@
   min-width: 55vw;
   width:700px;
   max-width: 80vw;
+  font-size: 1.2em;
 }
 
 .post-create-header {
