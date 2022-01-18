@@ -7,30 +7,33 @@ module.exports = ArcadePosts = {
 
   render(app, mod) {
     mod.renderMethod = "arcade";
-    if (!document.getElementById("arcade-posts-container")) {
-      app.browser.addElementToDom(ArcadePostsTemplate());
-    }
-    for (let i = mod.forums.length-1; i >= 0; i--) {
-      this.updateForum(app, mod, mod.forums[i]);
-    }
-    for (let i = mod.posts.length-1; i >= 0; i--) {
-      this.addPost(app, mod, mod.posts[i]);
-    }
+    try {
+      if (!document.getElementById("arcade-posts-container")) {
+        app.browser.addElementToDom(ArcadePostsTemplate());
+      }
+      for (let i = mod.forums.length-1; i >= 0; i--) {
+        this.updateForum(app, mod, mod.forums[i]);
+      }
+      for (let i = mod.posts.length-1; i >= 0; i--) {
+        this.addPost(app, mod, mod.posts[i]);
+      }
+    } catch (err) {}
   },
 
   attachEvents(app, mod) {
 
-    document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {
-      el.onclick = (e) => {
-        let clickLocation = e.currentTarget.id.replace("arcade-post-", "");
-        app.browser.logMatomoEvent("Posts", "ArcadePostsViewClick", clickLocation);
-        let sig = e.currentTarget.getAttribute("data-id");
-        PostView.render(app, mod, sig);
-        PostView.attachEvents(app, mod, sig);
-      }
-    });
-
     try {
+
+      document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {
+        el.onclick = (e) => {
+          let clickLocation = e.currentTarget.id.replace("arcade-post-", "");
+          app.browser.logMatomoEvent("Posts", "ArcadePostsViewClick", clickLocation);
+          let sig = e.currentTarget.getAttribute("data-id");
+          PostView.render(app, mod, sig);
+          PostView.attachEvents(app, mod, sig);
+        }
+      });
+
       document.querySelector('.arcade-posts-add').onclick = (e) => {
         PostCreate.render(app, mod);
         PostCreate.attachEvents(app, mod);
