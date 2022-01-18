@@ -21,15 +21,9 @@ module.exports = ArcadeSidebar = {
 
     let games_menu = document.querySelector(".arcade-apps");
     app.modules.respondTo("arcade-games").forEach(module => {
-      let title = module.name;
-      try {
-        if (module.gamename) { title = module.gamename; }
-      } catch (err) {}
-      let status = "";
-      try {
-        if (module.status) {status = '<div class="tiptext">This game is: ' + module.status + '.</div>';}
-      } catch (err) {}
-
+      let title = (module.gamename)? module.gamename: module.name;
+      let status = (module.status)? `<div class="tiptext">This game is: ${module.status}.</div>`: "";
+     
       if (!document.getElementById(module.name)) {
         games_menu.innerHTML += `<li class="arcade-navigator-item tip" id="${module.name}">${title}${status}</li>`;
       }
@@ -60,8 +54,8 @@ module.exports = ArcadeSidebar = {
           ArcadeGameDetails.render(app, mod, tx);
           ArcadeGameDetails.attachEvents(app, mod, tx);
         }
-        //
-        // not registered
+        /*
+        // Skip registration prompt
         //
         if (app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey()) == "") {
           if (app.options.wallet.anonymous != 1) {
@@ -70,7 +64,7 @@ module.exports = ArcadeSidebar = {
             mod.modal_register_username.attachEvents(app, mod);
             return;
           }
-        }
+        }*/
         doGameDetails();
       });
     });

@@ -2935,7 +2935,9 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
   }
   
   
-  
+  returnGameRulesHTML(){
+    return "";    
+  }
   
   
   returnGameOptionsHTML() {
