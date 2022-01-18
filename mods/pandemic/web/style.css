@@ -2,7 +2,8 @@
 
 
 .status-icon-menu {
-
+  width:550px;
+  margin:auto;
 }
 
 .status-message {
@@ -10,9 +11,19 @@
   padding-right: 0;
 }
 
+.menu_icon{
+  margin: 5px;
+  color: var(--saito-white);
+}
+
 .menu_icon_icon {
   max-width: 100px;
   max-height: 100px;
+}
+
+i.menu_icon_icon{
+  font-size: 60px;
+  margin-bottom: 0.5em;
 }
 
 .epidemic_overlay {
@@ -32,10 +43,12 @@
 
 
 .hud {
-
+  width: fit-content;
+  background-color: #444A;
 }
 .hud-body {
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .display-cards {

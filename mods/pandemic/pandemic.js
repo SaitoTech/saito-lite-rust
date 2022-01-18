@@ -22,7 +22,7 @@ class Pandemic extends GameTemplate {
     this.status          = "Alpha";
 
     this.gameboardWidth  = 2602;
-  
+    this.card_height_ratio = 1.7;  
     this.moves           = [];
     this.outbreaks       = [];
     this.maxHandSize     = 7;
@@ -194,6 +194,18 @@ class Pandemic extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "Welcome",
+      id : "game-welcome",
+      class : "game-welcome",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnWelcomeOverlay());
+        document.querySelector(".close_welcome_overlay").onclick = (e) => {
+        game_mod.overlay.hide();
+      }  
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -314,17 +326,16 @@ class Pandemic extends GameTemplate {
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
+    
+    this.restoreLog(); //from gameTemplate
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
 
-
-    //
-    // add card events -- text shown and callback run if there
-    //
-    //this.hud.addCardType("logcard", "", null);
-    //this.hud.addCardType("showcard", "select", this.cardbox_callback);
+    this.hud.render(app, this);
+    this.hud.attachEvents(app, this);
     this.hud.addCardType("card", "select", this.cardbox_callback);
+    this.changeable_callback = null;
     if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
       this.cardbox.skip_card_prompt = 1;
     } else {
@@ -460,20 +471,18 @@ class Pandemic extends GameTemplate {
   
     this.active_moves = moves;
 
-    let move_opacity = 1;
+    /* Determine which actions the player is allowed to do and update HUD controls */
+    let move_opacity = 1; //Always possible because if 0 moves left, the turn has already ended
     let treat_opacity = 0.4;
     let build_opacity = 0.4;
     let discover_cure_opacity = 0.4;
     let cards_opacity = 0.4;
 
-    if (
-      this.game.players_info[this.game.player-1].cards.includes("event1") ||
-      this.game.players_info[this.game.player-1].cards.includes("event2") ||
-      this.game.players_info[this.game.player-1].cards.includes("event3") ||
-      this.game.players_info[this.game.player-1].cards.includes("event4") ||
-      this.game.players_info[this.game.player-1].cards.includes("event5")) {
-        cards_opacity = 1;
-    }
+
+    let can_play_event_card = 0;
+    let can_share_knowledge = 0;
+        
+
     if (this.isCityInfected(city) == 1) {
       treat_opacity = 1;
     }
@@ -483,124 +492,120 @@ class Pandemic extends GameTemplate {
     if (this.canPlayerDiscoverCure() == 1) {
       discover_cure_opacity = 1;
     }
+
     if (this.canPlayerShareKnowledge() == 1) {
+      can_share_knowledge = 1;
       cards_opacity = 1;
     }
+    if (
+      player.cards.includes("event1") ||
+      player.cards.includes("event2") ||
+      player.cards.includes("event3") ||
+      player.cards.includes("event4") ||
+      player.cards.includes("event5")
+    ) {
+      cards_opacity = 1;
+      can_play_event_card = 1;
+    }
+
+    let html  = `<div class='status-message'>YOUR TURN: ${player.role} in ${this.game.cities[city].name} [${moves}]:</div>
+       <div class='status-icon-menu'>
+       <div class="menu_icon" id="move" title="Move to new city"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /></div>
+       <div class="menu_icon" id="treat" style="opacity:${treat_opacity}" title="Treat disease in this city (remove one cube)"><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /></div>
+       <div class="menu_icon" id="build" style="opacity:${build_opacity}" title="Build an operations center in this city"><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /></div>
+       <div class="menu_icon" id="discover_cure" style="opacity:${discover_cure_opacity}" title="Discover cure to a disease"><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /></div>
+       <div class="menu_icon" id="cards" style="opacity:${cards_opacity}" title="Play event card or share knowledge (give another player a card)"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /></div>
+       </div>`;
 
 
-    let html  = "<div class='status-message'>YOUR TURN: " + player.role + " in " + this.game.cities[player.city].name + " [" + moves +']:';
-        html += '</div>';
-        html += "<div class='status-icon-menu' style='width:550px;margin-left:auto;margin-right:auto;'>";
-        html += '<div class="card menu_icon" id="move" style="margin-right:10px;margin-top:10px"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /></div>';
-        html += '<div class="card menu_icon" id="treat" style="opacity:'+treat_opacity+';margin-right:10px;margin-top:10px"><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /></div>';
-        html += '<div class="card menu_icon" id="build" style="opacity:'+build_opacity+';margin-right:10px;margin-top:10px"><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /></div>';
-        html += '<div class="card menu_icon" id="discover_cure" style="opacity:'+discover_cure_opacity+';margin-right:10px;margin-top:10px"><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /></div>';
-        html += '<div class="card menu_icon" id="cards" style="opacity:'+cards_opacity+';margin-top:10px"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /></div>';
-        html += '</div>';
-
-
-    $('.card').off();
+    $('.menu_icon').off();
     this.updateStatus(html);
-    $('.card').on('click', function() {  
+    $('.menu_icon').on('click', function() {  
 
       let action = $(this).attr('id');
-  
-      if (action === "move") {
+      let flight1 = (player.cards.length>0)? 1: 0.4;
+      let flight2 =  (player.cards.includes(city)) ? 1 : 0.4;
+      let flight3 = (pandemic_self.game.state.research_stations.length > 1 && pandemic_self.game.state.research_stations.includes(city)) ? 1: 0.4;
+      switch (action){
+        case "move": 
+            html  = `<div class='status-message'>YOUR TURN: ${player.role} in ${pandemic_self.game.cities[city].name} [${moves}]:</div>
+            <div class='status-icon-menu'>
+            <div class="menu_icon" id="goback" title="return to previous menu"><i class="menu_icon_icon far fa-arrow-alt-circle-left"></i><div class="menu-text">Go back</div></div>
+            <div class="menu_icon" id="move" title="ground transportation to an adjacent city"><i class="menu_icon_icon fas fa-car-side"></i><div class="menu-text">Drive/Ferry</div></div>
+            <div class="menu_icon" id="flight" style="opacity:${flight1}" title="Play a card from your hand to go to that city"><i class="menu_icon_icon fas fa-plane-arrival"></i><div class="menu-text">Direct flight</div></div>
+            <div class="menu_icon" id="flight" style="opacity:${flight2}" title="Play the ${city} card to go anywhere in the world"><i class="menu_icon_icon fas fa-plane-departure"></i><div class="menu-text">Direct flight</div></div>
+            <div class="menu_icon" id="shuttle" style="opacity:${flight3}" title="move between research stations"><i class="menu_icon_icon fas fa-plane"></i><div class="menu-text">Shuttle flight</div></div>
+            </div>`;
 
-        let html  = "<div class='status-message'>YOUR TURN: " + player.role + " in " + pandemic_self.game.cities[player.city].name + " [" + moves +']:<ul>';
-            html += '<li class="card" id="move">drive / ferry</li>';
-            html += '<li class="card" id="flight">direct flight</li>';
-        if (pandemic_self.game.players_info[pandemic_self.game.player-1].cards.includes(city)) {
-            html += '<li class="card" id="flight">charter flight</li>';
-        }
-        if (pandemic_self.game.state.research_stations.length > 1 && pandemic_self.game.state.research_stations.includes(city)) {
-            html += '<li class="card" id="shuttle">shuttle flight</li>';
-        }
-        html += '</ul>';
-        html += '</div>';
-
-        $('.card').off();
+        $('.menu_icon').off();
         pandemic_self.updateStatus(html);
-        $('.card').on('click', function() {
+        $('.menu_icon').on('click', function() {
   
           let action = $(this).attr('id');
+          if (action == "goback"){
+            pandemic_self.playerMakeMove(pandemic_self.active_moves);
+
+          }
           if (action === "move") {
             pandemic_self.movePlayer();
           }
-          if (action === "flight") {
+          if (action === "flight" && (flight1 === 1 || flight2 ===1)) {
             pandemic_self.directFlight();
           }
-          if (action === "shuttle") {
+          if (action === "shuttle" && flight3 === 1) {
             pandemic_self.shuttleFlight();
           }
-
         });
-      }
-
-      if (action === "treat") {
-	if (treat_opacity != 1) { salert("You may not treat disease"); return; }
-        pandemic_self.cureDisease();
-      }
-      if (action === "discover_cure") {
-	if (discover_cure_opacity != 1) { salert("You may not discover a cure now"); return; }
+        break;
+        case "treat":
+          if (treat_opacity != 1) { salert("You may not treat disease"); return; }
+          pandemic_self.cureDisease();
+        break;
+        case "discover_cure":
+        if (discover_cure_opacity != 1) { salert("You may not discover a cure now"); return; }
         pandemic_self.discoverCure();
-      }
-      if (action === "cards") {
+        break;
+        case "build":
+        if (build_opacity != 1) { salert("You cannot build a research station here"); return; }
+        pandemic_self.buildResearchStation();
+  
+        break;
 
-	if (cards_opacity != 1) { salert("You do not have event cards and cannot share cards with anyone now"); return; }
-
-	let can_play_event_card = 0;
-        if (pandemic_self.game.players_info[this.game.player-1].cards.includes("event1") ||
-          pandemic_self.game.players_info[this.game.player-1].cards.includes("event2") ||
-          pandemic_self.game.players_info[this.game.player-1].cards.includes("event3") ||
-          pandemic_self.game.players_info[this.game.player-1].cards.includes("event4") ||
-          pandemic_self.game.players_info[this.game.player-1].cards.includes("event5")) {
-            can_play_event_card == 1; 
-        }
-
-        let can_share_knowledge = 0;
-        if (pandemic_self.canPlayerShareKnowledge() == 1) {
-	  can_share_knowledge = 1;
-	}
-
-        let html  = "<div class='status-message'>Card Options: " + player.role + " in " + pandemic_self.game.cities[player.city].name + " [" + moves +']:<ul>';
-	if (can_play_event_card == 1) {
-          html += '<li class="card" id="eventcard">play event card</li>';
-	}
-	if (can_share_knowledge == 1) {
-          html += '<li class="card" id="shareknowledge">give player card</li>';
-	}
-        html += '</ul>';
-        html += '</div>';
-
-        $('.card').off();
-        pandemic_self.updateStatus(html);
-        $('.card').on('click', function() {
-
-          let action = $(this).attr('id');
-
-          if (action === "eventcard") {
-            pandemic_self.playEventCard();
-	    return 0;
+        case "cards":
+          if (cards_opacity != 1) { salert("You do not have event cards and cannot share cards with anyone now"); return; }
+            html  = "<div class='status-message'>Card Options: " + player.role + " in " + pandemic_self.game.cities[player.city].name + " [" + moves +']:<ul>';
+          if (can_play_event_card == 1) {
+            html += '<li class="menu_option" id="eventcard">play event card</li>';
           }
-          if (action === "shareknowledge") {
-            pandemic_self.shareKnowledge();
-	    return 0;
+          if (can_share_knowledge == 1) {
+            html += '<li class="menu_option" id="shareknowledge">give player card</li>';
           }
+          html += '</ul>';
+          html += '</div>';
+
+          $('.menu_option').off();
+          pandemic_self.updateStatus(html);
+          $('.menu_option').on('click', function() {
+
+            let action = $(this).attr('id');
+
+            if (action === "eventcard") {
+              pandemic_self.playEventCard();
+              return 0;
+            }
+            if (action === "shareknowledge") {
+              pandemic_self.shareKnowledge();
+              return 0;
+            }
 
         });
+        break;
 
+        default: // "pass"?
+          pandemic_self.endTurn();
       }
-      if (action === "build") {
-	if (build_opacity != 1) { salert("You cannot build a research station here"); return; }
-        pandemic_self.buildResearchStation();
-      }
-      if (action === "pass") {
-        pandemic_self.endTurn();
-        return 0;
-      }
-  
-    });
+
+  });
   
   }
   
@@ -610,7 +615,7 @@ class Pandemic extends GameTemplate {
 
   shareKnowledge() {
   
-    let pandemic_self = this;
+    let pandemic_self = this;;
     let player = this.game.players_info[this.game.player-1];
     let city = player.city;
     let players_in_city = 0;
@@ -1346,7 +1351,7 @@ class Pandemic extends GameTemplate {
         html += '<li class="card" id="'+cards[i]+'">'+this.game.cities[cards[i]].name+'</li>';
       }
     }
-    html += '<li class="card" id="stop">stop</li>';
+    html += '<li class="card" id="stop">go back</li>';
     html += '</ul>';
     html += '</div>';
   
@@ -1658,7 +1663,7 @@ class Pandemic extends GameTemplate {
 	    this.overlay.show(this.app, this, this.returnWelcomeOverlay());
 	    document.querySelector(".close_welcome_overlay").onclick = (e) => {
 	      this.overlay.hide();
-            }
+      }
             this.game.state.welcome = 1;
           }
           if (parseInt(mv[1]) == this.game.player) {
@@ -1826,12 +1831,12 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
           for (let k = 0; k < 3; k++) {
             let newcard = this.drawInfectionCard();
             let virus = this.game.deck[0].cards[newcard].virus;
-            let dvirus = this.game.deck[0].discards[newcard].virus;
+            /*let dvirus = this.game.deck[0].discards[newcard].virus;*/
             if (virus == "yellow") { this.game.cities[newcard].virus.yellow = i; }
             if (virus == "blue") { this.game.cities[newcard].virus.blue = i; }
             if (virus == "black") { this.game.cities[newcard].virus.black = i; }
             if (virus == "red") { this.game.cities[newcard].virus.red = i; }
-            this.updateLog(this.game.cities[newcard].name + " infected with " + i + " " + virus + " -- " + dvirus);
+            this.updateLog(this.game.cities[newcard].name + " infected with " + i + " " + virus /*+ " -- " + dvirus*/);
           }
         }
   
@@ -1839,7 +1844,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
       }
       if (mv[0] === "initialize_player_deck") {
   
-        let epidemics = 4;
+        let epidemics = 4; //difficulty = "easy"
         let undrawn_cards = this.game.deck[1].crypt.length;
         let section_length = Math.floor(undrawn_cards/epidemics);
   
@@ -2821,7 +2826,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
       return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud-image showcard cardbox-hud cardbox-hud-status">${this.returnCardImage(card, cardtype)}</div>`;
     } else {
       if (this.game.cities[card] == undefined) {
-        return '<li class="card" id="'+card+'">'+this.game.cities[card].name+'</li>';
+        return '<li class="card" id="'+card+'">undefined</li>';
       }
       return '<li class="card" id="'+card+'">'+this.game.cities[card].name+'</li>';
     }
@@ -2869,7 +2874,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
         pandemic_self.showCard(card);
       }).mouseout(function() {
         let card = $(this).attr("id");
-        pandemic_self.hideCard(card);
+        pandemic_self.hideCard();
       });
   
     }
@@ -2889,12 +2894,13 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
         pandemic_self.showCard(card);
       }).mouseout(function() {
         let card = $(this).attr("id");
-        pandemic_self.hideCard(card);
+        pandemic_self.hideCard();
       });
   
     }
   
   }
+
   returnCardImage(cardname, cardtype="city") {
   
     var c = "";
@@ -2903,13 +2909,13 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 
     if (c == undefined || c == null || c === "") { return null; } 
 
-    var html = `<img class="cardimg" src="/pandemic/img/${c.img}" />`;
+    var html = `<img class="cardimg-hud" src="/pandemic/img/${c.img}" />`;
     return html;
   
   }
   
-  hideCard(cardname="") {
-    this.cardbox.hide(cardname);
+  hideCard() {
+    this.cardbox.hide();
   }
   
   showCard(cardname, cardtype="city") {
@@ -3028,11 +3034,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 
   returnWelcomeOverlay() {
 
-    let html = `
-
-<div class="welcome_overlay">
-
-    `;
+    let html = `<div class="welcome_overlay">`;
 
     for (let i = 0; i < this.game.players_info.length; i++) {
 
@@ -3054,7 +3056,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 	    <div class="player_role_description">
 	      <table>
 		<tr>
-		  <td class="player_role_description_header">Player: </td>
+		  <td class="player_role_description_header">Player ${i+1}: </td>
 		  <td>${this.app.keys.returnUsername(this.game.players[i])}</td>
 	        </td>
 		<tr>
@@ -3063,7 +3065,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 	        </td>
 		<tr>
 		  <td class="player_role_description_header">Description: </td>
-		  <td>Medics can remove all cubes from a city when treating disease</td>
+		  <td>${player.desc}</td>
 	        </tr>
 		<tr>
 		  <td class="player_role_description_header">Cards: </td>
@@ -3076,7 +3078,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
     }
 
     html += `
-        <display style="width:100%"><div style="display:inline-block;margin-left:auto;margin-right:auto" class="button close_welcome_overlay" id="close_welcome_overlay">close</div></div>
+        <display style="width:100%"><div style="display:inline-block;margin-left:auto;margin-right:auto" class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div></div>
       </div>
     `;
 
