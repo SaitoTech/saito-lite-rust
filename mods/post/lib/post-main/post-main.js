@@ -29,6 +29,9 @@ module.exports = PostMain = {
         PostForums.render(app, mod);
         PostForums.attachEvents(app, mod);
       }
+      for (let i = mod.forums.length-1; i >= 0; i--) {
+        this.updateForum(app, mod, mod.forums[i]);
+      }
     } else {
       if (!document.getElementById("post-container")) {
         app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
@@ -74,6 +77,36 @@ module.exports = PostMain = {
     });
     if (post_this == 0) { return; }
     app.browser.prependElementToDom(PostTeaserTemplate(app, mod, post), document.getElementById("post-posts"));
+  },
+
+  updateForum(app, mod, forum) {
+
+    let txmsg = forum.returnMessage();
+    let topic = txmsg.forum;
+    let divid = "forum-topic-"+topic;
+    let fuser = app.keys.returnUsername(forum.transaction.from[0].add);
+    let fdate = datetimeRelative(forum.transaction.ts);
+    let fpost_num = forum.post_num;
+
+    try {
+      document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = txmsg.title;
+      document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = fuser;
+      document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = fdate;
+
+      document.querySelector(`#forum-topic-latest-post-image-${topic}`).style.visibility = "visible";
+      document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
+      document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
+      document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
+
+      if (fpost_num == 1) {
+        document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";
+      } else {
+        document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
+      }
+    } catch (err) {
+console.log("err: " + err);
+    }
+
   }
 
 

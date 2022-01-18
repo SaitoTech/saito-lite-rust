@@ -211,11 +211,16 @@ class Browser {
   }
 
   returnURLParameter(name) {
+    try {
+    this.urlParams = new URLSearchParams(window.location.search);
     const entries = this.urlParams.entries();
     for (const pair of entries) {
       if (pair[0] == name) {
         return pair[1];
       }
+    }
+    } catch (err) {
+console.log("error in urlparams: " + err);
     }
     return "";
   }

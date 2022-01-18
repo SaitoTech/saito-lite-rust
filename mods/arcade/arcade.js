@@ -1135,6 +1135,8 @@ console.log("telling game module to receiveAcceptTx");
 
   createOpenTransaction(gamedata, recipient="") {
 
+alert("create Invite TX");
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
@@ -1174,6 +1176,8 @@ console.log("telling game module to receiveAcceptTx");
 
 
   createInviteTransaction(app, data, gametx) {
+
+alert("create Invite TX");
 
     let txmsg = gametx.returnMessage();
 

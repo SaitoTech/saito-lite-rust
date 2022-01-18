@@ -471,11 +471,11 @@
   display: flex;
   justify-items: center;
 }
-.forum-post-forum-link {
+.forum-topic-link {
   text-decoration: none;
   color: black;
 }
-.forum-post-forum-link:hover {
+.forum-topic-link:hover {
   text-decoration: none;
   color: black;
 }
@@ -493,16 +493,16 @@
   font-weight: bold;
   cursor: pointer;
 }
-.forum-post-forum-topic {
+.forum-topic {
   display: grid;
   width: 100%;
   height: 90px;
   grid-template-columns: 100px 3fr minmax(300px, 1fr);
 }
-.forum-post-forum-topic-image {
+.forum-topic-image {
   cursor: pointer;
 }
-.forum-post-forum-topic-center {
+.forum-topic-center {
   display: grid;
   padding: 10px;
   grid-template-columns: 8fr minmax(50px, 1fr);
@@ -510,34 +510,34 @@
   max-height: inherit;
   overflow: hidden;
 }
-.forum-post-forum-topic-intro {
+.forum-topic-intro {
   display: grid;
   grid-template-columns: 1fr;
   padding-left: 10px;
 }
-.forum-post-forum-topic-title {
+.forum-topic-title {
   display: flex;
   align-items: flex-end;
   font-size: 1.4em;
   font-weight: bold;
 }
-.forum-post-forum-topic-description {
+.forum-topic-description {
   font-size: 1.15em;
 }
-.forum-post-forum-topic-posts {
+.forum-topic-posts {
   text-align: center;
 }
-.forum-post-forum-topic-posts-num {
+.forum-topic-posts-num {
   width: 100%;
   font-size: 1.4em;
   font-weight: bold;
 }
-.forum-post-forum-topic-posts-text {
+.forum-topic-posts-text {
 }
-.forum-post-forum-topic-latest-post {
+.forum-topic-latest-post {
   padding-top: 10px;
 }
-.forum-post-forum-topic-latest-post-image {
+.forum-topic-latest-post-image {
   float: left;
   margin-left: auto;
   margin-right: 15px;
@@ -545,9 +545,9 @@
   margin-bottom: auto;
   font-size: 2.3em;
 }
-.forum-post-forum-topic-latest-post-details {
+.forum-topic-latest-post-details {
 }
-.forum-post-forum-topic-latest-post-title {
+.forum-topic-latest-post-title {
   font-size: 1.4em;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -555,16 +555,17 @@
   max-width: inherit;
   font-style: italic;
 }
-.forum-post-forum-topic-latest-post-info {
+.forum-topic-latest-post-info {
+  font-size: 0.8em;
 }
 
 
 
 @media only screen and (max-width: 900px) {
-  .forum-post-forum-topic {
+  .forum-topic {
     grid-template-columns: 100px 3fr;
   }
-  .forum-post-forum-topic-latest-post {
+  .forum-topic-latest-post {
     display: none;
   }
   .post-container {

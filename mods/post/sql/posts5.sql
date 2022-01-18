@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS first_posts (
       children INTEGER,
       flagged INTEGER ,
       deleted INTEGER ,
+      post_num INTEGER ,
       PRIMARY KEY(id DESC)
 );
 

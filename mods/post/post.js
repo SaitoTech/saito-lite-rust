@@ -23,6 +23,7 @@ class Post extends ModTemplate {
     this.post = {};
     this.post.domain = "saito";
     this.posts = [];
+    this.forums = [];
     this.comments = [];
 
     this.icon_fa = "fa fa-map-signs";
@@ -157,7 +158,11 @@ class Post extends ModTemplate {
 
   onPeerHandshakeComplete(app, peer) {
 
-    if (this.renderMethod == "none") { return; }
+console.log("renderMethod: " + this.renderMethod);
+
+    //if (this.renderMethod === "none") { return; }
+
+    let forum_splash = 1;
 
     //
     // fetch posts from server
@@ -166,13 +171,54 @@ class Post extends ModTemplate {
     let forum = app.browser.returnURLParameter("forum");
     if (forum) {
       sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+      forum_splash = 0;
     } else {
       let forum = app.browser.returnURLParameter("game");
       if (forum) {
         sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+        forum_splash = 0;
       }
     }
-    this.sendPeerDatabaseRequestWithFilter(
+
+    if (forum_splash == 1) {
+      sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
+      this.sendPeerDatabaseRequestWithFilter(
+
+        "Post" ,
+
+        sql ,
+
+        (res) => {
+
+          if (res) {
+            if (res.rows) {
+              for (let i = 0; i < res.rows.length; i++) {
+		this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
+		this.forums[this.forums.length-1].post_num = res.rows[i].post_num;
+              }
+            }
+          }
+
+          this.render();
+
+        }, 
+
+
+        (p) => {
+          if (p.peer.services) {
+            for (let i = 0; i < p.peer.services.length; i++) {
+              let s = p.peer.services[i];
+              if (s.service === "post") { return 1; }
+            }
+          }
+          if (this.app.network.peers[0] == p) { return 1; }
+          return 0;
+        }
+      );
+
+    } else {
+
+      this.sendPeerDatabaseRequestWithFilter(
 
         "Post" ,
 
@@ -205,9 +251,8 @@ class Post extends ModTemplate {
           if (this.app.network.peers[0] == p) { return 1; }
           return 0;
         }
-
-
-    );
+      );
+    }
   }
 
 
@@ -344,6 +389,20 @@ class Post extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "post");
 
+    let post_num = 1;
+
+    let sql2 = `SELECT post_num FROM first_posts WHERE forum = $forum`;
+    let params2 = { $forum : txmsg.forum }
+    let rows = await this.app.storage.queryDatabase(sql2, params2, 'post');
+    if (rows) {
+      if (rows.length > 0) {
+        if (rows[0].post_num > 0) {
+          post_num = rows[0].post_num+1;
+        }
+      }
+    }
+
+
     // delete
     let csql = `DELETE FROM first_posts WHERE forum = $pforum`;
     let cparams = { pforum : txmsg.forum };
@@ -368,7 +427,8 @@ class Post extends ModTemplate {
                 ts,
                 children,
                 flagged,
-                deleted
+                deleted,
+                post_num
                 ) 
             VALUES (
                 $pid ,
@@ -386,7 +446,8 @@ class Post extends ModTemplate {
 		$pts ,
 		$pchildren ,
 		$pflagged ,
-		$pdeleted
+		$pdeleted ,
+		$post_num
             );
         `;
     let fpparams = {
@@ -406,6 +467,7 @@ class Post extends ModTemplate {
 	$pchildren	: 0 ,
 	$pflagged 	: 0 ,
 	$pdeleted	: 0 ,
+	$post_num	: post_num ,
     };
 
     await this.app.storage.executeDatabase(fpsql, fpparams, "post");
@@ -537,6 +599,7 @@ class Post extends ModTemplate {
     };
 
     await this.app.storage.executeDatabase(sql, params, "post");
+
 
     //
     // fetch image if needed
@@ -724,6 +787,7 @@ class Post extends ModTemplate {
       $pflagged 	: 0 ,
       $pdeleted	: 0 ,
     };
+
 
     await this.app.storage.executeDatabase(sql, params, "post");
 
