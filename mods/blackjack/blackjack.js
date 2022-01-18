@@ -1210,7 +1210,7 @@ class Blackjack extends GameTemplate {
   }
 
 
-  returnGameRuleHTML() {
+  returnGameRulesHTML() {
     return `<div class="intro">
     <h1>Homestyle Blackjack</h1>
     <p><strong>Homestyle Blackjack is quite different than Casino Blackjack. </strong></p>

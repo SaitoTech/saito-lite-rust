@@ -26,12 +26,11 @@ module.exports = ArcadeGameSidebarTemplate = (game_mod) => {
       html += `<div>The game is a playable demo under active development. Expect the unexpected.</div>`;
     }else if (game_mod.status === "Beta"){
       html += `<div>Please let us know if you find any bugs or have suggestions to make the game better</div>`;
-    }else{
-      html += "</div>";
     }
+    html += "</div>";
   }
     if (game_mod.publisher_message){
-      html += `<div id="game-wizard-publisher-message" class="game-wizard-publisher-message"><b>Publisher Message: </b> ${game_mod.publisher_message}</div>`;
+      html += `<div id="game-wizard-publisher-message"><b>Publisher Message: </b> ${game_mod.publisher_message}</div>`;
     }
   html += `</div>`;
   }
