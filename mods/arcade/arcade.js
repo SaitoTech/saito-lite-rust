@@ -3,6 +3,7 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ArcadeMain = require('./lib/arcade-main/arcade-main');
 const ArcadeSidebar = require('./lib/arcade-sidebar/arcade-sidebar');
+const ArcadeGameSidebar = require('./lib/arcade-sidebar/arcade-game-sidebar');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const getMockGames = require('./mockinvites.js');
 const ArcadeContainerTemplate = require('./lib/arcade-main/templates/arcade-container.template');
@@ -49,12 +50,10 @@ class Arcade extends ModTemplate {
   receiveEvent(type, data) {
     if (type == 'chat-render-request') {
       if (this.browser_active) {
-        ArcadeSidebar.render(this.app, this);
-        ArcadeSidebar.attachEvents(this.app, this);
+	this.renderSidebar();
       }
     }
   }
-
 
   handleUrlParams(urlParams) {
     let i = urlParams.get('i');
@@ -64,7 +63,6 @@ class Arcade extends ModTemplate {
     }
   }
 
-
   renderArcadeMain(app, mod) {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
@@ -72,6 +70,18 @@ class Arcade extends ModTemplate {
         ArcadeMain.attachEvents(this.app, this);
       }
     }
+  }
+
+  renderSidebar() {
+    let x = this.app.browser.returnURLParameter("game");
+    if (x) {
+      ArcadeGameSidebar.render(this.app, this);
+      ArcadeGameSidebar.attachEvents(this.app, this);
+    } else {
+      ArcadeSidebar.render(this.app, this);
+      ArcadeSidebar.attachEvents(this.app, this);
+    }
+
   }
 
   returnServices() {
@@ -102,15 +112,22 @@ class Arcade extends ModTemplate {
     if (this.app.options.games != null) {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
-
-console.log("CONSIDERING GAME");
-console.log(JSON.stringify(game));
         if (game.over == 1 || (game.players_set == 1 && !game.players.includes(app.wallet.returnPublicKey()))) {} else {
-console.log("ADDING GAME!");
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
       }
     }
+
+
+
+    //
+    // hack to force forum to onPeerHandShake
+    //
+    try {
+      let post_mod = this.app.returnModule("Post");
+      post_mod.renderMethod = "arcade";
+console.log("set post to arcade rendermethod");
+    } catch (err) {}
 
     //
     // listen for txs from arcade-supporting games
@@ -123,10 +140,6 @@ console.log("ADDING GAME!");
 
   initializeHTML(app) {
     this.header = new SaitoHeader(app, this);
-    app.modules.getRespondTos("private_sale_overlay").forEach((moduleResponse, i) => {
-      moduleResponse.initializePrivateSaleOverlay();
-      //moduleResponse.triggerPrivateSaleOverlay();
-    });
   }
 
 
@@ -191,6 +204,7 @@ console.log("ADDING GAME!");
 
 
   async render(app) {
+
     if (!document.getElementById("arcade-container")) { 
       app.browser.addElementToDom(ArcadeContainerTemplate()); 
     }
@@ -205,9 +219,18 @@ console.log("ADDING GAME!");
     this.header.render(app, this);
     this.header.attachEvents(app, this);
 
-    ArcadeSidebar.render(app, this);
-    ArcadeSidebar.attachEvents(app, this);
-    
+    this.overlay.render(app, this);
+    this.overlay.attachEvents(app, this);
+
+    let x = app.browser.returnURLParameter("game");
+    if (x) {
+      ArcadeGameSidebar.render(app, this);
+      ArcadeGameSidebar.attachEvents(app, this);
+    } else {
+      ArcadeSidebar.render(app, this);
+      ArcadeSidebar.attachEvents(app, this);
+    }   
+
     this.renderArcadeMain(this.app, this);
 
   }
@@ -1122,6 +1145,8 @@ console.log("telling game module to receiveAcceptTx");
 
   createOpenTransaction(gamedata, recipient="") {
 
+alert("create Invite TX");
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
@@ -1161,6 +1186,8 @@ console.log("telling game module to receiveAcceptTx");
 
 
   createInviteTransaction(app, data, gametx) {
+
+alert("create Invite TX");
 
     let txmsg = gametx.returnMessage();
 
@@ -1794,15 +1821,12 @@ console.log("INCLUDING GAME!");
   }
   addGameToOpenList(tx) {
     let valid_game = this.validateGame(tx);
-console.log("is this a valid game: " + valid_game);
     if (valid_game) {
       let for_us = this.isForUs(tx);
       if (for_us) {
         this.games.unshift(tx);
       }
-console.log("about to run remove game!");
       let removed_game = this.removeOldGames();
-console.log("removed game? " + removed_game + " -- " + for_us);
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }

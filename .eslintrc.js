@@ -19,5 +19,6 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "prefer-const": 0
     }
 };

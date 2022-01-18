@@ -1,5 +1,6 @@
 const ArcadeMainTemplate = require("./templates/arcade-main.template");
 const ArcadeContainerTemplate = require("./templates/arcade-container.template");
+const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../arcade-game/game-loader");
@@ -11,8 +12,11 @@ const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypt
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 
-let tabNames = ["arcade", "observables", "tournaments"];
+//let tabNames = ["arcade", "observables", "tournaments"];
+let tabNames = [];
+
 module.exports = ArcadeMain = {
+
   render(app, mod) {
     //
     // avoid rendering over inits
@@ -60,6 +64,7 @@ module.exports = ArcadeMain = {
     //
     // add tabs
     //
+    /*
     tabNames.forEach((tabButtonName, i) => {
       document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
         app.browser.logMatomoEvent(
@@ -86,6 +91,7 @@ module.exports = ArcadeMain = {
         });
       };
     });
+    */
 
     //
     // add games
@@ -171,7 +177,14 @@ module.exports = ArcadeMain = {
       }
     });
 
-    ArcadePosts.render(app, mod);
+
+    let x = mod.app.browser.returnURLParameter("game");
+    if (x) {
+      ArcadePosts.render(app, mod);
+    } else {
+      ArcadeForums.render(app, mod);
+    }
+
     ArcadeInfobox.render(app, mod);
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);

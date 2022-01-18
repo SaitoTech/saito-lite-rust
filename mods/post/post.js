@@ -2,6 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PostMain = require('./lib/post-main/post-main');
 const PostSidebar = require('./lib/post-sidebar/post-sidebar');
+const PostCreate = require('./lib/post-overlay/post-create');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
@@ -22,7 +23,10 @@ class Post extends ModTemplate {
     this.post = {};
     this.post.domain = "saito";
     this.posts = [];
+    this.forums = [];
     this.comments = [];
+
+    this.fetch = 0;
 
     this.icon_fa = "fa fa-map-signs";
     this.description = `Simple forum for persistent posts and discussions`;
@@ -50,10 +54,34 @@ class Post extends ModTemplate {
     }
 
     if (type == "arcade-posts") {
+      this.fetch = 1; // fetch posts
       let obj = {};
       obj.render = this.renderArcade;
       obj.attachEvents = function() {};
       return obj;
+    }
+
+    if (type == "header-menu") {
+      if (this.browser_active) {
+        let obj = {};
+        let post_self = this;
+        obj.returnMenu = function() {
+  	  return `
+            <div class="wallet-action-row" id="header-dropdown-post-new">
+              <span class="scan-qr-info"><i class="settings-fas-icon fas fa-file"></i> New Post</span>
+            </div>
+	  `;
+        }
+        obj.attachEvents = function() {
+          if (document.getElementById('header-dropdown-post-new')) {
+            document.getElementById('header-dropdown-post-new').onclick = () => {
+              PostCreate.render(post_self.app, post_self);
+              PostCreate.attachEvents(post_self.app, post_self);
+            };
+          }
+        }
+        return obj;
+      }
     }
 
     if (type == "header-dropdown") {
@@ -133,13 +161,71 @@ class Post extends ModTemplate {
 
   onPeerHandshakeComplete(app, peer) {
 
-    if (this.renderMethod == "none") { return; }
+
+    if (app.modules.returnModuleBySlug("arcade")) { this.fetch = 1; }
+    if (this.renderMethod === "none") { if (this.fetch == 0) { return; } else {
+      if (app.modules.returnModuleBySlug("arcade")) { this.renderMethod = "arcade"; }	
+    }}
+
+console.log("OK, fetching from server!");
+
+    let forum_splash = 1;
 
     //
     // fetch posts from server
     //
     let sql = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
-    this.sendPeerDatabaseRequestWithFilter(
+    let forum = app.browser.returnURLParameter("forum");
+    if (forum) {
+      sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+      forum_splash = 0;
+    } else {
+      let forum = app.browser.returnURLParameter("game");
+      if (forum) {
+        sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+        forum_splash = 0;
+      }
+    }
+
+    if (forum_splash == 1) {
+      sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
+      this.sendPeerDatabaseRequestWithFilter(
+
+        "Post" ,
+
+        sql ,
+
+        (res) => {
+
+          if (res) {
+            if (res.rows) {
+              for (let i = 0; i < res.rows.length; i++) {
+		this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
+		this.forums[this.forums.length-1].post_num = res.rows[i].post_num;
+              }
+            }
+          }
+console.log("heading into render: " + this.renderMethod);
+          this.render();
+
+        }, 
+
+
+        (p) => {
+          if (p.peer.services) {
+            for (let i = 0; i < p.peer.services.length; i++) {
+              let s = p.peer.services[i];
+              if (s.service === "post") { return 1; }
+            }
+          }
+          if (this.app.network.peers[0] == p) { return 1; }
+          return 0;
+        }
+      );
+
+    } else {
+
+      this.sendPeerDatabaseRequestWithFilter(
 
         "Post" ,
 
@@ -172,9 +258,8 @@ class Post extends ModTemplate {
           if (this.app.network.peers[0] == p) { return 1; }
           return 0;
         }
-
-
-    );
+      );
+    }
   }
 
 
@@ -311,11 +396,88 @@ class Post extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "post");
 
+    let post_num = 1;
 
-    //
-    // save a lite version without the content
-    //
+    let sql2 = `SELECT post_num FROM first_posts WHERE forum = $forum`;
+    let params2 = { $forum : txmsg.forum }
+    let rows = await this.app.storage.queryDatabase(sql2, params2, 'post');
+    if (rows) {
+      if (rows.length > 0) {
+        if (rows[0].post_num > 0) {
+          post_num = rows[0].post_num+1;
+        }
+      }
+    }
 
+
+    // delete
+    let csql = `DELETE FROM first_posts WHERE forum = $pforum`;
+    let cparams = { pforum : txmsg.forum };
+    await this.app.storage.executeDatabase(csql, cparams, "post");
+
+    // insert first_posts
+    let fpsql = `
+        INSERT INTO 
+            first_posts (
+                id,
+                thread_id,
+                parent_id, 
+                type,
+		publickey,
+                title,
+                img,
+                text,
+		forum,
+		link,
+                tx, 
+                lite_tx, 
+                ts,
+                children,
+                flagged,
+                deleted,
+                post_num
+                ) 
+            VALUES (
+                $pid ,
+	        $pthread_id ,
+                $pparent_id ,
+                $ptype ,
+		$ppublickey ,
+		$ptitle ,
+		$pimg ,
+		$ptext ,
+		$pforum ,
+		$plink ,
+		$pfulltx ,
+		$plitetx ,
+		$pts ,
+		$pchildren ,
+		$pflagged ,
+		$pdeleted ,
+		$post_num
+            );
+        `;
+    let fpparams = {
+	$pid 		: tx.transaction.sig ,
+	$pthread_id 	: tx.transaction.sig ,
+	$pparent_id	: '' ,
+	$ptype		: 'post' ,
+	$ppublickey	: tx.transaction.from[0].add ,
+	$ptitle		: txmsg.title ,
+	$pimg		: "" ,
+	$ptext		: txmsg.comment ,
+	$pforum		: txmsg.forum ,
+	$plink		: txmsg.link ,
+	$pfulltx	: pfulltx ,
+	$plitetx	: plitetx ,
+	$pts		: tx.transaction.ts ,
+	$pchildren	: 0 ,
+	$pflagged 	: 0 ,
+	$pdeleted	: 0 ,
+	$post_num	: post_num ,
+    };
+
+    await this.app.storage.executeDatabase(fpsql, fpparams, "post");
 
     //
     // fetch image if needed
@@ -444,6 +606,7 @@ class Post extends ModTemplate {
     };
 
     await this.app.storage.executeDatabase(sql, params, "post");
+
 
     //
     // fetch image if needed
@@ -631,6 +794,7 @@ class Post extends ModTemplate {
       $pflagged 	: 0 ,
       $pdeleted	: 0 ,
     };
+
 
     await this.app.storage.executeDatabase(sql, params, "post");
 

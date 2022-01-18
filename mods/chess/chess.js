@@ -76,11 +76,16 @@ class Chessgame extends GameTemplate {
       //  chat.addPopUpChat();
       //}
 
+console.log("A");
       chess = require('./lib/chess.js');
+console.log("B");
       chessboard = require('./lib/chessboard');
+console.log("C");
 
       this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
+console.log("D");
       this.engine = new chess.Chess();
+console.log("E");
     }
 
     //
