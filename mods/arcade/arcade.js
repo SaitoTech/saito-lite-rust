@@ -119,6 +119,16 @@ class Arcade extends ModTemplate {
     }
 
 
+
+    //
+    // hack to force forum to onPeerHandShake
+    //
+    try {
+      let post_mod = this.app.returnModule("Post");
+      post_mod.renderMethod = "arcade";
+console.log("set post to arcade rendermethod");
+    } catch (err) {}
+
     //
     // listen for txs from arcade-supporting games
     //
@@ -1135,6 +1145,8 @@ console.log("telling game module to receiveAcceptTx");
 
   createOpenTransaction(gamedata, recipient="") {
 
+alert("create Invite TX");
+
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
@@ -1174,6 +1186,8 @@ console.log("telling game module to receiveAcceptTx");
 
 
   createInviteTransaction(app, data, gametx) {
+
+alert("create Invite TX");
 
     let txmsg = gametx.returnMessage();
 

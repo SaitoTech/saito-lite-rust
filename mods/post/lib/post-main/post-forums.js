@@ -5,6 +5,7 @@ module.exports = PostForums = {
   render(app, mod) {
 
     let sobj = [];
+/****
     sobj.push({
 	ft_img    : "/saito/img/background.png",
 	ft_mod    : "saito",
@@ -27,7 +28,7 @@ module.exports = PostForums = {
 	ft_puser  : "david@saito",
 	ft_pdate  :  "Jan 15",
     });
-
+****/
     let modforums = [];
     app.modules.respondTo("post-forum").forEach(mod => {
       modforums.push(mod);
@@ -75,11 +76,11 @@ module.exports = PostForums = {
 	ft_mod    : modgames[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 245,
-	ft_ptext  : "posts",
-	ft_ptitle : "Splitting Hands and Doubling Down",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 12",
+	ft_pnum   : 0,
+	ft_ptext  : "",
+	ft_ptitle : "",
+	ft_puser  : "",
+	ft_pdate  : "",
       });
     }
 

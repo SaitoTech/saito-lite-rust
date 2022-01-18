@@ -100,7 +100,6 @@ module.exports = ArcadeGameDetails = {
       if (options.crypto != "") {
         if (options.stake > 0) {
 
-
           let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(options.crypto).ticker;
           let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
           if(selected_crypto_ticker === preferred_crypto_ticker) {
@@ -128,23 +127,27 @@ module.exports = ArcadeGameDetails = {
             salert(`${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`);
             return;
           }
-          
         }
       }
 
 
         app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
         let gamemod = app.modules.returnModule(options.gamename);
+	let players_needed = 0;
+        if (document.querySelector('.game-wizard-players-select')) {
+          players_needed = document.querySelector('.game-wizard-players-select').value;
+        } else {
+          players_needed = document.querySelector('.game-wizard-players-no-select').value;
+        }
+
         let gamedata = {
 	  ts: new Date().getTime(),
           name: gamemod.name,
           slug: gamemod.returnSlug(),
           options: gamemod.returnFormattedGameOptions(options),
           options_html: gamemod.returnGameRowOptionsHTML(options),
-          players_needed: document.querySelector('.game-wizard-players-select').value,
+          players_needed: players_needed,
         };
-
-        let players_needed = document.querySelector('.game-wizard-players-select').value;
 
         if (players_needed == 1) {
           mod.launchSinglePlayerGame(app, gamedata); 
@@ -166,9 +169,7 @@ module.exports = ArcadeGameDetails = {
         }
 
       } catch (err) {
-
-      alert("error: " + err);
-
+        alert("error: " + err);
       }
 
       return false;

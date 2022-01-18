@@ -473,7 +473,7 @@ console.log("---------------------");
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            salert("Saito Upgrade: Wallet Reset");
+            alert("Saito Upgrade: Wallet Reset");
           } else {
             //
             // purge old slips
@@ -1398,6 +1398,69 @@ console.log("---------------------");
   /////////////////////
   // END WEB3 CRYPTO //
   /////////////////////
+
+
+  //////////////////
+  // UI Functions //
+  //////////////////
+
+  /**
+   * Serialized the user's wallet to JSON and downloads it to their local machine
+   */
+  async backupWallet() {
+    try {
+      if (this.app.BROWSER == 1) {
+        let content = JSON.stringify(this.app.options);
+        var pom = document.createElement('a');
+        pom.setAttribute('type', "hidden");
+        pom.setAttribute('href', 'data:application/json;utf-8,' + encodeURIComponent(content));
+        pom.setAttribute('download', "saito.wallet.json");
+        document.body.appendChild(pom);
+        pom.click();
+        pom.remove();
+      }
+    } catch (err) {
+      console.log("Error backing-up wallet: " + err);
+    }
+  }
+
+  async restoreWallet(file) {
+    var wallet_reader = new FileReader();
+    wallet_reader.readAsBinaryString(file);
+    wallet_reader.onloadend = () => {
+      let decryption_secret = "";
+      let decrypted_wallet = wallet_reader.result.toString();
+      try {
+        let wobj = JSON.parse(decrypted_wallet);
+        wobj.wallet.version = this.wallet.version;
+        wobj.wallet.inputs = [];
+        wobj.wallet.outputs = [];
+        wobj.wallet.spends = [];
+        wobj.games = [];
+        wobj.gameprefs = {};
+        this.app.options = wobj;
+
+        this.app.blockchain.resetBlockchain();
+
+        this.app.modules.returnModule('Arcade').onResetWallet();
+        this.app.storage.saveOptions();
+
+        alert("Restoration Complete ... click to reload Saito");
+        window.location.reload();
+      } catch (err) {
+        if(err.name == "SyntaxError") {
+          alert("Error reading wallet file. Did you upload the correct file?");
+        } else if(false) {// put this back when we support encrypting wallet backups again...
+          alert("Error decrypting wallet file. Password incorrect");
+        } else {
+          alert("Unknown error<br/>" + err);
+        }
+      }
+    };
+
+  }
+
+
 
   deleteBlock(block: Block) {
     // TODO : @david
