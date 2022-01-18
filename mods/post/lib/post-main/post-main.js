@@ -87,6 +87,7 @@ module.exports = PostMain = {
     let fuser = app.keys.returnUsername(forum.transaction.from[0].add);
     let fdate = datetimeRelative(forum.transaction.ts);
     let fpost_num = forum.post_num;
+    let fuid  = app.keys.returnIdenticon(forum.transaction.from[0].add);
 
     try {
       document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = txmsg.title;
@@ -97,6 +98,7 @@ module.exports = PostMain = {
       document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
+      document.querySelector(`#forum-topic-latest-post-image-${topic}`).innerHTML = `<img src="${fuid}" class="identicon" />`;
 
       if (fpost_num == 1) {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";
@@ -104,7 +106,6 @@ module.exports = PostMain = {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
       }
     } catch (err) {
-console.log("err: " + err);
     }
 
   }

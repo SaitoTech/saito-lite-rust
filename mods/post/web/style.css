@@ -544,16 +544,23 @@
   margin-top: 5px;
   margin-bottom: auto;
   font-size: 2.3em;
+  height: 50px;
+  width: 50px;
+}
+.identicon {
+  height: 50px;
+  width: 50px;
 }
 .forum-topic-latest-post-details {
 }
 .forum-topic-latest-post-title {
-  font-size: 1.4em;
+  font-size: 24px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: inherit;
   font-style: italic;
+  margin-bottom: 6px;
 }
 .forum-topic-latest-post-info {
   font-size: 0.8em;

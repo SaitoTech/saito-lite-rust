@@ -119,6 +119,16 @@ class Arcade extends ModTemplate {
     }
 
 
+
+    //
+    // hack to force forum to onPeerHandShake
+    //
+    try {
+      let post_mod = this.app.returnModule("Post");
+      post_mod.renderMethod = "arcade";
+console.log("set post to arcade rendermethod");
+    } catch (err) {}
+
     //
     // listen for txs from arcade-supporting games
     //

@@ -6,36 +6,19 @@ module.exports = ArcadeForums = {
   render(app, mod) {
 
     let sobj = [];
-    sobj.push({
-	ft_link   : "/post/?forum=saito",
-	ft_img    : "/saito/img/background.png",
-	ft_mod    : "saito",
-	ft_title  : "Saito Discussion",
-	ft_desc   : "All about Saito and the Saito Arcade",
-	ft_pnum   : 1423,
-	ft_ptext  : "posts",
-	ft_ptitle : "DEFCON Suicide Misadventures",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 15",
-    });
-    sobj.push({
-	ft_link   : "/post/?forum=development",
-	ft_img    : "/saito/img/background.png",
-	ft_mod    : "development",
-	ft_title  : "Saito Development",
-	ft_desc   : "Building on Saito and the Saito Network",
-	ft_pnum   : 1423,
-	ft_ptext  : "posts",
-	ft_ptitle : "DEFCON Suicide Misadventures",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 15",
-    });
-
     let modforums = [];
+
+    //
+    // set forum to renderMode.arcade if needed
+    //
+    try {
+      let post_mod = this.app.returnModule("Post");
+      post_mod.renderMethod = "arcade"; 
+    } catch (err) {}
+
     app.modules.respondTo("post-forum").forEach(mod => {
       modforums.push(mod);
     });
-
     for (let i = 0; i < modforums.length; i++) {
 
       let img = "/saito/img/background.png";
@@ -50,11 +33,11 @@ module.exports = ArcadeForums = {
 	ft_mod    : modforums[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 245,
-	ft_ptext  : "posts",
-	ft_ptitle : "Splitting Hands and Doubling Down",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 12",
+	ft_pnum   : 0,
+	ft_ptext  : "",
+	ft_ptitle : "",
+	ft_puser  : "",
+	ft_pdate  : "",
       });
     }
 
@@ -82,11 +65,11 @@ module.exports = ArcadeForums = {
 	ft_mod    : modgames[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 245,
-	ft_ptext  : "posts",
-	ft_ptitle : "Splitting Hands and Doubling Down",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 12",
+	ft_pnum   : 0,
+	ft_ptext  : "",
+	ft_ptitle : "",
+	ft_puser  : "",
+	ft_pdate  : "",
       });
     }
    

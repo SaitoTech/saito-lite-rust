@@ -26,6 +26,8 @@ class Post extends ModTemplate {
     this.forums = [];
     this.comments = [];
 
+    this.fetch = 0;
+
     this.icon_fa = "fa fa-map-signs";
     this.description = `Simple forum for persistent posts and discussions`;
     this.categories = "Social Messaging";
@@ -52,6 +54,7 @@ class Post extends ModTemplate {
     }
 
     if (type == "arcade-posts") {
+      this.fetch = 1; // fetch posts
       let obj = {};
       obj.render = this.renderArcade;
       obj.attachEvents = function() {};
@@ -158,9 +161,13 @@ class Post extends ModTemplate {
 
   onPeerHandshakeComplete(app, peer) {
 
-console.log("renderMethod: " + this.renderMethod);
 
-    //if (this.renderMethod === "none") { return; }
+    if (app.modules.returnModuleBySlug("arcade")) { this.fetch = 1; }
+    if (this.renderMethod === "none") { if (this.fetch == 0) { return; } else {
+      if (app.modules.returnModuleBySlug("arcade")) { this.renderMethod = "arcade"; }	
+    }}
+
+console.log("OK, fetching from server!");
 
     let forum_splash = 1;
 
@@ -198,7 +205,7 @@ console.log("renderMethod: " + this.renderMethod);
               }
             }
           }
-
+console.log("heading into render: " + this.renderMethod);
           this.render();
 
         }, 
