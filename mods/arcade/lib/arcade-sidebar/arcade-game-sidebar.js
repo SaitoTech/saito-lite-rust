@@ -5,6 +5,7 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
 const ArcadeGameDetails = require('../arcade-game/arcade-game-details');
 const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
+
 module.exports = ArcadeGameSidebar = {
 
   render(app, mod) {
@@ -25,43 +26,36 @@ module.exports = ArcadeGameSidebar = {
 
   
   attachEvents(app, mod) {
+   /* We probably need a better way to pass the game name around */
+    let gameStub = app.browser.returnURLParameter("game");
+    let game_mod = app.modules.returnModuleBySlug(gameStub);
 
-    if (!document.getElementById("games-add-game")) { return; }
-
-    if (app.modules.returnModule("AppStore") != null) {
-      document.getElementById("games-add-game").onclick = () => {
-        let appstore_mod = app.modules.returnModule("AppStore");
-        if (appstore_mod) {
-          let options = { search : "" , category : "Entertainment" , featured : 1 };
-          appstore_mod.openAppstoreOverlay(options);
-        }
-      };
+    //Launch Game on Click
+    let newGameBtn = document.querySelector("#new-game");
+    if (newGameBtn){
+      newGameBtn.addEventListener('click', (e) => {
+        //Should we create a new Event tag?
+        app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", game_mod.name); 
+        let tx = new saito.default.transaction();
+        tx.msg.game = game_mod.name;
+        ArcadeGameDetails.render(app, mod, tx);
+        ArcadeGameDetails.attachEvents(app, mod, tx);
+        
+      });
     }
+    
+    //Fetch Instructions
+    let howToBtn = document.querySelector("#how-to-play");
+    if (howToBtn){
+      howToBtn.addEventListener('click', (e) => {
+        mod.overlay.show(app, mod, game_mod.returnGameRulesHTML());
+      });
+    }          
 
-    Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
-      game.addEventListener('click', (e) => {
-
-        let gameName = e.currentTarget.id;
-        app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", gameName);
-        let doGameDetails = () => {
-          let tx = new saito.default.transaction();
-          tx.msg.game = gameName;
-          ArcadeGameDetails.render(app, mod, tx);
-          ArcadeGameDetails.attachEvents(app, mod, tx);
-        }
-
-        //
-        // not registered
-        //
-        if (app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey()) == "") {
-          if (app.options.wallet.anonymous != 1) {
-            mod.modal_register_username = new ModalRegisterUsername(app, doGameDetails);
-            mod.modal_register_username.render(app, mod);
-            mod.modal_register_username.attachEvents(app, mod);
-            return;
-          }
-        }
-        doGameDetails();
+    //Bread crumbs
+    Array.from(document.getElementsByClassName('navigation-return-to-arcade')).forEach(link => {
+      link.addEventListener("click", (e) => {
+        window.location = "/arcade";
       });
     });
 

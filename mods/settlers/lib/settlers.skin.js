@@ -1,9 +1,11 @@
 class SettlersSkin {
 
 	constructor(){
+		this.empty = true;
 	}
 
 	render(option = "classic"){
+		this.empty = false;
 		console.log("Skin Option:",option);
 		
 		switch(option){

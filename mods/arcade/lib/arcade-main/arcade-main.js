@@ -5,7 +5,6 @@ const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../arcade-game/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
-const ArcadeGameDetails = require("./../arcade-game/arcade-game-details");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
 const ArcadeObserveTemplate = require("./templates/arcade-observe.template");
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
@@ -478,7 +477,7 @@ if (relay_mod != null) {
         app.storage.saveOptions();
 
         let game_mod = app.modules.returnModule(existing_game.module);
-	if (game_mod) {
+  	if (game_mod) {
           window.location = '/' + game_mod.returnSlug().toLowerCase();
         }
         return;
