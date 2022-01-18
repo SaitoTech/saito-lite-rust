@@ -271,7 +271,6 @@ hr {
 }
 
 .saito-overlay-closebox {
-  display: none;
   position: absolute;
   width: 30px;
   height: 30px;
@@ -1979,6 +1978,7 @@ i.fas.fa-times-circle {
 
 .tip {
   position: relative;
+  width: 100%;
 }
 
 /* tip text */

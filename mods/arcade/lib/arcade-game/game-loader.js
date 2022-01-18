@@ -1,12 +1,19 @@
 const GameLoaderTemplate = require('./game-loader.template');
 const GameLoadedTemplate = require('./game-loaded.template');
+const GameLoadingTemplate = require('./game-loading.template');
 
 module.exports = GameLoader = {
 
     render(app, mod, game_id="") {
       mod.viewing_arcade_initialization_page = 1;
       if (game_id != "") {
-        document.getElementById("arcade-main").innerHTML = GameLoadedTemplate(game_id);
+	if (game_id == -1) {
+	  // no button
+          document.getElementById("arcade-main").innerHTML = GameLoadingTemplate();
+	} else {
+	  // spinner
+          document.getElementById("arcade-main").innerHTML = GameLoadedTemplate(game_id);
+	}
       } else {
         document.getElementById("arcade-main").innerHTML = GameLoaderTemplate();
       }

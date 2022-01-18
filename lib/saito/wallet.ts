@@ -27,7 +27,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.017,
+    version: 4.023,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -458,10 +458,8 @@ console.log("---------------------");
 
             this.app.options.wallet = this.wallet;
 
-            // reset blockchain
-            //this.app.options.blockchain.last_bid = "";
-            //this.app.options.blockchain.last_hash = "";
-            //this.app.options.blockchain.last_ts = "";
+            // reset games
+            this.app.options.games = [];
 
             // delete inputs and outputs
             this.app.options.wallet.inputs = [];
@@ -817,12 +815,16 @@ console.log("---------------------");
       this.app.options.keys = [];
     }
 
+
     this.wallet.inputs = [];
     this.wallet.outputs = [];
     this.wallet.spends = [];
     this.wallet.pending = [];
 
     this.saveWallet();
+
+    this.app.options.games = [];
+    this.app.storage.saveOptions();
 
     if (this.app.browser.browser_active == 1) {
       window.location.reload();

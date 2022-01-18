@@ -26,6 +26,7 @@ export default {
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
+    'saitoforum/saitoforum.js',
   ],
   lite: [
     'arcade/arcade.js',
@@ -41,7 +42,7 @@ export default {
     'imperium/imperium.js',
     'myqrcode/myqrcode.js',
     'qrscanner/qrscanner.js',
-    'pandemic/pandemic.js',
+    //'pandemic/pandemic.js',
     'poker/poker.js',
     'post/post.js',
     'relay/relay.js',
@@ -50,10 +51,11 @@ export default {
     'settlers/settlers.js',
     'solitrio/solitrio.js',
     'twilight/twilight.js',
-    'thirteen/thirteen.js',
+    //'thirteen/thirteen.js',
     'tst/tst.js',
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
+    'saitoforum/saitoforum.js',
   ]
 }

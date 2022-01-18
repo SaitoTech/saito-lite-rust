@@ -2,6 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PostMain = require('./lib/post-main/post-main');
 const PostSidebar = require('./lib/post-sidebar/post-sidebar');
+const PostCreate = require('./lib/post-overlay/post-create');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
@@ -54,6 +55,29 @@ class Post extends ModTemplate {
       obj.render = this.renderArcade;
       obj.attachEvents = function() {};
       return obj;
+    }
+
+    if (type == "header-menu") {
+      if (this.browser_active) {
+        let obj = {};
+        let post_self = this;
+        obj.returnMenu = function() {
+  	  return `
+            <div class="wallet-action-row" id="header-dropdown-post-new">
+              <span class="scan-qr-info"><i class="settings-fas-icon fas fa-file"></i> New Post</span>
+            </div>
+	  `;
+        }
+        obj.attachEvents = function() {
+          if (document.getElementById('header-dropdown-post-new')) {
+            document.getElementById('header-dropdown-post-new').onclick = () => {
+              PostCreate.render(post_self.app, post_self);
+              PostCreate.attachEvents(post_self.app, post_self);
+            };
+          }
+        }
+        return obj;
+      }
     }
 
     if (type == "header-dropdown") {
@@ -135,12 +159,19 @@ class Post extends ModTemplate {
 
     if (this.renderMethod == "none") { return; }
 
-console.log("ON PEER HANDSHAKE COMPLETE!");
-
     //
     // fetch posts from server
     //
     let sql = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+    let forum = app.browser.returnURLParameter("forum");
+    if (forum) {
+      sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+    } else {
+      let forum = app.browser.returnURLParameter("game");
+      if (forum) {
+        sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+      }
+    }
     this.sendPeerDatabaseRequestWithFilter(
 
         "Post" ,
@@ -148,8 +179,6 @@ console.log("ON PEER HANDSHAKE COMPLETE!");
         sql ,
 
         (res) => {
-
-console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
 
           if (res) {
             if (res.rows) {
@@ -677,8 +706,8 @@ console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
     let delete_tx = this.createDeleteTransaction(txmsg.post_id);
     let base_58_tx = Base58.encode(Buffer.from(JSON.stringify(delete_tx)));
 
-    console.log(`POSTS MODERATION https://saito.io/post/delete/${base_58_tx}`);
-    console.log(JSON.stringify(txmsg)); // lets see who is this guy
+    //console.log(`POSTS MODERATION https://saito.io/post/delete/${base_58_tx}`);
+    //console.log(JSON.stringify(txmsg)); // lets see who is this guy
 
     this.app.network.sendRequest('send email', {
       from: 'network@saito.tech',
@@ -709,7 +738,7 @@ console.log("ON PEER HANDSHAKE COMPLETE 2!" + JSON.stringify(res.rows));
     
     if (this.app.crypto.verifyHash(this.app.crypto.hash(tx.returnSignatureSource(this.app)), tx.transaction.sig, tx.transaction.from[0].add)) {
       let txmsg = tx.returnMessage();
-      console.log(txmsg);
+      //console.log(txmsg);
       let sql = `
           UPDATE 
             posts

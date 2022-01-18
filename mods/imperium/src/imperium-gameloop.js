@@ -495,10 +495,10 @@ console.log("----------------------------");
 
   	if (planet_idx != -1) {
           this.addPlanetaryUnit(player, sector, planet_idx, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 120, 1);  // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " on " + sys.p[planet_idx].name, 1);  // force message
  	} else {
           this.addSpaceUnit(player, sector, unitname);
-	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 120, 1); // force message
+	  this.updateLog(this.returnFactionNickname(player) + " produces " + this.returnUnit(unitname, player).name + " in " + sys.s.name, 1); // force message
         }
 
 
@@ -1736,7 +1736,7 @@ this.game.state.end_round_scoring = 0;
 	  textAlign: "center",
 	  onContinue : function() {
 
-	    game_mod.overlay.hideOverlay();
+	    game_mod.overlay.hide();
 
 	    if (game_mod.game.planets['new-byzantium'].owner != -1 ) {
 
@@ -1754,10 +1754,10 @@ this.game.state.end_round_scoring = 0;
 	        padding: "20px",
 	        textAlign: "center",
 	        onClose : function() {
-		  game_mod.overlay.hideOverlay();
+		  game_mod.overlay.hide();
 	        }
 	      }, function () {
-		game_mod.overlay.hideOverlay();
+		game_mod.overlay.hide();
 	      });
             }
 	  },
@@ -2667,9 +2667,9 @@ this.game.state.end_round_scoring = 0;
 	    let bonus_buff = 0;
 	    document.querySelectorAll('.overlay_action_card').forEach(el => { bonus_buff++; });
 
-	    this.overlay.showOverlay(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
+	    this.overlay.show(this.app, this, this.returnNewActionCardsOverlay(this.game.deck[1].hand.slice(this.game.deck[1].hand.length-(amount+bonus_buff), this.game.deck[1].hand.length)));
 	    document.getElementById("close-action-cards-btn").onclick = (e) => {
-	      this.overlay.hideOverlay();
+	      this.overlay.hide();
 	      this.game.state.showing_action_cards_amounts = 0;
             }
 	  }
@@ -2685,7 +2685,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type === "secret_objectives" || type === "secret_objective") {
           if (this.game.player == player && this.browser_active == 1) {
-	    this.overlay.showOverlay(this.app, this, this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
+	    this.overlay.show(this.app, this, this.returnNewSecretObjectiveOverlay(this.game.deck[5].hand.slice(this.game.deck[5].hand.length-amount, this.game.deck[5].hand.length)));
 	  }
 	  this.game.players_info[player-1].secret_objectives_in_hand += amount;
 	}
@@ -2765,7 +2765,7 @@ this.game.state.end_round_scoring = 0;
 
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
-            this.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
 // this likely causes disconnects as is not guaranteed to run on player turn
 //            this.playerAcknowledgeNotice("REMEMBER: use the trade strategy card to get trade goods. Commercial partnerships can be as valuable as large fleets in Red Imperium", function() {});
           }
@@ -2777,7 +2777,7 @@ this.game.state.end_round_scoring = 0;
 
 	  if (this.game.state.use_tutorials == 1 && !this.game.state.seen_commodities_tutorial) {
 	    this.game.state.seen_commodities_tutorial = 1;
-            this.overlay.showOverlay(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
+            this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/commodities.png" style="width:auto;height:100%" /></div>');
 // this likely causes disconnects as is not guaranteed to run on player turn
 //            this.playerAcknowledgeNotice("REMEMBER: when you have commodities, trade them with a neighbouring player. They receive trade goods. Two players can trade commodities to each other and receive trade goods in return!", function() {});
 	  }

@@ -121,7 +121,7 @@ This shows how to make the Select Crypto module show up.
       let dotgo = document.getElementById("dot-warning-confirm");
       if (dotgo) {
         dotgo.onclick = (e) => {
-          cryptomod.modal_overlay.hideOverlay();
+          cryptomod.modal_overlay.hide();
           app.connection.emit('update_balance');
         }
       }

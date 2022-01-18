@@ -24,7 +24,18 @@ class Server {
   public app: Saito;
   public blocks_dir: string;
   public web_dir: string;
-  public server: any;
+  public server: any = {
+    host: "",
+    port: 0,
+    publickey: "",
+    protocol: "",
+    name: "",
+    endpoint: {
+      host: "",
+      port: 0,
+      protocol: "",
+    },
+  };
   public webserver: any;
   public server_file_encoding: string;
   public host: string;
@@ -37,18 +48,6 @@ class Server {
 
     this.blocks_dir = path.join(__dirname, "../../../data/blocks/");
     this.web_dir = path.join(__dirname, "../../../web/");
-
-    this.server = {};
-    this.server.host = "";
-    this.server.port = 0;
-    this.server.publickey = "";
-    this.server.protocol = "";
-    this.server.name = "";
-
-    this.server.endpoint = {};
-    this.server.endpoint.host = "";
-    this.server.endpoint.port = 0;
-    this.server.endpoint.protocol = "";
 
     this.webserver = null;
     //this.io                         = null;

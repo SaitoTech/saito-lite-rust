@@ -21,6 +21,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+
 }
 
 .menu-player {
@@ -32,6 +33,30 @@ body {
   margin-bottom: 15px;
 }
 
+
+/* Since Poker only has two cards in a hand, can adjust the angles*/
+.cardfan>.card:nth-child(1) {
+  transform: rotate(-15deg);
+  left: 0px; 
+} 
+  
+.cardfan>.card:nth-child(2) {
+  transform: rotate(-5deg);
+  left: 3vh;
+}
+
+
+.hand>.card:nth-child(1) {
+  transform: rotate(-15deg);
+  left: 0px;
+} 
+
+.hand>.card:nth-child(2) {
+  transform: rotate(-5deg);
+  left: 2vh;
+}
+
+
 .hand {
   margin-left: auto;
   margin-right: auto;
@@ -39,10 +64,6 @@ body {
   position: relative;
 }
 
-.card {
-  width: unset;
-  float: none;
-}
 
 .deal .card {
   width: 9vw;
@@ -106,89 +127,12 @@ body {
   overflow: hidden;
 }
 
-.poker-seat-1 .hand {
-  display: none;
-}
-
-.poker-seat-4 .hand, .poker-seat-3 .hand, .poker-seat-2 .hand {
-  right: 15vh;
-  top: 2vh;
-}
-
-.poker-seat-5 .hand, .poker-seat-6 .hand {
-  left: 24vh;
-  top: 2vh;
-}
 
 .player-info-hand .card {
   width: 12vh;
   position: absolute;
 }
 
-.cardfan {
-  position: absolute;
-  top: 70vh;
-  left: 15vw;
-}
-
-.cardfan .card {
-  position: absolute;
-  width: 17.5vh;
-}
-
-/* .card:nth-child(1n+2) {
-  left: -130px;
-} */
-
-.cardfan>.card:nth-child(1) {
-  transform: rotate(-20deg);
-  left: 0px;
-}
-
-.cardfan>.card:nth-child(2) {
-  transform: rotate(-10deg);
-  left: 3vh;
-}
-
-.cardfan>.card:nth-child(3) {
-  transform: rotate(0deg);
-  left: 6vh;
-}
-
-.cardfan>.card:nth-child(4) {
-  transform: rotate(10deg);
-  left: 9vh;
-}
-
-.cardfan>.card:nth-child(5) {
-  transform: rotate(20deg);
-  left: 12vh;
-}
-
-.hand>.card:nth-child(1) {
-  transform: rotate(-20deg);
-  left: 0px;
-}
-
-.hand>.card:nth-child(2) {
-  transform: rotate(-10deg);
-  left: 2vh;
-}
-
-.hand>.card:nth-child(3) {
-  transform: rotate(0deg);
-  left: 4vh;
-}
-
-.hand>.card:nth-child(4) {
-  transform: rotate(10deg);
-  left: 6vh;
-}
-
-.hand>.card:nth-child(5) {
-  transform: rotate(20deg);
-  left: 8vh;
-}
 
 .suit {
   font-size: larger;
@@ -427,74 +371,6 @@ body {
 
 }
 
-
-
-
-
-.cardfan {
-  position: absolute;
-  top: 70vh;
-  left: 15vw;
-} 
-  
-.cardfan .card {
-  position: absolute;
-  width: 17.5vh;
-}
-  
-/* .card:nth-child(1n+2) {
-  left: -130px;
-} */
-
-.cardfan>.card:nth-child(1) {
-  transform: rotate(-20deg);
-  left: 0px; 
-} 
-  
-.cardfan>.card:nth-child(2) {
-  transform: rotate(-10deg);
-  left: 3vh;
-}
-
-.cardfan>.card:nth-child(3) {
-  transform: rotate(0deg);
-  left: 6vh;
-} 
-  
-.cardfan>.card:nth-child(4) {
-  transform: rotate(10deg);
-  left: 9vh;
-} 
-
-.cardfan>.card:nth-child(5) {
-  transform: rotate(20deg);
-  left: 12vh;
-} 
-
-.hand>.card:nth-child(1) {
-  transform: rotate(-20deg);
-  left: 0px;
-} 
-
-.hand>.card:nth-child(2) {
-  transform: rotate(-10deg);
-  left: 2vh;
-}
-
-.hand>.card:nth-child(3) {
-  transform: rotate(0deg);
-  left: 4vh;
-}
-
-.hand>.card:nth-child(4) {
-  transform: rotate(10deg);
-  left: 6vh;
-}
-
-.hand>.card:nth-child(5) {
-  transform: rotate(20deg);
-  left: 8vh;
-}
 
 
 

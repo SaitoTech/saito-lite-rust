@@ -1,6 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-//const GameBoardSizer = require('../../lib/saito/ui/game-board-sizer/game-board-sizer');
-//const GameHammerMobile = require('../../lib/saito/ui/game-hammer-mobile/game-hammer-mobile');
 const helpers = require('../../lib/helpers/index');
 
 
@@ -32,9 +30,7 @@ class Thirteen extends GameTemplate {
 
     this.moves           = [];
 
-    this.log_length = 150;
-
-    this.gameboardZoom  = 0.90;
+     this.gameboardZoom  = 0.90;
     this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;
@@ -53,18 +49,6 @@ class Thirteen extends GameTemplate {
     //
     //
     this.opponent_cards_in_hand = 0;
-
-    //
-    // instead of associating a different function with each card css we are
-    // associating a single one, and changing the reference function inside
-    // to get different actions executed on click. Basically we swap out the
-    // changeable function before attachingCardEvents and everything just works
-    //
-    this.chengeable_callback = function(card) {}
-    let thirteen_self = this;
-    this.cardbox_callback = function(card) { thirteen_self.changeable_callback(card); };
-
-
 
   }
 
@@ -101,9 +85,6 @@ class Thirteen extends GameTemplate {
       mod.respondTo('chat-manager').render(app, this);
       mod.respondTo('chat-manager').attachEvents(app, this);
     });
-
-    this.overlay.render(app, this);
-    this.overlay.attachEvents(app, this);
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -219,7 +200,6 @@ class Thirteen extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-    this.hud.render(app, this);
     this.hud.addCardType("logcard", "", null);
     this.hud.addCardType("showcard", "select", this.cardbox_callback);
     if (!app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -260,7 +240,7 @@ class Thirteen extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
     $('.menu-item').on('click', function() {
 
@@ -298,7 +278,7 @@ class Thirteen extends GameTemplate {
         `;
       }
 
-      twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
     });
 
   }
@@ -663,7 +643,7 @@ class Thirteen extends GameTemplate {
 
 	  this.overlay.showCardSelectionOverlay(this.app, this, this.game.deck[0].hand, { columns : 3 , textAlign : "center" , cardlistWidth: "90vw" , title : html , subtitle : "earn points by beating your opponent in this domain by turn's end" , onCardSelect : function (card) {
 
-	    thirteen_self.overlay.hideOverlay();
+	    thirteen_self.overlay.hide();
 
 	    thirteen_self.addMove("RESOLVE");
 	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
@@ -4517,17 +4497,16 @@ console.log("CARDS: "+JSON.stringify(cards));
   returnGameOptionsHTML() {
 
     return `
-
+            <h1 class="overlay-title">Thirteen Days</h1>
+            <div class="overlay-input">
             <label for="player1">Play as:</label>
             <select name="player1">
               <option value="random">random</option>
               <option value="ussr" default>USSR</option>
               <option value="us">US</option>
             </select>
-
+            </div>
             <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-
           `;
 
   }

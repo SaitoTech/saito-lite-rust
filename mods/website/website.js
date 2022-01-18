@@ -23,7 +23,7 @@ class Website extends ModTemplate {
     this.description = "Module that creates a root website on a Saito node.";
     this.categories = "Utilities Communications";
     this.header = null;
-    this.overlay = new SaitoOverlay(app, this);
+    this.overlay = new SaitoOverlay(app);
     return this;
   }
   initializeHompage(app) {
@@ -33,7 +33,7 @@ class Website extends ModTemplate {
         // https://zxing.org/w/decode
         // Then recreate a clear QR code and replace mods/website/web/img/wechat/weixin.png
         // https://www.the-qrcode-generator.com/
-        this.overlay.showOverlay(app, this, `<div id='weixinqr-overlay'><img src="/img/wechat/weixin.png" style="display: block;">
+        this.overlay.show(app, this, `<div id='weixinqr-overlay'><img src="/img/wechat/weixin.png" style="display: block;">
         </div>`, () => {})
       }
     });

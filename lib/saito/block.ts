@@ -64,6 +64,7 @@ class Block {
   public get_id: any;
   public txs_hmap: any;
   public txs_hmap_generated: boolean;
+  public has_examined_block: boolean;
 
   constructor(app: Saito) {
     this.app = app;
@@ -104,6 +105,8 @@ class Block {
     this.callbacks = [];
     this.callbackTxs = [];
     this.confirmations = -1; // set to +1 when we start callbacks
+
+    this.has_examined_block = false;
   }
 
   affixCallbacks() {
@@ -911,6 +914,7 @@ class Block {
   }
 
   generateMetadata() {
+
     //
     // generate block hashes
     //
@@ -1027,6 +1031,11 @@ class Block {
     this.total_fees = cumulative_fees;
     this.routing_work_for_creator = cumulative_work;
 
+    //
+    // note that we have examined the block
+    //
+    this.has_examined_block = true;
+
     return true;
   }
 
@@ -1061,6 +1070,8 @@ class Block {
   }
 
   hasGoldenTicket() {
+    if (this.has_examined_block) { return this.has_golden_ticket; }
+    this.generateMetadata();
     return this.has_golden_ticket;
   }
 
@@ -1264,6 +1275,10 @@ class Block {
           add_this_tx = 1;
           k = keylist.length;
         }
+        if (this.transactions[i].isGoldenTicket()) {
+	  add_this_tx = 1;
+	  k = keylist.length;
+	}
       }
 
       if (add_this_tx == 1) {

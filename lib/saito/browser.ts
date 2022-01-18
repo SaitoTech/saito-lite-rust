@@ -404,6 +404,17 @@ class Browser {
     return html.body.firstChild;
   }
 
+  addToolTip(elem, text){
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("tip");
+    elem.replaceWith(wrapper);
+    const tip = document.createElement("div");
+    tip.classList.add("tiptext");
+    tip.innerHTML = text;
+    wrapper.append(elem);
+    wrapper.append(tip);
+  }
+
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
     const hours = datetime.getHours();

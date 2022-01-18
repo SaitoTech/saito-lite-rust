@@ -44,7 +44,7 @@ try {
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }
     pid = $(this).attr("id");
-    imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
+    imperium_self.overlay.show(imperium_self.app, imperium_self, imperium_self.returnSectorInformationHTML(pid));
   });
 } catch (err) {}
 }
@@ -1057,7 +1057,7 @@ displayFactionSheet(player) {
 
   let imperium_self = this;
   let html = imperium_self.returnFactionSheet(imperium_self, player);
-  imperium_self.overlay.showOverlay(imperium_self.app, imperium_self, html);
+  imperium_self.overlay.show(imperium_self.app, imperium_self, html);
 
 }
 returnFactionSheet(imperium_self, player=null) {
@@ -1713,7 +1713,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML("", unit_popup, "", function() {});
   }
   hideUnit(unittype) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
   showSectorHighlight(sector) { this.addSectorHighlight(sector); }
@@ -1794,7 +1794,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(null, html);
   }
   hideHelpCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
   showActionCard(c) {
@@ -1808,7 +1808,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, html);
   }
   hideActionCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showStrategyCard(c) {
 
@@ -1837,7 +1837,7 @@ updateSectorGraphics(sector) {
   }
 
   hideStrategyCard(c) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showPlanetCard(sector, pid) {
     let planets = this.returnPlanets();
@@ -1848,7 +1848,7 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, '<img src="' + thiscard.img + '" style="width:100%" />');
   }
   hidePlanetCard(sector, pid) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showAgendaCard(agenda) {
     let thiscard = this.agenda_cards[agenda];
@@ -1861,13 +1861,13 @@ updateSectorGraphics(sector) {
     this.cardbox.showCardboxHTML(thiscard, html);
   }
   hideAgendaCard(sector, pid) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
   showTechCard(tech) {
     this.cardbox.showCardboxHTML(tech, this.tech[tech].returnCardImage());
   }
   hideTechCard(tech) {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
   }
 
 

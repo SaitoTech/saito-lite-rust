@@ -18,9 +18,6 @@ class GameTestSuite extends GameTemplate {
     this.type            = "Education Development";
     this.card_img_dir = '/gametestsuite/img/cards';
 
-    // disable by default
-    this.useHUD = 0;
-
     // player numbers
     this.minPlayers = 2;
     this.maxPlayers = 6;
@@ -462,7 +459,7 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.showOverlay(this.app, this, overlay_html, function() {
+    this.overlay.show(this.app, this, overlay_html, function() {
       alert("Callback Optional on Close!");
     });
 
@@ -481,8 +478,9 @@ class GameTestSuite extends GameTemplate {
       </div>
     `;
 
-    this.overlay.showOverlayBlocking(this.app, this, overlay_html);
-    document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hideOverlay(); }
+    this.overlay.show(this.app, this, overlay_html);
+    this.overlay.blockClose();
+    document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 
   }
 

@@ -56,7 +56,6 @@ class Twilight extends GameTemplate {
     //
     this.confirm_moves = 1;
 
-    this.log_length 	 = 150;
     this.interface 	 = 1;
 
     this.gameboardZoom   = 0.90;
@@ -114,7 +113,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
     $('.menu-item').on('click', function() {
 
@@ -158,7 +157,7 @@ class Twilight extends GameTemplate {
         `;
       }
 
-      twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
     });
 
   }
@@ -178,7 +177,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
     $('.menu-item').on('click', function() {
 
@@ -191,7 +190,7 @@ class Twilight extends GameTemplate {
           break;
       }
 
-      twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, "All players are backing up their game...");
+      twilight_self.overlay.show(twilight_self.app, twilight_self, "All players are backing up their game...");
     });
 
   }
@@ -339,7 +338,7 @@ class Twilight extends GameTemplate {
       </div>
     `;
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
   }
 
@@ -364,7 +363,7 @@ class Twilight extends GameTemplate {
 //          <li class="menu-item" id="text">Text Cards</li>
 //          <li class="menu-item" id="graphics">Graphical Cards</li>
 
-    twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, user_message);
+    twilight_self.overlay.show(twilight_self.app, twilight_self, user_message);
 
     $('.menu-item').on('click', function() {
       let action2 = $(this).attr("id");
@@ -389,7 +388,7 @@ class Twilight extends GameTemplate {
 	let html  = '<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:';
 	html += '<div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">'+oblink+'/arcade/?i=watch&msg='+msg+'</div>';
 	html += '</div>';
-	twilight_self.overlay.showOverlay(twilight_self.app, twilight_self, html);
+	twilight_self.overlay.show(twilight_self.app, twilight_self, html);
 
       }
 
@@ -430,32 +429,26 @@ class Twilight extends GameTemplate {
       }
 
       if (action2 == "enable_hud_vertical") {
-        $('.hud').addClass('hud-vertical').removeClass('hud-long').removeClass('hud-square').removeAttr("style");
         twilight_self.hud.mode = 2;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
         return;
       }
       if (action2 == "enable_hud_square") {
-        $('.hud').addClass('hud-square').removeClass('hud-long').removeClass('hud-vertical').removeAttr("style");
         twilight_self.hud.mode = 1;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
-	twilight_self.overlay.hideOverlay();
+	twilight_self.overlay.hide();
         return;
       }
       if (action2 == "enable_hud_horizontal") {
-        $('.hud').addClass('hud-long').removeClass('hud-vertical').removeClass('hud-square').removeAttr("style");
         twilight_self.hud.mode = 0;
-        twilight_self.hud.initial_render = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
         twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
-	twilight_self.overlay.hideOverlay();
+	twilight_self.overlay.hide();
         return;
       }
 
@@ -478,7 +471,7 @@ class Twilight extends GameTemplate {
         </div>
       `;
 
-      this.overlay.showOverlay(this.app, this, user_message);
+      this.overlay.show(this.app, this, user_message);
 
     } catch (err) {
 console.log(err);
@@ -699,14 +692,12 @@ console.log(err);
         this.sizer.attachEvents(this.app, this, '.gameboard');
 
 
-        //GameBoardSizer.render(this.app, this);
-        //GameBoardSizer.attachEvents(this.app, this, '.gameboard');
 
         $('#gameboard').draggable({
 	  stop : function(event, ui) {
 	    twilight_self.saveGamePreference((twilight_self.returnSlug()+"-board-offset"), ui.offset);
 	  }
-	});
+	}); //Redundant code with this.sizer.attachEvents
 
       }
 
@@ -744,11 +735,7 @@ initializeGame(game_id) {
   }
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
-  if (this.game.log) { 
-    if (this.game.log.length > 0) { 
-      for (let i = this.game.log.length-1; i >= 0; i--) { this.updateLog(this.game.log[i]); }
-    }
-  }
+  this.restoreLog();
 
   //
   // VP needed
@@ -2044,7 +2031,7 @@ try {
         if (mv[0] === "vp") {
           if (mv.length > 3) {
             if (parseInt(mv[3]) == 1) {
-              this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP", this.log_length, 1);
+              this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP", 1);
               if (mv[1] === "us") {
                 this.game.state.vp_outstanding += parseInt(mv[2]);
               } else {
@@ -5599,7 +5586,7 @@ this.startClock();
       this.countries[country].ussr = parseInt(this.countries[country].ussr) + parseInt(inf);
     }
 
-    this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, this.log_length, 1);
+    this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, 1);
 
     this.showInfluence(country, player, mycallback);
 
@@ -9612,7 +9599,7 @@ this.startClock();
   }
 
   hideCard() {
-    this.cardbox.hideCardbox(1);
+    this.cardbox.hide(1);
     //$('#cardbox').hide();
     //$('.cardbox_event_blocker').css('height','0px');
     //$('.cardbox_event_blocker').css('width','0px');
@@ -16145,7 +16132,19 @@ console.log("ROUND: " + this.game.state.round);
     return 0;
   }
 
-
+  //Rewrite updatelog to include logcardevents
+  updateLog(str, force = 0) {
+    if (str && this.game.log[0] !== str) {
+      this.game.log.unshift(str);
+      if (this.game.log.length > this.log_length){
+        this.game.log.splice(length);
+      }
+    }
+  
+    // update log and bind events
+    this.log.updateLog(str, force);
+    this.addLogCardEvents();
+  }
 
 
 

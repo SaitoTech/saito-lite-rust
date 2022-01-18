@@ -18,9 +18,8 @@ class Chessgame extends GameTemplate {
     this_chess = this;
     this.publickey = app.wallet.returnPublicKey();
 
-    this.useHUD = 0;
     this.useClock = 1;
-
+    this.log_length = 999;
     this.minPlayers = 2;
     this.maxPlayers = 2;
     this.type       = "Classic Boardgame";
@@ -183,7 +182,7 @@ console.log(JSON.stringify(msg));
       if (this.browser_active == 1) {
         this.setBoard(this.game.position);
         if (this.useClock) { this.startClock(); }
-        this.updateLog(data.move, 999);
+        this.updateLog(data.move);
         this.updateStatusMessage();
         if (this.engine.in_checkmate() === true) {
           this.resignGame();
@@ -218,7 +217,7 @@ console.log(JSON.stringify(msg));
     this.game.turn = [data_to_send];
     this.moves = [];
     this.sendMessage("game", extra);
-    this.updateLog(data.move, 999);
+    this.updateLog(data.move);
     this.updateStatusMessage();
     
   }
@@ -604,40 +603,38 @@ console.log(JSON.stringify(msg));
 
 
     let html = `
-
-      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
-
-        <div style="top:0;left:0;margin-right: 20px;">
-
-          <label for="color">Pick Your Color:</label>
-          <select name="color">
-            <option value="black" default>Black</option>
-            <option value="white">White</option>
-          </select>
-
-          <label for="clock">Time Limit:</label>
-          <select name="clock">
-            <option value="0" default>no limit</option>
-            <option value="2">2 minutes</option>
-            <option value="10">10 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">60 minutes</option>
-            <option value="90">90 minutes</option>
-          </select>
-
-          <label for="observer_mode">Observer Mode:</label>
-          <select name="observer">
-            <option value="enable" selected>enable</option>
-            <option value="disable">disable</option>
-          </select>
-
-        </div>
-        <div>
-
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
-        </div>
+      <h1 class="overlay-title">Chess Options</h1>
+      <div class="overlay-input">   
+      <label for="color">Pick Your Color:</label>
+      <select name="color">
+        <option value="black" default>Black</option>
+        <option value="white">White</option>
+      </select>
       </div>
+
+      <div class="overlay-input">
+      <label for="clock">Time Limit:</label>
+      <select name="clock">
+        <option value="0" default>no limit</option>
+        <option value="2">2 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="60">60 minutes</option>
+        <option value="90">90 minutes</option>
+      </select>
+      </div>
+
+      <div class="overlay-input">
+      <label for="observer_mode">Observer Mode:</label>
+      <select name="observer">
+        <option value="enable" selected>enable</option>
+        <option value="disable">disable</option>
+      </select>
+      </div>
+    
+      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+
+        
     `;
 
     return html;

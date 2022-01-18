@@ -230,7 +230,6 @@ class Network {
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
-      console.log("URL: " + url);
       const res = await fetch(url);
       if (res.ok) {
         const base64Buffer = await res.arrayBuffer();
@@ -240,6 +239,7 @@ class Network {
         );
         const block = new Block(this.app);
         block.deserialize(buffer);
+        await block.generateConsensusValues();
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         block.peer = this;
@@ -281,7 +281,7 @@ class Network {
         console.log(
           `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
         );
-        this.app.network.cleanupDisconnectedSocket(peer.socket);
+        this.app.connection.emit("peer_disconnect", peer);
       };
       peer.socket.onerror = (event) => {
         console.log(`[error] ${event.message}`);
@@ -349,7 +349,7 @@ class Network {
     return peer.socket;
   }
 
-  cleanupDisconnectedSocket(peer, force = 0) {
+  cleanupDisconnectedPeer(peer, force = 0) {
     for (let c = 0; c < this.peers.length; c++) {
       if (this.peers[c] === peer) {
         let keep_peer = -1;
@@ -480,7 +480,7 @@ class Network {
     }
 
     this.app.connection.on("peer_disconnect", (peer) => {
-      this.cleanupDisconnectedSocket(peer);
+      this.cleanupDisconnectedPeer(peer);
     });
   }
 
@@ -511,7 +511,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.debug("network.receiveRequest : ", message);
+    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -541,7 +541,7 @@ class Network {
             count++;
           }
           if (count > 1) {
-            this.cleanupDisconnectedSocket(this.peers[i], 1);
+            this.cleanupDisconnectedPeer(this.peers[i], 1);
             i--;
           }
         }
@@ -549,7 +549,7 @@ class Network {
         break;
       }
       case "PINGPING":
-console.log("received ping...");
+        console.log("received ping...");
         // job already done!
         break;
 
@@ -603,24 +603,6 @@ console.log("received ping...");
         //
         // notify peer of longest-chain after this amount
         //
-        // for (
-        //   let i = last_shared_ancestor;
-        //   i <= this.app.blockring.returnLatestBlockId();
-        //   i++
-        // ) {
-        //   block_hash =
-        //     this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-        //   if (block_hash !== "") {
-        //     block = await this.app.blockchain.loadBlockAsync(block_hash);
-        //
-        //     if (block) {
-        //       this.propagateBlock(block, peer);
-        //     }
-        //   }
-        // }
-        //
-        const blocks_to_send = [];
-
         for (
           let i = last_shared_ancestor;
           i <= this.app.blockring.returnLatestBlockId();
@@ -629,47 +611,65 @@ console.log("received ping...");
           block_hash =
             this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
-            if (this.app.blockchain.blocks[block_hash]) {
-              const block = this.app.blockchain.blocks[block_hash];
-              if (block.hasKeylistTransactions([publickey])) {
-                blocks_to_send.push({ hash: block_hash, type: "spv" });
-              } else {
-                blocks_to_send.push({ hash: block_hash, type: "hash" });
-              }
-            }
-          }
-        }
-
-        const litechain = { start: "", prehash: [], id: [], ts: [] };
-        let idx = 0;
-
-        for (let i = 0; i < blocks_to_send.length; i++) {
-          // send lite-hashes
-          if (blocks_to_send[i].type === "hash") {
-            const block_hash = blocks_to_send[i].hash;
-            litechain.id.push(
-              this.app.blockchain.blocks[block_hash].returnId()
-            );
-            litechain.prehash.push(
-              this.app.blockchain.blocks[block_hash].returnPreHash()
-            );
-            litechain.ts.push(
-              this.app.blockchain.blocks[block_hash].returnTimestamp()
-            );
-            idx++;
-            // send spv blocks
-          } else {
-            const block_hash = blocks_to_send[i].hash;
             block = await this.app.blockchain.loadBlockAsync(block_hash);
+
             if (block) {
               this.propagateBlock(block, peer);
             }
           }
         }
 
-        if (idx > 0) {
-          this.propagateLiteChain(litechain, peer);
-        }
+        // const blocks_to_send = [];
+        //
+        // for (
+        //   let i = last_shared_ancestor;
+        //   i <= this.app.blockring.returnLatestBlockId();
+        //   i++
+        // ) {
+        //   block_hash =
+        //     this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+        //   if (block_hash !== "") {
+        //     if (this.app.blockchain.blocks[block_hash]) {
+        //       const block = this.app.blockchain.blocks[block_hash];
+        //       if (block.hasKeylistTransactions([publickey])) {
+        //         blocks_to_send.push({ hash: block_hash, type: "spv" });
+        //       } else {
+        //         blocks_to_send.push({ hash: block_hash, type: "hash" });
+        //       }
+        //     }
+        //   }
+        // }
+        //
+        // const litechain = { start: "", prehash: [], id: [], ts: [] };
+        // let idx = 0;
+        //
+        // for (let i = 0; i < blocks_to_send.length; i++) {
+        //   // send lite-hashes
+        //   if (blocks_to_send[i].type === "hash") {
+        //     const block_hash = blocks_to_send[i].hash;
+        //     litechain.id.push(
+        //       this.app.blockchain.blocks[block_hash].returnId()
+        //     );
+        //     litechain.prehash.push(
+        //       this.app.blockchain.blocks[block_hash].returnPreHash()
+        //     );
+        //     litechain.ts.push(
+        //       this.app.blockchain.blocks[block_hash].returnTimestamp()
+        //     );
+        //     idx++;
+        //     // send spv blocks
+        //   } else {
+        //     const block_hash = blocks_to_send[i].hash;
+        //     block = await this.app.blockchain.loadBlockAsync(block_hash);
+        //     if (block) {
+        //       this.propagateBlock(block, peer);
+        //     }
+        //   }
+        // }
+        //
+        // if (idx > 0) {
+        //   this.propagateLiteChain(litechain, peer);
+        // }
 
         break;
       }
@@ -773,8 +773,6 @@ console.log("received ping...");
               }
             }
 
-            console.log("received msg: " + JSON.stringify(msg));
-
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;
@@ -794,20 +792,25 @@ console.log("received ping...");
   }
 
   pollPeers(peers, app) {
+
     const this_network = app.network;
 
     //
     // loop through peers to see if disconnected
     //
     peers.forEach((peer) => {
+
       //
       // if disconnected, cleanupDisconnectedSocket
+      // or reconnect if they're in our list of peers
+      // to which to connect.
       //
       if (!peer.socket.connected) {
         if (!this.dead_peers.includes(peer)) {
-          this.cleanupDisconnectedSocket(peer);
+          this.cleanupDisconnectedPeer(peer);
         }
       }
+
     });
 
     //console.log('dead peers to add: ' + this.dead_peers.length);
@@ -817,6 +820,7 @@ console.log("received ping...");
       this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
     this.dead_peers.forEach((peer) => {
       setTimeout(() => {
+console.log("Attempting to Connect to Peer!");
         this_network.connectToPeer(JSON.stringify(peer));
       }, peer_add_delay);
     });
@@ -830,7 +834,7 @@ console.log("received ping...");
     if (this.app.BROWSER) {
       return;
     }
-    console.debug("network.propagateBlock", blk);
+    //console.debug("network.propagateBlock", blk);
     if (!blk) {
       return;
     }
@@ -882,7 +886,7 @@ console.log("received ping...");
   // propagate transaction
   //
   propagateTransaction(tx: Transaction, outbound_message = "transaction") {
-    console.debug("network.propagateTransaction", tx);
+    //console.debug("network.propagateTransaction", tx);
     if (tx === null) {
       return;
     }

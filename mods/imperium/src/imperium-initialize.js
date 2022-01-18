@@ -60,7 +60,7 @@
           </div>
         `;
 
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, html);
+        game_mod.overlay.show(game_mod.app, game_mod, html);
 
         $('.menu-item').on('click', function() {
 
@@ -71,10 +71,10 @@
 	      game_mod.handleHowToPlayMenuItem();
               break;
             case "movement":
-              game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+              game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
               break;
             case "production":
-	      game_mod.overlay.showOverlay(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
+	      game_mod.overlay.show(game_mod.app, game_mod, '<div style="margin-left:auto;margin-right:auto;width:auto;height:90vh"><img src="/imperium/img/tutorials/production.png" style="width:auto; height:90vh;" /></div>');
               break;
             case "combat":
 	      game_mod.handleCombatMenuItem();
@@ -172,7 +172,7 @@
       class : "game-units-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -225,7 +225,7 @@
 	  salert("There are currently no Active Laws");
 	  return;
 	}
-        game_mod.overlay.showOverlay(game_mod.app, game_mod, game_mod.returnLawsOverlay());
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnLawsOverlay());
       }
     });
 
@@ -373,13 +373,7 @@ console.log("error initing chat: " + err);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.log != "") { 
-      if (this.game.log.length > 0) {
-        for (let i = this.game.log.length-1; i >= 0; i--) {
-	  this.updateLog(this.game.log[i]);
-        }
-      }
-    }
+    this.restoreLog();
   
     //
     // specify players
@@ -573,8 +567,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      let sys = this.returnSectorAndPlanets("4_4");
-      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //

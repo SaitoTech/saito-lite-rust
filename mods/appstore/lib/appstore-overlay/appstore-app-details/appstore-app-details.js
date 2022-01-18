@@ -125,7 +125,7 @@ module.exports = AppstoreAppDetails = {
 
 
 	   document.getElementById("appstore-compile-end-btn").onclick = (e) => {
-	     mod.overlay.hideOverlay();
+	     mod.overlay.hide();
 	   };
 
 	   document.getElementById("appstore-compile-btn").onclick = (e) => {

@@ -1,5 +1,6 @@
 const ArcadeMainTemplate = require("./templates/arcade-main.template");
 const ArcadeContainerTemplate = require("./templates/arcade-container.template");
+const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../arcade-game/game-loader");
@@ -11,8 +12,11 @@ const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypt
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 
-let tabNames = ["arcade", "observables", "tournaments"];
+//let tabNames = ["arcade", "observables", "tournaments"];
+let tabNames = [];
+
 module.exports = ArcadeMain = {
+
   render(app, mod) {
     //
     // avoid rendering over inits
@@ -60,6 +64,7 @@ module.exports = ArcadeMain = {
     //
     // add tabs
     //
+    /*
     tabNames.forEach((tabButtonName, i) => {
       document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
         app.browser.logMatomoEvent(
@@ -86,6 +91,7 @@ module.exports = ArcadeMain = {
         });
       };
     });
+    */
 
     //
     // add games
@@ -171,7 +177,14 @@ module.exports = ArcadeMain = {
       }
     });
 
-    ArcadePosts.render(app, mod);
+
+    let x = mod.app.browser.returnURLParameter("game");
+    if (x) {
+      ArcadePosts.render(app, mod);
+    } else {
+      ArcadeForums.render(app, mod);
+    }
+
     ArcadeInfobox.render(app, mod);
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);
@@ -236,7 +249,7 @@ module.exports = ArcadeMain = {
         } catch (err) {
           if (err.startsWith("Module Not Found")) {
             salert(
-              "This game requires " + game_options.crypto + " crypto to play!"
+              "This game requires " + game_options.crypto + " crypto to play! Not Found!"
             );
             return;
           } else {
@@ -244,7 +257,7 @@ module.exports = ArcadeMain = {
           }
         }
 
-        let c = confirm(
+        let c = sconfirm(
           "This game requires " + game_options.crypto + " crypto to play. OK?"
         );
         if (!c) {
@@ -256,9 +269,7 @@ module.exports = ArcadeMain = {
         //
 
         if (parseFloat(game_options.stake) > 0) {
-          let my_address = app.wallet
-            .returnPreferredCrypto(game_options.crypto)
-            .returnAddress();
+          let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
           crypto_transfer_manager.balance(
             app,
@@ -268,9 +279,10 @@ module.exports = ArcadeMain = {
             function () {}
           );
 
-          crypto_transfer_manager.hideOverlay();
-
           let current_balance = await cryptoMod.returnBalance();
+          
+          crypto_transfer_manager.hideOverlay();
+          
           if (BigInt(current_balance) < BigInt(game_options.stake)) {
             salert(
               "You do not have enough " +
@@ -296,7 +308,7 @@ module.exports = ArcadeMain = {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
-      /***** FAILS
+/***** FAILS
       // try to relay
       let relay_mod = app.modules.returnModule('Relay');
       if (relay_mod != null && accepted_game.initialize_game_offchain_if_possible == 1) {
@@ -397,12 +409,22 @@ module.exports = ArcadeMain = {
               let newtx = mod.createAcceptTransaction(accepted_game);
               mod.app.network.propagateTransaction(newtx);
 
-              /***** FAILS
-      let relay_mod = app.modules.returnModule('Relay');
-      if (relay_mod != null) {
-        relay_mod.sendRelayMessage(accepted_game.msg.players, 'game relay gamemove', newtx);
-      }
-******/
+
+              let my_publickey = app.wallet.returnPublicKey();
+              let { players } = accepted_game.returnMessage();
+              let peers = [];
+              for (let i = 0; i < app.network.peers.length; i++) {
+                peers.push(app.network.peers[i].returnPublicKey());
+              }
+
+	      //
+	      // try fast accept
+	      //
+let relay_mod = app.modules.returnModule("Relay");
+if (relay_mod != null) {
+  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+}
 
               GameLoader.render(app, mod);
               GameLoader.attachEvents(app, mod);
@@ -454,14 +476,11 @@ module.exports = ArcadeMain = {
         existing_game.ts = new Date().getTime();
         existing_game.initialize_game_run = 0;
         app.storage.saveOptions();
-        //Have to search list of modules in Saito to get the existing_game's slug (i.e. directory)
-        for (let z = 0; z < app.modules.mods.length; z++) {
-          if (app.modules.mods[z].name == existing_game.module) {
-              window.location = '/' + app.modules.mods[z].returnSlug();
-              return;
-          }
+
+        let game_mod = app.modules.returnModule(existing_game.module);
+  	if (game_mod) {
+          window.location = '/' + game_mod.returnSlug().toLowerCase();
         }
-        //window.location = '/' + existing_game.slug;
         return;
       }
     }

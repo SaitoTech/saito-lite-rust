@@ -1,7 +1,9 @@
 const PostMainTemplate = require('./post-main.template');
 const PostTeaserTemplate = require('./post-teaser.template');
+const PostForums = require('./post-forums');
+const PostForumsTemplate = require('./post-forums.template');
+const PostForumsThreadTemplate = require('./post-forums-thread.template');
 const PostView = require('./../post-overlay/post-view');
-const PostStyle = require('./../style.template');
 
 module.exports = PostMain = {
 
@@ -9,26 +11,36 @@ module.exports = PostMain = {
 
     mod.renderMethod = "main";
 
-    //
-    // add parent wrapping class
-    //
-    if (!document.getElementById("post-container")) {
-      app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
-    }
-    if (!document.querySelector(".post-main")) { 
-      app.browser.addElementToDom(PostMainTemplate(app, mod), "post-container"); 
-    }
-    for (let i = mod.posts.length-1; i >= 0; i--) {
-      this.addPost(app, mod, mod.posts[i]);
+    if (app.browser.returnURLParameter("forum")) {
+      mod.forum = app.browser.returnURLParameter("forum");
+    } else {
+      mod.forum = "";
     }
 
     //
-    // add css
+    // add parent wrapping class
     //
-    if (!document.getElementById("posts-stylesheet")) {
-      app.browser.addElementToDom(PostStyle());  
+    if (mod.forum === "") {
+      if (!document.getElementById("post-container")) {
+        app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+      }
+      if (!document.querySelector(".post-forums")) { 
+        app.browser.addElementToDom(PostForumsTemplate(app, mod), "post-container"); 
+        PostForums.render(app, mod);
+        PostForums.attachEvents(app, mod);
+      }
+    } else {
+      if (!document.getElementById("post-container")) {
+        app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+      }
+      if (!document.querySelector(".post-main")) { 
+        app.browser.addElementToDom(PostMainTemplate(app, mod), "post-container"); 
+      }
+      for (let i = mod.posts.length-1; i >= 0; i--) {
+        this.addPost(app, mod, mod.posts[i]);
+      }
     }
-    
+
 
   },
 

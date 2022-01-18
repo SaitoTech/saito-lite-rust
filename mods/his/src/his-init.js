@@ -1,5 +1,5 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-
+const JSON = require('json-bigint');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -30,11 +30,7 @@ class HereIStand extends GameTemplate {
     //
     this.confirm_moves = 1;
 
-    //
-    // max log entries
-    //
-    this.log_length 	 = 150;
-
+    
     //
     // default zoom
     //
@@ -45,7 +41,8 @@ class HereIStand extends GameTemplate {
     //
     // players
     this.minPlayers 	 = 2;
-    this.maxPlayers 	 = 2;
+    this.maxPlayers 	 = 6;
+
     this.type       	 = "Strategy Boardgame";
     this.categories 	 = "Bordgame Game"
 
@@ -73,55 +70,13 @@ class HereIStand extends GameTemplate {
     // re-fill status and log
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.log) { 
-      if (this.game.log.length > 0) { 
-        for (let i = this.game.log.length-1; i >= 0; i--) { this.updateLog(this.game.log[i]); }
-      }
-    }
+    this.restoreLog();
 
     //
-    // initialize
+    // initialize game objects
     //
-    if (!this.game.state) {
-
-      this.game.state = this.returnState();
-      this.initializeDice();
-
-console.log("\n\n\n\n");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("------ INITIALIZE GAME ----");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("---------------------------");
-console.log("DECK: " + this.game.options.deck);
-console.log("\n\n\n\n");
-
-      this.updateStatus("<div class='status-message' id='status-message'>Generating the Game</div>");
-
-      //
-      // Game Queue
-      //
-      this.game.queue.push("round");
-      this.game.queue.push("READY");
-      this.game.queue.push("init");
-    }
-
-
-    //
-    // adjust screen ratio
-    //
-    try {
-      //$('.country').css('width', this.scale(202)+"px");
-      //$('.formosan_resolution').css('width', this.scale(202)+"px");
-      //$('.formosan_resolution').css('height', this.scale(132)+"px");
-      //$('.formosan_resolution').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
-      //$('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
-
-
-      //
-      // INITIALIZE GAME-OBJECTS
-      //
-
+    this.factions = {};
+    this.units = {};
+    this.deck = this.returnDeck();
 
 

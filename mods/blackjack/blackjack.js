@@ -20,8 +20,7 @@ class Blackjack extends GameTemplate {
     this.status     = "Beta";
 
     this.card_img_dir = '/blackjack/img/cards';
-    this.useHUD = 0;
-
+ 
     this.minPlayers = 2;
     this.maxPlayers = 6;
     this.interface = 1;
@@ -63,7 +62,7 @@ toggleIntro() {
     <p>Blackjacks--21 points with two cards--<strong>pay 2:1!</strong></p>
     </div>`;
 
-    this.overlay.showOverlay(this.app, this, overlay_html);
+    this.overlay.show(this.app, this, overlay_html);
   }
 
 
@@ -82,9 +81,6 @@ toggleIntro() {
       text : "Game",
       id : "game-game",
       class : "game-game",
-      callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-game");
-      }
     });
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
@@ -144,9 +140,6 @@ toggleIntro() {
                 text : "Chat",
                 id : "game-chat",
                 class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
               })
               main_menu_added = 1;
             }
@@ -199,7 +192,8 @@ toggleIntro() {
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
-  
+    
+    this.restoreLog();
   }
 
 
@@ -994,7 +988,6 @@ toggleIntro() {
 
 
   displayHand() {
-    //Make my own html because I don't like cardfan
     let cardhtml = "";
     for (let c of this.myCards()){
       cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
@@ -1233,6 +1226,8 @@ toggleIntro() {
   returnGameOptionsHTML() {
 
     let options_html = `
+      <h1 class="overlay-title">Blackjack Options</h1>
+      <div class="overlay-input">
       <label for="stake">Initial Stake:</label>
       <select name="stake">
               <option value="0.001">0.001</option>
@@ -1247,7 +1242,8 @@ toggleIntro() {
               <option value="5000" >5000</option>
               <option value="10000">10000</option>
       </select>
-
+      </div>
+      <div class="overlay-input">
       <label for="crypto">Crypto to stake:</label>
       <select name="crypto">
           <option value="" selected>none</option>
@@ -1261,7 +1257,8 @@ toggleIntro() {
     }
 
     options_html += `
-            </select>
+      </select>
+      </div>
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button" style="margin-top:20px;padding:30px;text-align:center">accept</div>
 
 
