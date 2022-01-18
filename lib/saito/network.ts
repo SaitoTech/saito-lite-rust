@@ -549,7 +549,7 @@ class Network {
         break;
       }
       case "PINGPING":
-        console.log("received ping...");
+        // console.log("received ping...");
         // job already done!
         break;
 
@@ -792,14 +792,12 @@ class Network {
   }
 
   pollPeers(peers, app) {
-
     const this_network = app.network;
 
     //
     // loop through peers to see if disconnected
     //
     peers.forEach((peer) => {
-
       //
       // if disconnected, cleanupDisconnectedSocket
       // or reconnect if they're in our list of peers
@@ -810,7 +808,6 @@ class Network {
           this.cleanupDisconnectedPeer(peer);
         }
       }
-
     });
 
     //console.log('dead peers to add: ' + this.dead_peers.length);
@@ -820,7 +817,7 @@ class Network {
       this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
     this.dead_peers.forEach((peer) => {
       setTimeout(() => {
-console.log("Attempting to Connect to Peer!");
+        console.log("Attempting to Connect to Peer!");
         this_network.connectToPeer(JSON.stringify(peer));
       }, peer_add_delay);
     });

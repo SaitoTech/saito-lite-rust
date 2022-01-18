@@ -18,7 +18,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 10,
+    genesis_period: 4,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -57,7 +57,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 20;
+    this.prune_after_blocks = 3;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -244,8 +244,7 @@ class Blockchain {
             "potential edge case requires handling: blocks received out-of-order"
           );
 
-          let disconnected_block_id =
-            this.app.blockring.returnLatestBlockId();
+          let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
           for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
             let disconnected_block_hash =
@@ -458,12 +457,14 @@ class Blockchain {
   async deleteBlocks(delete_block_id) {
     let block_hashes =
       this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
+    console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     for (let hash in block_hashes) {
       await this.deleteBlock(delete_block_id, hash);
     }
   }
 
   async downgradeBlockchainData() {
+    console.debug("blockchain.downgradeBlockchainData");
     //
     // downgrade blocks still on the chain
     //
@@ -487,7 +488,6 @@ class Blockchain {
     }
 
     for (let i = 0; i < block_hashes_copy.length; i++) {
-
       //
       // ask block to remove its transactions
       //
@@ -523,7 +523,6 @@ class Blockchain {
     // loop backwards through blockchain
     //
     for (let i = 0; i < 16; ++i) {
-
       current_block_id -= weights[i];
 
       //
@@ -558,7 +557,10 @@ class Blockchain {
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
-    let block = this.blocks[deletedBlockHash];
+    let block = await this.loadBlockAsync(deletedBlockHash);
+    if (!block) {
+      console.trace("deleting non-existing block : " + deletedBlockHash);
+    }
 
     let blockFilename = this.app.storage.generateBlockFilename(block);
 
@@ -779,7 +781,6 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
-
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
@@ -825,9 +826,7 @@ class Blockchain {
       //
       this.saveBlockchain();
     } else {
-
     }
-
   }
 
   resetBlockchain() {
@@ -988,7 +987,9 @@ class Blockchain {
         //
         this.blockchain.genesis_block_id = purge_bid + 1;
         this.blockchain.genesis_block_hash =
-          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_bid + 1);
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(
+            purge_bid + 1
+          );
         let genesis_block = this.blocks[this.blockchain.genesis_block_hash];
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();

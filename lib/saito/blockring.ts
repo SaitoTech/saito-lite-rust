@@ -45,6 +45,9 @@ class Blockring {
   }
 
   deleteBlock(block) {
+    console.debug(
+      "blockring.deleteBlock : " + block.returnId() + " : " + block.returnHash()
+    );
     const insert_pos = block.returnId() % this.ring_buffer_length;
     const block_id = block.returnId();
     const block_hash = block.returnHash();
