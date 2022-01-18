@@ -73,37 +73,42 @@ class Settlers extends GameTemplate {
   /*
   Make Overlay of game introduction/Rules
   */
-  showInstructions() {
+  returnGameRulesHTML() {
+    let skin = this.skin;
+    if (!skin || skin.empty){
+      skin = new SettlersSkin();
+      skin.render();
+    }
     let overlay_html = `
 
   <div class="trade_overlay">
-  <h1>${this.skin.gametitle}</h1>
+  <h1>${skin.gametitle}</h1>
   <h2>Overview</h2>
   <p>The game mechanics should be familiar to anyone who has played resource-acquisition boardgames based on trading and building.</p>
   <h2>Set up</h2>
-  <p>Each player gets to place 2 ${this.skin.c1.name}s and 2 adjoining ${this.skin.r.name}s anywhere on the board during the initial setup. <em>Note: </em> ${this.skin.c1.name}s may not be placed on adjacent corners (i.e. only seperated by a single ${this.skin.r.name}, whether or not one is actually built).</p>
-  <p>The order of placement reverses so that last player to place their first ${this.skin.c1.name} is the first to place their second ${this.skin.c1.name}. Each player starts with resource cards from the tiles adjacent to their second placed ${this.skin.c1.name}.</p>
+  <p>Each player gets to place 2 ${skin.c1.name}s and 2 adjoining ${skin.r.name}s anywhere on the board during the initial setup. <em>Note: </em> ${skin.c1.name}s may not be placed on adjacent corners (i.e. only seperated by a single ${skin.r.name}, whether or not one is actually built).</p>
+  <p>The order of placement reverses so that last player to place their first ${skin.c1.name} is the first to place their second ${skin.c1.name}. Each player starts with resource cards from the tiles adjacent to their second placed ${skin.c1.name}.</p>
   <h2>Game Play</h2>
-  <p>Each player's turn consists of a number of moves: roll, trade, build, buy card, play card. They begin by rolling the dice. The number of the roll determines which tiles produce resources (see section on ${this.skin.b.name}). Players with ${this.skin.c1.name}s on the producing tiles collect resources from those tiles.</p>
-  <p>Players may then trade with each other or with the "bank." Trades with the bank require 4 identical resources to be exchanged for any other resource. However, if players have a ${this.skin.c1.name} adjacent to a trade ship, they can get a better rate with the "bank." There are no restrictions on trades between players, who may trade any number of resources. Once a player has bought a card or built something, they may no longer make trades during their turn. All trades must involve the player whose turn it is.</p>
+  <p>Each player's turn consists of a number of moves: roll, trade, build, buy card, play card. They begin by rolling the dice. The number of the roll determines which tiles produce resources (see section on ${skin.b.name}). Players with ${skin.c1.name}s on the producing tiles collect resources from those tiles.</p>
+  <p>Players may then trade with each other or with the "bank." Trades with the bank require 4 identical resources to be exchanged for any other resource. However, if players have a ${skin.c1.name} adjacent to a trade ship, they can get a better rate with the "bank." There are no restrictions on trades between players, who may trade any number of resources. Once a player has bought a card or built something, they may no longer make trades during their turn. All trades must involve the player whose turn it is.</p>
   <h3>Building and Costs</h3>
-  <p>After the player is satisfied with their trades (if any), they may build something or purchase a ${this.skin.card.name} card. Players must have sufficient resources to afford the purchases, as defined below:</p>
-  <ul style="margin-left:2em"> <li>A ${this.skin.r.name} costs ${this.skin.priceList[0]}</li>
-  <li>A ${this.skin.c1.name} costs ${this.skin.priceList[1]}</li>
-  <li>A ${this.skin.c2.name} costs ${this.skin.priceList[2]}</li>
-  <li>A ${this.skin.card.name} card costs ${this.skin.priceList[3]}</li></ul>
-  <p> A ${this.skin.c2.name} replaces an already built ${this.skin.c1.name} and collects double the resources of a ${this.skin.c1.name}.</p>
-  <h3 style="text-transform:capitalize">${this.skin.b.name}</h3>
-  <p>If a 7 is rolled, the ${this.skin.b.name} comes into play. The ${this.skin.b.name} does 3 things. First, any players with more than 7 resource cards must discard half their hand. Second, the rolling player may move the ${this.skin.b.name} to any tile. The ${this.skin.b.name} may steal one resource from any player with a ${this.skin.c1.name} or ${this.skin.c2.name} adjacent to the affected tile. Third, that tile is deactivate by the presence of the ${this.skin.b.name} and will not produce resources until the ${this.skin.b.name} is moved. The ${this.skin.b.name} will be moved on the next roll of a 7 or if a player purchases and plays a ${this.skin.s.name} from the ${this.skin.card.name} cards.</p>
-  <h3 style="text-transform:capitalize">${this.skin.card.name} cards</h3>
-  <p>There are many kinds of ${this.skin.card.name} cards, though the aforementioned ${this.skin.s.name} is the most common type. Some allow the player to perform a special action (such as building additional ${this.skin.r.name} at no cost or collecting additional resources), while others give the player an extra ${this.skin.vp.name}. Players may play a ${this.skin.card.name} card at any time during their turn (including before the roll), but may only play one per turn and only on the turn after purchasing it. ${this.skin.card.name} cards which give +1 ${this.skin.vp.name} are exempt from these restrictions.</p> 
+  <p>After the player is satisfied with their trades (if any), they may build something or purchase a ${skin.card.name} card. Players must have sufficient resources to afford the purchases, as defined below:</p>
+  <ul style="margin-left:2em"> <li>A ${skin.r.name} costs ${skin.priceList[0]}</li>
+  <li>A ${skin.c1.name} costs ${skin.priceList[1]}</li>
+  <li>A ${skin.c2.name} costs ${skin.priceList[2]}</li>
+  <li>A ${skin.card.name} card costs ${skin.priceList[3]}</li></ul>
+  <p> A ${skin.c2.name} replaces an already built ${skin.c1.name} and collects double the resources of a ${skin.c1.name}.</p>
+  <h3 style="text-transform:capitalize">${skin.b.name}</h3>
+  <p>If a 7 is rolled, the ${skin.b.name} comes into play. The ${skin.b.name} does 3 things. First, any players with more than 7 resource cards must discard half their hand. Second, the rolling player may move the ${skin.b.name} to any tile. The ${skin.b.name} may steal one resource from any player with a ${skin.c1.name} or ${skin.c2.name} adjacent to the affected tile. Third, that tile is deactivate by the presence of the ${skin.b.name} and will not produce resources until the ${skin.b.name} is moved. The ${skin.b.name} will be moved on the next roll of a 7 or if a player purchases and plays a ${skin.s.name} from the ${skin.card.name} cards.</p>
+  <h3 style="text-transform:capitalize">${skin.card.name} cards</h3>
+  <p>There are many kinds of ${skin.card.name} cards, though the aforementioned ${skin.s.name} is the most common type. Some allow the player to perform a special action (such as building additional ${skin.r.name} at no cost or collecting additional resources), while others give the player an extra ${skin.vp.name}. Players may play a ${skin.card.name} card at any time during their turn (including before the roll), but may only play one per turn and only on the turn after purchasing it. ${skin.card.name} cards which give +1 ${skin.vp.name} are exempt from these restrictions.</p> 
   <h2>Winning the Game</h2>
-  <p>${this.skin.vp.name} are important because the first player to accumulate 10 ${this.skin.vp.name} is declared the winner of the game. Players earn ${this.skin.vp.name} by building ${this.skin.c1.name}s (worth 1 ${this.skin.vp.name} each) and ${this.skin.c1.name}s (worth 2 ${this.skin.vp.name}s each). There are also two special achievements worth 2 ${this.skin.vp.name}s each.</p>
-  <p> The player with the longest contiguous ${this.skin.r.name} of at least 5 is awarded the "${this.skin.longest.name}" badge. Similarly, if a player accumulates at least 3 ${this.skin.s.name}s, they are awarded the "${this.skin.largest.name}" badge. Only one player may hold either badge, and other players must surpass them to claim it for themselves.</p>
+  <p>${skin.vp.name} are important because the first player to accumulate 10 ${skin.vp.name} is declared the winner of the game. Players earn ${skin.vp.name} by building ${skin.c1.name}s (worth 1 ${skin.vp.name} each) and ${skin.c1.name}s (worth 2 ${skin.vp.name}s each). There are also two special achievements worth 2 ${skin.vp.name}s each.</p>
+  <p> The player with the longest contiguous ${skin.r.name} of at least 5 is awarded the "${skin.longest.name}" badge. Similarly, if a player accumulates at least 3 ${skin.s.name}s, they are awarded the "${skin.largest.name}" badge. Only one player may hold either badge, and other players must surpass them to claim it for themselves.</p>
   </div>
    `;
 
-    this.overlay.show(this.app, this, overlay_html);
+   return overlay_html;
   }
 
   initializeHTML(app) {
@@ -132,7 +137,7 @@ class Settlers extends GameTemplate {
       class: "game-help",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.showInstructions();
+        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-game", {

@@ -80,7 +80,7 @@ class Wordblocks extends GameTemplate {
         game_mod.overlay.show(
           game_mod.app,
           game_mod,
-          game_mod.returnRulesOverlay()
+          game_mod.returnGameRulesHTML()
         );
       },
     });
@@ -235,7 +235,7 @@ class Wordblocks extends GameTemplate {
   }
 
   /** <<CHECK RULE ACCURACY >>**/
-  returnRulesOverlay() {
+  returnGameRulesHTML() {
     let overlay_html = `<div class="intro">
       <h1>Welcome to Wordblocks</h1>
       <p>Game play is similar to the classic crossword puzzle boardgame. Players take turns spelling words using the seven letters in their tile rack and available space on the game board. The game ends when one player finishes all the letters in their rack and there are no remaining tiles to draw.</p>

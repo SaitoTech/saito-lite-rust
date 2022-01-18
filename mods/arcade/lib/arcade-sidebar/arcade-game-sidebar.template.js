@@ -1,33 +1,42 @@
 module.exports = ArcadeGameSidebarTemplate = (game_mod) => {
-  let gamename = game_mod.name;
-  if (game_mod.gamename) { gamename = game_mod.gamename; }
-  return `
+  let gamename = (game_mod.gamename)? game_mod.gamename: game_mod.name;
+  
+  let html = `
   <div class="arcade-sidebar" id="arcade-sidebar">
     <div class="arcade-controls">
-      <div class="arcade-bars-menu">
-        <div class="arcade-navigator-bars-menu register-username-check">
-          <div class="arcade-sidebar-active-games-header" style="display:flex; align-items:center;justify-content: space-between">
-            <h2>${gamename}</h2>
-          </div>
-          <div class="arcade-apps-wrapper">
-            <ul class="arcade-apps" id="arcade-apps">
-	      <li class="arcade-navigator-item tip" id="New-Game">New Game</li>
-	      <li class="arcade-navigator-item tip" id="How-To-Play">How to Play</li>
-	      <li class="arcade-navigator-item tip" id="Return-to-Arcade">Return to Arcade</li>
-	    </ul>
-          </div>
+      <div class="arcade-navigator-bars-menu">
+        <div class="arcade-game-sidebar-header">
+          <i class="fas fa-arrow-circle-left navigation-return-to-arcade"></i><h2>${gamename}</h2>
         </div>
-    </div>
-  </div>
+        <div class="arcade-apps-wrapper">
+          <ul class="arcade-apps" id="arcade-apps">
+	         <li class="arcade-navigator-item tip" id="new-game">New Game</li>
+	         <li class="arcade-navigator-item tip" id="how-to-play">How to Play</li>
+	         <li class="arcade-navigator-item tip navigation-return-to-arcade" id="return-to-arcade">See Other Games</li>
+	        </ul>
+        </div>
+      </div>
+    </div>`;
 
-<div id="arcade-announcement" class="arcade-announcement"><b>Publisher Message: </b>this game is released open source under terms of this license. If you enjoy this game please support the publisher by purchasing a physical copy here. Or maybe join us and help create more open source games.</div>
+ if (game_mod.status || game_mod.publisher_message) {
+  html += `<div id="arcade-announcement" class="arcade-announcement">`
+  if (game_mod.status){
+    html += `<div id="game-status-notice" class="game-status-notice"><div>Game status: <b>${game_mod.status}</b></div>`;
+    if (game_mod.status === "Alpha"){
+      html += `<div>The game is a playable demo under active development. Expect the unexpected.</div>`;
+    }else if (game_mod.status === "Beta"){
+      html += `<div>Please let us know if you find any bugs or have suggestions to make the game better</div>`;
+    }else{
+      html += "</div>";
+    }
+  }
+    if (game_mod.publisher_message){
+      html += `<div id="game-wizard-publisher-message" class="game-wizard-publisher-message"><b>Publisher Message: </b> ${game_mod.publisher_message}</div>`;
+    }
+  html += `</div>`;
+  }
 
-  <div id="email-chat" class="email-chat"></div>
 
-<style>
-
-
-</style>
-
-  `;
+  html += `<div id="email-chat" class="email-chat"></div>`;
+  return html;
 }

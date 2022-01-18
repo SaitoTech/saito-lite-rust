@@ -31,7 +31,11 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
           ${players(mod.minPlayers, mod.maxPlayers)}
           <div class="game-wizard-options-toggle"><span class="game-wizard-options-toggle-text">advanced options...</span></div>
          </div>
-        <div id="game-wizard-invite" class="game-wizard-invite">  
+        <div id="game-wizard-invite" class="game-wizard-invite">
+          <div class="game-wizard-other-btns">
+            <button type="button" id="game-rules-btn" class="game-rules-btn">How to Play</button>
+            <button type="button" id="game-home-btn" class="game-home-btn">Home Page</button>
+          </div>  
           <button type="button" id="game-invite-btn" class="game-invite-btn">Create New Game</button>
         </div>
       </div>`;
