@@ -110,7 +110,6 @@ class Blockchain {
       return;
     }
 
-    // TODO : haven't tested this code block (fetch missing blocks)
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
     if (
@@ -118,6 +117,9 @@ class Blockchain {
       !this.isBlockIndexed(parent_block_hash)
     ) {
       console.log("fetching unknown block: " + parent_block_hash);
+      if (!parent_block_hash) {
+        console.log("hash is empty", block);
+      }
       await this.app.network.fetchBlock(parent_block_hash);
     }
 
@@ -458,7 +460,7 @@ class Blockchain {
     let block_hashes =
       this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
-    for (let hash in block_hashes) {
+    for (let hash of block_hashes) {
       await this.deleteBlock(delete_block_id, hash);
     }
   }
@@ -553,7 +555,10 @@ class Blockchain {
   }
 
   // deletes a single block
-  async deleteBlock(deletedBlockId, deletedBlockHash) {
+  async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
+    console.debug(
+      "blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash
+    );
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
@@ -581,7 +586,7 @@ class Blockchain {
     this.app.storage.deleteBlockFromDisk(blockFilename);
 
     // ask blockring to remove
-    this.blockring.deleteBlock(deletedBlockId);
+    this.blockring.deleteBlock(block);
 
     // remove from block index
     if (this.isBlockIndexed(deletedBlockHash)) {
@@ -768,7 +773,7 @@ class Blockchain {
   //
   // TODO - fetch from disk if needed, ergo async
   //
-  async loadBlockAsync(block_hash) {
+  async loadBlockAsync(block_hash: string) {
     if (this.blocks[block_hash]) {
       return this.blocks[block_hash];
     }

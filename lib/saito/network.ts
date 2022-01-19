@@ -216,6 +216,9 @@ class Network {
    */
   async fetchBlock(block_hash: string, peer: Peer = null) {
     console.debug("network.fetchBlock : " + block_hash);
+    if (!block_hash) {
+      console.trace("block hash is empty");
+    }
     if (peer === null) {
       if (this.peers.length === 0) {
         return;

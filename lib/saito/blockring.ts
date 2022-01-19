@@ -1,4 +1,5 @@
 import { Saito } from "../../apps/core";
+import Block from "./block";
 
 class Blockring {
   public app: Saito;
@@ -44,7 +45,7 @@ class Blockring {
     return this.ring[insert_pos].block_hashes.includes(block_hash);
   }
 
-  deleteBlock(block) {
+  deleteBlock(block: Block) {
     console.debug(
       "blockring.deleteBlock : " + block.returnId() + " : " + block.returnHash()
     );
@@ -141,7 +142,7 @@ class Blockring {
   }
 
   returnLatestBlockHash() {
-    if (this.lc_pos == 0) {
+    if (this.lc_pos == 0 && this.isEmpty()) {
       return "";
     }
     if (
