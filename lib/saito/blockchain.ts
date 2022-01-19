@@ -456,12 +456,14 @@ class Blockchain {
   //
   // deletes all blocks at a single block_id
   //
-  async deleteBlocks(delete_block_id) {
+  async deleteBlocks(delete_block_id: number) {
     let block_hashes =
       this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
-    for (let hash of block_hashes) {
-      await this.deleteBlock(delete_block_id, hash);
+    for (let entry of block_hashes) {
+      if (entry[0] <= delete_block_id) {
+        await this.deleteBlock(delete_block_id, entry[1]);
+      }
     }
   }
 
@@ -485,8 +487,10 @@ class Blockchain {
       prune_blocks_at_block_id
     );
 
-    for (let i = 0; i < block_hashes.length; i++) {
-      block_hashes_copy.push(block_hashes[i]);
+    for (const entry of block_hashes) {
+      if (prune_blocks_at_block_id >= entry[0]) {
+        block_hashes_copy.push(entry[1]);
+      }
     }
 
     for (let i = 0; i < block_hashes_copy.length; i++) {
@@ -970,12 +974,13 @@ class Blockchain {
     // so we check that our block is the head of the longest-chain and only
     // update the genesis period when that is the case.
     //
-    let latest_block_id = longest_chain_block.returnId();
+    const latest_block_id: number = longest_chain_block.returnId();
     if (latest_block_id >= this.returnGenesisPeriod() * 2 + 1) {
       //
       // prune blocks
       //
-      let purge_bid = latest_block_id - this.returnGenesisPeriod() * 2;
+      const purge_block_id: number =
+        latest_block_id - this.returnGenesisPeriod() * 2;
       this.blockchain.genesis_block_id =
         latest_block_id - this.returnGenesisPeriod();
 
@@ -984,18 +989,18 @@ class Blockchain {
       // lowest_block_id that we have found. we use the purge_id to
       // handle purges.
       //
-      if (purge_bid > 0) {
-        await this.deleteBlocks(purge_bid);
+      if (purge_block_id > 0) {
+        await this.deleteBlocks(purge_block_id);
 
         //
         // update blockchain consensus variables
         //
-        this.blockchain.genesis_block_id = purge_bid + 1;
+        this.blockchain.genesis_block_id = purge_block_id + 1;
         this.blockchain.genesis_block_hash =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(
-            purge_bid + 1
+            purge_block_id + 1
           );
-        let genesis_block = this.blocks[this.blockchain.genesis_block_hash];
+        const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
         }

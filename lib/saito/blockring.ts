@@ -122,16 +122,19 @@ class Blockring {
     }
   }
 
-  returnBlockHashesAtBlockId(block_id) {
+  returnBlockHashesAtBlockId(block_id): Map<number, string> {
     const insert_pos = block_id % this.ring_buffer_length;
-    const v = [];
+    const v = new Map();
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
-      v.push(this.ring[insert_pos].block_hashes[i]);
+      v.set(
+        this.ring[insert_pos].block_ids[i],
+        this.ring[insert_pos].block_hashes[i]
+      );
     }
     return v;
   }
 
-  returnLongestChainBlockHashAtBlockId(block_id) {
+  returnLongestChainBlockHashAtBlockId(block_id: number) {
     const insert_pos = block_id % this.ring_buffer_length;
     if (
       this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length
