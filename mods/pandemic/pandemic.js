@@ -14,8 +14,6 @@ class Pandemic extends GameTemplate {
     this.gamename        = "Pandemic";
     this.description     = `Pandemic is a cooperative multiplayer board game in which players works together to try and fend off a global epidemic.`;
     this.categories      = "Arcade Games Entertainment";
-    this.useHUD          = 1;
-    this.addHUDMenu      = ['Cards'];
     this.maxPlayers      = 4;
     this.minPlayers      = 2;  
     this.type            = "Cooperative Boardgme";
@@ -47,17 +45,16 @@ class Pandemic extends GameTemplate {
   showPlayerCards(player_num) {
 
     let html = '';
-    let pandemic_self = this;
-    let deck = pandemic_self.game.players_info[player_num-1].cards;
+    let playerHand = this.game.players_info[player_num-1].cards;
 
-    for (let i = 0; i < deck.length; i++) {
-      let city = pandemic_self.game.deck[1].cards[deck[i]];
-      html += `<div class="cardbox-hud" id="cardbox-hud-${i}"><img src="/pandemic/img/${city.img}" /></div>`;
+    for (let i = 0; i < playerHand.length; i++) {
+      //let city = pandemic_self.game.deck[1].cards[deck[i]];
+      //html += `<div class="cardbox-hud" id="cardbox-hud-${i}"><img src="/pandemic/img/${city.img}" /></div>`;
+      html += `<div class="card" id="${playerHand[i]}">${this.returnCardImage(playerHand[i],1)}</div>`;
     }
 
-    html = `<div class="display-cards">${html}</div>`;
-    this.overlay.show(this.app, this, html);
-
+    this.overlay.show(this.app, this, `<div class="cardfan cardfan-loose">${html}</div>`);
+    this.attachCardboxEvents();
   }
   
   
@@ -331,11 +328,13 @@ class Pandemic extends GameTemplate {
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
+    this.cardbox.addCardType("logcard","",null);
+    //this.cardbox.addCardType("showcard","",null);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
-    this.hud.addCardType("card", "select", this.cardbox_callback);
-    this.changeable_callback = null;
+    
     if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
       this.cardbox.skip_card_prompt = 1;
     } else {
@@ -413,7 +412,7 @@ class Pandemic extends GameTemplate {
     let pandemic_self = this;
   
     $('.card').off();
-    this.updateStatusAndListCards("Pick a card to discard: ");
+    this.updateStatusAndListCards("Pick a card to discard: ",this.game.players_info[this.game.player-1].cards);
     $('.card').on('click', function() {
   
       let cid = $(this).attr('id');
@@ -1339,13 +1338,15 @@ class Pandemic extends GameTemplate {
   
   }
   
+
+  //>>>>>>>>>>>>
   directFlight() {
   
     let pandemic_self = this;
     let city = this.game.players_info[this.game.player-1].city;
     let cards = this.game.players_info[this.game.player-1].cards;
   
-    let html  = "<div class='status-message'>Take a direct flight: <ul>";
+    /*let html  = "<div class='status-message'>Take a direct flight: <ul>";
     for (let i = 0; i < cards.length; i++) {
       if (this.game.cities[cards[i]] != undefined) {
         html += '<li class="card" id="'+cards[i]+'">'+this.game.cities[cards[i]].name+'</li>';
@@ -1356,18 +1357,14 @@ class Pandemic extends GameTemplate {
     html += '</div>';
   
     this.updateStatus(html);
-  
-    $('.card').off();
-    $('.card').on('click', function() {
-  
-      let c = $(this).attr('id');
-  
-      if (c == "stop") {
+    */
+    this.updateStatusAndListCards("Take a direct flight:",cards,function(c){
+
+    if (c == "stop") {
         pandemic_self.playerMakeMove(pandemic_self.active_moves);
         return;
       }
-  
-  
+   
       //
       // replace older moves
       //
@@ -1383,19 +1380,20 @@ class Pandemic extends GameTemplate {
       }
   
   
-  
       pandemic_self.active_moves--;
       pandemic_self.game.players_info[pandemic_self.game.player-1].city = c;
       pandemic_self.addMove("discard\t"+pandemic_self.game.player+"\t"+c);
       pandemic_self.removeCardFromHand(pandemic_self.game.player, c);
       pandemic_self.showBoard();
   
-      if (pandemic_self.active_moves == 0) {
-        pandemic_self.endTurn();
-      } else {
-        pandemic_self.playerMakeMove(pandemic_self.active_moves);
-      }
-    });
+      
+      pandemic_self.playerMakeMove(pandemic_self.active_moves);
+      
+    });   
+  
+   
+  
+      
   
   }
   
@@ -1669,8 +1667,8 @@ class Pandemic extends GameTemplate {
           if (parseInt(mv[1]) == this.game.player) {
             this.playerTurn();
           } else {
-	    this.removeEvents();
- 	    this.updateStatusAndListCards("Waiting for " + this.app.keys.returnUsername(this.game.players[parseInt(mv[1])-1]) + " ("+this.game.players_info[parseInt(mv[1])-1].role+")");
+      	    this.removeEvents();
+       	    this.updateStatusAndListCards(`Waiting for ${this.app.keys.returnUsername(this.game.players[parseInt(mv[1])-1])} (${this.game.players_info[parseInt(mv[1])-1].role})`,this.game.players_info[this.game.player-1].cards);
           }
         }
         return 0;
@@ -1704,9 +1702,10 @@ class Pandemic extends GameTemplate {
   	    return 0;
   
   	  } else {
-console.log("PLAYER: " + player + " --- " + " need to overwrite now that players is pkeys");
+        console.log("PLAYER: " + player + " --- " + " need to overwrite now that players is pkeys");
   	    //this.updateLog("Player "+(player+1)+": draws "+this.game.deck[1].cards[card].name);
             this.game.players_info[player].cards.push(card);
+            console.log(this.game.players_info[player].cards);
   	  }
         }
   
@@ -2126,7 +2125,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
 
 
   drawPlayerCard(player=1) {
-  
+    
     let newcard = this.game.deck[1].crypt[0];
         newcard = this.app.crypto.hexToString(newcard);
   
@@ -2136,7 +2135,7 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
     this.game.deck[1].crypt.splice(0, 1);
   
     this.showBoard();
-  
+    console.log(this.game.deck[1]);
     return newcard;
   }
   
@@ -2781,149 +2780,25 @@ console.log("PLAYER: " + player + " --- " + " need to overwrite now that players
   
   
   
-  
-  returnCardList(cardarray=[], cardtype="city") {
-  
-    let hand = this.game.players_info[this.game.player-1].cards;
-    let html = "";
-  
+  returnCardList(cardarray=[], cardtype=1) {
     if (cardarray.length == 0) {
-      for (let i = 0; i < hand.length; i++) {
-        cardarray.push(this.game.cities[hand[i]].name);
-      }
+      cardarray = this.game.players_info[this.game.player-1].cards;
     }
   
-    if (this.interface == 1) {
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i], cardtype);
-      }
-      html = `
-        <div class="status-cardbox">
-          ${html}
-        </div>`;
-    } else {
-  
-      html = "<ul>";
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i], cardtype);
-      }
-      html += '</ul>';
-  
-    }
-  
-    return html;
-  
+    return super.returnCardList(cardarray, cardtype);  
   }
   
-  
-  
-  returnCardItem(card, cardtype="city") {
-  
-    if (this.interface == 1) {
-      if (this.game.cities[card] == undefined) {
-        return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud-image showcard cardbox-hud cardbox-hud-status">${this.returnCardImage(card, cardtype)}</div>`;
-      }
-      return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud-image showcard cardbox-hud cardbox-hud-status">${this.returnCardImage(card, cardtype)}</div>`;
-    } else {
-      if (this.game.cities[card] == undefined) {
-        return '<li class="card" id="'+card+'">undefined</li>';
-      }
-      return '<li class="card" id="'+card+'">'+this.game.cities[card].name+'</li>';
-    }
-  
-  }
-  
-  
-
-
-
-  updateStatusAndListCards(message, cards=null) {
-  
-    if (cards == null) {
-      cards = this.game.players_info[this.game.player-1].cards;
-    }
-  
-    html = `
-      <div class="status-message">
-        ${message}
-      </div>
-      ${this.returnCardList(cards, "city")}
-    `
-  
-    this.updateStatus(html);
-    this.addShowCardEvents();
-  
-  }
-
-
-  
-
-  addShowCardEvents() {
-
-    if (this.browser_active == 0) { return; }  
-
-    let pandemic_self = this;
-
-    this.hud.attachCardEvents(this.app, this);
-
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-  
-      $('.showcard').off();
-      $('.showcard').mouseover(function() {
-        let card = $(this).attr("id");
-        pandemic_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        pandemic_self.hideCard();
-      });
-  
-    }
-  
-  }
-  addLogCardEvents() {
-
-    if (this.browser_active == 0) { return; }  
-
-    let pandemic_self = this;
-  
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-  
-      $('.logcard').off();
-      $('.logcard').mouseover(function() {
-        let card = $(this).attr("id");
-        pandemic_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        pandemic_self.hideCard();
-      });
-  
-    }
-  
-  }
-
-  returnCardImage(cardname, cardtype="city") {
-  
-    var c = "";
-    if (cardtype == "city") { c = this.game.deck[1].cards[cardname]; }
-    if (cardtype == "infection") { c = this.game.deck[0].cards[cardname]; }
-
+    
+  returnCardImage(cardname, ctype=1) {
+    console.log(cardname,ctype);
+    console.log(this.game.deck)
+    let c = this.game.deck[ctype].cards[cardname];
     if (c == undefined || c == null || c === "") { return null; } 
 
-    var html = `<img class="cardimg-hud" src="/pandemic/img/${c.img}" />`;
-    return html;
-  
+    return `<img class="cardimg-hud" src="/pandemic/img/${c.img}" />`;
   }
   
-  hideCard() {
-    this.cardbox.hide();
-  }
-  
-  showCard(cardname, cardtype="city") {
-    let url = this.returnCardImage(cardname, cardtype);
-    if (url) {
-      this.cardbox.showCardboxHTML(cardname, url);  
-    }
-  }
+
   
   removeCardFromHand(plyr, card) {
   

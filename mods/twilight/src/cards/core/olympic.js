@@ -20,7 +20,7 @@
 
         twilight_self.updateStatus('<div class="status-message" id="status-message"><span>' + opponent.toUpperCase() + ' holds the Olympics:</span><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul></div>');
 
-        twilight_self.addShowCardEvents(function(action) {
+        twilight_self.attachCardboxEvents(function(action) {
 
           if (action == "boycott") {
             twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");

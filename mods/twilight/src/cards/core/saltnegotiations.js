@@ -46,7 +46,7 @@
       user_message += "</ul></div>";
       twilight_self.updateStatus(user_message);
       twilight_self.addMove("resolve\tsaltnegotiations");
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 != "nocard") {
           twilight_self.game.deck[0].hand.push(action2);

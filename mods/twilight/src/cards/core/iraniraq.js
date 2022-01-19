@@ -19,7 +19,7 @@
 
         let target = 4;
 
-        twilight_self.addShowCardEvents(function(invaded) {
+        twilight_self.attachCardboxEvents(function(invaded) {
 
           if (invaded == "invadeiran") {
 

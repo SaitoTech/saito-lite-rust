@@ -984,7 +984,7 @@ console.log("tallying alliances before scoring");
               html += '<li class="card" id="discard">discard card</li>';
               html += '<li class="card" id="'+card+'">put in aftermath</li></ul></div>';
           thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          thirteen_self.attachCardboxEvents(function(card) {
 
 	    if (card == "discard") {
 	      thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t"+"1"+"\t"+card+"\t"+"1");
@@ -1063,7 +1063,7 @@ console.log("tallying alliances before scoring");
               html += '<li class="card" id="'+card+'">play card</li>';
 	      html += '</div>';
           thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          thirteen_self.attachCardboxEvents(function(card) {
 
 	    if (card == "discard") {
 	      if (thirteen_self.game.player == 1) {
@@ -3792,7 +3792,7 @@ console.log("CARDS: "+JSON.stringify(cards));
           }
           html += '</ul> When you are done discarding <span class="card dashed" id="finished">click here</span>.</div>';
           thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          thirteen_self.attachCardboxEvents(function(card) {
 
             if (card == "finished") {
               thirteen_self.addMove("DEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);

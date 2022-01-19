@@ -28,7 +28,7 @@
         return 0;
       }
 
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 == "nodiscard") {
           twilight_self.addMove("resolve\tdebtcrisis");

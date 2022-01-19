@@ -23,7 +23,6 @@ class Blackjack extends GameTemplate {
  
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.interface = 1;
 
     this.boardgameWidth = 5100;
 

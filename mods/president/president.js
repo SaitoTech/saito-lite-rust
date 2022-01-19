@@ -18,7 +18,6 @@ class President extends GameTemplate {
     this.description = 'Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?';
     this.categories = "Games Arcade Entertainment";
     this.card_img_dir = '/president/img/cards';
-    this.useHUD = 1;
 
     this.minPlayers = 2;
     this.maxPlayers = 4;
@@ -452,7 +451,7 @@ class President extends GameTemplate {
       president_self.endTurn(1);
       return;
     });
-    this.addShowCardEvents(function (card) {
+    this.attachCardboxEvents(function (card) {
       if (president_self.isValidPlay(this.hud.cardbox.cards)) {
         president_self.addMove("cards\t" + president_self.game.player + "\t" + (president_self.game.deck[0].hand.length - 1));
         president_self.addMove("play\t" + president_self.game.player + "\t" + JSON.stringify(this.hud.cardbox.cards));
@@ -744,32 +743,6 @@ class President extends GameTemplate {
 
 
 
-  returnCardList(cardarray = []) {
-
-    let hand = this.game.deck[0].hand;
-    let html = "";
-
-    if (this.interface == 1) {
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i]);
-      }
-      html = `
-        <div class="status-cardbox" id="status-cardbox">
-          ${html}
-        </div>`;
-    } else {
-
-      html = "<ul>";
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i]);
-      }
-      html += '</ul>';
-
-    }
-
-    return html;
-
-  }
 
 
   updateStatusAndListCards(message, cards = null) {
@@ -783,7 +756,7 @@ class President extends GameTemplate {
         ${this.returnCardList(cards)}
     `
     this.updateStatus(html);
-    this.addShowCardEvents(function (card) {
+    this.attachCardboxEvents(function (card) {
     });
 
   }

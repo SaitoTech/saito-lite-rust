@@ -19,7 +19,7 @@
       this.updateStatus(html);
 
       let twilight_self = this;
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
 	let selreg = "europe";
 	if (action2 == "asia") { selreg = "Asia"; }

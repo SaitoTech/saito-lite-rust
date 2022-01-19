@@ -90,7 +90,7 @@
           }
           user_message += '</ul>';
           this.updateStatus("<div class='status-message' id='status-message'>" + user_message + "</div>");
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             //
             // offer card

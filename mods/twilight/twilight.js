@@ -428,18 +428,19 @@ class Twilight extends GameTemplate {
 	}, 1000);
       }
 
+      /* These aren't even valid options*/
       if (action2 == "enable_hud_vertical") {
         twilight_self.hud.mode = 2;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
+        twilight_self.cardbox.attachCardEvents();
         return;
       }
       if (action2 == "enable_hud_square") {
         twilight_self.hud.mode = 1;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
+        twilight_self.cardbox.attachCardEvents();
 	twilight_self.overlay.hide();
         return;
       }
@@ -447,7 +448,7 @@ class Twilight extends GameTemplate {
         twilight_self.hud.mode = 0;
         twilight_self.hud.render(twilight_self.app, twilight_self);
         twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.hud.attachCardEvents(twilight_self.app, twilight_self);
+        twilight_self.cardbox.attachCardEvents();
 	twilight_self.overlay.hide();
         return;
       }
@@ -1261,7 +1262,7 @@ try {
 
               let twilight_self = this;
 
-              twilight_self.addShowCardEvents(function(action2) {
+              twilight_self.attachCardboxEvents(function(action2) {
                 if (action2 == "play") {
                   // trigger play of selected card
                   twilight_self.addMove("resolve\tgrainsales");
@@ -1352,7 +1353,7 @@ try {
                       user_message += '</ul></div>';
                   twilight_self.updateStatus(user_message);
 
-		  twilight_self.addShowCardEvents(function(action2) {
+		  twilight_self.attachCardboxEvents(function(action2) {
                     if (action2 == "skipche") {
                       twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");
                       twilight_self.addMove("resolve\tchecoup");
@@ -1535,7 +1536,7 @@ try {
               //
               let cards_discarded = 0;
 
-	      twilight_self.addShowCardEvents(function(action2) {
+	      twilight_self.attachCardboxEvents(function(action2) {
 
                 if (action2 == "finished") {
 
@@ -1713,7 +1714,7 @@ try {
 
             let twilight_self = this;
 
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "play") {
                   twilight_self.addMove("resolve\tnorthsea");
@@ -1825,7 +1826,7 @@ try {
 
               let twilight_self = this;
 
-              twilight_self.addShowCardEvents(function(action2) {
+              twilight_self.attachCardboxEvents(function(action2) {
                 twilight_self.addMove("aldrich\tussr\t"+action2);
                 twilight_self.endTurn();
               });
@@ -1902,7 +1903,7 @@ try {
               user_message += '<li class="card" id="skiptear"><span>skip coup</span></li>';
               user_message += '</ul></div>';
           twilight_self.updateStatus(user_message);
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "skiptear") {
               twilight_self.updateStatus("<div class='status-message' id='status-message'><span>Skipping Tear Down this Wall...</span></div>");
@@ -2633,7 +2634,7 @@ try {
 
             let twilight_self = this;
 
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "play") {
                 twilight_self.addMove("play\t2");
@@ -2696,7 +2697,7 @@ try {
 
             let twilight_self = this;
 	    
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "nope") {
                 twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
@@ -2724,7 +2725,7 @@ try {
                 user_message += '</ul> </span>If you wish to cancel your discard,</span> <span class="card dashed showcard nocard" id="finished">click here</span>.</div>';
                 twilight_self.updateStatus(user_message);
 
-                twilight_self.addShowCardEvents(function(action2) {
+                twilight_self.attachCardboxEvents(function(action2) {
                   if (action2 == "finished") {
                     twilight_self.endTurn(1);
                   } else {
@@ -2777,7 +2778,7 @@ try {
 
             let twilight_self = this;
 
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "play") {
                 twilight_self.addMove("play\t"+bonus_player);
@@ -3640,7 +3641,7 @@ if (this.game.player == 0) {
 
 	  let twilight_self = this;
 
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 === "select") {
 	      twilight_self.updateStatus();
@@ -3759,7 +3760,7 @@ if (this.game.player == 0) {
       }
 
       // TODO:
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         //
         // prevent ops hang
@@ -3798,7 +3799,7 @@ if (this.game.player == 0) {
             }
             user_message += '</ul></div>';
             twilight_self.updateStatus(user_message);
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 === "turkey") {
                 twilight_self.removeInfluence("turkey", 2, "us");
@@ -3906,7 +3907,7 @@ if (this.game.player == 0) {
               html = twilight_self.formatStatusHeader(header_msg, html, true);
           twilight_self.updateStatus(html);
 
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "cancelrealign") {
               twilight_self.addMove("notify\t"+player.toUpperCase()+" opts to end realignments");
@@ -3946,7 +3947,7 @@ if (this.game.player == 0) {
             let html = `<ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
                 html = twilight_self.formatStatusHeader(`Realign with ${j} OPS, or:`, html, true);
             twilight_self.updateStatus(html);
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "cancelrealign") {
 
@@ -4105,7 +4106,7 @@ this.startClock();
 
 
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
-    twilight_self.addShowCardEvents(function(card) {
+    twilight_self.attachCardboxEvents(function(card) {
       if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; }
       twilight_self.playerTurnHeadlineSelected(card, player);
     });
@@ -4256,7 +4257,7 @@ this.startClock();
           let html = '<div class="status-message" id="status-message">You only have the China Card remaining. Do you wish to play it this turn?';
               html += '<ul><li class="card" id="play">play card</li><li class="card" id="skipturn">skip turn</li></ul></div>';
           this.updateStatus(html);
-          this.addShowCardEvents(function(action) {
+          this.attachCardboxEvents(function(action) {
 
 	    if (action === "play") {
 	      twilight_self.playerTurn(selected_card);
@@ -4497,7 +4498,7 @@ this.startClock();
     }
 
 
-    twilight_self.addShowCardEvents(function(card) {
+    twilight_self.attachCardboxEvents(function(card) {
       twilight_self.playerTurnCardSelected(card, player);
     });
 
@@ -4597,7 +4598,7 @@ this.startClock();
           }
           user_message += '</ul>';
           twilight_self.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 === "turkey") {
               twilight_self.removeInfluence("turkey", 2, "us");
@@ -4772,7 +4773,7 @@ this.startClock();
         this.playerTurn();
       });
 
-      twilight_self.addShowCardEvents(function(action) {
+      twilight_self.attachCardboxEvents(function(action) {
         $('.card').off();
 
         //
@@ -4812,7 +4813,7 @@ this.startClock();
             user_message += '</ul>';
             twilight_self.updateStatus("<div class='status-message' id='status-message'>" + user_message + "</div>");
 
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
 	      let are_we_playing_ops = 0;
 	      if (twilight_self.game.queue[twilight_self.game.queue.length-1].split("\t")[0] === "ops") {
@@ -4859,7 +4860,7 @@ this.startClock();
 
             twilight_self.updateStatus(fr);
 
-            twilight_self.addShowCardEvents(function(action) {
+            twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
               if (action == "playevent") {
@@ -4897,7 +4898,7 @@ this.startClock();
 	    twilight_self.updateStatus(html);
 
 //            twilight_self.updateStatus(fr);
-            twilight_self.addShowCardEvents(function(action) {
+            twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
               if (action == "playevent") {
@@ -4953,7 +4954,7 @@ this.startClock();
 	    twilight_self.updateStatus(html);
 
 //            twilight_self.updateStatus(fr);
-            twilight_self.addShowCardEvents(function(action) {
+            twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
               if (action == "playevent") {
@@ -5001,7 +5002,7 @@ this.startClock();
               `;
 
             twilight_self.updateStatus(fr);
-            twilight_self.addShowCardEvents(function(action) {
+            twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
               if (action == "playevent") {
@@ -5091,7 +5092,7 @@ this.startClock();
           twilight_self.playerTurnCardSelected(card, player);
         });
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           twilight_self.game.state.event_before_ops = 0;
           twilight_self.game.state.event_name = "";
@@ -8484,7 +8485,7 @@ this.startClock();
     //
     if (this.game.player == 0) {
       this.updateStatus(`<div id="status-message" class="status-message">${message}</div>`);
-      //this.addShowCardEvents();
+      //this.attachCardboxEvents();
       return;
     }
 
@@ -8498,7 +8499,7 @@ this.startClock();
     `
 
     this.updateStatus(html);
-    this.addShowCardEvents();
+    this.attachCardboxEvents();
   }
 
 
@@ -9850,11 +9851,6 @@ this.startClock();
 
   }
 
-  addShowCardEvents(onCardClickFunction=null) {
-    this.changeable_callback = onCardClickFunction;
-    this.hud.attachCardEvents(this.app, this);
-  }
-
   addLogCardEvents() {
 
     try {
@@ -10263,7 +10259,7 @@ this.startClock();
 
         twilight_self.updateStatus(user_message);
         twilight_self.addMove("resolve\tasknot");
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "finished") {
 
@@ -10412,7 +10408,7 @@ this.startClock();
         }
 
         this.updateStatus('<div class="status-message" id="status-message"><span>Blockade triggers:</span><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul></div>');
-        twilight_self.addShowCardEvents(function(action) {
+        twilight_self.attachCardboxEvents(function(action) {
 
           if (action == "discard") {
             let choicehtml = '<div class="status-message" id="status-message"><span>Choose a card to discard:</span><ul>';
@@ -10423,7 +10419,7 @@ this.startClock();
             }
             choicehtml += '</ul></div>';
             twilight_self.updateStatus(choicehtml);
-            twilight_self.addShowCardEvents(function(card) {
+            twilight_self.attachCardboxEvents(function(card) {
               twilight_self.removeCardFromHand(card);
                 twilight_self.addMove("notify\tus discarded "+card);
               twilight_self.endTurn();
@@ -10709,7 +10705,7 @@ this.startClock();
             user_message += '<li class="card" id="skipche">or skip coup</li>';
             user_message += '</ul></div>';
         twilight_self.updateStatus(user_message);
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skipche") {
             twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");
             twilight_self.addMove("resolve\tche");
@@ -10773,7 +10769,7 @@ this.startClock();
       this.updateStatus(html);
 
       let twilight_self = this;
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);
@@ -11113,7 +11109,7 @@ this.startClock();
         return 0;
       }
 
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 == "nodiscard") {
           twilight_self.addMove("resolve\tdebtcrisis");
@@ -11767,7 +11763,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 	// and handle with the HUD too
 	//
         twilight_self.updateStatus('<div class="status-message" id="status-message">Set DEFCON at level:<ul><li class="card" id="five">five</li><li class="card" id="four">four</li><li class="card" id="three">three</li><li class="card" id="two">two</li><li class="card" id="one">one</li></ul></div>');
-       twilight_self.addShowCardEvents(function(action2) {
+       twilight_self.attachCardboxEvents(function(action2) {
 
           let defcon_target = 5;
 
@@ -11827,7 +11823,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
         let target = 4;
 
-        twilight_self.addShowCardEvents(function(invaded) {
+        twilight_self.attachCardboxEvents(function(invaded) {
 
           if (invaded == "invadepakistan") {
 
@@ -11982,7 +11978,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         this.updateStatus(userhtml);
         let twilight_self = this;
 
-        twilight_self.addShowCardEvents(function(myselect) {
+        twilight_self.attachCardboxEvents(function(myselect) {
           $('.card').off();
 
           if (myselect == "romania") {
@@ -12070,7 +12066,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
         let target = 4;
 
-        twilight_self.addShowCardEvents(function(invaded) {
+        twilight_self.attachCardboxEvents(function(invaded) {
 
           if (invaded == "invadeiran") {
 
@@ -12257,7 +12253,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
                 let confirmoptional = '<div class="status-message" id="status-message"><span>Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?</span><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul></div>';
                 twilight_self.updateStatus(confirmoptional);
-                twilight_self.addShowCardEvents(function(action2) {
+                twilight_self.attachCardboxEvents(function(action2) {
 
                   if (action2 == "conduct") {
                     twilight_self.addMove("resolve\tjunta");
@@ -12792,7 +12788,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
           }
           user_message += '</ul>';
           this.updateStatus("<div class='status-message' id='status-message'>" + user_message + "</div>");
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             //
             // offer card
@@ -13147,7 +13143,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
         twilight_self.updateStatus('<div class="status-message" id="status-message"><span>' + opponent.toUpperCase() + ' holds the Olympics:</span><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul></div>');
 
-        twilight_self.addShowCardEvents(function(action) {
+        twilight_self.attachCardboxEvents(function(action) {
 
           if (action == "boycott") {
             twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
@@ -13288,7 +13284,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         user_message += '</ul></div>';
         twilight_self.updateStatus(user_message);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skiportega") {
             twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Ortega coup...</div>");
             twilight_self.addMove("resolve\tortega");
@@ -13706,7 +13702,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
       user_message += "</ul></div>";
       twilight_self.updateStatus(user_message);
       twilight_self.addMove("resolve\tsaltnegotiations");
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 != "nocard") {
           twilight_self.game.deck[0].hand.push(action2);
@@ -13860,7 +13856,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
         twilight_self.updateStatus('<div class="status-message" id="status-message">USSR chooses:<ul><li class="card" id="southafrica">2 Influence in South Africa</li><li class="card" id="adjacent">1 Influence in South Africa and 2 Influence in adjacent countries</li></ul></div>');
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "southafrica") {
 
@@ -14060,7 +14056,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
       user_message += '</li></ul></div>';
       twilight_self.updateStatus(user_message);
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
         twilight_self.addMove("event\tus\t"+action2);
         twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
         twilight_self.addMove("undiscard\t1\t"+action2);
@@ -14235,7 +14231,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
           this.updateStatus('<div class="status-message" id="status-message"><span>You win the Summit:</span><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul></div>');
 
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "raise") {
               twilight_self.updateStatus("<div class='status-message' id='status-message'>broadcasting choice....</div>");
@@ -14772,7 +14768,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         return 0;
       }
 
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 == "endgame") {
           twilight_self.updateStatus("<div class='status-message' id='status-message'>Triggering Wargames...</div>");
@@ -14820,7 +14816,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         `;
         twilight_self.updateStatus(html);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "remove") {
 
@@ -15202,7 +15198,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         twilight_self.updateStatus(user_message);
         twilight_self.addMove("resolve\tpoliovaccine");
 
-        twilight_self.addShowCardEvents(function(card) {
+        twilight_self.attachCardboxEvents(function(card) {
           cards_discarded++;
           twilight_self.removeCardFromHand(action2);
           twilight_self.addMove("discard\tus\t"+action2);
@@ -15532,7 +15528,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
               let html = 'Discard one of the following cards to increase the stability of this country by 1 and add 1 influence: ';
               twilight_self.updateStatusAndListCards(html, eligible_cards);
-              twilight_self.addShowCardEvents(function(card) {
+              twilight_self.attachCardboxEvents(function(card) {
                 twilight_self.placeInfluence(c, 1, player, function() {
                   twilight_self.removeCardFromHand(card);
                   twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t1");
@@ -15582,7 +15578,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         twilight_self.addMove("resolve\tperestroika");
 
         twilight_self.updateStatus('<div class="status-message" id="status-message">Remove four USSR influence from existing countries. You will receive 1 VP per influence removed from battleground countries, and 1 VP for every 2 influence removed from non-battleground countries controlled by the USSR:<ul><li class="card" id="skip">or skip...</li></ul></div>');
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           twilight_self.playerFinishedPlacingInfluence();
           twilight_self.endTurn();
         });
@@ -15660,7 +15656,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 
         this.updateStatus(html);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "place") {
             twilight_self.placeInfluence("argentina", 1, player, function() {
               twilight_self.addMove("resolve\tperonism");
@@ -15679,7 +15675,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
             </ul></div>`;
 
             twilight_self.updateStatus(html);
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               let modified_ops = twilight_self.modifyOps(1,"peronism");
 
@@ -15945,7 +15941,7 @@ console.log("ROUND: " + this.game.state.round);
 	
         twilight_self.addMove("resolve\tsovietcoup");
         twilight_self.updateStatus('<div class="status-message" id="status-message">Sacrifice any VP before rolling for +1 modifier:<ul><li class="card" id="zero">0 VP</li><li class="card" id="one">1 VP</li><li class="card" id="two">2 VP</li><li class="card" id="three">3 VP</li></ul></div>');
-        twilight_self.addShowCardEvents(function(action) {
+        twilight_self.attachCardboxEvents(function(action) {
 
 	  let modifier = 0;
 
@@ -16097,7 +16093,7 @@ console.log("ROUND: " + this.game.state.round);
       this.updateStatus(html);
 
       let twilight_self = this;
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
 	let selreg = "europe";
 	if (action2 == "asia") { selreg = "Asia"; }
