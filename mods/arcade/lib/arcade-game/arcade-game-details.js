@@ -148,11 +148,11 @@ module.exports = ArcadeGameDetails = {
 
         app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
         let gamemod = app.modules.returnModule(options.gamename);
-	let players_needed = 0;
+	      let players_needed = 0;
         if (document.querySelector('.game-wizard-players-select')) {
           players_needed = document.querySelector('.game-wizard-players-select').value;
         } else {
-          players_needed = document.querySelector('.game-wizard-players-no-select').value;
+          players_needed = document.querySelector('.game-wizard-players-no-select').dataset.player;
         }
 
         let gamedata = {
@@ -163,7 +163,11 @@ module.exports = ArcadeGameDetails = {
           options_html: gamemod.returnGameRowOptionsHTML(options),
           players_needed: players_needed,
         };
-
+        if (players_needed === 0){
+          console.error("Create Game Error");
+          console.log(gamedata);
+          return;
+        }
         if (players_needed == 1) {
           mod.launchSinglePlayerGame(app, gamedata); 
           return;
