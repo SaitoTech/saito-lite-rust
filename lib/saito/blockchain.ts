@@ -18,7 +18,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 4,
+    genesis_period: 10,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -57,7 +57,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 3;
+    this.prune_after_blocks = 8;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
