@@ -31,10 +31,10 @@ class Blockchain {
     // set dynamically on load to avoid duplicating callbacks
     last_callback_block_id: 0,
   };
-  public blockring: Blockring;
-  public staking: Staking;
+  // public blockring: Blockring;
+  // public staking: Staking;
   public blocks: any;
-  public utxoset: any;
+  // public utxoset: any;
   public prune_after_blocks: number;
   public indexing_active: boolean;
   public run_callbacks: any;
@@ -49,10 +49,10 @@ class Blockchain {
     //
     // core components
     //
-    this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
-    this.staking = new Staking(this.app);
+    // this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
+    // this.staking = new Staking(this.app);
     this.blocks = {}; // hashmap of block_hash => block
-    this.utxoset = new UtxoSet();
+    // this.utxoset = new UtxoSet();
 
     //
     // downgrade blocks after N blocks
@@ -543,7 +543,9 @@ class Blockchain {
       //
       let idx = 2 * i;
       let block_hash =
-        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+        this.app.blockring.returnLongestChainBlockHashByBlockId(
+          current_block_id
+        );
 
       if (block_hash[idx]) {
         fork_id[idx] = block_hash[idx];
@@ -584,13 +586,13 @@ class Blockchain {
     wallet.deleteBlock(block);
 
     // removes utxoset data
-    await block.deleteBlock(this.utxoset);
+    await block.deleteBlock(this.app.utxoset);
 
     // deletes block from disk
     this.app.storage.deleteBlockFromDisk(blockFilename);
 
     // ask blockring to remove
-    this.blockring.deleteBlock(block);
+    this.app.blockring.deleteBlock(block);
 
     // remove from block index
     if (this.isBlockIndexed(deletedBlockHash)) {
@@ -834,7 +836,6 @@ class Blockchain {
       // save options
       //
       this.saveBlockchain();
-    } else {
     }
   }
 
@@ -907,7 +908,7 @@ class Blockchain {
     );
     // staking tables
     let { res_spend, res_unspend, res_delete } =
-      this.staking.onChainReorganization(block, false);
+      this.app.staking.onChainReorganization(block, false);
     this.app.wallet.onChainReorganization(block, false);
     await this.onChainReorganization(block, false);
 
@@ -1177,7 +1178,7 @@ class Blockchain {
       // utxoset update
       //block.onChainReorganization(true);
       let { res_spend, res_unspend, res_delete } =
-        this.staking.onChainReorganization(block, true);
+        this.app.staking.onChainReorganization(block, true);
       this.app.wallet.onChainReorganization(block, true);
 
       //

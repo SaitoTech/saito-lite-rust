@@ -1,13 +1,16 @@
 import { Saito } from "../../apps/core";
 import Block from "./block";
 
-class Blockring {
+export default class Blockring {
   public app: Saito;
   public ring_buffer_length: number;
-  public ring: any;
+  public ring: Array<{
+    block_hashes: Array<string>;
+    block_ids: Array<number>;
+    lc_pos: number;
+  }>;
   public is_empty: boolean;
   public lc_pos: number;
-  public ringp: any;
 
   constructor(app: Saito, genesis_period: number) {
     this.app = app;
@@ -16,13 +19,14 @@ class Blockring {
     // consensus variables
     //
     this.ring_buffer_length = genesis_period * 2;
-    this.ring = [this.ring_buffer_length];
+    this.ring = new Array<any>(this.ring_buffer_length);
 
     for (let i = 0; i < this.ring_buffer_length; i++) {
-      this.ring[i] = {};
-      this.ring[i].block_hashes = [];
-      this.ring[i].block_ids = [];
-      this.ring[i].lc_pos = 0;
+      this.ring[i] = {
+        block_hashes: new Array<string>(),
+        block_ids: new Array<number>(),
+        lc_pos: 0,
+      };
     }
 
     this.is_empty = true;
@@ -61,7 +65,7 @@ class Blockring {
       for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
         if (
           this.ring[insert_pos].block_ids[i] !== block_id ||
-          this.ringp[insert_pos].block_hashes[i] !== block_hash
+          this.ring[insert_pos].block_hashes[i] !== block_hash
         ) {
           new_block_hashes.push(this.ring[insert_pos].block_hashes[i]);
           new_block_ids.push(this.ring[insert_pos].block_ids[i]);
@@ -189,5 +193,3 @@ class Blockring {
     return "";
   }
 }
-
-export default Blockring;
