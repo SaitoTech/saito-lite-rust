@@ -89,17 +89,16 @@ export default class Blockring {
   print() {
     let idx = this.lc_pos % this.ring_buffer_length;
     let cont = true;
-    while (idx >= 0 && cont == true) {
-      cont = false;
-      if (this.ring[idx].block_hashes.length > 0) {
+    for (let i = 0; i < this.ring_buffer_length; i++) {
+      let index = (idx + this.ring_buffer_length) % this.ring_buffer_length;
+      if (this.ring[index].block_hashes.length > 0) {
         console.log(
           "block " +
-            this.ring[idx].block_ids[this.ring[idx].lc_pos] +
+            this.ring[index].block_ids[this.ring[index].lc_pos] +
             ": " +
-            this.ring[idx].block_hashes[this.ring[idx].lc_pos]
+            this.ring[index].block_hashes[this.ring[index].lc_pos]
         );
         idx--;
-        cont = true;
       }
     }
   }
