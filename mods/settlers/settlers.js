@@ -243,12 +243,12 @@ class Settlers extends GameTemplate {
       },
     });
     this.menu.addSubMenuOption("game-trade", {
-      text: "Advertise",
+      text: "Make Offer",
       id: "game-offer",
       class: "game-offer",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.showResourceOverlay();
+        game_mod.showTradeOverlay();
       },
     });
     this.menu.addSubMenuOption("game-trade", {
@@ -3325,6 +3325,7 @@ class Settlers extends GameTemplate {
       settlers_self.overlay.hide();
     });
   }
+
 
   /*
     Alternate interface for viewing a trade offer with accept/reject commands

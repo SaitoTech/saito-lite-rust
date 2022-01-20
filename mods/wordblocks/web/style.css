@@ -28,9 +28,12 @@ body {
 
 #opponentbox{
   position: absolute;
-  left: 1em;
-  top: 50vh;
-  transform: translateY(-50%);
+  right: 40px;
+  top: 50px;
+/*  position: absolute; */
+/*  left: 1em; */
+/*  top: 50vh; */
+/*  transform: translateY(-50%); */
 }
 
 .opponents > .player-box{
