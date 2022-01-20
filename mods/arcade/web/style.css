@@ -761,6 +761,16 @@ button.add-games {
   max-height: 50vh;
   overflow-y: scroll;
 }
+.game-wizard-post-description {
+  font-size: 0.9em;
+  margin-left: 10px;
+  display: inline-block;
+}
+.game-home-link {
+  border-bottom: 1px dashed whitesmoke;
+  cursor: pointer;
+}
+
 .game-wizard-advanced-box {
   display: block;
   text-align: left;
