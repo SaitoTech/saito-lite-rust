@@ -67,7 +67,7 @@ class Wuziqi extends GameTemplate {
             class: "game-intro",
             callback: function (app, game_mod) {
                 game_mod.menu.hideSubMenus();
-                game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnRulesOverlay());
+                game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnGameRulesHTML());
             }
         });
         this.menu.addSubMenuOption("game-game", {
@@ -206,7 +206,7 @@ class Wuziqi extends GameTemplate {
     }
 
     //html for game intro/rules
-    returnRulesOverlay() {
+    returnGameRulesHTML() {
 
         let overlay_html = `<div class="intro">
           <h2>Wuziqi （五子棋）</h2>

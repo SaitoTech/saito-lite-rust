@@ -2816,7 +2816,9 @@ class Pandemic extends GameTemplate {
   }
   
   
-  
+  returnGameRulesHTML(){
+    return "";    
+  }
   
   
   returnGameOptionsHTML() {
