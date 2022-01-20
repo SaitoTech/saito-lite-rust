@@ -31,10 +31,10 @@ class Blockchain {
     // set dynamically on load to avoid duplicating callbacks
     last_callback_block_id: 0,
   };
-  public blockring: Blockring;
-  public staking: Staking;
+  // public blockring: Blockring;
+  // public staking: Staking;
   public blocks: any;
-  public utxoset: any;
+  // public utxoset: any;
   public prune_after_blocks: number;
   public indexing_active: boolean;
   public run_callbacks: any;
@@ -49,10 +49,10 @@ class Blockchain {
     //
     // core components
     //
-    this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
-    this.staking = new Staking(this.app);
+    // this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
+    // this.staking = new Staking(this.app);
     this.blocks = {}; // hashmap of block_hash => block
-    this.utxoset = new UtxoSet();
+    // this.utxoset = new UtxoSet();
 
     //
     // downgrade blocks after N blocks
@@ -110,7 +110,6 @@ class Blockchain {
       return;
     }
 
-    // TODO : haven't tested this code block (fetch missing blocks)
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
     if (
@@ -118,6 +117,9 @@ class Blockchain {
       !this.isBlockIndexed(parent_block_hash)
     ) {
       console.log("fetching unknown block: " + parent_block_hash);
+      if (!parent_block_hash) {
+        console.log("hash is empty", block);
+      }
       await this.app.network.fetchBlock(parent_block_hash);
     }
 
@@ -244,8 +246,7 @@ class Blockchain {
             "potential edge case requires handling: blocks received out-of-order"
           );
 
-          let disconnected_block_id =
-            this.app.blockring.returnLatestBlockId();
+          let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
           for (let i = block.returnId() + 1; i < disconnected_block_id; i++) {
             let disconnected_block_hash =
@@ -455,15 +456,19 @@ class Blockchain {
   //
   // deletes all blocks at a single block_id
   //
-  async deleteBlocks(delete_block_id) {
+  async deleteBlocks(delete_block_id: number) {
     let block_hashes =
       this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
-    for (let hash in block_hashes) {
-      await this.deleteBlock(delete_block_id, hash);
+    console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
+    for (let entry of block_hashes) {
+      if (entry[0] <= delete_block_id) {
+        await this.deleteBlock(delete_block_id, entry[1]);
+      }
     }
   }
 
   async downgradeBlockchainData() {
+    console.debug("blockchain.downgradeBlockchainData");
     //
     // downgrade blocks still on the chain
     //
@@ -482,12 +487,13 @@ class Blockchain {
       prune_blocks_at_block_id
     );
 
-    for (let i = 0; i < block_hashes.length; i++) {
-      block_hashes_copy.push(block_hashes[i]);
+    for (const entry of block_hashes) {
+      if (prune_blocks_at_block_id >= entry[0]) {
+        block_hashes_copy.push(entry[1]);
+      }
     }
 
     for (let i = 0; i < block_hashes_copy.length; i++) {
-
       //
       // ask block to remove its transactions
       //
@@ -523,7 +529,6 @@ class Blockchain {
     // loop backwards through blockchain
     //
     for (let i = 0; i < 16; ++i) {
-
       current_block_id -= weights[i];
 
       //
@@ -538,7 +543,9 @@ class Blockchain {
       //
       let idx = 2 * i;
       let block_hash =
-        this.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+        this.app.blockring.returnLongestChainBlockHashByBlockId(
+          current_block_id
+        );
 
       if (block_hash[idx]) {
         fork_id[idx] = block_hash[idx];
@@ -554,11 +561,17 @@ class Blockchain {
   }
 
   // deletes a single block
-  async deleteBlock(deletedBlockId, deletedBlockHash) {
+  async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
+    console.debug(
+      "blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash
+    );
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
-    let block = this.blocks[deletedBlockHash];
+    let block = await this.loadBlockAsync(deletedBlockHash);
+    if (!block) {
+      console.trace("deleting non-existing block : " + deletedBlockHash);
+    }
 
     let blockFilename = this.app.storage.generateBlockFilename(block);
 
@@ -573,13 +586,13 @@ class Blockchain {
     wallet.deleteBlock(block);
 
     // removes utxoset data
-    await block.deleteBlock(this.utxoset);
+    await block.deleteBlock(this.app.utxoset);
 
     // deletes block from disk
     this.app.storage.deleteBlockFromDisk(blockFilename);
 
     // ask blockring to remove
-    this.blockring.deleteBlock(deletedBlockId);
+    this.app.blockring.deleteBlock(block);
 
     // remove from block index
     if (this.isBlockIndexed(deletedBlockHash)) {
@@ -766,7 +779,7 @@ class Blockchain {
   //
   // TODO - fetch from disk if needed, ergo async
   //
-  async loadBlockAsync(block_hash) {
+  async loadBlockAsync(block_hash: string) {
     if (this.blocks[block_hash]) {
       return this.blocks[block_hash];
     }
@@ -779,7 +792,6 @@ class Blockchain {
   // pre-loads any blocks needed to improve performance.
   //
   async onChainReorganization(block, lc = false) {
-
     //
     // skip out if earlier than we need to be vis-a-vis last_block_id
     //
@@ -824,10 +836,7 @@ class Blockchain {
       // save options
       //
       this.saveBlockchain();
-    } else {
-
     }
-
   }
 
   resetBlockchain() {
@@ -899,7 +908,7 @@ class Blockchain {
     );
     // staking tables
     let { res_spend, res_unspend, res_delete } =
-      this.staking.onChainReorganization(block, false);
+      this.app.staking.onChainReorganization(block, false);
     this.app.wallet.onChainReorganization(block, false);
     await this.onChainReorganization(block, false);
 
@@ -966,12 +975,13 @@ class Blockchain {
     // so we check that our block is the head of the longest-chain and only
     // update the genesis period when that is the case.
     //
-    let latest_block_id = longest_chain_block.returnId();
+    const latest_block_id: number = longest_chain_block.returnId();
     if (latest_block_id >= this.returnGenesisPeriod() * 2 + 1) {
       //
       // prune blocks
       //
-      let purge_bid = latest_block_id - this.returnGenesisPeriod() * 2;
+      const purge_block_id: number =
+        latest_block_id - this.returnGenesisPeriod() * 2;
       this.blockchain.genesis_block_id =
         latest_block_id - this.returnGenesisPeriod();
 
@@ -980,16 +990,18 @@ class Blockchain {
       // lowest_block_id that we have found. we use the purge_id to
       // handle purges.
       //
-      if (purge_bid > 0) {
-        await this.deleteBlocks(purge_bid);
+      if (purge_block_id > 0) {
+        await this.deleteBlocks(purge_block_id);
 
         //
         // update blockchain consensus variables
         //
-        this.blockchain.genesis_block_id = purge_bid + 1;
+        this.blockchain.genesis_block_id = purge_block_id + 1;
         this.blockchain.genesis_block_hash =
-          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_bid + 1);
-        let genesis_block = this.blocks[this.blockchain.genesis_block_hash];
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(
+            purge_block_id + 1
+          );
+        const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
         }
@@ -1166,7 +1178,7 @@ class Blockchain {
       // utxoset update
       //block.onChainReorganization(true);
       let { res_spend, res_unspend, res_delete } =
-        this.staking.onChainReorganization(block, true);
+        this.app.staking.onChainReorganization(block, true);
       this.app.wallet.onChainReorganization(block, true);
 
       //
