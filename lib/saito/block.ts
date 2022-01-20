@@ -1790,14 +1790,21 @@ class Block {
     // load block from disk if full is needed
     //
     if (block_type === "Full") {
-      const block = await this.app.storage.loadBlockByFilename(
-        this.app.storage.generateBlockFilename(this)
-      );
-      block.generateHashes();
+      //
+      // lite-browsers cannot load from disk
+      //
+      //if (this.app.BROWSER == 0) {
+        let block = await this.app.storage.loadBlockByFilename(
+          this.app.storage.generateBlockFilename(this)
+        );
+        block.generateHashes();
+        this.transactions = block.transactions;
+        this.generateMetadata();
+        this.block_type = BlockType.Full;
+      //} else {
+	//return false;
+      //}
 
-      this.transactions = block.transactions;
-      this.generateMetadata();
-      this.block_type = BlockType.Full;
       return true;
     }
 

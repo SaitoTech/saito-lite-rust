@@ -56,9 +56,10 @@ export default class Blockring {
     const insert_pos = block.returnId() % this.ring_buffer_length;
     const block_id = block.returnId();
     const block_hash = block.returnHash();
+
     if (this.containsBlockHashAtBlockId(block_id, block_hash)) {
-      const new_block_hashes = [];
-      const new_block_ids = [];
+      let new_block_hashes = [];
+      let new_block_ids = [];
       let idx_loop = 0;
       let new_lc_pos = 0;
 
@@ -73,12 +74,14 @@ export default class Blockring {
             new_lc_pos = idx_loop;
           }
           idx_loop += 1;
-        }
+        } else {
+	}
       }
 
       this.ring[insert_pos].block_hashes = new_block_hashes;
       this.ring[insert_pos].block_ids = new_block_ids;
       this.ring[insert_pos].lc_pos = new_lc_pos;
+    } else {
     }
   }
 
@@ -104,6 +107,7 @@ export default class Blockring {
   }
 
   onChainReorganization(block_id, block_hash, lc) {
+
     const insert_pos = block_id % this.ring_buffer_length;
 
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {

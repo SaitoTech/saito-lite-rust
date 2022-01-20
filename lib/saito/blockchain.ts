@@ -57,7 +57,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 2;
+    this.prune_after_blocks = 6;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
@@ -710,8 +710,6 @@ class Blockchain {
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
-    console.log("BLOCKCHAIN INFO: " + JSON.stringify(this.blockchain));
-
     //
     // prevent mempool from producing blocks while we load
     //
@@ -1157,8 +1155,24 @@ class Blockchain {
         break;
       }
       let bid = latest_block_id - i;
-      let previous_block_hash =
-        this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
+
+      //
+      // bid starts from the latest block, which will not have its blockring
+      // lc_pos variable correctly set yet, and thus can return the incorrect
+      // block_hash when fetching the previous_block_hash. so we want to 
+      // skip loading the previous_block_hash if this is the same as the 
+      // latest_block_id;
+      //
+      let insert_pos = bid % this.app.blockring.ring_buffer_length;
+
+      let previous_block_hash;
+
+      if (i == 0) {
+        previous_block_hash = block.returnPreviousBlockHash(); 
+      } else {
+        previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
+      }
+
       if (this.isBlockIndexed(previous_block_hash)) {
         let previous_block = await this.loadBlockAsync(previous_block_hash);
         await previous_block.upgradeBlockToBlockType("Full");
