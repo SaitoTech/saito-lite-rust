@@ -17,7 +17,6 @@ class Blackjack extends GameTemplate {
     this.description = 'This game is a playable demo under active development!';
     this.categories = "Games Arcade Entertainment";
     this.type            = "Classic Cardgame";
-    this.status     = "Beta";
 
     this.card_img_dir = '/blackjack/img/cards';
  

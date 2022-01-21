@@ -2,7 +2,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
   const players = (min, max) => {
     let selection = "";
     if (min === max) {
-      selection = `<div class="game-wizard-players-no-select" data-player="${min}">${min} player</div>`;
+      selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
     } else {
       selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
@@ -22,7 +22,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
           <div class="game-wizard-intro">
             <input type="hidden" name="gamename" value="${invite.msg.game}" />
             <div class="game-wizard-title">${mod.gamename}<div class="game-wizard-status">${mod.status ? mod.status : ""}</div></div>
-            <div class="game-wizard-description">${mod.description}</div>
+            <div class="game-wizard-description">${mod.description} <div class="game-wizard-post-description">[<span class="game-home-link">homepage</span>]</div></div>
           </div>
         </div>
         

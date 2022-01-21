@@ -404,7 +404,6 @@ module.exports = ArcadeMain = {
                 transaction
               );
 
-              salert("Game accepted - please wait");
               let newtx = mod.createAcceptTransaction(accepted_game);
               mod.app.network.propagateTransaction(newtx);
 

@@ -662,7 +662,10 @@ button.add-games {
   align-items:center;
   justify-content: space-between
 }
-
+.arcade-game-sidebar-return-to-arcade {
+  font-size: 1.6em;
+  margin-right: 10px;
+}
 .arcade-sidebar-active-games-body,
 .arcade-sidebar-active-leaderboard-body {
   border: 1px solid var(--saito-red);
@@ -758,6 +761,16 @@ button.add-games {
   max-height: 50vh;
   overflow-y: scroll;
 }
+.game-wizard-post-description {
+  font-size: 0.9em;
+  margin-left: 10px;
+  display: inline-block;
+}
+.game-home-link {
+  border-bottom: 1px dashed whitesmoke;
+  cursor: pointer;
+}
+
 .game-wizard-advanced-box {
   display: block;
   text-align: left;
@@ -831,13 +844,14 @@ button.add-games {
 .game-wizard-invite {
   padding: 10px;
   width: 100%;
-  height: 150px;
+  height: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 .game-wizard-other-btns{
-  display: flex;
+  display: none;
+  /* display: flex; */
   flex-direction: row;
   justify-content: space-between;
 }

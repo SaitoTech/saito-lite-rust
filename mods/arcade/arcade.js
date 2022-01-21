@@ -736,6 +736,8 @@ console.log("GAME IS OVER SO QUITTING!");
 
             if (game_found == false) {
 
+console.log("GAME NOT FOUND!");
+
               //
               // copied above reject all tx not to us NEW
               //
@@ -792,6 +794,8 @@ console.log("TIME LIMIT: " + currentTime + " --- " + this.app.options.games[i].t
             }
           }
 
+console.log("GAME NOT FOUND!");
+
           //
           // also possible this is game in our displayed list
           //
@@ -819,7 +823,12 @@ console.log("ALREADY INITED? " + already_inited);
             siteMessage(txmsg.module + ' invite accepted.', 20000);
             app.browser.sendNotification('Game Accepted', txmsg.module + ' invite accepted.', 'game-acceptance-notification');
 console.log("RECEIVE ACCEPT REQUEST WITH NULL BLOCK AND 0 CONF");
-            await this.receiveAcceptRequest(null, tx, 0, this.app);
+            let accepted = await this.receiveAcceptRequest(null, tx, 0, this.app);
+
+	    if (accepted == false) { 
+console.log("stopping as receiveAcceptRequest returned false.");
+	      return;
+	    }
 
             //
             // only launch game if it is for us -- observer mode?
@@ -836,6 +845,7 @@ console.log("telling game module to receiveAcceptTx");
 		if (game_mod.receiveAcceptRequest(null, tx, 0, this.app) == 0) { return; }
 	      }
 	    }
+console.log("... and launching the game");
             this.launchGame(txmsg.game_id);
           }
         }
@@ -1145,8 +1155,6 @@ console.log("telling game module to receiveAcceptTx");
 
   createOpenTransaction(gamedata, recipient="") {
 
-//alert("create Invite TX");
-
     let sendto = this.app.wallet.returnPublicKey();
     let moduletype = "Arcade";
 
@@ -1186,8 +1194,6 @@ console.log("telling game module to receiveAcceptTx");
 
 
   createInviteTransaction(app, data, gametx) {
-
-//alert("create Invite TX");
 
     let txmsg = gametx.returnMessage();
 
@@ -1412,8 +1418,6 @@ console.log("i am player zero, returning...");
           }
         }
       }
-
-console.log("LAUNCH GAME IDX: " + game_idx);
 
       //
       // we hit this if we have the sufficient number of joins but

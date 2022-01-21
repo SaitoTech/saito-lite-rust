@@ -243,6 +243,8 @@ class Block {
 
     if (block_type === "Pruned") {
       this.block_type = BlockType.Pruned;
+      this.transactions = [];
+      console.debug(`block ${this.returnHash()} type set as pruned`);
       return true;
     }
     return false;
@@ -914,7 +916,6 @@ class Block {
   }
 
   generateMetadata() {
-
     //
     // generate block hashes
     //
@@ -1070,7 +1071,9 @@ class Block {
   }
 
   hasGoldenTicket() {
-    if (this.has_examined_block) { return this.has_golden_ticket; }
+    if (this.has_examined_block) {
+      return this.has_golden_ticket;
+    }
     this.generateMetadata();
     return this.has_golden_ticket;
   }
@@ -1262,7 +1265,7 @@ class Block {
   //
   // returns a lite-version of the block
   //
-  returnLiteBlock(keylist = []): any {
+  returnLiteBlock(keylist = []): Block {
     let pruned_transactions = [];
 
     //
@@ -1276,9 +1279,9 @@ class Block {
           k = keylist.length;
         }
         if (this.transactions[i].isGoldenTicket()) {
-	  add_this_tx = 1;
-	  k = keylist.length;
-	}
+          add_this_tx = 1;
+          k = keylist.length;
+        }
       }
 
       if (add_this_tx == 1) {
@@ -1788,14 +1791,21 @@ class Block {
     // load block from disk if full is needed
     //
     if (block_type === "Full") {
-      const block = await this.app.storage.loadBlockByFilename(
-        this.app.storage.generateBlockFilename(this)
-      );
-      block.generateHashes();
+      //
+      // lite-browsers cannot load from disk
+      //
+      //if (this.app.BROWSER == 0) {
+        let block = await this.app.storage.loadBlockByFilename(
+          this.app.storage.generateBlockFilename(this)
+        );
+        block.generateHashes();
+        this.transactions = block.transactions;
+        this.generateMetadata();
+        this.block_type = BlockType.Full;
+      //} else {
+	//return false;
+      //}
 
-      this.transactions = block.transactions;
-      this.generateMetadata();
-      this.block_type = BlockType.Full;
       return true;
     }
 

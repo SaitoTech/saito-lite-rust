@@ -23,7 +23,6 @@ module.exports = ArcadeSidebar = {
     app.modules.respondTo("arcade-games").forEach(module => {
       let title = (module.gamename)? module.gamename: module.name;
       let status = (module.status)? `<div class="tiptext">This game is: ${module.status}.</div>`: "";
-     
       if (!document.getElementById(module.name)) {
         games_menu.innerHTML += `<li class="arcade-navigator-item tip" id="${module.name}">${title}${status}</li>`;
       }

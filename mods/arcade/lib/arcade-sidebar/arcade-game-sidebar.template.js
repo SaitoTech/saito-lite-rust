@@ -6,13 +6,12 @@ module.exports = ArcadeGameSidebarTemplate = (game_mod) => {
     <div class="arcade-controls">
       <div class="arcade-navigator-bars-menu">
         <div class="arcade-game-sidebar-header">
-          <i class="fas fa-arrow-circle-left navigation-return-to-arcade"></i><h2>${gamename}</h2>
+          <span class="arcade-game-sidebar-return-to-arcade"><i class="fas fa-arrow-circle-left navigation-return-to-arcade"></i></span><h2 style="width:100%">${gamename}</h2>
         </div>
         <div class="arcade-apps-wrapper">
           <ul class="arcade-apps" id="arcade-apps">
 	         <li class="arcade-navigator-item tip" id="new-game">New Game</li>
 	         <li class="arcade-navigator-item tip" id="how-to-play">How to Play</li>
-	         <li class="arcade-navigator-item tip navigation-return-to-arcade" id="return-to-arcade">See Other Games</li>
 	        </ul>
         </div>
       </div>
