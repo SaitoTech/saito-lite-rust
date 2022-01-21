@@ -95,6 +95,13 @@ body {
   height: var(--arcade-games-sidebar-height);
 }
 */
+
+.arcade-games {
+  font-size: 1.4em;
+}
+.arcade-games-wrapper {
+  background-color: black;
+} 
 .email-chat {
   height: unset;
   min-height: 300px;
@@ -1398,6 +1405,9 @@ span.rewards-row-name {
     width: 100%;
     max-height: calc(100vh - 7em);
   }
+  .arcade-sidebar {
+    display:none;
+  }
   .arcade-sidebar::after {
     content: "›";
     position: absolute;
@@ -1655,4 +1665,10 @@ span.rewards-row-name {
     z-index: -200;
   }
 }
+
+.arcade-games .arcade-navigator-item {
+  padding: 10px 0px 10px 20px;
+  list-style: none;
+}
+
 
