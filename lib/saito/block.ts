@@ -243,6 +243,7 @@ class Block {
 
     if (block_type === "Pruned") {
       this.block_type = BlockType.Pruned;
+      this.transactions = [];
       console.debug(`block ${this.returnHash()} type set as pruned`);
       return true;
     }
