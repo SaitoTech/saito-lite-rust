@@ -200,12 +200,8 @@ class Thirteen extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("showcard", "select", this.cardbox_callback);
-    if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.cardbox.skip_card_prompt = 1;
-    }
-    this.hud.card_width = 160; // cards 160: pixels wide
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
 
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
@@ -213,6 +209,7 @@ class Thirteen extends GameTemplate {
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        this.cardbox.skip_card_prompt = 0;   
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
@@ -4552,11 +4549,11 @@ console.log("CARDS: "+JSON.stringify(cards));
   returnCardItem(card) {
 
     if (card == "personal_letter") {
-      return `<div id="personal_letter" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}<img class="cardimg showcard" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png" /></div>`;
+      return `<div id="personal_letter" class="card hud-card cardbox-hud-status">${this.returnCardImage(card)}<img class="cardimg showcard" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png" /></div>`;
     }
     for (let z = 0; z < this.game.deck.length; z++) {
       if (this.game.deck[z].cards[card] != undefined) {
-        return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}</div>`;
+        return `<div id="${card.replace(/ /g,'')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card)}</div>`;
       }
     }
     return '<li class="card showcard" id="'+card+'">'+card+'</li>';

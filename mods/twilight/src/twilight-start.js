@@ -665,40 +665,24 @@ console.log(err);
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
 
-
     //
     // add card events -- text shown and callback run if there
     //
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("showcard", "select", this.cardbox_callback);
-    this.hud.addCardType("card", "select", this.cardbox_callback);
-    if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.cardbox.skip_card_prompt = 1;
-    } else {
-      this.hud.card_width = 110;
-    }
-
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
-
+        this.hud.card_width = 110;
+        this.cardbox.skip_card_prompt = 0;
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '.gameboard');
 
       } else {
-
-	let twilight_self = this;
-
         this.sizer.render(this.app, this);
         this.sizer.attachEvents(this.app, this, '.gameboard');
-
-
-        $('#gameboard').draggable({
-	  stop : function(event, ui) {
-	    twilight_self.saveGamePreference((twilight_self.returnSlug()+"-board-offset"), ui.offset);
-	  }
-	}); //redundant code with this.sizer.attachEvents
-
       }
 
     } catch (err) {}
@@ -4106,7 +4090,7 @@ this.startClock();
 
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
     twilight_self.attachCardboxEvents(function(card) {
-      if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; }
+      if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; } //You want to skip confirmations after Headline???
       twilight_self.playerTurnHeadlineSelected(card, player);
     });
 
@@ -8430,9 +8414,9 @@ this.startClock();
 
     if (this.interface == 1) {
       if (this.game.deck[0].cards[card] == undefined) {
-        return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
+        return `<div id="${card.replace(/ /g,'')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
       }
-      return `<div id="${card.replace(/ /g,'')}" class="card showcard cardbox-hud cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
+      return `<div id="${card.replace(/ /g,'')}" class="card showcard hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
     } else {
       if (this.game.deck[0].cards[card] == undefined) {
         return '<li class="card showcard" id="'+card+'">'+this.game.deck[0].cards[card].name+'</li>';

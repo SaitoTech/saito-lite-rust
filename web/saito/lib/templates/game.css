@@ -19,44 +19,11 @@ body {
   height: 100vh;
 }
 
+.gameboard {
+  user-select: none;
+}
 
-.hud {
-  display: grid;
-  grid-template-rows: 40px auto;
-  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  position: absolute;
-  left: 0%;
-  bottom: 0%;
-  float: none;
-  z-index: 40;
-  font-size: 1.2rem;
-  border-bottom: 0px;
-  transition: height 0.2s ease, width 0.2s ease, right 0.2s ease;
-  box-shadow: 0 0 3px 3px #BBB;
-  max-width: 100vw;
-}
-.hud-header {
-  display: grid;
-  width: 100%;
-  height: 40px;
-  cursor: move;
-  background-color: whitesmoke;
-  border-bottom: 1px solid var(--saito-skyline-grey);
-}
-.hud-body {
-  display: grid;
-  width: 100%;
-  max-width: 100vw;
-  height: 100%;
-  overflow-y: scroll;
-  /*cursor: pointer; This is a terrible idea, misleading UX*/
-  background-color: whitesmoke;
-/*  border-bottom: 1px solid var(--saito-skyline-grey); */
-}
-.cardimg-hud {
-  height: inherit;
-  width: inherit;
-}
+
 .game-overlay-menu {
   padding: 10px;
   background-color: whitesmoke;
@@ -149,6 +116,11 @@ game-overlay-cardlist-button {
 .game-overlay-cardlist-unselectable {
   opacity: 0.4;
 }
+
+
+/**************/
+/** GAME CARDBOX **/
+/**************/
 .game-cardbox {
   position:absolute;
   left: 15vw%;
@@ -160,6 +132,9 @@ game-overlay-cardlist-button {
   z-index: -10; /* start behind the board */
 }
 
+/**************/
+/** GAME MENU **/
+/**************/
 .game-menu {
   position: fixed;
   top: 0px;
@@ -229,6 +204,58 @@ game-overlay-cardlist-button {
   color: #222;
 }
 
+
+
+
+/**************/
+/** GAME HUD **/
+/**************/
+.hud {
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  position: absolute;
+  left: 0%;
+  bottom: 0%;
+  float: none;
+  z-index: 40;
+  font-size: 1.2rem;
+  border-bottom: 0px;
+  transition: height 0.2s ease, width 0.2s ease, right 0.2s ease;
+  box-shadow: 0 0 3px 3px #BBB;
+  max-width: 100vw;
+  padding: 0 20px 20px 20px;
+}
+.hud-header {
+  display: grid;
+  width: 100%;
+  height: 20px;
+  cursor: move;
+  background-color: transparent;
+}
+
+#hud-toggle-button{
+  justify-self: flex-end;
+  cursor: default;
+  color: whitesmoke;
+  font-size: 40px;
+  line-height: 20px;
+ /* margin-right: 20px;*/
+}
+
+
+.hud-body {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 260px;
+  /*height: 100%;*/
+  overflow-y: auto;
+  background-color: transparent;
+}
+
+.cardimg-hud {
+  height: inherit;
+  width: inherit;
+}
+
 .hud-controls {
   position: relative;
   width: 43px;
@@ -248,16 +275,6 @@ ul li a {
 .hud-hidden-vertical {
   height: 40px;
 }
-.status-message ul li , .status ul li {
-  width: 100%;
-  line-height: 3.5em;
-  border-top: 1px solid var(--saito-skyline-grey);
-  cursor: pointer;
-  list-style: none;
-}
-.status-message ul li:hover , .status ul li:hover {
-  background-color: #e7e7e7;
-}
 .status-overlay ul li {
   width: 100%;
   line-height: 3.5em;
@@ -266,38 +283,70 @@ ul li a {
   list-style: none;
 }
 
-.gameboard {
-  user-select: none;
-}
 
 
 .status-message {
   width: 500px;
+  max-width: 100vw;
   margin-left: auto;
   margin-right: auto;
   padding-top: 10px;
   padding-bottom: 10px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-radius: 5px;
-  background-color: #f5f5f5DD;
-  margin-bottom: 3px;
+  background-color: whitesmoke;
+  margin-bottom: 10px;
 }
-.status-message ul li {
-  width: 500px;
+
+.status-text-menu {
+  width: 400px;
+  height: 300px;
+  margin: auto;
+}
+
+
+.status-text-menu ul {
+  background-color: whitesmoke;
+  list-style-type: none;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 0px;
+}
+
+
+.status-text-menu ul li {
   margin-left: auto;
   margin-right: auto;
+  background-color: whitesmoke;
+  padding: 10px;
 }
+
+
+.status-text-menu ul li , .status ul li {
+  width: 100%;
+  line-height: 3.5em;
+  border-top: 1px solid var(--saito-skyline-grey);
+  cursor: pointer;
+  list-style: none;
+}
+.status-text-menu ul li:hover, .status ul li:hover {
+  background-color: #e7e7e7;
+}
+
+
+
 .status-cardbox {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr) );
+  overflow-y: auto;
   row-gap: 10px;
-  overflow-x: none;
-  /* overflow-x: scroll; */
-  /* height: 100%; */
-  height: unset;
+  height: fit-content;
   width: 100%;
-  padding: 0.25em;
-  margin-top: 5px;
+  /*padding: 10px;*/
 }
+
 .status-cardbox li { 
   list-style-type: none;
 }
@@ -396,105 +445,35 @@ ul li a {
 .hud-square .hud-body .status .status-cardbox {
   grid-template-columns: 1fr 1fr 1fr;
 }
+
 .hud-vertical {
-  width: 210px;
+  width: 280px;
   max-width: 210px;
   height: 100%;
   max-height: 100vh;
   top: 50px;
-  left: 105px;
-  box-shadow: none;
-  grid-template-rows: auto;
-}
-.hud-vertical .hud-header {
-  display: none;
-}
-.hud-vertical .hud-body .status .status-message {
-  max-width: 200px;
-}
-.hud-vertical .hud-body .status-overlay {
-  max-width: 200px;
-}
-.hud-vertical .hud-body .status-overlay .status-message {
-  max-width: 200px;
-}
-.hud-vertical .hud-body {
-  min-height: 100%;
-  min-width: 210px;
-  max-width: 210px;
-  border-right: 3px solid #bbb;
-}
-.hud-vertical .hud-body .status .status-cardbox {
-  grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px 50px 50px 50px;
+  left: 0;
 }
 
 .hud-long {
-  grid-template-rows: 20px auto;
   width: 1200px;
   max-width: 100vw;
   height: 280px;
   max-height: 280px;
   background-color: transparent;
   border-bottom: 0px;
-  box-shadow: 0 0 0 0 #888;
 }
-.hud-body {
-  min-height: 260px;
-  height: 260px;
-  background-color: transparent;
-  border-bottom: 0px;
-  box-shadow: 0 0 0 0 #888;
-}
-.hud-header {
-  opacity: 0.2;
-  background-color: #444;
-  width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  height: 20px;
-  grid-template-rows: auto;
-  border-bottom: 0px;
-  box-shadow: 0 0 0 0 #888;
-}
+
 .status-header i {
   float: left;
 }
-.status-cardbox {
-  grid-template-columns: repeat( auto-fit, minmax(40px, 1fr) );
-  overflow-y: scroll;
-}
 .status {
-  padding: 5px;
   text-align: center;
 }
 .status-overlay {
   height: 100%;
   padding: 5px;
   text-align: center;
-}
-.status-message {
-  background-color: whitesmoke;
-  box-shadow: 0 0 3px 1px #BBB
-  width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 100vw;
-}
-.status-message ul li {
-  background-color: whitesmoke;
-  padding: 10px;
-}
-.status-message ul li:hover {
-  background-color: #e7e7e7;
-}
-.status-message ul {
-  background-color: whitesmoke;
-  list-style-type: none;
-  margin-block-start: 0em;
-  margin-block-end: 0em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
-  padding-inline-start: 0px;
 }
 .status-header {
   background-color: whitesmoke;
@@ -510,15 +489,13 @@ ul li a {
     width: 0px;
     background: transparent;
 }
-.cardbox-hud {
+.hud-card {
   display: block;
   width: 10vw;
-  height: auto;
-/*  width: calc(10vw * 0.73); */
-/*  height: 10vw; */
+  height: fit-content;
   z-index: 2;
-  transform: translate(0%, 0%);
   justify-self: center;
+  margin-top: 5px;
 }
 .card {
   float: left;
@@ -526,6 +503,10 @@ ul li a {
   margin-left: auto;
   margin-right: auto;
 }
+
+/**************/
+/** GAME CRYPTO TRANSFER MANAGER **/
+/**************/
 .game-crypto-transfer-manager-container {
   min-width:300px;
   max-width: 95vw;
@@ -1065,9 +1046,9 @@ input#game_board_sizer {
 /*********************/
 @media screen and (orientation:portrait) and (max-width: 400px) {
 
-  .cardbox-hud {
+  .hud-card {
     width: calc(18vw * 0.811);
-    height: 18vw;
+    /*height: 18vw;*/
   }
 
   .status-cardbox {
@@ -1085,9 +1066,9 @@ input#game_board_sizer {
 
 @media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 650px) {
 
-  .cardbox-hud {
+  .hud-card {
     width: calc(13vw * 0.811);
-    height: 13vw;
+    /*height: 13vw;*/
   }
   .status-cardbox {
     grid-template-columns: repeat( auto-fit, minmax(12vw, 1fr) );
@@ -1104,13 +1085,13 @@ input#game_board_sizer {
 
 @media screen and (orientation:portrait) and (min-width: 650px) {
 
-  .cardbox-hud {
+  .hud-card {
     width: calc(10vw * 0.811);
-    height: 10vw;
+    /*height: 10vw;*/
   }
   .status-cardbox {
     grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );
-    grid-template-rows: repeat(auto-fit, 14vw);
+    /*grid-template-rows: repeat(auto-fit, 14vw);*/
   }
   .game-menu ul li {
     max-width: 115px;

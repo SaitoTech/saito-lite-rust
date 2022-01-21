@@ -440,7 +440,7 @@ body {
   left: 0;
 }
 
-.cardbox-hud {
+.hud-card {
   background-image: url(/twilight/img/Base.svg);
   background-size: contain;
   background-repeat: no-repeat;

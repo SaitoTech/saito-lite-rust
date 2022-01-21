@@ -29,8 +29,6 @@ class Solitrio extends GameTemplate {
     //
     this.boardgameWidth  = 5100;
 
-    //this.hud.mode = 1; // classic
-
   }
 
 

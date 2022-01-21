@@ -11020,7 +11020,7 @@ console.log("error initing chat: " + err);
     } catch (err) {}
 
 
-    this.hud.addCardType("textchoice", "", null);
+    this.cardbox.addCardType("textchoice", "", null);
 
     } catch (err) {}
 

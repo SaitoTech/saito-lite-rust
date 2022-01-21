@@ -32,9 +32,6 @@ class Poker extends GameTemplate {
   // manually announce arcade banner support
   //
   respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
 
     if (type == "arcade-carousel") {
       let obj = {};
@@ -54,6 +51,10 @@ class Poker extends GameTemplate {
         maxPlayers: this.maxPlayers,
       };
     }
+    if (super.respondTo(type) != null) {
+      return super.respondTo(type);
+    }
+
     return null;
   }
 
