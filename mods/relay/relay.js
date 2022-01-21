@@ -54,7 +54,7 @@ class Relay extends ModTemplate {
         tx.transaction.ts = new Date().getTime();
         tx.msg.request = message_request;
         tx.msg.data = message_data;
-        tx.sign(this.app);
+        //tx.sign(this.app);
 
         //
         // ... wrapped in transaction to relaying peer
@@ -72,6 +72,7 @@ class Relay extends ModTemplate {
                 //
                 // forward to peer
                 //
+console.log("relay peer message");
                 peer.sendRequest("relay peer message", tx.transaction);
 
             }

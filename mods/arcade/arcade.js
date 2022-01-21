@@ -1419,8 +1419,6 @@ console.log("i am player zero, returning...");
         }
       }
 
-console.log("LAUNCH GAME IDX: " + game_idx);
-
       //
       // we hit this if we have the sufficient number of joins but
       // are waiting for the original creator to hit the accept tx

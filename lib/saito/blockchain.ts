@@ -762,11 +762,6 @@ class Blockchain {
     //
     // new chain must have more accumulated work AND be longer
     //
-    console.log(
-      `blockchain.isNewChainTheLongestChain : old_bf = ${old_bf} && new_bf = ${new_bf}`,
-      new_chain,
-      old_chain
-    );
     return old_chain.length < new_chain.length && old_bf <= new_bf;
   }
 
@@ -1030,18 +1025,12 @@ class Blockchain {
       if (this.blocks[latest_block_hash]) {
         let block: Block = this.blocks[latest_block_hash];
 
-        //console.log("does block have GT: " + block.hasGoldenTicket() + " ----> " + block.returnId());
-
         if (i === 0) {
           if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
             golden_tickets_found = MIN_GOLDEN_TICKETS_DENOMINATOR;
             break;
           }
         }
-
-        console.log(
-          `does block [${block.returnHash()}] have GT: ${block.hasGoldenTicket()}`
-        );
 
         if (block.hasGoldenTicket()) {
           golden_tickets_found += 1;
