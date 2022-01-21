@@ -155,7 +155,7 @@ class Archive extends ModTemplate {
     //
     // prune periodically
     //
-    if (Math.random() < 0.0001) { this.pruneOldData(); }
+    if (Math.random() < 0.0001) { this.pruneOldTransactions(); }
 
   }
 
