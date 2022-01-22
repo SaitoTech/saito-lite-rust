@@ -354,6 +354,7 @@ console.log("##########################");
         if (file.path.substr(-2) !== "js") { return; }
         //if (file.path.substr(2).indexOf("/") > -1) { return; }
         if (file.path.indexOf("web/") > -1) { return; }
+        if (file.path.indexOf("src/") > -1) { return; }
         if (file.path.indexOf("www/") > -1) { return; }
         if (file.path.indexOf("lib/") > -1) { return; }
         if (file.path.indexOf("license/") > -1) { return; }
@@ -743,6 +744,7 @@ console.log(name + " is included? " + featured_app);
       bash_script_content += `unzip -o ${returnSlug(mod.name)}-${ts}-${hash}.zip -d ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)} \\*.js \\*.css \\*.html \\*.wasm` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/web` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/www` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/src` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/sql` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/DESCRIPTION.txt` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/BUGS.txt` + "\n";

@@ -77,11 +77,11 @@ module.exports = ArcadeForums = {
     if (!document.querySelector(".arcade-posts")) { 
 
       app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
-      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "arcade-posts");
+      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', "arcade-posts");
       for (let i = 0; i < sobj.length; i++) {
         app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts");
       }
-      app.browser.addElementToDom('<div class="forum-post-header">Arcade Games</div>', "arcade-posts");
+      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', "arcade-posts");
       for (let i = 0; i < obj.length; i++) {
         app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts");
       }

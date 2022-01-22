@@ -161,13 +161,10 @@ class Post extends ModTemplate {
 
   onPeerHandshakeComplete(app, peer) {
 
-
     if (app.modules.returnModuleBySlug("arcade")) { this.fetch = 1; }
     if (this.renderMethod === "none") { if (this.fetch == 0) { return; } else {
       if (app.modules.returnModuleBySlug("arcade")) { this.renderMethod = "arcade"; }	
     }}
-
-console.log("OK, fetching from server!");
 
     let forum_splash = 1;
 
@@ -187,6 +184,7 @@ console.log("OK, fetching from server!");
       }
     }
 
+
     if (forum_splash == 1) {
       sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
       this.sendPeerDatabaseRequestWithFilter(
@@ -197,11 +195,14 @@ console.log("OK, fetching from server!");
 
         (res) => {
 
+console.log("TESTING: A");
+
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
 		this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
 		this.forums[this.forums.length-1].post_num = res.rows[i].post_num;
+console.log("POSTNUM: " + this.forums[this.forums.length-1].post_num);
               }
             }
           }
@@ -704,7 +705,7 @@ console.log("heading into render: " + this.renderMethod);
 
 
 
-  createCommentTransaction(parent_id, comment) {
+  createCommentTransaction(parent_id, comment, images=null) {
 
       let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -716,7 +717,12 @@ console.log("heading into render: " + this.renderMethod);
       newtx.msg.comment = comment;
       newtx.msg.link = "";
       newtx.msg.forum = "";
-      newtx.msg.images = [];      
+      newtx.msg.images = [];
+      if (images != null) {
+	for (let i = 0; i < images.length; i++) {
+	  newtx.msg.images.push(images[i]);
+	}
+      }
 
       return this.app.wallet.signTransaction(newtx);
       

@@ -1,6 +1,7 @@
 export default {
   core: [
     'arcade/arcade.js',
+    'appstore/appstore.js',
     'archive/archive.js',
     'blackjack/blackjack.js',
     'chat/chat.js',
@@ -30,6 +31,7 @@ export default {
   ],
   lite: [
     'arcade/arcade.js',
+    'appstore/appstore.js',
     'archive/archive.js',
     'blackjack/blackjack.js',
     'chess/chess.js',

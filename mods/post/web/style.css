@@ -35,6 +35,9 @@
   grid-template-columns: 3em auto;
 }
 
+.post-teaser-back {
+  margin-left: 8px;
+}
 .post-teaser-thumbnail {
   float: left;
   min-width: 50px;
@@ -42,14 +45,15 @@
 
 .post-teaser-title {
   float: left;
-  font-size: 1.2em;
+  font-size: 25px;
   font-weight: bold;
   cursor: pointer;
 }
 
 .post-teaser-sublinks {
   clear: both;
-  font-size: 0.8em;
+  font-size: 18px;
+  padding-top: 2px;
 }
 
 .post-teaser-posted-by {
@@ -78,8 +82,12 @@
   cursor: pointer;
 }
 
+.post-details {
+  margin-left: 10px;
+}
 .post-view-user-identicon {
-  height: 1em;
+  height: 2em;
+  width: 2em;
 }
 
 .post-view-comment-edit {
@@ -93,7 +101,7 @@
   background-color: whitesmoke;
   padding: 2em;
   border-radius: 3px;
-  color: #444;
+  color: #333;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
   min-width: 55vw;
   width:700px;
@@ -200,9 +208,9 @@
 /* Post View */
 
 .post-view-container {
-  color: #444;
+  color: #333;
   width: 90vw;
-  max-width: 1000px;
+  max-width: 900px;
   max-height: 90vh;
   background-color: whitesmoke;
   padding: 20px;
@@ -222,8 +230,8 @@
   align-items: center;
 }
 .post-user-avatar .post-view-user-identicon {
-  width: 40px;
-  height: auto;
+  width: 50px;
+  height: 50px;
 }
 
 .post-view-thumbnail {
@@ -234,7 +242,7 @@
 }
 
 .post-view-title {
-  font-size: 1.2em;
+  font-size: 1.6em;
   font-weight: bold;
   margin: 1rem 0 3px;
 }
@@ -273,7 +281,8 @@
 .post-view-user {
   color: var(--saito-red);
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
+  font-size: 1.4em;
 }
 
 .post-view-actions {
@@ -287,14 +296,14 @@
   color: #888;
   cursor: pointer;
   display: flex;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   margin-right: 1rem;
   text-transform: capitalize;
 }
 .post-view-actions div:hover,
 .post-view-actions div:active,
 .post-view-actions div:focus {
-  color: #444;
+  color: #222;
 }
 .post-view-actions div svg {
   width: 16px;
@@ -302,9 +311,10 @@
 }
 
 .post-view-parent-comment {
-  line-height: 1.2em;
-  font-size: 1em;
+  line-height: 1.6em;
+  font-size: 1.2em;
   margin: 1rem 0rem 1.5rem 0rem;
+  
 }
 
 .post-view-parent-comment div {
@@ -313,7 +323,7 @@
 
 .post-view-container hr {
   margin: 0.8rem -20px 1rem;
-  border: #000 3px solid;
+  max-width: 98%;
   opacity: 0.18;
 }
 
@@ -322,21 +332,25 @@
 }
 
 .post-view-comments .post-user-avatar .post-view-user-identicon {
-  width: 24px;
+  width: 2em;
+  height: 2em;
 }
 .post-view-comments .post-view-user {
-  font-size: 0.8em;
+  font-size: 1.2em;
 }
 .post-view-comments .post-view-ts {
-  font-size: 0.6em;
+  font-size: 0.9em;
 }
 
 .post-view-textarea {
   border: 1px solid var(--saito-cyber-black-wash);
   padding: 1em;
-  min-height: 6em;
-  margin-bottom: 10px;
+  height: 220px;
+  margin-bottom: 20px;
   background-color: white;
+  max-height: 30vh;
+  overflow: hidden;
+  font-size: 1.15em;
 }
 
 .post-view-leave-comment {
@@ -353,8 +367,8 @@
 }
 
 .post-view-comment-text {
+  padding: 1em;
   font-size: 1.15em;
-  margin: 0.5rem 0 1rem 32px;
 }
 
 .post-view-comment-sublinks {
@@ -370,12 +384,11 @@
 }
 
 .post-view-ts {
-  font-size: 0.75em;
-  opacity: 0.6;
+  font-size: 1em;
+  opacity: 0.8;
 }
 
 .post-teaser-thumbnail {
-  background-image: url(/post/img/post-logo.png);
   background-size: contain;
   background-repeat: no-repeat;
   background-position-y: center;

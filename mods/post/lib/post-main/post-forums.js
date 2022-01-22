@@ -47,7 +47,7 @@ module.exports = PostForums = {
 	ft_mod    : modforums[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 245,
+	ft_pnum   : modforums[i].post_num,
 	ft_ptext  : "posts",
 	ft_ptitle : "Splitting Hands and Doubling Down",
 	ft_puser  : "david@saito",
@@ -76,7 +76,7 @@ module.exports = PostForums = {
 	ft_mod    : modgames[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 0,
+	ft_pnum   : modgames[i].post_num,
 	ft_ptext  : "",
 	ft_ptitle : "",
 	ft_puser  : "",
@@ -101,7 +101,6 @@ module.exports = PostForums = {
 
 
   attachEvents(app, mod) {
-
     app.modules.respondTo("arcade-posts").forEach(module => {
       if (module != null) {
         module.respondTo('arcade-posts').attachEvents(app, module);

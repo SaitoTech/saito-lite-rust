@@ -94,23 +94,25 @@ class Arcade extends ModTemplate {
   respondTo(type = "") {
     let arcade_mod = this;
     if (type == "header-menu") {
-      return {
-        returnMenu: function (app, mod) {
-	  return `
-            <div class="wallet-action-row" id="header-dropdown-create-game">
-              <span class="scan-qr-info"><i class="settings-fas-icon fas fa-copy"></i> Create Game</span>
-            </div>
-	  `;
-        },
-        attachEvents: function (app, mod) {
-          document.querySelectorAll('#header-dropdown-create-game').forEach((element) => {
-	    element.onclick = (e) => {
-	      GameCreateMenu.render(app, mod);
-	      GameCreateMenu.attachEvents(app, mod);
-	    }
-	  });
-        }
-      };
+      if (this.browser_active) {
+        return {
+          returnMenu: function (app, mod) {
+	    return `
+              <div class="wallet-action-row" id="header-dropdown-create-game">
+                <span class="scan-qr-info"><i class="settings-fas-icon fas fa-star"></i> Create Game</span>
+              </div>
+	    `;
+          },
+          attachEvents: function (app, mod) {
+            document.querySelectorAll('#header-dropdown-create-game').forEach((element) => {
+	      element.onclick = (e) => {
+	        GameCreateMenu.render(app, mod);
+	        GameCreateMenu.attachEvents(app, mod);
+	      }
+  	    });
+          }
+        };
+      }
     };
     if (type == "header-dropdown") {
       return {

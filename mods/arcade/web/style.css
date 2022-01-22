@@ -489,34 +489,31 @@ body {
 }
 
 .arcade-post-thumbnail {
-  background-image: url(/post/img/post-logo.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position-y: top;
-  width: 2.5em;
-  height: 2.5em;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
 }
 
 .arcade-post-header {
   align-items: center;
   display: flex;
   cursor: pointer;
-  margin-bottom: 0.2rem;
 }
 
 .arcade-post-sublinks {
-  display: flex;
-  align-items: center;
-  font-size: 0.85em;
-  padding-top: 2px;
+  font-size: 16px;
 }
 .arcade-post-sublinks > * {
-  margin: 0 0.5em 0 0;
+  float: left;
+  font-size: 16px;
+  margin-right: 10px;
 }
 
 .arcade-post-title {
+  float: left;
+  font-size: 25px;
   font-weight: bold;
-  font-size: 1em;
+  cursor: pointer;
 }
 
 .arcade-post-title > a {
@@ -548,6 +545,7 @@ body {
 }
 .arcade-post-back {
   padding-bottom: 15px;
+  margin-left: 18px;
 }
 .arcade-post-ts {
   font-size: 0.9em;

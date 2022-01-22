@@ -22,7 +22,13 @@ if (typeof Storage !== "undefined") {
   }
 
   if (bundle != null && bundle != "") {
+
+console.log("Bundle is: " + bundle);
+
     if (bundle != mySource) {
+
+console.log("removing old script");
+
       document.body.removeChild(sscript);
 
       const sscript2 = document.createElement("script");
