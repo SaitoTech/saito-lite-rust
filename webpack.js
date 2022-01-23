@@ -9,14 +9,9 @@ console.log(entry_path);
 console.log(output_path);
 console.log(output_filename);
 
-
-//
-// /Users/david/Programming/saito-lite-rust/bundler/1642877601134-af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262/config/index-1642877601134-af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262.js
-// /Users/david/Programming/saito-lite-rust/mods/appstore/bundler/dist
-// saito-1642877601134-af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262.js
-
 // const __dirname = path.resolve();
 let devtool = undefined;
+devtool = "eval";
 
 
 let entrypoint = "./../bundler/default/apps/lite/index.ts";

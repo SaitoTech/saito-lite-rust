@@ -100,6 +100,7 @@
 .post-create-container {
   background-color: whitesmoke;
   padding: 2em;
+  padding-bottom: 1.5em;
   border-radius: 3px;
   color: #333;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
@@ -135,6 +136,7 @@
 }
 
 .post-create-title {
+  display: none;
   border: none;
   padding: 10px 5px;
   border-radius: 0px;
@@ -411,6 +413,12 @@
     max-height: 80vh;
     overflow-y: auto;
   }
+  .post-teaser-title {
+    font-size: 17px;
+  }
+  .post-teaser-sublinks {
+    font-size: 12px;
+  }
 }
 
 /* horribly hacky but necessary */
@@ -594,6 +602,12 @@
   }
   .post-sidebar {
     z-index: -200;
+  }
+  .post-teaser-title {
+    font-size: 17px;
+  }
+  .post-teaser-sublinks {
+    font-size: 12px;
   }
 }
 

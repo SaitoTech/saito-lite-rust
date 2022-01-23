@@ -35,13 +35,14 @@ module.exports = PostCreateTemplate = (app, mod) => {
 
 
       <div id="post-create-image-link-container" class="post-create-image-link-container" style="
-        float: right;
-        font-size: 1.5em;
-        border: 1px solid grey;
-        margin: auto;
-        padding: 10px;
-        padding-bottom: 5px;
-        position: relative;
+float: right;
+font-size: 1.1em;
+border: 1px solid grey;
+margin: auto;
+padding: 10px;
+padding-bottom: 5px;
+position: relative;
+margin-top: 4px;
       "><i class="fas fa-link"></i></div>
 
 

@@ -79,7 +79,7 @@ console.log("adding comment here now");
     );
     mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig), function() {});
 
-    app.browser.addDragAndDropFileUploadToElement("comment-create", (file) => {
+    app.browser.addDragAndDropFileUploadToElement("post-view-leave-comment", (file) => {
       console.log(file);
       this.new_post.images.push(file);
       app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
