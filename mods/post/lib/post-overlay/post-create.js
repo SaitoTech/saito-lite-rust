@@ -61,9 +61,9 @@ module.exports = PostCreate = {
       }
 
       if (this.new_post.title === "") {
-	let maxlen = 50;
-	if (this.new_post.comment.length > 50) {
-	  this.new_post.title = this.new_post.comment.substr(0, 50) + "..."; 
+	let maxlen = 80;
+	if (this.new_post.comment.length > maxlen) {
+	  this.new_post.title = this.new_post.comment.substr(0, maxlen) + "..."; 
 	} else {
 	  this.new_post.title = this.new_post.comment;
 	}

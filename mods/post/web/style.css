@@ -403,22 +403,8 @@
   width: 3em;
 }
 
-@media only screen and (max-width: 600px) {
-  .post-create-header {
-    flex-direction: column;
-    flex-flow: column;
-  }
-  .post-create-container,
-  .post-view-container {
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  .post-teaser-title {
-    font-size: 17px;
-  }
-  .post-teaser-sublinks {
-    font-size: 12px;
-  }
+
+.post-submit-btn {
 }
 
 /* horribly hacky but necessary */
@@ -601,6 +587,7 @@
     grid-template-columns: 0px auto;
   }
   .post-sidebar {
+    display: none;
     z-index: -200;
   }
   .post-teaser-title {
@@ -609,6 +596,73 @@
   .post-teaser-sublinks {
     font-size: 12px;
   }
+}
+
+
+@media only screen and (max-width: 600px) {
+  .post-create-header {
+    flex-direction: column;
+    flex-flow: column;
+  }
+  .post-view-container {
+    max-height: 80vh;
+    max-width: 90vw;
+    overflow-y: auto;
+  }
+  .post-teaser-title {
+    font-size: 17px;
+  }
+  .post-teaser-sublinks {
+    font-size: 12px;
+  }
+  .post-sidebar {
+    display: none;
+  }
+  .post-create-textarea {
+    border: 1px solid var(--saito-cyber-black-wash);
+    padding: 1em;
+    height: 420px;
+    margin-bottom: 20px;
+    background-color: white;
+    max-height: 50vh;
+    overflow: hidden;
+    font-size: 1.15em;
+  }
+  .post-container {
+    padding: 10px;
+    grid-template-columns: 8fr;
+    height: inherit;
+    max-height: inherit;
+    overflow: hidden;
+    padding-top: 0px;
+    margin-top: 90px;
+  }
+  .forum-topic-title {
+    font-size: 1em;
+  }
+  .forum-topic-description {
+    font-size: 0.85em;
+  }
+  .forum-topic-center {
+    display: grid;
+    padding: 10px;
+    grid-template-columns: 8fr;
+    height: inherit;
+    max-height: inherit;
+    overflow: hidden;
+  }
+  .post-create-container {
+    background-color: whitesmoke;
+    padding: 2em;
+    padding-bottom: 1.5em;
+    border-radius: 3px;
+    color: #333;
+    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+    min-width: 55vw;
+    width:580px;
+    max-width: 90vw;
+    font-size: 1.2em;
+}
 }
 
 

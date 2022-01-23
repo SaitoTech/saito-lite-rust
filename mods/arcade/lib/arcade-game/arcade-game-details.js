@@ -87,19 +87,18 @@ module.exports = ArcadeGameDetails = {
     };
 
     //go to game home page
-    document.getElementById("game-home-btn").addEventListener("click", (e)=>{
+    document.querySelector(".game-home-link").addEventListener("click", (e)=>{
       let options = getOptions();
       let gamemod = app.modules.returnModule(options.gamename);
       window.location = "/arcade/?game="+gamemod.returnSlug();
     });
 
     //Query game instructions
-    document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
-       let options = getOptions();
-       let gamemod = app.modules.returnModule(options.gamename);
-       gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
-      
-    });
+    //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
+    //   let options = getOptions();
+    //   let gamemod = app.modules.returnModule(options.gamename);
+    //   gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+    //});
 
 
     //

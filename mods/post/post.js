@@ -321,7 +321,7 @@ console.log("heading into render: " + this.renderMethod);
       newtx.msg.link = link;
       newtx.msg.forum = forum;
       newtx.msg.images = images;
-      
+
       return this.app.wallet.signTransaction(newtx);
       
   }
@@ -334,8 +334,7 @@ console.log("heading into render: " + this.renderMethod);
 	plitetx.msg.images = [];
         plitetx = this.app.wallet.signTransaction(plitetx);
         plitetx = JSON.stringify(plitetx.transaction);
-
-    if (txmsg.title == "") { return; }
+    let ptitle = txmsg.title;
 
     let sql = `
         INSERT INTO 
@@ -382,7 +381,7 @@ console.log("heading into render: " + this.renderMethod);
 	$pparent_id	: '' ,
 	$ptype		: 'post' ,
 	$ppublickey	: tx.transaction.from[0].add ,
-	$ptitle		: txmsg.title ,
+	$ptitle		: ptitle ,
 	$pimg		: "" ,
 	$ptext		: txmsg.comment ,
 	$pforum		: txmsg.forum ,

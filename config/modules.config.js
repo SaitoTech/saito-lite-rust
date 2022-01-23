@@ -18,6 +18,7 @@ export default {
     'qrscanner/qrscanner.js',
     'relay/relay.js',
     'registry/registry.js',
+    'saitoforum/saitoforum.js',
     'settlers/settlers.js',
     'settings/settings.js',
     'solitrio/solitrio.js',
@@ -27,7 +28,6 @@ export default {
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
-    'saitoforum/saitoforum.js',
   ],
   lite: [
     'arcade/arcade.js',
@@ -49,6 +49,7 @@ export default {
     'post/post.js',
     'relay/relay.js',
     'registry/registry.js',
+    'saitoforum/saitoforum.js',
     'settings/settings.js',
     'settlers/settlers.js',
     'solitrio/solitrio.js',
@@ -58,6 +59,5 @@ export default {
     'wordblocks/wordblocks.js',
     'website/website.js',
     'wuziqi/wuziqi.js',
-    'saitoforum/saitoforum.js',
   ]
 }
