@@ -2,7 +2,6 @@ const ArcadeInviteTemplate = require('./arcade-invite.template');
 module.exports = ArcadeMainTemplate = (app, mod) => {
   return `
     <div id="arcade-main" class="arcade-main">
-
       <div class="alert-banner">
         <div class="alert-icon">&#9888;</div>
         <div class="alert-body">

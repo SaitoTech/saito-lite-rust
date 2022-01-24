@@ -30,7 +30,9 @@ class Arcade extends ModTemplate {
     this.old_game_removal_delay = 2000000;
     this.is_initializing = false;
     this.initialization_timer = null;
+
     this.viewing_arcade_initialization_page = 0;
+    this.viewing_game_homepage = 0;
 
     this.icon_fa = "fas fa-gamepad";
 
@@ -179,11 +181,20 @@ console.log("set post to arcade rendermethod");
     //
     // load open games from server
     //
+    let sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`;
+    if (this.viewing_game_homepage == 1) {
+      let gameslug = app.browser.returnURLParameter("game");
+console.log(gameslug);
+      let gamemod = app.modules.returnModuleBySlug(gameslug);
+console.log(gamemod.name);
+      sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff} AND module = "${gamemod.name}"`;
+    }
+
     this.sendPeerDatabaseRequestWithFilter(
 
         "Arcade",
 
-        `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`,
+	sql,
 
         (res) => {
           if (res.rows) {
@@ -246,6 +257,8 @@ console.log("set post to arcade rendermethod");
     this.overlay.attachEvents(app, this);
 
     let x = app.browser.returnURLParameter("game");
+    if (x) { this.viewing_game_homepage = 1; }
+
     if (x) {
       ArcadeGameSidebar.render(app, this);
       ArcadeGameSidebar.attachEvents(app, this);
