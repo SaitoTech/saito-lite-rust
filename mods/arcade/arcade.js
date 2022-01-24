@@ -3,6 +3,7 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ArcadeMain = require('./lib/arcade-main/arcade-main');
 const ArcadeSidebar = require('./lib/arcade-sidebar/arcade-sidebar');
+const GameCreateMenu = require('./lib/arcade-main/game-create-menu');
 const ArcadeGameSidebar = require('./lib/arcade-sidebar/arcade-game-sidebar');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const getMockGames = require('./mockinvites.js');
@@ -91,6 +92,28 @@ class Arcade extends ModTemplate {
   }
 
   respondTo(type = "") {
+    let arcade_mod = this;
+    if (type == "header-menu") {
+      if (this.browser_active) {
+        return {
+          returnMenu: function (app, mod) {
+	    return `
+              <div class="wallet-action-row" id="header-dropdown-create-game">
+                <span class="scan-qr-info"><i class="settings-fas-icon fas fa-star"></i> Create Game</span>
+              </div>
+	    `;
+          },
+          attachEvents: function (app, mod) {
+            document.querySelectorAll('#header-dropdown-create-game').forEach((element) => {
+	      element.onclick = (e) => {
+	        GameCreateMenu.render(app, mod);
+	        GameCreateMenu.attachEvents(app, mod);
+	      }
+  	    });
+          }
+        };
+      }
+    };
     if (type == "header-dropdown") {
       return {
         name: this.appname ? this.appname : this.name,

@@ -699,7 +699,11 @@ class Transaction {
     return buffer;
   }
 
-  sign(app) {
+  //
+  // everything but the signature
+  //
+  presign(app) {
+
     //
     // set slip ordinals
     //
@@ -713,6 +717,14 @@ class Transaction {
     if (this.transaction.m == "") {
       this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
     }
+
+  }
+  sign(app) {
+
+    //
+    // everything but the signature
+    //
+    this.presign(app);
 
     this.transaction.sig = app.crypto.signBuffer(
       this.serializeForSignature(app),

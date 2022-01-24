@@ -47,7 +47,7 @@ module.exports = PostForums = {
 	ft_mod    : modforums[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 245,
+	ft_pnum   : modforums[i].post_num,
 	ft_ptext  : "posts",
 	ft_ptitle : "Splitting Hands and Doubling Down",
 	ft_puser  : "david@saito",
@@ -76,7 +76,7 @@ module.exports = PostForums = {
 	ft_mod    : modgames[i].returnSlug(),
 	ft_title  : title,
 	ft_desc   : desc,
-	ft_pnum   : 0,
+	ft_pnum   : modgames[i].post_num,
 	ft_ptext  : "",
 	ft_ptitle : "",
 	ft_puser  : "",
@@ -87,11 +87,11 @@ module.exports = PostForums = {
    
 
     if (document.querySelector(".post-forums")) { 
-      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "post-forums");
+      //app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "post-forums");
       for (let i = 0; i < sobj.length; i++) {
         app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), "post-forums");
       }
-      app.browser.addElementToDom('<div class="forum-post-header">Post Games</div>', "post-forums");
+      //app.browser.addElementToDom('<div class="forum-post-header">Post Games</div>', "post-forums");
       for (let i = 0; i < obj.length; i++) {
         app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), "post-forums");
       }
@@ -101,7 +101,6 @@ module.exports = PostForums = {
 
 
   attachEvents(app, mod) {
-
     app.modules.respondTo("arcade-posts").forEach(module => {
       if (module != null) {
         module.respondTo('arcade-posts').attachEvents(app, module);

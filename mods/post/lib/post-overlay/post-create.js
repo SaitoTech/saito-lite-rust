@@ -28,12 +28,14 @@ module.exports = PostCreate = {
     //document.querySelector('.post-create-header-image').onclick = (e) =>      { this.showTab("image"); }
     document.querySelector('.post-create-image-link-container').onclick = (e) =>       { this.showTab("link"); }
 
+/*
     app.browser.addDragAndDropFileUploadToElement("post-create-image", (file) => {
       console.log(file);
       this.new_post.images.push(file);
       app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
       this.attachEvents(app, mod);
     });
+*/
 
     app.browser.addDragAndDropFileUploadToElement("post-create-container", (file) => {
       console.log(file);
@@ -53,16 +55,15 @@ module.exports = PostCreate = {
       this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
-
       if (this.new_post.title === "" && this.new_post.content === "") {
         salert("Cannot submit empty post!");
         return;
       }
 
       if (this.new_post.title === "") {
-	let maxlen = 50;
-	if (this.new_post.comment.length > 50) {
-	  this.new_post.title = this.new_post.comment.substr(0, 50) + "..."; 
+	let maxlen = 80;
+	if (this.new_post.comment.length > maxlen) {
+	  this.new_post.title = this.new_post.comment.substr(0, maxlen) + "..."; 
 	} else {
 	  this.new_post.title = this.new_post.comment;
 	}
@@ -102,6 +103,17 @@ module.exports = PostCreate = {
 
 
   showTab(tab) {
+
+    if (tab === "link") {
+      try {
+        if (document.querySelector(".post-create-link").style.display === "block") {
+	  tab = "discussion";
+	}
+      } catch (err) {
+
+      }
+    }
+
 
     let classname = ".post-create-header-"+tab;
 

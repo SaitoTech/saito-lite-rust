@@ -10,7 +10,10 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
   // from timestamp to friendly time
   const time =  datetimeRelative(tx.transaction.ts);
   const avatar = app.keys.returnIdenticon(tx.transaction.from[0].add);
-  const username = app.keys.returnUsername(tx.transaction.from[0].add);
+  let username = app.keys.returnUsername(tx.transaction.from[0].add);
+  if (tx.transaction.from[0].add.indexOf(username.substring(0, 10)) === 0) {
+    username = tx.transaction.from[0].add;
+  }
   const title = tx.msg.title;
   const text = tx.msg.text;
 
@@ -95,8 +98,15 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
     <div id="post-view-comments" class="post-view-comments">
     </div>
     <div id="post-view-leave-comment" class="post-view-leave-comment">
-      <div>Leave a comment: </div>
       <div id="comment-create" class="post-view-textarea markdown medium-editor-element" placeholder="Your post..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true" data-medium-editor-editor-index="1" medium-editor-index="37877e4c-7415-e298-1409-7dca41eed3b8"></div>
+
+
+      <div id="post-create-image-preview-container" class="post-create-image-preview-container">
+      </div>
+
+
+
+
       <button class="post-submit-btn">Submit</button>
     </div>
   </div>

@@ -14,6 +14,10 @@ class Archive extends ModTemplate {
 
     this.description = "A tool for storing transactions for asynchronous retreival.";
     this.categories  = "Utilities";
+
+    this.last_clean_on = Date.now();
+    this.cleaning_period_in_ms = 1000000;
+
   }
 
 
@@ -88,7 +92,7 @@ class Archive extends ModTemplate {
     let sql = "";
     let params = {};
 
-    for (let i = 0; i < tx.transaction.to.length; i++) {    
+    for (let i = 0; i < tx.transaction.to.length; i++) {
       sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
@@ -105,7 +109,7 @@ class Archive extends ModTemplate {
     //
     // sanity check that we want to be saving this for the FROM fields
     //
-    for (let i = 0; i < tx.transaction.from.length; i++) {    
+    for (let i = 0; i < tx.transaction.from.length; i++) {
       sql = "INSERT OR IGNORE INTO txs (sig, publickey, tx, ts, type) VALUES ($sig, $publickey, $tx, $ts, $type)";
       params = {
         $sig		:	tx.transaction.sig ,
@@ -120,12 +124,13 @@ class Archive extends ModTemplate {
     //
     // prune periodically
     //
-    if (Math.random() < 0.0001) { this.pruneOldTransactions(); }
-
+    if ((Date.now() - this.last_clean_on) >= this.cleaning_period_in_ms) { await this.pruneOldTransactions(); }
   }
 
 
   async pruneOldTransactions() {
+    console.debug("archive.pruneOldTransactions");
+    this.last_clean_on = Date.now();
 
     let ts = (new Date().getTime()) - 100000000;
     let sql = "DELETE FROM txs WHERE ts < $ts AND type = $type";
@@ -133,8 +138,7 @@ class Archive extends ModTemplate {
         $ts		:	ts ,
         $type		:	"Chat"
     };
-    this.app.storage.executeDatabase(sql, params, "archive");
-
+    await this.app.storage.executeDatabase(sql, params, "archive");
   }
 
 
@@ -155,7 +159,7 @@ class Archive extends ModTemplate {
     //
     // prune periodically
     //
-    if (Math.random() < 0.0001) { this.pruneOldData(); }
+    if ((Date.now() - this.last_clean_on) >= this.cleaning_period_in_ms) { await this.pruneOldTransactions(); }
 
   }
 

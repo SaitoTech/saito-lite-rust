@@ -11,6 +11,13 @@ module.exports = PostView = {
     mod.overlay = new SaitoOverlay(app);
     mod.comments = [];
 
+    this.new_post = {};
+    this.new_post.images = [];
+    this.new_post.title = "";
+    this.new_post.comment = "";
+    this.new_post.link = "";
+    this.new_post.forum = "";
+
     //
     // fetch comments from server
     //
@@ -18,6 +25,9 @@ module.exports = PostView = {
     //
     //let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" AND parent_id != "" ORDER BY ts DESC`;
     let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" ORDER BY ts ASC`;
+
+    mod.originalSig = sig;
+
     mod.sendPeerDatabaseRequestWithFilter(
 
         "Post" ,
@@ -25,12 +35,14 @@ module.exports = PostView = {
         sql ,
 
         (res) => {
+          try { document.getElementById("post-loader-spinner").style.display = "none"; } catch (err) {}
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
                 let add_this_comment = 1;
                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                 let txmsg = tx.returnMessage();
+console.log("add comment... ");
                 for (let z = 0; z < mod.comments.length; z++) {
                   if (mod.comments[z].transaction.sig == tx.transaction.sig) { add_this_comment = 0; }
                 }
@@ -52,7 +64,7 @@ console.log("error showing comment or gallery");
 		  }
 	        }
                 if (add_this_comment == 1) {
-                  tx.originalSig = res.rows[i].id;
+console.log("adding comment here now");
                   mod.comments.push(tx);
                 }
               }
@@ -66,10 +78,16 @@ console.log("error showing comment or gallery");
         }
     );
     mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig), function() {});
+
+    app.browser.addDragAndDropFileUploadToElement("post-view-leave-comment", (file) => {
+      console.log(file);
+      this.new_post.images.push(file);
+      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+      this.attachEvents(app, mod);
+    }, false);
+
   },
   rerender(app, mod, sig) {
-
-
 
   },
 
@@ -78,14 +96,31 @@ console.log("error showing comment or gallery");
 
       let comment = document.querySelector('.post-view-textarea').innerHTML;
       document.querySelector('.post-view-textarea').innerHTML = "";
-      if (comment != ""){
-        let newtx = mod.createCommentTransaction(sig, comment);
+      let images = this.new_post.images;
+
+      if (comment != "" || images.length > 0) {
+
+	try {
+	  document.getElementById("post-view-leave-comment").style.display = "none";
+	  document.getElementById("post-create-image-preview-container").innerHTML = "";
+	  alert("Please wait while we broadcast your message...");
+	} catch (err) {
+	}
+
+	setTimeout(() => {
+        let newtx = mod.createCommentTransaction(mod.originalSig, comment, images);
         app.network.propagateTransaction(newtx);
 
         newtx.children = 0;
         mod.comments.push(newtx);
         this.addComment(app, mod, newtx);
         this.attachEvents(app, mod, sig);  
+	try {
+	  document.getElementById("post-view-leave-comment").style.display = "block";
+	} catch (err) {
+	}
+	}, 200);
+
       }
     }
 
@@ -222,7 +257,17 @@ console.log("error showing comment or gallery");
 
 
   addComment(app, mod, comment) {
+
+    comment.originalSig = mod.originalSig;
     app.browser.addElementToDom(PostViewCommentTemplate(app, mod, comment), "post-view-comments");
+
+    this.new_post = {};
+    this.new_post.images = [];
+    this.new_post.title = "";
+    this.new_post.comment = "";
+    this.new_post.link = "";
+    this.new_post.forum = "";
+
   }
 
 

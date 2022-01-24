@@ -93,6 +93,7 @@ module.exports = PostMain = {
       document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = txmsg.title;
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = fuser;
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = fdate;
+      document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = fpost_num;
 
       document.querySelector(`#forum-topic-latest-post-image-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";

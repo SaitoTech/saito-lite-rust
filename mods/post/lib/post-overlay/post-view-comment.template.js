@@ -5,7 +5,10 @@ module.exports = PostViewCommentTemplate = (app, mod, tx) => {
 
   const time =  datetimeRelative(tx.transaction.ts);
   const avatar = app.keys.returnIdenticon(tx.transaction.from[0].add);
-  const username = app.keys.returnUsername(tx.transaction.from[0].add);
+  let username = app.keys.returnUsername(tx.transaction.from[0].add);
+  if (tx.transaction.from[0].add.indexOf(username.substring(0, 10)) === 0) {
+    username = tx.transaction.from[0].add;
+  }
   const title = txmsg.comment.substr(0, 35);
 
 
@@ -44,7 +47,24 @@ module.exports = PostViewCommentTemplate = (app, mod, tx) => {
           <div id="post-view-ts" class="post-view-ts"> ${time}</div>
         </div>
       </div>
-      <div data-id="${tx.originalSig}" id="post-view-comment-text" class="post-view-comment-text">${txmsg.comment}</div>
+      <div data-id="${tx.originalSig}" id="post-view-comment-text" class="post-view-comment-text">
+
+      ${txmsg.comment} 
+
+    `;
+
+    if (txmsg.images.length > 0) {
+      html += '<div id="post-view-gallery" class="post-view-gallery">';
+      for (let i = 0; i < txmsg.images.length; i++) {
+        html += `<img class="post-view-gallery-image" src="${txmsg.images[i]}" />`;
+      }
+      html += '</div>';
+    } else {
+      html += '<div id="post-view-gallery" style="display:none" class="post-view-gallery"></div>';
+    }
+
+  html += `
+      </div>
     </div>
   `;
 

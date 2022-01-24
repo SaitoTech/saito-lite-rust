@@ -54,7 +54,7 @@ class Relay extends ModTemplate {
         tx.transaction.ts = new Date().getTime();
         tx.msg.request = message_request;
         tx.msg.data = message_data;
-        //tx.sign(this.app);
+        tx.presign(this.app);
 
         //
         // ... wrapped in transaction to relaying peer
