@@ -1,14 +1,13 @@
 module.exports = {
   core: [
     'appstore/appstore.js',
-    'archive/archive.js',
+    'arcade/arcade.js',
     'archive/archive.js',
     'chat/chat.js',
     'chess/chess.js',
     'email/email.js',
     'encrypt/encrypt.js',
     'explorer/explorer.js',
-    'imperium/imperium.js',
     'myqrcode/myqrcode.js',
     'poker/poker.js',
     'qrscanner/qrscanner.js',
@@ -27,7 +26,6 @@ module.exports = {
     'email/email.js',
     'debug/debug.js',
     'encrypt/encrypt.js',
-    'imperium/imperium.js',
     'myqrcode/myqrcode.js',
     'qrscanner/qrscanner.js',
     'poker/poker.js',

@@ -181,7 +181,7 @@ console.log("##########################");
         //
         file_array.forEach(file => {
           let fileReadStream = fs.createReadStream(file);
-          var fileArray = path.relative(process.cwd(), file).split('/');
+          var fileArray = path.relative(process.cwd(), file).split(path.sep);
           fileArray.splice(0, 2);
           let filename = fileArray.join('/');
           // let pathBasename = path.basename(file);
