@@ -2035,10 +2035,6 @@ class Poker extends GameTemplate {
     );
   }
 
-  addMove(mv) {
-    this.moves.push(mv);
-  }
-
   endTurn(nextTarget = 0) {
     this.updateStatus("Waiting for information from peers....");
 

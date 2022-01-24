@@ -2339,10 +2339,6 @@ class Wordblocks extends GameTemplate {
     );
   }
 
-  addMove(mv) {
-    this.moves.push(mv);
-  }
-
   endTurn() {
     this.updateStatusWithTiles("Waiting for information from peers....");
     let extra = {};

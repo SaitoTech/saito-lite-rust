@@ -1002,12 +1002,6 @@ class Blackjack extends GameTemplate {
 
 
 
-  addMove(mv) {
-    this.moves.push(mv);
-  }
-
-
-
   /*
   Sends a message to restart the queue
   */

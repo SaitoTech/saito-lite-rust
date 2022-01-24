@@ -6426,10 +6426,6 @@ this.startClock();
   ///////////////////////
   // Twilight Specific //
   ///////////////////////
-  addMove(mv) {
-    this.moves.push(mv);
-  }
-
   removeMove() {
     return this.moves.pop();
   }

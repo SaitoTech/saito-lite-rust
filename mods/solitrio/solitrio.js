@@ -671,10 +671,6 @@ class Solitrio extends GameTemplate {
   }
 
 
-  addMove(mv) {
-    this.moves.push(mv);
-  }
-
 }
 
 module.exports = Solitrio;

@@ -1,32 +1,10 @@
 
 
-.status-icon-menu {
-  width:550px;
-  height: 110px;
-  margin:auto;
-  display: flex;
-}
-
 .status-message {
   padding-left: 0;
   padding-right: 0;
 }
 
-.menu_icon{
-  margin: 5px;
-  width: 100px;
-  color: var(--saito-white);
-}
-
-.menu_icon_icon {
-  max-width: 100px;
-  max-height: 100px;
-}
-
-i.menu_icon_icon{
-  font-size: 60px;
-  margin-bottom: 0.5em;
-}
 
 .epidemic_overlay {
   display: block;

@@ -18666,9 +18666,6 @@ this.game.state.end_round_scoring = 0;
   ///////////////////////
   // Imperium Specific //
   ///////////////////////
-  addMove(mv) {
-    this.moves.push(mv);
-  };
   prependMove(mv) {
     this.moves.unshift(mv);
   };
