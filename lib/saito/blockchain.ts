@@ -391,6 +391,11 @@ console.log("affixing callbacks");
         let starting_block_id = block.returnId() - this.callback_limit;
         let block_id_in_which_to_delete_callbacks =
           block.returnId() - this.callback_limit;
+        let block_id_in_which_running_callbacks_impossible_because_of_pruning =
+          block.returnId() - this.prune_after_blocks;
+        if (block_id_in_which_running_callbacks_impossible_because_of_pruning > block_id_in_which_to_delete_callbacks) {
+	  block_id_in_which_to_delete_callbacks = block_id_in_which_running_callbacks_impossible_because_of_pruning;
+	}
         if (starting_block_id < 1) {
           starting_block_id = 1;
         }
