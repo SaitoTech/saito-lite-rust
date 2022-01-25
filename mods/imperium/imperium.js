@@ -30285,7 +30285,10 @@ addUIEvents() {
   this.displayFactionDashboard();
   var html = this.returnTokenDisplay(); 
 
+console.log("A");
+console.log("HTML is " + html);
   document.querySelector('.hud-header').append(this.app.browser.htmlToElement(html));
+console.log("A2");
 
 }
 
@@ -30589,12 +30592,15 @@ updateSectorGraphics(sector) {
       $(old_images).remove();
       let divsector2 = "#hex_bg_" + sector;
       let player_color = "player_color_" + player;
+console.log("B1");
       for (let i = 0; i < ship_graphics.length; i++) {
         $(divsector2).append('<img class="sector_graphics ' + player_color + ' ship_graphic sector_graphics_space sector_graphics_space_' + sector + '" src="/imperium/img/frame/' + ship_graphics[i] + '" />');
       }
+console.log("B2");
       for (let i = 0; i < space_frames.length; i++) {
         $(divsector2).append('<img style="opacity:0.8" class="sector_graphics sector_graphics_space sector_graphics_space_' + sector + '" src="/imperium/img/frame/' + space_frames[i] + '" />');
       }
+console.log("B3");
     }
   }
 

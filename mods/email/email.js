@@ -87,17 +87,11 @@ class Email extends ModTemplate {
     }
   }
   render(app) {
+console.log("render 1");
     if (app.BROWSER != 1 || this.browser_active != 1 ) {return;}
+console.log("render 2");
     super.render(app);
-
-    // TODO: next week, email layout with page header
-    /* 
-          <div class="page-header">
-            <h1 class="page-title">Wallet</h1>
-            <p class="page-subtitle">Wallet demo. Transfer cryptocurrencies with messages.</p>
-          </div>
-    */
-
+console.log("render 4");
     let html = `
       <div id="content__">
         <div class="email-container main">
@@ -114,8 +108,8 @@ class Email extends ModTemplate {
     this.header.render(app, this);
     this.header.attachEvents(app, this);
     
-    // this.renderMain(app);
-    // this.renderSidebar(app);
+    this.renderMain(app);
+    this.renderSidebar(app);
     //
 
     //document.getElementById('content').style.visibility = "visible";
@@ -203,9 +197,11 @@ class Email extends ModTemplate {
   }
 
   onConfirmation(blk, tx, conf, app) {
+console.log("running in the email module!");
     let txmsg = tx.returnMessage();
     let email_mod = app.modules.returnModule("Email");
     if (conf == 0) {
+console.log("adding tx...");
       email_mod.addTransaction(tx);
     }
   }
@@ -213,7 +209,9 @@ class Email extends ModTemplate {
 
     let publickey = this.app.wallet.returnPublicKey();
     if (tx.transaction.to[0].add == publickey) {
+console.log("SST");
       this.app.storage.saveTransaction(tx);
+console.log("AE");
       this.addEmail(tx);
     }
     if (tx.transaction.from[0].add == publickey) {

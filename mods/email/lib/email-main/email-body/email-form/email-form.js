@@ -102,7 +102,9 @@ module.exports = EmailForm = {
         }
         
         let email_to_key = await mod.returnPublicKey(email_to);
-        if(email_to_key) {
+console.log("SENDING EMAIL TO: " + email_to_key);
+
+        if (email_to_key) {
           let newtx = app.wallet.returnBalance() > 0 ?
               app.wallet.createUnsignedTransactionWithDefaultFee(email_to_key, email_amount) :
               app.wallet.createUnsignedTransaction(email_to_key, email_amount, 0.0);
@@ -118,6 +120,7 @@ module.exports = EmailForm = {
 
   //        newtx = app.wallet.signTransaction(newtx);
           newtx = app.wallet.signAndEncryptTransaction(newtx);
+console.log("about to propagate the tx");
           app.network.propagateTransaction(newtx);
           window.location.hash = mod.goToLocation("#page=email_list&subpage=inbox");
           

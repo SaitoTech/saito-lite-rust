@@ -2050,3 +2050,8 @@ a.header-icon-fullscreen.tip {
 .text-sizer-large {
   font-size: 1.3em;
 }
+
+/* file label */
+.treated {
+  display:none;
+}
