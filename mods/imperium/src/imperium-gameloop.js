@@ -2695,6 +2695,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	try {
           let html = this.returnTokenDisplay();
+          //Not safe to directly plug html into hud-header (if header has controls), try append(app.browser.htmlToElement) ???
           document.querySelector('.hud-header').innerHTML = html;
 	} catch (err) {
 	  console.log("error updating hud-header: " + err);

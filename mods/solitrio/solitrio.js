@@ -29,8 +29,6 @@ class Solitrio extends GameTemplate {
     //
     this.boardgameWidth  = 5100;
 
-    //this.hud.mode = 1; // classic
-
   }
 
 
@@ -672,10 +670,6 @@ class Solitrio extends GameTemplate {
     return card.substring(1);
   }
 
-
-  addMove(mv) {
-    this.moves.push(mv);
-  }
 
 }
 

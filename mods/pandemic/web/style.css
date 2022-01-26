@@ -1,19 +1,10 @@
 
 
-
-.status-icon-menu {
-
-}
-
 .status-message {
   padding-left: 0;
   padding-right: 0;
 }
 
-.menu_icon_icon {
-  max-width: 100px;
-  max-height: 100px;
-}
 
 .epidemic_overlay {
   display: block;
@@ -22,35 +13,12 @@
   background-color: whitesmoke;
   text-align: center;
 }
-.welcome_overlay {
-  display: block;
-  width: 70vw;
-  height: 70vh;
-  background-color: whitesmoke;
-  text-align: center;
-}
-
 
 .hud {
-
-}
-.hud-body {
-  overflow-x: hidden;
+  background-color: #444A;
 }
 
-.display-cards {
-  width: 80vw;
-  height: 80vh;
-  overflow-y: scroll;
-}
-.display-cards .cardbox-hud {
-  position: relative;
-  float: left;
-  width: 20vw;
-  height: auto;
-  margin-right: 20px;
-  margin-bottom: 20px;
-}
+
 
 .vial {
   position: absolute;
@@ -92,6 +60,24 @@
  z-index: 89999;
  display:none;
  opacity: 0.4;
+}
+
+
+.cardfan{
+  all: unset;
+}
+
+
+.display-cards {
+  display: block;
+  height: 20vh;
+  width: 20vw;
+  top: -50%;
+  position: relative;
+}
+
+.cardfan .card{
+  width: 25vh;
 }
 
 .cardbox {
@@ -169,10 +155,8 @@
   display: inline-block;
   padding-left: 25px;
   padding-right: 25px;
-  padding-top: 5px;
-  padding-bottom: 5px;
 }
-.achnowledge-message:hover {
+.acknowledge-message:hover {
   font-weight: bold;
 }
 .acknowledge_message ul {
@@ -314,14 +298,14 @@ body {
 /*** Player Cards ***/
 
 .player_info_box {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  clear: both;
   padding-top: 25px;
   min-height: 200px;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
 }
 .player_role_card {
   height: 200px;
+  width: 180px;
   margin-left: 20px;
 }
 .player_role_card img {
@@ -342,6 +326,13 @@ body {
   text-transform: uppercase;
 }
 .welcome_overlay {
-  overflow-y: scroll;
+  display: block;
+  width: 70vw;
+  max-height: 70vh;
+  overflow-y: auto;
+  background-color: whitesmoke;
+  text-align: center;
 }
-
+.close_welcome_overlay{
+  margin: 40px;
+}

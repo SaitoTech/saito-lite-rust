@@ -382,11 +382,7 @@ class Wuziqi extends GameTemplate {
         });
     }
 
-    // Utility to add moves to stack
-    addMove(mv) {
-        this.moves.push(mv);
-    }
-
+    
     // Bundle moves and send them off.
     endTurn() {
         let extra = {};

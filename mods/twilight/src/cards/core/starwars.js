@@ -48,7 +48,7 @@
 
       user_message += '</li></ul></div>';
       twilight_self.updateStatus(user_message);
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
         twilight_self.addMove("event\tus\t"+action2);
         twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
         twilight_self.addMove("undiscard\t1\t"+action2);

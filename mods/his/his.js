@@ -494,8 +494,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
     //
     // add card events -- text shown and callback run if there
     //
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
     if (!app.browser.isMobileBrowser(navigator.userAgent)) {
       this.cardbox.skip_card_prompt = 1;
     }
@@ -2350,7 +2350,7 @@ console.log(JSON.stringify(this.spaces["wittenberg"]));
     let his_self = this;
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.addShowCardEvents(function(card) {
+    his_self.attachCardboxEvents(function(card) {
       his_self.playerTurnCardSelected(card, player);
     });
 

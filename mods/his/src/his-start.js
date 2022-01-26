@@ -258,10 +258,10 @@
     //
     // add card events -- text shown and callback run if there
     //
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("card", "select", this.cardbox_callback);
-    if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.cardbox.skip_card_prompt = 1;
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    if (app.browser.isMobileBrowser(navigator.userAgent)) {
+      this.cardbox.skip_card_prompt = 0;
     }
 
     //
