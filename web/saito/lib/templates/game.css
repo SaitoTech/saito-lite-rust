@@ -225,7 +225,10 @@ game-overlay-cardlist-button {
   padding: 0 20px 20px 20px;
 }
 .hud-header {
-  display: grid;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 20px;
   cursor: move;
@@ -288,6 +291,7 @@ ul li a {
 
 /*** Text prompt in hud > hud-body > status ***/
 .status-message {
+  position: relative; /* To make go-back-button work */
   width: 500px;
   max-width: 100vw;
   margin-left: auto;
@@ -385,11 +389,12 @@ i.menu_icon_icon{
 
 
 
-.status-cardbox {
+.status-cardbox { /* I want the scolling to be here, not hud-body, but hard to get the sizing to work */
   display: grid;
+  grid-gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr) );
-  overflow-y: auto;
-  row-gap: 10px;
+  grid-template-rows: repeat(auto-fit, minmax(80px, 1fr) );
+  /*overflow-y: auto;*/
   height: fit-content;
   width: 100%;
   margin-top: 5px;
@@ -548,13 +553,17 @@ i.menu_icon_icon{
   grid-template-columns: repeat(1, minmax(100px, 1fr));
 }
 
-
 .hud-long {
   width: 1200px;
   max-width: 100vw;
   height: 280px;
   max-height: 350px;
 }
+
+.hud-long .status-cardbox{
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr) );
+}
+
 
 .status-header i {
   float: left;
