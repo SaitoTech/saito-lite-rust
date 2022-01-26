@@ -122,8 +122,7 @@ export default class Wallet {
     ///////////////////////
     if (this.wallet.outputs.length > this.outputs_prune_limit) {
       console.log("Deleting Excessive outputs from heavy-spend wallet...");
-      let outputs_excess_amount =
-        this.wallet.outputs.length - this.outputs_prune_limit;
+      let outputs_excess_amount = this.wallet.outputs.length - this.outputs_prune_limit;
       outputs_excess_amount += 10;
       this.wallet.outputs.splice(0, outputs_excess_amount);
       this.outputs_hmap_counter = 0;
@@ -159,12 +158,7 @@ export default class Wallet {
     return this.createUnsignedTransaction(publickey, amount, BigInt(0));
   }
 
-  createUnsignedTransaction(
-    publickey = "",
-    amount = BigInt(0),
-    fee = BigInt(0),
-    force_merge = 0
-  ) {
+  createUnsignedTransaction(publickey = "", amount = BigInt(0), fee = BigInt(0), force_merge = 0) {
     // convert from human-readable to NOLAN
     amount = BigInt(amount) * BigInt(100000000);
     fee = BigInt(fee) * BigInt(100000000);
@@ -179,9 +173,7 @@ export default class Wallet {
     }
     const total_fees: bigint = amount + fee;
     if (total_fees > wallet_avail) {
-      console.log(
-        "Inadequate funds in wallet to create transaction w/: " + total_fees
-      );
+      console.log("Inadequate funds in wallet to create transaction w/: " + total_fees);
       throw "Inadequate SAITO to make requested transaction";
     }
     const tx = new Transaction();
@@ -363,10 +355,7 @@ console.log("---------------------");
         return this.app.wallet.returnPrivateKey();
       }
       async sendPayment(amount, to_address) {
-        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(
-          to_address,
-          amount
-        );
+        let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         this.app.network.propagateTransaction(newtx);
         return newtx.transaction.sig;
@@ -377,10 +366,7 @@ console.log("---------------------");
         if (to == this.app.wallet.returnPublicKey()) {
           for (let i = 0; i < this.app.wallet.wallet.inputs.length; i++) {
             if (this.app.wallet.wallet.inputs[i].amt === howMuch) {
-              if (
-                parseInt(this.app.wallet.wallet.inputs[i].ts) >=
-                parseInt(timestamp)
-              ) {
+              if (parseInt(this.app.wallet.wallet.inputs[i].ts) >= parseInt(timestamp)) {
                 if (this.app.wallet.wallet.inputs[i].add == to) {
                   return true;
                 }
@@ -389,10 +375,7 @@ console.log("---------------------");
           }
           for (let i = 0; i < this.app.wallet.wallet.outputs.length; i++) {
             if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
-              if (
-                parseInt(this.app.wallet.wallet.outputs[i].ts) >=
-                parseInt(timestamp)
-              ) {
+              if (parseInt(this.app.wallet.wallet.outputs[i].ts) >= parseInt(timestamp)) {
                 if (this.app.wallet.wallet.outputs[i].add == to) {
                   return true;
                 }
@@ -406,10 +389,7 @@ console.log("---------------------");
               //console.log("OUTPUT");
               //console.log(this.app.wallet.wallet.outputs[i]);
               if (this.app.wallet.wallet.outputs[i].amt === howMuch) {
-                if (
-                  parseInt(this.app.wallet.wallet.outputs[i].ts) >=
-                  parseInt(timestamp)
-                ) {
+                if (parseInt(this.app.wallet.wallet.outputs[i].ts) >= parseInt(timestamp)) {
                   if (this.app.wallet.wallet.outputs[i].add == to) {
                     return true;
                   }
@@ -503,10 +483,8 @@ console.log("---------------------");
   isSlipValid(slip, index) {
     const isSlipSpent = this.wallet.spends[index];
     const isSlipLC = slip.lc == 1;
-    const isSlipGtLVB =
-      slip.bid >= this.app.blockchain.returnLowestSpendableBlock();
-    const isSlipinTX =
-      this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1;
+    const isSlipGtLVB = slip.bid >= this.app.blockchain.returnLowestSpendableBlock();
+    const isSlipinTX = this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1;
     const valid = !isSlipSpent && isSlipLC && isSlipGtLVB && isSlipinTX;
     return valid;
   }
@@ -519,10 +497,7 @@ console.log("---------------------");
     // flag inputs as on/off-chain
     //
     for (let m = this.wallet.inputs.length - 1; m >= 0; m--) {
-      if (
-        this.wallet.inputs[m].bid == block_id &&
-        this.wallet.inputs[m].bsh === block_hash
-      ) {
+      if (this.wallet.inputs[m].bid == block_id && this.wallet.inputs[m].bsh === block_hash) {
         this.wallet.inputs[m].lc = lc;
       } else {
         if (this.wallet.inputs[m].bid < block_id) {
@@ -537,20 +512,15 @@ console.log("---------------------");
       //
       if (block_id == 0) {
         for (let i = 0; i < this.wallet.inputs.length; i++) {
-          if (
-            this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false
-          ) {
+          if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
             this.wallet.spends[i] = 0;
           }
         }
       } else {
-        const target_block_id =
-          this.app.blockchain.returnLatestBlockId() - block_id;
+        const target_block_id = this.app.blockchain.returnLatestBlockId() - block_id;
         for (let i = 0; i < this.wallet.inputs.length; i++) {
           if (this.wallet.inputs[i].bid <= target_block_id) {
-            if (
-              this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false
-            ) {
+            if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
               this.wallet.spends[i] = 0;
             }
           }
@@ -751,9 +721,7 @@ console.log("---------------------");
       if (this.wallet.spends[i] == 0 || i >= this.wallet.spends.length) {
         const slip = this.wallet.inputs[i];
         if (slip.lc == 1 && slip.bid >= lowest_block) {
-          if (
-            this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1
-          ) {
+          if (this.app.mempool.transactions_inputs_hmap[slip.returnKey()] != 1) {
             slipIndexes.push(i);
             utxiset.push(slip);
             value += slip.returnAmount();
@@ -801,11 +769,8 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
-
     this.wallet.privatekey = this.app.crypto.generateKeys();
-    this.wallet.publickey = this.app.crypto.returnPublicKey(
-      this.wallet.privatekey
-    );
+    this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 
     if (this.app.options.blockchain != undefined) {
       this.app.blockchain.resetBlockchain();
@@ -815,7 +780,6 @@ console.log("---------------------");
     if (this.app.options.keys != undefined) {
       this.app.options.keys = [];
     }
-
 
     this.wallet.inputs = [];
     this.wallet.outputs = [];
@@ -838,12 +802,10 @@ console.log("---------------------");
   saveWallet() {
     this.app.options.wallet = this.wallet;
     for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
-      this.app.options.wallets.inputs[i].amt =
-        this.app.options.wallets.inputs[i].amt.toString();
+      this.app.options.wallets.inputs[i].amt = this.app.options.wallets.inputs[i].amt.toString();
     }
     for (let i = 0; i < this.app.options.wallet.outputs.length; i++) {
-      this.app.options.wallets.outputs[i].amt =
-        this.app.options.wallets.outputs[i].amt.toString();
+      this.app.options.wallets.outputs[i].amt = this.app.options.wallets.outputs[i].amt.toString();
     }
     this.app.storage.saveOptions();
   }
@@ -1057,11 +1019,7 @@ console.log("---------------------");
     return "";
   }
 
-  async returnPreferredCryptoBalances(
-    addresses = [],
-    mycallback = null,
-    ticker = ""
-  ) {
+  async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = "") {
     if (ticker == "") {
       ticker = this.wallet.preferred_crypto;
     }
@@ -1082,11 +1040,7 @@ console.log("---------------------");
   }
   /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
   async checkBalance(address, ticker) {
-    const robj = await this.returnPreferredCryptoBalances(
-      [address],
-      null,
-      ticker
-    );
+    const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
     if (robj.length < 1) {
       return 0;
     }
@@ -1109,22 +1063,10 @@ console.log("---------------------");
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
    * @param {String} ticker - Ticker of install crypto module
    */
-  async sendPayment(
-    senders = [],
-    receivers = [],
-    amounts = [],
-    timestamp,
-    mycallback,
-    ticker
-  ) {
+  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, mycallback, ticker) {
     // validate inputs
-    if (
-      senders.length != receivers.length ||
-      senders.length != amounts.length
-    ) {
-      console.log(
-        "Lengths of senders, receivers, and amounts must be the same"
-      );
+    if (senders.length != receivers.length || senders.length != amounts.length) {
+      console.log("Lengths of senders, receivers, and amounts must be the same");
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
     }
     if (senders.length !== 1) {
@@ -1133,26 +1075,12 @@ console.log("---------------------");
       //mycallback({err: "Only supports one transaction"});
     }
     // only send if hasn't been sent before
-    if (
-      !this.doesPreferredCryptoTransactionExist(
-        senders,
-        receivers,
-        amounts,
-        timestamp,
-        ticker
-      )
-    ) {
+    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
-          this.savePreferredCryptoTransaction(
-            senders,
-            receivers,
-            amounts,
-            timestamp,
-            ticker
-          );
+          this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
           try {
             const hash = await cryptomod.send(amounts[i], receivers[i]);
             // execute callback if exists
@@ -1161,13 +1089,7 @@ console.log("---------------------");
           } catch (err) {
             // it failed, delete the transaction
             console.log("sendPayment ERROR: payment failed....\n" + err);
-            this.deletePreferredCryptoTransaction(
-              senders,
-              receivers,
-              amounts,
-              timestamp,
-              ticker
-            );
+            this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
             //mycallback({err: err});
             break;
           }
@@ -1206,10 +1128,7 @@ console.log("---------------------");
     // here in case someone wants to refactor this or wonders why this interface is this way.
     //return new Promise(async(resolve, reject) => {
 
-    if (
-      senders.length != receivers.length ||
-      senders.length != amounts.length
-    ) {
+    if (senders.length != receivers.length || senders.length != amounts.length) {
       // There is no way to handle errors with the interface of receivePayment as it's been designed.
       // We will swallow this error and log it to the console and return.
       // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
@@ -1233,15 +1152,7 @@ console.log("---------------------");
     //
     // if payment already received, return
     //
-    if (
-      this.doesPreferredCryptoTransactionExist(
-        senders,
-        receivers,
-        amounts,
-        timestamp,
-        ticker
-      )
-    ) {
+    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
       mycallback();
       return;
     }
@@ -1253,12 +1164,7 @@ console.log("---------------------");
     // create a function we can loop through to check if the payment has come in....
     //
     const check_payment_function = async () => {
-      return await cryptomod.hasPayment(
-        amounts[0],
-        senders[0],
-        receivers[0],
-        timestamp - 3
-      ); // subtract 3 seconds in case system time is slightly off
+      return await cryptomod.hasPayment(amounts[0], senders[0], receivers[0], timestamp - 3); // subtract 3 seconds in case system time is slightly off
     };
 
     const poll_check_payment_function = async () => {
@@ -1284,13 +1190,7 @@ console.log("---------------------");
       if (result) {
         // The transaction was found, we're done.
         console.log("TRANSACTION FOUND");
-        this.savePreferredCryptoTransaction(
-          senders,
-          receivers,
-          amounts,
-          timestamp,
-          ticker
-        );
+        this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
         mycallback(result);
       } else {
         // The transaction was not found.
@@ -1306,9 +1206,7 @@ console.log("---------------------");
           // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
           // some hope of figuring out why the game isn't progressing.
           console.log(
-            "Did not receive payment after " +
-              (pollWaitTime * tries) / 1000 +
-              " seconds"
+            "Did not receive payment after " + (pollWaitTime * tries) / 1000 + " seconds"
           );
           return;
           // mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
@@ -1319,13 +1217,7 @@ console.log("---------------------");
     //});
   }
 
-  savePreferredCryptoTransaction(
-    senders = [],
-    receivers = [],
-    amounts,
-    timestamp,
-    ticker
-  ) {
+  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
     const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
@@ -1350,13 +1242,7 @@ console.log("---------------------");
     return 1;
   }
 
-  doesPreferredCryptoTransactionExist(
-    senders = [],
-    receivers = [],
-    amounts,
-    timestamp,
-    ticker
-  ) {
+  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, timestamp, ticker) {
     const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
@@ -1372,13 +1258,7 @@ console.log("---------------------");
     return 0;
   }
 
-  deletePreferredCryptoTransaction(
-    senders = [],
-    receivers = [],
-    amounts,
-    timestamp,
-    ticker
-  ) {
+  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
     const sig = this.app.crypto.hash(
       JSON.stringify(senders) +
         JSON.stringify(receivers) +
@@ -1400,7 +1280,6 @@ console.log("---------------------");
   // END WEB3 CRYPTO //
   /////////////////////
 
-
   //////////////////
   // UI Functions //
   //////////////////
@@ -1412,10 +1291,10 @@ console.log("---------------------");
     try {
       if (this.app.BROWSER == 1) {
         let content = JSON.stringify(this.app.options);
-        var pom = document.createElement('a');
-        pom.setAttribute('type', "hidden");
-        pom.setAttribute('href', 'data:application/json;utf-8,' + encodeURIComponent(content));
-        pom.setAttribute('download', "saito.wallet.json");
+        var pom = document.createElement("a");
+        pom.setAttribute("type", "hidden");
+        pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(content));
+        pom.setAttribute("download", "saito.wallet.json");
         document.body.appendChild(pom);
         pom.click();
         pom.remove();
@@ -1443,25 +1322,23 @@ console.log("---------------------");
 
         this.app.blockchain.resetBlockchain();
 
-        this.app.modules.returnModule('Arcade').onResetWallet();
+        this.app.modules.returnModule("Arcade").onResetWallet();
         this.app.storage.saveOptions();
 
         alert("Restoration Complete ... click to reload Saito");
         window.location.reload();
       } catch (err) {
-        if(err.name == "SyntaxError") {
+        if (err.name == "SyntaxError") {
           alert("Error reading wallet file. Did you upload the correct file?");
-        } else if(false) {// put this back when we support encrypting wallet backups again...
+        } else if (false) {
+          // put this back when we support encrypting wallet backups again...
           alert("Error decrypting wallet file. Password incorrect");
         } else {
           alert("Unknown error<br/>" + err);
         }
       }
     };
-
   }
-
-
 
   deleteBlock(block: Block) {
     // TODO : @david

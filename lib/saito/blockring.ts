@@ -50,9 +50,7 @@ export default class Blockring {
   }
 
   deleteBlock(block: Block) {
-    console.debug(
-      "blockring.deleteBlock : " + block.returnId() + " : " + block.returnHash()
-    );
+    console.debug("blockring.deleteBlock : " + block.returnId() + " : " + block.returnHash());
     const insert_pos = block.returnId() % this.ring_buffer_length;
     const block_id = block.returnId();
     const block_hash = block.returnHash();
@@ -74,8 +72,7 @@ export default class Blockring {
             new_lc_pos = idx_loop;
           }
           idx_loop += 1;
-        } else {
-	}
+        }
       }
 
       this.ring[insert_pos].block_hashes = new_block_hashes;
@@ -107,7 +104,6 @@ export default class Blockring {
   }
 
   onChainReorganization(block_id, block_hash, lc) {
-
     const insert_pos = block_id % this.ring_buffer_length;
 
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
@@ -133,19 +129,14 @@ export default class Blockring {
     const insert_pos = block_id % this.ring_buffer_length;
     const v = new Map();
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
-      v.set(
-        this.ring[insert_pos].block_ids[i],
-        this.ring[insert_pos].block_hashes[i]
-      );
+      v.set(this.ring[insert_pos].block_ids[i], this.ring[insert_pos].block_hashes[i]);
     }
     return v;
   }
 
   returnLongestChainBlockHashAtBlockId(block_id: number) {
     const insert_pos = block_id % this.ring_buffer_length;
-    if (
-      this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length
-    ) {
+    if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
       return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
     }
     return "";
@@ -155,9 +146,7 @@ export default class Blockring {
     if (this.lc_pos == 0 && this.isEmpty()) {
       return "";
     }
-    if (
-      this.ring[this.lc_pos].block_hashes.length > this.ring[this.lc_pos].lc_pos
-    ) {
+    if (this.ring[this.lc_pos].block_hashes.length > this.ring[this.lc_pos].lc_pos) {
       return this.ring[this.lc_pos].block_hashes[this.ring[this.lc_pos].lc_pos];
     }
     return "";
@@ -167,9 +156,7 @@ export default class Blockring {
     if (this.lc_pos == 0) {
       return 0;
     }
-    if (
-      this.ring[this.lc_pos].block_ids.length > this.ring[this.lc_pos].lc_pos
-    ) {
+    if (this.ring[this.lc_pos].block_ids.length > this.ring[this.lc_pos].lc_pos) {
       return this.ring[this.lc_pos].block_ids[this.ring[this.lc_pos].lc_pos];
     }
     return 0;
@@ -186,9 +173,7 @@ export default class Blockring {
   returnLongestChainBlockHashByBlockId(block_id) {
     const insert_pos = block_id % this.ring_buffer_length;
 
-    if (
-      this.ring[insert_pos].block_hashes.length > this.ring[insert_pos].lc_pos
-    ) {
+    if (this.ring[insert_pos].block_hashes.length > this.ring[insert_pos].lc_pos) {
       if (this.ring[insert_pos].block_hashes.length > 0) {
         return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
       }

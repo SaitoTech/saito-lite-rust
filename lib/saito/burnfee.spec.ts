@@ -8,11 +8,7 @@ test("burnfee routing work needed tests", () => {
     2 * burnfee.heartbeat,
     0
   );
-  const bf2 = burnfee.returnRoutingWorkNeededToProduceBlockInNolan(
-    BigInt(1000000000),
-    0,
-    0
-  );
+  const bf2 = burnfee.returnRoutingWorkNeededToProduceBlockInNolan(BigInt(1000000000), 0, 0);
   const bf3 = burnfee.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(
     BigInt(100000000),
     burnfee.heartbeat,

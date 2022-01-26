@@ -12,9 +12,7 @@ class GoldenTicket {
       previous_block_hash = "00000000000000000000000000000000";
     }
 
-    const solution = this.app.crypto.hash(
-      previous_block_hash + random_hash + publickey
-    );
+    const solution = this.app.crypto.hash(previous_block_hash + random_hash + publickey);
     const leading_zeroes_required = Math.floor(difficulty / 16);
     const final_digit = 15 - (difficulty % 16);
 
@@ -52,10 +50,7 @@ class GoldenTicket {
   serialize(target_hash, random_hash) {
     const th = Buffer.from(target_hash, "hex");
     const rh = Buffer.from(random_hash, "hex");
-    const cr = Buffer.from(
-      this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()),
-      "hex"
-    );
+    const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), "hex");
 
     return Buffer.concat([th, rh, cr]).toString("base64");
     // let th2 = this.app.binary.hexToSizedArray(th.toString('hex'), 32);
@@ -105,9 +100,7 @@ class GoldenTicket {
     return {
       target_hash: Buffer.from(buffer.slice(0, 32)).toString("hex"),
       random_hash: Buffer.from(buffer.slice(32, 64)).toString("hex"),
-      creator: this.app.crypto.toBase58(
-        Buffer.from(buffer.slice(64, 97)).toString("hex")
-      ),
+      creator: this.app.crypto.toBase58(Buffer.from(buffer.slice(64, 97)).toString("hex")),
     };
   }
 

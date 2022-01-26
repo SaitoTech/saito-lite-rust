@@ -159,16 +159,13 @@ class Mempool {
   addTransaction(transaction: Transaction) {
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
-      const new_gt =
-        this.app.goldenticket.deserializeFromTransaction(transaction);
+      const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //
       // TODO -- update this to check the target block hash, not the sig
       //
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
-        const gt = this.app.goldenticket.deserializeFromTransaction(
-          this.mempool.golden_tickets[i]
-        );
+        const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
           console.debug("similar golden tickets already exists");
           return false;
@@ -178,10 +175,7 @@ class Mempool {
       this.mempool.golden_tickets.push(transaction);
     } else {
       for (let i = 0; i < this.mempool.transactions.length; i++) {
-        if (
-          this.mempool.transactions[i].transaction.sig ===
-          transaction.transaction.sig
-        ) {
+        if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
           console.debug("transaction already exists");
           return false;
         }
@@ -198,8 +192,7 @@ class Mempool {
     // nope out if inadequate golden ticket support
     //
     const previous_block_hash = this.app.blockring.returnLatestBlockHash();
-    const mempool_contains_golden_ticket =
-      this.containsValidGoldenTicket(previous_block_hash);
+    const mempool_contains_golden_ticket = this.containsValidGoldenTicket(previous_block_hash);
     const does_chain_meet_golden_ticket_requirements =
       await this.app.blockchain.doesChainMeetGoldenTicketRequirements(
         previous_block_hash,
@@ -220,9 +213,7 @@ class Mempool {
     // stop if already bundling?
     //
     if (this.bundling_active === true) {
-      console.log(
-        "ERROR 850293: mempool already bundling a block, not bundling another"
-      );
+      console.log("ERROR 850293: mempool already bundling a block, not bundling another");
       return;
     }
 
@@ -232,9 +223,7 @@ class Mempool {
     if (this.mempool.transactions.length === 0) {
       if (!this.app.network.isPrivateNetwork()) {
         if (this.app.network.isProductionNetwork()) {
-          console.log(
-            "WARNING 582034: refusing to spam public network with no-tx blocks."
-          );
+          console.log("WARNING 582034: refusing to spam public network with no-tx blocks.");
           return;
         }
       }
@@ -266,10 +255,7 @@ class Mempool {
       //
       this.addBlock(block);
     } catch (err) {
-      console.error(
-        "ERROR 781029: unexpected problem bundling block in mempool: ",
-        err
-      );
+      console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
 
     //
@@ -314,10 +300,7 @@ class Mempool {
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (
-      this.mempool.transactions.length === 0 &&
-      this.app.blockchain.returnLatestBlockId() > 1
-    ) {
+    if (this.mempool.transactions.length === 0 && this.app.blockchain.returnLatestBlockId() > 1) {
       console.log("CANNOT PRODUCE AS MEMPOLL HAS NO TXS AND LAST_BID > 1");
       return false;
     }
@@ -346,13 +329,8 @@ class Mempool {
         }
       }
       if (this.app.options.peers) {
-        if (
-          this.app.options.peers.length > 0 &&
-          this.app.blockchain.blocks.length === 0
-        ) {
-          console.log(
-            "ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN..."
-          );
+        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.length === 0) {
+          console.log("ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN...");
           return false;
         }
       }
@@ -363,12 +341,11 @@ class Mempool {
     //
     const previous_block = this.app.blockchain.returnLatestBlock();
     if (previous_block != null) {
-      this.routing_work_needed =
-        this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(
-          previous_block.block.burnfee,
-          new Date().getTime(),
-          previous_block.block.timestamp
-        );
+      this.routing_work_needed = this.app.burnfee.returnRoutingWorkNeededToProduceBlockInNolan(
+        previous_block.block.burnfee,
+        new Date().getTime(),
+        previous_block.block.timestamp
+      );
     } else {
       this.routing_work_needed = BigInt(0);
     }
@@ -443,9 +420,7 @@ class Mempool {
   containsValidGoldenTicket(target_hash) {
     if (this.mempool.golden_tickets.length > 0) {
       for (let i = 0; i < this.mempool.golden_tickets.length; i++) {
-        const gt = this.app.goldenticket.deserializeFromTransaction(
-          this.mempool.golden_tickets[i]
-        );
+        const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === target_hash) {
           return true;
         }
@@ -514,12 +489,10 @@ class Mempool {
     // set hashmap value to -1 for all txs in block
     //
     for (let b = 0; b < blk.transactions.length; b++) {
-      const location_in_mempool =
-        mempool_transactions[blk.transactions[b].transaction.sig];
+      const location_in_mempool = mempool_transactions[blk.transactions[b].transaction.sig];
       if (location_in_mempool !== undefined) {
         mempool_transactions[blk.transactions[b].transaction.sig] = -1;
-        this.transaction_size_current -=
-          this.mempool.transactions[location_in_mempool].size;
+        this.transaction_size_current -= this.mempool.transactions[location_in_mempool].size;
       }
     }
 
@@ -532,9 +505,7 @@ class Mempool {
     // fill our replacement array with all non -1 values
     //
     for (let t = 0; t < this.mempool.transactions.length; t++) {
-      if (
-        mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1
-      ) {
+      if (mempool_transactions[this.mempool.transactions[t].transaction.sig] > -1) {
         replacement.push(this.mempool.transactions[t]);
       }
     }
@@ -547,9 +518,7 @@ class Mempool {
     for (let b = 0; b < blk.transactions.length; b++) {
       delete this.transactions_hmap[blk.transactions[b].transaction.sig];
       for (let i = 0; i < blk.transactions[b].transaction.from.length; i++) {
-        delete this.transactions_inputs_hmap[
-          blk.transactions[b].transaction.from[i].returnKey()
-        ];
+        delete this.transactions_inputs_hmap[blk.transactions[b].transaction.from[i].returnKey()];
       }
     }
 
@@ -562,8 +531,7 @@ class Mempool {
 
     for (let i = 0; i < this.mempool.transactions.length; i++) {
       if (this.mempool.transactions[i].is_valid === 1) {
-        v +=
-          this.mempool.transactions[i].returnRoutingWorkAvailableToPublicKey();
+        v += this.mempool.transactions[i].returnRoutingWorkAvailableToPublicKey();
       }
     }
     return v;

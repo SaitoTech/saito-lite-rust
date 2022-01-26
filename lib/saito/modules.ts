@@ -51,19 +51,19 @@ class Mods {
     // no callbacks on type=9 spv stubs
     //
     if (tx.transaction.type == 9) {
-console.log("ghost tx");
+      console.log("ghost tx");
       return;
     }
 
     for (let i = 0; i < this.mods.length; i++) {
       if (message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-console.log("AFFIXING TO MOD: " + this.mods[i].name);
+          console.log("AFFIXING TO MOD: " + this.mods[i].name);
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
       } else {
-console.log("weird space.");
+        console.log("weird space.");
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
@@ -166,15 +166,9 @@ console.log("weird space.");
     const modNames = {};
     this.mods.forEach((mod, i) => {
       if (modNames[mod.name]) {
-        console.log(
-          `*****************************************************************`
-        );
-        console.log(
-          `***** WARNING: mod ${mod.name} is installed more than once! *****`
-        );
-        console.log(
-          `*****************************************************************`
-        );
+        console.log(`*****************************************************************`);
+        console.log(`***** WARNING: mod ${mod.name} is installed more than once! *****`);
+        console.log(`*****************************************************************`);
       }
       modNames[mod.name] = true;
     });

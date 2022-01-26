@@ -63,10 +63,7 @@ class Browser {
             //
             if (e.data) {
               if (e.data.active == 1) {
-                if (
-                  e.data.active == 1 &&
-                  e.data.publickey === this.app.wallet.returnPublicKey()
-                ) {
+                if (e.data.active == 1 && e.data.publickey === this.app.wallet.returnPublicKey()) {
                   this.setActiveTab(0);
                 }
               }
@@ -135,10 +132,7 @@ class Browser {
           const available_cryptos = this.app.wallet.returnInstalledCryptos();
           for (let i = 0; i < available_cryptos.length; i++) {
             if (available_cryptos[i].ticker) {
-              if (
-                available_cryptos[i].ticker.toLowerCase() ===
-                pair[1].toLowerCase()
-              ) {
+              if (available_cryptos[i].ticker.toLowerCase() === pair[1].toLowerCase()) {
                 preferred_crypto_found = 1;
                 this.app.wallet.setPreferredCrypto(available_cryptos[i].ticker);
               }
@@ -212,15 +206,15 @@ class Browser {
 
   returnURLParameter(name) {
     try {
-    this.urlParams = new URLSearchParams(window.location.search);
-    const entries = this.urlParams.entries();
-    for (const pair of entries) {
-      if (pair[0] == name) {
-        return pair[1];
+      this.urlParams = new URLSearchParams(window.location.search);
+      const entries = this.urlParams.entries();
+      for (const pair of entries) {
+        if (pair[0] == name) {
+          return pair[1];
+        }
       }
-    }
     } catch (err) {
-console.log("error in urlparams: " + err);
+      console.log("error in urlparams: " + err);
     }
     return "";
   }
@@ -310,10 +304,7 @@ console.log("error in urlparams: " + err);
         // Listen if anybody else opening the same page!
         localStorage.page_available = Date.now();
       }
-      if (
-        e.key == "page_available" &&
-        !this.isMobileBrowser(navigator.userAgent)
-      ) {
+      if (e.key == "page_available" && !this.isMobileBrowser(navigator.userAgent)) {
         console.log(e.key);
         console.log(navigator.userAgent);
         //alert("One more page already open");
@@ -409,7 +400,7 @@ console.log("error in urlparams: " + err);
     return html.body.firstChild;
   }
 
-  addToolTip(elem, text){
+  addToolTip(elem, text) {
     const wrapper = document.createElement("div");
     wrapper.classList.add("tip");
     elem.replaceWith(wrapper);
@@ -446,11 +437,7 @@ console.log("error in urlparams: " + err);
     return { year, month, day, hours, minutes };
   }
 
-  addDragAndDropFileUploadToElement(
-    id,
-    handleFileDrop = null,
-    click_to_upload = true
-  ) {
+  addDragAndDropFileUploadToElement(id, handleFileDrop = null, click_to_upload = true) {
     const hidden_upload_form = `
       <form class="my-form" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
@@ -560,8 +547,7 @@ console.log("error in urlparams: " + err);
 
       element_to_drag.onmousedown = function (e) {
         if (
-          (e.currentTarget.id != id_to_move &&
-            e.currentTarget.id != id_to_drag) ||
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag) ||
           e.currentTarget.id === undefined
         ) {
           document.ontouchend = null;
@@ -633,8 +619,7 @@ console.log("error in urlparams: " + err);
 
       element_to_drag.ontouchstart = function (e) {
         if (
-          (e.currentTarget.id != id_to_move &&
-            e.currentTarget.id != id_to_drag) ||
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag) ||
           e.currentTarget.id === undefined
         ) {
           document.ontouchend = null;
@@ -727,9 +712,7 @@ console.log("error in urlparams: " + err);
 
     try {
       const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
-      Object.entries(answer).forEach(([key, value]) =>
-        this.updateAddressHTML(key, value)
-      );
+      Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
     } catch (err) {
       console.error(err);
     }
@@ -809,10 +792,7 @@ console.log("error in urlparams: " + err);
   // usage: buildHashAndPreserve("#foo=1&bar=2","#foo=3&bar=4&baz=5","baz") --> "#foo=1&bar=2&baz=5"
   buildHashAndPreserve(newHash, oldHash, ...preservedKeys) {
     return this.buildHash(
-      Object.assign(
-        this.getSubsetOfHash(oldHash, preservedKeys),
-        this.parseHash(newHash)
-      )
+      Object.assign(this.getSubsetOfHash(oldHash, preservedKeys), this.parseHash(newHash))
     );
   }
 
@@ -839,17 +819,13 @@ console.log("error in urlparams: " + err);
   // Add new key-value pairs to the hash.
   // usage: modifyHash("#foo=1",{bar: 2}) --> "#foo=1&bar=2"
   modifyHash(oldHash, newHashValues) {
-    return this.buildHash(
-      Object.assign(this.parseHash(oldHash), newHashValues)
-    );
+    return this.buildHash(Object.assign(this.parseHash(oldHash), newHashValues));
   }
 
   // Override defaults with other values. Useful to initialize a page.
   // usage: modifyHash("#foo=1&bar=2","#foo=3") --> "#foo=3&bar=2"
   defaultHashTo(defaultHash, newHash) {
-    return this.buildHash(
-      Object.assign(this.parseHash(defaultHash), this.parseHash(newHash))
-    );
+    return this.buildHash(Object.assign(this.parseHash(defaultHash), this.parseHash(newHash)));
   }
 
   // Initialize a hash on page load.
@@ -861,10 +837,7 @@ console.log("error in urlparams: " + err);
   // let currentHash = window.location.hash; // (e.g."#page=2&ready=1")
   // initializeHash("#page=1", currentHash, {ready: 0}) --> #page=2&ready=0
   initializeHash(defaultHash, deepLinkHash, forcedHashValues) {
-    return this.modifyHash(
-      this.defaultHashTo(defaultHash, deepLinkHash),
-      forcedHashValues
-    );
+    return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
   }
 
   // TODO: implement htis function
