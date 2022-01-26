@@ -444,12 +444,14 @@ body {
   background-image: url(/twilight/img/Base.svg);
   background-size: contain;
   background-repeat: no-repeat;
-  max-width: 120px;
+  /*max-width: 120px;*/
 }
 .cardbox-card {
   background-image: url("/twilight/img/Base.svg");
   background-size: contain;
   background-repeat: no-repeat;
+  width: 388px;
+  height: 543px;
 }
 
 

@@ -665,7 +665,6 @@ console.log(err);
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
 
-
     //
     // add card events -- text shown and callback run if there
     //
@@ -721,7 +720,7 @@ initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
   this.restoreLog();
-
+  
   //
   // VP needed
   //
@@ -4091,7 +4090,7 @@ this.startClock();
 
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
     twilight_self.attachCardboxEvents(function(card) {
-      if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; }
+      if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 1; } //You want to skip confirmations after Headline???
       twilight_self.playerTurnHeadlineSelected(card, player);
     });
 
@@ -9830,6 +9829,7 @@ this.startClock();
     this.updateVictoryPoints();
 
   }
+
 
   addLogCardEvents() {
 
@@ -16108,19 +16108,7 @@ console.log("ROUND: " + this.game.state.round);
     return 0;
   }
 
-  //Rewrite updatelog to include logcardevents
-  updateLog(str, force = 0) {
-    if (str && this.game.log[0] !== str) {
-      this.game.log.unshift(str);
-      if (this.game.log.length > this.log_length){
-        this.game.log.splice(length);
-      }
-    }
-  
-    // update log and bind events
-    this.log.updateLog(str, force);
-    this.addLogCardEvents();
-  }
+
 
 
 
