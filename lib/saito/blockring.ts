@@ -74,8 +74,7 @@ export default class Blockring {
             new_lc_pos = idx_loop;
           }
           idx_loop += 1;
-        } else {
-	}
+        }
       }
 
       this.ring[insert_pos].block_hashes = new_block_hashes;
@@ -107,7 +106,6 @@ export default class Blockring {
   }
 
   onChainReorganization(block_id, block_hash, lc) {
-
     const insert_pos = block_id % this.ring_buffer_length;
 
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {

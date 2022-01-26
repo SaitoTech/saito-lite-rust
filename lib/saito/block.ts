@@ -113,7 +113,7 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
-console.log("EXAMINE: " + JSON.stringify(txmsg));
+        // console.log("EXAMINE: " + JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
@@ -1796,15 +1796,15 @@ console.log("EXAMINE: " + JSON.stringify(txmsg));
       // lite-browsers cannot load from disk
       //
       //if (this.app.BROWSER == 0) {
-        let block = await this.app.storage.loadBlockByFilename(
-          this.app.storage.generateBlockFilename(this)
-        );
-        block.generateHashes();
-        this.transactions = block.transactions;
-        this.generateMetadata();
-        this.block_type = BlockType.Full;
+      let block = await this.app.storage.loadBlockByFilename(
+        this.app.storage.generateBlockFilename(this)
+      );
+      block.generateHashes();
+      this.transactions = block.transactions;
+      this.generateMetadata();
+      this.block_type = BlockType.Full;
       //} else {
-	//return false;
+      //return false;
       //}
 
       return true;
