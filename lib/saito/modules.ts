@@ -50,21 +50,24 @@ class Mods {
     //
     // no callbacks on type=9 spv stubs
     //
+
     if (tx.transaction.type == 9) {
-console.log("ghost tx");
+console.log("tx is lite on: " + JSON.stringify(message));
       return;
     }
+
+console.log("about to add");
 
     for (let i = 0; i < this.mods.length; i++) {
       if (message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-console.log("AFFIXING TO MOD: " + this.mods[i].name);
+console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message));
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
       } else {
-console.log("weird space.");
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
+console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message));
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }

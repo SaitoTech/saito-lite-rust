@@ -73,7 +73,7 @@ class Blockchain {
     // set to zero to disable module execution
     //
     this.run_callbacks = 1;
-    this.callback_limit = 100;
+    this.callback_limit = 2; // 2 blocks
   }
 
   async addBlockToBlockchain(block, force = 0) {
@@ -400,6 +400,9 @@ console.log("affixing callbacks");
           starting_block_id = 1;
         }
 
+console.log("starting block: " + starting_block_id);
+console.log("block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks);
+
         for (let i = starting_block_id; i <= block.returnId(); i++) {
           let blocks_back = block.returnId() - i;
           let this_confirmation = blocks_back + 1;
@@ -419,10 +422,13 @@ console.log("affixing callbacks");
             }
           }
 
+console.log("running callbacks? " + run_callbacks);
+
           if (run_callbacks === 1) {
             let callback_block_hash =
               this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (callback_block_hash !== "") {
+console.log("running on block: " + callback_block_hash);
               let callback_block = this.blocks[callback_block_hash];
               if (callback_block) {
 console.log("running the callbacks on block: " + callback_block.returnHash());
