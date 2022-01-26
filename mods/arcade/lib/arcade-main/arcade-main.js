@@ -188,6 +188,14 @@ module.exports = ArcadeMain = {
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
+      if (mod.viewing_game_homepage == 1) {
+        let gameslug = app.browser.returnURLParameter("game");
+        let gamemod = app.modules.returnModuleBySlug(gameslug);
+	let cdiv = document.getElementById("saito-carousel");
+	cdiv.innerHTML = `<div class="big">${gamemod.gamename}</div>`;
+	cdiv.style.backgroundImage = `url('/${gameslug}/img/arcade.jpg')`;
+	cdiv.style.backgroundSize = "cover";
+      }
     }
 
     //

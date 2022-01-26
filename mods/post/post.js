@@ -163,7 +163,11 @@ class Post extends ModTemplate {
 
     if (app.modules.returnModuleBySlug("arcade")) { this.fetch = 1; }
     if (this.renderMethod === "none") { if (this.fetch == 0) { return; } else {
-      if (app.modules.returnModuleBySlug("arcade")) { this.renderMethod = "arcade"; }	
+      if (app.modules.returnModuleBySlug("arcade")) { 
+	if (app.modules.returnModuleBySlug("arcade").browser_active) {
+	  this.renderMethod = "arcade"; 
+	}
+      }
     }}
 
     let forum_splash = 1;
@@ -184,7 +188,6 @@ class Post extends ModTemplate {
       }
     }
 
-
     if (forum_splash == 1) {
       sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
       this.sendPeerDatabaseRequestWithFilter(
@@ -195,18 +198,14 @@ class Post extends ModTemplate {
 
         (res) => {
 
-console.log("TESTING: A");
-
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
 		this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
 		this.forums[this.forums.length-1].post_num = res.rows[i].post_num;
-console.log("POSTNUM: " + this.forums[this.forums.length-1].post_num);
               }
             }
           }
-console.log("heading into render: " + this.renderMethod);
           this.render();
 
         }, 

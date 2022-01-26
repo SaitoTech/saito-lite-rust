@@ -98,6 +98,7 @@ body {
 
 .arcade-games {
   font-size: 1.4em;
+  min-width: 400px;
 }
 .arcade-games-wrapper {
   background-color: black;

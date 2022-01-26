@@ -1,24 +1,8 @@
-/* @license
- * Copyright (c) 2018, Jeff Hlywa (jhlywa@gmail.com)
- * Released under the BSD license
- * https://github.com/jhlywa/chess.js/blob/master/LICENSE
- */
-
 /*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
  * @license  MIT
- */
-
-/*!
- * chessboard.js $version$
- *
- * Copyright 2013 Chris Oakman
- * Released under the MIT license
- * https://github.com/oakmac/chessboardjs/blob/master/LICENSE
- *
- * Date: $date$
  */
 
 /*!
@@ -52,5 +36,3 @@
 */
 
 /** @license URI.js v4.4.1 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js */
-
-//!isEntryValid

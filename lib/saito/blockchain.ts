@@ -341,7 +341,7 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
-    //console.debug("blockchain.addBlockSuccess : ", block);
+    console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
     let block_id = block.returnId();
@@ -375,10 +375,14 @@ class Blockchain {
       already_processed_callbacks = 1;
     }
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
+
       //
       // this block is initialized with zero-confs processed
       //
+console.log("affixing callbacks");
+
       block.affixCallbacks();
+
 
       //
       // don't run callbacks if reloading (force!)
@@ -387,6 +391,11 @@ class Blockchain {
         let starting_block_id = block.returnId() - this.callback_limit;
         let block_id_in_which_to_delete_callbacks =
           block.returnId() - this.callback_limit;
+        let block_id_in_which_running_callbacks_impossible_because_of_pruning =
+          block.returnId() - this.prune_after_blocks;
+        if (block_id_in_which_running_callbacks_impossible_because_of_pruning > block_id_in_which_to_delete_callbacks) {
+	  block_id_in_which_to_delete_callbacks = block_id_in_which_running_callbacks_impossible_because_of_pruning;
+	}
         if (starting_block_id < 1) {
           starting_block_id = 1;
         }
@@ -416,6 +425,7 @@ class Blockchain {
             if (callback_block_hash !== "") {
               let callback_block = this.blocks[callback_block_hash];
               if (callback_block) {
+console.log("running the callbacks on block: " + callback_block.returnHash());
                 await callback_block.runCallbacks(this_confirmation);
               }
             }

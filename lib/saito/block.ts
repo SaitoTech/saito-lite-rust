@@ -113,6 +113,7 @@ class Block {
     for (let z = 0; z < this.transactions.length; z++) {
       if (this.transactions[z].transaction.type === TransactionType.Normal) {
         const txmsg = this.transactions[z].returnMessage();
+console.log("EXAMINE: " + JSON.stringify(txmsg));
         this.app.modules.affixCallbacks(
           this.transactions[z],
           z,
