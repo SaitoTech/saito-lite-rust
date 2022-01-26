@@ -73,9 +73,7 @@ class Transaction {
       this.transaction = jsonobj;
       if (this.transaction.type === TransactionType.Normal) {
         try {
-          const reconstruct = this.base64ToString(
-            Buffer.from(this.transaction.m).toString()
-          );
+          const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
           this.msg = JSON.parse(reconstruct);
         } catch (err) {
           console.error(err);
@@ -145,10 +143,7 @@ class Transaction {
     if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
       try {
         const parsed_msg = this.msg;
-        this.dmsg = app.keys.decryptMessage(
-          this.transaction.from[0].add,
-          parsed_msg
-        );
+        this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
       } catch (e) {
         console.log("ERROR: " + e);
       }
@@ -177,35 +172,20 @@ class Transaction {
       buffer.slice(start_of_transaction_data + 4, start_of_transaction_data + 8)
     );
     const message_len = app.binary.u32FromBytes(
-      buffer.slice(
-        start_of_transaction_data + 8,
-        start_of_transaction_data + 12
-      )
+      buffer.slice(start_of_transaction_data + 8, start_of_transaction_data + 12)
     );
     const path_len = app.binary.u32FromBytes(
-      buffer.slice(
-        start_of_transaction_data + 12,
-        start_of_transaction_data + 16
-      )
+      buffer.slice(start_of_transaction_data + 12, start_of_transaction_data + 16)
     );
 
     const signature = app.crypto.stringToHex(
-      buffer.slice(
-        start_of_transaction_data + 16,
-        start_of_transaction_data + 80
-      )
+      buffer.slice(start_of_transaction_data + 16, start_of_transaction_data + 80)
     );
     const timestamp = app.binary.u64FromBytes(
-      buffer.slice(
-        start_of_transaction_data + 80,
-        start_of_transaction_data + 88
-      )
+      buffer.slice(start_of_transaction_data + 80, start_of_transaction_data + 88)
     );
     const r = app.binary.u32FromBytes(
-      buffer.slice(
-        start_of_transaction_data + 88,
-        start_of_transaction_data + 92
-      )
+      buffer.slice(start_of_transaction_data + 88, start_of_transaction_data + 92)
     );
     const transaction_type = buffer[start_of_transaction_data + 92];
     const start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
@@ -229,10 +209,7 @@ class Transaction {
       output.deserialize(app, buffer.slice(start_of_slip, end_of_slip));
       outputs.push(output);
     }
-    const message = buffer.slice(
-      start_of_message,
-      start_of_message + message_len
-    );
+    const message = buffer.slice(start_of_message, start_of_message + message_len);
 
     const path = [];
     for (let i = 0; i < path_len; i++) {
@@ -254,9 +231,7 @@ class Transaction {
 
     try {
       if (this.transaction.type === TransactionType.Normal) {
-        const reconstruct = app.crypto.base64ToString(
-          Buffer.from(this.transaction.m).toString()
-        );
+        const reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
         this.msg = JSON.parse(reconstruct);
       }
       //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
@@ -270,8 +245,7 @@ class Transaction {
 
     let output_payment = BigInt(0);
     if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
-      output_payment =
-        BigInt(output_slip_to_rebroadcast.returnAmount()) - BigInt(with_fee);
+      output_payment = BigInt(output_slip_to_rebroadcast.returnAmount()) - BigInt(with_fee);
     }
 
     transaction.transaction.type = TransactionType.ATR;
@@ -418,9 +392,7 @@ class Transaction {
       return this.msg;
     }
     try {
-      const reconstruct = this.base64ToString(
-        Buffer.from(this.transaction.m).toString()
-      );
+      const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
       this.msg = JSON.parse(reconstruct);
     } catch (err) {
       console.error(err);
@@ -601,11 +573,9 @@ class Transaction {
     /// [hop][hop][hop]...
 
     const start_of_inputs = TRANSACTION_SIZE;
-    const start_of_outputs =
-      TRANSACTION_SIZE + this.transaction.from.length * SLIP_SIZE;
+    const start_of_outputs = TRANSACTION_SIZE + this.transaction.from.length * SLIP_SIZE;
     const start_of_message =
-      TRANSACTION_SIZE +
-      (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE;
+      TRANSACTION_SIZE + (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE;
     const start_of_path =
       TRANSACTION_SIZE +
       (this.transaction.from.length + this.transaction.to.length) * SLIP_SIZE +
@@ -703,7 +673,6 @@ class Transaction {
   // everything but the signature
   //
   presign(app) {
-
     //
     // set slip ordinals
     //
@@ -717,10 +686,8 @@ class Transaction {
     if (this.transaction.m == "") {
       this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
     }
-
   }
   sign(app) {
-
     //
     // everything but the signature
     //
@@ -793,9 +760,7 @@ class Transaction {
       // validate routing path sigs
       //
       if (!this.validateRoutingPath()) {
-        console.log(
-          "ERROR 482033: routing paths do not validate, transaction invalid"
-        );
+        console.log("ERROR 482033: routing paths do not validate, transaction invalid");
         return false;
       }
 
@@ -811,9 +776,7 @@ class Transaction {
         total_out += this.transaction.to[i].returnAmount();
       }
       if (total_out > total_in) {
-        console.log(
-          "ERROR 802394: transaction spends more than it has available"
-        );
+        console.log("ERROR 802394: transaction spends more than it has available");
         return false;
       }
     }
@@ -844,9 +807,7 @@ class Transaction {
     //
     if (this.transaction.type === TransactionType.StakerWithdrawal) {
       for (let i = 0; i < this.transaction.from.length; i++) {
-        if (
-          this.transaction.from[i].type === SlipType.StakerWithdrawalPending
-        ) {
+        if (this.transaction.from[i].type === SlipType.StakerWithdrawalPending) {
           if (!app.staking.validateSlipInPending(this.transaction.from[i])) {
             console.log(
               "ERROR 089231: Staking Withdrawal Pending input slip is not in Pending thus transaction invalid!"
@@ -854,9 +815,7 @@ class Transaction {
             return false;
           }
         }
-        if (
-          this.transaction.from[i].type === SlipType.StakerWithdrawalStaking
-        ) {
+        if (this.transaction.from[i].type === SlipType.StakerWithdrawalStaking) {
           if (!app.staking.validateSlipInStakers(this.transaction.from[i])) {
             console.log(
               "ERROR 089231: Staking Withdrawal Staking input slip is not in Stakers thus transaction invalid!"

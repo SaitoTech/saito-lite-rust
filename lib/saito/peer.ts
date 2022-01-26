@@ -65,10 +65,7 @@ class Peer {
     const hop = new Hop();
     hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
     hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
-    hop.sig = this.app.crypto.signMessage(
-      hop.to,
-      this.app.wallet.returnPrivateKey()
-    );
+    hop.sig = this.app.crypto.signMessage(hop.to, this.app.wallet.returnPrivateKey());
 
     tmptx.transaction.path.push(hop);
     return tmptx;
@@ -130,12 +127,7 @@ class Peer {
   // no checks on socket state necessary when sending response
   //
   async sendResponse(message_id, data) {
-    await this.app.networkApi.sendAPIResponse(
-      this.socket,
-      "RESULT__",
-      message_id,
-      data
-    );
+    await this.app.networkApi.sendAPIResponse(this.socket, "RESULT__", message_id, data);
   }
 
   sendRequest(message: string, data: any = "") {
@@ -177,11 +169,9 @@ class Peer {
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
     if (this.socket && this.socket.readyState === this.socket.OPEN) {
-      this.app.networkApi
-        .sendAPICall(this.socket, "SENDMESG", buffer)
-        .then(() => {
-          //console.debug("message sent with sendRequest");
-        });
+      this.app.networkApi.sendAPICall(this.socket, "SENDMESG", buffer).then(() => {
+        //console.debug("message sent with sendRequest");
+      });
     } else {
       this.sendRequestWithCallbackAndRetry(message, data);
     }
@@ -190,12 +180,7 @@ class Peer {
   //
   // new default implementation
   //
-  sendRequestWithCallback(
-    message,
-    data: any = "",
-    callback = null,
-    loop = true
-  ) {
+  sendRequestWithCallback(message, data: any = "", callback = null, loop = true) {
     //console.log("sendRequestWithCallback : " + message);
     //
     // respect prohibitions

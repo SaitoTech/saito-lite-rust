@@ -20,9 +20,7 @@ class Handshake {
       lite: this.app.BROWSER,
       server_port: this.app.BROWSER ? 0 : this.app.server.server.endpoint.port,
       server_ip: this.app.BROWSER ? "" : this.app.server.server.endpoint.host,
-      server_protocol: this.app.BROWSER
-        ? ""
-        : this.app.server.server.endpoint.protocol,
+      server_protocol: this.app.BROWSER ? "" : this.app.server.server.endpoint.protocol,
     };
   }
 
@@ -45,9 +43,7 @@ class Handshake {
   deserializeHandshake(buffer) {
     const h2 = this.newHandshake();
 
-    h2.publickey = this.app.crypto.toBase58(
-      Buffer.from(buffer.slice(0, 33)).toString("hex")
-    );
+    h2.publickey = this.app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     h2.challenge = Number(this.app.binary.u64FromBytes(buffer.slice(33, 41)));
     h2.lite = Number(this.app.binary.u64FromBytes(buffer.slice(41, 49)));
 
@@ -57,13 +53,8 @@ class Handshake {
     h2.server_ip = Buffer.from(buffer.slice(57, 57 + length)).toString("utf-8");
 
     const offset = 57 + length;
-    length = Number(
-      this.app.binary.u32FromBytes(buffer.slice(offset, offset + 4))
-    );
-    h2.server_protocol = Buffer.from(
-      buffer.slice(offset + 4, offset + 4 + length),
-      "utf-8"
-    );
+    length = Number(this.app.binary.u32FromBytes(buffer.slice(offset, offset + 4)));
+    h2.server_protocol = Buffer.from(buffer.slice(offset + 4, offset + 4 + length), "utf-8");
 
     return h2;
   }

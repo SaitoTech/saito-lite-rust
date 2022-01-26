@@ -19,10 +19,8 @@ test("tx serialize deserialze", () => {
   mockApp.crypto = crypto;
   mockApp.binary = binary;
   mockApp.wallet = wallet;
-  wallet.wallet.privatekey =
-    "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
-  wallet.wallet.publickey =
-    "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
+  wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
+  wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
   mockApp.hash = (data) => {
     return blake3.hash(data).toString("hex");
@@ -138,8 +136,7 @@ test("sign", () => {
   mockApp.crypto = crypto;
   mockApp.binary = binary;
   mockApp.wallet = wallet;
-  wallet.wallet.privatekey =
-    "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
+  wallet.wallet.privatekey = "4a16ffa08e5fc440772ee962c1d730041f12c7008a6e5c704d13dfd3d1905e0d";
   wallet.wallet.publickey = "28Mh8nEhxymH9bFMhSKU51pnSQAnqURuPYkXTUqY2ueDM";
 
   mockApp.hash = (data) => {
@@ -152,15 +149,13 @@ test("sign", () => {
   tx.msg = { test: "test" };
 
   const input_slip = new Slip(wallet.wallet.publickey);
-  input_slip.uuid =
-    "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+  input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
   input_slip.amt = BigInt(123);
   input_slip.sid = 10;
   input_slip.type = SlipType.ATR;
 
   const output_slip = new Slip(wallet.wallet.publickey);
-  output_slip.uuid =
-    "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+  output_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
   output_slip.amt = BigInt(345);
   output_slip.sid = 23;
   output_slip.type = SlipType.Normal;

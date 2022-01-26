@@ -28,8 +28,7 @@ class Staking {
     const z = BigInt(this.stakers.length);
     const retrieve_from_pos = x % z;
 
-    const winning_slip =
-      this.stakers[parseInt(retrieve_from_pos.toString())].clone();
+    const winning_slip = this.stakers[parseInt(retrieve_from_pos.toString())].clone();
 
     return winning_slip;
   }
@@ -100,9 +99,7 @@ class Staking {
       // reset stakers if necessary
       //
       if (this.stakers.length == 0) {
-        const return_value = this.resetStakerTable(
-          block.returnStakingTreasury()
-        );
+        const return_value = this.resetStakerTable(block.returnStakingTreasury());
         res_spend = return_value.res_spend;
         res_unspend = return_value.res_unspend;
         res_delete = return_value.res_delete;
@@ -137,9 +134,7 @@ class Staking {
       // grab random input from golden ticket
       //
       const golden_ticket_data =
-        this.app.goldenticket.deserializeFromTransaction(
-          golden_ticket_transaction
-        );
+        this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
       const target_hash = golden_ticket_data.target_hash;
       let next_random_number = golden_ticket_data.random_hash;
@@ -185,9 +180,7 @@ class Staking {
         // then non-longest-chaining the same block
         //
         if (this.stakers.length == 0) {
-          const return_value = this.resetStakerTable(
-            block.returnStakingTreasury()
-          );
+          const return_value = this.resetStakerTable(block.returnStakingTreasury());
           res_spend = return_value.res_spend;
           res_unspend = return_value.res_unspend;
           res_delete = return_value.res_delete;
@@ -227,9 +220,7 @@ class Staking {
         // successfully remove from the staker table.
         //
         for (let k = 0; k < slips_to_remove_from_staking.length; k++) {
-          if (
-            this.removeStaker(slips_to_remove_from_staking[k].clone()) == true
-          ) {
+          if (this.removeStaker(slips_to_remove_from_staking[k].clone()) == true) {
             this.addPending(slips_to_add_to_pending[k].clone());
           }
         }
@@ -238,9 +229,7 @@ class Staking {
         // re-create staker table, if needed
         //
         if (this.stakers.length == 0) {
-          const return_value = this.resetStakerTable(
-            block.returnStakingTreasury()
-          );
+          const return_value = this.resetStakerTable(block.returnStakingTreasury());
           res_spend = return_value.res_spend;
           res_unspend = return_value.res_unspend;
           res_delete = return_value.res_delete;
@@ -279,8 +268,7 @@ class Staking {
           if (fee_transaction.transaction.from.length < staker_slip_num) {
             break;
           }
-          const staker_input =
-            fee_transaction.transaction.from[staker_slip_num].clone();
+          const staker_input = fee_transaction.transaction.from[staker_slip_num].clone();
 
           if (staker_output.type == SlipType.StakerOutput) {
             //
