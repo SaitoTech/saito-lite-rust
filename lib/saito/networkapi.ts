@@ -101,11 +101,7 @@ class NetworkAPI {
 
   sendAPIResponse(ws, command, message_id, message_bytes) {
     //console.debug("sendAPIResponse : " + command + " : " + message_id);
-    const serialized_api_message = this.serializeAPIMessage(
-      command,
-      message_id,
-      message_bytes
-    );
+    const serialized_api_message = this.serializeAPIMessage(command, message_id, message_bytes);
     ws.send(serialized_api_message);
   }
 
@@ -121,15 +117,10 @@ class NetworkAPI {
 
     if (this.api_callbacks[api_message.message_id]) {
       //console.log("resolving callback : " + api_message.message_name, api_message.message_data)
-      this.api_callbacks[api_message.message_id].resolve(
-        Buffer.from(api_message.message_data)
-      );
+      this.api_callbacks[api_message.message_id].resolve(Buffer.from(api_message.message_data));
     } else {
       console.error(
-        "expected : " +
-          api_message.message_id +
-          " , callback size : " +
-          this.api_callbacks.length
+        "expected : " + api_message.message_id + " , callback size : " + this.api_callbacks.length
       );
       throw "response callback not found";
     }
@@ -177,9 +168,7 @@ class NetworkAPI {
   deserializeAPIMessage(bytes) {
     return new APIMessage(
       Buffer.from(bytes.slice(0, 8)).toString("utf-8"),
-      this.app.binary.u32FromBytes(
-        Array.from(new Uint8Array(bytes.slice(8, 12)))
-      ),
+      this.app.binary.u32FromBytes(Array.from(new Uint8Array(bytes.slice(8, 12)))),
       Buffer.from(bytes.slice(12))
     );
   }

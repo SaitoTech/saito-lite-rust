@@ -82,10 +82,7 @@ class Crypto {
     while (plaintext.length > key.length) {
       key = key + key;
     }
-    return this.xor(
-      Buffer.from(plaintext, "hex"),
-      Buffer.from(key, "hex")
-    ).toString("hex");
+    return this.xor(Buffer.from(plaintext, "hex"), Buffer.from(key, "hex")).toString("hex");
   }
 
   //
@@ -95,9 +92,7 @@ class Crypto {
     while (str.length > key.length) {
       key = key + key;
     }
-    return this.xor(Buffer.from(str, "hex"), Buffer.from(key, "hex")).toString(
-      "hex"
-    );
+    return this.xor(Buffer.from(str, "hex"), Buffer.from(key, "hex")).toString("hex");
   }
 
   toSizedArray(value, size) {
