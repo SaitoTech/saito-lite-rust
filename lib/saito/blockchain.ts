@@ -516,7 +516,7 @@ class Blockchain {
       //
       // do not loop around if block id < 0
       //
-      if (current_block_id > block_id || current_block_id === 0) {
+      if (current_block_id > block_id || current_block_id <= 0) {
         break;
       }
 
