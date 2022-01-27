@@ -71,8 +71,6 @@ handleStrategyMenuItem() {
   this.overlay.showCardSelectionOverlay(this.app, this, this.returnStrategyCards(), {
     columns : 4 ,
     backgroundImage : "/imperium/img/starscape_background3.jpg" ,
-  }, function() {
-    alert("cardlist close strategy init menu");
   });
 
   //

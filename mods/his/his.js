@@ -23,7 +23,7 @@ class HereIStand extends GameTemplate {
     // this sets the ratio used for determining
     // the size of the original pieces
     //
-    this.boardgameWidth  = 5100;
+    this.boardWidth  = 5100;
 
     //
     // newbie mode
@@ -31,12 +31,6 @@ class HereIStand extends GameTemplate {
     this.confirm_moves = 1;
 
     
-    //
-    // default zoom
-    //
-    this.gameboardZoom   = 0.90;
-    this.gameboardMobileZoom = 0.67;
-
     //
     //
     // players

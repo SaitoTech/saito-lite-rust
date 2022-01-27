@@ -22,16 +22,9 @@ class Thirteen extends GameTemplate {
     this.categories      = "Games Arcade Entertainment";
 	  this.status     = "Beta";
     
-    //
-    // this sets the ratio used for determining
-    // the size of the original pieces
-    //
-    this.gameboardWidth  = 2450;
+    this.boardWidth  = 2450;
 
     this.moves           = [];
-
-     this.gameboardZoom  = 0.90;
-    this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
@@ -204,7 +197,8 @@ class Thirteen extends GameTemplate {
 
     this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
-
+    this.attachCardboxEvents(function(){});
+    
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
@@ -244,7 +238,7 @@ class Thirteen extends GameTemplate {
     $('.menu-item').on('click', function() {
 
       let player_action = $(this).attr("id");
-      var deck = twilight_self.game.deck[0];
+      var deck = twilight_self.game.deck[1];
       var html = "";
       var cards;
 
@@ -612,9 +606,7 @@ class Thirteen extends GameTemplate {
 	
 	if (this.game.player == player)  {
 
-	  let html = '';
-	  if (this.game.player == 1) { html = 'USSR pick your Agenda Card: '; }
-	  if (this.game.player == 2) { html = 'US pick your Agenda Card: '; }
+	  let html = (this.game.player == 1) ? 'USSR pick your Agenda Card: ' : 'US pick your Agenda Card: '; 
 
 /**** replaced with BIG OVERLAY ****
           this.updateStatusAndListCards(html, this.game.deck[0].hand);
@@ -640,45 +632,41 @@ class Thirteen extends GameTemplate {
 *** replaced with BIG OVERLAY ****/
 
 
-	  this.overlay.showCardSelectionOverlay(this.app, this, this.game.deck[0].hand, { columns : 3 , textAlign : "center" , cardlistWidth: "90vw" , title : html , subtitle : "earn points by beating your opponent in this domain by turn's end" , onCardSelect : function (card) {
+  this.overlay.showCardSelectionOverlay(
+  this.app,
+  this,
+  this.game.deck[0].hand,
+  {
+    columns: 3,
+    textAlign: "center",
+    cardlistWidth: "90vw",
+    title: html,
+    subtitle: "earn points by beating your opponent in this domain by turn's end",
+    onCardSelect: function (card) {
+      thirteen_self.overlay.hide();
 
-	    thirteen_self.overlay.hide();
-
-	    thirteen_self.addMove("RESOLVE");
-	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
-	      thirteen_self.addMove("flag\t"+thirteen_self.game.player+"\t" + thirteen_self.agendas[thirteen_self.game.deck[0].hand[i]].flag);
-	      if (thirteen_self.game.deck[0].hand[i] == card) {
-		if (player == 1) {
-		  thirteen_self.game.state.ussr_agenda_selected = card;
-	        }
-		if (player == 2) {
-		  thirteen_self.game.state.us_agenda_selected = card;
-		}
-	      }
-
-	      thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t" + "1" + "\t" + thirteen_self.game.deck[0].hand[i] + "\t" + "0"); // 0 = do not announce - TODO actually prevent info sharing
-	    }
-	    thirteen_self.endTurn();
-	    
-	  }}, function () {});
-	  this.overlay.blockClose();
-
+      thirteen_self.addMove("RESOLVE");
+      for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
+        thirteen_self.addMove(
+          "flag\t" + thirteen_self.game.player + "\t" +
+            thirteen_self.agendas[thirteen_self.game.deck[0].hand[i]].flag);
+        if (thirteen_self.game.deck[0].hand[i] == card) {
+          if (player == 1) {
+            thirteen_self.game.state.ussr_agenda_selected = card;
+          } else {
+            thirteen_self.game.state.us_agenda_selected = card;
+          }
+        }
+        thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t1\t${thirteen_self.game.deck[0].hand[i]}\t0`); // 0 = do not announce - TODO actually prevent info sharing
+      }
+      thirteen_self.endTurn();
+    },
+  });
+  this.overlay.blockClose();
 	} else {
-
-	  //if (player == 1) {
-	    let html = '';
-	    if (this.game.player == 1) { html = 'Your (USSR) agenda cards. Waiting for opponent to select: '; }
-	    if (this.game.player == 2) { html = 'Your (US) agenda cards. Waiting for opponent to select:'; }
+	    let html = 'waiting for opponent to select agenda card';
 	    this.updateStatusAndListCards(html, this.game.deck[0].hand);
       this.attachCardboxEvents(); 
-	  /*} else {
-	    if (this.game.player == 1) {
-  	      this.updateStatusAndListCards("waiting for US to pick its agenda card: ", this.game.deck[0].hand);
-	    }
-	    if (this.game.player == 2) {
-  	      this.updateStatusAndListCards("waiting for USSR to pick its agenda card: ", this.game.deck[0].hand);
-	    }
-	  }*/
 	}
 
 	return 0;

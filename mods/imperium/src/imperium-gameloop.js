@@ -1756,12 +1756,10 @@ this.game.state.end_round_scoring = 0;
 	        onClose : function() {
 		  game_mod.overlay.hide();
 	        }
-	      }, function () {
-		game_mod.overlay.hide();
 	      });
             }
 	  },
-	}, function () {});
+	});
 
   	this.game.queue.splice(qe, 1);
   	return 1;

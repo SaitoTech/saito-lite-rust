@@ -20,6 +20,7 @@ body {
 }
 
 .gameboard {
+  transform-origin: left top;
   user-select: none;
 }
 
@@ -102,19 +103,25 @@ body {
   font-size: 2em;
 }
 .game-overlay-cardlist-card {
+  min-width: 85%;
+  max-width: 100%;
   position:relative;
   z-index: 2;
   display: block;
   background-size: contain;
   background-repeat: no-repeat;
 }
-.game-overlay-cardlist-card img {
-  width: 100%;
-}
+
 game-overlay-cardlist-button {
 }
 .game-overlay-cardlist-unselectable {
   opacity: 0.4;
+}
+
+
+.rules-overlay {
+  background-color: whitesmoke;
+  border-color: black;
 }
 
 
@@ -982,9 +989,9 @@ i.menu_icon_icon{
 /*****************/
 input#game_board_sizer {
   position: absolute;
-  top: 20px;
-  right: 50px;
-  width: 300px;
+  top: 13px;
+  right: 40px;
+  width: 250px;
   background: #0004;
 }
 

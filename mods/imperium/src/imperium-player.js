@@ -4083,7 +4083,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
 	   	  imperium_self.hideStrategyCard(cardname);
     		  mycallback(cardname);
                 }
-    }, function() {});
+    });
 
   }
 

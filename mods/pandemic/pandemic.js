@@ -17,7 +17,7 @@ class Pandemic extends GameTemplate {
     this.type = "Cooperative Boardgme";
     this.status = "Alpha";
 
-    this.gameboardWidth = 2602;
+    this.boardWidth = 2602;
     this.card_height_ratio = 1.41;
     this.outbreaks = [];
     this.maxHandSize = 7;

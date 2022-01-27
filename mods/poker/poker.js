@@ -20,7 +20,6 @@ class Poker extends GameTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.boardgameWidth = 5100;
 
     this.settlement = [];
     this.updateHTML = "";
