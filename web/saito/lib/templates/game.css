@@ -102,19 +102,25 @@ body {
   font-size: 2em;
 }
 .game-overlay-cardlist-card {
+  min-width: 85%;
+  max-width: 100%;
   position:relative;
   z-index: 2;
   display: block;
   background-size: contain;
   background-repeat: no-repeat;
 }
-.game-overlay-cardlist-card img {
-  width: 100%;
-}
+
 game-overlay-cardlist-button {
 }
 .game-overlay-cardlist-unselectable {
   opacity: 0.4;
+}
+
+
+.rules-overlay {
+  background-color: whitesmoke;
+  border-color: black;
 }
 
 

@@ -1,4 +1,7 @@
-
+/* Redunant/Deprecated
+  overlay styling also in saito/style.css
+  This file only called by website module
+ */
 .saito-overlay-backdrop {
   position: fixed;
   display: none;
@@ -49,16 +52,6 @@
   transform: scale(1.0);
 }
 
-.game-overlay {
-  z-index: 9010;
-}
-
-.game-overlay-backdrop {
-  z-index: 9000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
 
 .saito-overlay-menu {
   padding: 10px;
