@@ -20,7 +20,7 @@ class GameTestSuite extends GameTemplate {
 
 
     this.categories = "Demonstration Utility";
-    this.type = "Utilitty";
+    this.type = "Utility";
     this.status = "Demonstration";
 
     // player numbers
@@ -390,11 +390,7 @@ class GameTestSuite extends GameTemplate {
       // display cardhud
       //
       document.getElementById("display_cardhud_button").onclick = (e) => {
-	if (!game_self.game.deck[0]) {
-	  alert("Deal cards to players before testing the CardHud");
-	  return;
-	}
-        game_self.display_cardhud_test(game_self.app);
+	      game_self.display_cardhud_test(game_self.app);
       }
 
       //
@@ -724,13 +720,29 @@ class GameTestSuite extends GameTemplate {
   }
 
   display_cardhud_test(app) {
+    let game_self = this;
     if (this.game_hud_visible == 0) {
       this.hud.render(this.app, this);
       this.hud.attachEvents(this.app, this);
-      this.hud.updateStatusMessageAndShowCards('updating the status message', this.game.deck[0].hand, this.game.deck[0].cards);
-      this.hud.onCardClick(function(card) {
-        alert("Selected a card: "+card);
-      });
+      if (this.game.deck[0].hand){
+        this.updateStatusAndListCards('Here is my hand', this.game.deck[0].hand);
+      }else{
+        this.updateStatusWithOptions("There are no cards to display",`<ul><li id='deal' class="hudmenuitem">Deal cards</li><li id='close' class="hudmenuitem">Close hud</li></ul>`);
+        $(".hudmenuitem").off();
+        $(".hudmenuitem").on("click",function(){
+            this.game_hud_visible = 0;
+            let cid = $(this).attr("id");
+            if (cid === "deal"){
+              game_self.deal_cards_to_player_test(game_self.app);
+              game_self.display_cardhud_test(game_self.app);
+              return;
+            }
+            if (cid === "close"){
+              game_self.hud.hide();
+              return;
+            }
+        });
+      }
       this.game_hud_visible = 1;
     } else {
       this.hud.hide();
@@ -741,12 +753,18 @@ class GameTestSuite extends GameTemplate {
   toggle_cardbox_test(app) {
     this.hud.render(this.app, this);
     this.hud.attachEvents(this.app, this);
-    if (this.hud.use_cardbox == 1) {
-      this.hud.use_cardbox = 0;
-      this.hud.updateStatusMessageAndShowCards('cardbox disabled in hud', this.game.deck[0].hand, this.game.deck[0].cards);
+    this.cardbox.render(this.app, this);
+    this.cardbox.attachEvents(this.app,this);
+
+    if (this.game_cardbox_visible == 1) {
+      this.game_cardbox_visible = 0;
+      this.cardbox.disable();
+      this.updateStatusAndListCards('cardbox disabled in hud');
     } else {
-      this.hud.use_cardbox = 1;
-      this.hud.updateStatusMessageAndShowCards('cardbox enabled in hud', this.game.deck[0].hand, this.game.deck[0].cards);
+      this.game_cardbox_visible = 1;
+      this.cardbox.addCardType("card","select",function(c){salert(`You clicked on the ${c} card`);});
+      this.updateStatusAndListCards('cardbox enabled in hud');
+      this.cardbox.attachCardEvents();
     }
   }
 
