@@ -43,7 +43,7 @@ class Twilight extends GameTemplate {
     // this sets the ratio used for determining
     // the size of the original pieces
     //
-    this.boardgameWidth  = 5100;
+    this.boardWidth  = 5100;
 
     this.card_height_ratio = 1.39; // height is 1.39x width
 
@@ -57,9 +57,6 @@ class Twilight extends GameTemplate {
     this.confirm_moves = 1;
 
     this.interface 	 = 1;
-
-    this.gameboardZoom   = 0.90;
-    this.gameboardMobileZoom = 0.67;
 
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;

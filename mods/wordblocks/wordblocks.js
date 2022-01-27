@@ -23,7 +23,7 @@ class Wordblocks extends GameTemplate {
     this.maxPlayers = 4;
     this.type = "Wordgame";
   
-    this.gameboardWidth = 2677;
+    this.boardWidth = 1000;
     this.tileHeight = 163;
     this.tileWidth = 148;
     this.letters = {};

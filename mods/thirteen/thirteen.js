@@ -22,16 +22,9 @@ class Thirteen extends GameTemplate {
     this.categories      = "Games Arcade Entertainment";
 	  this.status     = "Beta";
     
-    //
-    // this sets the ratio used for determining
-    // the size of the original pieces
-    //
-    this.gameboardWidth  = 2450;
+    this.boardWidth  = 2450;
 
     this.moves           = [];
-
-     this.gameboardZoom  = 0.90;
-    this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
@@ -204,7 +197,8 @@ class Thirteen extends GameTemplate {
 
     this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
-
+    this.attachCardboxEvents(function(){});
+    
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 

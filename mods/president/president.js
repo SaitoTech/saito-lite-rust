@@ -22,7 +22,7 @@ class President extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
     this.interface = 1;
-    this.boardgameWidth = 5100;
+    this.boardWidth = 5100;
 
     this.updateHTML = "";
 
