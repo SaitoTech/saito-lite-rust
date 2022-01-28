@@ -52,11 +52,10 @@ class Mods {
     //
 
     if (tx.transaction.type == 9) {
-console.log("tx is lite on: " + JSON.stringify(message));
       return;
     }
 
-console.log("about to add");
+    console.log("about to add");
 
     for (let i = 0; i < this.mods.length; i++) {
       if (message.module != undefined) {
@@ -67,7 +66,9 @@ console.log("about to add");
         }
       } else {
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message));
+          console.log(
+            "adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message)
+          );
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }

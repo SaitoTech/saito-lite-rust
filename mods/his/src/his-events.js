@@ -13,6 +13,14 @@
       }
     }
 
+
+    //
+    // cards in the deck can modify gameloop
+    //
+    for (let key in this.deck) {
+      z.push(this.deck[key]);
+    }
+
     return z;
 
   }

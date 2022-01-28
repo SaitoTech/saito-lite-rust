@@ -369,49 +369,57 @@ class Blockchain {
       // don't run callbacks if reloading (force!)
       //
       if (block.lc === 1 && block.force !== 1) {
-        let starting_block_id = block.returnId() - this.callback_limit;
-        let block_id_in_which_to_delete_callbacks =
-          block.returnId() - Math.min(this.callback_limit, this.prune_after_blocks);
-        if (starting_block_id < 1) {
-          starting_block_id = 1;
+        let block_id_from_which_to_run_callbacks = block.returnId() - this.callback_limit + 1;
+        let block_id_in_which_to_delete_callbacks = block.returnId() - this.prune_after_blocks;
+        if (block_id_from_which_to_run_callbacks <= 0) {
+          block_id_from_which_to_run_callbacks = 1;
+        }
+        if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
+          block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
         }
 
-console.log("starting block: " + starting_block_id);
-console.log("block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks);
+        console.log(
+          "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
+        );
+        console.log(
+          "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
+        );
 
-        for (let i = starting_block_id; i <= block.returnId(); i++) {
-          let blocks_back = block.returnId() - i;
-          let this_confirmation = blocks_back + 1;
-          let run_callbacks = 1;
+        if (block_id_from_which_to_run_callbacks > 0) {
+          for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
+            let blocks_back = block.returnId() - i;
+            let this_confirmation = blocks_back + 1;
+            let run_callbacks = 1;
 
-          //
-          // if bid is less than our last-bid but it is still
-          // the biggest BID we have, then we should avoid
-          // running callbacks as we will have already run
-          // them. We check TS as sanity check as well.
-          //
-          if (block.returnId() < this.blockchain.last_block_id) {
-            if (block.returnTimestamp() < this.blockchain.last_timestamp) {
-              if (block.lc === 1) {
-                run_callbacks = 0;
+            //
+            // if bid is less than our last-bid but it is still
+            // the biggest BID we have, then we should avoid
+            // running callbacks as we will have already run
+            // them. We check TS as sanity check as well.
+            //
+            if (block.returnId() < this.blockchain.last_block_id) {
+              if (block.returnTimestamp() < this.blockchain.last_timestamp) {
+                if (block.lc === 1) {
+                  run_callbacks = 0;
+                }
               }
             }
-          }
 
-console.log("running callbacks? " + run_callbacks);
+            console.log("running callbacks? " + run_callbacks);
 
-          if (run_callbacks === 1) {
-            let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-            if (callback_block_hash !== "") {
-console.log("running on block: " + callback_block_hash);
-              let callback_block = this.blocks[callback_block_hash];
-              if (callback_block) {
-                console.log(
-                  `running the callbacks on block: ${callback_block.returnHash()} callback count = ${
-                    callback_block.callbacks.length
-                  }`
-                );
-                await callback_block.runCallbacks(this_confirmation);
+            if (run_callbacks === 1) {
+              let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+              if (callback_block_hash !== "") {
+                console.log("running on block: " + callback_block_hash);
+                let callback_block = this.blocks[callback_block_hash];
+                if (callback_block) {
+                  console.log(
+                    `running the callbacks on block: ${callback_block.returnHash()} callback count = ${
+                      callback_block.callbacks.length
+                    }`
+                  );
+                  await callback_block.runCallbacks(this_confirmation);
+                }
               }
             }
           }

@@ -27,7 +27,16 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
+
       this.game.queue.push("READY");
+      this.game.queue.push("DEAL\t1\t2\t8");
+      this.game.queue.push("DEAL\t1\t1\t8");
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
+
       this.game.queue.push("init");
 
     }

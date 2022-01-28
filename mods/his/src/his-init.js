@@ -74,3 +74,4 @@ class HereIStand extends GameTemplate {
     this.deck = this.returnDeck();
 
 
+

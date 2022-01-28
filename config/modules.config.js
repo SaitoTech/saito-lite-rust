@@ -1,6 +1,6 @@
 module.exports = {
   core: [
-    'appstore/appstore.js',
+    //'appstore/appstore.js',
     'arcade/arcade.js',
     'archive/archive.js',
     'chat/chat.js',
@@ -10,6 +10,7 @@ module.exports = {
     'encrypt/encrypt.js',
     'explorer/explorer.js',
     //'myqrcode/myqrcode.js',
+    'his/his.js',
     'post/post.js',
     'poker/poker.js',
     //'qrscanner/qrscanner.js',
@@ -21,7 +22,7 @@ module.exports = {
     'website/website.js',
   ],
   lite: [
-    'appstore/appstore.js',
+    //'appstore/appstore.js',
     'arcade/arcade.js',
     'archive/archive.js',
     'chess/chess.js',
@@ -33,6 +34,7 @@ module.exports = {
     //'imperium/imperium.js',
     //'myqrcode/myqrcode.js',
     //'qrscanner/qrscanner.js',
+    'his/his.js',
     'post/post.js',
     'poker/poker.js',
     'relay/relay.js',
