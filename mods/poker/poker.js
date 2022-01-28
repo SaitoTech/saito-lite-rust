@@ -744,7 +744,8 @@ class Poker extends GameTemplate {
             this.updateStatus(
               "Waiting for " + this.game.state.player_names[mv[1] - 1]
             );
-            this.playerbox.refreshLog("player turn", parseInt(mv[1]));
+            //With .active highlighting the playerBox, don't need the text update 
+            //this.playerbox.refreshLog("player turn", parseInt(mv[1]));
             return 0;
           }
 
@@ -1948,13 +1949,13 @@ class Poker extends GameTemplate {
       this.playerbox.refreshInfo(
         `<div class="player-info-chips" id="player-info-chips-${i}">${this.sizeNumber(
           this.game.state.player_credit[i - 1]
-        )} ${this.game.crypto}</div>`,
+        )} ${(this.game.crypto=="")?"CHIPS":this.game.crypto}</div>`,
         i
       );
 
       //Show backs of cards
       let newhtml = `
-        <div class="player-info-hand hand tinyhand">
+        <div class="other-player-hand hand tinyhand">
           <img class="card" src="${this.card_img_dir}/red_back.png">
           <img class="card" src="${this.card_img_dir}/red_back.png">
         </div>
@@ -1966,36 +1967,33 @@ class Poker extends GameTemplate {
 
     let elem;
     
-    elem = document.querySelector(
-      `#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)} .player-info-name`
-    );
+    elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)}`);
     if (elem){
-      elem.classList.add("dealerbutton");
-      this.app.browser.addToolTip(elem, "I am the dealer");  
-    }else{console.error(`#player-box-head-${this.playerbox.playerBox(this.game.state.button_player)} .player-info-name`);}
+      let newButton = this.app.browser.makeElement("div","dealerbutton","playermarker");
+      newButton.classList.add("dealer");
+      newButton.textContent = "⬤";
+      elem.firstChild.after(newButton);
+      this.app.browser.addToolTip(newButton, "Dealer");  
+    }
     
 
-    elem = document.querySelector(
-      `#player-box-head-${this.playerbox.playerBox(
-        this.game.state.big_blind_player
-      )} .player-info-name`
-    );
+    elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.big_blind_player)}`);
     if (elem){
-      elem.classList.add("bigblind");
-      this.app.browser.addToolTip(elem, "I am the Big Blind");
-    }else{console.error(`#player-box-head-${this.playerbox.playerBox(this.game.state.big_blind_player)} .player-info-name`);}
+      let newButton = this.app.browser.makeElement("div","bigblind","playermarker");
+      newButton.classList.add("bigblind");
+      newButton.textContent = "◉";
+      elem.firstChild.after(newButton);
+      this.app.browser.addToolTip(newButton, "Big Blind");
+    }
     
-    elem = document.querySelector(
-      `#player-box-head-${this.playerbox.playerBox(
-        this.game.state.small_blind_player
-      )} .player-info-name`
-    );
+    elem = document.querySelector(`#player-box-head-${this.playerbox.playerBox(this.game.state.small_blind_player)}`);
     if (elem){
-      elem.classList.add("smallblind");
-    this.app.browser.addToolTip(elem, "I am the Small Blind");
-    }else{console.error(`#player-box-head-${this.playerbox.playerBox(
-        this.game.state.small_blind_player
-      )} .player-info-name`);}
+      let newButton = this.app.browser.makeElement("div","smallblind","playermarker");
+      newButton.classList.add("smallblind");
+      newButton.textContent = "◉";
+      elem.firstChild.after(newButton);
+      this.app.browser.addToolTip(newButton, "Small Blind");
+    }
     
   }
 
@@ -3322,6 +3320,17 @@ class Poker extends GameTemplate {
     });
     htmlHand += "</span> ";
     return htmlHand;
+  }
+
+
+  returnGameRulesHTML(){
+    return `<div class="rules-overlay">
+    <h1>Texas Hold'em</h1>
+    <p>This is a standard implementation of the popular poker game.</p>
+    <p>Each player attempts to form the best hand with their two private cards (the hole) and the five public cards (the river).</p>
+    <p>Players initially bet only seeing their two hole cards. The player to the left of the dealer is the small blind and must bet, the player to his/her left is the big blind and must also bet. Any other players must match the big blind (or they can raise the pot) in order to see the flop (the first three public cards are revealed at once).</p>
+    <p>Another round of betting then commences from the player to the left of the dealer, but players can check (i.e. not increase the pot). Two further cards are subsequently revealed with an identical round of betting after each card.</p> 
+    </div>`;
   }
 
   returnGameOptionsHTML() {

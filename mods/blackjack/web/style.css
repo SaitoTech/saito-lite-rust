@@ -9,21 +9,18 @@ body {
   height: 100vh;
 }
 
-/* 
-  Make Larger than default
-*/
-.player-box{
-  height: 25vh;
-  width: 30vh;
-}
-.poker-seat-1{
-  overflow-y: unset;
-  height: 36vh;
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.poker-seat-1 .status{
-  overflow-y: auto;
-}
+/* Split hands display on playerbox */
 .poker-seat-1 .player-box-graphic.hand{
   display: block;
   position: absolute;
@@ -36,29 +33,13 @@ body {
 .player-box-graphic .htmlCards{
   width: 30vh;
 }
+
 .player-box-graphic .htmlCards .card{
   width: 6vh;
   position: relative;
 }
-.main {
-  margin-top: unset;
-  padding: unset;
-}
 
-.intro {
-  background-color: whitesmoke;
-  padding: 30px;
-  font-size: 1.6em;
-}
 
-.gameboard {
-  position: absolute;
-  background-image: url("img/gameboard.jpg");
-  background-size: cover;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
 
 .player-notice {
   margin-left: auto;
@@ -144,161 +125,22 @@ body {
 }
 
 
-
-.hud {
-  display: none;
-}
-
-.status-info{
-  text-align: center;
-  margin: 0.25em; 
-}
-.status-message {
-  background-color: transparent;
-  box-shadow: none;
-  width: 100%;
-}
+/*For visibility with white text on dark background*/
 .status ul li:hover {
   background: #ccc3;
 }
 
-.player-box-info .chips{
-  font-size: 2.5vh;
-} 
 
-.player-info-log {
-  font-size: 2vh;
-  text-align: center;
-  border: 1px solid #aaaa;
-}
-
+/*Playerbox text menu prompt*/
 .menu-player {
   font-size: 2vh;
   font-weight: bolder;
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
 }
-
 
 .menu_option{
   text-transform: uppercase;
 }
 
-.menu-table {
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
 
-
-
-.hidden {
-  display: none;
-}
-
-
-
-
-@media screen and (orientation: landscape) and (max-height: 450px) {
-
-  .player-info {
-    padding: 5px;
-  }
-
-  .deal .card {
-    width: 8vw;
-  }
-
-  .player-info.poker-seat-1 {
-    height: 40vh;
-    width: 30vw;
-  }
-
-  .status ul li { 
-    line-height: 2.5em;
-    font-size: 1em;
-    width: 100%;
-  }
-
-  .cardfan {
-    left: 15vw;
-    top: 60vh;
-  }
-
-  .cardfan .card {
-    width: 14vw;
-  }
-
-
-}
-
-
-@media screen and (orientation: portrait) and (max-width: 450px) {
-
-  .player-info {
-    padding: 5px;
-  }
-
-
-  .player-info.poker-seat-1 {
-    height: 25vh;
-    width: 60vw;
-  }
-
-  .player-info-hand .card {
-    width: 16vw;
-  }
-
-  .status ul li { 
-    line-height: 2.5em;
-    font-size: 1em;
-    width: 100%;
-  }
-
- 
-
-  .cardfan {
-    left: 25vw;
-    top: 46vh;
-  }
-
-  .cardfan .card {
-    width: 35vw;
-  }
-
-  .poker-seat-4 .hand, .poker-seat-3 .hand, .poker-seat-2 .hand {
-    right: 15vw;
-    top: 10vh;
-  }
-
-}
-
-
-
-
-@media screen and (orientation: portrait) and (max-width: 450px) {
-
-  .player-info.poker-seat-2 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-3 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-4 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-5 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-6 {
-    display: none;
-    visibility: hidden;
-  }
-
-
-  .cardfan {
-    top: 36vh;
-  }
-
-}

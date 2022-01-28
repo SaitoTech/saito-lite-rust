@@ -19,10 +19,16 @@ body {
   height: 100vh;
 }
 
-.gameboard {
-  transform-origin: left top;
-  user-select: none;
+.main {
+  margin-top: unset;
+  padding: unset;
 }
+
+
+.gameboard {
+  transform-origin: left top; /* For resizing game boards */
+  user-select: none;
+ } 
 
 
 .game-overlay-menu {
@@ -695,8 +701,9 @@ i.menu_icon_icon{
 /*** Playerbox Layout (Often overwritten) ***/
 /**********************************************/
 .player-box {
-  width: 25vh;
-  height: 20vh;
+  width: 30vh;
+  min-height: 15vh;
+  max-height: 25vh;
   background-color: #4448;
   color: #fff;
   font-size: 1.25em;
@@ -728,7 +735,7 @@ i.menu_icon_icon{
 .player-info-name {
   font-weight: bold;
   font-size: 3vh;
-  padding-left: 0.5em;
+  padding-left: 1vh;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -742,11 +749,12 @@ i.menu_icon_icon{
 .player-box-info .chips {
   padding: 0.5em;
   text-align: center;
-  font-size: 3vh;
+  font-size: 2.5vh;
   overflow: hidden;
 }
 
-.player-box-graphic .card {
+/* Smaller cards for other players hands */
+.player-box-graphic .card, .other-player-hand .card {
   width: 12vh;
   position: absolute;
 }
@@ -784,18 +792,22 @@ i.menu_icon_icon{
   transform: translateY(-50%);
 }
 
+/* Special rules for this player */
 .poker-seat-1{
   min-width: 30vh;
-  height: 32vh;
+  max-height: 32vh;
   bottom: 1vh;
   left: 50vw;
   transform: translateX(-50%);
-  width: 16vw;
-  overflow-y: scroll;
+  width: 16vw; 
 }
 .poker-seat-1 .hand {
   display: none;
 }
+.poker-seat-1 .status{
+  overflow-y: auto;
+}
+
 
 .poker-seat-4 .hand, .poker-seat-3 .hand, .poker-seat-2 .hand {
   right: 15vh;
@@ -806,6 +818,13 @@ i.menu_icon_icon{
   left: 24vh;
   top: 2vh;
 }
+
+/*********************************/
+/*          PLAYER BOX           */
+/*** SCREEN SIZE MODIFICATIONS ***/
+/*********************************/
+
+
 
 
 /***************/

@@ -9,51 +9,27 @@ body {
   height: 100vh;
 }
 
-.main {
-  margin-top: unset;
-  padding: unset;
-}
 
-.gameboard {
+.gameboard{
+  /* Default fill the background with image */
   position: absolute;
   background-image: url("img/gameboard.jpg");
   background-size: cover;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-
-}
-
-.menu-player {
-  font-size: 1.1em;
-}
-
-.menu-table {
-  margin-top: 15px;
-  margin-bottom: 15px;
 }
 
 
 /* Since Poker only has two cards in a hand, can adjust the angles*/
-.cardfan>.card:nth-child(1) {
+.cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
   transform: rotate(-15deg);
   left: 0px; 
 } 
   
-.cardfan>.card:nth-child(2) {
+.cardfan>.card:nth-child(2), .hand>.card:nth-child(2) {
   transform: rotate(-5deg);
   left: 3vh;
-}
-
-
-.hand>.card:nth-child(1) {
-  transform: rotate(-15deg);
-  left: 0px;
-} 
-
-.hand>.card:nth-child(2) {
-  transform: rotate(-5deg);
-  left: 2vh;
 }
 
 
@@ -66,14 +42,14 @@ body {
 
 
 .deal .card {
-  width: 9vw;
-  max-width: 20vh;
+  width: max(11vw,100px);
+  max-width: min(13vh,150px);
 }
 
 .deal {
   margin: 0 auto;
   position: absolute;
-  top: 32vh;
+  top: 40vh;
   left: 50vw;
   transform: translateX(-50%);
   width: unset;
@@ -84,7 +60,7 @@ body {
 
 .pot {
   position: absolute;
-  top: 50vh;
+  top: 32vh;
   left: 50vw;
   transform: translateX(-50%);
   background-color: #4448;
@@ -95,42 +71,12 @@ body {
   color: #efefef;
 }
 
-.player-info {
-  width: 25vh;
-  height: 20vh;
-  background-color: #4448;
-  color: #fff;
-  padding: 1em;
-  position: absolute;
-}
-
-.player-info.poker-seat-1 {
-  height: 30vh;
-}
-.player-info .status {
-  font-size: 1.25em;
-}
-
-.player-info-name {
-  font-size: 3vh;
-  font-weight: bold;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .player-info-chips {
   padding: 0.5em;
   text-align: center;
   font-size: 3vh;
   overflow: hidden;
-}
-
-
-.player-info-hand .card {
-  width: 12vh;
-  position: absolute;
 }
 
 
@@ -154,36 +100,41 @@ body {
   background: #ccc3;
 }
 
-.player-info-log {
-  font-size: 2vh;
-  text-align: center;
-  border: 1px solid #aaaa;
-}
-
+/*Playerbox text menu prompt*/
 .menu-player {
   font-size: 2vh;
   font-weight: bolder;
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
 }
 
-.smallblind::before {
-  content: "◉";
-  margin-right: 0.5em;
+/* Player Markers */
+.playermarker{
+  width: 1em;
+  margin-left: 0.5vw;
+  font-size: 2.5vh;
+  line-height: 2.5vh;
+  -webkit-text-stroke: 1px #444;
+}
+.dealerbutton{
+  color: #fff;
+}
+.smallblind{
   color: aqua;
-  -webkit-text-stroke: 1px #444;
 }
-
-.bigblind::before {
-  content: "◉";
-  margin-right: 0.5em;
+.bigblind{
   color: yellow;
-  -webkit-text-stroke: 1px #444;
 }
-
-.dealerbutton::before {
-  content: "⬤";
-  margin-right: 0.5em;
-  color: #fff;;
-  -webkit-text-stroke: 1px #444;
+.tip{
+  width: unset;
+}
+.tiptext{
+  min-width: unset;
+  width: unset;
+  border: none;
+  line-height: 1em;
+  padding: 0.5em;
+  background-color: #fefefeee;
 }
 
 .shim {
@@ -207,9 +158,6 @@ body {
   padding: 5vh;
 }
 
-.hidden {
-  display: none;
-}
 
 .shim-notice .card {
   width: 5vw;
@@ -223,12 +171,9 @@ body {
 
 
 
-@media screen and (orientation: landscape) and (max-height: 450px) {
+@media screen and (orientation: landscape) and (max-height: 600px) {
 
-  .player-info {
-    padding: 5px;
-  }
-
+ 
   .deal .card {
     width: 8vw;
   }
@@ -266,23 +211,31 @@ body {
 }
 
 
-@media screen and (orientation: portrait) and (max-width: 450px) {
+@media screen and (orientation: portrait) and (max-width: 600px) {
 
-  .player-info {
-    padding: 5px;
-  }
 
   .pot {
-    top: 27vh;
+    top: 30vh;
     font-size: 2.4em;
   }
 
-  .player-info.poker-seat-1 {
-    height: 25vh;
-    width: 60vw;
+  .deal {
+    margin: 0 auto;
+    position: absolute;
+    top: 38vh;
+    transform: inherit;
+    /*Slightly to left to accommodate log*/
+    width: 90vw;
+    left: 49vw;
+    transform: translate(-50%);
   }
 
-  .player-info-hand .card {
+  .deal .card {
+    width: 100% /*of grid slot*/
+  }
+
+  /*Backs of other player cards*/
+  .other-player-hand .card {
     width: 16vw;
   }
 
@@ -292,26 +245,12 @@ body {
     width: 100%;
   }
 
-  .deal {
-    margin: 0 auto;
-    position: absolute;
-    top: 30vh;
-    left: 45vw;
-    transform: inherit;
-    width: 90vw;
-    margin-left: 5vw;
-    margin-right: auto;
-    transform: translate(-50%);
-  }
 
-  .deal .card {
-    width: 18vw;
-  }
-
+ 
   .cardfan {
-    left: 25vw;
-    top: 46vh;
+    top: 40vh;
   }
+
 
   .cardfan .card {
     width: 35vw;
@@ -329,49 +268,6 @@ body {
   }
 
 }
-
-
-
-
-@media screen and (orientation: portrait) and (max-width: 450px) {
-
-  .player-info.poker-seat-2 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-3 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-4 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-5 {
-    display: none;
-    visibility: hidden;
-  }
-  .player-info.poker-seat-6 {
-    display: none;
-    visibility: hidden;
-  }
-
-  .deal .card {
-    width: 15vw;
-    max-width: 20vh;
-  }
-
-  .deal {
-    top: 10vh;
-  }
-
-  .cardfan {
-    top: 40vh;
-  }
-
-}
-
-
 
 
 
