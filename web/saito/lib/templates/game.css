@@ -396,11 +396,18 @@ i.menu_icon_icon{
   cursor: pointer;
   list-style: none;
 }
+
 .status-text-menu ul li:hover, .status ul li:hover {
   background-color: #e7e7e7;
 }
 
-
+/*Player box version*/
+.status ul .menu_option{
+  line-height: 3em;
+}
+.status ul .menu_option:hover{
+  background-color: #ccc3;
+}
 
 .status-cardbox { /* I want the scolling to be here, not hud-body, but hard to get the sizing to work */
   display: grid;
