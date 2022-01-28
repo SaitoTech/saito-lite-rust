@@ -33,21 +33,11 @@ console.log("MOVE: " + mv[0]);
 	  this.game.state.round++;
 
 	  //
-	  // restore state
+	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
 	    this.updateLog("Luther's 95 Theses!");
 	    this.game.queue.push("event\t1\t008");
-	    this.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
-	    this.convertSpace("protestant", "wittenberg");
-	    this.addUnit(1, "wittenberg", "regular");
-	    this.addUnit(1, "wittenberg", "regular");
-	    this.addUnit(1, "wittenberg", "debater");
-	    this.displaySpace("wittenberg");
-
-console.log("this is what is in wittenberg");
-console.log(JSON.stringify(this.spaces["wittenberg"]));
-
 	  }
 
           return 1;

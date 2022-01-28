@@ -125,9 +125,9 @@ export default class Blockring {
     if (lc) {
       this.lc_pos = insert_pos;
     } else {
-      const previous_insert_pos = insert_pos - 1;
+      let previous_insert_pos = insert_pos - 1;
       if (previous_insert_pos < 0) {
-        previous_insert_pos === this.ring_buffer_length - 1;
+        previous_insert_pos = this.ring_buffer_length - 1;
       }
       if (this.ring[previous_insert_pos].block_hashes.length > 0) {
         this.lc_pos = previous_insert_pos;

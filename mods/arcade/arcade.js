@@ -1445,9 +1445,13 @@ console.log("i am player zero, returning...");
 
     let arcade_self = this;
     arcade_self.is_initializing = true;
+
     arcade_self.initialization_timer = setInterval(() => {
+
+console.log("in init timer!");
+
       let game_idx = -1;
-      if (arcade_self.app.options.games != undefined) {
+      if (arcade_self.app.options?.games != undefined) {
         for (let i = 0; i < arcade_self.app.options.games.length; i++) {
           if (arcade_self.app.options.games[i].id == game_id) {
             game_idx = i;
@@ -1461,6 +1465,8 @@ console.log("i am player zero, returning...");
       //
       if (game_idx == -1) {
 
+console.log("heading into game loader!");
+
         GameLoader.render(this.app, this, game_idx);
         //GameLoading.attachEvents(this.app, this);
         //this.viewing_arcade_initialization_page = 1;
@@ -1468,39 +1474,54 @@ console.log("i am player zero, returning...");
 
       }
 
-      if (arcade_self.app.options.games[game_idx].initializing == 0) {
+console.log("init 3");
+
+      if (arcade_self.app.options?.games[game_idx].initializing == 0) {
+
+console.log("init A1");
 
         //
         // check we don't have a pending TX for this game...
         //
+console.log("init A2");
         let ready_to_go = 1;
+console.log("init A3");
       	let game_step_needing_processing = 0;
-
-
+console.log("init A4");
         if (arcade_self.app.wallet.wallet.pending.length > 0) {
+console.log("init A5");
           for (let i = 0; i < arcade_self.app.wallet.wallet.pending.length; i++) {
+console.log("init A6");
             let thistx = new saito.default.transaction(JSON.parse(arcade_self.app.wallet.wallet.pending[i]));
+console.log("init A7");
             let thistxmsg = thistx.returnMessage();
+console.log("message is: " + JSON.stringify(thistxmsg));
+
             if (thistxmsg.module == arcade_self.app.options.games[game_idx].module) {
               if (thistxmsg.game_id == arcade_self.app.options.games[game_idx].id) {
                 ready_to_go = 0;
-                if (thistxmsg.step.game <= arcade_self.app.options.games[game_idx].step.game) {
+                if (thistxmsg?.step?.game <= arcade_self.app.options.games[game_idx].step.game) {
                   ready_to_go = 1;
                 }
               }
             }
           }
         }
+console.log("init 3 - 2");
 
         if (ready_to_go == 0) {
           console.log("transaction for this game still in pending...");
           return;
         }
         
+console.log("init 4");
         clearInterval(arcade_self.initialization_timer);
 
+console.log("init 5");
         GameLoader.render(this.app, this, game_id);
+console.log("init 5");
         GameLoader.attachEvents(this.app, this);
+console.log("init 5");
         this.viewing_arcade_initialization_page = 1;
 
       }
