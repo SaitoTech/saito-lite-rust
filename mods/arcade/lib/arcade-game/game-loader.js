@@ -41,7 +41,11 @@ module.exports = GameLoader = {
               break;
             }
           }
-      }); } catch (err) {}
+      }); } catch (err) {
+
+console.log("error in attach events!");
+
+      }
 
 
     }
