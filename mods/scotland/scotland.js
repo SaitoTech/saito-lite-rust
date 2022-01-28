@@ -24,12 +24,9 @@ class Scotland extends GameTemplate {
     // this sets the ratio used for determining
     // the size of the original pieces
     //
-    this.gameboardWidth  = 5135;
+    this.boardWidth  = 5135;
 
     this.moves           = [];
-
-    this.gameboardZoom  = 0.4;
-    this.gameboardMobileZoom = 0.57;
 
     this.minPlayers = 2;
     this.maxPlayers = 5; // need extra pawn color for 6
@@ -131,7 +128,7 @@ class Scotland extends GameTemplate {
     // add card events -- text shown and callback run if there
     //
     this.hud.mode = 0;
-    //this.hud.addCardType("logcard", "", null);
+    //this.cardbox.addCardType("logcard", "", null);
     //if (!app.browser.isMobileBrowser(navigator.userAgent)) {
     //  this.hud.cardbox.skip_card_prompt = 1;
     //}

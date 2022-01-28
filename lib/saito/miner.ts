@@ -59,10 +59,7 @@ class Miner {
       ) {
         const transaction = this.app.wallet.createUnsignedTransaction();
         transaction.transaction.type = TransactionType.GoldenTicket;
-        transaction.transaction.m = this.app.goldenticket.serialize(
-          this.target,
-          random_hash
-        );
+        transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
         transaction.sign(this.app);
         this.stopMining();
         this.app.network.propagateTransaction(transaction);

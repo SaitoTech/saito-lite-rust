@@ -20,18 +20,11 @@ class Thirteen extends GameTemplate {
     this.publisher_message = `Thirteen Days is owned by <a href="http://jollyrogergames.com/game/13-days/">Jolly Roger Games</a>. This module includes the open source Vassal module explicitly authorized by the publisher. Vassal module requirements are that at least one player per game has purchased a copy of the game. Please support Jolly Roger Games and purchase your copy <a href="http://jollyrogergames.com/game/13-days/">here</a>`;
     this.type       = "Strategy Boardgame";
     this.categories      = "Games Arcade Entertainment";
-	this.status     = "Beta";
+	  this.status     = "Beta";
     
-    //
-    // this sets the ratio used for determining
-    // the size of the original pieces
-    //
-    this.gameboardWidth  = 2450;
+    this.boardWidth  = 2450;
 
     this.moves           = [];
-
-     this.gameboardZoom  = 0.90;
-    this.gameboardMobileZoom = 0.67;
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
@@ -41,15 +34,17 @@ class Thirteen extends GameTemplate {
     this.all_battlegrounds = ['cuba_pol', 'cuba_mil', 'atlantic', 'turkey', 'berlin', 'italy', 'un','television','alliances'];
 
     this.menuItems = ['lang'];
-    //this.hud = new gamehud(this.app, this.menuItems());
-
-    this.hud.mode = 0; // transparent
-
+    
+    this.card_height_ratio = 1.37;
+    this.hud.mode = 0; // wide
+    this.interface = 1;
     //
     //
     //
     this.opponent_cards_in_hand = 0;
-
+    this.agendas = this.returnAgendaCards();
+    this.strategies = this.returnStrategyCards();
+    
   }
 
 
@@ -200,19 +195,17 @@ class Thirteen extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("showcard", "select", this.cardbox_callback);
-    if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.cardbox.skip_card_prompt = 1;
-    }
-    this.hud.card_width = 160; // cards 160: pixels wide
-
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.attachCardboxEvents(function(){});
+    
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
+        this.cardbox.skip_card_prompt = 0;   
         this.hammer.render(this.app, this);
         this.hammer.attachEvents(this.app, this, '.gameboard');
       } else {
@@ -245,7 +238,7 @@ class Thirteen extends GameTemplate {
     $('.menu-item').on('click', function() {
 
       let player_action = $(this).attr("id");
-      var deck = twilight_self.game.deck[0];
+      var deck = twilight_self.game.deck[1];
       var html = "";
       var cards;
 
@@ -335,13 +328,13 @@ class Thirteen extends GameTemplate {
       this.game.queue.push("DECKENCRYPT\t2\t1");
       this.game.queue.push("DECKXOR\t2\t2");
       this.game.queue.push("DECKXOR\t2\t1");
-      this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnStrategyCards()));
+      this.game.queue.push("DECK\t2\t"+JSON.stringify(this.strategies));
 
       this.game.queue.push("DECKENCRYPT\t1\t2");
       this.game.queue.push("DECKENCRYPT\t1\t1");
       this.game.queue.push("DECKXOR\t1\t2");
       this.game.queue.push("DECKXOR\t1\t1");
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnAgendaCards()));
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.agendas));
 
       this.game.queue.push("init");
 
@@ -610,16 +603,14 @@ class Thirteen extends GameTemplate {
 	if (this.browser_active == 0) { return 0; }
 
 	let player = parseInt(mv[1]);
-	let ac = this.returnAgendaCards();
 	
 	if (this.game.player == player)  {
 
-	  let html = '';
-	  if (this.game.player == 1) { html = 'USSR pick your Agenda Card: '; }
-	  if (this.game.player == 2) { html = 'US pick your Agenda Card: '; }
+	  let html = (this.game.player == 1) ? 'USSR pick your Agenda Card: ' : 'US pick your Agenda Card: '; 
 
 /**** replaced with BIG OVERLAY ****
-          this.updateStatusAndListCards(html, this.game.deck[0].hand, function(card) {
+          this.updateStatusAndListCards(html, this.game.deck[0].hand);
+      function(card) {
 
 	    thirteen_self.addMove("RESOLVE");
 	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
@@ -641,45 +632,41 @@ class Thirteen extends GameTemplate {
 *** replaced with BIG OVERLAY ****/
 
 
-	  this.overlay.showCardSelectionOverlay(this.app, this, this.game.deck[0].hand, { columns : 3 , textAlign : "center" , cardlistWidth: "90vw" , title : html , subtitle : "earn points by beating your opponent in this domain by turn's end" , onCardSelect : function (card) {
+  this.overlay.showCardSelectionOverlay(
+  this.app,
+  this,
+  this.game.deck[0].hand,
+  {
+    columns: 3,
+    textAlign: "center",
+    cardlistWidth: "90vw",
+    title: html,
+    subtitle: "earn points by beating your opponent in this domain by turn's end",
+    onCardSelect: function (card) {
+      thirteen_self.overlay.hide();
 
-	    thirteen_self.overlay.hide();
-
-	    thirteen_self.addMove("RESOLVE");
-	    for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
-	      thirteen_self.addMove("flag\t"+thirteen_self.game.player+"\t" + ac[thirteen_self.game.deck[0].hand[i]].flag);
-	      if (thirteen_self.game.deck[0].hand[i] == card) {
-		if (player == 1) {
-		  thirteen_self.game.state.ussr_agenda_selected = card;
-	        }
-		if (player == 2) {
-		  thirteen_self.game.state.us_agenda_selected = card;
-		}
-	      }
-
-	      thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t" + "1" + "\t" + thirteen_self.game.deck[0].hand[i] + "\t" + "0"); // 0 = do not announce - TODO actually prevent info sharing
-	    }
-	    thirteen_self.endTurn();
-	    
-	  }}, function () {});
-	  this.overlay.blockClose();
-
+      thirteen_self.addMove("RESOLVE");
+      for (let i = 0; i < thirteen_self.game.deck[0].hand.length; i++) {
+        thirteen_self.addMove(
+          "flag\t" + thirteen_self.game.player + "\t" +
+            thirteen_self.agendas[thirteen_self.game.deck[0].hand[i]].flag);
+        if (thirteen_self.game.deck[0].hand[i] == card) {
+          if (player == 1) {
+            thirteen_self.game.state.ussr_agenda_selected = card;
+          } else {
+            thirteen_self.game.state.us_agenda_selected = card;
+          }
+        }
+        thirteen_self.addMove(`discard\t${thirteen_self.game.player}\t1\t${thirteen_self.game.deck[0].hand[i]}\t0`); // 0 = do not announce - TODO actually prevent info sharing
+      }
+      thirteen_self.endTurn();
+    },
+  });
+  this.overlay.blockClose();
 	} else {
-
-	  if (player == 1) {
-	    let html = '';
-	    if (this.game.player == 1) { html = 'Your (USSR) agenda cards. Waiting for opponent to select: '; }
-	    if (this.game.player == 2) { html = 'Your (US) agenda cards. Waiting for opponent to select:'; }
-	    this.updateStatusAndListCards(html, this.game.deck[0].hand, function(card) {
-	    }); 
-	  } else {
-	    if (this.game.player == 1) {
-  	      this.updateStatusAndListCards("waiting for US to pick its agenda card: ", this.game.deck[0].hand, function(card) {});
-	    }
-	    if (this.game.player == 2) {
-  	      this.updateStatusAndListCards("waiting for USSR to pick its agenda card: ", this.game.deck[0].hand, function(card) {});
-	    }
-	  }
+	    let html = 'waiting for opponent to select agenda card';
+	    this.updateStatusAndListCards(html, this.game.deck[0].hand);
+      this.attachCardboxEvents(); 
 	}
 
 	return 0;
@@ -882,17 +869,16 @@ console.log("tallying alliances before scoring");
       if (mv[0] == "scoring_phase") {
 
 	let scorer = parseInt(mv[1]);
-	let ac = this.returnAgendaCards();
-
+	
 	if (this.game.player == scorer) {
 	  if (scorer == 1) {
-	    this.addMove("scoring_result\t1\t" + ac[this.game.state.ussr_agenda_selected].score());
-	    this.addMove("notify\tUSSR choses to score "+ac[this.game.state.ussr_agenda_selected].name);
+	    this.addMove("scoring_result\t1\t" + this.agendas[this.game.state.ussr_agenda_selected].score());
+	    this.addMove("notify\tUSSR choses to score "+this.agendas[this.game.state.ussr_agenda_selected].name);
 	    this.endTurn();
 	  }
 	  if (scorer == 2) {
-	    this.addMove("scoring_result\t2\t" + ac[this.game.state.us_agenda_selected].score());
-	    this.addMove("notify\tUS choses to score "+ac[this.game.state.us_agenda_selected].name);
+	    this.addMove("scoring_result\t2\t" + this.agendas[this.game.state.us_agenda_selected].score());
+	    this.addMove("notify\tUS choses to score "+this.agendas[this.game.state.us_agenda_selected].name);
 	    this.endTurn();
 	  }
 	}
@@ -972,36 +958,35 @@ console.log("tallying alliances before scoring");
       if (mv[0] == "aftermath_or_discard") {
 
 	let player = parseInt(mv[1]);
-        let sc = this.returnStrategyCards();
-
+        
 	this.game.queue.splice(qe, 1);
 
 	if (this.game.player == player) {
 	
 	  let card = this.game.deck[1].hand[0];
 
-          let html = '<div class="status-message" id="status-message">You have pulled <span class="showcard" id="'+card+'">' + sc[card].name + '</span> as Aftermath bonus card:<ul>';
-              html += '<li class="card" id="discard">discard card</li>';
-              html += '<li class="card" id="'+card+'">put in aftermath</li></ul></div>';
-          thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          let statMsg  = 'You have pulled <span class="showcard" id="'+card+'">' + this.strategies[card].name + '</span> as Aftermath bonus card:';
+          let html = '<ul><li class="card" id="discard">discard card</li>';
+              html += '<li class="card" id="'+card+'">put in aftermath</li></ul>';
+          thirteen_self.updateStatusWithOptions(statMsg, html);
+          thirteen_self.attachCardboxEvents(function (card) {
+            if (card == "discard") {
+              thirteen_self.addMove(
+                "discard\t" + thirteen_self.game.player + "\t" + "1" + "\t" + card + "\t" + "1"
+              );
+              thirteen_self.addMove("notify\tWorld Opinion bonus card is discarded");
+              thirteen_self.endTurn();
+              return;
+            }
 
-	    if (card == "discard") {
-	      thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t"+"1"+"\t"+card+"\t"+"1");
-	      thirteen_self.addMove("notify\tWorld Opinion bonus card is discarded");
-	      thirteen_self.endTurn();
-	      return;
-	    }
-
-	    if (thirteen_self.game.player == 1) {
-	      thirteen_self.game.state.aftermath_ussr.push(card);
-	    }
-	    if (thirteen_self.game.player == 2) {
-	      thirteen_self.game.state.aftermath_us.push(card);
-	    }
-	    thirteen_self.endTurn();
-	  });
-
+            if (thirteen_self.game.player == 1) {
+              thirteen_self.game.state.aftermath_ussr.push(card);
+            }
+            if (thirteen_self.game.player == 2) {
+              thirteen_self.game.state.aftermath_us.push(card);
+            }
+            thirteen_self.endTurn();
+          });
         }
 	return 0;
 
@@ -1049,8 +1034,7 @@ console.log("tallying alliances before scoring");
 
 	let sharer = parseInt(mv[1]);
 	let card = mv[2];
-	let sc = this.returnStrategyCards();
-
+	
 	if (this.game.player == sharer) {
 	  this.removeCardFromHand(card);
 	} else {
@@ -1058,12 +1042,12 @@ console.log("tallying alliances before scoring");
 	  //
 	  // play or discard
 	  //
-          let html = '<div class="status-message" id="status-message">you have pulled <span class="showcard" id="'+card+'">' + sc[card].name + '</span><ul>';
+          let html = '<ul>';
               html += '<li class="card" id="discard">discard card</li>';
               html += '<li class="card" id="'+card+'">play card</li>';
 	      html += '</div>';
-          thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          thirteen_self.updateStatusWithOptions(`you have pulled <span class="showcard" id="${card}">${this.strategies[card].name}</span>`, html);
+          thirteen_self.attachCardboxEvents(function(card) {
 
 	    if (card == "discard") {
 	      if (thirteen_self.game.player == 1) {
@@ -1357,8 +1341,7 @@ console.log("SHOULD PLACE: " + player);
 
 	let player = parseInt(mv[1]);
 	let card = mv[2];
-	let sc = this.returnStrategyCards();
-
+	
 	if (player == 1) { 
 	  if (this.game.state.ussr_cannot_deflate_defcon_from_events == 1) {
 	    this.game.state.ussr_cannot_deflate_defcon_from_events = 2;
@@ -1377,13 +1360,13 @@ console.log("SHOULD PLACE: " + player);
 	if (player == 2) { 
 	  log_update = 'US';
 	}
-	log_update += ' plays <span class="logcard" id="'+card+'">' + sc[card].name + '</span>';
+	log_update += ' plays <span class="logcard" id="'+card+'">' + this.strategies[card].name + '</span>';
 	this.updateLog(log_update);
 
 	if (this.game.player == player) {
-	  let status_update = "<div class='status-message' id='status-message'>" + sc[card].name + ": "+sc[card].text+' <p></p><ul><li class="card" id="done">finish turn</li></ul></div>'
-	  this.updateStatus(status_update);
-	  sc[card].event(player);
+	  let status_update =  this.strategies[card].name + ": "+this.strategies[card].text;
+	  this.updateStatusWithOptions(status_update,'<ul><li class="card" id="done">finish turn</li></ul>');
+	  this.strategies[card].event(player);
 	}
 
         this.game.queue.splice(qe, 1);
@@ -1636,14 +1619,14 @@ console.log("SHOULD PLACE: " + player);
 
       if (mv[0] == "play") {
 
-	if (this.game.state.ussr_cannot_deflate_defcon_from_events > 1) { this.game.state.ussr_cannot_deflate_defcon_from_events = 1; }
-	if (this.game.state.us_cannot_deflate_defcon_from_events > 1) { this.game.state.us_cannot_deflate_defcon_from_events = 1; }
-	this.game.state.turn = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
+    	if (this.game.state.ussr_cannot_deflate_defcon_from_events > 1) { this.game.state.ussr_cannot_deflate_defcon_from_events = 1; }
+    	if (this.game.state.us_cannot_deflate_defcon_from_events > 1) { this.game.state.us_cannot_deflate_defcon_from_events = 1; }
+    	this.game.state.turn = parseInt(mv[1]);
+            this.game.queue.splice(qe, 1);
 
-	this.playerTurn();
+    	this.playerTurn();
 
-	return 0;
+    	return 0;
 
       }
 
@@ -1685,11 +1668,12 @@ console.log("SHOULD PLACE: " + player);
 
     //
     //
-    //
+    //Whose turn is it
     if (this.game.state.turn != this.game.player) {
-      this.hideCard();
-      if (this.game.player == 1) { this.updateStatusAndListCards(`waiting for US to move...`); }
-      if (this.game.player == 2) { this.updateStatusAndListCards(`waiting for USSR to move...`); }
+
+      this.cardbox.hide(1);
+      this.updateStatusAndListCards(`waiting for ${(this.game.player ==1)?"US":"USSR"} to move...`, this.game.deck[1].hand);
+      this.attachCardboxEvents(); //Allow mouseover zoom
     } else {
       let html = "";
       if (this.game.player == 1) { html = "USSR pick a card to play: "; }
@@ -1697,7 +1681,7 @@ console.log("SHOULD PLACE: " + player);
 
       let cards = [];
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-	cards.push(this.game.deck[1].hand[i]);
+      	cards.push(this.game.deck[1].hand[i]);
       }
       if (this.game.player == this.game.state.personal_letter) {
         cards.push("personal_letter");
@@ -1705,27 +1689,34 @@ console.log("SHOULD PLACE: " + player);
 
 console.log("CARDS: "+JSON.stringify(cards));
 
-      this.updateStatusAndListCards(html, cards, function(card) {
-	if (card == "personal_letter") {
-	  thirteen_self.game.state.personal_letter_bonus = 1; 
-	  let cards2 = [];
-	  for (let z = 0; z < cards.length; z++) {
-	    if (cards[z] != "personal_letter") {
-	      cards2.push(cards[z]);
-	    }
-	  }
-          if (thirteen_self.game.player == 1) { html = "USSR pick a card to play (+1 bonus): "; }
-          if (thirteen_self.game.player == 2) { html = "US pick a card to play (+1 bonus): "; }
-  	  thirteen_self.addMove("setvar\tpersonal_letter\t"+thirteen_self.game.player);
-          thirteen_self.updateStatusAndListCards(html, cards2, function(card) {
-  	    thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t2\t"+card+"\t1");
-	    thirteen_self.playerPlayStrategyCard(card);
-	  });
-	} else {
-  	  thirteen_self.addMove("discard\t"+thirteen_self.game.player+"\t2\t"+card+"\t1");
-	  thirteen_self.playerPlayStrategyCard(card);
-	}
+      this.updateStatusAndListCards(html, cards);
+   this.attachCardboxEvents(function (card) {
+    if (card == "personal_letter") {
+      thirteen_self.game.state.personal_letter_bonus = 1;
+      let cards2 = [];
+      for (let z = 0; z < cards.length; z++) {
+        if (cards[z] != "personal_letter") {
+          cards2.push(cards[z]);
+        }
+      }
+      if (thirteen_self.game.player == 1) {
+        html = "USSR pick a card to play (+1 bonus): ";
+      }
+      if (thirteen_self.game.player == 2) {
+        html = "US pick a card to play (+1 bonus): ";
+      }
+      thirteen_self.addMove("setvar\tpersonal_letter\t" + thirteen_self.game.player);
+
+      thirteen_self.updateStatusAndListCards(html, cards2);
+        thirteen_self.attachCardboxEvents(function (card) {
+        thirteen_self.addMove("discard\t" + thirteen_self.game.player + "\t2\t" + card + "\t1");
+        thirteen_self.playerPlayStrategyCard(card);
       });
+    } else {
+      thirteen_self.addMove("discard\t" + thirteen_self.game.player + "\t2\t" + card + "\t1");
+      thirteen_self.playerPlayStrategyCard(card);
+    }
+  });
     }
 
   }
@@ -1734,49 +1725,32 @@ console.log("CARDS: "+JSON.stringify(cards));
   playerPlayStrategyCard(card) {
 
     let thirteen_self  = this;
-    let strategy_cards = this.returnStrategyCards(); 
-    let this_card      = strategy_cards[card];
+    let this_card      = this.strategies[card];
 
     let html = '';
 
-    let me = "ussr";
-    if (this.game.player == 2) { me = "us"; }
-
+    let me = (this.game.player == 2)? "us": "ussr";
 
     //
     // my card
-    //
     if (this_card.side == "neutral" || this_card.side == me) {
-
-      html = '<div class="status-message" id="status-message">how would you like to play this card: <p></p><ul>';
-      html += '<li class="textcard" id="playevent">play event</li>';
+      html = '<ul><li class="textcard" id="playevent">play event</li>';
       html += '<li class="textcard" id="playcommand">add/remove cubes</li>';
-      html += '</ul></div>';
+      html += '</ul>';
 
-    //
-    // opponent card
-    //
-    } else {
-
-      html = "<div class='status-message' id='status-message'>how would you like to play this card: <p></p><ul>";
-      html += '<li class="textcard" id="playcommand">add/remove cubes</li>';
-      html += '</ul></div>';
-
+    } else {  // opponent card
+      html = '<ul><li class="textcard" id="playcommand">add/remove cubes</li></ul>';
     }
-    thirteen_self.updateStatus(html);
+    thirteen_self.updateStatusWithOptions("how would you like to play this card:",html);
 
     $('.textcard').off();
     $('.textcard').on('click', function() {
-
-
       let action = $(this).attr("id");
       $('.textcard').off();
 
       if (action == "playevent") {
-	thirteen_self.hideCard();
-
-        if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+strategy_cards[card].name+"</span> for event"); }
-        if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+strategy_cards[card].name+"</span> for event"); }
+        if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
+        if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
 
         thirteen_self.playerTriggerEvent(thirteen_self.game.player, card);
         return;
@@ -1786,21 +1760,20 @@ console.log("CARDS: "+JSON.stringify(cards));
 	let myside = "us";
         let opponent = 1;
 
-	thirteen_self.hideCard();
+	//thirteen_self.hideCard();
 
 	if (thirteen_self.game.player == 1) { myside = "ussr"; opponent = 2; }
 
-	let sc = thirteen_self.returnStrategyCards();
-
-	if (sc[card].side == "neutral" || sc[card].side == myside) {
+	
+	if (thirteen_self.strategies[card].side == "neutral" || thirteen_self.strategies[card].side == myside) {
           thirteen_self.playerPlaceCommandTokens(thirteen_self.game.player, card);
 	} else {
 	  thirteen_self.updateLog("opponent playing event first...");
 	  thirteen_self.addMove("place_command_tokens\t" + thirteen_self.game.player + "\t"+card);
 	  thirteen_self.addMove("trigger_opponent_event\t"+opponent+"\t"+card);
 
-          if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+strategy_cards[card].name+"</span> for command"); }
-          if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+strategy_cards[card].name+"</span> for command"); }
+          if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
+          if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
 
 	  thirteen_self.endTurn();
 	}
@@ -1912,7 +1885,7 @@ console.log("CARDS: "+JSON.stringify(cards));
       action = $(this).attr("id");
       if (action == "done") { mycallback(); }
 
-      let html2 = "<div class='status-message' id='status-message'>" + 'Adjust which DEFCON track: <p></p><ul>';
+      let html2 = '<ul>';
       if (only_one_defcon_track == 1) {
 	if (selected_defcon_track == 0) {
           html2 += '<li class="textcard" id="1">political</li>';
@@ -1954,9 +1927,9 @@ console.log("CARDS: "+JSON.stringify(cards));
       }
       html2 += '<li class="textcard" id="done">finish move</li>';
       html2 += '</ul>';
-      html2 += '</div>';
+   
 
-      thirteen_self.updateStatus(html2);
+      thirteen_self.updateStatusWithOptions('Adjust which DEFCON track:',html2);
 
       $('.textcard').off();
       $('.textcard').on('click', function() {
@@ -1979,7 +1952,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
       thirteen_self.removeEventsFromBoard();
 
-      let html = "<div class='status-message' id='status-message'>escalate or de-escalate defcon track? <p></p><ul>";
+      let html = "<ul>";
 	if (directions != "decrease") {
           html += '<li class="textcard" id="increase">escalate defcon</li>';
 	}
@@ -1987,8 +1960,8 @@ console.log("CARDS: "+JSON.stringify(cards));
           html += '<li class="textcard" id="decrease">de-escalate defcon</li>';
 	}
           html += '<li class="textcard" id="done">done</li>';
-          html += '</ul></div>';
-      thirteen_self.updateStatus(html);
+          html += '</ul>';
+      thirteen_self.updateStatusWithOptions(`escalate or de-escalate defcon track?`,html);
 
 
       $('.textcard').off();
@@ -2067,7 +2040,7 @@ console.log("CARDS: "+JSON.stringify(cards));
     if (!testdone) {
        let num_to_announce = number;
        if (number == 100) { num_to_announce = max_per_arena; }
-	this.updateStatus("<div class='status-message' id='status-message'>"+ 'Add ' + num_to_announce + ' Influence: <p></p><ul><li class="textcard" id="done">finish turn</li></ul></div>');
+	this.updateStatusWihtOptions('Add ' + num_to_announce + ' Influence: ','<ul><li class="textcard" id="done">finish turn</li></ul>');
     }
 
     let thirteen_self = this;
@@ -2204,7 +2177,7 @@ console.log("CARDS: "+JSON.stringify(cards));
     if (!testdone) {
        let num_to_announced = number;
        if (number == 100) { num_to_announce = max_per_arena; }
-	this.updateStatus("<div class='status-message' id='status-message'>"+'Remove ' + num_to_announce + ' Influence: <p></p><ul><li class="textcard" id="done">finish turn</li></ul></div>');
+	this.updateStatusWithOptions('Remove ' + num_to_announce + ' Influence:','<ul><li class="textcard" id="done">finish turn</li></ul>');
     }
 
     let thirteen_self = this;
@@ -2350,8 +2323,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
 
   playerTriggerEvent(player, card) {
-    let strategy_cards = this.returnStrategyCards();
-    strategy_cards[card].event(player);
+    this.strategies[card].event(player);
   }
 
 
@@ -2359,8 +2331,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
     let thirteen_self = this;
 
-    let sc   = thirteen_self.returnStrategyCards();
-    if (tokens == -1) { tokens = sc[card].tokens; }
+    if (tokens == -1) { tokens = this.strategies[card].tokens; }
     //
     // personal letter bonus if played
     //
@@ -2381,12 +2352,12 @@ console.log("CARDS: "+JSON.stringify(cards));
 
       let arena_id = $(this).attr('id');
 
-      html = "<div class='status-message' id='status-message'>" + 'do you wish to add or remove command tokens? <p></p><ul>';
+      html = '<ul>';
       html += '<li class="card" id="addtokens">add command tokens</li>';
       html += '<li class="card" id="removetokens">remove command tokens</li>';
-      html += '</ul></div>';
+      html += '</ul>';
 
-      thirteen_self.updateStatus(html);
+      thirteen_self.updateStatusWithOptions(`do you wish to add or remove command tokens?`,html);
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -2395,7 +2366,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
         if (action == "addtokens") {
 
-          html = "<div class='status-message' id='status-message'>" + 'how many command tokens do you wish to add? <p></p><ul>';
+          html = '<ul>';
 	  if (tokens >= 1) {
             html += '<li class="textcard" id="1">one</li>';
 	  }
@@ -2412,9 +2383,9 @@ console.log("CARDS: "+JSON.stringify(cards));
             html += '<li class="textcard" id="5">five</li>';
 	  }
           html += '</ul>';
-	  html += '</div>';
+	  
 
-          thirteen_self.updateStatus(html);
+          thirteen_self.updateStatusWithOptions(`how many command tokens do you wish to add?`,html);
 
 	  $('.textcard').off();
 	  $('.textcard').on('click', function() {
@@ -2463,7 +2434,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
         if (action == "removetokens") {
 
-          html = "<div class='status-message' id='status-message'>" + 'how many command tokens do you wish to remove? <p></p><ul>';
+          html = '<ul>';
 	  if (tokens >= 1) {
             html += '<li class="textcard" id="1">one</li>';
 	  }
@@ -2479,9 +2450,9 @@ console.log("CARDS: "+JSON.stringify(cards));
 	  if (tokens >= 5) {
             html += '<li class="textcard" id="5">five</li>';
 	  }
-          html += '</ul></div>';
+          html += '</ul>';
 
-          thirteen_self.updateStatus(html);
+          thirteen_self.updateStatusWithOptions(`how many command tokens do you wish to remove?`,html);
 
 	  $('.textcard').off();
 	  $('.textcard').on('click', function() {
@@ -3154,16 +3125,16 @@ console.log("CARDS: "+JSON.stringify(cards));
   }
 
 
-
   returnCardImage(card) {
-    let thirteen_self = this;
-    let agenda_cards = thirteen_self.returnAgendaCards();
-    let strategy_cards = thirteen_self.returnStrategyCards();
-    if (agenda_cards[card]) {
-      return `<div class="agenda_card cardimg showcard" style="background-image: url('/thirteen/img/${agenda_cards[card].img}');background-size: cover;" id="${card}" /></div>`;
+    if (card === "personal_letter") {
+      return `<img class="cardimg showcard" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png"/>`;
+    }
+
+    if (this.agendas[card]) {
+      return `<img class="agenda_card cardimg showcard" src='/thirteen/img/${this.agendas[card].img}' id="${card}"/>`;
     } 
-    if (strategy_cards[card]) { 
-      return `<div class="strategy_card cardimg showcard" style="background-image: url('/thirteen/img/${strategy_cards[card].img}');background-size: cover;" id="${card}" /></div>`;
+    if (this.strategies[card]) { 
+      return `<img class="strategy_card cardimg showcard" src='/thirteen/img/${this.strategies[card].img}' id="${card}"/>`;
     }
     return "";
   }
@@ -3786,13 +3757,13 @@ console.log("CARDS: "+JSON.stringify(cards));
 	event : function(player) {
 
 	  let cards_discarded = 0;
-          let html = "<div class='status-message' id='status-message'>Select cards to discard:<ul>";
+          let html = "<ul>";
           for (let i = 0; i < thirteen_self.game.deck[1].hand.length; i++) {
             html += '<li class="card showcard '+thirteen_self.game.deck[1].hand[i]+'" id="'+thirteen_self.game.deck[1].hand[i]+'">'+thirteen_self.game.deck[1].cards[thirteen_self.game.deck[1].hand[i]].name+'</li>';
           }
-          html += '</ul> When you are done discarding <span class="card dashed" id="finished">click here</span>.</div>';
-          thirteen_self.updateStatus(html);
-          thirteen_self.addShowCardEvents(function(card) {
+          html += '<li class="card dashed" id="finished">Done Discarding</li></ul>';
+          thirteen_self.updateStatusWithOptions(`Select cards to discard:`,html);
+          thirteen_self.attachCardboxEvents(function(card) {
 
             if (card == "finished") {
               thirteen_self.addMove("DEAL\t2\t"+thirteen_self.game.player+"\t"+cards_discarded);
@@ -4546,23 +4517,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
 
 
-  //
-  // OVERWRITE Game Library to add personal letter card
-  //
-  returnCardItem(card) {
-
-    if (card == "personal_letter") {
-      return `<div id="personal_letter" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}<img class="cardimg showcard" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png" /></div>`;
-    }
-    for (let z = 0; z < this.game.deck.length; z++) {
-      if (this.game.deck[z].cards[card] != undefined) {
-        return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}</div>`;
-      }
-    }
-    return '<li class="card showcard" id="'+card+'">'+card+'</li>';
-
-  }
-
+  
 
   //
   // OVERWRITE -- to take "us" and "ussr" instead of player_id

@@ -31,7 +31,7 @@
         user_message += '</ul></div>';
         twilight_self.updateStatus(user_message);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skiportega") {
             twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Ortega coup...</div>");
             twilight_self.addMove("resolve\tortega");

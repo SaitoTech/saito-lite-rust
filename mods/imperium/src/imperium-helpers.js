@@ -69,9 +69,6 @@
   ///////////////////////
   // Imperium Specific //
   ///////////////////////
-  addMove(mv) {
-    this.moves.push(mv);
-  };
   prependMove(mv) {
     this.moves.unshift(mv);
   };

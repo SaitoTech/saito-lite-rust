@@ -85,10 +85,7 @@ class Network {
     // no duplicate connections
     //
     for (let i = 0; i < this.peers.length; i++) {
-      if (
-        this.peers[i].peer.host === peerhost &&
-        this.peers[i].peer.port === peerport
-      ) {
+      if (this.peers[i].peer.host === peerhost && this.peers[i].peer.port === peerport) {
         console.log("already connected to peer...");
         return;
       }
@@ -101,10 +98,7 @@ class Network {
       if (peerhost === "localhost") {
         return;
       }
-      if (
-        this.app.options.server.host === peerhost &&
-        this.app.options.server.port === peerport
-      ) {
+      if (this.app.options.server.host === peerhost && this.app.options.server.port === peerport) {
         console.log(
           "ERROR 185203: not adding " +
             this.app.options.server.host +
@@ -134,11 +128,7 @@ class Network {
     //
     // we connect to them
     //
-    peer.socket = this.app.network.initializeWebSocket(
-      peer,
-      false,
-      this.app.BROWSER == 1
-    );
+    peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
     this.peers.push(peer);
     this.peers_connected++;
     peer.keepAlive();
@@ -156,9 +146,7 @@ class Network {
   addRemotePeer(socket) {
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
-      console.log(
-        "ERROR 757594: denying request to remote peer as server overloaded..."
-      );
+      console.log("ERROR 757594: denying request to remote peer as server overloaded...");
       return null;
     }
 
@@ -236,10 +224,7 @@ class Network {
       const res = await fetch(url);
       if (res.ok) {
         const base64Buffer = await res.arrayBuffer();
-        const buffer = Buffer.from(
-          Buffer.from(base64Buffer).toString("utf-8"),
-          "base64"
-        );
+        const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
         const block = new Block(this.app);
         block.deserialize(buffer);
         await block.generateConsensusValues();
@@ -248,9 +233,7 @@ class Network {
         block.peer = this;
         this.app.mempool.addBlock(block);
       } else {
-        console.error(
-          `Error fetching block: Status ${res.status} -- ${res.statusText}`
-        );
+        console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
       }
     } catch (err) {
       console.log(`Error fetching block:`);
@@ -270,9 +253,7 @@ class Network {
           wsProtocol = "wss";
         }
       }
-      peer.socket = new WebSocket(
-        `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
-      );
+      peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
       peer.socket.onopen = (event) => {
@@ -313,9 +294,7 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       }
-      peer.socket = new WSWebSocket(
-        `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
-      );
+      peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
       //
@@ -326,9 +305,7 @@ class Network {
         this.app.network.requestBlockchain(peer);
       });
       peer.socket.on("close", (event) => {
-        console.log(
-          `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
-        );
+        console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
       });
       peer.socket.on("error", (event) => {
         console.log(`[error] ${event.message}`);
@@ -374,10 +351,7 @@ class Network {
         //
         // do not remove peers if it's end point is in our options
         //
-        if (
-          this.app.options.peers != null &&
-          typeof peer.peer.endpoint != "undefined"
-        ) {
+        if (this.app.options.peers != null && typeof peer.peer.endpoint != "undefined") {
           for (let d = 0; d < this.app.options.peers.length; d++) {
             if (
               this.app.options.peers[d].host === peer.peer.endpoint.host &&
@@ -581,38 +555,26 @@ class Network {
         publickey = "";
         bytes = message.message_data;
 
-        block_id = Number(
-          this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8)))
-        );
+        block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
         if (!block_id) {
           block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
           fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
         }
 
-        console.log(
-          "RECEIVED REQCHAIN with fork_id: " +
-            fork_id +
-            " and block_id " +
-            block_id
+        console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
+
+        const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
+          block_id,
+          fork_id
         );
 
-        const last_shared_ancestor =
-          this.app.blockchain.generateLastSharedAncestor(block_id, fork_id);
-
-        console.log(
-          "last shared ancestor generated at: " + last_shared_ancestor
-        );
+        console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
         //
         // notify peer of longest-chain after this amount
         //
-        for (
-          let i = last_shared_ancestor;
-          i <= this.app.blockring.returnLatestBlockId();
-          i++
-        ) {
-          block_hash =
-            this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+        for (let i = last_shared_ancestor; i <= this.app.blockring.returnLatestBlockId(); i++) {
+          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
             block = await this.app.blockchain.loadBlockAsync(block_hash);
 
@@ -739,9 +701,7 @@ class Network {
           reconstructed_message = reconstructed_obj.message;
           reconstructed_data = reconstructed_obj.data;
         } catch (err) {
-          console.log(
-            "Error reconstructing data: " + JSON.stringify(mdata) + " - " + err
-          );
+          console.log("Error reconstructing data: " + JSON.stringify(mdata) + " - " + err);
         }
 
         const msg: any = {};
@@ -781,9 +741,7 @@ class Network {
         break;
       }
       default:
-        console.error(
-          "Unhandled command received by client... " + message.message_name
-        );
+        console.error("Unhandled command received by client... " + message.message_name);
         await this.app.networkApi.sendAPIResponse(
           this.socket,
           "ERROR___",
@@ -816,8 +774,7 @@ class Network {
     //console.log('dead peers to add: ' + this.dead_peers.length);
     // limit amount of time nodes spend trying to reconnect to
     // prevent ddos issues.
-    const peer_add_delay =
-      this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
+    const peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
     this.dead_peers.forEach((peer) => {
       setTimeout(() => {
         console.log("Attempting to Connect to Peer!");
@@ -844,15 +801,8 @@ class Network {
 
     const data = { bhash: blk.returnHash(), bid: blk.block.id };
     for (let i = 0; i < this.peers.length; i++) {
-      if (
-        peer === this.peers[i] ||
-        (!peer && this.peers[i].peer.sendblks === 1)
-      ) {
-        this.sendRequest(
-          "SNDBLKHH",
-          Buffer.from(blk.returnHash(), "hex"),
-          this.peers[i]
-        );
+      if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
+        this.sendRequest("SNDBLKHH", Buffer.from(blk.returnHash(), "hex"), this.peers[i]);
       }
     }
   }
@@ -873,11 +823,7 @@ class Network {
     for (let i = 0; i < this.peers.length; i++) {
       if (peer === this.peers[i]) {
         console.log("sending SPVCHAIN w " + JSON.stringify(litechain));
-        this.sendRequest(
-          "SPVCHAIN",
-          Buffer.from(JSON.stringify(litechain), "utf8"),
-          this.peers[i]
-        );
+        this.sendRequest("SPVCHAIN", Buffer.from(JSON.stringify(litechain), "utf8"), this.peers[i]);
       }
     }
   }
@@ -963,12 +909,7 @@ class Network {
     }
 
     console.log(
-      "req blockchain with: " +
-        latest_block_id +
-        " and " +
-        latest_block_hash +
-        " and " +
-        fork_id
+      "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
     );
 
     const buffer_to_send = Buffer.concat([

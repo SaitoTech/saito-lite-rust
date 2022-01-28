@@ -22,9 +22,6 @@ class Blackjack extends GameTemplate {
  
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.interface = 1;
-
-    this.boardgameWidth = 5100;
 
     this.settlement = [];
     this.updateHTML = "";
@@ -999,12 +996,6 @@ class Blackjack extends GameTemplate {
     }else{
       $("#player-box-graphic-1").addClass("hidden");
     }
-  }
-
-
-
-  addMove(mv) {
-    this.moves.push(mv);
   }
 
 

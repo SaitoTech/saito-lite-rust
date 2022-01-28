@@ -18,24 +18,18 @@ class HereIStand extends GameTemplate {
     this.description     = `Here I Stand is a boardgame based on the military, political and religious conflicts within Europe at the outbreak of the Protestant Reformation (1517-1555). Each player controls one or more major powers that dominated Europe: the Ottoman Empire, the Hapsburgs, England, France, the Papacy and the Protestant states.`;
     this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
     this.categories      = "Games Arcade Entertainment";
-    this.status = "alpha";
+
     //
     // this sets the ratio used for determining
     // the size of the original pieces
     //
-    this.boardgameWidth  = 5100;
+    this.boardWidth  = 5100;
 
     //
     // newbie mode
     //
     this.confirm_moves = 1;
 
-    
-    //
-    // default zoom
-    //
-    this.gameboardZoom   = 0.90;
-    this.gameboardMobileZoom = 0.67;
 
     //
     //
@@ -78,6 +72,7 @@ class HereIStand extends GameTemplate {
     this.factions = {};
     this.units = {};
     this.deck = this.returnDeck();
+
 
 
 
@@ -197,7 +192,16 @@ console.log("\n\n\n\n");
       // Game Queue
       //
       this.game.queue.push("round");
+
       this.game.queue.push("READY");
+      this.game.queue.push("DEAL\t1\t2\t8");
+      this.game.queue.push("DEAL\t1\t1\t8");
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.deck));
+
       this.game.queue.push("init");
 
     }
@@ -494,10 +498,10 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
     //
     // add card events -- text shown and callback run if there
     //
-    this.hud.addCardType("logcard", "", null);
-    this.hud.addCardType("card", "select", this.cardbox_callback);
-    if (!app.browser.isMobileBrowser(navigator.userAgent)) {
-      this.cardbox.skip_card_prompt = 1;
+    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    if (app.browser.isMobileBrowser(navigator.userAgent)) {
+      this.cardbox.skip_card_prompt = 0;
     }
 
     //
@@ -562,15 +566,17 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
   returnGameOptionsHTML() {
 
     return `
-      <div class="overlay-input">
-      <label for="player1">Play as:</label>
-      <select name="player1">
-        <option value="random" selected>random</option>
-        <option value="ussr">Protestants</option>
-        <option value="us">Hapsburgs</option>
-      </select>
-      </div>
+      <div style="padding:40px;width:100vw;height:100vh;overflow-y:scroll;display:grid;grid-template-columns: 200px auto">
+	<div style="top:0;left:0;">
+            <label for="player1">Play as:</label>
+            <select name="player1">
+              <option value="random" selected>random</option>
+              <option value="ussr">Protestants</option>
+              <option value="us">Hapsburgs</option>
+            </select>
 	    <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+	</div>
+    </div>
           `;
 
   }
@@ -580,8 +586,6 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
   addUnit(player, space, type) {
     this.spaces[space].units[player-1].push(this.newUnit(player, type));
-console.log("ADDED " + type + " to " + space);
-console.log(JSON.stringify(this.spaces[space]));
   }
 
   addRegular(player, space) {
@@ -2091,10 +2095,37 @@ console.log(JSON.stringify(this.spaces[space]));
       img : "HIS-008.svg" , 
       name : "Card" ,
       onEvent : function(game_mod, player) {
-	alert("The Reformation Happens");
+
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+	game_mod.game.queue.push("protestant_reformation\t"+player);
+        game_mod.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
+        game_mod.convertSpace("protestant", "wittenberg");
+        game_mod.addUnit(1, "wittenberg", "regular");
+        game_mod.addUnit(1, "wittenberg", "regular");
+        game_mod.addUnit(1, "wittenberg", "debater");
+        game_mod.displaySpace("wittenberg");
+
 	return 1;
       },
       handleGameLoop : function(game_mod, qe, mv) {
+
+        if (mv[0] == "protestant_reformation") {
+
+          let player = parseInt(mv[1]);
+          game_mod.game.queue.splice(qe, 1);
+
+	  if (this.game.player == player) {
+            game_mod.playerReformationAttempt(player);
+	  }
+
+          return 0;
+
+        }
+
 	return 1;
       }
     }
@@ -2105,6 +2136,846 @@ console.log(JSON.stringify(this.spaces[space]));
     deck['010'] = { 
       img : "HIS-010.svg" , 
       name : "Card" ,
+    }
+    deck['011'] = { 
+      img : "HIS-011.svg" , 
+      name : "Card" ,
+    }
+    deck['012'] = { 
+      img : "HIS-012.svg" , 
+      name : "Card" ,
+    }
+    deck['013'] = { 
+      img : "HIS-013.svg" , 
+      name : "Card" ,
+    }
+    deck['014'] = { 
+      img : "HIS-014.svg" , 
+      name : "Card" ,
+    }
+    deck['015'] = { 
+      img : "HIS-015.svg" , 
+      name : "Card" ,
+    }
+    deck['016'] = { 
+      img : "HIS-016.svg" , 
+      name : "Card" ,
+    }
+    deck['017'] = { 
+      img : "HIS-017.svg" , 
+      name : "Card" ,
+    }
+    deck['018'] = { 
+      img : "HIS-018.svg" , 
+      name : "Card" ,
+    }
+    deck['019'] = { 
+      img : "HIS-019.svg" , 
+      name : "Card" ,
+    }
+    deck['020'] = { 
+      img : "HIS-020.svg" , 
+      name : "Card" ,
+    }
+    deck['021'] = { 
+      img : "HIS-021.svg" , 
+      name : "Card" ,
+    }
+    deck['022'] = { 
+      img : "HIS-022.svg" , 
+      name : "Card" ,
+    }
+    deck['023'] = { 
+      img : "HIS-023.svg" , 
+      name : "Card" ,
+    }
+    deck['024'] = { 
+      img : "HIS-024.svg" , 
+      name : "Card" ,
+    }
+    deck['025'] = { 
+      img : "HIS-025.svg" , 
+      name : "Card" ,
+    }
+    deck['026'] = { 
+      img : "HIS-026.svg" , 
+      name : "Card" ,
+    }
+    deck['027'] = { 
+      img : "HIS-027.svg" , 
+      name : "Card" ,
+    }
+    deck['028'] = { 
+      img : "HIS-028.svg" , 
+      name : "Card" ,
+    }
+    deck['029'] = { 
+      img : "HIS-029.svg" , 
+      name : "Card" ,
+    }
+    deck['030'] = { 
+      img : "HIS-030.svg" , 
+      name : "Card" ,
+    }
+    deck['031'] = { 
+      img : "HIS-031.svg" , 
+      name : "Card" ,
+    }
+    deck['032'] = { 
+      img : "HIS-032.svg" , 
+      name : "Card" ,
+    }
+    deck['033'] = { 
+      img : "HIS-033.svg" , 
+      name : "Card" ,
+    }
+    deck['034'] = { 
+      img : "HIS-034.svg" , 
+      name : "Card" ,
+    }
+    deck['035'] = { 
+      img : "HIS-035.svg" , 
+      name : "Card" ,
+    }
+    deck['036'] = { 
+      img : "HIS-036.svg" , 
+      name : "Card" ,
+    }
+    deck['037'] = { 
+      img : "HIS-037.svg" , 
+      name : "Card" ,
+    }
+    deck['038'] = { 
+      img : "HIS-038.svg" , 
+      name : "Card" ,
+    }
+    deck['039'] = { 
+      img : "HIS-039.svg" , 
+      name : "Card" ,
+    }
+    deck['040'] = { 
+      img : "HIS-040.svg" , 
+      name : "Card" ,
+    }
+    deck['041'] = { 
+      img : "HIS-041.svg" , 
+      name : "Card" ,
+    }
+    deck['042'] = { 
+      img : "HIS-042.svg" , 
+      name : "Card" ,
+    }
+    deck['043'] = { 
+      img : "HIS-043.svg" , 
+      name : "Card" ,
+    }
+    deck['044'] = { 
+      img : "HIS-044.svg" , 
+      name : "Card" ,
+    }
+    deck['045'] = { 
+      img : "HIS-045.svg" , 
+      name : "Card" ,
+    }
+    deck['046'] = { 
+      img : "HIS-046.svg" , 
+      name : "Card" ,
+    }
+    deck['047'] = { 
+      img : "HIS-047.svg" , 
+      name : "Card" ,
+    }
+    deck['048'] = { 
+      img : "HIS-048.svg" , 
+      name : "Card" ,
+    }
+    deck['049'] = { 
+      img : "HIS-049.svg" , 
+      name : "Card" ,
+    }
+    deck['050'] = { 
+      img : "HIS-050.svg" , 
+      name : "Card" ,
+    }
+    deck['051'] = { 
+      img : "HIS-051.svg" , 
+      name : "Card" ,
+    }
+    deck['052'] = { 
+      img : "HIS-052.svg" , 
+      name : "Card" ,
+    }
+    deck['053'] = { 
+      img : "HIS-053.svg" , 
+      name : "Card" ,
+    }
+    deck['054'] = { 
+      img : "HIS-054.svg" , 
+      name : "Card" ,
+    }
+    deck['055'] = { 
+      img : "HIS-055.svg" , 
+      name : "Card" ,
+    }
+    deck['056'] = { 
+      img : "HIS-056.svg" , 
+      name : "Card" ,
+    }
+    deck['057'] = { 
+      img : "HIS-057.svg" , 
+      name : "Card" ,
+    }
+    deck['058'] = { 
+      img : "HIS-058.svg" , 
+      name : "Card" ,
+    }
+    deck['059'] = { 
+      img : "HIS-059.svg" , 
+      name : "Card" ,
+    }
+    deck['060'] = { 
+      img : "HIS-060.svg" , 
+      name : "Card" ,
+    }
+    deck['061'] = { 
+      img : "HIS-061.svg" , 
+      name : "Card" ,
+    }
+    deck['062'] = { 
+      img : "HIS-062.svg" , 
+      name : "Card" ,
+    }
+    deck['063'] = { 
+      img : "HIS-063.svg" , 
+      name : "Card" ,
+    }
+    deck['064'] = { 
+      img : "HIS-064.svg" , 
+      name : "Card" ,
+    }
+    deck['065'] = { 
+      img : "HIS-065.svg" , 
+      name : "Card" ,
+    }
+    deck['066'] = { 
+      img : "HIS-066.svg" , 
+      name : "Card" ,
+    }
+    deck['067'] = { 
+      img : "HIS-067.svg" , 
+      name : "Card" ,
+    }
+    deck['068'] = { 
+      img : "HIS-068.svg" , 
+      name : "Card" ,
+    }
+    deck['069'] = { 
+      img : "HIS-069.svg" , 
+      name : "Card" ,
+    }
+    deck['070'] = { 
+      img : "HIS-070.svg" , 
+      name : "Card" ,
+    }
+    deck['071'] = { 
+      img : "HIS-071.svg" , 
+      name : "Card" ,
+    }
+    deck['072'] = { 
+      img : "HIS-072.svg" , 
+      name : "Card" ,
+    }
+    deck['073'] = { 
+      img : "HIS-073.svg" , 
+      name : "Card" ,
+    }
+    deck['074'] = { 
+      img : "HIS-074.svg" , 
+      name : "Card" ,
+    }
+    deck['075'] = { 
+      img : "HIS-075.svg" , 
+      name : "Card" ,
+    }
+    deck['076'] = { 
+      img : "HIS-076.svg" , 
+      name : "Card" ,
+    }
+    deck['077'] = { 
+      img : "HIS-077.svg" , 
+      name : "Card" ,
+    }
+    deck['078'] = { 
+      img : "HIS-078.svg" , 
+      name : "Card" ,
+    }
+    deck['079'] = { 
+      img : "HIS-079.svg" , 
+      name : "Card" ,
+    }
+    deck['080'] = { 
+      img : "HIS-080.svg" , 
+      name : "Card" ,
+    }
+    deck['081'] = { 
+      img : "HIS-081.svg" , 
+      name : "Card" ,
+    }
+    deck['082'] = { 
+      img : "HIS-082.svg" , 
+      name : "Card" ,
+    }
+    deck['083'] = { 
+      img : "HIS-083.svg" , 
+      name : "Card" ,
+    }
+    deck['084'] = { 
+      img : "HIS-084.svg" , 
+      name : "Card" ,
+    }
+    deck['085'] = { 
+      img : "HIS-085.svg" , 
+      name : "Card" ,
+    }
+    deck['086'] = { 
+      img : "HIS-086.svg" , 
+      name : "Card" ,
+    }
+    deck['087'] = { 
+      img : "HIS-087.svg" , 
+      name : "Card" ,
+    }
+    deck['088'] = { 
+      img : "HIS-088.svg" , 
+      name : "Card" ,
+    }
+    deck['089'] = { 
+      img : "HIS-089.svg" , 
+      name : "Card" ,
+    }
+    deck['090'] = { 
+      img : "HIS-090.svg" , 
+      name : "Card" ,
+    }
+    deck['091'] = { 
+      img : "HIS-091.svg" , 
+      name : "Card" ,
+    }
+    deck['092'] = { 
+      img : "HIS-092.svg" , 
+      name : "Card" ,
+    }
+    deck['093'] = { 
+      img : "HIS-093.svg" , 
+      name : "Card" ,
+    }
+    deck['094'] = { 
+      img : "HIS-094.svg" , 
+      name : "Card" ,
+    }
+    deck['095'] = { 
+      img : "HIS-095.svg" , 
+      name : "Card" ,
+    }
+    deck['096'] = { 
+      img : "HIS-096.svg" , 
+      name : "Card" ,
+    }
+    deck['097'] = { 
+      img : "HIS-097.svg" , 
+      name : "Card" ,
+    }
+    deck['098'] = { 
+      img : "HIS-098.svg" , 
+      name : "Card" ,
+    }
+    deck['099'] = { 
+      img : "HIS-099.svg" , 
+      name : "Card" ,
+    }
+    deck['100'] = { 
+      img : "HIS-100.svg" , 
+      name : "Card" ,
+    }
+    deck['101'] = { 
+      img : "HIS-101.svg" , 
+      name : "Card" ,
+    }
+    deck['102'] = { 
+      img : "HIS-102.svg" , 
+      name : "Card" ,
+    }
+    deck['103'] = { 
+      img : "HIS-103.svg" , 
+      name : "Card" ,
+    }
+    deck['104'] = { 
+      img : "HIS-104.svg" , 
+      name : "Card" ,
+    }
+    deck['105'] = { 
+      img : "HIS-105.svg" , 
+      name : "Card" ,
+    }
+    deck['106'] = { 
+      img : "HIS-106.svg" , 
+      name : "Card" ,
+    }
+    deck['107'] = { 
+      img : "HIS-107.svg" , 
+      name : "Card" ,
+    }
+    deck['108'] = { 
+      img : "HIS-108.svg" , 
+      name : "Card" ,
+    }
+    deck['109'] = { 
+      img : "HIS-109.svg" , 
+      name : "Card" ,
+    }
+    deck['110'] = { 
+      img : "HIS-110.svg" , 
+      name : "Card" ,
+    }
+    deck['111'] = { 
+      img : "HIS-111.svg" , 
+      name : "Card" ,
+    }
+    deck['112'] = { 
+      img : "HIS-112.svg" , 
+      name : "Card" ,
+    }
+    deck['113'] = { 
+      img : "HIS-113.svg" , 
+      name : "Card" ,
+    }
+    deck['114'] = { 
+      img : "HIS-114.svg" , 
+      name : "Card" ,
+    }
+    deck['115'] = { 
+      img : "HIS-115.svg" , 
+      name : "Card" ,
+    }
+    deck['116'] = { 
+      img : "HIS-116.svg" , 
+      name : "Card" ,
+    }
+    deck['117'] = { 
+      img : "HIS-117.svg" , 
+      name : "Card" ,
+    }
+    deck['118'] = { 
+      img : "HIS-118.svg" , 
+      name : "Card" ,
+    }
+    deck['119'] = { 
+      img : "HIS-119.svg" , 
+      name : "Card" ,
+    }
+    deck['120'] = { 
+      img : "HIS-120.svg" , 
+      name : "Card" ,
+    }
+    deck['121'] = { 
+      img : "HIS-121.svg" , 
+      name : "Card" ,
+    }
+    deck['122'] = { 
+      img : "HIS-122.svg" , 
+      name : "Card" ,
+    }
+    deck['123'] = { 
+      img : "HIS-123.svg" , 
+      name : "Card" ,
+    }
+    deck['124'] = { 
+      img : "HIS-124.svg" , 
+      name : "Card" ,
+    }
+    deck['125'] = { 
+      img : "HIS-125.svg" , 
+      name : "Card" ,
+    }
+    deck['126'] = { 
+      img : "HIS-126.svg" , 
+      name : "Card" ,
+    }
+    deck['127'] = { 
+      img : "HIS-127.svg" , 
+      name : "Card" ,
+    }
+    deck['128'] = { 
+      img : "HIS-128.svg" , 
+      name : "Card" ,
+    }
+    deck['129'] = { 
+      img : "HIS-129.svg" , 
+      name : "Card" ,
+    }
+    deck['130'] = { 
+      img : "HIS-130.svg" , 
+      name : "Card" ,
+    }
+    deck['131'] = { 
+      img : "HIS-131.svg" , 
+      name : "Card" ,
+    }
+    deck['132'] = { 
+      img : "HIS-132.svg" , 
+      name : "Card" ,
+    }
+    deck['133'] = { 
+      img : "HIS-133.svg" , 
+      name : "Card" ,
+    }
+    deck['134'] = { 
+      img : "HIS-134.svg" , 
+      name : "Card" ,
+    }
+    deck['135'] = { 
+      img : "HIS-135.svg" , 
+      name : "Card" ,
+    }
+    deck['136'] = { 
+      img : "HIS-136.svg" , 
+      name : "Card" ,
+    }
+    deck['137'] = { 
+      img : "HIS-137.svg" , 
+      name : "Card" ,
+    }
+    deck['138'] = { 
+      img : "HIS-138.svg" , 
+      name : "Card" ,
+    }
+    deck['139'] = { 
+      img : "HIS-139.svg" , 
+      name : "Card" ,
+    }
+    deck['140'] = { 
+      img : "HIS-140.svg" , 
+      name : "Card" ,
+    }
+    deck['141'] = { 
+      img : "HIS-141.svg" , 
+      name : "Card" ,
+    }
+    deck['142'] = { 
+      img : "HIS-142.svg" , 
+      name : "Card" ,
+    }
+    deck['143'] = { 
+      img : "HIS-143.svg" , 
+      name : "Card" ,
+    }
+    deck['144'] = { 
+      img : "HIS-144.svg" , 
+      name : "Card" ,
+    }
+    deck['145'] = { 
+      img : "HIS-145.svg" , 
+      name : "Card" ,
+    }
+    deck['146'] = { 
+      img : "HIS-146.svg" , 
+      name : "Card" ,
+    }
+    deck['147'] = { 
+      img : "HIS-147.svg" , 
+      name : "Card" ,
+    }
+    deck['148'] = { 
+      img : "HIS-148.svg" , 
+      name : "Card" ,
+    }
+    deck['149'] = { 
+      img : "HIS-149.svg" , 
+      name : "Card" ,
+    }
+    deck['150'] = { 
+      img : "HIS-150.svg" , 
+      name : "Card" ,
+    }
+    deck['151'] = { 
+      img : "HIS-151.svg" , 
+      name : "Card" ,
+    }
+    deck['152'] = { 
+      img : "HIS-152.svg" , 
+      name : "Card" ,
+    }
+    deck['153'] = { 
+      img : "HIS-153.svg" , 
+      name : "Card" ,
+    }
+    deck['154'] = { 
+      img : "HIS-154.svg" , 
+      name : "Card" ,
+    }
+    deck['155'] = { 
+      img : "HIS-155.svg" , 
+      name : "Card" ,
+    }
+    deck['156'] = { 
+      img : "HIS-156.svg" , 
+      name : "Card" ,
+    }
+    deck['157'] = { 
+      img : "HIS-157.svg" , 
+      name : "Card" ,
+    }
+    deck['158'] = { 
+      img : "HIS-158.svg" , 
+      name : "Card" ,
+    }
+    deck['159'] = { 
+      img : "HIS-159.svg" , 
+      name : "Card" ,
+    }
+    deck['160'] = { 
+      img : "HIS-160.svg" , 
+      name : "Card" ,
+    }
+    deck['161'] = { 
+      img : "HIS-161.svg" , 
+      name : "Card" ,
+    }
+    deck['162'] = { 
+      img : "HIS-162.svg" , 
+      name : "Card" ,
+    }
+    deck['163'] = { 
+      img : "HIS-163.svg" , 
+      name : "Card" ,
+    }
+    deck['164'] = { 
+      img : "HIS-164.svg" , 
+      name : "Card" ,
+    }
+    deck['165'] = { 
+      img : "HIS-165.svg" , 
+      name : "Card" ,
+    }
+    deck['166'] = { 
+      img : "HIS-166.svg" , 
+      name : "Card" ,
+    }
+    deck['167'] = { 
+      img : "HIS-167.svg" , 
+      name : "Card" ,
+    }
+    deck['168'] = { 
+      img : "HIS-168.svg" , 
+      name : "Card" ,
+    }
+    deck['169'] = { 
+      img : "HIS-169.svg" , 
+      name : "Card" ,
+    }
+    deck['170'] = { 
+      img : "HIS-170.svg" , 
+      name : "Card" ,
+    }
+    deck['171'] = { 
+      img : "HIS-171.svg" , 
+      name : "Card" ,
+    }
+    deck['172'] = { 
+      img : "HIS-172.svg" , 
+      name : "Card" ,
+    }
+    deck['173'] = { 
+      img : "HIS-173.svg" , 
+      name : "Card" ,
+    }
+    deck['174'] = { 
+      img : "HIS-174.svg" , 
+      name : "Card" ,
+    }
+    deck['175'] = { 
+      img : "HIS-175.svg" , 
+      name : "Card" ,
+    }
+    deck['176'] = { 
+      img : "HIS-176.svg" , 
+      name : "Card" ,
+    }
+    deck['177'] = { 
+      img : "HIS-177.svg" , 
+      name : "Card" ,
+    }
+    deck['178'] = { 
+      img : "HIS-178.svg" , 
+      name : "Card" ,
+    }
+    deck['179'] = { 
+      img : "HIS-179.svg" , 
+      name : "Card" ,
+    }
+    deck['180'] = { 
+      img : "HIS-180.svg" , 
+      name : "Card" ,
+    }
+    deck['181'] = { 
+      img : "HIS-181.svg" , 
+      name : "Card" ,
+    }
+    deck['182'] = { 
+      img : "HIS-182.svg" , 
+      name : "Card" ,
+    }
+    deck['183'] = { 
+      img : "HIS-183.svg" , 
+      name : "Card" ,
+    }
+    deck['184'] = { 
+      img : "HIS-184.svg" , 
+      name : "Card" ,
+    }
+    deck['185'] = { 
+      img : "HIS-185.svg" , 
+      name : "Card" ,
+    }
+    deck['186'] = { 
+      img : "HIS-186.svg" , 
+      name : "Card" ,
+    }
+    deck['187'] = { 
+      img : "HIS-187.svg" , 
+      name : "Card" ,
+    }
+    deck['188'] = { 
+      img : "HIS-188.svg" , 
+      name : "Card" ,
+    }
+    deck['189'] = { 
+      img : "HIS-189.svg" , 
+      name : "Card" ,
+    }
+    deck['190'] = { 
+      img : "HIS-190.svg" , 
+      name : "Card" ,
+    }
+    deck['191'] = { 
+      img : "HIS-191.svg" , 
+      name : "Card" ,
+    }
+    deck['192'] = { 
+      img : "HIS-192.svg" , 
+      name : "Card" ,
+    }
+    deck['193'] = { 
+      img : "HIS-193.svg" , 
+      name : "Card" ,
+    }
+    deck['194'] = { 
+      img : "HIS-194.svg" , 
+      name : "Card" ,
+    }
+    deck['195'] = { 
+      img : "HIS-195.svg" , 
+      name : "Card" ,
+    }
+    deck['196'] = { 
+      img : "HIS-196.svg" , 
+      name : "Card" ,
+    }
+    deck['197'] = { 
+      img : "HIS-197.svg" , 
+      name : "Card" ,
+    }
+    deck['198'] = { 
+      img : "HIS-198.svg" , 
+      name : "Card" ,
+    }
+    deck['199'] = { 
+      img : "HIS-199.svg" , 
+      name : "Card" ,
+    }
+    deck['200'] = { 
+      img : "HIS-200.svg" , 
+      name : "Card" ,
+    }
+    deck['201'] = { 
+      img : "HIS-201.svg" , 
+      name : "Card" ,
+    }
+    deck['202'] = { 
+      img : "HIS-202.svg" , 
+      name : "Card" ,
+    }
+    deck['203'] = { 
+      img : "HIS-203.svg" , 
+      name : "Card" ,
+    }
+    deck['204'] = { 
+      img : "HIS-204.svg" , 
+      name : "Card" ,
+    }
+    deck['205'] = { 
+      img : "HIS-205.svg" , 
+      name : "Card" ,
+    }
+    deck['206'] = { 
+      img : "HIS-206.svg" , 
+      name : "Card" ,
+    }
+    deck['207'] = { 
+      img : "HIS-207.svg" , 
+      name : "Card" ,
+    }
+    deck['208'] = { 
+      img : "HIS-208.svg" , 
+      name : "Card" ,
+    }
+    deck['209'] = { 
+      img : "HIS-209.svg" , 
+      name : "Card" ,
+    }
+    deck['210'] = { 
+      img : "HIS-210.svg" , 
+      name : "Card" ,
+    }
+    deck['211'] = { 
+      img : "HIS-211.svg" , 
+      name : "Card" ,
+    }
+    deck['212'] = { 
+      img : "HIS-212.svg" , 
+      name : "Card" ,
+    }
+    deck['213'] = { 
+      img : "HIS-213.svg" , 
+      name : "Card" ,
+    }
+    deck['214'] = { 
+      img : "HIS-214.svg" , 
+      name : "Card" ,
+    }
+    deck['215'] = { 
+      img : "HIS-215.svg" , 
+      name : "Card" ,
+    }
+    deck['216'] = { 
+      img : "HIS-216.svg" , 
+      name : "Card" ,
+    }
+    deck['217'] = { 
+      img : "HIS-217.svg" , 
+      name : "Card" ,
+    }
+    deck['218'] = { 
+      img : "HIS-218.svg" , 
+      name : "Card" ,
+    }
+    deck['219'] = { 
+      img : "HIS-219.svg" , 
+      name : "Card" ,
+    }
+
+    for (let key in deck) {
+      deck[key] = this.addEvents(deck[key]);
     }
 
     return deck;
@@ -2125,6 +2996,14 @@ console.log(JSON.stringify(this.spaces[space]));
       if (this.factions[this.game.players_info[i].faction] != undefined) {
         z.push(this.factions[this.game.players_info[i].faction]);
       }
+    }
+
+
+    //
+    // cards in the deck can modify gameloop
+    //
+    for (let key in this.deck) {
+      z.push(this.deck[key]);
     }
 
     return z;
@@ -2200,21 +3079,11 @@ console.log("MOVE: " + mv[0]);
 	  this.game.state.round++;
 
 	  //
-	  // restore state
+	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
 	    this.updateLog("Luther's 95 Theses!");
 	    this.game.queue.push("event\t1\t008");
-	    this.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
-	    this.convertSpace("protestant", "wittenberg");
-	    this.addUnit(1, "wittenberg", "regular");
-	    this.addUnit(1, "wittenberg", "regular");
-	    this.addUnit(1, "wittenberg", "debater");
-	    this.displaySpace("wittenberg");
-
-console.log("this is what is in wittenberg");
-console.log(JSON.stringify(this.spaces["wittenberg"]));
-
 	  }
 
           return 1;
@@ -2338,9 +3207,152 @@ console.log(JSON.stringify(this.spaces["wittenberg"]));
 
   }
 
-
-  playerReformationAttempt(player) {
+  returnPlayerFaction(player) {
+    let key = this.game.players_info[player-1].faction;
+    return this.factions[key];
   }
+
+  returnActionMenuOptions(player=null) {
+
+    let menu = [];
+
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1,1],
+      name : "Move formation in clear",
+      fnct : this.playerMoveFormationInClear,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      cost : [2,2,2,2,2,2],
+      name : "Move formation over pass",
+      fnct : this.playerMoveFormationOverPass,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy'],
+      cost : [1,1,1,1,1],
+      name : "Naval move",
+      fnct : this.playerNavalMove,
+    });
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Buy mercenary",
+      fnct : this.playerBuyMercenary,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      cost : [2,2,2,2,2,2],
+      name : "Raise regular",
+      fnct : this.playerRaiseRegular,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy'],
+      cost : [2,2,2,2,2],
+      name : "Build naval squadron",
+      fnct : this.playerBuildNavalSquadron,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1,1],
+      name : "Assault",
+      fnct : this.playerAssault,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1,1],
+      name : "Control unfortified space",
+      fnct : this.playerControlUnfortifiedSpace,
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [2,2,2],
+      name : "Explore",
+      fnct : this.playerExplore,
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [2,3,3],
+      name : "Colonize",
+      fnct : this.playerColonize,
+    });
+    menu.push({
+      factions : ['hapsburg','england','france'],
+      cost : [4,4,4],
+      name : "Conquer",
+      fnct : this.playerConquer,
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [2],
+      name : "Initiate piracy in a sea",
+      fnct : this.playerInitiatePiracyInASea,
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Raise Cavalry",
+      fnct : this.playerRaiseCavalry,
+    });
+    menu.push({
+      factions : ['ottoman'],
+      cost : [1],
+      name : "Build corsair",
+      fnct : this.playerBuildCorsair,
+    });
+    menu.push({
+      factions : ['protestant'],
+      cost : [1],
+      name : "Translate scripture",
+      fnct : this.playerTranslateScripture,
+    });
+    menu.push({
+      factions : ['england','protestant'],
+      cost : [1,1,1,1,1,1],
+      name : "Publish treatise",
+      fnct : this.playerPublishTreatise,
+    });
+    menu.push({
+      factions : ['papacy','protestant'],
+      cost : [3,3],
+      name : "Call theological debate",
+      fnct : this.playerCallTheologicalDebate,
+    });
+    menu.push({
+      factions : ['papacy'],
+      cost : [1],
+      name : "Build Saint Peters",
+      fnct : this.playerBuildSaintPeters,
+    });
+    menu.push({
+      factions : ['papacy'],
+      cost : [2],
+      name : "Burn books",
+      fnct : this.playerBurnBooks,
+    });
+    menu.push({
+      factions : ['papacy'],
+      cost : [3],
+      name : "Found Jesuit University",
+      fnct : this.playerFoundJesuitUniversity,
+    });
+
+    if (player == null) { return menu; }
+
+    let pfaction = this.returnPlayerFaction(player);
+    let fmenu = [];
+
+
+    for (let i = 0; i < menu.length; i++) {
+      if (menu[i].factions.includes(pfaction.key)) {
+        fmenu.push(menu[i]);
+      }
+    }
+
+    return menu;
+
+  }
+
 
 
   playerTurn(selected_card=null) {
@@ -2350,10 +3362,68 @@ console.log(JSON.stringify(this.spaces["wittenberg"]));
     let his_self = this;
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.addShowCardEvents(function(card) {
+    his_self.attachCardboxEvents(function(card) {
       his_self.playerTurnCardSelected(card, player);
     });
 
+    let menu = this.returnPlayerActionMenuOptions(this.game.player);
+
+    this.updateStatusAndListCards("Select a card...");
+
+  }
+
+  playerActionMenu(player) {
+    let menu_options = this.returnActionMenuOptions();
+  }
+
+  playerReformationAttempt(player) {
+
+    this.updateStatus("Attempting Reformation Attempt");
+
+  }
+  playerCounterReformationAttempt(player) {
+  }
+  playerMoveFormationInClear(player) {
+  }
+  playerMoveFormationOverPass(player) {
+  }
+  playerNavalMove(player) {
+  }
+  playerBuyMercenary(player) {
+  }
+  playerRaiseRegular(player) {
+  }
+  playerBuildNavalSquadron(player) {
+  }
+  playerAssault(player) {
+  }
+  playerControlUnfortifiedSpace(player) {
+  }
+  playerExplore(player) {
+  }
+  playerColonize(player) {
+  }
+  playerConquer(player) {
+  }
+  playerInitiatePiracyInASea(player) {
+  }
+  playerRaiseCavalry(player) {
+  }
+  playerBuildCorsair(player) {
+  }
+  playerTranslateScripture(player) {
+  }
+  playerPublishTreatise(player) {
+  }
+  playerCallTheologicalDebate(player) {
+  }
+  playerBuildSaintPeters(player) {
+  }
+  playerBurnBooks(player) {
+  }
+  playerFoundJesuitUniversity(player) {
+  }
+  playerPublishTreatise(player) {
   }
 
 
@@ -2364,6 +3434,7 @@ console.log(JSON.stringify(this.spaces["wittenberg"]));
     if (obj.id == null)                 { obj.id = "faction"; }
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
+    if (obj.key == null)	        { obj.key = name; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `

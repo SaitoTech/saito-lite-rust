@@ -27,8 +27,7 @@ class BurnFee {
     const elapsed_time_float = parseFloat(elapsed_time + "");
     const burn_fee_previous_block_as_float =
       parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
-    const work_needed_float =
-      burn_fee_previous_block_as_float / elapsed_time_float;
+    const work_needed_float = burn_fee_previous_block_as_float / elapsed_time_float;
 
     // convert back to nolan for rounding / safety
     return BigInt(Math.round(work_needed_float * 100_000_000.0));
@@ -53,8 +52,7 @@ class BurnFee {
       return BigInt(10_000_000_000_000_000_000);
     }
 
-    let timestamp_difference =
-      current_block_timestamp - previous_block_timestamp;
+    let timestamp_difference = current_block_timestamp - previous_block_timestamp;
     if (timestamp_difference == 0) {
       timestamp_difference = 1;
     }
@@ -67,8 +65,7 @@ class BurnFee {
     const burn_fee_previous_block_as_float =
       parseFloat(burn_fee_previous_block.toString()) / 100_000_000.0;
     const res1 =
-      burn_fee_previous_block_as_float *
-      Math.sqrt(this.heartbeat / timestamp_difference);
+      burn_fee_previous_block_as_float * Math.sqrt(this.heartbeat / timestamp_difference);
     const new_burnfee = Math.round(res1 * 100_000_000.0);
     return BigInt(new_burnfee);
   }

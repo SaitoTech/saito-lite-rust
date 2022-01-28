@@ -45,7 +45,7 @@
 
                 let confirmoptional = '<div class="status-message" id="status-message"><span>Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?</span><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul></div>';
                 twilight_self.updateStatus(confirmoptional);
-                twilight_self.addShowCardEvents(function(action2) {
+                twilight_self.attachCardboxEvents(function(action2) {
 
                   if (action2 == "conduct") {
                     twilight_self.addMove("resolve\tjunta");

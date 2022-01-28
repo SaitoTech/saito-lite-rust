@@ -52,7 +52,6 @@ class Mods {
     //
 
     if (tx.transaction.type == 9) {
-console.log("tx is lite on: " + JSON.stringify(message));
       return;
     }
 
@@ -169,15 +168,9 @@ console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSO
     const modNames = {};
     this.mods.forEach((mod, i) => {
       if (modNames[mod.name]) {
-        console.log(
-          `*****************************************************************`
-        );
-        console.log(
-          `***** WARNING: mod ${mod.name} is installed more than once! *****`
-        );
-        console.log(
-          `*****************************************************************`
-        );
+        console.log(`*****************************************************************`);
+        console.log(`***** WARNING: mod ${mod.name} is installed more than once! *****`);
+        console.log(`*****************************************************************`);
       }
       modNames[mod.name] = true;
     });

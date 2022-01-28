@@ -232,7 +232,7 @@ class Hearts extends GameTemplate {
     //
     // and you'll see what happens
     //
-    this.hud.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     //
     // this prevents desktop users going creay

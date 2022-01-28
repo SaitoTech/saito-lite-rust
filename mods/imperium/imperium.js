@@ -17,7 +17,7 @@ class Imperium extends GameTemplate {
     this.type             = "Strategy Boardgame";
     //this.status           = "Beta";
 
-    this.gameboardWidth   = 1900;
+    this.boardWidth   = 1900;
   
     this.rmoves           = [];
     this.totalPlayers     = 2;
@@ -10815,9 +10815,7 @@ console.log("Active Agenda: " + active_agenda);
       class : "game-action-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -10829,9 +10827,7 @@ console.log("Active Agenda: " + active_agenda);
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -10852,9 +10848,7 @@ console.log("Active Agenda: " + active_agenda);
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -10878,9 +10872,7 @@ console.log("Active Agenda: " + active_agenda);
 	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
         }
 
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" }, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -10904,9 +10896,7 @@ console.log("Active Agenda: " + active_agenda);
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
 	game_mod.handleObjectivesMenuItem();
-        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" }, function() {
-	//  alert("cardlist close strategy init menu");
-	//});
+        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
 
@@ -11020,7 +11010,7 @@ console.log("error initing chat: " + err);
     } catch (err) {}
 
 
-    this.hud.addCardType("textchoice", "", null);
+    this.cardbox.addCardType("textchoice", "", null);
 
     } catch (err) {}
 
@@ -11920,8 +11910,6 @@ handleStrategyMenuItem() {
   this.overlay.showCardSelectionOverlay(this.app, this, this.returnStrategyCards(), {
     columns : 4 ,
     backgroundImage : "/imperium/img/starscape_background3.jpg" ,
-  }, function() {
-    alert("cardlist close strategy init menu");
   });
 
   //
@@ -14663,12 +14651,10 @@ this.game.state.end_round_scoring = 0;
 	        onClose : function() {
 		  game_mod.overlay.hide();
 	        }
-	      }, function () {
-		game_mod.overlay.hide();
 	      });
             }
 	  },
-	}, function () {});
+	});
 
   	this.game.queue.splice(qe, 1);
   	return 1;
@@ -18666,9 +18652,6 @@ this.game.state.end_round_scoring = 0;
   ///////////////////////
   // Imperium Specific //
   ///////////////////////
-  addMove(mv) {
-    this.moves.push(mv);
-  };
   prependMove(mv) {
     this.moves.unshift(mv);
   };
@@ -22861,7 +22844,7 @@ playerSelectStrategyCards(mycallback, selection = 0) {
 	   	  imperium_self.hideStrategyCard(cardname);
     		  mycallback(cardname);
                 }
-    }, function() {});
+    });
 
   }
 

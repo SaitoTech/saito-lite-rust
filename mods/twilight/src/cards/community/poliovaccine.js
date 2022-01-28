@@ -34,7 +34,7 @@
         twilight_self.updateStatus(user_message);
         twilight_self.addMove("resolve\tpoliovaccine");
 
-        twilight_self.addShowCardEvents(function(card) {
+        twilight_self.attachCardboxEvents(function(card) {
           cards_discarded++;
           twilight_self.removeCardFromHand(action2);
           twilight_self.addMove("discard\tus\t"+action2);

@@ -37,7 +37,7 @@
             user_message += '<li class="card" id="skipche">or skip coup</li>';
             user_message += '</ul></div>';
         twilight_self.updateStatus(user_message);
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skipche") {
             twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");
             twilight_self.addMove("resolve\tche");

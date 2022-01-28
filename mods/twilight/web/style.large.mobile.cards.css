@@ -93,9 +93,6 @@ body {
   padding: 10px 5px;
 }
 
-.log {
-  padding: 2px;
-}
 
 /** Modal **/
 .modal {
@@ -206,11 +203,6 @@ body {
   border-bottom: 1px dashed;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
 
 .gameboard {
   position: relative;
@@ -465,7 +457,7 @@ body {
   transform: translate(-50%, -50%);
 }
 
-.cardbox-hud {
+.hud-card {
   display: block;
 
 /* PREVIOUS - works but too small? */
@@ -649,17 +641,7 @@ body {
     padding: 20px;
   }
 
-  /* .log {
-    height: 1em;
-    bottom: 0;
-    padding: 0.2rem;
-    position: fixed;
-    background: black;
-    overflow: hidden;
-    margin-bottom: 0px;
-    width: 100%;
-  } */
-
+  
   .cardbox {
     position: fixed;
     z-index: 90000;
@@ -690,7 +672,7 @@ body {
     overflow: scroll;
   }
 
-  .cardbox-hud {
+  .hud-card {
     display: block;
     min-width: calc(36vh * 0.7211);
     min-height: 100%;
@@ -750,19 +732,7 @@ body {
     padding: 20px;
   }
 
-  /*
-  .log {
-    height: 15px;
-    bottom: 0;
-    padding: 0.2rem;
-    position: fixed;
-    background: black;
-    overflow: hidden;
-    margin-bottom: 0px;
-    width: 100%;
-  }
-   */
-
+  
   .cardbox {
     /* position: fixed;
     height: 95vh;
@@ -788,7 +758,7 @@ body {
     padding-top: 0.5em;
   }
 
-  .cardbox-hud {
+  .hud-card {
     /* width: 10em;
     min-height: 14em; */
     width: calc(22vw * 0.7211);

@@ -83,7 +83,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
 	// and handle with the HUD too
 	//
         twilight_self.updateStatus('<div class="status-message" id="status-message">Set DEFCON at level:<ul><li class="card" id="five">five</li><li class="card" id="four">four</li><li class="card" id="three">three</li><li class="card" id="two">two</li><li class="card" id="one">one</li></ul></div>');
-       twilight_self.addShowCardEvents(function(action2) {
+       twilight_self.attachCardboxEvents(function(action2) {
 
           let defcon_target = 5;
 

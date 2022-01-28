@@ -1,10 +1,5 @@
-import UtxoSet from "./utxoset";
-import * as JSON from "json-bigint";
 import { Saito } from "../../apps/core";
-import Blockring from "./blockring";
-import Staking from "./staking";
-import Transaction, { TransactionType } from "./transaction";
-import Block from "./block";
+import Block, { BlockType } from "./block";
 
 class Blockchain {
   public app: Saito;
@@ -112,10 +107,7 @@ class Blockchain {
 
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
-    if (
-      !this.app.blockring.isEmpty() &&
-      !this.isBlockIndexed(parent_block_hash)
-    ) {
+    if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
       console.log("fetching unknown block: " + parent_block_hash);
       if (!parent_block_hash) {
         console.log("hash is empty", block);
@@ -202,8 +194,7 @@ class Blockchain {
       while (new_chain_hash !== old_chain_hash) {
         if (this.blocks[old_chain_hash]) {
           old_chain.push(old_chain_hash);
-          old_chain_hash =
-            this.blocks[old_chain_hash].block.previous_block_hash;
+          old_chain_hash = this.blocks[old_chain_hash].block.previous_block_hash;
           if (old_chain_hash === "") {
             break;
           }
@@ -242,9 +233,7 @@ class Blockchain {
           //
           // NOTE - requires testing
           //
-          console.log(
-            "potential edge case requires handling: blocks received out-of-order"
-          );
+          console.log("potential edge case requires handling: blocks received out-of-order");
 
           let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
@@ -252,14 +241,8 @@ class Blockchain {
             let disconnected_block_hash =
               this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (disconnected_block_hash) {
-              this.app.blockring.onChainReorganization(
-                i,
-                disconnected_block_hash,
-                false
-              );
-              let disconnected_block = await this.loadBlockAsync(
-                disconnected_block_hash
-              );
+              this.app.blockring.onChainReorganization(i, disconnected_block_hash, false);
+              let disconnected_block = await this.loadBlockAsync(disconnected_block_hash);
               if (disconnected_block) {
                 disconnected_block.lc = 0;
               }
@@ -375,14 +358,12 @@ class Blockchain {
       already_processed_callbacks = 1;
     }
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
-
       //
       // this block is initialized with zero-confs processed
       //
-console.log("affixing callbacks");
+      console.log("affixing callbacks");
 
       block.affixCallbacks();
-
 
       //
       // don't run callbacks if reloading (force!)
@@ -390,12 +371,7 @@ console.log("affixing callbacks");
       if (block.lc === 1 && block.force !== 1) {
         let starting_block_id = block.returnId() - this.callback_limit;
         let block_id_in_which_to_delete_callbacks =
-          block.returnId() - this.callback_limit;
-        let block_id_in_which_running_callbacks_impossible_because_of_pruning =
-          block.returnId() - this.prune_after_blocks;
-        if (block_id_in_which_running_callbacks_impossible_because_of_pruning > block_id_in_which_to_delete_callbacks) {
-	  block_id_in_which_to_delete_callbacks = block_id_in_which_running_callbacks_impossible_because_of_pruning;
-	}
+          block.returnId() - Math.min(this.callback_limit, this.prune_after_blocks);
         if (starting_block_id < 1) {
           starting_block_id = 1;
         }
@@ -425,13 +401,16 @@ console.log("block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_del
 console.log("running callbacks? " + run_callbacks);
 
           if (run_callbacks === 1) {
-            let callback_block_hash =
-              this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+            let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
             if (callback_block_hash !== "") {
 console.log("running on block: " + callback_block_hash);
               let callback_block = this.blocks[callback_block_hash];
               if (callback_block) {
-console.log("running the callbacks on block: " + callback_block.returnHash());
+                console.log(
+                  `running the callbacks on block: ${callback_block.returnHash()} callback count = ${
+                    callback_block.callbacks.length
+                  }`
+                );
                 await callback_block.runCallbacks(this_confirmation);
               }
             }
@@ -441,11 +420,10 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
         //
         // delete callbacks as appropriate to save memory
         //
-        if (block_id_in_which_to_delete_callbacks > 0) {
-          let callback_block_hash =
-            this.app.blockring.returnLongestChainBlockHashAtBlockId(
-              block_id_in_which_to_delete_callbacks
-            );
+        if (block_id_in_which_to_delete_callbacks >= 0) {
+          let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(
+            block_id_in_which_to_delete_callbacks + 1 // because block ring starts from 1
+          );
           let callback_block = this.blocks[callback_block_hash];
           if (callback_block) {
             callback_block.callbacks = [];
@@ -473,8 +451,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
   // deletes all blocks at a single block_id
   //
   async deleteBlocks(delete_block_id: number) {
-    let block_hashes =
-      this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
+    let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     for (let entry of block_hashes) {
       if (entry[0] <= delete_block_id) {
@@ -499,9 +476,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     }
 
     let block_hashes_copy = [];
-    let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(
-      prune_blocks_at_block_id
-    );
+    let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(prune_blocks_at_block_id);
 
     for (const entry of block_hashes) {
       if (prune_blocks_at_block_id >= entry[0]) {
@@ -536,10 +511,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       }
     }
 
-    let weights = [
-      0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000,
-      100000,
-    ];
+    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
     //
     // loop backwards through blockchain
@@ -550,7 +522,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       //
       // do not loop around if block id < 0
       //
-      if (current_block_id > block_id || current_block_id === 0) {
+      if (current_block_id > block_id || current_block_id <= 0) {
         break;
       }
 
@@ -558,10 +530,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       // index to update
       //
       let idx = 2 * i;
-      let block_hash =
-        this.app.blockring.returnLongestChainBlockHashByBlockId(
-          current_block_id
-        );
+      let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
 
       if (block_hash[idx]) {
         fork_id[idx] = block_hash[idx];
@@ -578,9 +547,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
 
   // deletes a single block
   async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
-    console.debug(
-      "blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash
-    );
+    console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
@@ -621,10 +588,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
 
     let pbid = peer_latest_block_id;
     let mbid = my_latest_block_id;
-    let weights = [
-      0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000,
-      100000,
-    ];
+    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
 
     //
     // peer is further ahead
@@ -656,12 +620,8 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
         if (current_block_id < mbid && current_block_id > 0) {
           let idx = 2 * i;
 
-          let block_hash =
-            this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
-          if (
-            fork_id[idx] === block_hash[idx] &&
-            fork_id[idx + 1] === block_hash[idx + 1]
-          ) {
+          let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
+          if (fork_id[idx] === block_hash[idx] && fork_id[idx + 1] === block_hash[idx + 1]) {
             return current_block_id;
           }
         }
@@ -701,13 +661,8 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
           // compare input hash to my hash
           //
           let block_hash =
-            this.app.blockring.returnLongestChainBlockHashByBlockId(
-              current_block_id
-            );
-          if (
-            fork_id[idx] === block_hash[idx] &&
-            fork_id[idx + 1] === block_hash[idx + 1]
-          ) {
+            this.app.blockring.returnLongestChainBlockHashByBlockId(current_block_id);
+          if (fork_id[idx] === block_hash[idx] && fork_id[idx + 1] === block_hash[idx + 1]) {
             return current_block_id;
           }
         }
@@ -740,10 +695,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     //
     // and start mining
     //
-    this.app.miner.startMining(
-      this.returnLatestBlockHash(),
-      this.returnDifficulty()
-    );
+    this.app.miner.startMining(this.returnLatestBlockHash(), this.returnDifficulty());
 
     //
     // permit mempool to continue
@@ -758,10 +710,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     if (old_chain.length > new_chain.length) {
       return false;
     }
-    if (
-      this.app.blockring.returnLatestBlockId() >=
-      this.blocks[new_chain[0]].block.id
-    ) {
+    if (this.app.blockring.returnLatestBlockId() >= this.blocks[new_chain[0]].block.id) {
       return false;
     }
 
@@ -785,12 +734,19 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     return !!this.blocks[block_hash];
   }
 
-  //
-  // TODO - fetch from disk if needed, ergo async
-  //
   async loadBlockAsync(block_hash: string) {
+    if (!block_hash) return null;
     if (this.blocks[block_hash]) {
       return this.blocks[block_hash];
+    } else if (typeof window === "undefined") {
+      // load from disk if in server
+      console.debug(`loading block from disk : ${block_hash}`);
+      let block = await this.app.storage.loadBlockByHash(block_hash);
+      if (!block) {
+        console.warn(`block is not found in disk : ${block_hash}`);
+      }
+      block.block_type = BlockType.Full;
+      return block;
     }
     return null;
   }
@@ -910,14 +866,12 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     // utxoset update
     block.onChainReorganization(false);
     // blockring update
-    this.app.blockring.onChainReorganization(
-      block.returnId(),
-      block.returnHash(),
+    this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
+    // staking tables
+    let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
+      block,
       false
     );
-    // staking tables
-    let { res_spend, res_unspend, res_delete } =
-      this.app.staking.onChainReorganization(block, false);
     this.app.wallet.onChainReorganization(block, false);
     await this.onChainReorganization(block, false);
 
@@ -951,12 +905,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       // winding requires starting at the END of the vector and rolling
       // backwards until we have added block #5, etc.
       //
-      return await this.windChain(
-        new_chain,
-        old_chain,
-        new_chain.length - 1,
-        wind_failure
-      );
+      return await this.windChain(new_chain, old_chain, new_chain.length - 1, wind_failure);
     } else {
       //
       // continue unwinding,, which means
@@ -964,12 +913,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       // unwinding requires moving FORWARD in our vector (and backwards in
       // the blockchain). So we increment our unwind index.
       //
-      return await this.unwindChain(
-        new_chain,
-        old_chain,
-        current_unwind_index + 1,
-        wind_failure
-      );
+      return await this.unwindChain(new_chain, old_chain, current_unwind_index + 1, wind_failure);
     }
   }
 
@@ -989,10 +933,8 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       //
       // prune blocks
       //
-      const purge_block_id: number =
-        latest_block_id - this.returnGenesisPeriod() * 2;
-      this.blockchain.genesis_block_id =
-        latest_block_id - this.returnGenesisPeriod();
+      const purge_block_id: number = latest_block_id - this.returnGenesisPeriod() * 2;
+      this.blockchain.genesis_block_id = latest_block_id - this.returnGenesisPeriod();
 
       //
       // in either case, we are OK to throw out everything below the
@@ -1007,9 +949,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
         //
         this.blockchain.genesis_block_id = purge_block_id + 1;
         this.blockchain.genesis_block_hash =
-          this.app.blockring.returnLongestChainBlockHashAtBlockId(
-            purge_block_id + 1
-          );
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_block_id + 1);
         const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
@@ -1075,10 +1015,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
       console.log(
-        "not enough golden tickets: " +
-          golden_tickets_found +
-          " --- " +
-          search_depth_idx
+        "not enough golden tickets: " + golden_tickets_found + " --- " + search_depth_idx
       );
       //
       // TODO - browsers might want to implement this check somehow
@@ -1107,12 +1044,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
     }
 
     if (old_chain.length === 0) {
-      return await this.windChain(
-        new_chain,
-        old_chain,
-        new_chain.length - 1,
-        false
-      );
+      return await this.windChain(new_chain, old_chain, new_chain.length - 1, false);
     } else {
       if (new_chain.length > 0) {
         return await this.unwindChain(new_chain, old_chain, 0, true);
@@ -1164,8 +1096,8 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       //
       // bid starts from the latest block, which will not have its blockring
       // lc_pos variable correctly set yet, and thus can return the incorrect
-      // block_hash when fetching the previous_block_hash. so we want to 
-      // skip loading the previous_block_hash if this is the same as the 
+      // block_hash when fetching the previous_block_hash. so we want to
+      // skip loading the previous_block_hash if this is the same as the
       // latest_block_id;
       //
       let insert_pos = bid % this.app.blockring.ring_buffer_length;
@@ -1173,7 +1105,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       let previous_block_hash;
 
       if (i == 0) {
-        previous_block_hash = block.returnPreviousBlockHash(); 
+        previous_block_hash = block.returnPreviousBlockHash();
       } else {
         previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
       }
@@ -1188,16 +1120,14 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
 
     if (does_block_validate) {
       // update so block_id and block_hash updates
-      this.app.blockring.onChainReorganization(
-        block.returnId(),
-        block.returnHash(),
-        true
-      );
+      this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), true);
 
       // utxoset update
       //block.onChainReorganization(true);
-      let { res_spend, res_unspend, res_delete } =
-        this.app.staking.onChainReorganization(block, true);
+      let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
+        block,
+        true
+      );
       this.app.wallet.onChainReorganization(block, true);
 
       //
@@ -1239,12 +1169,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
       if (current_wind_index === 0) {
         return !wind_failure;
       }
-      return await this.windChain(
-        new_chain,
-        old_chain,
-        current_wind_index - 1,
-        false
-      );
+      return await this.windChain(new_chain, old_chain, current_wind_index - 1, false);
     } else {
       //
       // we have had an error while winding the chain. this requires us to
@@ -1278,12 +1203,7 @@ console.log("running the callbacks on block: " + callback_block.returnHash());
         // which requires us to start at the END of the new chain vector.
         //
         if (old_chain.length > 0) {
-          return await this.windChain(
-            old_chain,
-            new_chain,
-            old_chain.len() - 1,
-            true
-          );
+          return await this.windChain(old_chain, new_chain, old_chain.len() - 1, true);
         } else {
           return false;
         }

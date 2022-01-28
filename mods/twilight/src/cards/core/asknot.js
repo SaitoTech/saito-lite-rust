@@ -35,7 +35,7 @@
 
         twilight_self.updateStatus(user_message);
         twilight_self.addMove("resolve\tasknot");
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "finished") {
 

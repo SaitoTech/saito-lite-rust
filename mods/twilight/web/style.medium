@@ -23,21 +23,6 @@ body {
   border: 2px solid #948f8b;
   border-bottom: 0px;
 }
-.log {
-  overflow: hidden;
-  position: absolute;
-  top: 431px;
-  left: 0px;
-  float: left;
-  padding:10px;
-  font-family: Courier, Sans-Serif;
-  height: 200px;
-  width: 390px;
-  font-size: 1.1em;
-  background-color: #fffccd;
-  border: 2px solid #948f8b; 
-  border-top: 0px;
-}
 
 li {
  margin-top: 6px;

@@ -20,8 +20,6 @@ class Poker extends GameTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
-    this.interface = 1;
-    this.boardgameWidth = 5100;
 
     this.settlement = [];
     this.updateHTML = "";
@@ -33,9 +31,6 @@ class Poker extends GameTemplate {
   // manually announce arcade banner support
   //
   respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
 
     if (type == "arcade-carousel") {
       let obj = {};
@@ -55,6 +50,10 @@ class Poker extends GameTemplate {
         maxPlayers: this.maxPlayers,
       };
     }
+    if (super.respondTo(type) != null) {
+      return super.respondTo(type);
+    }
+
     return null;
   }
 
@@ -2033,10 +2032,6 @@ class Poker extends GameTemplate {
     document.querySelector(".pot").innerHTML = this.sizeNumber(
       this.game.state.pot
     );
-  }
-
-  addMove(mv) {
-    this.moves.push(mv);
   }
 
   endTurn(nextTarget = 0) {

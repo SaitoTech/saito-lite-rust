@@ -19,7 +19,7 @@
         return 0;
       }
 
-      twilight_self.addShowCardEvents(function(action2) {
+      twilight_self.attachCardboxEvents(function(action2) {
 
         if (action2 == "endgame") {
           twilight_self.updateStatus("<div class='status-message' id='status-message'>Triggering Wargames...</div>");
