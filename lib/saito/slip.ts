@@ -110,9 +110,7 @@ class Slip {
   }
 
   deserialize(app, buffer) {
-    this.add = app.crypto.toBase58(
-      Buffer.from(buffer.slice(0, 33)).toString("hex")
-    );
+    this.add = app.crypto.toBase58(Buffer.from(buffer.slice(0, 33)).toString("hex"));
     this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
     this.amt = app.binary.u64FromBytes(buffer.slice(65, 73)).toString();
     this.sid = app.binary.u8FromByte(buffer[73]);
@@ -175,13 +173,7 @@ class Slip {
     const slip_ordinal = app.binary.u8AsByte(this.sid);
     const slip_type = app.binary.u32AsBytes(this.type);
 
-    return new Uint8Array([
-      ...publickey,
-      ...uuidx,
-      ...amount,
-      slip_ordinal,
-      ...slip_type,
-    ]);
+    return new Uint8Array([...publickey, ...uuidx, ...amount, slip_ordinal, ...slip_type]);
   }
 
   serializeInputForSignature(app) {

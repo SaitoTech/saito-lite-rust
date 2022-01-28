@@ -73,15 +73,7 @@ class Keychain {
     }
   }
 
-  addKey(
-    publickey = "",
-    identifier = "",
-    watched = false,
-    tag = "",
-    bid = "",
-    bsh = "",
-    lc = 1
-  ) {
+  addKey(publickey = "", identifier = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
     if (publickey === "") {
       return;
     }
@@ -173,10 +165,7 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
         if (this.keys[x].aes_secret != "") {
-          const tmpmsg = this.app.crypto.aesDecrypt(
-            encrypted_msg,
-            this.keys[x].aes_secret
-          );
+          const tmpmsg = this.app.crypto.aesDecrypt(encrypted_msg, this.keys[x].aes_secret);
           if (tmpmsg != null) {
             const tmpx = JSON.parse(tmpmsg);
             if (tmpx.module != null) {
@@ -232,10 +221,7 @@ class Keychain {
     for (let x = 0; x < this.keys.length; x++) {
       if (this.keys[x].publickey == publickey) {
         if (this.keys[x].aes_secret != "") {
-          return this.app.crypto.aesDecrypt(
-            encrypted_string,
-            this.keys[x].aes_secret
-          );
+          return this.app.crypto.aesDecrypt(encrypted_string, this.keys[x].aes_secret);
         }
       }
     }
@@ -275,10 +261,7 @@ class Keychain {
 
   hasSharedSecret(publickey) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (
-        this.keys[x].publickey == publickey ||
-        this.keys[x].isIdentifier(publickey) == 1
-      ) {
+      if (this.keys[x].publickey == publickey || this.keys[x].isIdentifier(publickey) == 1) {
         if (this.keys[x].hasSharedSecret() == 1) {
           return true;
         }
@@ -289,10 +272,7 @@ class Keychain {
 
   isWatched(publickey) {
     for (let x = 0; x < this.keys.length; x++) {
-      if (
-        this.keys[x].publickey == publickey ||
-        this.keys[x].isIdentifier(publickey)
-      ) {
+      if (this.keys[x].publickey == publickey || this.keys[x].isIdentifier(publickey)) {
         if (this.keys[x].isWatched()) {
           return true;
         }
@@ -303,18 +283,9 @@ class Keychain {
 
   initializeKeyExchange(publickey) {
     const alice = this.app.crypto.createDiffieHellman();
-    const alice_publickey = alice
-      .getPublicKey(null, "compressed")
-      .toString("hex");
-    const alice_privatekey = alice
-      .getPrivateKey(null, "compressed")
-      .toString("hex");
-    this.updateCryptoByPublicKey(
-      publickey,
-      alice_publickey,
-      alice_privatekey,
-      ""
-    );
+    const alice_publickey = alice.getPublicKey(null, "compressed").toString("hex");
+    const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
+    this.updateCryptoByPublicKey(publickey, alice_publickey, alice_privatekey, "");
     return alice_publickey;
   }
 
@@ -357,10 +328,7 @@ class Keychain {
   returnKeys() {
     const kx = [];
     for (let x = 0; x < this.keys.length; x++) {
-      if (
-        this.keys[x].lc == 1 &&
-        this.keys[x].publickey != this.app.wallet.returnPublicKey()
-      ) {
+      if (this.keys[x].lc == 1 && this.keys[x].publickey != this.app.wallet.returnPublicKey()) {
         kx[kx.length] = this.keys[x];
       }
     }
@@ -407,10 +375,7 @@ class Keychain {
     if (this.keys != undefined) {
       for (let x = 0; x < this.keys.length; x++) {
         if (this.keys[x].publickey === publickey) {
-          if (
-            this.keys[x].data.email != "" &&
-            typeof this.keys[x].data.email !== "undefined"
-          ) {
+          if (this.keys[x].data.email != "" && typeof this.keys[x].data.email !== "undefined") {
             return this.keys[x].data.email;
           }
         }
@@ -457,17 +422,13 @@ class Keychain {
       size: 420, // 420px square
       format: "svg", // use SVG instead of PNG
     };
-    const data = new Identicon(
-      this.app.crypto.hash(publickey),
-      options
-    ).toString();
+    const data = new Identicon(this.app.crypto.hash(publickey), options).toString();
     return "data:image/svg+xml;base64," + data;
   }
 
   returnIdenticonColor(publickey) {
     // foreground defaults to last 7 chars as hue at 70% saturation, 50% brightness
-    const hue =
-      parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
+    const hue = parseInt(this.app.crypto.hash(publickey).substr(-7), 16) / 0xfffffff;
     const saturation = 0.7;
     const brightness = 0.5;
     const values = this.hsl2rgb(hue, saturation, brightness).map(Math.round);
@@ -738,12 +699,7 @@ class Keychain {
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
-  updateCryptoByPublicKey(
-    publickey,
-    aes_publickey = "",
-    aes_privatekey = "",
-    shared_secret = ""
-  ) {
+  updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
     if (publickey == "") {
       return;
     }

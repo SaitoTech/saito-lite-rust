@@ -65,9 +65,7 @@ class StorageCore extends Storage {
 
   generateBlockFilename(block): string {
     let filename = this.data_dir + "/" + this.dest + "/";
-    filename += Buffer.from(
-      this.app.binary.u64AsBytes(block.block.timestamp).toString("hex")
-    );
+    filename += Buffer.from(this.app.binary.u64AsBytes(block.block.timestamp).toString("hex"));
     filename += "-";
     filename += Buffer.from(block.hash).toString("hex");
     filename += ".sai";
@@ -116,9 +114,7 @@ class StorageCore extends Storage {
     }
 
     files.sort(function (a, b) {
-      const compres =
-        fs.statSync(dir + a).mtime.getTime() -
-        fs.statSync(dir + b).mtime.getTime();
+      const compres = fs.statSync(dir + a).mtime.getTime() - fs.statSync(dir + b).mtime.getTime();
       if (compres == 0) {
         return parseInt(a) - parseInt(b);
       }
@@ -266,10 +262,7 @@ class StorageCore extends Storage {
       // open options file
       //
       try {
-        const optionsfile = fs.readFileSync(
-          `${this.config_dir}/options`,
-          this.file_encoding_load
-        );
+        const optionsfile = fs.readFileSync(`${this.config_dir}/options`, this.file_encoding_load);
         this.app.options = JSON.parse(optionsfile.toString());
       } catch (err) {
         // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
@@ -317,11 +310,7 @@ class StorageCore extends Storage {
     this.app.options = Object.assign({}, this.app.options);
 
     try {
-      fs.writeFileSync(
-        `${this.config_dir}/options`,
-        JSON.stringify(this.app.options),
-        null
-      );
+      fs.writeFileSync(`${this.config_dir}/options`, JSON.stringify(this.app.options), null);
     } catch (err) {
       // this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
       console.error(err);

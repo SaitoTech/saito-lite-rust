@@ -23,7 +23,7 @@
 
         this.updateStatus(html);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "place") {
             twilight_self.placeInfluence("argentina", 1, player, function() {
               twilight_self.addMove("resolve\tperonism");
@@ -42,7 +42,7 @@
             </ul></div>`;
 
             twilight_self.updateStatus(html);
-            twilight_self.addShowCardEvents(function(action2) {
+            twilight_self.attachCardboxEvents(function(action2) {
 
               let modified_ops = twilight_self.modifyOps(1,"peronism");
 

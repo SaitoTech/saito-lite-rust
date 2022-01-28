@@ -42,7 +42,7 @@
         }
 
         this.updateStatus('<div class="status-message" id="status-message"><span>Blockade triggers:</span><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul></div>');
-        twilight_self.addShowCardEvents(function(action) {
+        twilight_self.attachCardboxEvents(function(action) {
 
           if (action == "discard") {
             let choicehtml = '<div class="status-message" id="status-message"><span>Choose a card to discard:</span><ul>';
@@ -53,7 +53,7 @@
             }
             choicehtml += '</ul></div>';
             twilight_self.updateStatus(choicehtml);
-            twilight_self.addShowCardEvents(function(card) {
+            twilight_self.attachCardboxEvents(function(card) {
               twilight_self.removeCardFromHand(card);
                 twilight_self.addMove("notify\tus discarded "+card);
               twilight_self.endTurn();

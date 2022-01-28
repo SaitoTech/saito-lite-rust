@@ -23,13 +23,6 @@ class Solitrio extends GameTemplate {
 
     this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
     this.categories  = "Cardgame Game Solitaire";
-    //
-    // this sets the ratio used for determining
-    // the size of the original pieces
-    //
-    this.boardgameWidth  = 5100;
-
-    //this.hud.mode = 1; // classic
 
   }
 
@@ -672,10 +665,6 @@ class Solitrio extends GameTemplate {
     return card.substring(1);
   }
 
-
-  addMove(mv) {
-    this.moves.push(mv);
-  }
 
 }
 

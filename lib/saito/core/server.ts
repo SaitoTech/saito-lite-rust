@@ -97,13 +97,9 @@ class Server {
           ? 1
           : this.app.options.server.sendblks;
       this.server.sendtxs =
-        typeof this.app.options.server.sendtxs == "undefined"
-          ? 1
-          : this.app.options.server.sendtxs;
+        typeof this.app.options.server.sendtxs == "undefined" ? 1 : this.app.options.server.sendtxs;
       this.server.sendgts =
-        typeof this.app.options.server.sendgts == "undefined"
-          ? 1
-          : this.app.options.server.sendgts;
+        typeof this.app.options.server.sendgts == "undefined" ? 1 : this.app.options.server.sendgts;
       this.server.receiveblks =
         typeof this.app.options.server.receiveblks == "undefined"
           ? 1
@@ -122,9 +118,7 @@ class Server {
     // sanity check
     //
     if (this.server.host === "" || this.server.port === 0) {
-      console.log(
-        "Not starting local server as no hostname / port in options file"
-      );
+      console.log("Not starting local server as no hostname / port in options file");
       return;
     }
 
@@ -296,9 +290,7 @@ class Server {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString(
-            "base64"
-          );
+          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");
@@ -325,9 +317,7 @@ class Server {
           });
 
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString(
-            "base64"
-          );
+          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
           res.write(buffer, "utf8");
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.end();
@@ -370,11 +360,7 @@ class Server {
         const fd = fs.openSync(client_options_file, "w");
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        fs.writeSync(
-          fd,
-          this.app.storage.returnClientOptions(),
-          this.server_file_encoding
-        );
+        fs.writeSync(fd, this.app.storage.returnClientOptions(), this.server_file_encoding);
         fs.closeSync(fd);
       }
       res.sendFile(client_options_file);

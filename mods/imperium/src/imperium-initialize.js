@@ -147,9 +147,7 @@
       class : "game-action-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -161,9 +159,7 @@
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -184,9 +180,7 @@
 	let tech = game_mod.returnTechnology();
         let t2 = [];
         for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"}, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -210,9 +204,7 @@
 	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
         }
 
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" }, function() {
-	  alert("cardlist close strategy init menu");
-	});
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
       }
     });
     this.menu.addSubMenuOption("game-cardlist", {
@@ -236,9 +228,7 @@
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
 	game_mod.handleObjectivesMenuItem();
-        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" }, function() {
-	//  alert("cardlist close strategy init menu");
-	//});
+        //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
       }
     });
 
@@ -352,7 +342,7 @@ console.log("error initing chat: " + err);
     } catch (err) {}
 
 
-    this.hud.addCardType("textchoice", "", null);
+    this.cardbox.addCardType("textchoice", "", null);
 
     } catch (err) {}
 

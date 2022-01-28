@@ -54,7 +54,7 @@
         this.updateStatus(userhtml);
         let twilight_self = this;
 
-        twilight_self.addShowCardEvents(function(myselect) {
+        twilight_self.attachCardboxEvents(function(myselect) {
           $('.card').off();
 
           if (myselect == "romania") {

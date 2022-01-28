@@ -61,7 +61,7 @@ console.log("about to add");
     for (let i = 0; i < this.mods.length; i++) {
       if (message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message));
+          console.log("AFFIXING TO MOD: " + this.mods[i].name);
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
@@ -169,15 +169,9 @@ console.log("adding callback on module: " + this.mods[i].name + " for tx " + JSO
     const modNames = {};
     this.mods.forEach((mod, i) => {
       if (modNames[mod.name]) {
-        console.log(
-          `*****************************************************************`
-        );
-        console.log(
-          `***** WARNING: mod ${mod.name} is installed more than once! *****`
-        );
-        console.log(
-          `*****************************************************************`
-        );
+        console.log(`*****************************************************************`);
+        console.log(`***** WARNING: mod ${mod.name} is installed more than once! *****`);
+        console.log(`*****************************************************************`);
       }
       modNames[mod.name] = true;
     });

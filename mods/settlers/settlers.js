@@ -22,7 +22,6 @@ class Settlers extends GameTemplate {
     this.hexgrid = new GameHexGrid();
     this.skin = new SettlersSkin();
 
-    this.boardgameWidth = 5100; //not sure about this
     this.minPlayers = 2;
     this.maxPlayers = 4;
 

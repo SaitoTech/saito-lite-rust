@@ -64,7 +64,7 @@
 
           this.updateStatus('<div class="status-message" id="status-message"><span>You win the Summit:</span><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul></div>');
 
-          twilight_self.addShowCardEvents(function(action2) {
+          twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "raise") {
               twilight_self.updateStatus("<div class='status-message' id='status-message'>broadcasting choice....</div>");

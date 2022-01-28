@@ -26,7 +26,7 @@
         `;
         twilight_self.updateStatus(html);
 
-        twilight_self.addShowCardEvents(function(action2) {
+        twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "remove") {
 

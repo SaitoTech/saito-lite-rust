@@ -293,12 +293,13 @@ hr {
   transform: scale(1);
 }
 
+/* Make sure game overlay can cover saito-overlay */
 .game-overlay {
-  z-index: 9010;
+  z-index: 2010;
 }
 
 .game-overlay-backdrop {
-  z-index: 9000;
+  z-index: 2000;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -325,6 +326,22 @@ hr {
 .saito-overlay-menu ul li:hover {
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75), -2px -2px 5px #eee;
   background: #0001;
+}
+
+.rules-overlay{
+  background: var(--saito-nightscape);
+  padding: 1em;
+  font-size: 20px;
+  border: 2px white solid;
+  border-radius: 10px;
+  max-width: 80vw;
+  min-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.rules-overlay p{
+  margin-top: 0.5em;
 }
 
 /* Forms and Inputs */

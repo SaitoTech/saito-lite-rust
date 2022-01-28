@@ -20,8 +20,7 @@ test("slip serialize deserialze", () => {
   mockApp.binary = binary;
   mockApp.wallet = wallet;
 
-  wallet.wallet.privatekey =
-    "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
+  wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
   wallet.wallet.publickey = mockApp.crypto.toBase58(
     "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74"
   );
@@ -71,10 +70,8 @@ describe("serializeForSignature", () => {
     mockApp.crypto = crypto;
     mockApp.binary = binary;
     mockApp.wallet = wallet;
-    wallet.wallet.privatekey =
-      "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
-    wallet.wallet.publickey =
-      "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
+    wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
+    wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
     mockApp.hash = (data) => {
       return blake3.hash(data).toString("hex");

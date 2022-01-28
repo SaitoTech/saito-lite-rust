@@ -55,10 +55,8 @@ test("write_read_block_with_data_to_file", async () => {
   mockApp.crypto = crypto;
   mockApp.binary = binary;
   mockApp.wallet = wallet;
-  wallet.wallet.privatekey =
-    "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
-  wallet.wallet.publickey =
-    "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
+  wallet.wallet.privatekey = "854702489d49c7fb2334005b903580c7a48fe81121ff16ee6d1a528ad32f235d";
+  wallet.wallet.publickey = "02af1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce74";
 
   mockApp.hash = (data) => {
     return blake3.hash(data).toString("hex");
@@ -69,8 +67,7 @@ test("write_read_block_with_data_to_file", async () => {
   block.block.timestamp = 1637034582666;
   block.block.previous_block_hash =
     "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
-  block.block.merkle =
-    "ccf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
+  block.block.merkle = "ccf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
   block.block.creator = crypto.toBase58(
     "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8bcc"
   );
@@ -98,9 +95,7 @@ test("write_read_block_with_data_to_file", async () => {
   expect(block2).toBeTruthy();
   expect(block2.block.id).toEqual(block.block.id);
   expect(block2.block.timestamp).toEqual(block.block.timestamp);
-  expect(block2.block.previous_block_hash).toEqual(
-    block.block.previous_block_hash
-  );
+  expect(block2.block.previous_block_hash).toEqual(block.block.previous_block_hash);
   expect(block2.block.merkle).toEqual(block.block.merkle);
   expect(block2.block.creator).toEqual(block.block.creator);
   expect(block2.block.burnfee).toEqual(block.block.burnfee);

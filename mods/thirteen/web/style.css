@@ -284,7 +284,7 @@ li.card {
 
 
 /*** makes cards smaller in hud ***/
-.cardbox-hud .agenda_card {
+.hud-card .agenda_card {
   width:131px;
   height: 180px;
 }

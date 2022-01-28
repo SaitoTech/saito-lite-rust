@@ -85,7 +85,7 @@
     let his_self = this;
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.addShowCardEvents(function(card) {
+    his_self.attachCardboxEvents(function(card) {
       his_self.playerTurnCardSelected(card, player);
     });
 
