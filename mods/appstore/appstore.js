@@ -238,6 +238,8 @@ console.log("##########################");
 
     if (conf == 0) {
 
+console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
+
       switch (txmsg.request) {
         case 'submit module':
           this.submitModule(blk, tx);
@@ -292,17 +294,25 @@ console.log("##########################");
             }
           }
           if (!tx.isTo(app.wallet.returnPublicKey())) { 
+console.log("transaction is not to me...");
+console.log("mine: " + app.wallet.returnPublicKey());
+console.log("and to: " + JSON.stringify(tx.transaction.to));
 	    return; 
 	  }
+console.log("about to go into request bundle");
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
+
+console.log("received bundle to: " + JSON.stringify(tx.transaction.to));
+console.log("my publickey: " + app.wallet.returnPublicKey());
           if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
             console.log("##### BUNDLE RECEIVED #####");
             //
             // 
             //
             if (app.options.appstore) {
+console.log("default is not blank");
               if (app.options.appstore.default != "") {
                 if (tx.isFrom(app.options.appstore.default)) {
                   this.receiveBundle(blk, tx);
@@ -562,6 +572,8 @@ console.log(name + " is included? " + featured_app);
 
     if (this.app.BROWSER == 1) { return; }
 
+console.log("now making a bundle!");
+
     let sql = '';
     let params = '';
     let txmsg = tx.returnMessage();
@@ -591,6 +603,8 @@ console.log(name + " is included? " + featured_app);
       }
     }
 
+console.log("now making a bundle 2!");
+
     //
     // unversioned apps (first as default)
     //
@@ -613,6 +627,8 @@ console.log(name + " is included? " + featured_app);
       }
     }
 
+console.log("now making a bundle 3!");
+
     //
     // versioned apps (second as overrules default)
     //
@@ -633,6 +649,8 @@ console.log(name + " is included? " + featured_app);
         );
       }
     }
+
+console.log("now making a bundle 4!");
 
     //
     // WEBPACK
@@ -878,6 +896,7 @@ console.log("Bundle __dirname: " + __dirname);
 
         let scriptname = req.params.filename;
 
+
         let sql = "SELECT script FROM bundles WHERE name = $scriptname";
         let params = {
           $scriptname: scriptname
@@ -887,10 +906,20 @@ console.log("Bundle __dirname: " + __dirname);
         if (rows) {
           if (rows.length > 0) {
 
+/*****
             res.setHeader('Content-type', 'text/javascript');
             res.charset = 'UTF-8';
             res.write(rows[0].script);
             res.end();
+*****/
+
+            const filename = "/Users/david/Programming/saito-lite-rust/mods/appstore/bundler/dist/"+scriptname;
+            res.writeHead(200, {
+              "Content-Type": "text/javascript",
+              "Content-Transfer-Encoding": "utf8",
+            });
+            const src = fs.createReadStream(filename, { encoding: "utf8" });
+            src.pipe(res);
 
             return;
           }

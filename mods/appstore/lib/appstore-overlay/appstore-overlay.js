@@ -75,10 +75,13 @@ console.log("Fetched: " + (new Date().getTime()));
           let installed_apps = [];
           if (app.options.modules) {
             for (let i = 0; i < app.options.modules.length; i++) {
+console.log("pushing back: " +app.options.modules[i].name);
+
               installed_apps.push(app.options.modules[i].name);
             }
           }
           for (let z = 0; z < res.rows.length; z++) {
+console.log("res: " + res.rows[z].name);
             if (installed_apps.includes(res.rows[z].name) || res.rows[z].name == "name" || res.rows[z].name == "Unknown") {
               res.rows.splice(z, 1);
               z--;
@@ -92,6 +95,7 @@ console.log("Fetched: " + (new Date().getTime()));
 	    //
             document.querySelector(".appstore-overlay-grid").innerHTML = "";
             for (let i = 0; i < res.rows.length; i++) {
+console.log("adding " + res.rows[i].name);
               app.browser.addElementToDom(AppStoreOverlayAppTemplate(app, res.rows[i]), "appstore-overlay-grid");
 	    }
 

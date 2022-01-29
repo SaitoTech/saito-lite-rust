@@ -2,7 +2,6 @@ var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
 const JSON = require('json-bigint');
 
-
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -13,6 +12,7 @@ class Midnight extends GameTemplate {
     super(app);
 
     this.name            = "Midnight";
+    this.gamename        = "Midnight Rogue";
     this.slug            = "midnight";
     this.description     = "Experimental Interactive Fiction demo";
     this.categories      = "Arcade Games Entertainment";

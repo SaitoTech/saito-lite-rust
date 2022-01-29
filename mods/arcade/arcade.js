@@ -151,7 +151,6 @@ class Arcade extends ModTemplate {
     try {
       let post_mod = this.app.returnModule("Post");
       post_mod.renderMethod = "arcade";
-console.log("set post to arcade rendermethod");
     } catch (err) {}
 
     //
@@ -184,9 +183,7 @@ console.log("set post to arcade rendermethod");
     let sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`;
     if (this.viewing_game_homepage == 1) {
       let gameslug = app.browser.returnURLParameter("game");
-console.log(gameslug);
       let gamemod = app.modules.returnModuleBySlug(gameslug);
-console.log(gamemod.name);
       sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff} AND module = "${gamemod.name}"`;
     }
 
@@ -619,7 +616,6 @@ try {
           // game is over, we don't care
           if (tx.msg.over) {
             if (tx.msg.over == 1) {
-console.log("GAME IS OVER SO QUITTING!");
 	      return;
 	    }
           }
