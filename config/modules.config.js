@@ -1,6 +1,6 @@
 module.exports = {
   core: [
-    //'appstore/appstore.js',
+    'appstore/appstore.js',
     'arcade/arcade.js',
     'archive/archive.js',
     'chat/chat.js',
@@ -22,7 +22,7 @@ module.exports = {
     'website/website.js',
   ],
   lite: [
-    //'appstore/appstore.js',
+    'appstore/appstore.js',
     'arcade/arcade.js',
     'archive/archive.js',
     'chess/chess.js',
