@@ -912,8 +912,10 @@ console.log("Bundle __dirname: " + __dirname);
             res.write(rows[0].script);
             res.end();
 *****/
+	    let scriptn = './bundler/dist/'+scriptname;
+            let mods_dir_path = path.resolve(__dirname, scriptn);
+            let filename = mods_dir_path;
 
-            const filename = "/Users/david/Programming/saito-lite-rust/mods/appstore/bundler/dist/"+scriptname;
             res.writeHead(200, {
               "Content-Type": "text/javascript",
               "Content-Transfer-Encoding": "utf8",
