@@ -6,7 +6,7 @@ module.exports = {
     'chat/chat.js',
     'chess/chess.js',
     'debug/debug.js',
-    'email/email.js',
+    //'email/email.js',
     'encrypt/encrypt.js',
     'explorer/explorer.js',
     //'myqrcode/myqrcode.js',
@@ -19,6 +19,7 @@ module.exports = {
     'settings/settings.js',
     'solitrio/solitrio.js',
     //'wordblocks/wordblocks.js',
+    'wallet/wallet.js',
     'website/website.js',
   ],
   lite: [
@@ -28,7 +29,7 @@ module.exports = {
     'chess/chess.js',
     'chat/chat.js',
     'debug/debug.js',
-    'email/email.js',
+    //'email/email.js',
     //'debug/debug.js',
     'encrypt/encrypt.js',
     //'imperium/imperium.js',
@@ -41,6 +42,7 @@ module.exports = {
     'registry/registry.js',
     'settings/settings.js',
     'solitrio/solitrio.js',
+    'wallet/wallet.js',
     //'wordblocks/wordblocks.js',
     'website/website.js',
   ]
