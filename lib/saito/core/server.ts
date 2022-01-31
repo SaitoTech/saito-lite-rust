@@ -364,7 +364,6 @@ class Server {
       }
 
       let block_to_return = { block : null , transactions : null };
-
       block_to_return.block = JSON.parse(JSON.stringify(block.block));
       block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
 

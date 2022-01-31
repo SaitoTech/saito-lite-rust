@@ -559,6 +559,13 @@ console.log(name + " is included? " + featured_app);
         };
         await this.app.storage.executeDatabase(sql, params, "appstore");
 
+
+	//
+	// RESET CACHE
+	//
+	let sql2 = "SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules  WHERE  featured = 1";
+	let params2 = {};
+	this.sqlcache[sql2] = await this.app.storage.queryDatabase(sql2, params2, "appstore");
       }
 
     }
