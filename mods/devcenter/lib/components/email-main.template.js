@@ -8,15 +8,15 @@ module.exports = EmailMainTemplate = (app, mod) => {
 
         <p></p>
 
-	Everything on Saito is a blockchain application. This interface is an application. The Saito Arcade is an application. All of the games in the Saito Arcade are also modules. The chatbox is a module. And when you install other cryptocurrency, you are adding applications that teach Saito how to connect to those chains and make transfers for you.
+	Everything on Saito is an application that is running in your browser. This "website" is an application. The Arcade is an application. All of the games are applications. The chatbox is an application. And when you install other cryptocurrencies, you are adding applications that connect to other cryptocurrencies.
 
         <p></p>
 
-	This application is for developers and advanced users. Come here to install new Saito applications, modify applications you have already installed, and develop and upload new applications to the network. To start exploring the applications available and get a sense of what is possible click on the "AppStore" link in the left-hand menu. If you are here to change your existing application bundle, customize your wallet by clicking on "Settings".
+	This development center is an application for developers and advanced users. It lets you install new applications, manage your wallet, and build and upload Saito applications. Important applications will install links in your left-hand menu, like the "AppStore" that lets you install and upload new applications, and the "Settings" menu that lets you manage your existing wallet.
 
         <p></p>
 
-        If you are interested in developing on Saito, a good place to start is our tutorial series that explains how to build simple applications. It takes about five minutes to build your first Saito application. Once you have developed your application, you can upload it to the network where it will be available to any Saito AppStore running anywhere on the blockchain.
+        Want to build your own application? A good place to start is our tutorial series that explains how to build simple applications. It takes about five minutes to build your first module. Once you have developed your application, you can upload it to the network where it will be available to any Saito AppStore running anywhere on the blockchain.
 
         <p></p>
 
@@ -25,19 +25,6 @@ module.exports = EmailMainTemplate = (app, mod) => {
       </div>
     </div>
   `;
-
-  //
-  // preload scripts
-  //
-  let mods = app.modules.respondTo("email-appspace");
-  for (let i = 0; i < mods.length; i++) {
-    let tmod = mods[i];
-    if (tmod != null) {
-      if (tmod.script != "" && tmod.script !== "undefined" && tmod.script != undefined) {
-        html += tmod.script;
-      }
-    }
-  }
 
   return html;
 

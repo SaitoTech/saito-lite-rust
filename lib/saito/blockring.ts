@@ -135,21 +135,11 @@ export default class Blockring {
     }
   }
 
-  returnBlockHashesAtBlockId(block_id): Map<number, string> {
+  returnBlockHashesAtBlockId(block_id) {
     const insert_pos = block_id % this.ring_buffer_length;
-    const v = new Map();
-    if (!this.ring[insert_pos]) {
-      console.trace(
-        "block id : " +
-          block_id +
-          " insert_pos : " +
-          insert_pos +
-          " doesn't have an entry in block ring"
-      );
-      return v;
-    }
+    let v = [];
     for (let i = 0; i < this.ring[insert_pos].block_hashes.length; i++) {
-      v.set(this.ring[insert_pos].block_ids[i], this.ring[insert_pos].block_hashes[i]);
+      v.push(this.ring[insert_pos].block_hashes[i]);
     }
     return v;
   }

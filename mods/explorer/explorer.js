@@ -135,7 +135,7 @@ class ExplorerCore extends ModTemplate {
     return '<div class="explorer-main"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">'+ this.app.wallet.returnPublicKey() + '</div> \
-          <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance().toString().split(".")[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + this.app.wallet.returnBalance().toString().split(".")[1] + '</div> \
+          <div class="explorer-data"><h4>Balance:</h4> </div><div>'+ this.app.wallet.returnBalance()+ '</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">'+ this.app.mempool.mempool.transactions.length + ' txs</a></div> \
         </div>' + '\
         <div class="explorer-data"><h4>Search for Block (by hash):</h4> \
@@ -200,27 +200,37 @@ class ExplorerCore extends ModTemplate {
 
     var html = '<div class="blockchain-table">';
     html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div>';
+
+console.log("Latest Block ID: " + latest_block_id);
+
     for (var mb = latest_block_id; mb >= 0 && mb > latest_block_id - 200; mb--) {
+
       let longest_chain_hash = explorer_self.app.blockring.returnLongestChainBlockHashAtBlockId(mb);
       let hashes_at_block_id = explorer_self.app.blockring.returnBlockHashesAtBlockId(mb);
 
-      for (var mb2 = 0; mb2 < hashes_at_block_id.length; mb2++) {
+console.log(longest_chain_hash + " -- " + JSON.stringify(hashes_at_block_id));
+
+      for (let i = 0; i < hashes_at_block_id.length; i++) {
+
 	let txs_in_block = 0;
 	let previous_block_hash = "";
- 	if (explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]]) {
-	  txs_in_block = explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]].transactions.length;
-	  previous_block_hash = explorer_self.app.blockchain.blocks[hashes_at_block_id[mb2]].returnHash();
+
+	let block = explorer_self.app.blockchain.blocks[hashes_at_block_id[i]];
+
+ 	if (block) {
+	  txs_in_block = block.transactions.length;
+	  previous_block_hash = block.returnPreviousBlockHash();
 	}
-        if (longest_chain_hash === hashes_at_block_id[mb2]) {
+        if (longest_chain_hash === hashes_at_block_id[i]) {
           html += '<div>*</div>';
         } else {
           html += '<div></div>';
         }
-        html += '<div><a href="/explorer/block?hash=' + hashes_at_block_id[mb2] + '">' + hashes_at_block_id[mb2] + '</a></div>';
-        html += '<div><a href="/explorer/block?hash=' + hashes_at_block_id[mb2] + '">' + hashes_at_block_id[mb2] + '</a></div>';
+console.log("HERE");
+        html += '<div><a href="/explorer/block?hash=' + block.returnHash() + '">' + block.returnId() + '</a></div>';
+        html += '<div><a href="/explorer/block?hash=' + block.returnHash() + '">' + block.returnHash() + '</a></div>';
         html += '<div>' + txs_in_block + '</div>';
         html += '<div class="elipsis">' + previous_block_hash + '</div>';
-        //html += '</tr>';
       }
     }
     html += '</div>';
