@@ -34,9 +34,6 @@ body {
 
 
 .hand {
-  margin-left: auto;
-  margin-right: auto;
-  clear: both;
   position: relative;
 }
 
@@ -74,12 +71,15 @@ body {
 
 
 .player-info-chips {
-  padding: 0.5em;
   text-align: center;
-  font-size: 3vh;
+  font-size: max(1em,3vh);
   overflow: hidden;
 }
 
+.plog-update{
+  text-align: center;
+  font-size: 1.2em;
+}
 
 .suit {
   font-size: larger;
@@ -104,7 +104,7 @@ body {
 
 /*Playerbox text menu prompt*/
 .menu-player {
-  font-size: 2vh;
+  font-size: 1em;
   font-weight: bolder;
   margin-top: 0.5vh;
   margin-bottom: 0.5vh;
@@ -166,94 +166,39 @@ body {
 
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-
- 
+  /* Common elements */ 
   .deal .card {
     width: 8vw;
   }
   .pot {
-    top: 50vh;
-    font-size: 1.4em;
+    top: 30vh;
+    font-size: 2.4em;
   }
-
-  .player-info.poker-seat-1 {
-    height: 40vh;
-    width: 30vw;
-  }
-
-  .status ul li { 
-    line-height: 2.5em;
-    font-size: 1em;
-    width: 100%;
-  }
-
-  .cardfan {
-    left: 15vw;
-    top: 60vh;
-  }
-
-  .cardfan .card {
-    width: 14vw;
-  }
-
   .shim-notice {
     max-width: 100vw;
     width: 80vw;
     overflow-y: scroll;
   }
-
+ 
 }
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-
-
   .pot {
     top: 30vh;
     font-size: 2.4em;
   }
 
+  /* Table cards */
   .deal {
-    margin: 0 auto;
-    position: absolute;
     top: 38vh;
-    transform: inherit;
     /*Slightly to left to accommodate log*/
     width: 90vw;
     left: 49vw;
-    transform: translate(-50%);
   }
 
   .deal .card {
     width: 100% /*of grid slot*/
-  }
-
-  /*My cards*/
-  .cardfan {
-    top: unset;
-    bottom: 0px;
-  }
-  .cardfan .card {
-    width: 30vw;
-  }
-
-  /*Backs of other player cards*/
-  .other-player-hand .card {
-    width: 16vw;
-  }
-
-  .status ul li { 
-    line-height: 2.5em;
-    font-size: 1em;
-    width: 100%;
-  }
-
-
- 
-
-  .poker-seat-4 .hand, .poker-seat-3 .hand, .poker-seat-2 .hand {
-    right: 15vw;
-    top: 10vh;
   }
 
   .shim-notice {

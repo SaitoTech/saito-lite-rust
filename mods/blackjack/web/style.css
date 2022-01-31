@@ -40,14 +40,15 @@ body {
 }
 
 
-
 .player-notice {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
   font-weight: bold;
   background-color: #0002;
-  padding: 10px;
+  padding: 5px;
+  max-width: 75%;
+  min-width: fit-content;
 }
 
 .splithand{
@@ -72,12 +73,6 @@ body {
   justify-content: space-between;
 }
 
-.hand {
-  margin-left: auto;
-  margin-right: auto;
-  clear: both;
-  position: relative;
-}
 
 .card {
   width: unset;
@@ -143,4 +138,27 @@ body {
   text-transform: uppercase;
 }
 
+.poker-seat-4 .hand{
+  top: 15vh;
+  left: 33%;
+}
+.poker-seat-2 .hand{
+  left: 9vh;
+}
 
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .poker-seat-6, .poker-seat-2{ 
+    top:40vh 
+  }
+  .poker-seat-5, .poker-seat-3{ 
+    top:25vh
+   }
+  .poker-seat-5 .hand, .poker-seat-3 .hand{ 
+    left: 15%;
+    top: -20vh;
+ }
+ .poker-seat-2 .hand{
+    left: 4vh;
+ }
+  
+}
