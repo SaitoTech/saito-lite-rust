@@ -97,43 +97,7 @@ class Saito {
       // performant blake3 library and less performant blake3-js that neeeds
       // to run in the browser but cannot be deployed via WASM.
       //
-      // app.crypto.hash()
-      //
-      // is still our go-to function for hashing. This just prepares the
-      // functions and puts them on the app object so that the crypto.hash
-      // function can invoke whichever one is being used in that specific
-      // configuration (server / browser);
-      //
       await hash_loader(this);
-      // if (!this.BROWSER) {
-      //     // eslint-disable-next-line @typescript-eslint/no-var-requires
-      //     // const blake3 = require('blake3');
-      //     const blake3 = await import ("blake3");
-      //     this.hash = (data) => {
-      //         return blake3.hash(data).toString('hex');
-      //     };
-      //
-      // } else {
-      //     // await import("blake3-js").then(blake3 => {
-      //     //     this.hash = (data) => {
-      //     //         return blake3.newRegular().update(data).finalize();
-      //     //     }
-      //     // });
-      //     // eslint-disable-next-line @typescript-eslint/no-var-requires
-      //     const blake3 = require("blake3-js");
-      //
-      //     this.hash = (data) => {
-      //         return blake3.newRegular().update(data).finalize();
-      //         // return blake3.hash(data).toString('hex');
-      //     };
-      //     //
-      //     // this.hash = (data) => {
-      //     //     return blake3.hash(data).toString('hex');
-      //     // };
-      //     // eslint-disable-next-line @typescript-eslint/no-var-requires
-      //     // const blake3 = require("blake3-js");
-      //
-      // }
 
       this.wallet.initialize();
       this.mempool.initialize();
@@ -142,7 +106,7 @@ class Saito {
 
       this.modules.mods = this.modules.mods_list.map((mod_path) => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const Module = require(`../../mods/${mod_path}`);
+        const Module = require(`./../../mods/${mod_path}`);
         const x = new Module(this);
         x.dirname = path.dirname(mod_path);
         return x;

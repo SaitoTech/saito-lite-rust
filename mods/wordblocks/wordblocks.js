@@ -1,7 +1,7 @@
-const saito = require("../../lib/saito/saito");
 const GameTemplate = require("../../lib/templates/gametemplate");
 
 class Wordblocks extends GameTemplate {
+
   constructor(app) {
     super(app);
 
@@ -14,7 +14,7 @@ class Wordblocks extends GameTemplate {
     this.score = "";
     this.app = app;
     this.name = "Wordblocks";
-    this.description = `Wordblocks is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
+    this.description = `Wordblocks is a word game in which two to four players score points by placing TILES bearing a single letter onto a board divided into a grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
     this.categories = "Game Arcade Entertainment";
     //
     // Game Class VARS
@@ -234,7 +234,6 @@ class Wordblocks extends GameTemplate {
     
   }
 
-  /** <<CHECK RULE ACCURACY >>**/
   returnGameRulesHTML() {
     let overlay_html = `
       <div class="rules-overlay">
@@ -303,12 +302,14 @@ class Wordblocks extends GameTemplate {
   }
 
   initializeGame(game_id) {
+
     // OBSERVER MODE
     //if (this.game.player == 0) { return; }
 
     this.updateStatus("loading game...");
     this.loadGame(game_id);
 
+/*****
     var dictionary = this.game.options.dictionary;
     let durl =
       "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js";
@@ -330,6 +331,7 @@ class Wordblocks extends GameTemplate {
       // instead of onerror
       salert("Network issues downloading dictionary");
     }
+*****/
 
     //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.stringify(this.wordlist));
 
@@ -1443,7 +1445,7 @@ class Wordblocks extends GameTemplate {
   }
 
   /*
-  Board is 1-indexed, 15 Rows x 15 Columns (= y_x)
+  Board is 1-indexed, 15 Rows and 15 Columns ( y_x)
   */
   returnBoard() {
     var board = {};
@@ -2385,3 +2387,4 @@ class Wordblocks extends GameTemplate {
 }
 
 module.exports = Wordblocks;
+

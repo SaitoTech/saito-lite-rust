@@ -55,20 +55,14 @@ class Mods {
       return;
     }
 
-    console.log("about to add");
-
     for (let i = 0; i < this.mods.length; i++) {
       if (message.module != undefined) {
         if (this.mods[i].shouldAffixCallbackToModule(message.module, tx) == 1) {
-          console.log("AFFIXING TO MOD: " + this.mods[i].name);
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
       } else {
         if (this.mods[i].shouldAffixCallbackToModule("", tx) == 1) {
-          console.log(
-            "adding callback on module: " + this.mods[i].name + " for tx " + JSON.stringify(message)
-          );
           callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
           callbackIndexArray.push(txindex);
         }
@@ -79,7 +73,6 @@ class Mods {
   async handlePeerRequest(message, peer: Peer, mycallback = null) {
     for (let iii = 0; iii < this.mods.length; iii++) {
       try {
-console.log("asking module to HPR: " + this.mods[iii].name);
         this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
       } catch (err) {
         console.log("handlePeerRequest Unknown Error: \n" + err);

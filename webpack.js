@@ -1,7 +1,5 @@
 const path = require("path");
 const webpack = require("webpack");
-// const CircularDependencyPlugin = require('circular-dependency-plugin');
-
 
 let [entry_path, output_path, output_filename] = process.argv.slice(2);
 
@@ -13,27 +11,10 @@ console.log(output_filename);
 let devtool = undefined;
 devtool = "eval";
 
-
-let entrypoint = "./../bundler/default/apps/lite/index.ts";
-let outputfile = "saito.js";
-
-
-
-
 entrypoint = entry_path;
 outputfile = output_filename;
 let outputpath = output_path;
 
-
-if (process.argv.includes("dev")) {
-  console.log("dev mode source map used");
-  devtool = "eval";
-}
-if (process.argv.includes("web3")) {
-  //TODO: build a separate saito.js for web3
-  entrypoint = "./../bundler/default/apps/lite/web3index.ts";
-  outputfile = "web3saito.js";
-}
 webpack({
   optimization: {
     minimize: true,
