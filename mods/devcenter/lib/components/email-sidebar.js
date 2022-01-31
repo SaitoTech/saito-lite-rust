@@ -6,7 +6,7 @@ module.exports = EmailSidebar = {
 
     render(app, mod) {
 
-      if (!document.getElementById("email-controls")) { app.browser.addElementToDom(EmailSidebarTemplate(), "email-sidebar"); }
+      if (!document.getElementById("email-sidebar")) { app.browser.addElementToDom(EmailSidebarTemplate(), "email-container"); }
 
       let email_apps = document.querySelector(".email-apps");
       let mods = app.modules.respondTo("email-appspace");

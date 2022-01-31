@@ -63,9 +63,7 @@ class DevCenter extends ModTemplate {
 
     app.browser.addElementToDom(`
       <div id="content__">
-        <div class="email-container main">
-          <div class="email-sidebar" id="email-sidebar"></div>
-          <div class="email-main" id="email-main"></div>
+        <div id="email-container" class="email-container main">
         </div>
       </div>
     `);
@@ -76,18 +74,18 @@ class DevCenter extends ModTemplate {
     this.header.render(app, this);
     this.header.attachEvents(app, this);
     
-    this.renderMain(app);
     this.renderSidebar(app);
+    this.renderMain(app);
 
   }
 
   renderMain(app) {
-    if(app.BROWSER != 1 || this.browser_active != 1 ) {return;}
+    if (app.BROWSER != 1 || this.browser_active != 1 ) { return; }
     EmailMain.render(app, this);
     EmailMain.attachEvents(app, this);
   }
   renderSidebar(app) {
-    if(app.BROWSER != 1 || this.browser_active != 1 ) {return;}
+    if (app.BROWSER != 1 || this.browser_active != 1 ) { return; }
     EmailSidebar.render(app, this);
     EmailSidebar.attachEvents(app, this);
   }

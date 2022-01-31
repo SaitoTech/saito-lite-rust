@@ -4,8 +4,7 @@ module.exports = EmailMain = {
 
   render(app, mod) {
 
-    let email_main = document.querySelector(".email-main");
-    if (!document.querySelector(".email-main")) { app.browser.addElementToDom(EmailMainTemplate(app, mod)); }
+    if (!document.getElementById("email-main")) { app.browser.addElementToDom(EmailMainTemplate(app, mod), "email-container"); }
 
   },
 
