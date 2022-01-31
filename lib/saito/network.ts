@@ -887,7 +887,8 @@ class Network {
       }
       if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
         const tmptx = peer.addPathToTransaction(tx);
-        if (peer.socket && peer.socket.readyState === WebSocket.OPEN) {
+        if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
+          // 1 = WebSocket Open
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
           if (!peer.socket) {
