@@ -887,10 +887,14 @@ class Network {
       }
       if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
         const tmptx = peer.addPathToTransaction(tx);
-        if (peer.socket) {
+        if (peer.socket && peer.socket.readyState === WebSocket.OPEN) {
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
         } else {
-          console.error("socket not found");
+          if (!peer.socket) {
+            console.error("socket not found");
+          } else {
+            console.warn("not sending the transaction to peer as the socket is not open yet");
+          }
         }
       }
     });

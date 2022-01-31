@@ -391,7 +391,7 @@ class Browser {
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);
     headerDiv.id = elemId;
-    headerDiv.class = elemClass;
+    headerDiv.classList.add(elemClass);
     return headerDiv;
   }
 
