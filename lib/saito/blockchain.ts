@@ -461,9 +461,11 @@ class Blockchain {
   async deleteBlocks(delete_block_id: number) {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
-    for (let entry of block_hashes) {
-      if (entry[0] <= delete_block_id) {
-        await this.deleteBlock(delete_block_id, entry[1]);
+    for (let i = 0; i < block_hashes.length; i++) {
+      if (this.blocks[block_hashes[i]]) {
+	if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
+          await this.deleteBlock(delete_block_id, block_hashes[i]);
+	}
       }
     }
   }
@@ -486,9 +488,11 @@ class Blockchain {
     let block_hashes_copy = [];
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(prune_blocks_at_block_id);
 
-    for (const entry of block_hashes) {
-      if (prune_blocks_at_block_id >= entry[0]) {
-        block_hashes_copy.push(entry[1]);
+    for (let i = 0; i < block_hashes.length; i++) {
+      if (this.blocks[block_hashes[i]]) {
+	if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
+          block_hashes_copy.push(block_hashes[i]);
+	}
       }
     }
 
