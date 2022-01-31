@@ -195,6 +195,7 @@ p {
   color: var(--saito-red);
   cursor: pointer;
   font-size: 2em;
+  padding-top: 4px;
   margin: 0.1em 0 0 0;
 }
 
@@ -341,11 +342,12 @@ p {
 .chat-box-main {
   display: block;
   flex-direction: column;
-  width: 32em; 
+  width: 100%; 
   grid-area: chat_main;
   overflow-y: scroll;
   overflow-x: hidden;
   background: linear-gradient(135deg, #ffffff, #eaeaea);
+  font-size: 1.15em;
 }
 
 .chat-box-default-message{
@@ -393,7 +395,7 @@ p {
 .chat-box-input {
   width: 32em;
   height: 3em;
-  padding: 4px;
+  padding: 0px;
   border-top: 1px solid lightgrey;
   display: grid;
   grid-template-columns: 28.5em 3em;
@@ -407,11 +409,12 @@ p {
   resize: none;
   margin: auto;
   padding: 3px;
-  font-size: 1.2em;
+  font-size: 1.4em;
   border: none;
   box-shadow: none;
   outline: none;
   resize: none;
+  padding-left: 8px;
 }
 
 .chat-timestamp {
@@ -472,7 +475,7 @@ p {
 
 .chat-box-message-container {
   border: solid;
-  border-width: 0 0 2px 0;
+  border-width: 0 0 0 0;
   padding: 3px 0;
 }
 
