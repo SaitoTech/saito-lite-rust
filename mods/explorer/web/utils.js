@@ -7,16 +7,14 @@ HTMLElement.prototype.toggleClass = function toggleClass(className) {
 };
 
 async function fetchBlock(hash) {
-    var url = window.location.origin + "/json-blocks/" + hash + "/blk";
+    var url = window.location.origin + "/json-block/" + hash;
 
-console.log("URL: " + url); 
-   
-    var block = [];
-    for await (let line of makeTextFileLineIterator(url)) {
-        block.push(JSON.parse(line));
-    }
-
-    listTransactions(block, hash);
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        listTransactions(data, hash);
+      });
+  
 
 }
 
@@ -44,12 +42,12 @@ function drawRawBlock(blk, hash) {
 function listTransactions(blk, hash) {
 
     var html = '<div class="block-table">';
-    html += '<div><h4>id</h4></div><div>' + blk[0].block.id + '</div>';
+    html += '<div><h4>id</h4></div><div>' + blk.block.id + '</div>';
     html += '<div><h4>hash</h4></div><div>' + hash + '</div>';
     html += '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' + hash + '">click to view source</a></div>';
     html += '</div>';
 
-    if (blk.length > 0) {
+    if (blk.transactions.length > 0) {
 
       html += '<h3>Bundled Transactions:</h3></div>';
 
@@ -60,9 +58,11 @@ function listTransactions(blk, hash) {
       html += '<div class="table-header">type</div>';
       html += '<div class="table-header">module</div>';
 
-      for (var mt = 1; mt < blk.length; mt++) {
-        var tmptx = blk[mt];
-        
+      for (var mt = 1; mt < blk.transactions.length; mt++) {
+
+        var tmptx = blk.transactions[mt];
+        tmptx.transaction.id = mt;
+
         var tx_fees = 0;
         //if (tmptx.fees_total == "") {
 
@@ -94,7 +94,7 @@ function listTransactions(blk, hash) {
 
         //}
 
-        html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + tmptx.transaction.id + `</a></div>`;
+        html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + mt + `</a></div>`;
         html += `<div><a onclick="showTransaction('tx-` + tmptx.transaction.id + `');">` + tmptx.transaction.from[0].add + `</a></div>`;
         html += '<div>' + tx_fees.toFixed(5) + '</div>';
         html += '<div>' + tmptx.transaction.type + '</div>';
@@ -124,11 +124,14 @@ function listTransactions(blk, hash) {
   function showTransaction(obj) {
 
     var txdiv = document.querySelector('.txbox.' + obj);
+console.log("A");
     if (!txdiv.classList.contains('treated')){
+console.log("B");
       var txjson = JSON.parse(txdiv.innerText);
       txdiv.innerHTML = "";
       var tree = jsonTree.create(txjson, txdiv);
       txdiv.classList.add('treated');
+      txdiv.style.display = "block";
     }
     txdiv.toggleClass('hidden');
   }
