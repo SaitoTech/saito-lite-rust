@@ -220,8 +220,6 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (!this.app.blockchain.blocks[bsh]) {
       return null;
     }
