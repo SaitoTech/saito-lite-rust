@@ -756,6 +756,7 @@ class Blockchain {
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
         console.warn(`block is not found in disk : ${block_hash}`);
+	return null;
       }
       block.block_type = BlockType.Full;
       return block;

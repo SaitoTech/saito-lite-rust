@@ -83,6 +83,7 @@ console.log("pushing back: " +app.options.modules[i].name);
           for (let z = 0; z < res.rows.length; z++) {
 console.log("res: " + res.rows[z].name);
             if (installed_apps.includes(res.rows[z].name) || res.rows[z].name == "name" || res.rows[z].name == "Unknown") {
+console.log("name: " +  res.rows[z].name);
               res.rows.splice(z, 1);
               z--;
             } else {

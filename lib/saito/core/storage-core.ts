@@ -171,26 +171,13 @@ class StorageCore extends Storage {
     const blk = await this.loadBlockByHash(bsh);
     if (blk != null) {
       //
-      // delete txs
+      // delete txs utxoset
       //
       if (blk.transactions != undefined) {
         for (let b = 0; b < blk.transactions.length; b++) {
-          // TODO : @david : no id field in transaction
-          // for (
-          //   let bb = 0;
-          //   bb < blk.transactions[b].transaction.to.length;
-          //   bb++
-          // ) {
-          //   blk.transactions[b].transaction.to[bb].bid = bid;
-          //   blk.transactions[b].transaction.to[bb].bhash = bsh;
-          //   blk.transactions[b].transaction.to[bb].tid =
-          //     blk.transactions[b].transaction.id;
-          //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //   // @ts-ignore
-          //   shashmap.delete_slip(
-          //     blk.transactions[b].transaction.to[bb].returnIndex()
-          //   );
-          // }
+	  for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
+	    this.app.utxoset.delete(blk.transactions[b].transaction.to[bb].returnKey());
+	  }
         }
       }
 

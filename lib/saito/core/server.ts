@@ -363,9 +363,13 @@ class Server {
         return res.sendStatus(404); // Not Found
       }
 
-      let block_to_return = { block : null , transactions : null };
-      block_to_return.block = JSON.parse(JSON.stringify(block.block));
-      block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+      let block_to_return = { block : {} , transactions : {} };
+      if (block?.block) {
+        block_to_return.block = JSON.parse(JSON.stringify(block.block));
+      }
+      if (block?.transactions) {
+        block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+      }
 
       let buffer = JSON.stringify(block_to_return).toString("utf-8");
       buffer = Buffer.from(buffer, "utf-8");
