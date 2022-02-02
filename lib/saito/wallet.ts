@@ -1,5 +1,7 @@
 import { Saito } from "../../apps/core";
 
+import saito from "./saito";
+
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { TransactionType } from "./transaction";
