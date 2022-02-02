@@ -100,6 +100,7 @@ class Pandemic extends GameTemplate {
         '<div class="status-message">' + this.game.status + "</div>"
       );
     }
+    this.restoreLog(); //from gameTemplate
 
     //
     // new state if needed
@@ -337,8 +338,6 @@ class Pandemic extends GameTemplate {
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
-
-    this.restoreLog(); //from gameTemplate
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);

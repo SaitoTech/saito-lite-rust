@@ -16,10 +16,6 @@ body {
   font-size: 1.6em;
 }
 
-.hud {
-  display: none;
-}
-
 .connection_monitor {
   position: fixed;
   display: none;

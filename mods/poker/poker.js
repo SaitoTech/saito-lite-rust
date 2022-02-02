@@ -311,9 +311,9 @@ class Poker extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
-    this.restoreLog();
 
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this); //empty function

@@ -187,6 +187,7 @@ class Wordblocks extends GameTemplate {
     this.hud.render(app, this);
     this.hud.attachEvents(app, this); //Enable dragging
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -228,7 +229,6 @@ class Wordblocks extends GameTemplate {
       console.error(err);
     }
 
-    this.restoreLog();
     
   }
 
