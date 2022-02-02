@@ -457,9 +457,9 @@ class Mempool {
     }
     this.clearing_active = true;
     for (let b = this.mempool.blocks.length - 1; b >= 0; b--) {
-      if (this.mempool.blocks[b].returnHash() === blk.returnHash()) {
-        this.block_size_current -= this.blocks[b].size;
-        this.blocks.splice(b, 1);
+      if (this.mempool.blocks[b] && this.mempool.blocks[b].returnHash() === blk.returnHash()) {
+        this.block_size_current -= this.mempool.blocks[b].size;
+        this.mempool.blocks.splice(b, 1);
       }
     }
     this.clearing_active = false;
