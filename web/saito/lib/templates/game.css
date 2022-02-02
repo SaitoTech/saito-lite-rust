@@ -233,7 +233,7 @@ game-overlay-cardlist-button {
   font-size: 1.2rem;
   border-bottom: 0px;
   transition: height 0.2s ease, width 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease;
-  box-shadow: 0 0 3px 3px #BBB;
+  /*box-shadow: 0 0 3px 3px #BBB;*/
   max-width: 100vw;
   padding: 0 20px 20px 20px;
 }

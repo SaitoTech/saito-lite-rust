@@ -166,6 +166,7 @@ class Blackjack extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -176,7 +177,7 @@ class Blackjack extends GameTemplate {
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
     
-    this.restoreLog();
+    
   }
 
 
