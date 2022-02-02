@@ -185,7 +185,8 @@ class Wordblocks extends GameTemplate {
 
     this.hud.auto_sizing = 0; //turn off default sizing
     this.hud.render(app, this);
-    
+    this.hud.attachEvents(app, this); //Enable dragging
+
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -227,9 +228,6 @@ class Wordblocks extends GameTemplate {
       console.error(err);
     }
 
-    if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }
     this.restoreLog();
     
   }
@@ -309,31 +307,30 @@ class Wordblocks extends GameTemplate {
     this.updateStatus("loading game...");
     this.loadGame(game_id);
 
-/*****
-    var dictionary = this.game.options.dictionary;
-    let durl =
-      "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js";
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", durl, false);
-
-    try {
-      xhr.send();
-      if (xhr.status != 200) {
-        salert(`Network issues downloading dictionary -- ${durl}`);
-      } else {
-        //
-        // TODO -- dictionary should be JSON
-        //
-        eval(xhr.response);
-        this.wordlist = wordlist;
+    if (this.wordlist == ""){
+      //TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
+      try {
+        var dictionary = this.game.options.dictionary;
+        let durl = "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".json";
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", durl, false); //true -> async 
+        //xhr.responseType = "json"; //only in async
+        xhr.send();
+        //xhr.onload = ()=>{
+           if (xhr.status != 200) {
+            salert(`Network issues downloading dictionary -- ${durl}`);
+          } else {
+            this.wordlist = xhr.response;
+            //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.stringify(xhr.response));
+          }
+        //};
+      } catch (err) {
+        // instead of onerror
+        console.error(err);
+        salert("Network issues downloading dictionary, error caught");
       }
-    } catch (err) {
-      // instead of onerror
-      salert("Network issues downloading dictionary");
     }
-*****/
-
-    //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.stringify(this.wordlist));
+    
 
     //
     // deal cards
@@ -341,46 +338,17 @@ class Wordblocks extends GameTemplate {
     if (this.game.deck.length == 0 && this.game.step.game == 1) {
       this.updateStatus("Generating the Game");
 
-      if (this.game.opponents.length == 1) {
-        this.game.queue.push("READY");
-        this.game.queue.push("DEAL\t1\t2\t7");
-        this.game.queue.push("DEAL\t1\t1\t7");
-        this.game.queue.push("DECKENCRYPT\t1\t2");
-        this.game.queue.push("DECKENCRYPT\t1\t1");
-        this.game.queue.push("DECKXOR\t1\t2");
-        this.game.queue.push("DECKXOR\t1\t1");
+      this.game.queue.push("READY");
+      for (let i = this.game.players.length; i > 0; i--){
+        this.game.queue.push(`DEAL\t1\t${i}\t7`);
       }
-
-      if (this.game.opponents.length == 2) {
-        this.game.queue.push("READY");
-        this.game.queue.push("DEAL\t1\t3\t7");
-        this.game.queue.push("DEAL\t1\t2\t7");
-        this.game.queue.push("DEAL\t1\t1\t7");
-        this.game.queue.push("DECKENCRYPT\t1\t3");
-        this.game.queue.push("DECKENCRYPT\t1\t2");
-        this.game.queue.push("DECKENCRYPT\t1\t1");
-        this.game.queue.push("DECKXOR\t1\t3");
-        this.game.queue.push("DECKXOR\t1\t2");
-        this.game.queue.push("DECKXOR\t1\t1");
+      for (let i = this.game.players.length; i > 0; i--){
+        this.game.queue.push(`DECKENCRYPT\t1\t${i}`);  
       }
-
-      if (this.game.opponents.length == 3) {
-        this.game.queue.push("READY");
-        this.game.queue.push("DEAL\t1\t4\t7");
-        this.game.queue.push("DEAL\t1\t3\t7");
-        this.game.queue.push("DEAL\t1\t2\t7");
-        this.game.queue.push("DEAL\t1\t1\t7");
-        this.game.queue.push("DECKENCRYPT\t1\t4");
-        this.game.queue.push("DECKENCRYPT\t1\t3");
-        this.game.queue.push("DECKENCRYPT\t1\t2");
-        this.game.queue.push("DECKENCRYPT\t1\t1");
-        this.game.queue.push("DECKXOR\t1\t4");
-        this.game.queue.push("DECKXOR\t1\t3");
-        this.game.queue.push("DECKXOR\t1\t2");
-        this.game.queue.push("DECKXOR\t1\t1");
+       for (let i = this.game.players.length; i > 0; i--){
+        this.game.queue.push(`DECKXOR\t1\t${i}`); 
       }
-      let tmp_json = JSON.stringify(this.returnDeck());
-      this.game.queue.push("DECK\t1\t" + tmp_json);
+      this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
     }
     //
     // stop here if initializing
@@ -389,36 +357,12 @@ class Wordblocks extends GameTemplate {
       return;
     }
 
-    resizeBoard = function resizeBoard(app) {};
-    responsive = function responsive() {};
-
-    //
-    // initialize scoreboard
-    //
-    let html = "";
-    let am_i_done = 0;
-    let players = 1;
-
-    if (this.game.opponents != undefined) {
-      players = this.game.opponents.length + 1;
-    }
-
-    if (this.browser_active == 1) {
-      try {
-        $(".score").html(html);
-      } catch (err) {}
-    }
-
     //
     // return letters
     //
     this.letters = this.returnLetters();
 
-    //
-    // initialize interface
-    //
-    resizeBoard(this.app);
-
+   
     //
     // load any existing tiles
     //
@@ -455,6 +399,7 @@ class Wordblocks extends GameTemplate {
       }
     }
 
+    /*This starts the game*/
     if (this.game.target == this.game.player) {
       this.updateStatusWithTiles("YOUR GO! " + this.defaultMsg);
       this.enableEvents();
@@ -463,26 +408,7 @@ class Wordblocks extends GameTemplate {
         `Waiting for Player ${this.game.target} to move.`
       );
     }
-
-    try {
-      $("#game_status").on("click", () => {
-        $(".log").hide();
-        if (
-          (this.app.browser.isMobileBrowser(navigator.userAgent) &&
-            window.matchMedia("(orientation: portrait)").matches) ||
-          window.innerHeight > 700
-        ) {
-          $("#sizer").switchClass("fa-caret-up", "fa-caret-down");
-          $("#hud").switchClass("short", "tall", 150);
-        } else {
-          $("#sizer").switchClass("fa-caret-left", "fa-caret-right");
-          $("#hud").switchClass("narrow", "wide", 150);
-        }
-
-        $(".hud_menu_overlay").hide();
-        $(".status").show();
-      });
-    } catch (err) {}
+   
   }
 
   /*
@@ -585,9 +511,11 @@ class Wordblocks extends GameTemplate {
   */
   limitedEvents() {
     let wordblocks_self = this;
+
     if (this.browser_active == 1) {
       $(".slot").off();
       $("#rack .tile").off();
+
       $("#tiles").disableSelection();
       //Drag to Sort tiles on Rack
       $("#tiles").sortable({
@@ -792,6 +720,8 @@ class Wordblocks extends GameTemplate {
       Allow shuffling of rack and click on board to launch text entry
       */
       if (!interactiveMode) {
+        let xpos = 0;
+        let ypos = 0;
         $("#helper").remove(); //clean up just in case
         $(".hud-status-update-message").html(wordblocks_self.defaultMsg); //update instructions to player
         //Click on game board to type a word
@@ -874,7 +804,7 @@ class Wordblocks extends GameTemplate {
             </div>
             ${html}
             `;
-            $(".status").html(updated_status);
+            $(".status").html(updated_status); //may be a problem?
             wordblocks_self.enableEvents();
           } else {
             $("body").append(html);
@@ -1087,7 +1017,7 @@ class Wordblocks extends GameTemplate {
 
     // reset board
     $(".tile-placement-controls").html("");
-    $(".status").html("Processing your turn.");
+    //$(".status").html("Processing your turn.");
 
     // if entry is valid (position and letters available)
     if (this.isEntryValid(word, orientation, x, y) == 1) {
@@ -1114,7 +1044,7 @@ class Wordblocks extends GameTemplate {
         this.updateStatusWithTiles(
           `Not a valid word, try again! ${this.defaultMsg}`
         );
-        this.addEventsToBoard();
+        this.enableEvents();
       } else {
         this.game.words_played[parseInt(this.game.player) - 1].push({
           word: fullword,
@@ -2283,10 +2213,7 @@ class Wordblocks extends GameTemplate {
           score: 0,
         });
 
-        if (
-          wordblocks_self.game.player ==
-          wordblocks_self.returnNextPlayer(player)
-        ) {
+        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
           wordblocks_self.updateStatusWithTiles(
             "YOUR GO: " + wordblocks_self.defaultMsg
           );
