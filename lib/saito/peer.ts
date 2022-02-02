@@ -202,7 +202,6 @@ class Peer {
     const buffer = Buffer.from(JSON.stringify(data_to_send), "utf-8");
 
     if (this.socket && this.socket.readyState === this.socket.OPEN) {
-console.log("SENDING MESSAGE RIGHT NOW!: " + (new Date().getTime()));
       this.app.networkApi
         .sendAPICall(this.socket, "SENDMESG", buffer)
         .then((response: Buffer) => {

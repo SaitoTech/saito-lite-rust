@@ -34,6 +34,8 @@ class Arcade extends ModTemplate {
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = 0;
 
+    this.chat_open = 0;
+
     this.icon_fa = "fas fa-gamepad";
 
     this.accepted = [];
@@ -54,6 +56,17 @@ class Arcade extends ModTemplate {
     if (type == 'chat-render-request') {
       if (this.browser_active) {
 	this.renderSidebar();
+
+	try {
+          let chat_mod = this.app.modules.returnModule("Chat");
+	  if (chat_mod.groups.length > 0 && this.chat_open == 0) {
+	    this.chat_open = 1;
+	    chat_mod.openChatBox();
+	  }
+	} catch (err) {
+	  console.log("Err: " + err);
+	}
+
       }
     }
   }

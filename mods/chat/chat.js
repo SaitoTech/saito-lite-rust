@@ -220,7 +220,6 @@ class Chat extends ModTemplate {
               sql ,
         
               (res) => {
-                console.log("RES in CHAT: " + JSON.stringify(res));  
                 if (res) {
                   if (res.rows) {
                     for (let i = 0; i < res.rows.length; i++) {
@@ -230,6 +229,7 @@ class Chat extends ModTemplate {
                         return a.transaction.ts - b.transaction.ts;
                       })
                     }
+            	    this.sendEvent('chat-render-request', {});
                   }
                 }
               },
