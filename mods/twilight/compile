@@ -1,5 +1,5 @@
 
-rm ../../web/saito/saito.js
+#rm ../../web/saito/saito.js
 
 
 #
@@ -34,5 +34,5 @@ done
 cat ./src/twilight-end.js >> ./twilight.js
 
 
-npm run compile $1
+#npm run compile $1
 

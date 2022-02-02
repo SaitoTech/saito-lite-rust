@@ -61,6 +61,7 @@ class Twilight extends GameTemplate {
 
     // long-horizontal
     this.hud.mode = 0;
+    this.hud.enable_mode_change = 1;
 
   }
 
@@ -3722,8 +3723,9 @@ if (this.game.player == 0) {
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.back_button_cancelled == 1) { bind_back_button_state = false; }
 
-      let html = twilight_self.formatPlayOpsStatus(player, ops, bind_back_button_state); // back button
-      twilight_self.updateStatus(html);
+      let html = twilight_self.formatPlayOpsStatus(player, ops, bind_back_button_state); 
+      
+      twilight_self.updateStatusWithOptions(`<span>${player.toUpperCase()} plays ${ops} OPS:</span><ul>`,html,true);
 
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
@@ -3806,7 +3808,7 @@ if (this.game.player == 0) {
         if (action2 == "place") {
 
           let j = ops;
-          let html = twilight_self.formatStatusHeader("Place " + j + " influence", "", true)
+          let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
           twilight_self.updateStatus(html);
           twilight_self.prePlayerPlaceInfluence(player);
           if (j == 1) {
@@ -3829,7 +3831,7 @@ if (this.game.player == 0) {
               twilight_self.uneventOpponentControlledCountries(player, card);
             }
 
-            let html = twilight_self.formatStatusHeader("Place " + j + " influence", "",  true)
+            let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
             twilight_self.updateStatus(html);
 
             if (j <= 0) {
@@ -3869,7 +3871,7 @@ if (this.game.player == 0) {
 
         if (action2 == "coup") {
 
-          let html = twilight_self.formatStatusHeader("Pick a country to coup", "", true);
+          let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
           twilight_self.updateStatus(html);
           twilight_self.playerCoupCountry(player, ops, card);
 
@@ -3880,8 +3882,7 @@ if (this.game.player == 0) {
 
           let header_msg = `Realign with ${ops} OPS, or:`;
           let html = `<ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
-              html = twilight_self.formatStatusHeader(header_msg, html, true);
-          twilight_self.updateStatus(html);
+          twilight_self.updateStatusWithOptions(header_msg,html,true);
 
           twilight_self.attachCardboxEvents(function(action2) {
 
@@ -3919,10 +3920,10 @@ if (this.game.player == 0) {
 
             j--;
 
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with " + j + " OPS, or:<ul><li class=\"card\" id=\"cancelrealign\">stop realigning</li></ul></div>");
+            
             let html = `<ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
-                html = twilight_self.formatStatusHeader(`Realign with ${j} OPS, or:`, html, true);
-            twilight_self.updateStatus(html);
+             
+            twilight_self.updateStatusWithOptions(`Realign with ${j} OPS, or:`,html,true);
             twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "cancelrealign") {
@@ -3994,8 +3995,6 @@ if (this.game.player == 0) {
   }
 
   formatPlayOpsStatus(player, ops, bind_back_button=false) {
-
-    let header_msg = `<span>${player.toUpperCase()} plays ${ops} OPS:</span><ul>`;
     let html = '<ul>';
 
     if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
@@ -4016,7 +4015,6 @@ if (this.game.player == 0) {
     }
 
     html += '</ul>';
-    html = this.formatStatusHeader(header_msg, html, bind_back_button);
     return html;
   }
 
@@ -4623,16 +4621,15 @@ this.startClock();
 
       if (twilight_self.game.deck[0].cards[card].scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
-        let html = ``;
-        html += `<ul><li class="card" id="event">score region</li></ul>`
+        let html = `<ul><li class="card" id="event">score region</li></ul>`;
 
         // true means we want to include the back button in our functionality
-        if (this.game.state.back_button_cancelled == 1) {
+        /*if (this.game.state.back_button_cancelled == 1) {
           html = twilight_self.formatStatusHeader(status_header, html, false);
         } else {
           html = twilight_self.formatStatusHeader(status_header, html, true);
-        }
-        twilight_self.updateStatus(html);
+        }*/
+        twilight_self.updateStatusWithOptions(status_header, html, (this.game.state.back_button_cancelled != 1));
       } else {
 
         let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, twilight_self.game.player, 0);
@@ -4726,22 +4723,14 @@ this.startClock();
             announcement += '<li class="card" id="cancel_cmc">cancel cuban missile crisis</li>';
           }
         }
-
-        if (twilight_self.game.state.back_button_cancelled == 1) {
-          announcement = twilight_self.formatStatusHeader(
-            `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-	    announcement,
-            false
-          );
+        let header_msg = `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
+        /*if (twilight_self.game.state.back_button_cancelled == 1) {
+          announcement = twilight_self.formatStatusHeader(header_msg, announcement,false);
         } else {
-          announcement = twilight_self.formatStatusHeader(
-            `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-	    announcement,
-            true
-          );
-        }
+          announcement = twilight_self.formatStatusHeader(header_msg, announcement, true);
+        }*/
 
-        twilight_self.updateStatus(announcement);
+        twilight_self.updateStatusWithOptions(header_msg, announcement, (twilight_self.game.state.back_button_cancelled!=1));
       }
 
       $('#back_button').off();
@@ -4870,10 +4859,7 @@ this.startClock();
               <input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> don't confirm moves (expert mode)...
               `;
 
-            let html = twilight_self.formatStatusHeader(fr_header, fr_msg, false);
-	    twilight_self.updateStatus(html);
-
-//            twilight_self.updateStatus(fr);
+	           twilight_self.updateStatusWithOptions(fr_header,fr_msg,false);
             twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
@@ -4926,10 +4912,9 @@ this.startClock();
 	      </div>
 	    `;
 
-            let html = twilight_self.formatStatusHeader(fr_header, fr_msg,  false)
-	    twilight_self.updateStatus(html);
+  	       twilight_self.updateStatusWithOptions(fr_header, fr_msg,  false);
 
-//            twilight_self.updateStatus(fr);
+
             twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
@@ -5062,8 +5047,8 @@ this.startClock();
         }
 
         let html = '<ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>';
-            html = twilight_self.formatStatusHeader('Playing opponent card:', html, true);
-        twilight_self.updateStatus(html);
+        twilight_self.updateStatusWithOptions('Playing opponent card:', html, true);
+
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.playerTurnCardSelected(card, player);
         });
@@ -9915,21 +9900,7 @@ this.startClock();
 
 
 
-  formatStatusHeader(status_header, status_message, include_back_button=false) {
-    let back_button_html = `<i class="fa fa-arrow-left" id="back_button"></i>`;
-    return `
-    <div class="status-header">
-      ${include_back_button ? back_button_html : ""}
-      <div style="text-align: center;">
-        ${status_header}
-      </div>
-    </div>
-    <div class="status-message">
-      ${status_message}
-    </div>
-    `
-  }
-
+  
 
   displayChinaCard() {
 
