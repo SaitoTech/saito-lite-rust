@@ -200,6 +200,7 @@ class Chat extends ModTemplate {
     async onPeerHandshakeComplete(app, peer) {
 
         let loaded_txs = 0;
+	let community_chat_group_id = "";
 
         //
         // create mastodon server
@@ -207,6 +208,41 @@ class Chat extends ModTemplate {
         if (peer.isMainPeer()) {
             console.log("peer handshake complete with: " + peer.peer.publickey);
             this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
+	    community_chat_group_id = this.groups[this.groups.length-1].id;
+
+	    // not a publickey but group_id gets archived as if it were one
+            let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
+
+            this.sendPeerDatabaseRequestWithFilter(
+          
+              "Archive" ,
+          
+              sql ,
+        
+              (res) => {
+                console.log("RES in CHAT: " + JSON.stringify(res));  
+                if (res) {
+                  if (res.rows) {
+                    for (let i = 0; i < res.rows.length; i++) {
+            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx)); 
+            	      let txmsg = tx.returnMessage();
+                      this.binaryInsert(this.groups[this.groups.length-1].txs, tx, (a, b) => {
+                        return a.transaction.ts - b.transaction.ts;
+                      })
+                    }
+                  }
+                }
+              },
+    
+              (p) => {
+                if (p.peer.publickey === peer.peer.publickey) {
+		  return 1;
+	        }
+	        return 0;
+	      }
+            );
+
+
         } else {
 
             //
@@ -218,9 +254,17 @@ class Chat extends ModTemplate {
         }
 
         //
-        // load transactions from server
+        // load transactions from server, but not group chat again
         //
         let group_ids = this.groups.map(group => group.id);
+	for (let i = 0; i < group_ids.length; i++) {
+	  if (group_ids[i] === community_chat_group_id) {
+	    group_ids.splice(i, 1);
+	    i--;
+	  }
+        }
+
+
         let txs = new Promise((resolve, reject) => {
             app.storage.loadTransactionsByKeys(group_ids, "Chat", 25, (txs) => {
                 resolve(txs);

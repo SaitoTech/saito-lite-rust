@@ -210,7 +210,7 @@ console.log("SENDING MESSAGE RIGHT NOW!: " + (new Date().getTime()));
           if (callback) {
             let content = Buffer.from(response).toString("utf-8");
             content = JSON.parse(content);
-            //console.log("SENDMESG callback: ", content);
+            console.log("SENDMESG callback: ", content);
             callback(content);
           }
         })

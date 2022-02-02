@@ -742,7 +742,6 @@ class Network {
                 }
               }
             }
-
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;
