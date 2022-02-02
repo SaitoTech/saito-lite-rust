@@ -37,7 +37,12 @@ class StorageCore extends Storage {
   }
 
   deleteBlockFromDisk(filename) {
-    return fs.unlinkSync(filename);
+    try {
+      return fs.unlinkSync(filename);
+    } catch (error) {
+      console.error(`failed deleting the block file ${filename} from disk`);
+      console.error(error);
+    }
   }
 
   returnFileSystem() {
@@ -65,9 +70,9 @@ class StorageCore extends Storage {
 
   generateBlockFilename(block): string {
     let filename = this.data_dir + "/" + this.dest + "/";
-    filename += Buffer.from(this.app.binary.u64AsBytes(block.block.timestamp).toString("hex"));
+    filename += block.block.timestamp;
     filename += "-";
-    filename += Buffer.from(block.hash).toString("hex");
+    filename += block.hash;
     filename += ".sai";
     return filename;
   }
@@ -207,8 +212,6 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (!this.app.blockchain.blocks[bsh]) {
       return null;
     }
