@@ -879,6 +879,7 @@ console.log("telling game module to receiveAcceptTx");
 	    }
 console.log("... and launching the game");
             this.launchGame(txmsg.game_id);
+console.log("... and done launching the game");
           }
         }
       }
@@ -1441,6 +1442,8 @@ console.log("i am player zero, returning...");
 
     let arcade_self = this;
     arcade_self.is_initializing = true;
+
+console.log("initializing launch game...");
 
     arcade_self.initialization_timer = setInterval(() => {
 

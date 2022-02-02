@@ -16,13 +16,10 @@ module.exports = AppStorePublishSuccess = {
     document.querySelector('.appstore-app-install-overlay').style.display = "block";
 
 /**
-
     mod.overlay = new SaitoOverlay(app);
-    
     mod.overlay.show(app, mod, AppStorePublishWaitingTemplate());
-**/
-
 //    document.querySelector(".email-appspace").innerHTML = AppStorePublishSuccessTemplate();
+**/
   },
 
   attachEvents(app, mod) {
