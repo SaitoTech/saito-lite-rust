@@ -791,7 +791,7 @@ class Network {
     if (this.app.BROWSER) {
       return;
     }
-    //console.debug("network.propagateBlock", blk);
+    console.debug("network.propagateBlock", blk);
     if (!blk) {
       return;
     }
