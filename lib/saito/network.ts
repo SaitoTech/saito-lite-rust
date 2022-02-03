@@ -413,7 +413,9 @@ class Network {
 
   hasPeer(publickey) {
     for (let i = 0; i < this.peers.length; i++) {
-      if (this.peers[i].peer.publickey === publickey) { return true; }
+      if (this.peers[i].peer.publickey === publickey) {
+        return true;
+      }
     }
     return false;
   }
@@ -703,7 +705,6 @@ class Network {
         break;
 
       case "SENDMESG": {
-
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";
@@ -766,14 +767,13 @@ class Network {
   }
 
   pollPeers() {
-    let peers = this.app.network.peers;
     console.debug(
-      `polling peers [count = ${peers.length}][dead_peers = ${this.dead_peers.length}]`
+      `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
     );
     //
     // loop through peers to see if disconnected
     //
-    peers.forEach((peer) => {
+    this.app.network.peers.forEach((peer) => {
       //
       // if disconnected, cleanupDisconnectedSocket
       // or reconnect if they're in our list of peers
@@ -796,8 +796,16 @@ class Network {
       setTimeout(() => {
         console.log("Attempting to Connect to Peer!");
         peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
-        if (!peers.includes(peer)) {
-          peers.push(peer);
+        let has_peer = false;
+        for (let peer2 of this.app.network.peers) {
+          if (peer2.peer.host === peer.peer.host && peer2.peer.port === peer.peer.port) {
+            has_peer = true;
+            break;
+          }
+        }
+        if (!has_peer) {
+          this.app.network.peers.push(peer);
+          this.peers_connected++;
         }
       }, peer_add_delay);
     });
