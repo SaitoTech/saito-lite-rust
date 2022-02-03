@@ -341,14 +341,13 @@ class Server {
         return res.sendStatus(404); // Not Found
       }
       let buffer = block.serialize();
-      buffer = Buffer.from(buffer, "binary").toString("base64");
+      let bufferString = Buffer.from(buffer).toString("base64");
 
       res.status(200);
-      res.end(buffer);
+      res.end(bufferString);
     });
 
     app.get("/json-block/:hash", async (req, res) => {
-
       const hash = req.params.hash;
       console.debug("fetching block : " + hash);
 
@@ -363,7 +362,7 @@ class Server {
         return res.sendStatus(404); // Not Found
       }
 
-      let block_to_return = { block : {} , transactions : {} };
+      let block_to_return = { block: {}, transactions: {} };
       if (block?.block) {
         block_to_return.block = JSON.parse(JSON.stringify(block.block));
       }

@@ -13,7 +13,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 5,
+    genesis_period: 8,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -738,17 +738,17 @@ class Blockchain {
     return !!this.blocks[block_hash];
   }
 
-  async loadBlockAsync(block_hash: string) {
+  async loadBlockAsync(block_hash: string): Promise<Block | null> {
     if (!block_hash) return null;
     if (this.blocks[block_hash]) {
       return this.blocks[block_hash];
     } else if (typeof window === "undefined") {
       // load from disk if in server
       console.debug(`loading block from disk : ${block_hash}`);
-      let block = await this.app.storage.loadBlockByHash(block_hash);
+      let block: Block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
         console.warn(`block is not found in disk : ${block_hash}`);
-	return null;
+        return null;
       }
       block.block_type = BlockType.Full;
       return block;

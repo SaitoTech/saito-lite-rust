@@ -247,7 +247,6 @@ class Block {
     //
     let winning_tx = this.transactions[0];
     for (let i = 0; i < this.transactions.length; i++) {
-
       // TODO - select correct tx
       //if (this.transactions[i].transaction.work_cumulative > winning_nolan) {
       //   break;
@@ -1435,7 +1434,7 @@ class Block {
       if (cv_st < BigInt(0)) {
         const x = cv_st * -1;
         if (adjusted_staking_treasury < x) {
-          adjusted_staking_treasury = adjusted_staking_treasury - x;
+          adjusted_staking_treasury = adjusted_staking_treasury - BigInt(x);
         } else {
           adjusted_staking_treasury = BigInt(0);
         }
@@ -1492,9 +1491,9 @@ class Block {
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-	//
-	// TODO : validate golden ticket
-	//
+        //
+        // TODO : validate golden ticket
+        //
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,
