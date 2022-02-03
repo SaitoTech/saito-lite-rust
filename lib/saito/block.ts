@@ -1380,8 +1380,8 @@ class Block {
     //
     // if this is our first / genesis block, it is valid
     //
-    if (this.returnHash() === this.app.blockchain.blockchain.genesis_hash || this.app.blockchain.blockchain.genesis_hash === "") {
-      console.log(`approving ${this.returnHash} as genesis block`);
+    if (this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash || this.app.blockchain.blockchain.genesis_block_hash === "") {
+      console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
 
