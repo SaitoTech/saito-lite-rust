@@ -8,6 +8,16 @@
   width: 83%;
 }
 
+.hud-header{
+  max-width: 500px;
+  margin: auto;
+}
+.hud-header.soviet{
+  background:  linear-gradient(to right, rgba(255,0,0,.7), rgba(255,255,0,0.4), rgba(255,0,0,.7));
+}
+.hud-header.american{
+  background:  linear-gradient(to right, rgba(255,0,0,0.7), rgba(255,255,255,0.4), rgba(0,0,255,0.7));
+}
 
 .status-message {
   padding-left: 0;
@@ -15,15 +25,39 @@
   border-radius: 0px;
 }
 
+.status-text-menu{
+  width: 350px;
+  height: 200px;
+}
+
+/*Stats overlay*/
+tbody th {
+  text-align: left;
+  max-width: 70px;
+}
+tbody td{
+  text-align: center;
+}
+table{
+  font-size: 20px;
+}
+table caption{
+  font-weight: bolder;
+  margin: 0.5em;
+}
 .statistics-overlay {
-  min-width:50vw;
+  min-width: min(750px,90vw);
   min-height: 50vh;
   padding: 10px;
   background-color: whitesmoke;
 }
 .statistics-round-table {
   min-width:50vw;
+  width: 100%;
   text-align: center;
+}
+.headline-statistics-table{
+  width: 100%;
 }
 
 .china_card_status_us_faceup {
@@ -403,15 +437,16 @@ body {
 
 
 .cardlist-container {
-  height: 80vh;
-  width: 80vw;
-  overflow-y: scroll;
+  max-height: 80vh;
+  min-width: 90vh;
+  max-width: 80vw;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background: rgba(0,0,0,0.4);
 }
-.cardlist-card {
-  position: relative;
-  float:left;
-  margin-right:10px;
-  margin-bottom: 10px;
+.cardlist-container .card {
   height: 30vh;
   max-height: 520px;
   width: calc(30vh * 0.72110);
@@ -423,7 +458,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.cardimg-hud {
+.cardimg {
   position: absolute;
   width: 100%;
   height: auto;
@@ -431,11 +466,6 @@ body {
   left: 0px;
 }
 
-.cardimg {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
 
 .hud-card {
   background-image: url(/twilight/img/Base.svg);

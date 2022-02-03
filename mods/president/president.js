@@ -745,22 +745,7 @@ class President extends GameTemplate {
 
 
 
-  updateStatusAndListCards(message, cards = null) {
-
-    if (cards == null) {
-      cards = this.game.deck[0].hand;
-    }
-
-    html = `
-        <div id="status-message" class="status-message">${message}</div>
-        ${this.returnCardList(cards)}
-    `
-    this.updateStatus(html);
-    this.attachCardboxEvents(function (card) {
-    });
-
-  }
-
+  
 
   returnPlayersBoxArray() {
 

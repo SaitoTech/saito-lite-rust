@@ -343,7 +343,7 @@ console.log("error initing chat: " + err);
 
 
     this.cardbox.addCardType("textchoice", "", null);
-
+    this.cardbox.attachCardEvents();
     } catch (err) {}
 
   }

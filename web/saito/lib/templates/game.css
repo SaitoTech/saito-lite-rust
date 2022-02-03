@@ -277,11 +277,6 @@ game-overlay-cardlist-button {
   background-color: transparent;
 }
 
-.cardimg-hud {
-  height: inherit;
-  width: inherit;
-}
-
 
 ul li a {
   color: black;
@@ -302,7 +297,7 @@ ul li a {
 }
 
 
-/*** Text prompt in hud > hud-body > status ***/
+/*** Legacy Text prompt in hud > hud-body > status ***/
 .status-message {
   position: relative; /* To make back-button work */
   width: 500px;
@@ -323,15 +318,15 @@ ul li a {
   left: 2em;
 }
 
-
+/*** Text prompt in hud > hud-body > status ***/
 .status-header {
   background-color: whitesmoke;
   width: 500px;
   max-width: 100%;
   min-height: 40px;
-  margin: 0 auto 10px auto;
-  padding-top:10px;
-  padding-left:10px; 
+  margin: 0 auto 3px auto;
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+  padding: 10px 0; 
 }
 
 .status-header i {
@@ -341,7 +336,7 @@ ul li a {
 
 
 /*** Vertical alternate ***/
-.hud-vertical .status-message{
+.hud-vertical .status-header{
   width: 100%;
 }
 

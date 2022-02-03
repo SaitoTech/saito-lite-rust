@@ -344,6 +344,7 @@ class Pandemic extends GameTemplate {
     this.cardbox.addCardType("logcard", "", null);
     //this.cardbox.addCardType("showcard","",null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.attachCardEvents(); //Add hover action to restored Log tags
 
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
@@ -3022,7 +3023,7 @@ class Pandemic extends GameTemplate {
       return null;
     }
 
-    return `<img class="cardimg-hud" src="/pandemic/img/${c.img}" />`;
+    return `<img class="cardimg" src="/pandemic/img/${c.img}" />`;
   }
 
   /* Remove the specified card from the specified player's hand*/
