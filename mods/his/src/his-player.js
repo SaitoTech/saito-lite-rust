@@ -221,6 +221,48 @@
 
 
 
+
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+console.log("submitting: " + key);
+      if (filter_func(this.spaces[key]) == 1) {
+console.log("cleared through here");
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+      }
+console.log("and  done 2");
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+
+      let action = $(this).attr("id");
+
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+
+
+
   playerTurn(selected_card=null) {
 
     this.startClock();

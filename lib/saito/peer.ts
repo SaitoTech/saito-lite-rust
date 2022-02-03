@@ -209,7 +209,6 @@ class Peer {
           if (callback) {
             let content = Buffer.from(response).toString("utf-8");
             content = JSON.parse(content);
-            console.log("SENDMESG callback: ", content);
             callback(content);
           }
         })

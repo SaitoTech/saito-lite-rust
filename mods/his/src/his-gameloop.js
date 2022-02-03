@@ -63,6 +63,89 @@ console.log("MOVE: " + mv[0]);
         }
 
 
+	if (mv[0] === "reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let protestants_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+	  
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x);
+	    if (x > p_high) { x = p_high; }
+	  }
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Catholics roll: " + x);
+	    if (x > c_high) { x = c_high; }
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high > c_high) { protestants_win = 1; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+	
+	  //
+	  // handle victory
+	  //
+	  if (protestants_win == 1) {
+	    this.updateLog("Protestants win!");
+	    this.game.queue.push("convert\t"+space+"\tprotestant");
+	  } else {
+	    this.updateLog("Catholics win!");
+	  }
+
+	  return 1;
+
+	}
+
+
+
+
+
 	//
 	// objects and cards can add commands
 	//

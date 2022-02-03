@@ -749,6 +749,8 @@ try {
       //
       if (txmsg.request == "accept") {
 
+console.log("ACCEPT RECEIVED!");
+
         //
         // multiplayer games might hit here without options.games
         // in which case we need to import game details including
