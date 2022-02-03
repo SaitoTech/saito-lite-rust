@@ -797,6 +797,7 @@ class Network {
         console.log("Attempting to Connect to Peer!");
         peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
         let has_peer = false;
+        // TODO : check performance impact and refactor this
         for (let peer2 of this.app.network.peers) {
           if (peer2.peer.host === peer.peer.host && peer2.peer.port === peer.peer.port) {
             has_peer = true;
