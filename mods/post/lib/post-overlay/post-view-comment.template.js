@@ -47,11 +47,7 @@ module.exports = PostViewCommentTemplate = (app, mod, tx) => {
           <div id="post-view-ts" class="post-view-ts"> ${time}</div>
         </div>
       </div>
-      <div data-id="${tx.originalSig}" id="post-view-comment-text" class="post-view-comment-text">
-
-      ${txmsg.comment} 
-
-    `;
+      <div data-id="${tx.originalSig}" id="post-view-comment-text" class="post-view-comment-text">${txmsg.comment}`;
 
     if (txmsg.images.length > 0) {
       html += '<div id="post-view-gallery" class="post-view-gallery">';
@@ -63,10 +59,7 @@ module.exports = PostViewCommentTemplate = (app, mod, tx) => {
       html += '<div id="post-view-gallery" style="display:none" class="post-view-gallery"></div>';
     }
 
-  html += `
-      </div>
-    </div>
-  `;
+  html += `</div></div>`;
 
 
   return html;

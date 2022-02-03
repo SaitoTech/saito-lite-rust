@@ -236,7 +236,12 @@ class Post extends ModTemplate {
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
+let x = JSON.parse(res.rows[i].lite_tx);
+console.log(res.rows[i].lite_tx);
+console.log("ORIGINAL SIG: " + x.sig);
                 this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
+console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
+
                 this.posts[this.posts.length-1].children = res.rows[i].children;
                 this.posts[this.posts.length-1].img = res.rows[i].img;
               }
@@ -331,7 +336,8 @@ class Post extends ModTemplate {
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
-        plitetx = this.app.wallet.signTransaction(plitetx);
+        // this destroys sig and prevents comment-fetching
+        //plitetx = this.app.wallet.signTransaction(plitetx);
         plitetx = JSON.stringify(plitetx.transaction);
     let ptitle = txmsg.title;
 
@@ -737,7 +743,8 @@ class Post extends ModTemplate {
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
-        plitetx = this.app.wallet.signTransaction(plitetx);
+	//below screws up sig preventing dupe-detection
+        //plitetx = this.app.wallet.signTransaction(plitetx);
         plitetx = JSON.stringify(plitetx.transaction);
 
 

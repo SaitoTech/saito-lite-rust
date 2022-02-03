@@ -189,7 +189,16 @@
   opacity: 0.5;
   border: 1px solid #9c1010;
 }
-
+.post-view-comment-textarea {
+  border: 1px solid var(--saito-cyber-black-wash);
+  padding: 1em;
+  height: 220px;
+  margin-bottom: 20px;
+  background-color: white;
+  max-height: 30vh;
+  overflow: hidden;
+  font-size: 1.15em;
+}
 .post-create-textarea {
   border: 1px solid var(--saito-cyber-black-wash);
   padding: 1em;

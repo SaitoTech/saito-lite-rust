@@ -26,6 +26,8 @@ module.exports = PostView = {
     //let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" AND parent_id != "" ORDER BY ts DESC`;
     let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" ORDER BY ts ASC`;
 
+console.log(sql);
+
     mod.originalSig = sig;
 
     mod.sendPeerDatabaseRequestWithFilter(
@@ -37,6 +39,8 @@ module.exports = PostView = {
         (res) => {
           try { document.getElementById("post-loader-spinner").style.display = "none"; } catch (err) {}
           if (res) {
+console.log("FETCH POSTS AND COMMENTS");
+console.log("res.rows.length: " + res.rows.length);
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
                 let add_this_comment = 1;
@@ -44,6 +48,7 @@ module.exports = PostView = {
                 let txmsg = tx.returnMessage();
 console.log("add comment... ");
                 for (let z = 0; z < mod.comments.length; z++) {
+console.log("dupe... ");
                   if (mod.comments[z].transaction.sig == tx.transaction.sig) { add_this_comment = 0; }
                 }
 	        if (tx.transaction.sig == sig) {
@@ -68,6 +73,7 @@ console.log("adding comment here now");
                   mod.comments.push(tx);
                 }
               }
+console.log("how many comments? " + mod.comments.length);
               for (let i = 0; i < mod.comments.length; i++) {
                 this.addComment(app, mod, mod.comments[i]);
               }
@@ -129,6 +135,7 @@ console.log("adding comment here now");
     document.querySelectorAll('.post-view-edit').forEach(el => {
       el.onclick = (e) => {
         console.log("********* post-view-edit onclick ********");
+
         let post_sig = el.getAttribute("data-id");
         document.querySelectorAll('.post-view-parent-comment').forEach(el2 => {	
           
@@ -183,12 +190,17 @@ console.log("adding comment here now");
 
           let comment_sig = el.getAttribute("data-id");
 
+	  // remove gallery
+	  document.querySelectorAll(".post-view-gallery").forEach(e => e.remove());
+	  document.querySelectorAll(".post-view-leave-comment").forEach(e => e.remove());
+
+
           document.querySelectorAll('.post-view-comment-text').forEach(el2 => {	
 
             if (el2.getAttribute("data-id") === comment_sig) {
 
               let replacement_html = `
-                <textarea data-id="${comment_sig}" id="textedit-field-${comment_sig}">${el2.innerHTML}</textarea>
+                <textarea data-id="${comment_sig}" class="post-view-comment-textarea" id="textedit-field-${comment_sig}">${el2.innerHTML}</textarea>
                 <button id="edit-button-${comment_sig}" data-id="${comment_sig}" type="button" class="comment-edit-button" value="Edit Comment">edit comment</button>
               `;
               el2.innerHTML = replacement_html;
@@ -259,6 +271,7 @@ console.log("adding comment here now");
   addComment(app, mod, comment) {
 
     comment.originalSig = mod.originalSig;
+
     app.browser.addElementToDom(PostViewCommentTemplate(app, mod, comment), "post-view-comments");
 
     this.new_post = {};
