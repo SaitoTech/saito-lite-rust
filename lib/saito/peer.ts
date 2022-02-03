@@ -134,7 +134,7 @@ class Peer {
     //
     // respect prohibitions
     //
-    console.debug("peer.sendRequest : " + message);
+    // console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
     if (message === "SNDBLOCK") {
       this.app.networkApi.send(this.socket, "SNDBLOCK", data);
