@@ -311,6 +311,7 @@ console.log("error initing chat: " + err);
         app.browser.requestFullscreen();
       }
     });
+
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
@@ -359,7 +360,6 @@ console.log("error initing chat: " + err);
 
     this.preloadImages();
 
-    this.updateStatus("loading game...: " + game_id);
     this.loadGame(game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
@@ -807,9 +807,12 @@ try {
     //
     // add events to board 
     //
-    this.addEventsToBoard();
-    this.addUIEvents();
-
+    try {
+      this.addEventsToBoard();
+      this.addUIEvents();
+    } catch (err) {
+     
+    }
 
 
   }
