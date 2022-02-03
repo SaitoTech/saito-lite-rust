@@ -90,20 +90,15 @@ module.exports = AppstoreAppDetails = {
       //
       //
       //
-console.log("A");
       let have_specified_appstore = 0;
       if (app.options?.appstore?.default) {
         if (app.options.appstore.default != "") { have_specified_appstore = 1; }
       }
-console.log("A 2");
-
       //
       // READY TO SUBMIT
       //
       if (have_specified_appstore) {
-console.log("A 3");
 	if (app.network.hasPeer(app.options.appstore.default)) {
-console.log("A 4");
 
           var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(app.options.appstore.default, 0);
           if (newtx == null) { return; }
@@ -122,7 +117,6 @@ console.log("A 4");
           `;
 
         } else {
-console.log("A 5");
 
           document.querySelector(".appstore-app-install-overlay").innerHTML = `
             <div class="appstore-bundler-install-notice">
@@ -166,8 +160,6 @@ console.log("A 5");
 	   };
         }
       } else {
-
-console.log("A 7");
 
         document.querySelector(".appstore-app-install-overlay").innerHTML = `
           <div class="appstore-bundler-install-notice">
