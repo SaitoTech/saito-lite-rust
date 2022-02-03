@@ -294,25 +294,17 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
             }
           }
           if (!tx.isTo(app.wallet.returnPublicKey())) { 
-console.log("transaction is not to me...");
-console.log("mine: " + app.wallet.returnPublicKey());
-console.log("and to: " + JSON.stringify(tx.transaction.to));
 	    return; 
 	  }
-console.log("about to go into request bundle");
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
-
-console.log("received bundle to: " + JSON.stringify(tx.transaction.to));
-console.log("my publickey: " + app.wallet.returnPublicKey());
           if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
             console.log("##### BUNDLE RECEIVED #####");
             //
             // 
             //
             if (app.options.appstore) {
-console.log("default is not blank");
               if (app.options.appstore.default != "") {
                 if (tx.isFrom(app.options.appstore.default)) {
                   this.receiveBundle(blk, tx);
@@ -460,7 +452,11 @@ console.log("default is not blank");
 
     if (this.app.BROWSER == 1) { 
 
+console.log("we are browser submit module...");
+console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
+
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
+
 
         let newtx = this.app.wallet.createUnsignedTransaction();
             newtx.msg.module       = "Email";
@@ -487,7 +483,7 @@ console.log("default is not blank");
         newtx = this.app.wallet.signTransaction(newtx);
 	let emailmod = this.app.modules.returnModule("Email");
 	if (emailmod) {
-          emailmod.emails.inbox.push(newtx);
+          emailmod.addEmail(newtx);
 	}
         this.app.storage.saveTransaction(newtx);
 
@@ -496,6 +492,9 @@ console.log("default is not blank");
       return; 
 
     }
+
+
+console.log("server is starting app insert");
 
     let sql = `INSERT OR IGNORE INTO modules (name, description, version, image, categories, publickey, unixtime, bid, bsh, tx, featured) VALUES ($name, $description, $version, $image, $categories, $publickey, $unixtime, $bid, $bsh, $tx, $featured)`;
 
@@ -769,28 +768,29 @@ console.log("into new app dir: " + newappdir);
 
 console.log("processing mod: " + mod.name);
 
-      let mod_path = `mods/${returnSlug(mod.name)}-${ts}-${hash}.zip`;
+      let mod_name = mod.name;
+      let mod_path = `mods/${returnSlug(mod_name)}-${ts}-${hash}.zip`;
 
+      bash_script_content += `unzip -o ${returnSlug(mod_name)}-${ts}-${hash}.zip -d ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)} \\*.js \\*.css \\*.html \\*.wasm` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/web` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/www` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/src` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/sql` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/DESCRIPTION.txt` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/BUGS.txt` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/README.txt` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/README.md` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/install.sh` + "\n";
+      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/license` + "\n";
 
-      bash_script_content += `unzip -o ${returnSlug(mod.name)}-${ts}-${hash}.zip -d ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)} \\*.js \\*.css \\*.html \\*.wasm` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/web` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/www` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/src` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/sql` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/DESCRIPTION.txt` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/BUGS.txt` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/README.txt` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/README.md` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/install.sh` + "\n";
-      bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod.name)}/license` + "\n";
+console.log("still ok");
 
-      bash_script_delete += `rm -rf ${returnSlug(mod.name)}-${ts}-${hash}.zip` + "\n";
-      bash_script_delete += `rm -rf ../../bundler/${newappdir}/mods/${returnSlug(mod.name)}` + "\n";
+      bash_script_delete += `rm -rf ${returnSlug(mod_name)}-${ts}-${hash}.zip` + "\n";
+      bash_script_delete += `rm -rf ../../bundler/${newappdir}/mods/${returnSlug(mod_name)}` + "\n";
 
       let zip_bin2 = Buffer.from(mod.zip, 'base64').toString('binary');
       fs.writeFileSync(path.resolve(__dirname, mod_path), zip_bin2, { encoding: 'binary' });
-      //return `${returnSlug(mod.name)}-${ts}-${hash}/${returnSlug(mod.name)}`;
-      return `${returnSlug(mod.name)}/${returnSlug(mod.name)}.js`;
+      return `${returnSlug(mod_name)}/${returnSlug(mod_name)}.js`;
     });
 
     bash_script_delete += `rm -f ${__dirname}/mods/compile-${ts}-${hash}-create` + "\n";

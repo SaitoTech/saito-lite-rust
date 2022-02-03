@@ -411,6 +411,13 @@ class Network {
     }
   }
 
+  hasPeer(publickey) {
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].peer.publickey === publickey) { return true; }
+    }
+    return false;
+  }
+
   initialize() {
     if (this.app.options) {
       if (this.app.options.server) {
@@ -681,7 +688,6 @@ class Network {
 
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
         if (!is_block_indexed) {
-          // TODO : added sending peer to this. @david to fix if there's a better way
           await this.fetchBlock(block_hash, peer);
         }
         break;
@@ -697,6 +703,7 @@ class Network {
         break;
 
       case "SENDMESG": {
+
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";
@@ -742,7 +749,6 @@ class Network {
                 }
               }
             }
-
             await this.app.modules.handlePeerRequest(msg, peer, mycallback);
         }
         break;
@@ -844,17 +850,12 @@ class Network {
   //
   // propagate transaction
   //
-  propagateTransaction(tx: Transaction, outbound_message = "transaction") {
-    //console.debug("network.propagateTransaction", tx);
+  propagateTransaction(tx: Transaction) {
     if (tx === null) {
       return;
     }
     if (!tx.is_valid) {
       return;
-    }
-    // TODO : @david to check. is this type===FEE(1) ? or should it be type===GT(2) ?
-    if (tx.transaction.type === 1) {
-      outbound_message = "golden ticket";
     }
 
     //
@@ -878,7 +879,7 @@ class Network {
           console.error("BAD TX: " + JSON.stringify(tx.transaction));
           return;
         } else {
-          console.log(" ... added transaftion");
+          console.log(" ... added transaction");
         }
         if (this.app.mempool.canBundleBlock()) {
           return 1;
@@ -926,9 +927,9 @@ class Network {
       }
     }
 
-    console.log(
-      "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
-    );
+    //console.log(
+    //  "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
+    //);
 
     const buffer_to_send = Buffer.concat([
       this.app.binary.u64AsBytes(latest_block_id),

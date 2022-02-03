@@ -585,25 +585,46 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
 
   addUnit(player, space, type) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, type));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, type));
   }
 
   addRegular(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "regular"));
   }
 
   addMercenary(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "mercenary"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "mercenary"));
   }
 
   addDebater(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "debater"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "debater"));
   }
 
   convertSpace(religion, space) {
-    this.spaces[space].religion = religion;
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.religion = religion;
     this.displayBoard();
   }
+
+
+  isSpaceAdjacentToReligion(space, religion) {
+   console.log ("rel 1: ");
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+   console.log ("rel 2: " + space.religion);
+    for (let i = 0; i < space.neighbours.length; i++) {
+   console.log ("rel 2: " + space.neighbours[i]);
+      if (this.spaces[space.neighbours[i]].religion === religion) {
+	return true;
+      }
+    }
+console.log("returning false");
+    return false;
+  }
+
 
 
   /////////////////////
@@ -886,7 +907,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1265,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["glasgow","edinburgh"],
       type: "fortress"
     }
     spaces['glasgow'] = {
@@ -894,7 +916,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1285,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stirling","edinburgh","carlisle"],
       type: "town"
     }
     spaces['edinburgh'] = {
@@ -902,7 +925,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1420,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stirling","carlisle","berwick"],
       type: "key"
     }
     spaces['berwick'] = {
@@ -910,7 +934,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1572,
       home: "england",
       political: "england",
-      religious: "catholic",
+      neighbours: ["edinburgh","carlisle","york"],
+      religion: "catholic",
       type: "town"
     }
     spaces['carlisle'] = {
@@ -918,7 +943,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1447,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["glasgow","berwick","york","shrewsbury"],
       type: "town"
     }
     spaces['york'] = {
@@ -926,7 +952,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1595,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["berwick","carlisle","shrewsbury","lincoln"],
       type: "key"
     }
     spaces['wales'] = {
@@ -934,15 +961,18 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1398,
       home: "england",
       political: "england",
-      religious: "catholic",
-      type: "town"
+      religion: "catholic",
+      neighbours: ["shrewsbury","bristol"],
+      type: "key"
+
     }
     spaces['shrewsbury'] = {
       top: 521,
       left: 1535,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wales","carlisle","york","london","bristol"],
       type: "town"
     }
     spaces['lincoln'] = {
@@ -950,7 +980,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1706,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["london","york"],
       type: "town"
     }
     spaces['norwich'] = {
@@ -958,7 +989,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1896,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours:["london"],
       type: "town"
     }
     spaces['bristol'] = {
@@ -966,7 +998,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1554,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
       type: "key"
     }
     spaces['london'] = {
@@ -974,7 +1007,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1785,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
       type: "key"
     }
     spaces['plymouth'] = {
@@ -982,7 +1016,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1398,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bristol","portsmouth"],
       type: "town"
     }
     spaces['portsmouth'] = {
@@ -990,7 +1025,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1661,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["plymouth","bristol","london"],
       type: "town"
     }
     spaces['calais'] = {
@@ -998,7 +1034,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2022,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["boulogne","brussels","antwerp"],
       type: "key"
     }
 
@@ -1007,7 +1044,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1955,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["calais","rouen","paris","stquentin"],
       type: "town"
     }
     spaces['stquentin'] = {
@@ -1015,7 +1053,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2093,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brussels","stdizier","paris","boulogne"],
       type: "town"
     }
     spaces['stdizier'] = {
@@ -1023,7 +1062,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2205,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brussles","stquentin","paris","dijon","metz"],
       type: "town"
     }
     spaces['paris'] = {
@@ -1031,7 +1071,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2009,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rouen","boulogne","stquentin","stdizer","dijon","orleans"],
       type: "key"
     }
     spaces['rouen'] = {
@@ -1039,7 +1080,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1805,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["boulogne","paris","tours","nantes"],
       type: "key"
     }
     spaces['orleans'] = {
@@ -1047,7 +1089,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2018,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["paris","tours","dijon","lyon"],
       type: "town"
     }
     spaces['dijon'] = {
@@ -1055,7 +1098,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2204,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stdizer","paris","orleans","lyon","besancon"],
       type: "town"
     }
     spaces['limoges'] = {
@@ -1063,7 +1107,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1975,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["tours","bordeaux","lyon"],
       type: "town"
     }
     spaces['tours'] = {
@@ -1071,7 +1116,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1849,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rouen","nantes","bordeaux","limoges","orleans"],
       type: "town"
     }
     spaces['nantes'] = {
@@ -1079,7 +1125,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1650,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brest","rouen","tours","bordeaux"],
       type: "town"
     }
     spaces['brest'] = {
@@ -1087,7 +1134,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1409,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes"],
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1095,7 +1143,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1780,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes","tours","limgoes"],
       type: "key"
     }
     spaces['lyon'] = {
@@ -1103,7 +1152,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2312,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["avignon","limgoes","orleans","digion","geneva","grenoble"],
       type: "key"
     }
     spaces['grenoble'] = {
@@ -1111,7 +1161,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2437,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lyon","geneva"],
       type: "town"
     }
     spaces['avignon'] = {
@@ -1119,7 +1170,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2292,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["toulouse","lyon","marseille"],
       type: "town"
     }
     spaces['marseille'] = {
@@ -1127,7 +1179,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2390,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["avignon","nice"],
       type: "key"
     }
     spaces['toulouse'] = {
@@ -1135,7 +1188,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1990,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bordeaux","avignon"],
+
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1143,7 +1198,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1780,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes","tours","limoges","toulouse"],
       type: "key"
     }
 
@@ -1152,7 +1208,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2500,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","kassel","cologne","amsterdam"],
       type: "town"
     }
     spaces['bremen'] = {
@@ -1160,7 +1217,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2595,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours:["munster","brunswick","hamburg"],
       type: "town"
     }
     spaces['hamburg'] = {
@@ -1168,7 +1226,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2758,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","brunswick","lubeck"],
       type: "town"
     }
     spaces['lubeck'] = {
@@ -1176,7 +1235,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2985,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
       type: "town"
     }
     spaces['stettin'] = {
@@ -1184,7 +1244,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3214,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lubeck","brandenburg"],
       type: "town"
     }
     spaces['brandenburg'] = {
@@ -1192,7 +1253,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3077,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stettin","lubeck","magdeburg","wittenberg","breslau"],
       type: "electorate"
     }
     spaces['wittenberg'] = {
@@ -1200,7 +1262,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3130,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brandenburg","magdeburg","leipzip","prague","breslau"],
       type: "electorate"
     }
     spaces['magdeburg'] = {
@@ -1208,7 +1271,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2932,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lubeck","brandenburg","wittenburg","erfurt","brunswick"],
       type: "town"
     }
     spaces['brunswick'] = {
@@ -1216,7 +1280,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2722,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","hamburg","magdeburg","kassel"],
       type: "town"
     }
     spaces['cologne'] = {
@@ -1224,7 +1289,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2500,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["munster","mainz","liege"],
       type: "electorate"
     }
     spaces['kassel'] = {
@@ -1232,7 +1298,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2665,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["munster","brunswick","erfurt","nuremberg","mainz"],
       type: "town"
     }
     spaces['erfurt'] = {
@@ -1240,7 +1307,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2824,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["magdeburg","kassel","leipzig"],
       type: "town"
     }
     spaces['leipzig'] = {
@@ -1248,7 +1316,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2983,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wittenberg","prague","nuremberg","erfurt"],
       type: "town"
     }
     spaces['regensburg'] = {
@@ -1256,7 +1325,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3033,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nuremburg","augsburg","salzburg","linz"],
       type: "town"
     }
     spaces['salzburg'] = {
@@ -1264,7 +1334,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3147,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["linz","regensburg","augsburg","innsbruck"],
       type: "town"
     }
     spaces['augsburg'] = {
@@ -1272,7 +1343,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2860,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["worms","nuremberg","regensburg","salzburg"],
       type: "electorate"
     }
     spaces['nuremberg'] = {
@@ -1280,7 +1352,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2834,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["augsburg","worms","mainz","kassel","leipzig","regensburg"],
       type: "town"
     }
     spaces['mainz'] = {
@@ -1288,7 +1361,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2666,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trier","cologne","kassel","nuremberg","worms"],
       type: "electorate"
     }
     spaces['trier'] = {
@@ -1296,7 +1370,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2516,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["liege","metz","mainz"],
       type: "town"
     }
     spaces['strasburg'] = {
@@ -1304,7 +1379,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2578,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["metz","besancon","basel","worms"],
       type: "town"
     }
     spaces['worms'] = {
@@ -1312,7 +1388,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2704,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["strasburg","mainz","nuremberg","augsburg"],
       type: "town"
     }
 
@@ -1322,7 +1399,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1702,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zaragoza","bilbao"],
       type: "key"
     }
     spaces['bilbao'] = {
@@ -1330,7 +1408,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1533,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["corunna","valladolid","zaragoza","navarre"],
       type: "town"
     }
     spaces['corunnas'] = {
@@ -1338,7 +1417,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1015,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bilbao","valladolid"],
       type: "town"
     }
     spaces['valladolid'] = {
@@ -1346,7 +1426,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1394,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["corunna","bilbao","madrid"],
       type: "key"
     }
     spaces['zaragoza'] = {
@@ -1354,7 +1435,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1777,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["navarre","bilbao","madrid","barcelona"],
       type: "town"
     }
     spaces['barcelona'] = {
@@ -1362,7 +1444,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2106,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zaragoza","velencia"],
       type: "key"
     }
     spaces['palma'] = {
@@ -1370,7 +1453,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2211,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      neighbours: ["cartagena","cagliari"],
+      religion: "catholic",
       type: "town"
     }
     spaces['madrid'] = {
@@ -1378,7 +1462,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1550,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["edinburgh","carlisle","yddork"],
       type: "town"
     }
     spaces['valencia'] = {
@@ -1386,7 +1471,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1871,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cartagena","madrid","barcelona"],
       type: "town"
     }
     spaces['cartagena'] = {
@@ -1394,7 +1480,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1830,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["granda","valencia"],
       type: "town"
     }
     spaces['granada'] = {
@@ -1402,7 +1489,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1558,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cordoba","gibraltar","cartagena"],
       type: "town"
     }
     spaces['seville'] = {
@@ -1410,7 +1498,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1319,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cordoba","gibraltar"],
       type: "key"
     }
     spaces['cordoba'] = {
@@ -1418,7 +1507,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1446,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["madrid","seville","granada"],
       type: "town"
     }
     spaces['gibraltar'] = {
@@ -1426,7 +1516,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1374,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["seville","granada"],
       type: "fortress"
     }
 
@@ -1435,7 +1526,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1902,
       home: "hapsburg ottoman",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "town"
     }
     spaces['algiers'] = {
@@ -1443,7 +1534,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2275,
       home: "ottoman independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "key"
     }
     spaces['tunis'] = {
@@ -1451,7 +1542,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2945,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "key"
     }
     spaces['cagliari'] = {
@@ -1459,7 +1550,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2828,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "town"
     }
     spaces['palermo'] = {
@@ -1467,7 +1558,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3260,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["messina"],
       type: "town"
     }
     spaces['messina'] = {
@@ -1475,7 +1567,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3475,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["palermo","naples","taranto"],
       type: "town"
     }
     spaces['cerignola'] = {
@@ -1483,7 +1576,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3426,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["taranto","ancona","rome"],
       type: "town"
     }
     spaces['taranto'] = {
@@ -1491,7 +1585,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3597,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cerignola","naples","messina"],
       type: "town"
     }
     spaces['naples'] = {
@@ -1499,7 +1594,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3358,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rome","taranto","messina"],
       type: "key"
     }
     spaces['malta'] = {
@@ -1507,7 +1603,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3380,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "fortress"
     }
     spaces['vienna'] = {
@@ -1515,7 +1611,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3474,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brunn","linz","graz","pressburg"],
       type: "key"
     }
     spaces['linz'] = {
@@ -1523,7 +1620,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3288,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["prague","regensburg","salzburg","vienna"],
       type: "town"
     }
     spaces['graz'] = {
@@ -1531,7 +1629,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3380,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","mohacs","agram","trieste"],
       type: "town"
     }
     spaces['trieste'] = {
@@ -1539,7 +1638,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3257,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["graz","agram","zara","venice"],
       type: "town"
     }
     spaces['innsbruck'] = {
@@ -1547,7 +1647,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3016,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zurich","salzburg"],
       type: "town"
     }
 
@@ -1557,7 +1658,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3316,
       home: "hapsburg ottoman",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["edinburgh","carlisle","york"],
       type: "town"
     }
     spaces['candia'] = {
@@ -1565,7 +1667,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4484,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "fortress"
     }
     spaces['rhodes'] = {
@@ -1573,7 +1675,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4730,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "town"
     }
     spaces['corfu'] = {
@@ -1581,7 +1683,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3868,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "fortress"
     }
 
@@ -1591,7 +1693,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4146,
       home: "",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["athens"],
       type: "town"
     }
     spaces['athens'] = {
@@ -1599,7 +1702,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4286,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","lepanto","coron"],
       type: "key"
     }
     spaces['lepanto'] = {
@@ -1607,7 +1711,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4057,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","athens"],
       type: "town"
     }
     spaces['larissa'] = {
@@ -1615,7 +1720,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4130,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["lepanto","athens","salonika"],
       type: "town"
     }
     spaces['salonika'] = {
@@ -1623,7 +1729,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4164,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","edirne"],
       type: "key"
     }
     spaces['durazzo'] = {
@@ -1631,7 +1738,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3844,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["scutari"],
       type: "town"
     }
     spaces['scutari'] = {
@@ -1639,7 +1747,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3819,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["ragusa","durazzo"],
       type: "fortress"
     }
     spaces['edirne'] = {
@@ -1647,7 +1756,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4532,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["varna","istanbul","salonika","sofia",],
       type: "key"
     }
     spaces['istanbul'] = {
@@ -1655,7 +1765,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4775,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["edirne","varna"],
       type: "key"
     }
     spaces['varna'] = {
@@ -1663,7 +1774,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4653,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["bucharest","edirne","istanbul"],
       type: "town"
     }
     spaces['bucharest'] = {
@@ -1671,7 +1783,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4459,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["nicopolis","varna"],
       type: "town"
     }
     spaces['nicopolis'] = {
@@ -1679,7 +1792,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4336,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["bucharest","belgrade"],
       type: "town"
     }
     spaces['sofia'] = {
@@ -1687,7 +1801,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4275,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["nezh","edirne"],
       type: "town"
     }
     spaces['nezh'] = {
@@ -1695,7 +1810,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4070,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["belgrade","sofia"],
       type: "town"
     }
 
@@ -1705,7 +1821,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3894,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["szegedin","mohacs","agram","nezh","nicopolis"],
       type: "key"
     }
     spaces['szegedin'] = {
@@ -1713,7 +1830,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3846,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["buda","belgrade"],
       type: "town"
     }
     spaces['mohacs'] = {
@@ -1721,7 +1839,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3710,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["buda","graz","agram","belgrade"],
       type: "town"
     }
     spaces['graz'] = {
@@ -1729,7 +1848,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3374,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","mohacs","agram","trieste"],
       type: "town"
     }
     spaces['agram'] = {
@@ -1737,7 +1857,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3460,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["graz","trieste","belgrade","mohacs"],
       type: "town"
     }
     spaces['buda'] = {
@@ -1745,7 +1866,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3746,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["pressburg","mohacs","szegedin"],
       type: "key"
     }
     spaces['pressburg'] = {
@@ -1753,7 +1875,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3613,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","buda"],
       type: "town"
     }
     spaces['brunn'] = {
@@ -1761,7 +1884,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3526,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["breslau","prague","vienna"],
       type: "town"
     }
     spaces['breslau'] = {
@@ -1769,7 +1893,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3466,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brandenburg","wittenberg","brunn"],
       type: "town"
     }
     spaces['prague'] = {
@@ -1777,7 +1902,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3230,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wittenberg","leipzig","linz"],
       type: "key"
     }
 
@@ -1787,7 +1913,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2244,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","munster"],
       type: "town"
     }
     spaces['antwerp'] = {
@@ -1795,7 +1922,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2168,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","liege","brussels","calais"],
       type: "key"
     }
     spaces['brussels'] = {
@@ -1803,7 +1931,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2201,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","calais","stquentin","stdizier","liege"],
       type: "fortress"
     }
     spaces['liege'] = {
@@ -1811,7 +1940,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2351,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cologne","trier","metz","brussels","antwerp"],
       type: "town"
     }
     spaces['metz'] = {
@@ -1819,7 +1949,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2384,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["liege","trier","strasburg","besancon","stdizier"],
       type: "key"
     }
     spaces['besancon'] = {
@@ -1827,7 +1958,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2390,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["metz","dijon","geneva","basel","strasburg"],
       type: "fortress"
     }
     spaces['basel'] = {
@@ -1835,7 +1967,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2558,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["strasburg","besancon","geneva","zurich"],
       type: "town"
     }
     spaces['zurich'] = {
@@ -1843,7 +1976,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2712,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["basel","innsbruck"],
       type: "town"
     }
     spaces['geneva'] = {
@@ -1851,7 +1985,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2474,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["basel","besancon","lyon","grenoble"],
       type: "town"
     }
     spaces['milan'] = {
@@ -1859,7 +1994,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2746,
       home: "independent",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","modena","pavia","turin"],
       type: "key"
     }
     spaces['trent'] = {
@@ -1867,7 +2003,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2933,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","modena","venice"],
       type: "town"
     }
     spaces['modena'] = {
@@ -1875,7 +2012,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2951,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","milan","pavia","florence","ravenna","venice"],
       type: "town"
     }
     spaces['pavia'] = {
@@ -1883,7 +2021,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2800,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","turin","genoa","modena"],
       type: "town"
     }
     spaces['turin'] = {
@@ -1891,7 +2030,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2585,
       home: "independent",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","pavia","genoa"],
       type: "town"
     }
     spaces['nice'] = {
@@ -1899,7 +2039,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2580,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["marseille"],
       type: "town"
     }
     spaces['florence'] = {
@@ -1907,7 +2048,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2976,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["modena","genoa","siena"],
       type: "key"
     }
     spaces['siena'] = {
@@ -1915,7 +2057,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2988,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["genoa","florence","rome"],
       type: "town"
     }
     spaces['bastia'] = {
@@ -1923,7 +2066,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2784,
       home: "genoa",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
       type: "town"
     }
     spaces['genoa'] = {
@@ -1931,7 +2074,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2726,
       home: "genoa",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["pavia","turin","modena","siena"],
       type: "key"
     }
     spaces['rome'] = {
@@ -1939,7 +2083,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3125,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["siena","ancona","cerignola","naples"],
       type: "key"
     }
     spaces['ancona'] = {
@@ -1947,7 +2092,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3238,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["ravenna","rome","cerignola"],
       type: "town"
     }
     spaces['ravenna'] = {
@@ -1955,7 +2101,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3130,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["venice","modena","ancona"],
       type: "key"
     }
     spaces['venice'] = {
@@ -1963,7 +2110,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3086,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","modena","ravenna","trieste"],
       type: "key"
     }
     spaces['zara'] = {
@@ -1971,7 +2119,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3374,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["ragusa","trieste"],
       type: "town"
     }
     spaces['ragusa'] = {
@@ -1979,10 +2128,10 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3660,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zara","scutari"],
       type: "town"
     }
-
 
     for (let key in spaces) {
       spaces[key].units = [];
@@ -2116,10 +2265,43 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+console.log("player is: " + player + " -- i am " + game_mod.game.player);
+
           game_mod.game.queue.splice(qe, 1);
 
-	  if (this.game.player == player) {
-            game_mod.playerReformationAttempt(player);
+	  if (game_mod.game.player == player) {
+            game_mod.playerSelectSpaceWithFilter(
+
+	      "Select Reformation Attempt",
+
+	      //
+	      // catholic spaces adjacent to protestant 
+	      //
+	      function(space) {
+console.log("is this catholic: " + space.religion);
+let isatr = game_mod.isSpaceAdjacentToReligion(space, "protestant");
+console.log("and printing now!");
+console.log("is space adj: " + isatr);
+		if (
+		  space.religion === "catholic" &&
+		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+	        ) {
+		  return 1;
+	        }
+		return 0;
+	      },
+
+	      //
+	      // launch reformation
+	      //
+	      function(spacekey) {
+		game_mod.addMove("reformation\t"+spacekey);
+		game_mod.endTurn();
+	      },
+
+	      null
+
+	    );
 	  }
 
           return 0;
@@ -3109,6 +3291,89 @@ console.log("MOVE: " + mv[0]);
         }
 
 
+	if (mv[0] === "reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let protestants_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+	  
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x);
+	    if (x > p_high) { x = p_high; }
+	  }
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Catholics roll: " + x);
+	    if (x > c_high) { x = c_high; }
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high > c_high) { protestants_win = 1; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+	
+	  //
+	  // handle victory
+	  //
+	  if (protestants_win == 1) {
+	    this.updateLog("Protestants win!");
+	    this.game.queue.push("convert\t"+space+"\tprotestant");
+	  } else {
+	    this.updateLog("Catholics win!");
+	  }
+
+	  return 1;
+
+	}
+
+
+
+
+
 	//
 	// objects and cards can add commands
 	//
@@ -3352,6 +3617,48 @@ console.log("MOVE: " + mv[0]);
     return menu;
 
   }
+
+
+
+
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+console.log("submitting: " + key);
+      if (filter_func(this.spaces[key]) == 1) {
+console.log("cleared through here");
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+      }
+console.log("and  done 2");
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+
+      let action = $(this).attr("id");
+
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
 
 
 

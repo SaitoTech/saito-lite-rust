@@ -1,5 +1,7 @@
 import { Saito } from "../../apps/core";
 
+import saito from "./saito";
+
 import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { TransactionType } from "./transaction";
@@ -1272,10 +1274,19 @@ console.log("---------------------");
       }
     }
   }
-  // TODO : @david to implement
+
   private isSlipInPendingTransactions(input: Slip): boolean {
+    for (let i = 0; i < this.wallet.pending.length; i++) {
+      let ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
+      for (let ii = 0; ii < ptx.transaction.from.length; ii++) {
+	if (input.returnKey() === ptx.transaction.from[ii].returnKey()) {
+	  return true;
+	}
+      }
+    }
     return false;
   }
+
   /////////////////////
   // END WEB3 CRYPTO //
   /////////////////////

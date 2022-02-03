@@ -263,6 +263,7 @@ class Settlers extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -317,7 +318,7 @@ class Settlers extends GameTemplate {
     if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }
-    this.restoreLog();
+    
 
   }
 

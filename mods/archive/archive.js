@@ -79,6 +79,10 @@ class Archive extends ModTemplate {
         mycallback(response);
       }
     }
+
+    super.handlePeerRequest(app, req, peer, mycallback);
+
+
   }
 
 

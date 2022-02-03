@@ -58,7 +58,6 @@ module.exports = AppstoreAppDetails = {
 
       console.log("MODULE LIST IS: " + JSON.stringify(module_list));
 
-      //let mods_to_include = app.options.modules.splice(0,5);
       let mods_to_include = [];
       if (app.options.modules) {
         mods_to_include = app.options.modules;
@@ -88,14 +87,27 @@ module.exports = AppstoreAppDetails = {
         }
       }
 
+      //
+      //
+      //
+console.log("A");
+      let have_specified_appstore = 0;
+      if (app.options?.appstore?.default) {
+        if (app.options.appstore.default != "") { have_specified_appstore = 1; }
+      }
+console.log("A 2");
 
       //
       // READY TO SUBMIT
       //
-      if (app.options.appstore) {
-        if (app.options.appstore.default != "") {
+      if (have_specified_appstore) {
+console.log("A 3");
+	if (app.network.hasPeer(app.options.appstore.default)) {
+console.log("A 4");
+
           var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(app.options.appstore.default, 0);
           if (newtx == null) { return; }
+  
           newtx.msg.module = "AppStore";
           newtx.msg.request = "request bundle";
           newtx.msg.list = module_list;
@@ -110,11 +122,12 @@ module.exports = AppstoreAppDetails = {
           `;
 
         } else {
+console.log("A 5");
 
           document.querySelector(".appstore-app-install-overlay").innerHTML = `
             <div class="appstore-bundler-install-notice">
               <center style="margin-bottom:20pxpadding:20px;">
-		Your wallet does not specify an AppStore to use. Use this AppStore? 
+		Your wallet is not setup to use this AppStore. Use this AppStore? 
 	        <p></p>
 	        <div class="button" id="appstore-compile-btn">yes please</div>
 	        <p></p>
@@ -123,12 +136,15 @@ module.exports = AppstoreAppDetails = {
             </div>
           `;
 
+	   if (!app.options.appstore) { app.options.appstore = {}; }
+	   app.options.appstore.default = app.network.peers[0].peer.publickey;
 
-	   document.getElementById("appstore-compile-end-btn").onclick = (e) => {
+	   document.getElementById("appstore-end-compile-btn").onclick = (e) => {
 	     mod.overlay.hide();
 	   };
 
 	   document.getElementById("appstore-compile-btn").onclick = (e) => {
+
 	     app.options.appstore = {};
 	     app.options.appstore.default = app.network.peers[0].peer.publickey;
 	     app.storage.saveOptions();
@@ -147,17 +163,16 @@ module.exports = AppstoreAppDetails = {
                  <center><div class="loader" id="game_spinner"></div></center>
                </div>
              `;
-
-	   }
-
-
+	   };
         }
       } else {
+
+console.log("A 7");
 
         document.querySelector(".appstore-app-install-overlay").innerHTML = `
           <div class="appstore-bundler-install-notice">
             <center style="margin-bottom:20px">
-	      Your wallet does not specify an AppStore to use. Use this AppStore? 
+	      Your wallet does not have a default AppStore. Use this AppStore? 
 	      <p></p>
 	      <div class="button" id="appstore-compile-btn">yes, compile</div>
 	      <p></p>
@@ -166,7 +181,14 @@ module.exports = AppstoreAppDetails = {
           </div>
         `;
 
-	 document.getElementById("appstore-compile-btn").onclick = (e) => {
+
+        document.getElementById("appstore-end-compile-btn").onclick = (e) => {
+          mod.overlay.hide();
+        };
+
+
+	document.getElementById("appstore-compile-btn").onclick = (e) => {
+
 	   app.options.appstore = {};
 	   app.options.appstore.default = app.network.peers[0].peer.publickey;
 	   app.storage.saveOptions();

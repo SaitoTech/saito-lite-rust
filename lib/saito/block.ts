@@ -247,10 +247,12 @@ class Block {
     //
     let winning_tx = this.transactions[0];
     for (let i = 0; i < this.transactions.length; i++) {
-      // TODO : @david : no field in transaction
-      // if (this.transactions[i].transaction.cumulative_fees > winning_nolan) {
+
+      // TODO - select correct tx
+      //if (this.transactions[i].transaction.work_cumulative > winning_nolan) {
       //   break;
-      // }
+      //}
+
       winning_tx = this.transactions[i];
     }
 
@@ -1489,7 +1491,10 @@ class Block {
       if (cv.gt_idx > 0) {
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
-        // TODO : @david
+
+	//
+	// TODO : validate golden ticket
+	//
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,
