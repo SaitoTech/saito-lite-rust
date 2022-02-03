@@ -9,7 +9,7 @@ class SaitoForum extends ModTemplate {
 
     this.name = "Saitolicious";
     this.slug = "saitolicious";
-    this.description = "Tacos and the Saito Network and Saito Consensus";
+    this.description = "Tacos, the Saito Network and Saito Consensus";
     this.categories = "Forum Discussion";
 
   }

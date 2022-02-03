@@ -559,12 +559,6 @@ class Browser {
 
         e = e || window.event;
 
-        //e.preventDefault();
-        //if (e.stopPropagation) { e.stopPropagation(); }
-        //if (e.preventDefault) { e.preventDefault(); }
-        //e.cancelBubble = true;
-        //e.returnValue = false;
-
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;

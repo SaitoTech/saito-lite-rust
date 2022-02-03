@@ -168,6 +168,7 @@ game-overlay-cardlist-button {
   padding: 0px 0px 0px 0px;
 }
 .game-menu ul li {
+  user-select: none;
   color: black;
   list-style: none;
   text-align: center;
@@ -232,8 +233,8 @@ game-overlay-cardlist-button {
   z-index: 40;
   font-size: 1.2rem;
   border-bottom: 0px;
-  transition: height 0.2s ease, width 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease;
-  /*box-shadow: 0 0 3px 3px #BBB;*/
+  /* transition: height 0.2s ease, width 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease; */
+  /* box-shadow: 0 0 3px 3px #BBB;*/
   max-width: 100vw;
   /*padding: 0 20px 20px 20px;*/
 }
@@ -431,6 +432,7 @@ i.menu_icon_icon{
   width: 100%;
   margin-top: 5px;
   /*padding: 10px;*/
+  user-select: none;
 }
 
 .status-cardbox li { 
