@@ -75,7 +75,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
 
 
   let comment_spinner = "";
-  if (tx.children > 1) { comment_spinner = '<div class="post-loader-spinner loader" id="post-loader-spinner"></div>'; }
+  if (tx.children >= 1) { comment_spinner = '<div class="post-loader-spinner loader" id="post-loader-spinner"></div>'; }
   let comment_filler = '<div class="post-loader-spinner loader" id="post-loader-spinner"></div>';
   if (tx.msg.comment) { comment_filler = tx.msg.comment; }
 
