@@ -1377,6 +1377,15 @@ class Block {
       return true;
     }
 
+    //
+    // if this is our first / genesis block, it is valid
+    //
+    if (this.returnHash() === this.app.blockchain.blockchain.genesis_hash || this.app.blockchain.blockchain.genesis_hash === "") {
+      console.log(`approving ${this.returnHash} as genesis block`);
+      return true;
+    }
+
+
     //console.log("block::validate");
     //
     // invalid if no transactions

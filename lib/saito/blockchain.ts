@@ -72,6 +72,7 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block, force = 0) {
+
     //
     //
     //
@@ -801,6 +802,27 @@ class Blockchain {
       // generate fork_id
       //
       this.blockchain.fork_id = this.generateForkId(block.returnId());
+
+      //
+      // set genesis info if first block ever
+      //
+      if (this.blockchain.genesis_block_id == 0) {
+
+        this.blockchain.last_block_hash = block.returnHash();
+        this.blockchain.last_block_id = block.returnId();
+        this.blockchain.last_timestamp = block.returnTimestamp();
+        this.blockchain.last_burnfee = block.returnBurnFee();
+
+        this.blockchain.genesis_block_id = block.returnId();
+        this.blockchain.genesis_block_hash = block.returnHash();
+        this.blockchain.genesis_timestamp = block.returnTimestamp();
+
+        this.blockchain.lowest_acceptable_timestamp = block.returnTimestamp();
+        this.blockchain.lowest_acceptable_block_hash = block.returnHash();
+        this.blockchain.lowest_acceptable_block_id = block.returnId();
+
+      }
+
 
       //
       // save options
