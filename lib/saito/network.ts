@@ -23,8 +23,9 @@ class Network {
   public block_sample_size: any;
   public dead_peers: any;
   public socket: any;
-  public peer_monitor_timer_speed: any;
-  public peer_monitor_connection_timeout: any;
+  public peer_monitor_timer_speed = 5000;
+  public peer_monitor_connection_timeout = 2000;
+  public peer_monitor_timer: any;
 
   constructor(app: Saito) {
     this.app = app;
@@ -243,6 +244,7 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
+    console.debug("network.initializeWebSocket");
     //
     // browsers can only use w3c sockets
     //
@@ -330,6 +332,7 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
+    console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
       if (this.peers[c] === peer) {
         let keep_peer = -1;
@@ -390,9 +393,9 @@ class Network {
           // we push onto dead peers list, which will
           // continue to try and request a connection
           //
-          this.dead_peers.push(this.app.options.peers[keep_peer]);
+          this.dead_peers.push(peer);
         }
-
+        console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
         //
@@ -459,6 +462,10 @@ class Network {
     this.app.connection.on("peer_disconnect", (peer) => {
       this.cleanupDisconnectedPeer(peer);
     });
+
+    this.peer_monitor_timer = setInterval(() => {
+      this.pollPeers();
+    }, this.peer_monitor_timer_speed);
   }
 
   isPrivateNetwork() {
@@ -752,9 +759,11 @@ class Network {
     }
   }
 
-  pollPeers(peers, app) {
-    const this_network = app.network;
-
+  pollPeers() {
+    let peers = this.app.network.peers;
+    console.debug(
+      `polling peers [count = ${peers.length}][dead_peers = ${this.dead_peers.length}]`
+    );
     //
     // loop through peers to see if disconnected
     //
@@ -764,7 +773,7 @@ class Network {
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (!peer.socket.connected) {
+      if (peer.socket.readyState !== peer.socket.OPEN) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }
@@ -775,13 +784,17 @@ class Network {
     // limit amount of time nodes spend trying to reconnect to
     // prevent ddos issues.
     const peer_add_delay = this.peer_monitor_timer_speed - this.peer_monitor_connection_timeout;
-    this.dead_peers.forEach((peer) => {
+    let unsuccessful_peers = this.dead_peers;
+    this.dead_peers = []; // to capture peers failing at connection
+    unsuccessful_peers.forEach((peer) => {
       setTimeout(() => {
         console.log("Attempting to Connect to Peer!");
-        this_network.connectToPeer(JSON.stringify(peer));
+        peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
+        if (!peers.includes(peer)) {
+          peers.push(peer);
+        }
       }, peer_add_delay);
     });
-    this.dead_peers = [];
   }
 
   //
