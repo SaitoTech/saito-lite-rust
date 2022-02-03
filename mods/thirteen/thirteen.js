@@ -4501,23 +4501,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 
 
 
-  formatStatusHeader(status_header, include_back_button=false) {
-    let back_button_html = `<i class="fa fa-arrow-left" id="back_button"></i>`;
-    return `
-    <div class="status-header">
-      ${include_back_button ? back_button_html : ""}
-      <div style="text-align: center;">
-        ${status_header}
-      </div>
-    </div>
-    `
-  }
-
-
-
-
-
-  
+    
 
   //
   // OVERWRITE -- to take "us" and "ussr" instead of player_id
