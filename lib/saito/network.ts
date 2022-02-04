@@ -194,7 +194,9 @@ class Network {
     //
     // remote peers can do this here, as the connection is already open
     //
-    this.app.network.requestBlockchain(peer);
+    // note - disabling as remote peer is push
+    //
+    //this.app.network.requestBlockchain(peer);
 
     return peer;
   }
@@ -564,6 +566,33 @@ class Network {
         break;
       }
 
+      case "GSTCHAIN": {
+        console.log("RECEIVED GSTCHAIN");
+
+        const buffer = Buffer.from(message.message_data, "utf8");
+        const syncobj = JSON.parse(buffer.toString("utf8"));
+
+	let previous_block_hash = syncobj.start;
+
+	for (let i = 0; i < syncobj.prehash.length; i++) {
+
+	  let block_hash = this.app.crypto.hash(previous_block_hash + syncobj.prehash[i]);
+
+	  if (syncobj.txs[i] > 0) {
+            await this.fetchBlock(block_hash);
+	  } else {
+	    // ghost block
+	    this.app.blockchain.addGhostToBlockchain(syncobj.block_ids[i], previous_block_hash, syncobj.block_ts[i], syncobj.prehash[i], syncobj.gts[i], block_hash);
+	  }
+
+	  previous_block_hash = block_hash;
+
+	}
+
+        console.log("RECEIVED GHOSTCHAIN: " + JSON.stringify(syncobj));
+        break;
+      }
+
       case "REQCHAIN": {
 
         block_id = 0;
@@ -601,57 +630,63 @@ class Network {
           }
         }
 
-        // const blocks_to_send = [];
-        //
-        // for (
-        //   let i = last_shared_ancestor;
-        //   i <= this.app.blockring.returnLatestBlockId();
-        //   i++
-        // ) {
-        //   block_hash =
-        //     this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-        //   if (block_hash !== "") {
-        //     if (this.app.blockchain.blocks[block_hash]) {
-        //       const block = this.app.blockchain.blocks[block_hash];
-        //       if (block.hasKeylistTransactions([publickey])) {
-        //         blocks_to_send.push({ hash: block_hash, type: "spv" });
-        //       } else {
-        //         blocks_to_send.push({ hash: block_hash, type: "hash" });
-        //       }
-        //     }
-        //   }
-        // }
-        //
-        // const litechain = { start: "", prehash: [], id: [], ts: [] };
-        // let idx = 0;
-        //
-        // for (let i = 0; i < blocks_to_send.length; i++) {
-        //   // send lite-hashes
-        //   if (blocks_to_send[i].type === "hash") {
-        //     const block_hash = blocks_to_send[i].hash;
-        //     litechain.id.push(
-        //       this.app.blockchain.blocks[block_hash].returnId()
-        //     );
-        //     litechain.prehash.push(
-        //       this.app.blockchain.blocks[block_hash].returnPreHash()
-        //     );
-        //     litechain.ts.push(
-        //       this.app.blockchain.blocks[block_hash].returnTimestamp()
-        //     );
-        //     idx++;
-        //     // send spv blocks
-        //   } else {
-        //     const block_hash = blocks_to_send[i].hash;
-        //     block = await this.app.blockchain.loadBlockAsync(block_hash);
-        //     if (block) {
-        //       this.propagateBlock(block, peer);
-        //     }
-        //   }
-        // }
-        //
-        // if (idx > 0) {
-        //   this.propagateLiteChain(litechain, peer);
-        // }
+        break;
+      }
+
+
+
+      case "REQGSTCN": {
+
+        block_id = 0;
+        block_hash = "";
+        fork_id = "";
+        publickey = "";
+        bytes = message.message_data;
+
+        block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
+        if (!block_id) {
+          block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
+          fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
+        }
+
+        console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
+
+        const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
+          block_id,
+          fork_id
+        );
+
+        console.log("last shared ancestor generated at: " + last_shared_ancestor);
+
+	let syncobj = { start : "" , prehash : [] , block_ids : [] , block_ts : [] , txs : [] , gts : []  };
+	syncobj.start = this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
+
+        for (
+          let i = last_shared_ancestor+1;
+          i <= this.app.blockring.returnLatestBlockId();
+          i++
+        ) {
+
+          block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
+
+          if (block_hash !== "") {
+            if (this.app.blockchain.blocks[block_hash]) {
+
+              let block = this.app.blockchain.blocks[block_hash];
+              syncobj.gts.push(block.hasGoldenTicket());
+              syncobj.block_ts.push(block.returnTimestamp());
+              syncobj.prehash.push(block.prehash);
+              syncobj.block_ids.push(block.returnId());
+              if (block.hasKeylistTransactions([publickey])) {
+                syncobj.txs.push(1);
+              } else {
+                syncobj.txs.push(0);
+              }
+            }
+          }
+        }
+
+        this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
 
         break;
       }
@@ -949,13 +984,21 @@ class Network {
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-        this.sendRequest("REQCHAIN", buffer_to_send, peer);
+	if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+          this.sendRequest("REQGSTCN", buffer_to_send, peer);
+	} else {
+          this.sendRequest("REQCHAIN", buffer_to_send, peer);
+	}
         return;
       }
     }
 
     if (this.peers.length > 0) {
-      this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
+      if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        this.sendRequest("REQGSTCN", buffer_to_send, this.peers[0]);
+      } else {
+        this.sendRequest("REQCHAIN", buffer_to_send, this.peers[0]);
+      }
     }
   }
 
