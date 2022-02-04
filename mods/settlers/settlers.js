@@ -111,9 +111,8 @@ class Settlers extends GameTemplate {
   }
 
   initializeHTML(app) {
-    if (this.browser_active == 0) {
-      return;
-    }
+
+    if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
 
