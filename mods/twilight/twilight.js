@@ -283,10 +283,10 @@ class Twilight extends GameTemplate {
   }
 
 
+  /* Mostly deprecated, but potential useful logic for adding game clock to menu */
   handleDisplayMenu() {
 
     let twilight_self = this;
-
     let use_clock_html = '';
     if (twilight_self.useClock == 1) { use_clock_html = '<li class="menu-item" id="move_clock">Move Clock</li>'; }
 
@@ -294,9 +294,6 @@ class Twilight extends GameTemplate {
       <div class="game-overlay-menu" id="game-overlay-menu">
         <div>DISPLAY MODE:</div>
        <ul>
-          <li class="menu-item" id="english">English</li>
-          <li class="menu-item" id="chinese">简体中文</li>
-          <li class="menu-item" id="enable_observer_mode">Observer Mode</li>
           ${use_clock_html}
         </ul>
       </div>`;
@@ -313,24 +310,6 @@ class Twilight extends GameTemplate {
 	return;
       }
 
-      if (action2 === "enable_observer_mode") {
-        twilight_self.game.saveGameState = 1;
-	let msgobj = {
-	  game_id : twilight_self.game.id ,
-	  player : twilight_self.app.wallet.returnPublicKey() ,
-	  module : twilight_self.game.module
-	};
-        let msg = twilight_self.app.crypto.stringToBase64(JSON.stringify(msgobj));
-	let observe_link = window.location.href;
-	let tmpar = observe_link.split("/");
-	let oblink = tmpar[0] + "//" + tmpar[2];
-
-	let html  = '<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:';
-	html += '<div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">'+oblink+'/arcade/?i=watch&msg='+msg+'</div>';
-	html += '</div>';
-	twilight_self.overlay.show(twilight_self.app, twilight_self, html);
-
-      }
 
       if (action2 === "text") {
         twilight_self.displayModal("Card Menu options changed to text-mode. Please reload.");
@@ -349,25 +328,6 @@ class Twilight extends GameTemplate {
           window.location.reload();
 	}, 1000);
       }
-
-      if (action2 === "english") {
-        twilight_self.displayModal("Language Settings", "Card settings changed to English");
-        twilight_self.lang = "en";
-        twilight_self.saveGamePreference("lang", "en");
-	setTimeout(function() {
-          window.location.reload();
-	}, 1000);
-      }
-
-      if (action2 === "chinese") {
-        twilight_self.displayModal("语言设定", "卡牌语言改成简体中文");
-        twilight_self.lang = "zh";
-        twilight_self.saveGamePreference("lang", "zh");
-	setTimeout(function() {
-          window.location.reload();
-	}, 1000);
-      }
-
 
     });
   }
@@ -402,36 +362,47 @@ class Twilight extends GameTemplate {
 	game_mod.menu.showSubMenu("game-game");
       }
     });
+   
     this.menu.addSubMenuOption("game-game", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
-    let initial_confirm_moves = "Newbie Mode"; 
-    if (this.confirm_moves == 1) {
-      initial_confirm_moves = "Expert Mode"; 
-    }
-    this.menu.addSubMenuOption("game-game", {
-      text : initial_confirm_moves,
+      text : "Play Mode",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	if (game_mod.confirm_moves == 0) {
-	  game_mod.confirm_moves = 1;
-          game_mod.saveGamePreference('twilight_expert_mode', 0);
-	  window.location.reload();	
-	} else {
-	  game_mod.confirm_moves = 0;
-          game_mod.saveGamePreference('twilight_expert_mode', 1);
-	  window.location.reload();	
-	}
+         game_mod.menu.showSubSubMenu("game-confirm"); 
       }
     });
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 0){
+          game_mod.displayModal("Game Settings", "Will confirm moves before committing");
+          game_mod.confirm_moves = 1;
+          game_mod.saveGamePreference('twilight_expert_mode', 0);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves ==1){
+          game_mod.displayModal("Game Settings", "No need to confirm moves");
+          game_mod.confirm_moves = 0;
+          game_mod.saveGamePreference('twilight_expert_mode', 1);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
@@ -441,6 +412,28 @@ class Twilight extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Invite Observer",
+      id: "game-observer",
+      class: "game-observer",
+      callback: function(app, game_mod){
+        game_mod.game.saveGameState = 1;
+        let msgobj = {
+          game_id : game_mod.game.id ,
+          player : app.wallet.returnPublicKey() ,
+          module : game_mod.game.module
+        };
+        let msg = app.crypto.stringToBase64(JSON.stringify(msgobj));
+        let observe_link = window.location.href;
+        let tmpar = observe_link.split("/");
+        let oblink = tmpar[0] + "//" + tmpar[2];
+        let html  = `<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:
+        <div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">${oblink}/arcade/?i=watch&msg=${msg}</div></div>`;
+        game_mod.overlay.show(app, game_mod, html);
+      }
+    });
+
+
     this.menu.addSubMenuOption("game-game", {
       text : "Exit",
       id : "game-exit",
@@ -502,75 +495,65 @@ class Twilight extends GameTemplate {
       id : "game-display",
       class : "game-display",
       callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.handleDisplayMenu();
+	       game_mod.menu.showSubMenu("game-display");
       }
     });
 
-
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-	for (let ii = 0; ii < this.game.players.length; ii++) {
-	  if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-	    // add main menu
-	    if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-          	id : "game-chat",
-          	class : "game-chat",
-          	callback : function(app, game_mod) {
-		  game_mod.menu.showSubMenu("game-chat");
-          	}
-              })
-	      main_menu_added = 1;
-	    }
-
-	    if (community_menu_added == 0) {
-    	      this.menu.addSubMenuOption("game-chat", {
-    	        text : "Community",
-      	        id : "game-chat-community",
-      	        class : "game-chat-community",
-      	        callback : function(app, game_mod) {
-	  	  game_mod.menu.hideSubMenus();
-        	  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.mute_community_chat = 0;
-		  chatmod.openChatBox();
-    	        }
-              });
-	      community_menu_added = 1;
-	    }
-
-	    // add peer chat
-  	    let data = {};
-	    let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-	    let gid = this.app.crypto.hash(members.join('_'));
-	    let name = "Player "+(ii+1);
-	    let chatmod = this.app.modules.mods[i];
-	
-    	    this.menu.addSubMenuOption("game-chat", {
-    	      text : name,
-      	      id : "game-chat-"+(ii+1),
-      	      class : "game-chat-"+(ii+1),
-      	      callback : function(app, game_mod) {
-		game_mod.menu.hideSubMenus();
-	        chatmod.createChatGroup(members, name);
-		chatmod.openChatBox(gid);
-        	chatmod.sendEvent('chat-render-request', {});
-        	chatmod.saveChat();
-    	      }
-            });
-	  }
-	}
+    this.menu.addSubMenuOption("game-display",{
+      text: "Language",
+      id: "game-language",
+      class: "game-language",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-language");
       }
-    }
+    });
+
+    this.menu.addSubMenuOption("game-language", {
+      text: `English ${(this.lang=="en")?"✔":""}`,
+      id: "game-language-en",
+      callback: function(app, game_mod){
+        game_mod.displayModal("Language Settings", "Card settings changed to English");
+        game_mod.lang = "en";
+        game_mod.saveGamePreference("lang", "en");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+  this.menu.addSubMenuOption("game-language", {
+      text: `简体中文 ${(this.lang=="zh")?"✔":""}`,
+      id: "game-language-zh",
+      callback: function(app, game_mod){
+        game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
+        game_mod.lang = "zh";
+        game_mod.saveGamePreference("lang", "zh");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+
+    this.menu.addSubMenuOption("game-display", {
+      text : "Log",
+      id : "game-log",
+      class : "game-log",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      }
+    });
+    this.menu.addSubMenuOption("game-display", {
+      text : "HUD",
+      id : "game-display-hud",
+      class : "game-display-hud",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.hud.toggleHud();
+      }
+    });
+    this.menu.addChatMenu(app, this);
+
     this.menu.addMenuIcon({
       text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id : "game-menu-fullscreen",
       callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
+	      game_mod.menu.hideSubMenus();
         app.browser.requestFullscreen();
       }
     });
@@ -4098,7 +4081,7 @@ if (this.game.player == 0) {
     //
     // if the clock is going, ask to confirm moves
     //
-    twilight_self.confirm_this_move = 1;
+    //twilight_self.confirm_this_move = 1;
 
     //
     // END OF HISTORY

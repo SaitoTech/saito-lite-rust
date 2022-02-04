@@ -51,6 +51,7 @@ class Chessgame extends GameTemplate {
 
   initializeHTML(app) {
 
+    if (!this.browser_active) { return; }
     super.initializeHTML(app);
 
     this.app.modules.respondTo("chat-manager").forEach(mod => {
