@@ -167,6 +167,7 @@ game-overlay-cardlist-button {
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
 }
+
 .game-menu ul li {
   user-select: none;
   color: black;
@@ -192,7 +193,7 @@ game-overlay-cardlist-button {
 .game-menu-icon .fa-window-maximize {
   vertical-align: middle;
 }
-.game-menu ul .game-menu-sub-option {
+.game-menu ul .game-menu-sub-option, .game-menu-sub-option ul .game-menu-sub-sub-option {
   position: relative;
   background-color: #f5f5f5ee;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
@@ -200,15 +201,23 @@ game-overlay-cardlist-button {
   line-height: 50px;
   width: 125px;
 }
-.game-menu-sub-options {
+.game-menu-sub-options, .game-menu-sub-sub-options{
   display:none;
 }
+
+.game-menu-sub-sub-options{
+  position: relative;
+  left: 100%;
+  top: -100%;
+}
+
 .game-menu-option:hover {
-  /* font-weight: bold; */
+  font-weight: bold; 
   color: #222;
 }
 
 .game-menu-option:hover ul {
+  font-weight: normal; 
   text-shadow: none;
   color: #000;
 }
@@ -218,7 +227,9 @@ game-overlay-cardlist-button {
   color: #222;
 }
 
-
+.game-menu-sub-sub-option:hover{
+  font-weight: bold;
+}
 
 
 /**************/
