@@ -10680,6 +10680,8 @@ console.log("Active Agenda: " + active_agenda);
 
   initializeHTML(app) {
 
+    if (!this.browser_active) { return; }
+
     let imperium_self = this;
 
     super.initializeHTML(app);
@@ -10910,65 +10912,14 @@ console.log("Active Agenda: " + active_agenda);
 
     // runs before init then issues, so try/catch
     try {
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].name === "Chat") {
-        for (let ii = 0; ii < this.game.players.length; ii++) {
-          if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-            // add peer chat
-            let data = {};
-            let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-            let gid = this.app.crypto.hash(members.join('_'));
-            let name = imperium_self.returnFaction((ii+1));
-            let nickname = imperium_self.returnFactionNickname((ii+1));
-            let chatmod = this.app.modules.mods[i];
-
-            if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-                id : "game-chat",
-                class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
-              })
-              main_menu_added = 1;
-            }
-
-            if (community_menu_added == 0) {
-              this.menu.addSubMenuOption("game-chat", {
-                text : "Group",
-                id : "game-chat-community",
-                class : "game-chat-community",
-                callback : function(app, game_mod) {
-                  game_mod.menu.hideSubMenus();
-                  chatmod.sendEvent('chat-render-request', {});
-		  chatmod.mute_community_chat = 0;
-                  chatmod.openChatBox();
-                }
-              });
-              community_menu_added = 1;
-            }
-
-            this.menu.addSubMenuOption("game-chat", {
-              text : nickname,
-              id : "game-chat-"+(ii+1),
-              class : "game-chat-"+(ii+1),
-              callback : function(app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                chatmod.createChatGroup(members, name);
-                chatmod.openChatBox(gid);
-                chatmod.sendEvent('chat-render-request', {});
-                chatmod.saveChat();
-              }
-            });
-
-          }
-        }
+  let fullname = [];
+      let nickname = [];
+      for (let ii = 0; ii < this.game.players.length; ii++) {
+        fullname.push(imperium_self.returnFaction((ii+1)));
+        nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
-    }
+      this.menu.addChatMenu(app, this, nickname, fullname);
+
     } catch (err) {
 console.log("error initing chat: " + err);
     }
