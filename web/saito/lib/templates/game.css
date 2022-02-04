@@ -163,9 +163,10 @@ game-overlay-cardlist-button {
   margin: 1px 1px 3px 3px;
   z-index: 50;
 }
-.game-menu ul {
-  margin: 0px 0px 0px 0px;
-  padding: 0px 0px 0px 0px;
+
+.game-menu > ul {
+  display: flex;
+  flex-direction: row;
 }
 
 .game-menu ul li {
@@ -182,17 +183,15 @@ game-overlay-cardlist-button {
   line-height: 40px;
   font-size: 1.1rem;
   cursor: pointer;
-  float: left;
+  /*float: left;*/
 }
 .game-menu ul .game-menu-icon {
   width: 40px;
-  margin-left: 10px;
+  margin: 0 5px;
   font-size: 2em;
-  line-height: 35px;
+  line-height: 40px;
 }
-.game-menu-icon .fa-window-maximize {
-  vertical-align: middle;
-}
+
 .game-menu ul .game-menu-sub-option, .game-menu-sub-option ul .game-menu-sub-sub-option {
   position: relative;
   background-color: #f5f5f5ee;
@@ -229,6 +228,44 @@ game-overlay-cardlist-button {
 
 .game-menu-sub-sub-option:hover{
   font-weight: bold;
+}
+
+/* Mobile stuff */
+.game-menu-mobile-toggle{
+  display: none;
+}
+
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .game-menu > ul li{
+    display: none;
+    /*left: unset;
+    right: calc(100vw - 50px);  */
+  }
+  .game-menu.mobile-visible > ul li{
+    display: list-item;
+    /*left: 0px;
+    right: unset;*/  
+  }
+  .game-menu > ul li:last-of-type{
+    display: list-item;
+  }
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .game-menu > ul li{
+    display: none;
+    /*left: unset;
+    right: calc(100vw - 50px);  */
+  }
+  .game-menu.mobile-visible > ul li{
+    display: list-item;
+    /*left: 0px;
+    right: unset;*/  
+  }
+  .game-menu > ul li:last-of-type{
+    display: list-item;
+  }
 }
 
 
@@ -1291,14 +1328,13 @@ input#game_board_sizer {
   }
 
   .game-menu ul li {
-    max-width: 85px;
-    width: 85px;
+    max-width: 75px;
     font-size: 0.9rem;
   }
 
 }
 
-@media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 650px) {
+@media screen and (orientation:portrait) and (min-width: 400px) and (max-width: 600px) {
 
   .hud-card {
     width: calc(13vw * 0.811);
@@ -1312,12 +1348,10 @@ input#game_board_sizer {
   .game-menu ul li {
     max-width: 100px;
     width: 100px;
-    font-size: 1rem;
   }
-
 }
 
-@media screen and (orientation:portrait) and (min-width: 650px) {
+@media screen and (orientation:portrait) and (min-width: 600px) {
 
   .hud-card {
     width: calc(10vw * 0.811);
@@ -1328,8 +1362,7 @@ input#game_board_sizer {
     /*grid-template-rows: repeat(auto-fit, 14vw);*/
   }
   .game-menu ul li {
-    max-width: 115px;
-    width: 115px;
+    max-width: 125px;
     font-size: 1rem;
   }
 
@@ -1342,22 +1375,6 @@ input#game_board_sizer {
 /*** LANDSCAPE ***/
 /*****************/
 @media screen and (orientation: landscape) and (max-height: 650px) {
-
-  .game-menu {
-    height: 30px;
-    line-height: 30px;
-  }
-
-  .game-menu ul li {
-    height; 30px;
-    width: 115px;
-    line-height: 30px;
-  }
-
-  .game-menu ul .game-menu-icon {
-    line-height: 25px;
-    font-size: 1.2em;
-  }
 
   .game-overlay-menu {
     font-size: 1.4em;
