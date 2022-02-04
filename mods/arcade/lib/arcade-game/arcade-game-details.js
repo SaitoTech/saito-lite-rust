@@ -145,9 +145,9 @@ module.exports = ArcadeGameDetails = {
       }
 
 
-        app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
+        //app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
         let gamemod = app.modules.returnModule(options.gamename);
-	      let players_needed = 0;
+	let players_needed = 0;
         if (document.querySelector('.game-wizard-players-select')) {
           players_needed = document.querySelector('.game-wizard-players-select').value;
         } else {
@@ -174,12 +174,28 @@ module.exports = ArcadeGameDetails = {
           mod.overlay.hide();
           document.getElementById('background-shim').destroy();
 
+console.log("PRE CREATING OPEN TX");
+
           let newtx = mod.createOpenTransaction(gamedata);
 
           let arcade_mod = app.modules.returnModule('Arcade');
 	  if (arcade_mod) {
             arcade_mod.addGameToOpenList(newtx);
 	  }
+
+
+//
+// and relay open if exists
+//
+let peers = [];
+for (let i = 0; i < app.network.peers.length; i++) {
+  peers.push(app.network.peers[i].returnPublicKey());
+}
+let relay_mod = app.modules.returnModule("Relay");
+if (relay_mod != null) {
+  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+}
+
 
           mod.app.network.propagateTransaction(newtx);
           mod.renderArcadeMain(app, mod);

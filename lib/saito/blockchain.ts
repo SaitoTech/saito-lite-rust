@@ -71,6 +71,58 @@ class Blockchain {
     this.callback_limit = 2; // 2 blocks
   }
 
+  addGhostToBlockchain(id=0, previous_block_hash="", ts=0, prehash="", gt=false, hash="") {
+
+    this.indexing_active = true;
+
+console.log("adding Ghost to Blockchain!");
+
+    ////////////////////
+    // insert indexes //
+    ////////////////////
+    let block                   	= new Block(this.app);
+        block.block.id            	= id;
+        block.block.previous_block_hash = previous_block_hash;
+        block.block.timestamp          	= ts;
+        block.has_golden_ticket		= gt;
+        block.prehash             	= prehash;
+        block.hash                	= hash;
+        block.block_type		= BlockType.Ghost;
+
+    //
+    // sanity checks
+    //
+    if (this.isBlockIndexed(block.hash)) {
+      console.error("ERROR 581023: block exists in blockchain index");
+      this.indexing_active = false;
+      return;
+    }
+
+
+    if (!this.app.blockring.containsBlockHashAtBlockId(block.block.id, block.hash)) {
+      this.app.blockring.addBlock(block);
+    }
+
+    //
+    // blocks are stored in a hashmap indexed by the block_hash. we expect all
+    // all block_hashes to be unique, so simply insert blocks one-by-one on
+    // arrival if they do not exist.
+    //
+    if (!this.isBlockIndexed(block.hash)) {
+      this.blocks[block.hash] = block;
+    }
+
+console.log("block hash now added, but nothing is longest-chain!");
+
+    // update longest-chain
+    this.indexing_active = false;
+    return;
+
+  }
+
+
+
+
   async addBlockToBlockchain(block, force = 0) {
     //
     //

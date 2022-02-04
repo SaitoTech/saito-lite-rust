@@ -379,6 +379,9 @@ module.exports = ArcadeMain = {
       //
       // ready to go? check with server game is not taken
       //
+      GameLoader.render(app, mod);
+      GameLoader.attachEvents(app, mod);
+
       mod.sendPeerRequestWithFilter(
         () => {
           let msg = {};
@@ -432,8 +435,6 @@ if (relay_mod != null) {
   relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
 }
 
-              GameLoader.render(app, mod);
-              GameLoader.attachEvents(app, mod);
 
               return;
             } else {
