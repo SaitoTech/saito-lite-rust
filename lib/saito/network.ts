@@ -565,6 +565,7 @@ class Network {
       }
 
       case "REQCHAIN": {
+
         block_id = 0;
         block_hash = "";
         fork_id = "";

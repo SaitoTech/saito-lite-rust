@@ -13,10 +13,10 @@
   margin: auto;
 }
 .hud-header.soviet{
-  background:  linear-gradient(to right, rgba(255,0,0,.7), rgba(255,255,0,0.4), rgba(255,0,0,.7));
+  background:  linear-gradient(to right, rgba(255,0,0,0.6), rgba(255,255,0,0.4), rgba(255,0,0,0.6));
 }
 .hud-header.american{
-  background:  linear-gradient(to right, rgba(255,0,0,0.7), rgba(255,255,255,0.4), rgba(0,0,255,0.7));
+  background:  linear-gradient(to right, rgba(0,0,255,0.6), rgba(255,255,255,0.4), rgba(0,0,255,0.6));
 }
 
 .status-message {
