@@ -151,8 +151,20 @@ class Peer {
       return;
     }
     // transaction as Transaction.serialize()
+    if (message === "REQGSTCN") {
+      this.app.networkApi.send(this.socket, "REQGSTCN", data);
+      return;
+    }
     if (message === "REQCHAIN") {
       this.app.networkApi.send(this.socket, "REQCHAIN", data);
+      return;
+    }
+    if (message === "SPVCHAIN") {
+      this.app.networkApi.send(this.socket, "SPVCHAIN", data);
+      return;
+    }
+    if (message === "GSTCHAIN") {
+      this.app.networkApi.send(this.socket, "GSTCHAIN", data);
       return;
     }
     if (message === "PINGPING") {

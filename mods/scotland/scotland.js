@@ -1,6 +1,5 @@
 const GameHud = require('../../lib/saito/ui/game-hud/game-hud');
 const GameTemplate = require('../../lib/templates/gametemplate');
-const helpers = require('../../lib/helpers/index');
 
 
 
@@ -115,6 +114,8 @@ class Scotland extends GameTemplate {
 
 
   initializeHTML(app) {
+
+    if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
     this.app.modules.respondTo("chat-manager").forEach(mod => {

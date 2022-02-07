@@ -164,7 +164,11 @@ export default class Blockring {
 
   returnLatestBlockId() {
     if (this.lc_pos == 0) {
-      return 0;
+      if (this.ring[0].block_ids.length > 0) {
+        return this.ring[0].block_ids[this.ring[0].lc_pos];
+      } else {
+        return 0;
+      }
     }
     if (this.ring[this.lc_pos].block_ids.length > this.ring[this.lc_pos].lc_pos) {
       return this.ring[this.lc_pos].block_ids[this.ring[this.lc_pos].lc_pos];

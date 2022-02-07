@@ -50,7 +50,6 @@ console.log("rendering: " + mod.posts[i].transaction.sig);
 
       }
     } catch (err) {
-console.log("ERROR: " + err);
     }
 
   },

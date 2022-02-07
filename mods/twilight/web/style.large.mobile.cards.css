@@ -411,13 +411,13 @@ body {
 }
 
 
-.cardimg-hud {
+/*.cardimg-hud {
   position: absolute;
   left: 0;
   top: 0;
   height: 110px;
   width: 85px;
-}
+}*/
 
 .cardimg {
   position: absolute;

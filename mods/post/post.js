@@ -653,6 +653,9 @@ console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
   }
   async receiveEditTransaction(tx) {
     let txmsg = tx.returnMessage();
+
+console.log("EDITING: " + JSON.stringify(txmsg));
+
     let is_parent_id = 0;
     let sql = `SELECT parent_id FROM posts WHERE id = $id`;
     let params = { $id : txmsg.sig }
@@ -675,11 +678,17 @@ console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
       if (rows.length > 0) {
         if (rows[0].publickey === tx.transaction.from[0].add) {
 
-          sql = `UPDATE posts SET id = $newid, text = $text, tx = $tx WHERE publickey = $author AND id = $id`;
+          let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
+          plitetx.msg.comment = "";
+          plitetx.msg.images = [];
+
+
+          sql = `UPDATE posts SET id = $newid, text = $text, tx = $tx, lite_tx = $lite_tx WHERE publickey = $author AND id = $id`;
           params = {
-            $id		: txmsg.sig,
+            $newid	: tx.transaction.sig,
             $text	: txmsg.comment ,
             $tx		: JSON.stringify(tx.transaction) ,
+            $lite_tx	: JSON.stringify(plitetx.transaction) ,
             $author	: tx.transaction.from[0].add ,
             $id		: txmsg.sig
           };
@@ -739,6 +748,8 @@ console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
     // it is signed by the node storing it in the database.
     //
     let txmsg = tx.returnMessage();
+console.log("Received Comment: " + JSON.stringify(txmsg));
+console.log("With Sig: " + tx.transaction.sig);
     let pfulltx = JSON.stringify(tx.transaction);   
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";

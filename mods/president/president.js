@@ -75,6 +75,8 @@ class President extends GameTemplate {
 
   initializeHTML(app) {
 
+    if (!this.browser_active) { return; }
+    
     super.initializeHTML(app);
     this.app.modules.respondTo("chat-manager").forEach(mod => {
       mod.respondTo('chat-manager').render(app, this);
@@ -745,22 +747,7 @@ class President extends GameTemplate {
 
 
 
-  updateStatusAndListCards(message, cards = null) {
-
-    if (cards == null) {
-      cards = this.game.deck[0].hand;
-    }
-
-    html = `
-        <div id="status-message" class="status-message">${message}</div>
-        ${this.returnCardList(cards)}
-    `
-    this.updateStatus(html);
-    this.attachCardboxEvents(function (card) {
-    });
-
-  }
-
+  
 
   returnPlayersBoxArray() {
 

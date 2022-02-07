@@ -23,10 +23,7 @@ module.exports = PostView = {
     //
     // we now fetch parent to show images and stuff
     //
-    //let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" AND parent_id != "" ORDER BY ts DESC`;
     let sql = `SELECT id, tx FROM posts WHERE thread_id = "${sig}" ORDER BY ts ASC`;
-
-console.log(sql);
 
     mod.originalSig = sig;
 
@@ -39,16 +36,12 @@ console.log(sql);
         (res) => {
           try { document.getElementById("post-loader-spinner").style.display = "none"; } catch (err) {}
           if (res) {
-console.log("FETCH POSTS AND COMMENTS");
-console.log("res.rows.length: " + res.rows.length);
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
                 let add_this_comment = 1;
                 let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
                 let txmsg = tx.returnMessage();
-console.log("add comment... ");
                 for (let z = 0; z < mod.comments.length; z++) {
-console.log("dupe... ");
                   if (mod.comments[z].transaction.sig == tx.transaction.sig) { add_this_comment = 0; }
                 }
 	        if (tx.transaction.sig == sig) {
@@ -69,11 +62,9 @@ console.log("error showing comment or gallery");
 		  }
 	        }
                 if (add_this_comment == 1) {
-console.log("adding comment here now");
                   mod.comments.push(tx);
                 }
               }
-console.log("how many comments? " + mod.comments.length);
               for (let i = 0; i < mod.comments.length; i++) {
                 this.addComment(app, mod, mod.comments[i]);
               }
@@ -98,6 +89,8 @@ console.log("how many comments? " + mod.comments.length);
   },
 
   attachEvents(app, mod, sig="") {
+
+try {
     document.querySelector('.post-submit-btn').onclick = (e) => {
 
       let comment = document.querySelector('.post-view-textarea').innerHTML;
@@ -129,12 +122,16 @@ console.log("how many comments? " + mod.comments.length);
 
       }
     }
+} catch (err) {}
 
-
-
+try {
     document.querySelectorAll('.post-view-edit').forEach(el => {
       el.onclick = (e) => {
         console.log("********* post-view-edit onclick ********");
+
+	document.querySelectorAll(".post-view-gallery").forEach(e => e.remove());
+	document.querySelectorAll(".post-view-leave-comment").forEach(e => e.remove());
+
 
         let post_sig = el.getAttribute("data-id");
         document.querySelectorAll('.post-view-parent-comment').forEach(el2 => {	
@@ -143,7 +140,7 @@ console.log("how many comments? " + mod.comments.length);
             if (el2.getAttribute("mode") != "edit") { // already in edit mode
               el2.setAttribute("mode", "edit");
               let replacement_html = `
-                <textarea data-id="${post_sig}" id="textedit-field-${post_sig}">${el2.innerHTML}</textarea>
+                <textarea data-id="${post_sig}" class="post-view-comment-text" id="textedit-field-${post_sig}">${el2.innerHTML}</textarea>
                 <button id="edit-button-${post_sig}" data-id="${post_sig}" type="button" class="comment-edit-button" value="Edit Post">edit comment</button>
               `;
 
@@ -182,6 +179,7 @@ console.log("how many comments? " + mod.comments.length);
         });
       }
     });
+} catch (err) {}
 
 
     try {
@@ -231,9 +229,7 @@ console.log("how many comments? " + mod.comments.length);
       });
     } catch (err) {}
 
-    /*  REPORTING SYSTEM
-    *   
-    */
+try {
     document.querySelectorAll('.post-view-report').forEach(el => {
       el.onclick = async (e) => {
         const reportit = await sconfirm("Report this post or comments to the mods?");
@@ -263,7 +259,7 @@ console.log("how many comments? " + mod.comments.length);
         }
     }
   });
-
+} catch (err) {}
 
   },
 

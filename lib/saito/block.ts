@@ -1380,11 +1380,18 @@ class Block {
     //
     // if this is our first / genesis block, it is valid
     //
-    if (this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash || this.app.blockchain.blockchain.genesis_block_hash === "") {
+    if (
+      this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
+      this.app.blockchain.blockchain.genesis_block_hash === ""
+    ) {
       console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
 
+    if (this.block_type === BlockType.Ghost) {
+      console.log("block validates as true since it is a ghost block");
+      return true;
+    }
 
     //console.log("block::validate");
     //
@@ -1426,7 +1433,15 @@ class Block {
     // checks against previous block
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
+
     if (previous_block) {
+      //
+      // nope out for ghost blocks as previous blocks - we only get on catch-up SPV sync
+      //
+      if (previous_block.isType("Ghost")) {
+        return 1;
+      }
+
       //
       // treasury
       //
@@ -1667,6 +1682,12 @@ class Block {
   async upgradeBlockToBlockType(block_type) {
     if (this.isType(block_type)) {
       return true;
+    }
+    //
+    // Ghost blocks nope out
+    //
+    if (this.isType("Ghost")) {
+      return false;
     }
 
     //
