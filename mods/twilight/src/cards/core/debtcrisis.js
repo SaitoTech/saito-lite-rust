@@ -8,16 +8,17 @@
       let cards_available = 0;
       let twilight_self = this;
 
-      let user_message = "<div class='status-message' id='status-message'><span>Choose a card to discard or USSR doubles influence in two countries in South America:</span><ul>";
+      let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
+      let html = "<ul>";
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) > 2 && this.game.deck[0].hand[i] != "china") {
-          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+          html += `<li class="card showcard" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
           cards_available++;
         }
       }
-      user_message += '<li class="card showcard" id="nodiscard">[do not discard]</li>';
-      user_message += '</ul></div>';
-      this.updateStatus(user_message);
+      html += '<li class="card showcard" id="nodiscard">[do not discard]</li></ul>';
+      
+      this.updateStatusWithOptions(user_message, html, false);
 
 
       if (cards_available == 0) {
