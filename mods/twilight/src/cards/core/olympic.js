@@ -18,7 +18,7 @@
 
         this.addMove("resolve\tolympic");
 
-        twilight_self.updateStatus('<div class="status-message" id="status-message"><span>' + opponent.toUpperCase() + ' holds the Olympics:</span><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul></div>');
+        twilight_self.updateStatusWithOptions(`${opponent.toUpperCase()} holds the Olympics:`,'<ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>',false);
 
         twilight_self.attachCardboxEvents(function(action) {
 

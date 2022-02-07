@@ -26,10 +26,7 @@
 
       if (this.game.player == 1) {
 
-        let user_message = "<div class='status-message' id='status-message'>Pick a country adjacent to Nicaragua to coup:<ul>";
-        user_message += '<li class="card" id="skiportega">or skip coup</li>';
-        user_message += '</ul></div>';
-        twilight_self.updateStatus(user_message);
+        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="card" id="skiportega">or skip coup</li></ul>',false);
 
         twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skiportega") {
