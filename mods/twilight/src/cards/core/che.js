@@ -33,10 +33,10 @@
       if (this.game.player == 1) {
           
         twilight_self.playerFinishedPlacingInfluence();
-        let user_message = "<div class='status-message' id='status-message'>Che takes effect. Pick first target for coup:<ul>";
-            user_message += '<li class="card" id="skipche">or skip coup</li>';
-            user_message += '</ul></div>';
-        twilight_self.updateStatus(user_message);
+        let user_message = "Che takes effect. Pick first target for coup:";
+        let html = '<ul><li class="card" id="skipche">or skip coup</li></ul>';
+            
+        twilight_self.updateStatusWithOptions(user_message, html, false);
         twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "skipche") {
             twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");

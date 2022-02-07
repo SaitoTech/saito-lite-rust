@@ -1,7 +1,7 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
-const helpers = require("../../lib/helpers/index");
+
 
 //////////////////
 // CONSTRUCTOR  //

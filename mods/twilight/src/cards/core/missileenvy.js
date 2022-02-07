@@ -82,14 +82,14 @@
           //
           // select highest card
           //
-          let user_message = "<span>Select card to give opponent:</span><ul>";
+          let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
             if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
-              user_message += '<li class="card showcard" id="'+available_cards[i]+'">'+this.game.deck[0].cards[available_cards[i]].name+'</li>';
+              html += `<li class="card showcard" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
-          user_message += '</ul>';
-          this.updateStatus("<div class='status-message' id='status-message'>" + user_message + "</div>");
+          html += '</ul>';
+          this.updateStatusWithOptions("Select card to give opponent:",html,false);
           twilight_self.attachCardboxEvents(function(action2) {
 
             //

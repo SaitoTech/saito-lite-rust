@@ -8,6 +8,7 @@
   width: 83%;
 }
 
+
 .hud-header{
   max-width: 500px;
   margin: auto;
@@ -25,10 +26,6 @@
   border-radius: 0px;
 }
 
-.status-text-menu{
-  width: 350px;
-  height: 200px;
-}
 
 /*Stats overlay*/
 tbody th {

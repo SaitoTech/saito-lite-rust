@@ -67,6 +67,10 @@
   all: unset;
 }
 
+.cardfan .card{
+  width: 25vh;
+}
+
 
 .display-cards {
   display: block;
@@ -74,10 +78,6 @@
   width: 20vw;
   top: -50%;
   position: relative;
-}
-
-.cardfan .card{
-  width: 25vh;
 }
 
 .cardbox {

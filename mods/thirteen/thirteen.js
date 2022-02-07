@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const helpers = require('../../lib/helpers/index');
 
 
 //////////////////

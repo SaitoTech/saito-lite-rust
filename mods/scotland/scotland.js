@@ -1,6 +1,5 @@
 const GameHud = require('../../lib/saito/ui/game-hud/game-hud');
 const GameTemplate = require('../../lib/templates/gametemplate');
-const helpers = require('../../lib/helpers/index');
 
 
 
