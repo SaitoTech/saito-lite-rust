@@ -462,7 +462,7 @@ i.menu_icon_icon{
 
 .status-text-menu ul li , .status ul li {
   width: 100%;
-  line-height: 2em;
+  line-height: 3em;
   border-top: 1px solid var(--saito-skyline-grey);
   cursor: pointer;
   list-style: none;

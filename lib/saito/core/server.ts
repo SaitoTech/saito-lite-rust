@@ -281,6 +281,7 @@ class Server {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       const block = this.app.blockchain.blocks[bsh];
+
       if (block) {
         if (block.hasKeylistTransactions(bsh, keylist) === 0) {
           res.writeHead(200, {
@@ -305,8 +306,15 @@ class Server {
         // @ts-ignore
         const blk = await this.app.storage.loadBlockByHash(bsh);
 
+console.log("and here...");
+
         if (blk == null) {
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
           res.send("{}");
+          res.end();
           return;
         } else {
           const newblk = blk.returnLiteBlock(keylist);
@@ -323,8 +331,14 @@ class Server {
           res.end();
           return;
         }
+
+console.log("hit end...");
         return;
       }
+
+console.log("block doesn't exist...");
+      return;
+
     });
 
     app.get("/block/:hash", async (req, res) => {

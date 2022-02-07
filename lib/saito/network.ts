@@ -220,9 +220,7 @@ class Network {
     try {
       let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
-        url = `${peer.peer.protocol}://${peer.peer.host}:${
-          peer.peer.port
-        }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
+        url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
       const res = await fetch(url);
       if (res.ok) {
@@ -242,7 +240,7 @@ class Network {
       console.log(`Error fetching block:`);
       console.error(err);
     }
-    return null;
+    return;
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
@@ -567,21 +565,27 @@ class Network {
       }
 
       case "GSTCHAIN": {
-        console.log("RECEIVED GSTCHAIN");
 
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
+
+        console.log("RECEIVED GSTCHAIN: " + JSON.stringify(syncobj));
 
 	let previous_block_hash = syncobj.start;
 
 	for (let i = 0; i < syncobj.prehash.length; i++) {
 
-	  let block_hash = this.app.crypto.hash(previous_block_hash + syncobj.prehash[i]);
+	  let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
 
-	  if (syncobj.txs[i] > 0) {
+console.log("block hash as: " + block_hash);
+
+	  if (parseInt(syncobj.txs[i]) > 0) {
+console.log("fetching blcok! " + block_hash);
             await this.fetchBlock(block_hash);
+console.log("done fetch block!");
 	  } else {
 	    // ghost block
+console.log("adding ghostchain blcok! " + block_hash);
 	    this.app.blockchain.addGhostToBlockchain(syncobj.block_ids[i], previous_block_hash, syncobj.block_ts[i], syncobj.prehash[i], syncobj.gts[i], block_hash);
 	  }
 
@@ -640,7 +644,7 @@ class Network {
         block_id = 0;
         block_hash = "";
         fork_id = "";
-        publickey = "";
+        publickey = peer.peer.publickey;
         bytes = message.message_data;
 
         block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
@@ -658,7 +662,7 @@ class Network {
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
-	let syncobj = { start : "" , prehash : [] , block_ids : [] , block_ts : [] , txs : [] , gts : []  };
+	let syncobj = { start : "" , prehash : [] , previous_block_hash : [] , block_ids : [] , block_ts : [] , txs : [] , gts : []  };
 	syncobj.start = this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
         for (
@@ -676,10 +680,14 @@ class Network {
               syncobj.gts.push(block.hasGoldenTicket());
               syncobj.block_ts.push(block.returnTimestamp());
               syncobj.prehash.push(block.prehash);
+              syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
+console.log("checking if "+ block.returnHash()+" has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
+console.log("yes");
                 syncobj.txs.push(1);
               } else {
+console.log("no");
                 syncobj.txs.push(0);
               }
             }
@@ -961,9 +969,10 @@ class Network {
   }
 
   requestBlockchain(peer = null) {
+
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
-    const fork_id = this.app.blockchain.blockchain.fork_id;
+    let fork_id = this.app.blockchain.blockchain.fork_id;
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
@@ -971,10 +980,12 @@ class Network {
         latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
       }
     }
+    if (!latest_block_id) { latest_block_hash = ""; }
+    if (!fork_id) { fork_id = ""; }
 
-    //console.log(
-    //  "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
-    //);
+    console.log(
+      "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
+    );
 
     const buffer_to_send = Buffer.concat([
       this.app.binary.u64AsBytes(latest_block_id),
