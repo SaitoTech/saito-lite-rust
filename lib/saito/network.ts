@@ -572,29 +572,33 @@ class Network {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-	let previous_block_hash = syncobj.start;
+        let previous_block_hash = syncobj.start;
 
-	for (let i = 0; i < syncobj.prehash.length; i++) {
+        for (let i = 0; i < syncobj.prehash.length; i++) {
+          let block_hash = this.app.crypto.hash(previous_block_hash + syncobj.prehash[i]);
 
-	  let block_hash = this.app.crypto.hash(previous_block_hash + syncobj.prehash[i]);
-
-	  if (syncobj.txs[i] > 0) {
+          if (syncobj.txs[i] > 0) {
             await this.fetchBlock(block_hash);
-	  } else {
-	    // ghost block
-	    this.app.blockchain.addGhostToBlockchain(syncobj.block_ids[i], previous_block_hash, syncobj.block_ts[i], syncobj.prehash[i], syncobj.gts[i], block_hash);
-	  }
+          } else {
+            // ghost block
+            this.app.blockchain.addGhostToBlockchain(
+              syncobj.block_ids[i],
+              previous_block_hash,
+              syncobj.block_ts[i],
+              syncobj.prehash[i],
+              syncobj.gts[i],
+              block_hash
+            );
+          }
 
-	  previous_block_hash = block_hash;
-
-	}
+          previous_block_hash = block_hash;
+        }
 
         console.log("RECEIVED GHOSTCHAIN: " + JSON.stringify(syncobj));
         break;
       }
 
       case "REQCHAIN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -633,10 +637,7 @@ class Network {
         break;
       }
 
-
-
       case "REQGSTCN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -658,20 +659,15 @@ class Network {
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
-	let syncobj = { start : "" , prehash : [] , block_ids : [] , block_ts : [] , txs : [] , gts : []  };
-	syncobj.start = this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
+        let syncobj = { start: "", prehash: [], block_ids: [], block_ts: [], txs: [], gts: [] };
+        syncobj.start =
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
-        for (
-          let i = last_shared_ancestor+1;
-          i <= this.app.blockring.returnLatestBlockId();
-          i++
-        ) {
-
+        for (let i = last_shared_ancestor + 1; i <= this.app.blockring.returnLatestBlockId(); i++) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
 
           if (block_hash !== "") {
             if (this.app.blockchain.blocks[block_hash]) {
-
               let block = this.app.blockchain.blocks[block_hash];
               syncobj.gts.push(block.hasGoldenTicket());
               syncobj.block_ts.push(block.returnTimestamp());
@@ -803,9 +799,9 @@ class Network {
   }
 
   pollPeers() {
-    console.debug(
-      `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
-    );
+    // console.debug(
+    //   `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
+    // );
     //
     // loop through peers to see if disconnected
     //
@@ -984,11 +980,11 @@ class Network {
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-	if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
-	} else {
+        } else {
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
-	}
+        }
         return;
       }
     }
