@@ -969,9 +969,10 @@ console.log("no");
   }
 
   requestBlockchain(peer = null) {
+
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
-    const fork_id = this.app.blockchain.blockchain.fork_id;
+    let fork_id = this.app.blockchain.blockchain.fork_id;
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {
@@ -979,10 +980,12 @@ console.log("no");
         latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
       }
     }
+    if (!latest_block_id) { latest_block_hash = ""; }
+    if (!fork_id) { fork_id = ""; }
 
-    //console.log(
-    //  "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
-    //);
+    console.log(
+      "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
+    );
 
     const buffer_to_send = Buffer.concat([
       this.app.binary.u64AsBytes(latest_block_id),
