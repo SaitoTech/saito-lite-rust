@@ -41,18 +41,18 @@
           return 0;
         }
 
-        this.updateStatus('<div class="status-message" id="status-message"><span>Blockade triggers:</span><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul></div>');
+        this.updateStatusWithOptions('Blockade triggers:','<ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>',false);
         twilight_self.attachCardboxEvents(function(action) {
 
           if (action == "discard") {
-            let choicehtml = '<div class="status-message" id="status-message"><span>Choose a card to discard:</span><ul>';
+            let choicehtml = '<ul>';
             for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
               if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i], twilight_self.game.player, 0) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
                 choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
               }
             }
-            choicehtml += '</ul></div>';
-            twilight_self.updateStatus(choicehtml);
+            choicehtml += '</ul>';
+            twilight_self.updateStatusWithOptions("Choose a card to discard:",choicehtml,false);
             twilight_self.attachCardboxEvents(function(card) {
               twilight_self.removeCardFromHand(card);
                 twilight_self.addMove("notify\tus discarded "+card);

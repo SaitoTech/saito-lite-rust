@@ -32,7 +32,7 @@
       } else {
 
 
-        let userhtml = "<div class='status-message' id='status-message'>Match USSR influence in which country? <ul>";
+        let userhtml = "<ul>";
 
         if (yugo_diff > 0) {
           userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
@@ -49,9 +49,9 @@
         if (czechoslovakia_diff > 0) {
           userhtml += '<li class="card" id="czechoslovakia">Czechoslovakia</li>';
         }
-        userhtml += '</ul></div>';
+        userhtml += '</ul>';
 
-        this.updateStatus(userhtml);
+        this.updateStatusWithOptions("Match USSR influence in which country?",userhtml,false);
         let twilight_self = this;
 
         twilight_self.attachCardboxEvents(function(myselect) {

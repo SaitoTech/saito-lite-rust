@@ -1,7 +1,7 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
-const helpers = require("../../lib/helpers/index");
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -80,7 +80,7 @@ class Settlers extends GameTemplate {
     }
     let overlay_html = `
 
-  <div class="trade_overlay">
+  <div class="rules-overlay trade_overlay">
   <h1>${skin.gametitle}</h1>
   <h2>Overview</h2>
   <p>The game mechanics should be familiar to anyone who has played resource-acquisition boardgames based on trading and building.</p>

@@ -131,19 +131,6 @@ game-overlay-cardlist-button {
 }
 
 
-/**************/
-/** GAME CARDBOX **/
-/**************/
-.game-cardbox {
-  position:absolute;
-  left: 15vw%;
-  top: 13vh;
-  height: 55vh;
-  width: calc(55vh * 0.730);
-  transform: translate(calc((100vw - (55vh * 0.73)) / 2), 0);
-  border: 0px;
-  z-index: -10; /* start behind the board */
-}
 
 /**************/
 /** GAME MENU **/
@@ -281,7 +268,7 @@ game-overlay-cardlist-button {
   z-index: 40;
   font-size: 1.2rem;
   border-bottom: 0px;
-  /* transition: height 0.2s ease, width 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease; */
+  transition: height 0.3s ease, width 0.3s ease, right 0.3s ease, top 0.3s ease, bottom 0.3s ease; 
   /* box-shadow: 0 0 3px 3px #BBB;*/
   max-width: 100vw;
   /*padding: 0 20px 20px 20px;*/
@@ -322,7 +309,7 @@ game-overlay-cardlist-button {
   max-width: 100vw;
   min-height: 260px;
   height: calc(100% - 30px);
-  overflow-y: auto;
+  /*overflow-y: auto;*/
   background-color: transparent;
 }
 
@@ -350,7 +337,7 @@ ul li a {
 .status-message {
   position: relative; /* To make back-button work */
   width: 500px;
-  max-width: 100vw;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding-top: 10px;
@@ -361,11 +348,6 @@ ul li a {
   margin-bottom: 10px;
 }
 
-.status-header #back_button{
-  position: absolute;
-  font-size: 1.2em;
-  left: 2em;
-}
 
 /*** Text prompt in hud > hud-body > status ***/
 .status-header {
@@ -382,11 +364,18 @@ ul li a {
   float: left;
 }
 
+#back_button {
+  font-size: 1.2em;
+  cursor:pointer;
+  width:30px;
+  height:30px;
+}
 
 
 /*** Vertical alternate ***/
 .hud-vertical .status-header{
   width: 100%;
+  min-height: fit-content;
 }
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
@@ -423,11 +412,19 @@ i.menu_icon_icon{
 }
 
 
+.hud-body .status{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 /*** Text listed menu options in hud > hud-body > status ***/ 
 .status-text-menu {
-  width: 300px;
+  width: min(350px,100%);
   height: fit-content;
-  margin: auto;
 }
 
 
@@ -472,11 +469,11 @@ i.menu_icon_icon{
 
 .status-cardbox { /* I want the scolling to be here, not hud-body, but hard to get the sizing to work */
   display: grid;
-  grid-gap: 10px;
+  grid-gap: 5px;
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr) );
-  grid-template-rows: repeat(auto-fit, minmax(80px, 1fr) );
-  /*overflow-y: auto;*/
-  height: fit-content;
+  /*grid-template-rows: repeat(auto-fit, minmax(80px, 1fr) );*/
+  overflow-y: auto;
+  /*height: fit-content;*/
   width: 100%;
   margin-top: 5px;
   /*padding: 10px;*/
@@ -610,6 +607,7 @@ i.menu_icon_icon{
 /**************/
 .hud-square {
   height: 410px;
+  min-height: 410px;
   width: 510px;
   min-width: 510px;
   max-width: 9.1em;
@@ -1132,6 +1130,7 @@ i.menu_icon_icon{
   left: 12vh;
 }
 
+
 .hand>.card:nth-child(1) {
   transform: rotate(-20deg);
   left: 0px;
@@ -1221,86 +1220,75 @@ input#game_board_sizer {
 
 
 
-/*****************/
-/** CARDBOX CSS **/
-/*****************/
-.hud-cardbox {
-  position: absolute;
-  height: 48vh;
-  max-height: 520px;
-  width: calc(48vh * 0.8110);
-  max-width: 375px;
-  z-index: 2;
-  display: none;
-  top: 27%;
+/**************/
+/** GAME CARDBOX **/
+/**************/
+.game-cardbox {
+  position:absolute;
   left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-.cardbox-menu {
-    position: absolute;
-    bottom: 0px;
-    font-size: 2em;
-    font-weight: bold;
-    background-color: #eb2d2d;
-    border: 2px solid #111311;
-    cursor: pointer;
-    padding: 10px 25px;
-    text-decoration: none;
-    color: white;
-    border-radius: 10px;
-    z-index: 900009;
-    width: 85%;
-    text-align: center;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.cardbox-exit {
-  position: absolute; 
-  left: 50%; 
-  top: 50%;
-  transform: translate(-50%, -50%); 
-  text-align: center;
-  font-size: 2.1em;
+  top: 13vh;
+  height: 55vh;
+  width: calc(55vh * 0.730);
+  transform: translateX(-50%);
+  z-index: -10; /* start behind the board */
+  font-size: max(1.5vh,8px);
   color: white;
-  z-index: 9999999999;
-  cursor: pointer;
 }
+
 .cardbox-card {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 48vh;
-  width: calc(48vh * 0.730);
-  z-index: 2;
-  display: none;
+ position: relative;
+ width: 100%;
+ height: 100%;
 }
-
-
-
 
 .cardbox-exit-background {
   position: absolute;
-  left: 85%;
+  top: -2%;
+  right: -2%;
   width: 5vh;
   height: 5vh;
   max-width: 50px;
   max-height: 50px;
   border: 3px black solid;
   border-radius: 100px;
-  top: -1%;
   background: #eb2d2d;
+  z-index: 90000;
   display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999999999;
+}
+
+.cardbox-exit {
+  position: relative; 
+  width: 100%; 
+  height: 100%;
+  text-align: center;
+  font-size: 2.5em;
+  z-index: inherit;
+  cursor: pointer;
+  display: none;
+}
+
+.cardbox-menu {
+  position: absolute;
+  width: 85%;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -6%;
+  font-size: 2em;
+  background-color: #eb2d2d;
+  border: 2px solid #111311;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-radius: 10px;
+  z-index: 900009;
+  text-align: center;
+  display: none;
 }
 
 
-
-
-
+.cardbox-menu:hover, .cardbox-exit:hover{
+  font-weight: bold;
+}
 
 
 
