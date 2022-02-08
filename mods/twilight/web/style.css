@@ -3,10 +3,6 @@
   padding: 10px;
 }
 
-.cardbox-menu.cardbox-card {
-  bottom: 10px;
-  width: 83%;
-}
 
 
 .hud-header{
@@ -359,25 +355,11 @@ body {
   cursor: pointer;
 }
 
-.cardbox_event_blocker {
- position:absolute;
- width:0px;
- height:0px;
- background-color: black;
- z-index: 89999;
- display:none;
- opacity: 0.4;
-}
 
-.us {
-  display: inline;
+.us, .ussr {
   float: left;
 }
 
-.ussr {
-  display: inline;
-  float: left;
-}
 
 .us_control {
   color: #FFFFFF;
@@ -463,12 +445,18 @@ body {
   background-repeat: no-repeat;
   /*max-width: 120px;*/
 }
+
+.game-cardbox{
+  width: calc(55vh * 0.712);
+}
+
 .cardbox-card {
+  left: 6px;
   background-image: url("/twilight/img/Base.svg");
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
-  width: 388px;
-  height: 543px;
+  /*width: 388px;
+  height: 543px;*/
 }
 
 
