@@ -172,6 +172,17 @@ game-overlay-cardlist-button {
   cursor: pointer;
   /*float: left;*/
 }
+
+/*Create a little buffer around the menu so it doesn't close so fast*/
+.game-menu .game-menu-sub-options:before{
+ content: "";
+ position: absolute; 
+ top: 0px;
+ bottom: -20px;
+ left: -5px;
+ right: -5px;
+}
+
 .game-menu ul .game-menu-icon {
   width: 40px;
   margin: 0 5px;
@@ -189,6 +200,7 @@ game-overlay-cardlist-button {
 }
 .game-menu-sub-options, .game-menu-sub-sub-options{
   display:none;
+  position: relative;
 }
 
 .game-menu-sub-sub-options{

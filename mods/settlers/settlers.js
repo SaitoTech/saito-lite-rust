@@ -1204,14 +1204,8 @@ class Settlers extends GameTemplate {
           }
         }
 
-        discardString = discardString.substring(0, discardString.length - 2); //cut the final ,
-        if (confirmsNeeded >= 2) {
-          let index = discardString.lastIndexOf(",");
-          discardString =
-            discardString.slice(0, index) +
-            " and" +
-            discardString.slice(index + 1);
-        }
+        discardString = this.prettifyList(discardString);
+        
         this.game.queue.push(
           `NOTIFY\t${discardString} must discard half their hand.`
         );
@@ -3712,14 +3706,7 @@ class Settlers extends GameTemplate {
     }
   }
 
-  prettifyList(list) {
-    list = list.substring(0, list.length - 2); //cut the final ,
-    if (list.split(",").length >= 2) {
-      let index = list.lastIndexOf(",");
-      list = list.slice(0, index) + " and" + list.slice(index + 1);
-    }
-    return list;
-  }
+
 }
 
 module.exports = Settlers;
