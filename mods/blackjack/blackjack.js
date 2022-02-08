@@ -14,7 +14,7 @@ class Blackjack extends GameTemplate {
     this.app = app;
     this.name = "Blackjack";
     this.gamename = "Blackjack";
-    this.description = 'This game is a playable demo under active development!';
+    this.description = 'Classic casino game with home rules. Try to get closest to 21 without busting, beat the dealer and win your bet, but look out! You may be dealer next hand.';
     this.categories = "Games Arcade Entertainment";
     this.type            = "Classic Cardgame";
 
