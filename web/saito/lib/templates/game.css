@@ -293,8 +293,8 @@ game-overlay-cardlist-button {
 .hud {
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   position: absolute;
-  left: 0%;
-  bottom: 0%;
+  left: 0;
+  bottom: 0;
   float: none;
   z-index: 40;
   font-size: 1.2rem;
