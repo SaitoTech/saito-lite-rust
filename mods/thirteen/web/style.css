@@ -48,12 +48,6 @@ li.card {
   width: 100%;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
-
 
 .flag {
  position: absolute;
@@ -244,11 +238,6 @@ li.card {
   border-bottom: 1px dashed;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
 
 .gameboard {
   position: relative;

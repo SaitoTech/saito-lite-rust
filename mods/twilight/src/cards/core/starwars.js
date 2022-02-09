@@ -29,7 +29,7 @@
             if (this.game.deck[0].cards[i].name != undefined) {
               if (this.game.deck[0].cards[i].scoring != 1) {
                 if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-                  html += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+                  html += '<li class="card" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
                 } else {
                   discardlength--;
                 }

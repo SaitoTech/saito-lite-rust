@@ -129,7 +129,7 @@ class Scotland extends GameTemplate {
     // add card events -- text shown and callback run if there
     //
     this.hud.mode = 0;
-    //this.cardbox.addCardType("logcard", "", null);
+    //this.cardbox.addCardType("showcard", "", null);
     //if (!app.browser.isMobileBrowser(navigator.userAgent)) {
     //  this.hud.cardbox.skip_card_prompt = 1;
     //}

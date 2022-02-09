@@ -21,7 +21,7 @@
         let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
-            html += '<li class="card showcard card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
             cards_to_discard++;
           }
         }
@@ -32,7 +32,7 @@
           return;
         }
 
-        html += '<span class="card dashed showcard nocard" id="finished">done discarding</span></ul>';
+        html += '<span class="card dashed nocard" id="finished">done discarding</span></ul>';
 
         twilight_self.updateStatusWithOptions(user_message, html, false);
         twilight_self.addMove("resolve\tasknot");

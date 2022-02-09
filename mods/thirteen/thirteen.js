@@ -138,8 +138,8 @@ class Thirteen extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-    this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.cardbox.addCardType("showcard", "", null);
+    this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.attachCardboxEvents(function(){});
     
     this.hud.render(app, this);
@@ -436,7 +436,7 @@ class Thirteen extends GameTemplate {
     ///////////
     if (this.game.queue.length > 0) {
 
-      console.log("queue: " + JSON.stringify(this.game.queue));
+      //console.log("queue: " + JSON.stringify(this.game.queue));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
@@ -625,7 +625,7 @@ class Thirteen extends GameTemplate {
 	if (player == 2) { player_country = "us"; }
 
 	if (announce_discard == 1) {
-          this.updateLog("<span>" + player_country + " discards</span> <span class=\"logcard\" id=\""+cardname+"\">" + this.game.deck[deckidx].cards[cardname].name + "</span>");
+          this.updateLog("<span>" + player_country + ` discards</span> <span class="showcard" id="${cardname}">${this.game.deck[deckidx].cards[cardname].name}</span>`);
 	}
 
         for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
@@ -994,10 +994,10 @@ console.log("tallying alliances before scoring");
 
 	    if (card == "discard") {
 	      if (thirteen_self.game.player == 1) {
-	        thirteen_self.notify("notify\tUSSR discards the card without triggering the event");
+	        thirteen_self.addMove("notify\tUSSR discards the card without triggering the event");
 	      }
 	      if (thirteen_self.game.player == 2) {
-	        thirteen_self.notify("notify\tUS discards the card without triggering the event");
+	        thirteen_self.addMove("notify\tUS discards the card without triggering the event");
 	      }
 	      thirteen_self.endTurn();
 	    } else {
@@ -1020,7 +1020,7 @@ console.log("tallying alliances before scoring");
 
       if (mv[0] == "round") {
 
-console.log(JSON.stringify(this.game.deck[0]));
+//console.log(JSON.stringify(this.game.deck[0]));
 
 	//
 	// next round
@@ -1303,7 +1303,7 @@ console.log("SHOULD PLACE: " + player);
 	if (player == 2) { 
 	  log_update = 'US';
 	}
-	log_update += ' plays <span class="logcard" id="'+card+'">' + this.strategies[card].name + '</span>';
+	log_update += ' plays <span class="showcard" id="'+card+'">' + this.strategies[card].name + '</span>';
 	this.updateLog(log_update);
 
 	if (this.game.player == player) {
@@ -1630,10 +1630,11 @@ console.log("SHOULD PLACE: " + player);
         cards.push("personal_letter");
       }
 
-console.log("CARDS: "+JSON.stringify(cards));
+//console.log("CARDS: "+JSON.stringify(cards));
 
       this.updateStatusAndListCards(html, cards);
    this.attachCardboxEvents(function (card) {
+    
     if (card == "personal_letter") {
       thirteen_self.game.state.personal_letter_bonus = 1;
       let cards2 = [];
@@ -1692,8 +1693,8 @@ console.log("CARDS: "+JSON.stringify(cards));
       $('.textcard').off();
 
       if (action == "playevent") {
-        if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
-        if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
+        if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='showcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
+        if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='showcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for event"); }
 
         thirteen_self.playerTriggerEvent(thirteen_self.game.player, card);
         return;
@@ -1715,8 +1716,8 @@ console.log("CARDS: "+JSON.stringify(cards));
 	  thirteen_self.addMove("place_command_tokens\t" + thirteen_self.game.player + "\t"+card);
 	  thirteen_self.addMove("trigger_opponent_event\t"+opponent+"\t"+card);
 
-          if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
-          if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='logcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
+          if (thirteen_self.game.player == 1) { thirteen_self.addMove("notify\tUSSR plays <span class='showcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
+          if (thirteen_self.game.player == 2) { thirteen_self.addMove("notify\tUS plays <span class='showcard' id='"+card+"'>"+thirteen_self.strategies[card].name+"</span> for command"); }
 
 	  thirteen_self.endTurn();
 	}
@@ -3070,14 +3071,14 @@ console.log("CARDS: "+JSON.stringify(cards));
 
   returnCardImage(card) {
     if (card === "personal_letter") {
-      return `<img class="cardimg showcard" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png"/>`;
+      return `<img class="cardimg" id="personal_letter" src="/thirteen/img/Agenda%20Card%2013b.png"/>`;
     }
 
     if (this.agendas[card]) {
-      return `<img class="agenda_card cardimg showcard" src='/thirteen/img/${this.agendas[card].img}' id="${card}"/>`;
+      return `<img class="agenda_card cardimg" src='/thirteen/img/${this.agendas[card].img}' id="${card}"/>`;
     } 
     if (this.strategies[card]) { 
-      return `<img class="strategy_card cardimg showcard" src='/thirteen/img/${this.strategies[card].img}' id="${card}"/>`;
+      return `<img class="strategy_card cardimg" src='/thirteen/img/${this.strategies[card].img}' id="${card}"/>`;
     }
     return "";
   }
@@ -3702,7 +3703,7 @@ console.log("CARDS: "+JSON.stringify(cards));
 	  let cards_discarded = 0;
           let html = "<ul>";
           for (let i = 0; i < thirteen_self.game.deck[1].hand.length; i++) {
-            html += '<li class="card showcard '+thirteen_self.game.deck[1].hand[i]+'" id="'+thirteen_self.game.deck[1].hand[i]+'">'+thirteen_self.game.deck[1].cards[thirteen_self.game.deck[1].hand[i]].name+'</li>';
+            html += '<li class="card '+thirteen_self.game.deck[1].hand[i]+'" id="'+thirteen_self.game.deck[1].hand[i]+'">'+thirteen_self.game.deck[1].cards[thirteen_self.game.deck[1].hand[i]].name+'</li>';
           }
           html += '<li class="card dashed" id="finished">Done Discarding</li></ul>';
           thirteen_self.updateStatusWithOptions(`Select cards to discard:`,html);

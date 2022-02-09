@@ -38,11 +38,11 @@
       for (var i in this.game.deck[0].discards) {
         if (this.game.deck[0].discards[i].scoring == 0) {
           if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-            html += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+            html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
           }
         }
       }
-      html += '<li class="card showcard" id="nocard">do not reclaim card...</li></ul>';
+      html += '<li class="card" id="nocard">do not reclaim card...</li></ul>';
       
       twilight_self.updateStatusWithOptions("Choose Card to Reclaim:",html,false);
       twilight_self.addMove("resolve\tsaltnegotiations");

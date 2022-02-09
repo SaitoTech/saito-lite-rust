@@ -12,11 +12,11 @@
       let html = "<ul>";
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) > 2 && this.game.deck[0].hand[i] != "china") {
-          html += `<li class="card showcard" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
+          html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
           cards_available++;
         }
       }
-      html += '<li class="card showcard" id="nodiscard">[do not discard]</li></ul>';
+      html += '<li class="card" id="nodiscard">[do not discard]</li></ul>';
       
       this.updateStatusWithOptions(user_message, html, false);
 
@@ -40,7 +40,7 @@
 
         twilight_self.addMove("resolve\tdebtcrisis");
         twilight_self.addMove("discard\tus\t"+action2);
-        twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
+        twilight_self.addMove("notify\tUS discards <span class=\"showcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
         twilight_self.removeCardFromHand(action2);
         twilight_self.endTurn();
 

@@ -85,7 +85,7 @@
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
             if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
-              html += `<li class="card showcard" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
+              html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
           html += '</ul>';
