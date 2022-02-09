@@ -137,6 +137,7 @@ class Network {
     //
     // initiate the handshake (verifying peers)
     //
+
   }
 
   //
@@ -244,7 +245,9 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
-    console.debug("network.initializeWebSocket");
+
+    console.debug("network.initializeWebSocket: " + remote_socket + " / " + browser);
+
     //
     // browsers can only use w3c sockets
     //
@@ -255,6 +258,7 @@ class Network {
           wsProtocol = "wss";
         }
       }
+console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -270,7 +274,7 @@ class Network {
         this.app.connection.emit("peer_disconnect", peer);
       };
       peer.socket.onerror = (event) => {
-        console.log(`[error] ${event.message}`);
+        console.log(`Peer Socket Error: [error] ${event.message}`);
       };
       peer.socket.onmessage = async (event) => {
         const data = await event.data.arrayBuffer();
@@ -296,6 +300,7 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       }
+console.log("attempting to connect 2 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -332,6 +337,7 @@ class Network {
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
+
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
       if (this.peers[c] === peer) {
@@ -811,6 +817,9 @@ console.log("no");
   }
 
   pollPeers() {
+
+    let network_self = this;
+
     console.debug(
       `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
     );
@@ -839,7 +848,8 @@ console.log("no");
     unsuccessful_peers.forEach((peer) => {
       setTimeout(() => {
         console.log("Attempting to Connect to Peer!");
-        peer.socket = this.app.network.initializeWebSocket(peer, false, this.app.BROWSER == 1);
+        peer.socket = network_self.app.network.initializeWebSocket(peer, false, network_self.app.BROWSER == 1);
+        console.log("Attempt finished to Connect to Peer!");
         let has_peer = false;
         // TODO : check performance impact and refactor this
         for (let peer2 of this.app.network.peers) {
