@@ -135,6 +135,7 @@ thead,  tfoot{
 
 .wb-main {
   max-width: 902px;
+  margin: 0 auto;
 }
 
 .gameboard {

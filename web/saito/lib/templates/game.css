@@ -26,7 +26,7 @@ body {
 
 
 .gameboard {
-  transform-origin: left top; /* For resizing game boards */
+  /*transform-origin: left top; /* For resizing game boards */
   user-select: none;
  } 
 
@@ -341,7 +341,7 @@ game-overlay-cardlist-button {
 .hud-body {
   width: 100%;
   max-width: 100vw;
-  min-height: 260px;
+  /*min-height: 260px;*/
   height: calc(100% - 30px);
   /*overflow-y: auto;*/
   background-color: transparent;
@@ -557,10 +557,10 @@ i.menu_icon_icon{
 }
 
 /* For integration with game-cardbox*/
-.logcard{
+.showcard{
   font-weight: bold;
   cursor: pointer;
-  border-bottom: 1px dashed;
+  text-decoration: underline dotted;
 }
 
 @media screen and (max-width: 525px) {
@@ -1268,6 +1268,7 @@ input#game_board_sizer {
   z-index: -10; /* start behind the board */
   font-size: max(1.5vh,8px);
   color: white;
+  pointer-events: none;
 }
 
 .cardbox-card {

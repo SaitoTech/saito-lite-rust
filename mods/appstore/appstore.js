@@ -1,5 +1,4 @@
 const saito = require('../../lib/saito/saito');
-const helpers = require('../../lib/helpers/index');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const EmailAppStore = require('./lib/email-appspace/appstore-appspace');
 const AppStoreOverlay = require('./lib/appstore-overlay/appstore-overlay');

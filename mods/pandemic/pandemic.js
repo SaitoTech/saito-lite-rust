@@ -281,8 +281,8 @@ class Pandemic extends GameTemplate {
 
     this.cardbox.render(app, this);
     this.cardbox.attachEvents(app, this);
-    this.cardbox.addCardType("logcard", "", null);
-    //this.cardbox.addCardType("showcard","",null);
+    
+    this.cardbox.addCardType("showcard","",null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.attachCardEvents(); //Add hover action to restored Log tags
 

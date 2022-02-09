@@ -572,8 +572,8 @@ console.log("start HUD 2: " + this.hud.card_width);
     //
     // add card events -- text shown and callback run if there
     //
-    this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.cardbox.addCardType("showcard", "", null);
+    //this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     this.cardbox.attachCardEvents();
 
@@ -1026,7 +1026,7 @@ try {
                   //
                   // move to discard pile
                   //
-                  this.updateLog(mv[1].toUpperCase() + ` discards <span class="logcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
+                  this.updateLog(mv[1].toUpperCase() + ` discards <span class="showcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
                   //
                   // discard pile is parallel to normal
                   //
@@ -1052,7 +1052,7 @@ try {
                 //
                 // remove from discards
                 //
-                this.updateLog(`<span class="logcard" id="${mv[2]}">${this.game.deck[deckidx-1].cards[mv[2]].name}</span> removed from discard pile`);
+                this.updateLog(`<span class="showcard" id="${mv[2]}">${this.game.deck[deckidx-1].cards[mv[2]].name}</span> removed from discard pile`);
 		delete this.game.deck[deckidx-1].discards[i];
               }
             }
@@ -1426,7 +1426,7 @@ try {
               for (let i = 0; i < cardoptions.length; i++) {
                 html += `<li class="card card_${this.game.deck[0].crypt[i]}" id="${this.game.deck[0].crypt[i]}_${cardoptions[i]}">${this.game.deck[0].cards[cardoptions[i]].name}</li>`;
               }
-              html += '<li class="card dashed showcard nocard" id="finished">Done discarding</li></ul>';
+              html += '<li class="card dashed nocard" id="finished">Done discarding</li></ul>';
               twilight_self.updateStatusWithOptions(user_message, html, false);
 
               //
@@ -1451,7 +1451,7 @@ try {
                   pos_to_discard.push(tmpar[0]);
                   cards_discarded++;
                   twilight_self.addMove("discard\tus\t"+tmpar[1]);
-                  twilight_self.addMove(`notify\tUS discards <span class="logcard" id="${tmpar[1]}">${twilight_self.game.deck[0].cards[tmpar[1]].name}</span>`);
+                  twilight_self.addMove(`notify\tUS discards <span class="showcard" id="${tmpar[1]}">${twilight_self.game.deck[0].cards[tmpar[1]].name}</span>`);
 
                 }
               });
@@ -1711,7 +1711,7 @@ try {
 
             for (let i = 0; i < num; i++) {
               let uscard = this.game.queue[this.game.queue.length-1];
-              html += '<li class="card showcard" id="'+uscard+'">'+this.game.deck[0].cards[uscard].name+'</li>';
+              html += '<li class="card" id="'+uscard+'">'+this.game.deck[0].cards[uscard].name+'</li>';
               this.game.queue.splice(this.game.queue.length-1, 1);
             }
             html += '</ul>';
@@ -1743,7 +1743,7 @@ try {
             }
 
             this.game.queue.splice(qe, 1);
-            this.updateLog(`USSR discards <span class="logcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
+            this.updateLog(`USSR discards <span class="showcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
             shd_continue = 1;
           }
 
@@ -1879,7 +1879,7 @@ try {
 
           if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
 
-          this.updateLog(mv[1].toUpperCase() + ` plays <span class="logcard" id="${mv[2]}">${this.game.state.event_name}</span> for ${mv[3]} OPS`);
+          this.updateLog(mv[1].toUpperCase() + ` plays <span class="showcard" id="${mv[2]}">${this.game.state.event_name}</span> for ${mv[3]} OPS`);
 
           // stats
           if (mv[1] == "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
@@ -2030,7 +2030,7 @@ try {
         if (mv[0] === "event") {
 
           if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
-          this.updateLog(mv[1].toUpperCase() + ` triggers <span class="logcard" id="${mv[2]}">${this.game.state.event_name}</span> event`);
+          this.updateLog(mv[1].toUpperCase() + ` triggers <span class="showcard" id="${mv[2]}">${this.game.state.event_name}</span> event`);
 
           shd_continue = this.playEvent(mv[1], mv[2]);
 
@@ -2611,7 +2611,7 @@ try {
                 let cards_to_discard = 0;
                 let html = "<ul>";
                 for (let i = 0; i < available_cards.length; i++) {
-                  html += `<li class="card showcard" id="${available_cards[i]}">${twilight_self.game.deck[0].cards[available_cards[i]].name}</li>`;
+                  html += `<li class="card" id="${available_cards[i]}">${twilight_self.game.deck[0].cards[available_cards[i]].name}</li>`;
                   cards_to_discard++;
                 }
 
@@ -2622,7 +2622,7 @@ try {
                   return;
                 }
 
-                html += '<li class="card dashed showcard nocard" id="finished">cancel</li>';
+                html += '<li class="card dashed nocard" id="finished">cancel</li>';
                 twilight_self.updateStatusWithOptions("Select card to discard:", html, false);
 
                 twilight_self.attachCardboxEvents(function(action2) {
@@ -2635,7 +2635,7 @@ try {
                     cards_discarded++;
                     twilight_self.removeCardFromHand(action2);
                     twilight_self.addMove("discard\t"+twilight_self.game.state.eagle_has_landed+"\t"+action2);
-                    twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+` discards <span class="logcard" id="${action2}">${twilight_self.game.deck[0].cards[action2].name}</span>`);
+                    twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+` discards <span class="showcard" id="${action2}">${twilight_self.game.deck[0].cards[action2].name}</span>`);
                     twilight_self.endTurn(1);
                     return 0;
                   }
@@ -3296,13 +3296,13 @@ if (this.game.player == 0) {
 
       if (us_plays_defectors == 1) {
 
-        this.updateLog(`US headlines <span class="logcard" id="defectors">Defectors</span>`);
+        this.updateLog(`US headlines <span class="showcard" id="defectors">Defectors</span>`);
 
         this.game.turn = [];
         if (my_card != "defectors") {
-          this.updateLog(`<span>USSR headlines</span> <span class="logcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
+          this.updateLog(`<span>USSR headlines</span> <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         } else {
-          this.updateLog(`<span>USSR headlines</span> <span class="logcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>`);
+          this.updateLog(`<span>USSR headlines</span> <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>`);
         }
 
         this.updateLog("Defectors cancels USSR headline.");
@@ -3323,12 +3323,12 @@ if (this.game.player == 0) {
         // show headline card information to both players
         if (this.game.player == 1) {
           this.updateStatus(`<div class='status-message' id='status-message'>US headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>. USSR headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span></div>`);
-          this.updateLog(`US headlines <span class="logcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
-          this.updateLog(`USSR headlines <span class="logcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
+          this.updateLog(`US headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
+          this.updateLog(`USSR headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         } else {
           this.updateStatus(`<div class='status-message' id='status-message'>USSR headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>. US headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span></div>`);
-          this.updateLog(`USSR headlines <span class="logcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
-          this.updateLog(`US headlines <span class="logcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
+          this.updateLog(`USSR headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
+          this.updateLog(`US headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         }
 
 
@@ -3686,10 +3686,10 @@ if (this.game.player == 0) {
 
             let html = "<ul>";
             if (twilight_self.countries['turkey'].us >= 2) {
-              html += '<li class="card showcard" id="turkey">Turkey</li>';
+              html += '<li class="card" id="turkey">Turkey</li>';
             }
             if (twilight_self.countries['westgermany'].us >= 2) {
-              html += '<li class="card showcard" id="westgermany">West Germany</li>';
+              html += '<li class="card" id="westgermany">West Germany</li>';
             }
             html += '</ul>';
             twilight_self.updateStatus("Select country from which to remove influence:",html,false);
@@ -4062,7 +4062,7 @@ if (this.game.player == 0) {
     twilight_self.game.turn = [];
 
     $('.card').off();
-    $('.showcard').off();
+    //$('.showcard').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
 
@@ -4455,10 +4455,10 @@ if (this.game.player == 0) {
 
           let html = "<ul>";
           if (twilight_self.countries['turkey'].us >= 2) {
-            html += '<li class="card showcard" id="turkey">Turkey</li>';
+            html += '<li class="card" id="turkey">Turkey</li>';
           }
           if (twilight_self.countries['westgermany'].us >= 2) {
-            html += '<li class="card showcard" id="westgermany">West Germany</li>';
+            html += '<li class="card" id="westgermany">West Germany</li>';
           }
           html += '</ul>';
           twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html,false);
@@ -4661,10 +4661,10 @@ if (this.game.player == 0) {
             let user_message = "Select country from which to remove influence:";
             let user_options = "<ul>";
             if (twilight_self.countries['turkey'].us >= 2) {
-              user_options += '<li class="card showcard" id="turkey">Turkey</li>';
+              user_options += '<li class="card" id="turkey">Turkey</li>';
             }
             if (twilight_self.countries['westgermany'].us >= 2) {
-              user_options += '<li class="card showcard" id="westgermany">West Germany</li>';
+              user_options += '<li class="card" id="westgermany">West Germany</li>';
             }
             user_options += '</ul>';
             twilight_self.updateStatusWithOptions(user_message, user_options, false);
@@ -9204,36 +9204,6 @@ this.startClock();
 
 
 
-
-
-
-
-  mobileCardSelect(card, player, mycallback, prompttext="play") {
-
-    let twilight_self = this;
-
-    twilight_self.hideCard();
-    twilight_self.showPlayableCard(card);
-
-    $('.cardbox_menu_playcard').html(prompttext);
-    $('.cardbox_menu_playcard').css('display','block');
-    $('.cardbox_menu_playcard').off();
-    $('.cardbox_menu_playcard').on('click', function () {
-      $('.cardbox_menu').css('display','none');
-      twilight_self.hideCard();
-      mycallback();
-      $(this).hide();
-      $('.cardbox-exit').hide();
-    });
-    $('.cardbox-exit').off();
-    $('.cardbox-exit').on('click', function () {
-      twilight_self.hideCard();
-      $('.cardbox_menu_playcard').css('display','none');
-      $(this).css('display', 'none');
-    });
-
-  }
-
   returnCardImage(cardname) {
     let cardclass = "cardimg";
 
@@ -9297,18 +9267,32 @@ this.startClock();
     return html
   }
 
-  showCard(cardname) {
-    let card_html = this.returnCardImage(cardname,0);
-    let cardbox_html = this.app.browser.isMobileBrowser(navigator.userAgent) ?
-      `${card_html}
-        <div id="cardbox-exit-background">
-          <div class="cardbox-exit" id="cardbox-exit">×</div>
-        </div>` : card_html;
+  
+   mobileCardSelect(card, player, mycallback, prompttext="play") {
 
-    $('#cardbox').html(cardbox_html);
-    $('#cardbox').show();
+    let twilight_self = this;
+
+    twilight_self.hideCard();
+    twilight_self.showPlayableCard(card);
+
+    $('.cardbox_menu_playcard').html(prompttext);
+    $('.cardbox_menu_playcard').css('display','block');
+    $('.cardbox_menu_playcard').off();
+    $('.cardbox_menu_playcard').on('click', function () {
+      $('.cardbox_menu').css('display','none');
+      twilight_self.hideCard();
+      mycallback();
+      $(this).hide();
+      $('.cardbox-exit').hide();
+    });
+    $('.cardbox-exit').off();
+    $('.cardbox-exit').on('click', function () {
+      twilight_self.hideCard();
+      $('.cardbox_menu_playcard').css('display','none');
+      $(this).css('display', 'none');
+    });
+
   }
-
   showPlayableCard(cardname) {
     let card_html = this.returnCardImage(cardname,0);
     let cardbox_html = this.app.browser.isMobileBrowser(navigator.userAgent) ?
@@ -9604,42 +9588,7 @@ this.startClock();
   }
 
 
-  addLogCardEvents() {
-
-    try {
-    let twilight_self = this;
-
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-
-      $('.logcard').off();
-      $('.logcard').mouseover(function() {
-        let card = $(this).attr("id");
-        twilight_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        twilight_self.hideCard(card);
-      });
-
-    } else {
-
-      $('.logcard').off();
-      $('.logcard').on('click', function() {
-
-        let card = $(this).attr("id");
-
-        twilight_self.showCard(card);
-        $('.cardbox-exit').off();
-        $('.cardbox-exit').on('click', function () {
-          twilight_self.hideCard();
-          $('.cardbox_menu_playcard').css('display','none');
-          $(this).css('display', 'none');
-        });
-      });
-
-    }
-    } catch (err) {}
-  }
-
+  
   returnFormattedGameOptions(options) {
     let new_options = {};
     for (var index in options) {
@@ -9984,7 +9933,7 @@ this.startClock();
         let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
-            html += '<li class="card showcard card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
             cards_to_discard++;
           }
         }
@@ -9995,7 +9944,7 @@ this.startClock();
           return;
         }
 
-        html += '<span class="card dashed showcard nocard" id="finished">done discarding</span></ul>';
+        html += '<span class="card dashed nocard" id="finished">done discarding</span></ul>';
 
         twilight_self.updateStatusWithOptions(user_message, html, false);
         twilight_self.addMove("resolve\tasknot");
@@ -10154,7 +10103,7 @@ this.startClock();
             let choicehtml = '<ul>';
             for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
               if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i], twilight_self.game.player, 0) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
-                choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
+                choicehtml += '<li class="card" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
               }
             }
             choicehtml += '</ul>';
@@ -10833,11 +10782,11 @@ this.startClock();
       let html = "<ul>";
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) > 2 && this.game.deck[0].hand[i] != "china") {
-          html += `<li class="card showcard" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
+          html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
           cards_available++;
         }
       }
-      html += '<li class="card showcard" id="nodiscard">[do not discard]</li></ul>';
+      html += '<li class="card" id="nodiscard">[do not discard]</li></ul>';
       
       this.updateStatusWithOptions(user_message, html, false);
 
@@ -10861,7 +10810,7 @@ this.startClock();
 
         twilight_self.addMove("resolve\tdebtcrisis");
         twilight_self.addMove("discard\tus\t"+action2);
-        twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
+        twilight_self.addMove("notify\tUS discards <span class=\"showcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
         twilight_self.removeCardFromHand(action2);
         twilight_self.endTurn();
 
@@ -12524,7 +12473,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
           let html = "<ul>";
           for (let i = 0; i < available_cards.length; i++) {
             if (this.modifyOps(this.game.deck[0].cards[available_cards[i]].ops) == selected_ops && available_cards[i] != "china") {
-              html += `<li class="card showcard" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
+              html += `<li class="card" id="${available_cards[i]}">${this.game.deck[0].cards[available_cards[i]].name}</li>`;
             }
           }
           html += '</ul>';
@@ -13432,11 +13381,11 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
       for (var i in this.game.deck[0].discards) {
         if (this.game.deck[0].discards[i].scoring == 0) {
           if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-            html += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+            html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
           }
         }
       }
-      html += '<li class="card showcard" id="nocard">do not reclaim card...</li></ul>';
+      html += '<li class="card" id="nocard">do not reclaim card...</li></ul>';
       
       twilight_self.updateStatusWithOptions("Choose Card to Reclaim:",html,false);
       twilight_self.addMove("resolve\tsaltnegotiations");
@@ -13775,7 +13724,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
             if (this.game.deck[0].cards[i].name != undefined) {
               if (this.game.deck[0].cards[i].scoring != 1) {
                 if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-                  html += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+                  html += '<li class="card" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
                 } else {
                   discardlength--;
                 }
@@ -14917,7 +14866,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
         let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            html += `<li class="card showcard" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
+            html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
             cards_to_discard++;
           }
         }
@@ -14928,7 +14877,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
           return 0;
         }
 
-        html += '<li class="card dashed showcard nocard" id="finished">finished</li></ul>';
+        html += '<li class="card dashed nocard" id="finished">finished</li></ul>';
         twilight_self.updateStatusWithOptions("Select cards to discard:",html,false);
         twilight_self.addMove("resolve\tpoliovaccine");
 
@@ -15268,7 +15217,7 @@ console.log("1 - scale: " + twilight_self.scale(twilight_self.game.state.defcon_
                   twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t1");
                   twilight_self.addMove("stability\t"+player+"\t"+c+"\t1");
                   twilight_self.addMove("discard\t"+player+"\t"+card);
-                  twilight_self.addMove("notify\t"+player.toUpperCase()+" discards <span class=\"logcard\" id=\""+card+"\">"+twilight_self.game.deck[0].cards[card].name + "</span>");
+                  twilight_self.addMove("notify\t"+player.toUpperCase()+" discards <span class=\"showcard\" id=\""+card+"\">"+twilight_self.game.deck[0].cards[card].name + "</span>");
                   twilight_self.endTurn(1);
                 });
               });

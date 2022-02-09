@@ -88,8 +88,7 @@ class President extends GameTemplate {
     //
     this.hud.render(app, this);
 
-    this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     if (!app.browser.isMobileBrowser(navigator.userAgent)) {
       //this.hud.cardbox.skip_card_prompt = 1;
@@ -733,12 +732,12 @@ class President extends GameTemplate {
       if (this.game.deck[0].cards[card] == undefined) {
         return `<div id="${card.replace(/ /g, '')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
       }
-      return `<div id="${card.replace(/ /g, '')}" class="card showcard hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
+      return `<div id="${card.replace(/ /g, '')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
     } else {
       if (this.game.deck[0].cards[card] == undefined) {
-        return '<li class="card showcard" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
+        return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
       }
-      return '<li class="card showcard" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
+      return '<li class="card" id="' + card + '">' + this.game.deck[0].cards[card].name + '</li>';
     }
 
   }

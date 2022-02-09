@@ -259,11 +259,6 @@ body {
   border-bottom: 1px dashed;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
 
 .gameboard {
   position: relative;
@@ -361,10 +356,6 @@ body {
   cursor: pointer;
 }
 
-.showcard {
-  text-decoration: none;
-  cursor: pointer;
-}
 
 
 .us, .ussr {

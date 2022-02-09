@@ -3,8 +3,6 @@ const EmailMain = require('./lib/email-main/email-main');
 const EmailSidebar = require('./lib/email-sidebar/email-sidebar');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
-const helpers = require('../../lib/helpers/index');
-
 
 class Email extends ModTemplate {
 
