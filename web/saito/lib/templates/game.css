@@ -26,7 +26,7 @@ body {
 
 
 .gameboard {
-  transform-origin: left top; /* For resizing game boards */
+  /*transform-origin: left top; /* For resizing game boards */
   user-select: none;
  } 
 
