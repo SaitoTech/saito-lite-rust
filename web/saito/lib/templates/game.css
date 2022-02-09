@@ -266,7 +266,7 @@ game-overlay-cardlist-button {
   bottom: 0%;
   float: none;
   z-index: 40;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   border-bottom: 0px;
   transition: height 0.3s ease, width 0.3s ease, right 0.3s ease, top 0.3s ease, bottom 0.3s ease; 
   /* box-shadow: 0 0 3px 3px #BBB;*/
@@ -286,12 +286,15 @@ game-overlay-cardlist-button {
   margin: 5px 0;
 }
 
-.hud-controls{
+.hud-controls {
   cursor: default;
   color: whitesmoke;
-  
   line-height: 20px;
+  padding-left:3px;
+  padding-right:3px;
 }
+
+
 
 #hud-mode-button{
   justify-self: flex-start;
@@ -358,6 +361,7 @@ ul li a {
   margin: 0 auto 3px auto;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   padding: 10px 0; 
+  font-size: 0.9em;
 }
 
 .status-header i {
