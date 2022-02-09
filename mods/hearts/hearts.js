@@ -372,7 +372,7 @@ alert(`You picked: ${card}`);
       return '<div class="noncard">'+cardidx+'</div>';
     }
 
-    return `<img class="cardimg showcard" id="${cardidx}" src="/${this.returnSlug()}/img/cards/${c.name}" />`;
+    return `<img class="cardimg" id="${cardidx}" src="/${this.returnSlug()}/img/cards/${c.name}" />`;
 
 
 
