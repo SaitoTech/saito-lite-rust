@@ -28,6 +28,8 @@ class Twilight extends GameTemplate {
 
     super(app);
 
+console.log("start HUD: " + this.hud.card_width);
+
     this.app             = app;
 
     this.name  		 = "Twilight";
@@ -57,7 +59,9 @@ class Twilight extends GameTemplate {
 
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
+    this.hud.card_width = 120;
 
+console.log("start HUD 2: " + this.hud.card_width);
   }
 
 
@@ -559,7 +563,6 @@ class Twilight extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
-
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -583,6 +586,7 @@ class Twilight extends GameTemplate {
         this.hammer.attachEvents(this.app, this, '.gameboard');
 
       } else {
+        this.hud.card_width = 120; // hardcode max card size
         this.sizer.render(this.app, this);
         this.sizer.attachEvents(this.app, this, '.gameboard');
       }

@@ -1,9 +1,19 @@
+
+
+/*********************/
+/*** MOD DEFAULTS ****/
+/*********************/
+.hud-long .status-cardbox {
+  grid-template-columns: repeat(auto-fit, minmax(40px, 125px) );
+  grid-gap: 0px;
+}
+
+
+
 .noncard {
   color: black;
   padding: 10px;
 }
-
-
 
 .hud-header{
   max-width: 500px;
