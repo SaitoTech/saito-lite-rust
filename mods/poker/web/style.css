@@ -127,37 +127,6 @@ body {
   background-color: #fefefeee;
 }
 
-.shim {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #222b;
-  z-index: 101;
-  cursor: pointer;
-}
-
-.shim-notice {
-  background: #222b;
-  position: absolute;
-  top: 50vh;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  left: 50vw;
-  padding: 5vh;
-}
-
-
-.shim-notice .card {
-  width: 5vw;
-  max-width: 8vh;
-  min-width: 60px;
-}
-
-
-
-
 
 
 
@@ -169,11 +138,6 @@ body {
   .pot {
     top: 30vh;
     font-size: 2.4em;
-  }
-  .shim-notice {
-    max-width: 100vw;
-    width: 80vw;
-    overflow-y: scroll;
   }
  
 }
@@ -195,12 +159,6 @@ body {
 
   .deal .card {
     width: 100% /*of grid slot*/
-  }
-
-  .shim-notice {
-    max-width: 100vw;
-    width: 80vw;
-    overflow-y: scroll;
   }
 
 }
