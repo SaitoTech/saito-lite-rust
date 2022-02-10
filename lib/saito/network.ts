@@ -612,10 +612,8 @@ console.log("adding ghostchain blcok! " + block_hash);
         bytes = message.message_data;
 
         block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
-        if (!block_id) {
-          block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
-          fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
-        }
+        block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
+        fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         console.log("RECEIVED REQCHAIN with fork_id: " + fork_id + " and block_id " + block_id);
 
@@ -633,7 +631,6 @@ console.log("adding ghostchain blcok! " + block_hash);
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
             block = await this.app.blockchain.loadBlockAsync(block_hash);
-
             if (block) {
               this.propagateBlock(block, peer);
             }
@@ -654,10 +651,8 @@ console.log("adding ghostchain blcok! " + block_hash);
         bytes = message.message_data;
 
         block_id = Number(this.app.binary.u64FromBytes(Buffer.from(bytes.slice(0, 8))));
-        if (!block_id) {
-          block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
-          fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
-        }
+        block_hash = Buffer.from(bytes.slice(8, 40), "hex").toString("hex");
+        fork_id = Buffer.from(bytes.slice(40, 72), "hex").toString("hex");
 
         console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
 
@@ -672,7 +667,7 @@ console.log("adding ghostchain blcok! " + block_hash);
 	syncobj.start = this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
         for (
-          let i = last_shared_ancestor+1;
+          let i = last_shared_ancestor;
           i <= this.app.blockring.returnLatestBlockId();
           i++
         ) {
@@ -681,7 +676,6 @@ console.log("adding ghostchain blcok! " + block_hash);
 
           if (block_hash !== "") {
             if (this.app.blockchain.blocks[block_hash]) {
-
               let block = this.app.blockchain.blocks[block_hash];
               syncobj.gts.push(block.hasGoldenTicket());
               syncobj.block_ts.push(block.returnTimestamp());

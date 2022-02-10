@@ -415,6 +415,8 @@ console.log("start HUD 2: " + this.hud.card_width);
         game_mod.handleStatsMenu();
       }
     });
+
+/****
     this.menu.addSubMenuOption("game-game", {
       text: "Invite Observer",
       id: "game-observer",
@@ -435,7 +437,7 @@ console.log("start HUD 2: " + this.hud.card_width);
         game_mod.overlay.show(app, game_mod, html);
       }
     });
-
+****/
 
     this.menu.addSubMenuOption("game-game", {
       text : "Exit",
