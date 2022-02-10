@@ -165,7 +165,7 @@ class Blockchain {
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
       console.log("fetching unknown block: " + parent_block_hash);
       if (!parent_block_hash) {
-        console.log("hash is empty", block);
+        console.log("hash is empty for parent: ", block.returnHash());
       } else {
         await this.app.network.fetchBlock(parent_block_hash);
       }
