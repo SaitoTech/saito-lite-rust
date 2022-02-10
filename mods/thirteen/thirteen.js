@@ -36,7 +36,9 @@ class Thirteen extends GameTemplate {
     
     this.card_height_ratio = 1.37;
     this.hud.mode = 0; // wide
+    this.hud.enable_mode_change = 1;
     this.interface = 1;
+
     //
     //
     //

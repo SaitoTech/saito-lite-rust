@@ -19,11 +19,11 @@ for file in ./src/cards/end_of_history/*
 do
   cat $file >> ./twilight.js
 done
-for file in /src/cards/cold_war_crazies/*
+for file in ./src/cards/cold_war_crazies/*
 do
   cat $file >> ./twilight.js
 done
-for file in /src/cards/absurdum/*
+for file in ./src/cards/absurdum/*
 do
   cat $file >> ./twilight.js
 done
