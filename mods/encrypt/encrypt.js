@@ -171,8 +171,11 @@ class Encrypt extends ModTemplate {
       return;
     }
 
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));
-
+    let tx = null;
+    try{
+      tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));  
+    }catch(err){}
+  
     //
     // we had an issue creating the transaction, try zero-fee
     //
