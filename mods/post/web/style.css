@@ -497,14 +497,11 @@
   display: flex;
   justify-items: center;
 }
-.forum-topic-link {
+.forum-topic-link, .forum-topic-link:hover {
   text-decoration: none;
   color: black;
 }
-.forum-topic-link:hover {
-  text-decoration: none;
-  color: black;
-}
+
 .forum-post-topic {
   border-bottom: 1px solid #F6F6F6;
   cursor: pointer;
