@@ -984,6 +984,7 @@ class Block {
           this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
+console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
           this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
         }
       }
@@ -1009,6 +1010,7 @@ class Block {
 
   hasKeylistTransactions(keylist) {
     if (!this.txs_hmap_generated) {
+console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
     }
     for (let i = 0; i < keylist.length; i++) {
@@ -1094,6 +1096,7 @@ class Block {
       return this.hash;
     }
     this.prehash = this.app.crypto.hash(this.serializeForSignature().toString("hex"));
+console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_block_hash);
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
   }

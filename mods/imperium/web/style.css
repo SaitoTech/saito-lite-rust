@@ -1,4 +1,21 @@
 
+/********************/
+/*** MOD DEFAULTS ***/
+/********************/
+.hud-controls {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.hud-header {
+  margin: 0px;
+}
+.status ul {
+  width: 100%;
+}
+
+
+
+
 
 .game-menu ul li {
     width: 160px;
@@ -726,7 +743,8 @@
   font-family: helvetica, sans-serif;
   line-height: 1.6em;
   font-weight: normal;
-  padding-top: 14px;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
 * {

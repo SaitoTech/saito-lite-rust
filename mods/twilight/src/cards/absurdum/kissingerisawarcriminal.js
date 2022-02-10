@@ -7,16 +7,17 @@
 
       }
 
-      let html = "<div class='status-message' id='status-message'><span>Designate a region to turn all 1-stability countries into battleground countries: </span><ul>";
-          html += '<li class="card" id="asia">Asia</li>';
-          html += '<li class="card" id="europe">Europe</li>';
-          html += '<li class="card" id="africa">Africa</li>';
-          html += '<li class="card" id="camerica">Central America</li>';
-          html += '<li class="card" id="samerica">South America</li>';
-          html += '<li class="card" id="mideast">Middle-East</li>';
-          html += '</ul></div>';
+      let user_message = "Designate a region to turn all 1-stability countries into battleground countries:";
+      let html = `<ul>";
+                  <li class="card" id="asia">Asia</li>
+                  <li class="card" id="europe">Europe</li>
+                  <li class="card" id="africa">Africa</li>
+                  <li class="card" id="camerica">Central America</li>
+                  <li class="card" id="samerica">South America</li>
+                  <li class="card" id="mideast">Middle-East</li>
+                  </ul>`;
 
-      this.updateStatus(html);
+      this.updateStatusWithOptions(user_message, html, false);
 
       let twilight_self = this;
       twilight_self.attachCardboxEvents(function(action2) {

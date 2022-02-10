@@ -5,33 +5,33 @@
 #
 # class constructor
 #
-cat mods/twilight/src/twilight-start.js > mods/twilight/twilight.js
+cat ./src/twilight-start.js > ./twilight.js
 
-for file in mods/twilight/src/cards/core/*
+for file in ./src/cards/core/*
 do
-  cat $file >> mods/twilight/twilight.js
+  cat $file >> ./twilight.js
 done
-for file in mods/twilight/src/cards/community/*
+for file in ./src/cards/community/*
 do
-  cat $file >> mods/twilight/twilight.js
+  cat $file >> ./twilight.js
 done
-for file in mods/twilight/src/cards/end_of_history/*
+for file in ./src/cards/end_of_history/*
 do
-  cat $file >> mods/twilight/twilight.js
+  cat $file >> ./twilight.js
 done
-for file in mods/twilight/src/cards/cold_war_crazies/*
+for file in /src/cards/cold_war_crazies/*
 do
-  cat $file >> mods/twilight/twilight.js
+  cat $file >> ./twilight.js
 done
-for file in mods/twilight/src/cards/absurdum/*
+for file in /src/cards/absurdum/*
 do
-  cat $file >> mods/twilight/twilight.js
+  cat $file >> ./twilight.js
 done
 
 #
 # and inirtialize
 #
-cat mods/twilight/src/twilight-end.js >> mods/twilight/twilight.js
+cat ./src/twilight-end.js >> ./twilight.js
 
 
 npm run compile

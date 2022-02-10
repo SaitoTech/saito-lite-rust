@@ -116,6 +116,16 @@ class Post extends ModTemplate {
 
     PostMain.render(app, this);
     PostMain.attachEvents(app, this);
+
+    this.urlParams = new URLSearchParams(window.location.search);
+    if (this.urlParams.get('delete')) {
+      let confirmed = sconfirm("Are you sure you want to delete these post:<br />" + decodeURIComponent(this.urlParams.get('title')));
+      if(confirmed) {
+        let delete_tx = this.createDeleteTransaction(this.urlParams.get('delete'));
+        this.app.network.propagateTransaction(delete_tx);
+      }
+    }
+
   }
 
 
@@ -871,6 +881,8 @@ console.log("With Sig: " + tx.transaction.sig);
         <b>Post #${txmsg.title} was reported.<br/></b>
         Post ID${txmsg.post_id}<br/><br/>
         <a href="https://saito.io/post/delete/${base_58_tx}">Delete Post</a><hr/>.
+        <a href="https://saito.io/post?delete=${txmsg.post_id}&title=${encodeURIComponent(txmsg.title)}">Review and Delete Post</a><hr/>.
+        
       `
     });
   }

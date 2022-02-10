@@ -13,7 +13,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 100,
+    genesis_period: 100000,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -71,29 +71,23 @@ class Blockchain {
     this.callback_limit = 2; // 2 blocks
   }
 
-  addGhostToBlockchain(
-    id = 0,
-    previous_block_hash = "",
-    ts = 0,
-    prehash = "",
-    gt = false,
-    hash = ""
-  ) {
+  addGhostToBlockchain(id=0, previous_block_hash="", ts=0, prehash="", gt=false, hash="") {
+
     this.indexing_active = true;
 
-    console.log("adding Ghost to Blockchain!");
+console.log("adding Ghost to Blockchain!");
 
     ////////////////////
     // insert indexes //
     ////////////////////
-    let block = new Block(this.app);
-    block.block.id = id;
-    block.block.previous_block_hash = previous_block_hash;
-    block.block.timestamp = ts;
-    block.has_golden_ticket = gt;
-    block.prehash = prehash;
-    block.hash = hash;
-    block.block_type = BlockType.Ghost;
+    let block                   	= new Block(this.app);
+        block.block.id            	= id;
+        block.block.previous_block_hash = previous_block_hash;
+        block.block.timestamp          	= ts;
+        block.has_golden_ticket		= gt;
+        block.prehash             	= prehash;
+        block.hash                	= hash;
+        block.block_type		= BlockType.Ghost;
 
     //
     // sanity checks
@@ -103,6 +97,7 @@ class Blockchain {
       this.indexing_active = false;
       return;
     }
+
 
     if (!this.app.blockring.containsBlockHashAtBlockId(block.block.id, block.hash)) {
       this.app.blockring.addBlock(block);
@@ -117,14 +112,21 @@ class Blockchain {
       this.blocks[block.hash] = block;
     }
 
-    console.log("block hash now added, but nothing is longest-chain!");
+console.log("block hash now added, but nothing is longest-chain!");
 
     // update longest-chain
     this.indexing_active = false;
     return;
+
   }
 
+
+
+
   async addBlockToBlockchain(block, force = 0) {
+
+console.log("ABTB: " + block.returnHash());
+
     //
     //
     //
@@ -377,6 +379,7 @@ class Blockchain {
   }
 
   async addBlockSuccess(block) {
+
     console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
@@ -791,17 +794,17 @@ class Blockchain {
     return !!this.blocks[block_hash];
   }
 
-  async loadBlockAsync(block_hash: string): Promise<Block | null> {
+  async loadBlockAsync(block_hash: string) {
     if (!block_hash) return null;
     if (this.blocks[block_hash]) {
       return this.blocks[block_hash];
     } else if (typeof window === "undefined") {
       // load from disk if in server
       console.debug(`loading block from disk : ${block_hash}`);
-      let block: Block = await this.app.storage.loadBlockByHash(block_hash);
+      let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
         console.warn(`block is not found in disk : ${block_hash}`);
-        return null;
+	return null;
       }
       block.block_type = BlockType.Full;
       return block;
@@ -854,24 +857,6 @@ class Blockchain {
       // generate fork_id
       //
       this.blockchain.fork_id = this.generateForkId(block.returnId());
-
-      //
-      // set genesis info if first block ever
-      //
-      if (this.blockchain.genesis_block_id == 0) {
-        this.blockchain.last_block_hash = block.returnHash();
-        this.blockchain.last_block_id = block.returnId();
-        this.blockchain.last_timestamp = block.returnTimestamp();
-        this.blockchain.last_burnfee = block.returnBurnFee();
-
-        this.blockchain.genesis_block_id = block.returnId();
-        this.blockchain.genesis_block_hash = block.returnHash();
-        this.blockchain.genesis_timestamp = block.returnTimestamp();
-
-        this.blockchain.lowest_acceptable_timestamp = block.returnTimestamp();
-        this.blockchain.lowest_acceptable_block_hash = block.returnHash();
-        this.blockchain.lowest_acceptable_block_id = block.returnId();
-      }
 
       //
       // save options

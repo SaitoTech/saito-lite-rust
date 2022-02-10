@@ -415,6 +415,7 @@ try {
       //
       if (app.BROWSER == 0 && txmsg.request == "open" || txmsg.request == "join" || txmsg.request == "accept" || txmsg.request == "close") {
   	if (this.doesGameExistLocally(tx.transaction.sig)) {
+console.log("SERVER NOTIFY PEERS");
           this.notifyPeers(app, tx);
 	}
       }
@@ -676,7 +677,10 @@ try {
 	if (!this.doesGameExistLocally(tx.transaction.sig)) {
           this.addGameToOpenList(tx);
           this.receiveOpenRequest(blk, tx, conf, app);
-  	  this.notifyPeers(app, tx);
+	  // only servers notify lite-clients
+	  if (app.BROWSER == 0 && app.SPVMODE == 0) {
+  	    this.notifyPeers(app, tx);
+	  }
 	}
       }
 

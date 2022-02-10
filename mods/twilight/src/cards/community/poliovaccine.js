@@ -16,10 +16,10 @@
         let cards_discarded = 0;
 
         let cards_to_discard = 0;
-        let user_message = "<div class='status-message' id='status-message'>Select cards to discard:<ul>";
+        let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            html += `<li class="card" id="${this.game.deck[0].hand[i]}">${this.game.deck[0].cards[this.game.deck[0].hand[i]].name}</li>`;
             cards_to_discard++;
           }
         }
@@ -30,8 +30,8 @@
           return 0;
         }
 
-        user_message += '</ul> When you are done discarding <span class="card dashed showcard nocard" id="finished">click here</span>.</div>';
-        twilight_self.updateStatus(user_message);
+        html += '<li class="card dashed nocard" id="finished">finished</li></ul>';
+        twilight_self.updateStatusWithOptions("Select cards to discard:",html,false);
         twilight_self.addMove("resolve\tpoliovaccine");
 
         twilight_self.attachCardboxEvents(function(card) {

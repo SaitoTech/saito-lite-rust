@@ -1,6 +1,6 @@
 const EmailListTemplate = require('./email-list.template.js');
 const EmailListRowTemplate = require('./email-list-row.template.js');
-const helpers = require('./../../../../../../lib/helpers/index');
+const helpers = require('./../../../../../../lib/helpers/index'); //Just to get date-time formatter
 
 module.exports = EmailList = {
 

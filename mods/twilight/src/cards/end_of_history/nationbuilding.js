@@ -59,7 +59,7 @@
                   twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t1");
                   twilight_self.addMove("stability\t"+player+"\t"+c+"\t1");
                   twilight_self.addMove("discard\t"+player+"\t"+card);
-                  twilight_self.addMove("notify\t"+player.toUpperCase()+" discards <span class=\"logcard\" id=\""+card+"\">"+twilight_self.game.deck[0].cards[card].name + "</span>");
+                  twilight_self.addMove("notify\t"+player.toUpperCase()+" discards <span class=\"showcard\" id=\""+card+"\">"+twilight_self.game.deck[0].cards[card].name + "</span>");
                   twilight_self.endTurn(1);
                 });
               });
