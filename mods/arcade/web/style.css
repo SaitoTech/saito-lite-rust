@@ -328,26 +328,27 @@ body {
   font-weight: bold;
   overflow-y: hidden;
   overflow-x: hidden;
+  display: flex;
 }
 .gameShortDescriptionKey {
-  clear: both;
-  float: left;
+  display: inline-block;
 }
 .gameShortDescriptionValue {
-  float: left;
-  margin-left: 10px;
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .arcade-tile .gameShortDescription {
   display: grid;
+  height: 100%;
+  align-content: center;
   justify-items: end;
-  margin: 0.2em 0.2em 0.4em 0em;
+  /*margin: 0.2em 0.2em 0.4em 0em;
+  margin: 0 10% 0 50%;*/
+  margin-right: 0.4em;
   font-size: 1em;
   overflow: auto;
-  margin: 0 10% 0 50%;
-  background-color: #0005;
-  padding: 1em;
-  margin: 0 10% 0 50%;
+  background-color: #0005;  
 }
 
 .invite-description {
@@ -394,6 +395,11 @@ body {
 
 .arcade-tile .player-slot-ellipsis {
   align-self: end;
+}
+
+.arcade-tile .gameButtons{
+  display: flex;
+  flex-direction: column;
 }
 
 .arcade-tile .button {
@@ -1382,14 +1388,14 @@ span.rewards-row-name {
     display: none;
   }
   .invite-tile-wrapper {
-    grid-template-columns: 4fr 3fr 1fr;
+    grid-template-columns: 4fr 2fr 1fr;
   }
   .arcade-tile .invite-row-2 {
     grid-template-columns: 3fr 2fr;
   }
-  .arcade-tile .gameName {
+  /*.arcade-tile .gameName {
     font-size: 2.2em;
-  }
+  }*/
   .arcade-tile .gameShortDescription {
     font-size: 1em;
   }
@@ -1442,19 +1448,23 @@ span.rewards-row-name {
   }
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 9em;
-    min-height: 7em;
-    height: unset;
-    font-size: 0.6em;
-  }
-  .invite-tile-button {
-    min-width: 8em;
-    max-width: 8em;
+    grid-template-columns: 1fr 15em;
     font-size: 0.8em;
   }
-  .arcade-tile .button {
-    font-size: 1em;
+
+  .arcade-tile .gameButtons{
+    flex-direction: row;
   }
+
+  .invite-tile-button {
+    min-width: unset;
+    max-width: 6em;
+    height: 5em;
+    font-size: 0.8em;
+  }
+  /*.arcade-tile .button {
+    font-size: 1em;
+  }*/
   .arcade-tile .gameShortDescription {
     display: none;
   }

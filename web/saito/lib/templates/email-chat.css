@@ -333,7 +333,7 @@ p {
   padding: 1px;
   background: white;
   background-image: url(/chat/img/chat_header.png);
-  width: 100%;
+  width: 16em;
   background-size: cover;
   line-height: 1.6em;
 }
@@ -341,7 +341,7 @@ p {
 .chat-box-main {
   display: block;
   flex-direction: column;
-  width: 100%; 
+  width: 32em; 
   grid-area: chat_main;
   overflow-y: scroll;
   overflow-x: hidden;
