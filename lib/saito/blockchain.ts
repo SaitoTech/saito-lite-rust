@@ -410,12 +410,9 @@ console.log("ABTB: " + block.returnHash());
     // run callbacks if desired
     //
     let already_processed_callbacks = 0;
-console.log("LCBI: " + this.blockchain.last_callback_block_id);
     if (block_id <= this.blockchain.last_callback_block_id) {
       already_processed_callbacks = 1;
     }
-console.log("run callbacks: " + this.run_callbacks);
-console.log("already proc callbacks: " + already_processed_callbacks);
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
@@ -741,7 +738,6 @@ console.log("already proc callbacks: " + already_processed_callbacks);
     //
     if (this.app?.options?.blockchain) {
       this.blockchain = this.app.options.blockchain;
-console.log("setting LCBI: " + this.blockchain.last_block_id);
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
