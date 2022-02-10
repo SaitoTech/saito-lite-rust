@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.037,
+    version: 4.038,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -1279,9 +1279,9 @@ console.log("---------------------");
     for (let i = 0; i < this.wallet.pending.length; i++) {
       let ptx = new saito.transaction(JSON.parse(this.wallet.pending[i]));
       for (let ii = 0; ii < ptx.transaction.from.length; ii++) {
-	if (input.returnKey() === ptx.transaction.from[ii].returnKey()) {
-	  return true;
-	}
+        if (input.returnKey() === ptx.transaction.from[ii].returnKey()) {
+          return true;
+        }
       }
     }
     return false;
@@ -1302,7 +1302,7 @@ console.log("---------------------");
     try {
       if (this.app.BROWSER == 1) {
         let content = JSON.stringify(this.app.options);
-        var pom = document.createElement("a");
+        let pom = document.createElement("a");
         pom.setAttribute("type", "hidden");
         pom.setAttribute("href", "data:application/json;utf-8," + encodeURIComponent(content));
         pom.setAttribute("download", "saito.wallet.json");
@@ -1316,7 +1316,7 @@ console.log("---------------------");
   }
 
   async restoreWallet(file) {
-    var wallet_reader = new FileReader();
+    let wallet_reader = new FileReader();
     wallet_reader.readAsBinaryString(file);
     wallet_reader.onloadend = () => {
       let decryption_secret = "";

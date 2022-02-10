@@ -247,7 +247,6 @@ class Block {
     //
     let winning_tx = this.transactions[0];
     for (let i = 0; i < this.transactions.length; i++) {
-
       // TODO - select correct tx
       //if (this.transactions[i].transaction.work_cumulative > winning_nolan) {
       //   break;
@@ -985,7 +984,7 @@ class Block {
           this.txs_hmap[this.transactions[i].transaction.from[ii].add] = 1;
         }
         for (let ii = 0; ii < this.transactions[i].transaction.to.length; ii++) {
-console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
+          // console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add);
           this.txs_hmap[this.transactions[i].transaction.to[ii].add] = 1;
         }
       }
@@ -1011,7 +1010,7 @@ console.log("setting txhmap for " + this.transactions[i].transaction.to[ii].add)
 
   hasKeylistTransactions(keylist) {
     if (!this.txs_hmap_generated) {
-console.log("generating tx hashmap for " + JSON.stringify(keylist));
+      console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();
     }
     for (let i = 0; i < keylist.length; i++) {
@@ -1097,7 +1096,7 @@ console.log("generating tx hashmap for " + JSON.stringify(keylist));
       return this.hash;
     }
     this.prehash = this.app.crypto.hash(this.serializeForSignature().toString("hex"));
-console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_block_hash);
+    console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_block_hash);
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
   }
@@ -1381,6 +1380,17 @@ console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_b
       return true;
     }
 
+    //
+    // if this is our first / genesis block, it is valid
+    //
+    if (
+      this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
+      this.app.blockchain.blockchain.genesis_block_hash === ""
+    ) {
+      console.log(`approving ${this.returnHash()} as genesis block`);
+      return true;
+    }
+
     if (this.block_type === BlockType.Ghost) {
       console.log("block validates as true since it is a ghost block");
       return true;
@@ -1427,13 +1437,13 @@ console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_b
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
 
-
     if (previous_block) {
-
       //
       // nope out for ghost blocks as previous blocks - we only get on catch-up SPV sync
       //
-      if (previous_block.isType("Ghost")) { return 1; }
+      if (previous_block.isType("Ghost")) {
+        return 1;
+      }
 
       //
       // treasury
@@ -1451,7 +1461,7 @@ console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_b
       if (cv_st < BigInt(0)) {
         const x = cv_st * -1;
         if (adjusted_staking_treasury < x) {
-          adjusted_staking_treasury = adjusted_staking_treasury - x;
+          adjusted_staking_treasury = adjusted_staking_treasury - BigInt(x);
         } else {
           adjusted_staking_treasury = BigInt(0);
         }
@@ -1508,9 +1518,9 @@ console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_b
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-	//
-	// TODO : validate golden ticket
-	//
+        //
+        // TODO : validate golden ticket
+        //
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,

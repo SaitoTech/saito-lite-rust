@@ -328,26 +328,27 @@ body {
   font-weight: bold;
   overflow-y: hidden;
   overflow-x: hidden;
+  display: flex;
 }
 .gameShortDescriptionKey {
-  clear: both;
-  float: left;
+  display: inline-block;
 }
 .gameShortDescriptionValue {
-  float: left;
-  margin-left: 10px;
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .arcade-tile .gameShortDescription {
   display: grid;
+  height: 100%;
+  align-content: center;
   justify-items: end;
-  margin: 0.2em 0.2em 0.4em 0em;
+  /*margin: 0.2em 0.2em 0.4em 0em;
+  margin: 0 10% 0 50%;*/
+  margin-right: 0.4em;
   font-size: 1em;
   overflow: auto;
-  margin: 0 10% 0 50%;
-  background-color: #0005;
-  padding: 1em;
-  margin: 0 10% 0 50%;
+  background-color: #0005;  
 }
 
 .invite-description {
@@ -394,6 +395,11 @@ body {
 
 .arcade-tile .player-slot-ellipsis {
   align-self: end;
+}
+
+.arcade-tile .gameButtons{
+  display: flex;
+  flex-direction: column;
 }
 
 .arcade-tile .button {
@@ -1382,14 +1388,14 @@ span.rewards-row-name {
     display: none;
   }
   .invite-tile-wrapper {
-    grid-template-columns: 4fr 3fr 1fr;
+    grid-template-columns: 4fr 2fr 1fr;
   }
   .arcade-tile .invite-row-2 {
     grid-template-columns: 3fr 2fr;
   }
-  .arcade-tile .gameName {
+  /*.arcade-tile .gameName {
     font-size: 2.2em;
-  }
+  }*/
   .arcade-tile .gameShortDescription {
     font-size: 1em;
   }
@@ -1442,19 +1448,23 @@ span.rewards-row-name {
   }
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 9em;
-    min-height: 7em;
-    height: unset;
-    font-size: 0.6em;
-  }
-  .invite-tile-button {
-    min-width: 8em;
-    max-width: 8em;
+    grid-template-columns: 1fr 15em;
     font-size: 0.8em;
   }
-  .arcade-tile .button {
-    font-size: 1em;
+
+  .arcade-tile .gameButtons{
+    flex-direction: row;
   }
+
+  .invite-tile-button {
+    min-width: unset;
+    max-width: 6em;
+    height: 5em;
+    font-size: 0.8em;
+  }
+  /*.arcade-tile .button {
+    font-size: 1em;
+  }*/
   .arcade-tile .gameShortDescription {
     display: none;
   }
@@ -1534,141 +1544,28 @@ span.rewards-row-name {
   color: black;
 }
 
-
-
-
-.post-posts {
-  background-color: white;
-}
-.post-forums {
-  background-color: white;
-}
-.forum-image-header {
-  padding-top: 10px;
-}
-.forum-image-header-image {
-  /* width: 100%; */
-  height: 66px;
-  width: 100px;
-  display: flex;
-  justify-items: center;
-}
-.forum-topic-link {
-  text-decoration: none;
-  color: whitesmoke;
-}
-.forum-topic-link:hover {
-  text-decoration: none;
-  color: white;
-}
-.forum-post-topic {
-  border-bottom: 1px solid #F6F6F6;
-  cursor: pointer;
-}
-.forum-post-header {
-  width: 100%;
-  color: whitesmoke;
-  background: var(--saito-reverse-jester);
-  font-size: 1.2em;
-  padding:5px;
-  padding-left: 10px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.forum-topic {
-  display: grid;
-  width: 100%;
-  height: 90px;
-  grid-template-columns: 100px 3fr minmax(300px, 1fr);
-}
-.forum-topic-image {
-  cursor: pointer;
-}
-.forum-topic-center {
-  display: grid;
-  padding: 10px;
-  grid-template-columns: 8fr minmax(50px, 1fr);
-  height: inherit;
-  max-height: inherit;
-  overflow: hidden;
-}
-.forum-topic-intro {
-  display: grid;
-  grid-template-columns: 1fr;
-  padding-left: 10px;
-}
-.forum-topic-title {
-  display: flex;
-  align-items: flex-end;
-  font-size: 1.4em;
-  font-weight: bold;
-}
-.forum-topic-description {
-  font-size: 1.15em;
-}
-.forum-topic-posts {
-  text-align: center;
-}
-.forum-topic-posts-num {
-  width: 100%;
-  font-size: 1.4em;
-  font-weight: bold;
-}
-.forum-topic-posts-text {
-}
-.forum-topic-latest-post {
-  padding-top: 10px;
-}
-.forum-topic-latest-post-image {
-  float: left;
-  margin-left: auto;
-  margin-right: 15px;
-  margin-top: 5px;
-  margin-bottom: auto;
-  font-size: 2.3em;
-  height: 50px;
-  width: 50px;
-}
-.identicon {
-  height: 50px;
-  width: 50px;
-}
-.forum-topic-latest-post-details {
-}
-.forum-topic-latest-post-title {
-  font-size: 24px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: inherit;
-  font-style: italic;
-  margin-bottom: 6px;
-}
-.forum-topic-latest-post-info {
-  font-size: 0.8em;
-}
-
-
-
-@media only screen and (max-width: 900px) {
-  .forum-topic {
-    grid-template-columns: 100px 3fr;
-  }
-  .forum-topic-latest-post {
-    display: none;
-  }
-  .post-container {
-    gap: 0px;
-    grid-template-columns: 0px auto;
-  }
-  .post-sidebar {
-    z-index: -200;
-  }
-}
-
 .arcade-games .arcade-navigator-item {
   padding: 10px 0px 10px 20px;
   list-style: none;
 }
+
+
+
+
+/*
+  OVERWRITE DEFAULT FORUM POST DISPLAY 
+*/
+
+.forum-topic-link, .forum-topic-link:hover {
+  text-decoration: none;
+  color: whitesmoke;
+}
+
+.forum-post-header {
+  color: whitesmoke;
+}
+
+
+
 
 

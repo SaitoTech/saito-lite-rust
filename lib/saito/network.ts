@@ -137,7 +137,6 @@ class Network {
     //
     // initiate the handshake (verifying peers)
     //
-
   }
 
   //
@@ -221,7 +220,9 @@ class Network {
     try {
       let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
-        url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
+        url = `${peer.peer.protocol}://${peer.peer.host}:${
+          peer.peer.port
+        }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
       const res = await fetch(url);
       if (res.ok) {
@@ -245,7 +246,6 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
-
     console.debug("network.initializeWebSocket: " + remote_socket + " / " + browser);
 
     //
@@ -258,7 +258,10 @@ class Network {
           wsProtocol = "wss";
         }
       }
-console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
+      console.log(
+        "attempting to connect 1 to: " +
+          `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
+      );
       peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -300,7 +303,10 @@ console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       }
-console.log("attempting to connect 2 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
+      console.log(
+        "attempting to connect 2 to: " +
+          `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
+      );
       peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -337,7 +343,6 @@ console.log("attempting to connect 2 to: " + `${wsProtocol}://${peer.peer.host}:
   }
 
   cleanupDisconnectedPeer(peer, force = 0) {
-
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
       if (this.peers[c] === peer) {
@@ -571,40 +576,43 @@ console.log("attempting to connect 2 to: " + `${wsProtocol}://${peer.peer.host}:
       }
 
       case "GSTCHAIN": {
-
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
         console.log("RECEIVED GSTCHAIN: " + JSON.stringify(syncobj));
 
-	let previous_block_hash = syncobj.start;
+        let previous_block_hash = syncobj.start;
 
-	for (let i = 0; i < syncobj.prehash.length; i++) {
+        for (let i = 0; i < syncobj.prehash.length; i++) {
+          let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
 
-	  let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
+          console.log("block hash as: " + block_hash);
 
-console.log("block hash as: " + block_hash);
-
-	  if (parseInt(syncobj.txs[i]) > 0) {
-console.log("fetching blcok! " + block_hash);
+          if (parseInt(syncobj.txs[i]) > 0) {
+            console.log("fetching blcok! " + block_hash);
             await this.fetchBlock(block_hash);
-console.log("done fetch block!");
-	  } else {
-	    // ghost block
-console.log("adding ghostchain blcok! " + block_hash);
-	    this.app.blockchain.addGhostToBlockchain(syncobj.block_ids[i], previous_block_hash, syncobj.block_ts[i], syncobj.prehash[i], syncobj.gts[i], block_hash);
-	  }
+            console.log("done fetch block!");
+          } else {
+            // ghost block
+            console.log("adding ghostchain blcok! " + block_hash);
+            this.app.blockchain.addGhostToBlockchain(
+              syncobj.block_ids[i],
+              previous_block_hash,
+              syncobj.block_ts[i],
+              syncobj.prehash[i],
+              syncobj.gts[i],
+              block_hash
+            );
+          }
 
-	  previous_block_hash = block_hash;
-
-	}
+          previous_block_hash = block_hash;
+        }
 
         console.log("RECEIVED GHOSTCHAIN: " + JSON.stringify(syncobj));
         break;
       }
 
       case "REQCHAIN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -640,10 +648,7 @@ console.log("adding ghostchain blcok! " + block_hash);
         break;
       }
 
-
-
       case "REQGSTCN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -663,17 +668,20 @@ console.log("adding ghostchain blcok! " + block_hash);
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
-	let syncobj = { start : "" , prehash : [] , previous_block_hash : [] , block_ids : [] , block_ts : [] , txs : [] , gts : []  };
-	syncobj.start = this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
+        let syncobj = {
+          start: "",
+          prehash: [],
+          previous_block_hash: [],
+          block_ids: [],
+          block_ts: [],
+          txs: [],
+          gts: [],
+        };
+        syncobj.start =
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
-        for (
-          let i = last_shared_ancestor;
-          i <= this.app.blockring.returnLatestBlockId();
-          i++
-        ) {
-
+        for (let i = last_shared_ancestor + 1; i <= this.app.blockring.returnLatestBlockId(); i++) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
-
           if (block_hash !== "") {
             if (this.app.blockchain.blocks[block_hash]) {
               let block = this.app.blockchain.blocks[block_hash];
@@ -682,20 +690,18 @@ console.log("adding ghostchain blcok! " + block_hash);
               syncobj.prehash.push(block.prehash);
               syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
-console.log("checking if "+ block.returnHash()+" has txs for " + publickey);
+              console.log("checking if " + block.returnHash() + " has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
-console.log("yes");
+                console.log("yes");
                 syncobj.txs.push(1);
               } else {
-console.log("no");
+                console.log("no");
                 syncobj.txs.push(0);
               }
             }
           }
         }
-
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
-
         break;
       }
 
@@ -810,12 +816,11 @@ console.log("no");
   }
 
   pollPeers() {
-
     let network_self = this;
 
-    console.debug(
-      `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
-    );
+    // console.debug(
+    //   `polling peers [count = ${this.app.network.peers.length}][dead_peers = ${this.dead_peers.length}]`
+    // );
     //
     // loop through peers to see if disconnected
     //
@@ -841,7 +846,11 @@ console.log("no");
     unsuccessful_peers.forEach((peer) => {
       setTimeout(() => {
         console.log("Attempting to Connect to Peer!");
-        peer.socket = network_self.app.network.initializeWebSocket(peer, false, network_self.app.BROWSER == 1);
+        peer.socket = network_self.app.network.initializeWebSocket(
+          peer,
+          false,
+          network_self.app.BROWSER == 1
+        );
         console.log("Attempt finished to Connect to Peer!");
         let has_peer = false;
         // TODO : check performance impact and refactor this
@@ -972,7 +981,6 @@ console.log("no");
   }
 
   requestBlockchain(peer = null) {
-
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
@@ -983,8 +991,12 @@ console.log("no");
         latest_block_hash = this.app.blockchain.blockchain.last_block_hash;
       }
     }
-    if (!latest_block_id) { latest_block_hash = ""; }
-    if (!fork_id) { fork_id = ""; }
+    if (!latest_block_id) {
+      latest_block_hash = "";
+    }
+    if (!fork_id) {
+      fork_id = "";
+    }
 
     console.log(
       "req blockchain with: " + latest_block_id + " and " + latest_block_hash + " and " + fork_id
@@ -998,11 +1010,11 @@ console.log("no");
 
     for (let x = this.peers.length - 1; x >= 0; x--) {
       if (this.peers[x] === peer) {
-	if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
           this.sendRequest("REQGSTCN", buffer_to_send, peer);
-	} else {
+        } else {
           this.sendRequest("REQCHAIN", buffer_to_send, peer);
-	}
+        }
         return;
       }
     }

@@ -31,6 +31,8 @@ module.exports = ArcadeMain = {
       document.getElementById("arcade-main").destroy();
     }
 
+    let x = mod.app.browser.returnURLParameter("game");
+
     //
     // put active games first
     //
@@ -97,10 +99,13 @@ module.exports = ArcadeMain = {
     //
     if (document.querySelector(".arcade-hero")) {
       mod.games.forEach((invite, i) => {
-        app.browser.addElementToElement(
+        console.log(invite.msg.game, x);
+        if (!x || invite.msg.game.toLowerCase() === x){
+          app.browser.addElementToElement(
           ArcadeInviteTemplate(app, mod, invite, i),
           document.querySelector(".arcade-hero")
-        );
+        );  
+        }
       });
       mod.observer.forEach((observe, i) => {
         app.browser.addElementToElement(
@@ -177,14 +182,15 @@ module.exports = ArcadeMain = {
     });
 
 
-    let x = mod.app.browser.returnURLParameter("game");
+    
     if (x) {
       ArcadePosts.render(app, mod);
     } else {
       ArcadeForums.render(app, mod);
     }
 
-    ArcadeInfobox.render(app, mod);
+    //ArcadeInfobox.render(app, mod); //Not doing anything right now
+
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
