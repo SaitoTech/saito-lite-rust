@@ -283,7 +283,7 @@ class Blockchain {
         // connection or network issues.
         //
         if (
-          previous_block_hash === this.blockchain.last_block_hash &&
+          block.block.previous_block_hash === this.blockchain.last_block_hash &&
           block.block.previous_block_hash !== ""
         ) {
           //
