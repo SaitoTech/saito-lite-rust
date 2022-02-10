@@ -574,7 +574,7 @@ console.log("start HUD 2: " + this.hud.card_width);
     //
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
-    this.cardbox.attachCardEvents();
+    this.attachCardboxEvents();
 
     try {
 
