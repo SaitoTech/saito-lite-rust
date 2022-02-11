@@ -1775,6 +1775,14 @@ div#message-wrapper {
   width: 80vw;
 }
 
+/* Exclusively for modal-add-user-confirm.template */
+.confirm-modal-wrapper {
+      font-size: 1.5em;
+      padding: 1.5em;
+      color: white;
+      font-weight: bold;
+}
+
 .welcome-invite-box {
   min-width: 200px;
   min-height: 120px;

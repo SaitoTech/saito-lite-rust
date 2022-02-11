@@ -263,9 +263,6 @@ class Arcade extends ModTemplate {
     this.header.render(app, this);
     this.header.attachEvents(app, this);
 
-    this.overlay.render(app, this);
-    this.overlay.attachEvents(app, this);
-
     let x = app.browser.returnURLParameter("game");
     if (x) { this.viewing_game_homepage = 1; }
 
