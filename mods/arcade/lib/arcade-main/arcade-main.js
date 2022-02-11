@@ -1,5 +1,6 @@
 const ArcadeMainTemplate = require("./templates/arcade-main.template");
 const ArcadeContainerTemplate = require("./templates/arcade-container.template");
+const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
@@ -93,6 +94,10 @@ module.exports = ArcadeMain = {
       };
     });
     */
+
+    if (x){
+      app.browser.addElementToElement(ArcadeMobileHelper(app.modules.returnModuleBySlug(x)), document.getElementById("arcade-mobile-helper"));
+    }
 
     //
     // add games

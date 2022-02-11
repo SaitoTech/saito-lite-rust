@@ -54,7 +54,9 @@ class Handshake {
 
     const offset = 57 + length;
     length = Number(this.app.binary.u32FromBytes(buffer.slice(offset, offset + 4)));
-    h2.server_protocol = Buffer.from(buffer.slice(offset + 4, offset + 4 + length), "utf-8");
+    h2.server_protocol = Buffer.from(buffer.slice(offset + 4, offset + 4 + length)).toString(
+      "utf-8"
+    );
 
     return h2;
   }

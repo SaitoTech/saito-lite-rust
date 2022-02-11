@@ -108,7 +108,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
 
 
 
-      <button class="post-submit-btn">Submit</button>
+      <button class="post-submit-btn">Comment</button>
     </div>
   </div>
   `;

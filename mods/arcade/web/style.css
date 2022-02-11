@@ -179,6 +179,31 @@ body {
   background: var(--saito-jester);
 }
 
+#arcade-mobile-helper{
+  display: none;
+}
+
+.arcade-game-mobile-header{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arcade-game-mobile-header .arcade-game-mobile-return-to-arcade{
+  position: absolute;
+  left: 1em;
+}
+.arcade-apps.mobile-helper{
+  display: flex;
+}
+
+.mobile-helper li{
+  text-align: center;
+  height: 45px;
+  line-height: 45px;
+  padding: unset;
+}
+
 /*
 #observables-hero {
   font-size: 4em;
@@ -560,44 +585,6 @@ body {
   opacity: 0.7;
 }
 
-@media only screen and (max-width: 1000px) {
-  .main {
-    margin-left: 1em;
-  }
-  .arcade-container {
-    display: block;
-  }
-  .arcade-sidebar {
-    position: absolute;
-    width: 15em;
-    left: -15em;
-    height: calc(100vh - 5em);
-    transition: all ease-in-out 1s;
-    background: var(--saito-nightscape);
-  }
-  .arcade-sidebar:hover,
-  .arcade-sidebar:active,
-  .arcade-sidebar.active {
-    left: 0;
-  }
-  .arcade-sub {
-    /* overflow-y: scroll; */
-    display: block;
-    margin: 1em 0 0 0;
-  }
-  .arcade-container .page-header {
-    margin-bottom: 1rem;
-  }
-  .arcade-main {
-    padding-left: 10px;
-  }
-  .arcade-main .forum-title {
-    margin-bottom: 0.5rem;
-  }
-  .arcade-posts {
-    padding-left: 0;
-  }
-}
 
 /* controls */
 button,
@@ -1380,8 +1367,33 @@ span.rewards-row-name {
   text-align: center;
   text-transform: uppercase;
 }
-@media only screen and (max-width: 1000px) {
+
+
+/* *
+  Mid - size
+ * */
+
+@media only screen and (max-width: 900px) {
+  .arcade-sub {
+    /* overflow-y: scroll; */
+    display: block;
+    margin: 1em 0 0 0;
+  }
+  .arcade-container .page-header {
+    margin-bottom: 1rem;
+  }
+  .arcade-main {
+    padding-left: 10px;
+  }
+  .arcade-main .forum-title {
+    margin-bottom: 0.5rem;
+  }
+  .arcade-posts {
+    padding-left: 0;
+  }
+
   .arcade-container {
+    display: block;
     padding: 0;
   }
   .game-inset-img {
@@ -1411,8 +1423,15 @@ span.rewards-row-name {
     width: 100%;
     max-height: calc(100vh - 7em);
   }
+
+  /* Pop out side bar*/
   .arcade-sidebar {
-    display:none;
+    position: absolute;
+    width: 15em;
+    left: -15em;
+    height: calc(100vh - 5em);
+    transition: all ease-in-out 1s;
+    background: var(--saito-nightscape);
   }
   .arcade-sidebar::after {
     content: "›";
@@ -1435,8 +1454,20 @@ span.rewards-row-name {
     padding-bottom: 7px;
     cursor: ew-resize;
   }
+
+  .arcade-sidebar:hover,
+  .arcade-sidebar:active,
+  .arcade-sidebar.active {
+    left: 0;
+  }
+
   .arcade-sidebar:hover::after {
     opacity: 0;
+  }
+
+  /* Completely hide side bar */
+  .arcade-sidebar {
+    display:none;
   }
 }
 @media only screen and (max-width: 600px) {
@@ -1446,6 +1477,11 @@ span.rewards-row-name {
   .arcade-main {
     grid-template-rows: 1.3em auto 1fr;
   }
+
+  #arcade-mobile-helper{
+    display: block;
+  }
+
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 15em;
