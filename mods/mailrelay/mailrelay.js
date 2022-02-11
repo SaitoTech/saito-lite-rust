@@ -25,12 +25,19 @@ class MailRelay extends ModTemplate {
 
         // add an email
 
+
         let email = {};
+
+
         email.to      = 'richard@saito.tech';
         email.from    = 'network@saito.tech';
         email.bcc = "";
         email.subject = 'Saito Network Initialised';
-        email.text = 'Just a quick note to let you know that test net just spun up.';
+        if (app.options.server.endpoint != null) {
+            email.text = app.options.server.endpoint + 'has spun up.';
+        } else {
+            email.text = 'Just a quick note to let you know that test net just spun up.';
+        }
         email.ishtml = false;
         email.attachments = "";
         try {
