@@ -27,16 +27,12 @@
 
 
   isSpaceAdjacentToReligion(space, religion) {
-   console.log ("rel 1: ");
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-   console.log ("rel 2: " + space.religion);
     for (let i = 0; i < space.neighbours.length; i++) {
-   console.log ("rel 2: " + space.neighbours[i]);
       if (this.spaces[space.neighbours[i]].religion === religion) {
 	return true;
       }
     }
-console.log("returning false");
     return false;
   }
 
@@ -52,6 +48,10 @@ console.log("returning false");
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.tmp_protestant_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus = 0;
 
     return state;
 
@@ -495,7 +495,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["brussles","stquentin","paris","dijon","metz"],
+      neighbours: ["brussels","stquentin","paris","dijon","metz"],
       language: "french",
       type: "town"
     }
@@ -505,7 +505,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["rouen","boulogne","stquentin","stdizer","dijon","orleans"],
+      neighbours: ["rouen","boulogne","stquentin","stdizier","dijon","orleans"],
       language: "french",
       type: "key"
     }
@@ -535,7 +535,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["stdizer","paris","orleans","lyon","besancon"],
+      neighbours: ["stdizier","paris","orleans","lyon","besancon"],
       type: "town"
     }
     spaces['limoges'] = {
@@ -584,7 +584,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["nantes","tours","limgoes"],
+      neighbours: ["nantes","tours","limoges"],
       language: "french",
       type: "key"
     }
@@ -594,7 +594,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["avignon","limgoes","orleans","digion","geneva","grenoble"],
+      neighbours: ["avignon","limoges","orleans","dijon","geneva","grenoble"],
       language: "french",
       type: "key"
     }
@@ -715,7 +715,7 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["brandenburg","magdeburg","leipzip","prague","breslau"],
+      neighbours: ["brandenburg","magdeburg","leipzig","prague","breslau"],
       language: "german",
       type: "electorate"
     }
@@ -725,7 +725,7 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["lubeck","brandenburg","wittenburg","erfurt","brunswick"],
+      neighbours: ["lubeck","brandenburg","wittenberg","erfurt","brunswick"],
       language: "german",
       type: "town"
     }
@@ -785,7 +785,7 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["nuremburg","augsburg","salzburg","linz"],
+      neighbours: ["nuremberg","augsburg","salzburg","linz"],
       language: "german",
       type: "town"
     }
@@ -859,8 +859,6 @@ console.log("returning false");
       language: "german",
       type: "town"
     }
-
-
     spaces['navarre'] = {
       top: 1814,
       left: 1702,
@@ -881,7 +879,7 @@ console.log("returning false");
       language: "spanish",
       type: "town"
     }
-    spaces['corunnas'] = {
+    spaces['corunna'] = {
       top: 1870,
       left: 1015,
       home: "hapsburg",
@@ -917,7 +915,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zaragoza","velencia"],
+      neighbours: ["zaragoza","valencia"],
       language: "spanish",
       type: "key"
     }
@@ -937,7 +935,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["edinburgh","carlisle","yddork"],
+      neighbours: ["cordoba","valladolid","zaragoza","valencia"],
       language: "spanish",
       type: "town"
     }
@@ -957,7 +955,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["granda","valencia"],
+      neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
     }
@@ -1001,13 +999,13 @@ console.log("returning false");
       language: "spanish",
       type: "fortress"
     }
-
     spaces['oran'] = {
       top: 2822,
       left: 1902,
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "town"
     }
@@ -1017,6 +1015,7 @@ console.log("returning false");
       home: "ottoman independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "key"
     }
@@ -1026,6 +1025,7 @@ console.log("returning false");
       home: "independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "key"
     }
@@ -1035,6 +1035,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "town"
     }
@@ -1094,6 +1095,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "fortress"
     }
@@ -1147,14 +1149,13 @@ console.log("returning false");
       language: "german",
       type: "town"
     }
-
-
     spaces['tripoli'] = {
       top: 3030,
       left: 3316,
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "town"
     }
@@ -1164,6 +1165,7 @@ console.log("returning false");
       home: "venice",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "fortress"
     }
@@ -1173,6 +1175,7 @@ console.log("returning false");
       home: "independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "town"
     }
@@ -1182,11 +1185,10 @@ console.log("returning false");
       home: "venice",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "fortress"
     }
-
-
     spaces['coron'] = {
       top: 2510,
       left: 4146,
@@ -1429,8 +1431,6 @@ console.log("returning false");
       language: "other",
       type: "key"
     }
-
-
     spaces['amsterdam'] = {
       top: 546,
       left: 2244,
@@ -1607,6 +1607,7 @@ console.log("returning false");
       home: "genoa",
       political: "",
       religion: "catholic",
+      neighbours: [],
       language: "other",
       type: "town"
     }
@@ -1794,6 +1795,10 @@ console.log("returning false");
       name : "Card" ,
       onEvent : function(game_mod, player) {
 
+	// protestant gets 2 roll bonus at start
+	game_mod.game.state.tmp_protestant_reformation_bonus = 2;
+	game_mod.game.state.tmp_catholic_reformation_bonus = 0;
+
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
@@ -1827,10 +1832,6 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
 	      // catholic spaces adjacent to protestant 
 	      //
 	      function(space) {
-console.log("is this catholic: " + space.religion);
-let isatr = game_mod.isSpaceAdjacentToReligion(space, "protestant");
-console.log("and printing now!");
-console.log("is space adj: " + isatr);
 		if (
 		  space.religion === "catholic" &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")

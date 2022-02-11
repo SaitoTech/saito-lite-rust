@@ -73,6 +73,13 @@
 
   }
 
+  resetPlayerTurn(player_num) {
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+  }
+
   returnPlayerFaction(player) {
     let key = this.game.players_info[player-1].faction;
     return this.factions[key];
@@ -268,6 +275,8 @@ console.log("and  done 2");
     this.startClock();
 
     let his_self = this;
+
+    this.resetPlayerTurn(this.game.player);
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
     his_self.attachCardboxEvents(function(card) {

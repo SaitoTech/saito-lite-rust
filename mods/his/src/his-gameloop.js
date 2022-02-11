@@ -40,6 +40,10 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("event\t1\t008");
 	  }
 
+	  if (this.game.state.round > 1) {
+	    this.updateStatus("Game Over");
+	    return 0;
+	  }
           return 1;
         }
 
@@ -62,12 +66,29 @@ console.log("MOVE: " + mv[0]);
           return 0;
         }
 
+	if (mv[0] === "convert") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  let religion = mv[2];
+
+	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
+
+	  this.game.spaces[space].religion = religion;
+	  this.displaySpace(space);
+
+	  return 1;
+
+	}
 
 	if (mv[0] === "reformation") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  let space = mv[1];
+	  let p_player = mv[2];
+	  let c_player = mv[3];
 
 	  let p_rolls = 0;
 	  let c_rolls = 0;
@@ -89,10 +110,10 @@ console.log("MOVE: " + mv[0]);
 	  // neighbours
 	  //
 	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "catholic") {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_neighbours++;
 	    }
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "protestant") {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
 	    }  
 	  }
@@ -100,7 +121,15 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  // language zone
 	  //
-	  
+	  if (this.spaces[space].language !== "german") {
+	    ties_resolve = "catholic";
+ 	  }
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
 
 	  //
 	  // calculate total rolls
@@ -110,16 +139,25 @@ console.log("MOVE: " + mv[0]);
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
 
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
 	  for (let i = 0; i < p_rolls; i++) {
+console.log("i: " + i);
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x);
-	    if (x > p_high) { x = p_high; }
+console.log("x is: " + x);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
 	  }
 
+this.updateLog("Catholics: " + c_rolls);
+
 	  for (let i = 0; i < c_rolls; i++) {
+console.log("i: " + i);
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x);
-	    if (x > c_high) { x = c_high; }
+console.log("x is: " + x);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
 	  }
 
 	  //

@@ -174,7 +174,9 @@ class HereIStand extends GameTemplate {
       this.game.spaces = this.returnSpaces();
       this.game.players_info = this.returnPlayers(this.game.players.length);
 
-      this.initializeDice();
+      if (this.game.dice === "") {
+        this.initializeDice();
+      }
 
 console.log("\n\n\n\n");
 console.log("---------------------------");
@@ -555,16 +557,12 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
 
   isSpaceAdjacentToReligion(space, religion) {
-   console.log ("rel 1: ");
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-   console.log ("rel 2: " + space.religion);
     for (let i = 0; i < space.neighbours.length; i++) {
-   console.log ("rel 2: " + space.neighbours[i]);
       if (this.spaces[space.neighbours[i]].religion === religion) {
 	return true;
       }
     }
-console.log("returning false");
     return false;
   }
 
@@ -580,6 +578,10 @@ console.log("returning false");
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.tmp_protestant_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus = 0;
 
     return state;
 
@@ -845,6 +847,7 @@ console.log("returning false");
 
     let spaces = {};
 
+
     spaces['stirling'] = {
       top: 70,
       left: 1265,
@@ -852,6 +855,7 @@ console.log("returning false");
       political: "scotland",
       religion: "catholic",
       neighbours: ["glasgow","edinburgh"],
+      language: "english",
       type: "fortress"
     }
     spaces['glasgow'] = {
@@ -861,6 +865,7 @@ console.log("returning false");
       political: "scotland",
       religion: "catholic",
       neighbours: ["stirling","edinburgh","carlisle"],
+      language: "english",
       type: "town"
     }
     spaces['edinburgh'] = {
@@ -870,6 +875,7 @@ console.log("returning false");
       political: "scotland",
       religion: "catholic",
       neighbours: ["stirling","carlisle","berwick"],
+      language: "english",
       type: "key"
     }
     spaces['berwick'] = {
@@ -878,6 +884,7 @@ console.log("returning false");
       home: "england",
       political: "england",
       neighbours: ["edinburgh","carlisle","york"],
+      language: "english",
       religion: "catholic",
       type: "town"
     }
@@ -888,6 +895,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["glasgow","berwick","york","shrewsbury"],
+      language: "english",
       type: "town"
     }
     spaces['york'] = {
@@ -897,6 +905,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["berwick","carlisle","shrewsbury","lincoln"],
+      language: "english",
       type: "key"
     }
     spaces['wales'] = {
@@ -906,6 +915,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["shrewsbury","bristol"],
+      language: "english",
       type: "key"
 
     }
@@ -916,6 +926,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["wales","carlisle","york","london","bristol"],
+      language: "english",
       type: "town"
     }
     spaces['lincoln'] = {
@@ -925,6 +936,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["london","york"],
+      language: "english",
       type: "town"
     }
     spaces['norwich'] = {
@@ -934,6 +946,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours:["london"],
+      language: "english",
       type: "town"
     }
     spaces['bristol'] = {
@@ -942,6 +955,7 @@ console.log("returning false");
       home: "england",
       political: "england",
       religion: "catholic",
+      language: "english",
       neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
       type: "key"
     }
@@ -952,6 +966,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
+      language: "english",
       type: "key"
     }
     spaces['plymouth'] = {
@@ -961,6 +976,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["bristol","portsmouth"],
+      language: "english",
       type: "town"
     }
     spaces['portsmouth'] = {
@@ -970,6 +986,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["plymouth","bristol","london"],
+      language: "english",
       type: "town"
     }
     spaces['calais'] = {
@@ -979,6 +996,7 @@ console.log("returning false");
       political: "england",
       religion: "catholic",
       neighbours: ["boulogne","brussels","antwerp"],
+      language: "french",
       type: "key"
     }
 
@@ -989,6 +1007,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["calais","rouen","paris","stquentin"],
+      language: "french",
       type: "town"
     }
     spaces['stquentin'] = {
@@ -1006,7 +1025,8 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["brussles","stquentin","paris","dijon","metz"],
+      neighbours: ["brussels","stquentin","paris","dijon","metz"],
+      language: "french",
       type: "town"
     }
     spaces['paris'] = {
@@ -1015,7 +1035,8 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["rouen","boulogne","stquentin","stdizer","dijon","orleans"],
+      neighbours: ["rouen","boulogne","stquentin","stdizier","dijon","orleans"],
+      language: "french",
       type: "key"
     }
     spaces['rouen'] = {
@@ -1025,6 +1046,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["boulogne","paris","tours","nantes"],
+      language: "french",
       type: "key"
     }
     spaces['orleans'] = {
@@ -1034,6 +1056,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["paris","tours","dijon","lyon"],
+      language: "french",
       type: "town"
     }
     spaces['dijon'] = {
@@ -1042,7 +1065,7 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["stdizer","paris","orleans","lyon","besancon"],
+      neighbours: ["stdizier","paris","orleans","lyon","besancon"],
       type: "town"
     }
     spaces['limoges'] = {
@@ -1052,6 +1075,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["tours","bordeaux","lyon"],
+      language: "french",
       type: "town"
     }
     spaces['tours'] = {
@@ -1061,6 +1085,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["rouen","nantes","bordeaux","limoges","orleans"],
+      language: "french",
       type: "town"
     }
     spaces['nantes'] = {
@@ -1070,6 +1095,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["brest","rouen","tours","bordeaux"],
+      language: "french",
       type: "town"
     }
     spaces['brest'] = {
@@ -1079,6 +1105,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["nantes"],
+      language: "french",
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1087,7 +1114,8 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["nantes","tours","limgoes"],
+      neighbours: ["nantes","tours","limoges"],
+      language: "french",
       type: "key"
     }
     spaces['lyon'] = {
@@ -1096,7 +1124,8 @@ console.log("returning false");
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["avignon","limgoes","orleans","digion","geneva","grenoble"],
+      neighbours: ["avignon","limoges","orleans","dijon","geneva","grenoble"],
+      language: "french",
       type: "key"
     }
     spaces['grenoble'] = {
@@ -1106,6 +1135,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["lyon","geneva"],
+      language: "french",
       type: "town"
     }
     spaces['avignon'] = {
@@ -1115,6 +1145,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["toulouse","lyon","marseille"],
+      language: "french",
       type: "town"
     }
     spaces['marseille'] = {
@@ -1124,6 +1155,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["avignon","nice"],
+      language: "french",
       type: "key"
     }
     spaces['toulouse'] = {
@@ -1133,7 +1165,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["bordeaux","avignon"],
-
+      language: "french",
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1143,6 +1175,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["nantes","tours","limoges","toulouse"],
+      language: "french",
       type: "key"
     }
 
@@ -1153,6 +1186,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["bremen","kassel","cologne","amsterdam"],
+      language: "german",
       type: "town"
     }
     spaces['bremen'] = {
@@ -1162,6 +1196,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours:["munster","brunswick","hamburg"],
+      language: "german",
       type: "town"
     }
     spaces['hamburg'] = {
@@ -1171,6 +1206,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["bremen","brunswick","lubeck"],
+      language: "german",
       type: "town"
     }
     spaces['lubeck'] = {
@@ -1180,6 +1216,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
+      language: "german",
       type: "town"
     }
     spaces['stettin'] = {
@@ -1189,6 +1226,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["lubeck","brandenburg"],
+      language: "german",
       type: "town"
     }
     spaces['brandenburg'] = {
@@ -1198,6 +1236,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["stettin","lubeck","magdeburg","wittenberg","breslau"],
+      language: "german",
       type: "electorate"
     }
     spaces['wittenberg'] = {
@@ -1206,7 +1245,8 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["brandenburg","magdeburg","leipzip","prague","breslau"],
+      neighbours: ["brandenburg","magdeburg","leipzig","prague","breslau"],
+      language: "german",
       type: "electorate"
     }
     spaces['magdeburg'] = {
@@ -1215,7 +1255,8 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["lubeck","brandenburg","wittenburg","erfurt","brunswick"],
+      neighbours: ["lubeck","brandenburg","wittenberg","erfurt","brunswick"],
+      language: "german",
       type: "town"
     }
     spaces['brunswick'] = {
@@ -1225,6 +1266,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["bremen","hamburg","magdeburg","kassel"],
+      language: "german",
       type: "town"
     }
     spaces['cologne'] = {
@@ -1234,6 +1276,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["munster","mainz","liege"],
+      language: "german",
       type: "electorate"
     }
     spaces['kassel'] = {
@@ -1243,6 +1286,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["munster","brunswick","erfurt","nuremberg","mainz"],
+      language: "german",
       type: "town"
     }
     spaces['erfurt'] = {
@@ -1252,6 +1296,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["magdeburg","kassel","leipzig"],
+      language: "german",
       type: "town"
     }
     spaces['leipzig'] = {
@@ -1261,6 +1306,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["wittenberg","prague","nuremberg","erfurt"],
+      language: "german",
       type: "town"
     }
     spaces['regensburg'] = {
@@ -1269,7 +1315,8 @@ console.log("returning false");
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["nuremburg","augsburg","salzburg","linz"],
+      neighbours: ["nuremberg","augsburg","salzburg","linz"],
+      language: "german",
       type: "town"
     }
     spaces['salzburg'] = {
@@ -1279,6 +1326,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["linz","regensburg","augsburg","innsbruck"],
+      language: "german",
       type: "town"
     }
     spaces['augsburg'] = {
@@ -1288,6 +1336,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["worms","nuremberg","regensburg","salzburg"],
+      language: "german",
       type: "electorate"
     }
     spaces['nuremberg'] = {
@@ -1297,6 +1346,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["augsburg","worms","mainz","kassel","leipzig","regensburg"],
+      language: "german",
       type: "town"
     }
     spaces['mainz'] = {
@@ -1306,6 +1356,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["trier","cologne","kassel","nuremberg","worms"],
+      language: "german",
       type: "electorate"
     }
     spaces['trier'] = {
@@ -1315,6 +1366,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["liege","metz","mainz"],
+      language: "german",
       type: "town"
     }
     spaces['strasburg'] = {
@@ -1324,6 +1376,7 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["metz","besancon","basel","worms"],
+      language: "german",
       type: "town"
     }
     spaces['worms'] = {
@@ -1333,10 +1386,9 @@ console.log("returning false");
       political: "hapsburg",
       religion: "catholic",
       neighbours: ["strasburg","mainz","nuremberg","augsburg"],
+      language: "german",
       type: "town"
     }
-
-
     spaces['navarre'] = {
       top: 1814,
       left: 1702,
@@ -1344,6 +1396,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["zaragoza","bilbao"],
+      language: "spanish",
       type: "key"
     }
     spaces['bilbao'] = {
@@ -1353,15 +1406,17 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["corunna","valladolid","zaragoza","navarre"],
+      language: "spanish",
       type: "town"
     }
-    spaces['corunnas'] = {
+    spaces['corunna'] = {
       top: 1870,
       left: 1015,
       home: "hapsburg",
       political: "",
       religion: "catholic",
       neighbours: ["bilbao","valladolid"],
+      language: "spanish",
       type: "town"
     }
     spaces['valladolid'] = {
@@ -1371,6 +1426,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["corunna","bilbao","madrid"],
+      language: "spanish",
       type: "key"
     }
     spaces['zaragoza'] = {
@@ -1380,6 +1436,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["navarre","bilbao","madrid","barcelona"],
+      language: "spanish",
       type: "town"
     }
     spaces['barcelona'] = {
@@ -1388,7 +1445,8 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zaragoza","velencia"],
+      neighbours: ["zaragoza","valencia"],
+      language: "spanish",
       type: "key"
     }
     spaces['palma'] = {
@@ -1397,6 +1455,7 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       neighbours: ["cartagena","cagliari"],
+      language: "other",
       religion: "catholic",
       type: "town"
     }
@@ -1406,7 +1465,8 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["edinburgh","carlisle","yddork"],
+      neighbours: ["cordoba","valladolid","zaragoza","valencia"],
+      language: "spanish",
       type: "town"
     }
     spaces['valencia'] = {
@@ -1416,6 +1476,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["cartagena","madrid","barcelona"],
+      language: "spanish",
       type: "town"
     }
     spaces['cartagena'] = {
@@ -1424,7 +1485,8 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["granda","valencia"],
+      neighbours: ["granada","valencia"],
+      language: "spanish",
       type: "town"
     }
     spaces['granada'] = {
@@ -1434,6 +1496,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["cordoba","gibraltar","cartagena"],
+      language: "spanish",
       type: "town"
     }
     spaces['seville'] = {
@@ -1443,6 +1506,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["cordoba","gibraltar"],
+      language: "spanish",
       type: "key"
     }
     spaces['cordoba'] = {
@@ -1452,6 +1516,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["madrid","seville","granada"],
+      language: "spanish",
       type: "town"
     }
     spaces['gibraltar'] = {
@@ -1461,15 +1526,17 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["seville","granada"],
+      language: "spanish",
       type: "fortress"
     }
-
     spaces['oran'] = {
       top: 2822,
       left: 1902,
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['algiers'] = {
@@ -1478,6 +1545,8 @@ console.log("returning false");
       home: "ottoman independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "key"
     }
     spaces['tunis'] = {
@@ -1486,6 +1555,8 @@ console.log("returning false");
       home: "independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "key"
     }
     spaces['cagliari'] = {
@@ -1494,6 +1565,8 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['palermo'] = {
@@ -1503,6 +1576,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["messina"],
+      language: "italian",
       type: "town"
     }
     spaces['messina'] = {
@@ -1512,6 +1586,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["palermo","naples","taranto"],
+      language: "italian",
       type: "town"
     }
     spaces['cerignola'] = {
@@ -1521,6 +1596,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["taranto","ancona","rome"],
+      language: "italian",
       type: "town"
     }
     spaces['taranto'] = {
@@ -1530,6 +1606,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["cerignola","naples","messina"],
+      language: "italian",
       type: "town"
     }
     spaces['naples'] = {
@@ -1539,6 +1616,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["rome","taranto","messina"],
+      language: "italian",
       type: "key"
     }
     spaces['malta'] = {
@@ -1547,6 +1625,8 @@ console.log("returning false");
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
     spaces['vienna'] = {
@@ -1556,6 +1636,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["brunn","linz","graz","pressburg"],
+      language: "german",
       type: "key"
     }
     spaces['linz'] = {
@@ -1565,6 +1646,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["prague","regensburg","salzburg","vienna"],
+      language: "german",
       type: "town"
     }
     spaces['graz'] = {
@@ -1574,6 +1656,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["vienna","mohacs","agram","trieste"],
+      language: "german",
       type: "town"
     }
     spaces['trieste'] = {
@@ -1583,6 +1666,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["graz","agram","zara","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['innsbruck'] = {
@@ -1592,17 +1676,17 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["zurich","salzburg"],
+      language: "german",
       type: "town"
     }
-
-
     spaces['tripoli'] = {
       top: 3030,
       left: 3316,
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
-      neighbours: ["edinburgh","carlisle","york"],
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['candia'] = {
@@ -1611,6 +1695,8 @@ console.log("returning false");
       home: "venice",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
     spaces['rhodes'] = {
@@ -1619,6 +1705,8 @@ console.log("returning false");
       home: "independent",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['corfu'] = {
@@ -1627,10 +1715,10 @@ console.log("returning false");
       home: "venice",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
-
-
     spaces['coron'] = {
       top: 2510,
       left: 4146,
@@ -1638,6 +1726,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["athens"],
+      language: "other",
       type: "town"
     }
     spaces['athens'] = {
@@ -1647,6 +1736,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["larissa","lepanto","coron"],
+      language: "other",
       type: "key"
     }
     spaces['lepanto'] = {
@@ -1656,6 +1746,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["larissa","athens"],
+      language: "other",
       type: "town"
     }
     spaces['larissa'] = {
@@ -1665,6 +1756,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["lepanto","athens","salonika"],
+      language: "other",
       type: "town"
     }
     spaces['salonika'] = {
@@ -1674,6 +1766,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["larissa","edirne"],
+      language: "other",
       type: "key"
     }
     spaces['durazzo'] = {
@@ -1683,6 +1776,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["scutari"],
+      language: "other",
       type: "town"
     }
     spaces['scutari'] = {
@@ -1692,6 +1786,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["ragusa","durazzo"],
+      language: "other",
       type: "fortress"
     }
     spaces['edirne'] = {
@@ -1701,6 +1796,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["varna","istanbul","salonika","sofia",],
+      language: "other",
       type: "key"
     }
     spaces['istanbul'] = {
@@ -1710,6 +1806,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["edirne","varna"],
+      language: "other",
       type: "key"
     }
     spaces['varna'] = {
@@ -1719,6 +1816,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["bucharest","edirne","istanbul"],
+      language: "other",
       type: "town"
     }
     spaces['bucharest'] = {
@@ -1728,6 +1826,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["nicopolis","varna"],
+      language: "other",
       type: "town"
     }
     spaces['nicopolis'] = {
@@ -1737,6 +1836,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["bucharest","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['sofia'] = {
@@ -1746,6 +1846,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["nezh","edirne"],
+      language: "other",
       type: "town"
     }
     spaces['nezh'] = {
@@ -1755,6 +1856,7 @@ console.log("returning false");
       political: "",
       religion: "other",
       neighbours: ["belgrade","sofia"],
+      language: "other",
       type: "town"
     }
 
@@ -1766,6 +1868,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["szegedin","mohacs","agram","nezh","nicopolis"],
+      language: "other",
       type: "key"
     }
     spaces['szegedin'] = {
@@ -1775,6 +1878,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["buda","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['mohacs'] = {
@@ -1784,6 +1888,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["buda","graz","agram","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['graz'] = {
@@ -1793,6 +1898,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["vienna","mohacs","agram","trieste"],
+      language: "german",
       type: "town"
     }
     spaces['agram'] = {
@@ -1802,6 +1908,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["graz","trieste","belgrade","mohacs"],
+      language: "other",
       type: "town"
     }
     spaces['buda'] = {
@@ -1811,6 +1918,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["pressburg","mohacs","szegedin"],
+      language: "other",
       type: "key"
     }
     spaces['pressburg'] = {
@@ -1820,6 +1928,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["vienna","buda"],
+      language: "other",
       type: "town"
     }
     spaces['brunn'] = {
@@ -1829,6 +1938,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["breslau","prague","vienna"],
+      language: "other",
       type: "town"
     }
     spaces['breslau'] = {
@@ -1838,6 +1948,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["brandenburg","wittenberg","brunn"],
+      language: "other",
       type: "town"
     }
     spaces['prague'] = {
@@ -1847,10 +1958,9 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["wittenberg","leipzig","linz"],
+      language: "other",
       type: "key"
     }
-
-
     spaces['amsterdam'] = {
       top: 546,
       left: 2244,
@@ -1858,6 +1968,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["antwerp","munster"],
+      language: "other",
       type: "town"
     }
     spaces['antwerp'] = {
@@ -1867,6 +1978,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["antwerp","liege","brussels","calais"],
+      language: "other",
       type: "key"
     }
     spaces['brussels'] = {
@@ -1876,6 +1988,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["antwerp","calais","stquentin","stdizier","liege"],
+      language: "french",
       type: "fortress"
     }
     spaces['liege'] = {
@@ -1885,6 +1998,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["cologne","trier","metz","brussels","antwerp"],
+      language: "french",
       type: "town"
     }
     spaces['metz'] = {
@@ -1894,6 +2008,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["liege","trier","strasburg","besancon","stdizier"],
+      language: "french",
       type: "key"
     }
     spaces['besancon'] = {
@@ -1903,6 +2018,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["metz","dijon","geneva","basel","strasburg"],
+      language: "french",
       type: "fortress"
     }
     spaces['basel'] = {
@@ -1912,6 +2028,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["strasburg","besancon","geneva","zurich"],
+      language: "german",
       type: "town"
     }
     spaces['zurich'] = {
@@ -1921,6 +2038,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["basel","innsbruck"],
+      language: "german",
       type: "town"
     }
     spaces['geneva'] = {
@@ -1930,6 +2048,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["basel","besancon","lyon","grenoble"],
+      language: "french",
       type: "town"
     }
     spaces['milan'] = {
@@ -1939,6 +2058,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["trent","modena","pavia","turin"],
+      language: "italian",
       type: "key"
     }
     spaces['trent'] = {
@@ -1948,6 +2068,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["milan","modena","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['modena'] = {
@@ -1957,6 +2078,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["trent","milan","pavia","florence","ravenna","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['pavia'] = {
@@ -1966,6 +2088,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["milan","turin","genoa","modena"],
+      language: "italian",
       type: "town"
     }
     spaces['turin'] = {
@@ -1975,6 +2098,7 @@ console.log("returning false");
       political: "france",
       religion: "catholic",
       neighbours: ["milan","pavia","genoa"],
+      language: "italian",
       type: "town"
     }
     spaces['nice'] = {
@@ -1984,6 +2108,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["marseille"],
+      language: "french",
       type: "town"
     }
     spaces['florence'] = {
@@ -1993,6 +2118,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["modena","genoa","siena"],
+       language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -2002,6 +2128,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["genoa","florence","rome"],
+      language: "italian",
       type: "town"
     }
     spaces['bastia'] = {
@@ -2010,6 +2137,8 @@ console.log("returning false");
       home: "genoa",
       political: "",
       religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['genoa'] = {
@@ -2019,6 +2148,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["pavia","turin","modena","siena"],
+      language: "italian",
       type: "key"
     }
     spaces['rome'] = {
@@ -2028,6 +2158,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["siena","ancona","cerignola","naples"],
+      language: "italian",
       type: "key"
     }
     spaces['ancona'] = {
@@ -2037,6 +2168,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["ravenna","rome","cerignola"],
+      language: "italian",
       type: "town"
     }
     spaces['ravenna'] = {
@@ -2046,6 +2178,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["venice","modena","ancona"],
+      language: "italian",
       type: "key"
     }
     spaces['venice'] = {
@@ -2055,6 +2188,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["trent","modena","ravenna","trieste"],
+      language: "italian",
       type: "key"
     }
     spaces['zara'] = {
@@ -2064,6 +2198,7 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["ragusa","trieste"],
+      language: "other",
       type: "town"
     }
     spaces['ragusa'] = {
@@ -2073,8 +2208,10 @@ console.log("returning false");
       political: "",
       religion: "catholic",
       neighbours: ["zara","scutari"],
+      language: "italian",
       type: "town"
     }
+
 
     for (let key in spaces) {
       spaces[key].units = [];
@@ -2188,6 +2325,10 @@ console.log("returning false");
       name : "Card" ,
       onEvent : function(game_mod, player) {
 
+	// protestant gets 2 roll bonus at start
+	game_mod.game.state.tmp_protestant_reformation_bonus = 2;
+	game_mod.game.state.tmp_catholic_reformation_bonus = 0;
+
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
@@ -2221,10 +2362,6 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
 	      // catholic spaces adjacent to protestant 
 	      //
 	      function(space) {
-console.log("is this catholic: " + space.religion);
-let isatr = game_mod.isSpaceAdjacentToReligion(space, "protestant");
-console.log("and printing now!");
-console.log("is space adj: " + isatr);
 		if (
 		  space.religion === "catholic" &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
@@ -3211,6 +3348,10 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("event\t1\t008");
 	  }
 
+	  if (this.game.state.round > 1) {
+	    this.updateStatus("Game Over");
+	    return 0;
+	  }
           return 1;
         }
 
@@ -3233,12 +3374,29 @@ console.log("MOVE: " + mv[0]);
           return 0;
         }
 
+	if (mv[0] === "convert") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  let religion = mv[2];
+
+	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
+
+	  this.game.spaces[space].religion = religion;
+	  this.displaySpace(space);
+
+	  return 1;
+
+	}
 
 	if (mv[0] === "reformation") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  let space = mv[1];
+	  let p_player = mv[2];
+	  let c_player = mv[3];
 
 	  let p_rolls = 0;
 	  let c_rolls = 0;
@@ -3260,10 +3418,10 @@ console.log("MOVE: " + mv[0]);
 	  // neighbours
 	  //
 	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "catholic") {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_neighbours++;
 	    }
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion == "protestant") {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
 	    }  
 	  }
@@ -3271,7 +3429,15 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  // language zone
 	  //
-	  
+	  if (this.spaces[space].language !== "german") {
+	    ties_resolve = "catholic";
+ 	  }
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
 
 	  //
 	  // calculate total rolls
@@ -3281,16 +3447,25 @@ console.log("MOVE: " + mv[0]);
 	  c_rolls += c_neighbours;
 	  c_rolls += c_bonus;
 
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
 	  for (let i = 0; i < p_rolls; i++) {
+console.log("i: " + i);
 	    let x = this.rollDice(6);
-	    this.updateLog("Protestants roll: " + x);
-	    if (x > p_high) { x = p_high; }
+console.log("x is: " + x);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
 	  }
 
+this.updateLog("Catholics: " + c_rolls);
+
 	  for (let i = 0; i < c_rolls; i++) {
+console.log("i: " + i);
 	    let x = this.rollDice(6);
-	    this.updateLog("Catholics roll: " + x);
-	    if (x > c_high) { x = c_high; }
+console.log("x is: " + x);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
 	  }
 
 	  //
@@ -3413,6 +3588,13 @@ console.log("MOVE: " + mv[0]);
 
     return players;
 
+  }
+
+  resetPlayerTurn(player_num) {
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
   returnPlayerFaction(player) {
@@ -3610,6 +3792,8 @@ console.log("and  done 2");
     this.startClock();
 
     let his_self = this;
+
+    this.resetPlayerTurn(this.game.player);
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
     his_self.attachCardboxEvents(function(card) {
@@ -4241,14 +4425,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-      }
-    }
-
-    //
-    // add click event
-    //
-    for (let key in this.spaces) {
-      if (this.spaces.hasOwnProperty(key)) {
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }
@@ -4256,6 +4432,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     }
 
   }
+
 
   displayVictoryTrack() {
   }

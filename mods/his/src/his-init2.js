@@ -9,7 +9,9 @@
       this.game.spaces = this.returnSpaces();
       this.game.players_info = this.returnPlayers(this.game.players.length);
 
-      this.initializeDice();
+      if (this.game.dice === "") {
+        this.initializeDice();
+      }
 
 console.log("\n\n\n\n");
 console.log("---------------------------");

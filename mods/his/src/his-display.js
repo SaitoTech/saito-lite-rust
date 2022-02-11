@@ -514,14 +514,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-      }
-    }
-
-    //
-    // add click event
-    //
-    for (let key in this.spaces) {
-      if (this.spaces.hasOwnProperty(key)) {
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }
@@ -529,6 +521,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     }
 
   }
+
 
   displayVictoryTrack() {
   }
