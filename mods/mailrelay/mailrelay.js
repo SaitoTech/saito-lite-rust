@@ -34,7 +34,7 @@ class MailRelay extends ModTemplate {
         email.bcc = "";
         email.subject = 'Saito Network Initialised';
         if (app.options.server.endpoint != null) {
-            email.text = app.options.server.endpoint + 'has spun up.';
+            email.text = app.options.server.endpoint.host + ' has spun up.';
         } else {
             email.text = 'Just a quick note to let you know that test net just spun up.';
         }
