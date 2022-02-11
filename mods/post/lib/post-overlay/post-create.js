@@ -3,7 +3,7 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 
 module.exports = PostCreate = {
 
-  render(app, mod) {
+  render(app, mod, img_src=null) {
 
     this.new_post = {};
     this.new_post.images = [];
@@ -26,15 +26,6 @@ module.exports = PostCreate = {
     //document.querySelector('.post-create-header-image').onclick = (e) =>      { this.showTab("image"); }
     document.querySelector('.post-create-image-link-container').onclick = (e) =>       { this.showTab("link"); }
 
-/*
-    app.browser.addDragAndDropFileUploadToElement("post-create-image", (file) => {
-      console.log(file);
-      this.new_post.images.push(file);
-      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
-      this.attachEvents(app, mod);
-    });
-*/
-
     app.browser.addDragAndDropFileUploadToElement("post-create-container", (file) => {
       console.log(file);
       this.new_post.images.push(file);
@@ -42,11 +33,26 @@ module.exports = PostCreate = {
       this.attachEvents(app, mod);
     }, false);
 
+    if (img_src != null) {
+      this.new_post.images.push(img_src);
+      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${img_src}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+      this.attachEvents(app, mod);
+      document.querySelector(".post-create-title").style.display = "block";
+      document.querySelector(".post-create-title").placeholder = "Give Your Screenshot a Title";
+      document.querySelector(".post-create-textarea").style.display = "none";
+      document.querySelector(".post-create-link").style.display = "none";
+      document.querySelector(".post-create-image-link-container").style.display = "none";
+    }
+
   },
 
   attachEvents(app, mod) {
 
-    document.querySelector('.post-submit-btn').onclick = (e) => {
+    document.querySelector('.post-submit-btn').onclick = async (e) => {
+
+      if (this.new_post.images.length > 0) {
+	alert("It may take up to a minute to update large images. Please be patient!");
+      }
 
       this.new_post.title = document.querySelector('.post-create-title').value;
       this.new_post.comment = document.querySelector('.post-create-textarea').innerHTML;
@@ -54,7 +60,7 @@ module.exports = PostCreate = {
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
       if (this.new_post.title === "" && this.new_post.content === "") {
-        salert("Cannot submit empty post!");
+        salert("Cannot submit untitled/empty post!");
         return;
       }
 
@@ -66,6 +72,7 @@ module.exports = PostCreate = {
 	  this.new_post.title = this.new_post.comment;
 	}
       }
+
 
       let newtx = mod.createPostTransaction(this.new_post.title, this.new_post.comment, this.new_post.link, this.new_post.forum, this.new_post.images);
       app.network.propagateTransaction(newtx);

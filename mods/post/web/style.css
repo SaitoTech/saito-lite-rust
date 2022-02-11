@@ -283,7 +283,7 @@
 }
 
 .post-view-title {
-  font-size: 1.6em;
+  font-size: 1.5em;
   font-weight: bold;
   margin: 1rem 0 3px;
 }
@@ -323,7 +323,7 @@
   color: var(--saito-red);
   font-weight: bold;
   margin-bottom: 1px;
-  font-size: 1.4em;
+  font-size: 1.2em;
 }
 
 .post-view-actions {

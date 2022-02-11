@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import screenfull from "screenfull";
+import html2canvas from 'html2canvas';
 
 class Browser {
   public app: any;
@@ -846,6 +847,21 @@ class Browser {
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+  async captureScreenshot(callback=null) {
+
+    html2canvas(document.body).then(function(canvas) {
+      let img  = canvas.toDataURL("image/jpeg", 0.35);
+console.log("img: " + img);
+      if (callback != null) { callback(img); }
+    });
+  };
+
+
 }
 
 export default Browser;

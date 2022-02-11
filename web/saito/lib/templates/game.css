@@ -146,7 +146,7 @@ game-overlay-cardlist-button {
 }
 .shim-notice .card {
   width: 10vw;
-  max-width: 8vh;
+  max-width: 12vh;
   min-width: 55px;
   margin: 0;
 }
@@ -808,7 +808,7 @@ i.menu_icon_icon{
 }
 
 .player-box.active{
-  border: 3px solid silver;
+  border: 1px solid silver;
 }
 
 
