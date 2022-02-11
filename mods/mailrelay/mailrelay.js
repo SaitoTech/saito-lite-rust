@@ -25,7 +25,7 @@ class MailRelay extends ModTemplate {
 
         // add an email
 
-        let email = {};
+        let email = { to : "" , from : "", bcc : "", subject : "", text : "", html : "", ishtml : true , attachments : "" };
         email.to      = 'richard@saito.tech';
         email.from    = 'network@saito.tech';
         email.bcc = "";
@@ -43,7 +43,7 @@ class MailRelay extends ModTemplate {
 
     async handlePeerRequest(app, message, peer, callback) {
         if (message.request == "send email") {
-            let email = {};
+            let email = { to : "" , from : "", bcc : "", subject : "", text : "", html : "" , ishtml : false , attachments : "" };
             email.to = message.data.to;         //email address as string
             if (typeof (message.data.from) != "undefined" && message.data.from != "") {
                 email.from = message.data.from;       //email address as string
@@ -55,8 +55,10 @@ class MailRelay extends ModTemplate {
             email.bcc = message.data.bcc;        //bcc addresses as array of strings
             if (message.data.ishtml) {               //html email content flag - defaults to no.
                 email.html = message.data.body;
+                email.ishtml = true;
             } else {
                 email.text = message.data.body;
+                email.ishtml = false;
             }
             email.attachments = message.data.attachments;  //array of attahments in formats as defined here
             // ref: https://github.com/guileen/node-sendmail/blob/master/examples/attachmentFile.js
