@@ -5,9 +5,7 @@ module.exports = PostSidebar = {
 
   render(app, mod) {
 
-    //
     // add parent wrapping class
-    //
     if (!document.getElementById("post-container")) {
       app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
     }
@@ -21,15 +19,22 @@ module.exports = PostSidebar = {
       }
     });
 
-    document.querySelector(".post-sidebar-create-btn").onclick = (e) => {
-      PostCreate.render(app, mod);
-      PostCreate.attachEvents(app, mod);
-    };
 
   },
 
 
   attachEvents(app, mod) {
+    document.querySelector(".post-sidebar-create-btn").onclick = (e) => {
+      PostCreate.render(app, mod);
+      PostCreate.attachEvents(app, mod);
+    };
+
+    //Bread crumbs
+    Array.from(document.getElementsByClassName('post-return-to-main')).forEach(link => {
+      link.addEventListener("click", (e) => {
+        window.location = "/post";
+      });
+    });
 
     app.modules.respondTo("email-chat").forEach(module => {
       module.respondTo('email-chat').attachEvents(app, mod);

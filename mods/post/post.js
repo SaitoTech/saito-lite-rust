@@ -111,6 +111,11 @@ class Post extends ModTemplate {
     this.header.render(app, this);
     this.header.attachEvents(app, this);
 
+    if (!document.getElementById("post-container")) {
+      app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+    }
+
+
     PostSidebar.render(this.app, this);
     PostSidebar.attachEvents(this.app, this);
 
