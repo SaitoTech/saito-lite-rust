@@ -8,7 +8,7 @@ module.exports = ChatList = {
 
     render(app, mod) {
 
-      mod.add_user_modal = new ModalAddUser();
+      mod.add_user_modal = new ModalAddUser(app);
 
       document.getElementById("chat-main").innerHTML = "";
       app.browser.addElementToDom(ChatListTemplate(), "chat-main");      

@@ -42,10 +42,6 @@ body {
 }
 */
 
-.hud-cardbox {
-  top: 40%;
-  transform: translate(-50%, -50%) scale(0.8);
-}
 
 .status-cardbox {
   width: 80vw;

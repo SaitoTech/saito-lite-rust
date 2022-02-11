@@ -253,7 +253,6 @@ hr {
   background-color: #444;
   opacity: 0.4;
   z-index: 100;
-  min-width: 350px;
 }
 
 .saito-overlay,
@@ -1767,6 +1766,7 @@ div#message-wrapper {
 
 .welcome-modal-wrapper {
   display: grid;
+  font-size: 1.5em;
   grid-template-columns: 6fr 1fr;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   background-image: url(/saito/img/dreamscape.png);
@@ -1810,9 +1810,9 @@ div#message-wrapper {
   position: absolute;
 }
 
-.welcome-modal-header {
+/*.welcome-modal-header {
   font-size: 2em;
-}
+}*/
 
 .welcome-modal-main {
 }
@@ -1860,13 +1860,17 @@ div#message-wrapper {
     grid-template-columns: 1fr;
     width: 100%;
   }
+
   .modal-content-blank {
     width: 100%;
   }
-  .welcome-modal-exit .fa-arrow-right {
+  .welcome-modal-exit{
+    display: none;
+  }
+  /*.welcome-modal-exit .fa-arrow-right {
     font-size: 80px;
     bottom: 2px;
-  }
+  }*/
   .welcome-modal-action {
     padding: 0.81em;
   }

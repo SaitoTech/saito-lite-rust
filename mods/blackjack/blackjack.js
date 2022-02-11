@@ -14,7 +14,7 @@ class Blackjack extends GameTemplate {
     this.app = app;
     this.name = "Blackjack";
     this.gamename = "Blackjack";
-    this.description = 'This game is a playable demo under active development!';
+    this.description = 'Classic casino game with home rules. Try to get closest to 21 without busting, beat the dealer and win your bet, but look out! You may be dealer next hand.';
     this.categories = "Games Arcade Entertainment";
     this.type            = "Classic Cardgame";
 
@@ -1147,7 +1147,7 @@ class Blackjack extends GameTemplate {
     
     //Consolidated log message
     this.updateLog(logMsg);        
-    this.showSplash(dealerHTML+playerHTML);
+    this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
 
     return 1;
   }
@@ -1265,28 +1265,6 @@ class Blackjack extends GameTemplate {
     return "";
   }
 
-  /*
-  Load preformatted html into a pseudo overlay for the endgame info dump
-  */
-  showSplash(message) {
-    var shim = document.querySelector('.shim');
-    shim.classList.remove('hidden');
-    shim.firstElementChild.innerHTML = message;
-    shim.addEventListener('click', (e) => {
-      shim.classList.add('hidden');
-      shim.firstElementChild.innerHTML = "";
-    });
-  }
-
-  handToHTML(hand) {
-    _this = this;
-    var htmlHand = " <span class='htmlCards'>";
-    hand.forEach((card) => {
-      htmlHand += `<img class="card" src="${_this.card_img_dir}/${card}.png">`;
-    });
-    htmlHand += "</span> ";
-    return htmlHand;
-  }
 
 
 

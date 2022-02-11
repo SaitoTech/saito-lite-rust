@@ -1,13 +1,19 @@
+
+
+/*********************/
+/*** MOD DEFAULTS ****/
+/*********************/
+/*.hud-long .status-cardbox {
+  grid-template-columns: repeat(auto-fit, minmax(40px, 125px) );
+  grid-gap: 0px;
+}*/
+
+
+
 .noncard {
   color: black;
   padding: 10px;
 }
-
-.cardbox-menu.cardbox-card {
-  bottom: 10px;
-  width: 83%;
-}
-
 
 .hud-header{
   max-width: 500px;
@@ -25,7 +31,8 @@
   padding-right: 0;
   border-radius: 0px;
 }
-
+.status-header {
+}
 
 /*Stats overlay*/
 tbody th {
@@ -252,11 +259,6 @@ body {
   border-bottom: 1px dashed;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
 
 .gameboard {
   position: relative;
@@ -277,13 +279,6 @@ body {
 
 }
 
-#back_button {
-  font-size: 1.2em;
-  /* position: absolute; */
-  cursor:pointer;
-  width:30px;
-  height:30px;
-}
 
 
 .round {
@@ -361,30 +356,12 @@ body {
   cursor: pointer;
 }
 
-.showcard {
-  text-decoration: none;
-  cursor: pointer;
-}
 
-.cardbox_event_blocker {
- position:absolute;
- width:0px;
- height:0px;
- background-color: black;
- z-index: 89999;
- display:none;
- opacity: 0.4;
-}
 
-.us {
-  display: inline;
+.us, .ussr {
   float: left;
 }
 
-.ussr {
-  display: inline;
-  float: left;
-}
 
 .us_control {
   color: #FFFFFF;
@@ -392,7 +369,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .us_uncontrol {
@@ -401,7 +378,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .ussr_control {
@@ -410,7 +387,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .ussr_uncontrol {
@@ -419,7 +396,7 @@ body {
   background-image: url("img/SovietInfluenceUnControlledBackground.png");
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .loader {
@@ -470,12 +447,18 @@ body {
   background-repeat: no-repeat;
   /*max-width: 120px;*/
 }
+
+.game-cardbox{
+  width: calc(55vh * 0.712);
+}
+
 .cardbox-card {
+  left: 6px;
   background-image: url("/twilight/img/Base.svg");
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
-  width: 388px;
-  height: 543px;
+  /*width: 388px;
+  height: 543px;*/
 }
 
 

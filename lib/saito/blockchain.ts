@@ -71,23 +71,29 @@ class Blockchain {
     this.callback_limit = 2; // 2 blocks
   }
 
-  addGhostToBlockchain(id=0, previous_block_hash="", ts=0, prehash="", gt=false, hash="") {
-
+  addGhostToBlockchain(
+    id = 0,
+    previous_block_hash = "",
+    ts = 0,
+    prehash = "",
+    gt = false,
+    hash = ""
+  ) {
     this.indexing_active = true;
 
-console.log("adding Ghost to Blockchain!");
+    console.log("adding Ghost to Blockchain!");
 
     ////////////////////
     // insert indexes //
     ////////////////////
-    let block                   	= new Block(this.app);
-        block.block.id            	= id;
-        block.block.previous_block_hash = previous_block_hash;
-        block.block.timestamp          	= ts;
-        block.has_golden_ticket		= gt;
-        block.prehash             	= prehash;
-        block.hash                	= hash;
-        block.block_type		= BlockType.Ghost;
+    let block = new Block(this.app);
+    block.block.id = id;
+    block.block.previous_block_hash = previous_block_hash;
+    block.block.timestamp = ts;
+    block.has_golden_ticket = gt;
+    block.prehash = prehash;
+    block.hash = hash;
+    block.block_type = BlockType.Ghost;
 
     //
     // sanity checks
@@ -97,7 +103,6 @@ console.log("adding Ghost to Blockchain!");
       this.indexing_active = false;
       return;
     }
-
 
     if (!this.app.blockring.containsBlockHashAtBlockId(block.block.id, block.hash)) {
       this.app.blockring.addBlock(block);
@@ -112,20 +117,15 @@ console.log("adding Ghost to Blockchain!");
       this.blocks[block.hash] = block;
     }
 
-console.log("block hash now added, but nothing is longest-chain!");
+    console.log("block hash now added, but nothing is longest-chain!");
 
     // update longest-chain
     this.indexing_active = false;
     return;
-
   }
 
-
-
-
   async addBlockToBlockchain(block, force = 0) {
-
-console.log("ABTB: " + block.returnHash());
+    console.log("ABTB: " + block.returnHash());
 
     //
     //
@@ -165,9 +165,10 @@ console.log("ABTB: " + block.returnHash());
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
       console.log("fetching unknown block: " + parent_block_hash);
       if (!parent_block_hash) {
-        console.log("hash is empty", block);
+        console.log("hash is empty for parent: ", block.returnHash());
+      } else {
+        await this.app.network.fetchBlock(parent_block_hash);
       }
-      await this.app.network.fetchBlock(parent_block_hash);
     }
 
     // pre-validation
@@ -282,7 +283,7 @@ console.log("ABTB: " + block.returnHash());
         // connection or network issues.
         //
         if (
-          previous_block_hash === this.blockchain.last_block_hash &&
+          block.block.previous_block_hash === this.blockchain.last_block_hash &&
           block.block.previous_block_hash !== ""
         ) {
           //
@@ -379,7 +380,6 @@ console.log("ABTB: " + block.returnHash());
   }
 
   async addBlockSuccess(block) {
-
     console.log("blockchain.addBlockSuccess : ", block.returnHash());
     this.app.blockring.print();
 
@@ -410,12 +410,9 @@ console.log("ABTB: " + block.returnHash());
     // run callbacks if desired
     //
     let already_processed_callbacks = 0;
-console.log("LCBI: " + this.blockchain.last_callback_block_id);
     if (block_id <= this.blockchain.last_callback_block_id) {
       already_processed_callbacks = 1;
     }
-console.log("run callbacks: " + this.run_callbacks);
-console.log("already proc callbacks: " + already_processed_callbacks);
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
@@ -741,7 +738,6 @@ console.log("already proc callbacks: " + already_processed_callbacks);
     //
     if (this.app?.options?.blockchain) {
       this.blockchain = this.app.options.blockchain;
-console.log("setting LCBI: " + this.blockchain.last_block_id);
       this.blockchain.last_callback_block_id = this.blockchain.last_block_id;
     }
 
@@ -808,7 +804,7 @@ console.log("setting LCBI: " + this.blockchain.last_block_id);
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
         console.warn(`block is not found in disk : ${block_hash}`);
-	return null;
+        return null;
       }
       block.block_type = BlockType.Full;
       return block;

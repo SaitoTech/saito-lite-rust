@@ -16,6 +16,7 @@ body {
   overflow: hidden; 
   position: fixed;
   width: 100vw;
+
   height: 100vh;
 }
 
@@ -26,7 +27,7 @@ body {
 
 
 .gameboard {
-  transform-origin: left top; /* For resizing game boards */
+  /*transform-origin: left top; /* For resizing game boards */
   user-select: none;
  } 
 
@@ -124,26 +125,32 @@ game-overlay-cardlist-button {
   opacity: 0.4;
 }
 
+/** For various common overlays**/
 
 .rules-overlay {
   background-color: whitesmoke;
   border-color: black;
 }
 
-
-/**************/
-/** GAME CARDBOX **/
-/**************/
-.game-cardbox {
-  position:absolute;
-  left: 15vw%;
-  top: 13vh;
-  height: 55vh;
-  width: calc(55vh * 0.730);
-  transform: translate(calc((100vw - (55vh * 0.73)) / 2), 0);
-  border: 0px;
-  z-index: -10; /* start behind the board */
+.shim-notice {
+  background: #222b;
+  color: #fff;
+  padding: min(5vh,5vw);
+  min-width: min(400px,85vw);
+  max-width: 95vw;
+  overflow-y: auto;
 }
+
+.shim-notice  .htmlCards{
+  display: flex;
+}
+.shim-notice .card {
+  width: 10vw;
+  max-width: 12vh;
+  min-width: 55px;
+  margin: 0;
+}
+
 
 /**************/
 /** GAME MENU **/
@@ -185,6 +192,17 @@ game-overlay-cardlist-button {
   cursor: pointer;
   /*float: left;*/
 }
+
+/*Create a little buffer around the menu so it doesn't close so fast*/
+.game-menu .game-menu-sub-options:before{
+ content: "";
+ position: absolute; 
+ top: 0px;
+ bottom: -20px;
+ left: -5px;
+ right: -5px;
+}
+
 .game-menu ul .game-menu-icon {
   width: 40px;
   margin: 0 5px;
@@ -202,6 +220,7 @@ game-overlay-cardlist-button {
 }
 .game-menu-sub-options, .game-menu-sub-sub-options{
   display:none;
+  position: relative;
 }
 
 .game-menu-sub-sub-options{
@@ -275,17 +294,16 @@ game-overlay-cardlist-button {
 .hud {
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
   position: absolute;
-  left: 0%;
-  bottom: 0%;
+  left: 0;
+  bottom: 0;
   float: none;
   z-index: 40;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   border-bottom: 0px;
   transition: height 0.3s ease, width 0.3s ease, right 0.3s ease, top 0.3s ease, bottom 0.3s ease; 
-  /* box-shadow: 0 0 3px 3px #BBB;*/
   max-width: 100vw;
-  /*padding: 0 20px 20px 20px;*/
 }
+
 .hud-header {
   display: flex;
   flex-direction: row;
@@ -299,12 +317,15 @@ game-overlay-cardlist-button {
   margin: 5px 0;
 }
 
-.hud-controls{
+.hud-controls {
   cursor: default;
   color: whitesmoke;
-  
   line-height: 20px;
+  padding-left:3px;
+  padding-right:3px;
 }
+
+
 
 #hud-mode-button{
   justify-self: flex-start;
@@ -320,9 +341,7 @@ game-overlay-cardlist-button {
 .hud-body {
   width: 100%;
   max-width: 100vw;
-  min-height: 260px;
-  height: calc(100% - 30px);
-  /*overflow-y: auto;*/
+  height: calc(100% - 20px); /*hud-header = 20px*/
   background-color: transparent;
 }
 
@@ -368,9 +387,10 @@ ul li a {
   width: 500px;
   max-width: 100%;
   min-height: 40px;
-  margin: 0 auto 3px auto;
+  margin: 0 auto 10px auto;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   padding: 10px 0; 
+  font-size: 0.9em;
 }
 
 .status-header i {
@@ -436,7 +456,7 @@ i.menu_icon_icon{
 
 /*** Text listed menu options in hud > hud-body > status ***/ 
 .status-text-menu {
-  width: min(350px,100%);
+  width: min(500px,100%); /*I think 350px looks better*/
   height: fit-content;
 }
 
@@ -480,16 +500,11 @@ i.menu_icon_icon{
   background-color: #ccc3;
 }
 
-.status-cardbox { /* I want the scolling to be here, not hud-body, but hard to get the sizing to work */
+.status-cardbox { 
   display: grid;
-  grid-gap: 5px;
-  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr) );
-  /*grid-template-rows: repeat(auto-fit, minmax(80px, 1fr) );*/
+  width: 100%;     /*Fit the status, fit the hud*/
   overflow-y: auto;
-  /*height: fit-content;*/
-  width: 100%;
-  margin-top: 5px;
-  /*padding: 10px;*/
+  overflow-x: clip;
   user-select: none;
 }
 
@@ -535,10 +550,10 @@ i.menu_icon_icon{
 }
 
 /* For integration with game-cardbox*/
-.logcard{
+.showcard{
   font-weight: bold;
   cursor: pointer;
-  border-bottom: 1px dashed;
+  text-decoration: underline dotted;
 }
 
 @media screen and (max-width: 525px) {
@@ -640,7 +655,7 @@ i.menu_icon_icon{
   top: 0px;
   left: 0px;
   margin-top: 45px;
-  padding: 0 10px 5px 5px;
+  padding: 0 5px 5px 5px;
 }
 
 .hud-vertical .status-cardbox{
@@ -658,7 +673,7 @@ i.menu_icon_icon{
 }
 
 .hud-long .status-cardbox{
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr) );
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr) );
 }
 
 
@@ -793,7 +808,7 @@ i.menu_icon_icon{
 }
 
 .player-box.active{
-  border: 3px solid silver;
+  border: 1px solid silver;
 }
 
 
@@ -1233,87 +1248,76 @@ input#game_board_sizer {
 
 
 
-/*****************/
-/** CARDBOX CSS **/
-/*****************/
-.hud-cardbox {
-  position: absolute;
-  height: 48vh;
-  max-height: 520px;
-  width: calc(48vh * 0.8110);
-  max-width: 375px;
-  z-index: 2;
-  display: none;
-  top: 27%;
+/**************/
+/** GAME CARDBOX **/
+/**************/
+.game-cardbox {
+  position:absolute;
   left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-.cardbox-menu {
-    position: absolute;
-    bottom: 0px;
-    font-size: 2em;
-    font-weight: bold;
-    background-color: #eb2d2d;
-    border: 2px solid #111311;
-    cursor: pointer;
-    padding: 10px 25px;
-    text-decoration: none;
-    color: white;
-    border-radius: 10px;
-    z-index: 900009;
-    width: 85%;
-    text-align: center;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.cardbox-exit {
-  position: absolute; 
-  left: 50%; 
-  top: 50%;
-  transform: translate(-50%, -50%); 
-  text-align: center;
-  font-size: 2.1em;
-  color: white;
-  z-index: 9999999999;
-  cursor: pointer;
-}
-.cardbox-card {
-  position: absolute;
-  top: 0;
-  left: 50%;
+  top: 13vh;
+  height: 55vh;
+  width: calc(55vh * 0.730);
   transform: translateX(-50%);
-  height: 48vh;
-  width: calc(48vh * 0.730);
-  z-index: 2;
-  display: none;
+  z-index: -10; /* start behind the board */
+  font-size: max(1.5vh,8px);
+  color: white;
+  pointer-events: none;
 }
 
-
-
+.cardbox-card {
+ position: relative;
+ width: 100%;
+ height: 100%;
+}
 
 .cardbox-exit-background {
   position: absolute;
-  left: 85%;
+  top: -2%;
+  right: -2%;
   width: 5vh;
   height: 5vh;
   max-width: 50px;
   max-height: 50px;
   border: 3px black solid;
   border-radius: 100px;
-  top: -1%;
   background: #eb2d2d;
+  z-index: 90000;
   display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999999999;
+}
+
+.cardbox-exit {
+  position: relative; 
+  width: 100%; 
+  height: 100%;
+  text-align: center;
+  font-size: 2.5em;
+  z-index: inherit;
+  cursor: pointer;
+  display: none;
+}
+
+.cardbox-menu {
+  position: absolute;
+  width: 85%;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -6%;
+  font-size: 2em;
+  background-color: #eb2d2d;
+  border: 2px solid #111311;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-radius: 10px;
+  z-index: 900009;
+  text-align: center;
+  display: none;
 }
 
 
-
-
-
+.cardbox-menu:hover, .cardbox-exit:hover{
+  font-weight: bold;
+}
 
 
 
@@ -1336,8 +1340,8 @@ input#game_board_sizer {
   }
 
   .status-cardbox {
-    grid-template-columns: repeat( auto-fit, minmax(17vw, 1fr) );
-    grid-template-rows: repeat(auto-fit, 20vw);
+    /*grid-template-columns: repeat( auto-fit, minmax(17vw, 1fr) );
+    grid-template-rows: repeat(auto-fit, 20vw);*/
   }
 
   .game-menu ul li {
@@ -1354,8 +1358,8 @@ input#game_board_sizer {
     /*height: 13vw;*/
   }
   .status-cardbox {
-    grid-template-columns: repeat( auto-fit, minmax(12vw, 1fr) );
-    grid-template-rows: repeat(auto-fit, 15vw);
+    /*grid-template-columns: repeat( auto-fit, minmax(12vw, 1fr) );
+    grid-template-rows: repeat(auto-fit, 15vw);*/
 
   }
   .game-menu ul li {
@@ -1371,7 +1375,7 @@ input#game_board_sizer {
     /*height: 10vw;*/
   }
   .status-cardbox {
-    grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );
+    /*grid-template-columns: repeat( auto-fit, minmax(11vw, 1fr) );*/
     /*grid-template-rows: repeat(auto-fit, 14vw);*/
   }
   .game-menu ul li {

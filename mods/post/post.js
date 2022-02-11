@@ -2,7 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PostMain = require('./lib/post-main/post-main');
 const PostSidebar = require('./lib/post-sidebar/post-sidebar');
-const PostCreate = require('./lib/post-overlay/post-create');
+var PostCreate = require('./lib/post-overlay/post-create');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
@@ -321,7 +321,12 @@ console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
   }
 
 
-
+  postImage(image, forum="") {
+    PostCreate.render(this.app, this, image);
+    PostCreate.attachEvents(this.app, this);
+    try { document.querySelector('.post-create-forum').value = forum; } catch (err) {}
+    try { document.querySelector('.post-create').prepend("Post Screenshot to Game Forum:"); } catch (err) {}
+  }
 
 
   createPostTransaction(title, comment, link, forum, images) {
