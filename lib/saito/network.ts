@@ -302,6 +302,8 @@ class Network {
       let wsProtocol = "ws";
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
+      } else {
+        console.log("non secure peer : ", peer.peer);
       }
       console.log(
         "attempting to connect 2 to: " +
