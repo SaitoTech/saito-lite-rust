@@ -406,15 +406,30 @@ console.log("start HUD 2: " + this.hud.card_width);
       }
     });
 
+    if (app.modules.returnModule("Post")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        await app.browser.captureScreenshot(function(image) {
+          game_mod.app.modules.returnModule("Post").postImage(image, game_mod.returnSlug());
+        });
+      },
+    });
+    }
+
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
-      callback : function(app, game_mod) {
+      callback : async function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
         game_mod.handleStatsMenu();
       }
     });
+
+/****
     this.menu.addSubMenuOption("game-game", {
       text: "Invite Observer",
       id: "game-observer",
@@ -435,7 +450,7 @@ console.log("start HUD 2: " + this.hud.card_width);
         game_mod.overlay.show(app, game_mod, html);
       }
     });
-
+****/
 
     this.menu.addSubMenuOption("game-game", {
       text : "Exit",

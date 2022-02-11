@@ -40,7 +40,7 @@
     "forever-agent": "^0.6.1",
     "fs-extra": "^8.1.0",
     "html-docx": "^1.1.2",
-    "html2canvas": "^1.0.0-rc.7",
+    "html2canvas": "^1.4.1",
     "identicon.js": "^2.3.3",
     "image-resolver": "^0.6.1",
     "jimp": "^0.9.3",
