@@ -63,7 +63,7 @@ class Registry extends ModTemplate {
   tryRegisterIdentifier(identifier, domain="@saito") {
     
       let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
-      if (newtx == null) {
+      if (!newtx) {
         console.log("NULL TX CREATED IN REGISTRY MODULE")
         throw Error("NULL TX CREATED IN REGISTRY MODULE");
       }
@@ -86,7 +86,7 @@ class Registry extends ModTemplate {
       } else {
         throw TypeError("identifier must be a string");
       }
-
+      return false;
   }
 
   // DEPRECATED, USE tryRegisterIdentifier()

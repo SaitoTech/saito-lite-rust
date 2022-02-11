@@ -8,7 +8,6 @@ const ArcadeGameSidebar = require('./lib/arcade-sidebar/arcade-game-sidebar');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const getMockGames = require('./mockinvites.js');
 const ArcadeContainerTemplate = require('./lib/arcade-main/templates/arcade-container.template');
-const ModalRegisterEmail = require('../../lib/saito/ui/modal-register-email/modal-register-email');
 const JSON = require('json-bigint');
 const fetch = require("node-fetch");
 

@@ -99,12 +99,7 @@ try {
 
       if (comment != "" || images.length > 0) {
 
-	try {
-	  document.getElementById("post-view-leave-comment").style.display = "none";
-	  document.getElementById("post-create-image-preview-container").innerHTML = "";
-	  alert("Please wait while we broadcast your message...");
-	} catch (err) {
-	}
+	
 
 	setTimeout(() => {
         let newtx = mod.createCommentTransaction(mod.originalSig, comment, images);
@@ -113,12 +108,21 @@ try {
         newtx.children = 0;
         mod.comments.push(newtx);
         this.addComment(app, mod, newtx);
-        this.attachEvents(app, mod, sig);  
+        this.attachEvents(app, mod, sig);
+        mod.overlay.hide();  
 	try {
 	  document.getElementById("post-view-leave-comment").style.display = "block";
-	} catch (err) {
+	} catch (err) { console.error(err);
 	}
 	}, 200);
+
+  try {
+    document.getElementById("post-view-leave-comment").style.display = "none";
+    document.getElementById("post-create-image-preview-container").innerHTML = "";
+    salert("Broadcasting message...");
+  } catch (err) {
+    console.error(err);
+  }
 
       }
     }

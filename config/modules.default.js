@@ -13,6 +13,7 @@ module.exports = {
     'post/post.js',
     'qrscanner/qrscanner.js',
     'relay/relay.js',
+    'registry/registry.js',
     'saitoforum/saitoforum.js',
     'settings/settings.js',
     'solitrio/solitrio.js',

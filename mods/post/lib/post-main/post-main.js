@@ -3,6 +3,7 @@ const PostTeaserTemplate = require('./post-teaser.template');
 const PostForums = require('./post-forums');
 const PostForumsTemplate = require('./post-forums.template');
 const PostForumsThreadTemplate = require('./post-forums-thread.template');
+const PostMobileHelperTemplate = require('./post-mobile-helper.template');
 const PostView = require('./../post-overlay/post-view');
 
 module.exports = PostMain = {
@@ -11,21 +12,25 @@ module.exports = PostMain = {
 
     mod.renderMethod = "main";
 
-    if (app.browser.returnURLParameter("forum")) {
-      mod.forum = app.browser.returnURLParameter("forum");
-    } else {
-      mod.forum = "";
+    //The name of the specific forum (if not main splash page)
+    mod.forum = (app.browser.returnURLParameter("forum")) ? app.browser.returnURLParameter("forum") : "";
+
+    // add parent wrapping class if for some reason not already there
+    if (!document.getElementById("post-container")) {
+      app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
     }
 
-    //
-    // add parent wrapping class
-    //
+    if (!document.getElementById("forum-main")) {
+      app.browser.addElementToDom('<div id="forum-main" class="forum-main"><div id="forum-mobile-helper"></div></div>','post-container');
+    }
+
     if (mod.forum === "") {
-      if (!document.getElementById("post-container")) {
-        app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+      if (document.querySelector(".post-return-to-main")){
+        document.querySelector(".post-return-to-main").remove();
       }
+
       if (!document.querySelector(".post-forums")) { 
-        app.browser.addElementToDom(PostForumsTemplate(app, mod), "post-container"); 
+        app.browser.addElementToDom(PostForumsTemplate(app, mod), "forum-main"); 
         PostForums.render(app, mod);
         PostForums.attachEvents(app, mod);
       }
@@ -33,11 +38,12 @@ module.exports = PostMain = {
         this.updateForum(app, mod, mod.forums[i]);
       }
     } else {
-      if (!document.getElementById("post-container")) {
-        app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+      if (!document.getElementById("post-mobile-header")){
+        app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");  
       }
+
       if (!document.querySelector(".post-main")) { 
-        app.browser.addElementToDom(PostMainTemplate(app, mod), "post-container"); 
+        app.browser.addElementToDom(PostMainTemplate(app, mod), "forum-main"); 
       }
       for (let i = mod.posts.length-1; i >= 0; i--) {
         this.addPost(app, mod, mod.posts[i]);

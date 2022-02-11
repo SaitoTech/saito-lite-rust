@@ -1,4 +1,4 @@
-const ArcadeInviteTemplate = require('./arcade-invite.template');
+
 module.exports = ArcadeMainTemplate = (app, mod) => {
   return `
     <div id="arcade-main" class="arcade-main">
@@ -9,7 +9,7 @@ module.exports = ArcadeMainTemplate = (app, mod) => {
  	  <div class="alert-notice">Saito requires a standards-compliant browser: yours may freeze <a href="#" style="text-decoration:none">click for details</a></div>
         </div>
       </div>
-
+      <div id="arcade-mobile-helper"></div>
       <div id="arcade-tabs">
         <div id="arcade-hero" class="arcade-hero">
         </div>
