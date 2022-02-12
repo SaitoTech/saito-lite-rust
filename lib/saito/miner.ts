@@ -33,6 +33,11 @@ class Miner {
 
   startMining(previous_block_hash=null, difficulty=null) {
 
+    // browsers do not need to hash currently
+    if (this.app.BROWSER == 1) {
+      return;
+    }
+
     if (previous_block_hash == null) {
       let blk = this.app.blockchain.returnLatestBlock();
       if (!blk) { return; }

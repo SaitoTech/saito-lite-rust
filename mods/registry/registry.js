@@ -62,9 +62,13 @@ class Registry extends ModTemplate {
 
   tryRegisterIdentifier(identifier, domain="@saito") {
 
-console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+      let registry_self = this.app.modules.returnModule("Registry");
 
-      let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
+console.log("REGISTERING TO WHICH MODULE: " + this.name);
+console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+
+      let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
       if (!newtx) {
         console.log("NULL TX CREATED IN REGISTRY MODULE")
         throw Error("NULL TX CREATED IN REGISTRY MODULE");

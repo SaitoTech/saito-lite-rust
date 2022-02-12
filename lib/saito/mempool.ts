@@ -186,6 +186,12 @@ class Mempool {
         }
       }
 
+      if (!this.app.miner.isMining()) {
+	if (this.mempool.golden_tickets.length == 0) {
+	  this.app.miner.startMining();
+	}
+      }
+
       this.mempool.transactions.push(transaction);
 
     }

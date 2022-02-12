@@ -145,6 +145,7 @@ class Network {
   // server sends us a websocket
   //
   addRemotePeer(socket) {
+
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
       console.log("ERROR 757594: denying request to remote peer as server overloaded...");
@@ -578,6 +579,7 @@ class Network {
       }
 
       case "GSTCHAIN": {
+
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -669,6 +671,10 @@ class Network {
         );
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
+
+        if (last_shared_ancestor > 0) {
+	  last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
+        }
 
         let syncobj = {
           start: "",

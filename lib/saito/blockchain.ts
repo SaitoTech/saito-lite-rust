@@ -82,6 +82,7 @@ class Blockchain {
     this.indexing_active = true;
 
     console.log("adding Ghost to Blockchain!");
+console.log(this.app.modules.returnModule("Registry").publickey);
 
     ////////////////////
     // insert indexes //
@@ -126,6 +127,8 @@ class Blockchain {
 
   async addBlockToBlockchain(block, force = 0) {
     console.log("ABTB: " + block.returnHash());
+
+console.log(this.app.modules.returnModule("Registry").publickey);
 
     //
     //
