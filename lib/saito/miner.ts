@@ -27,7 +27,15 @@ class Miner {
     });
   }
 
-  startMining(previous_block_hash, difficulty) {
+  startMining(previous_block_hash=null, difficulty=null) {
+
+    if (previous_block_hash == null) {
+      let blk = this.app.blockchain.returnLatestBlock();
+      if (!blk) { return; }
+      previous_block_hash = blk.returnHash();
+      difficulty = blk.returnDifficulty();
+    }
+
     this.target = previous_block_hash;
     this.difficulty = difficulty;
 
@@ -39,6 +47,10 @@ class Miner {
     this.mining_timer = setInterval(async () => {
       await this.mine();
     }, this.mining_speed);
+  }
+
+  isMining() {
+    return this.mining_active;
   }
 
   stopMining() {

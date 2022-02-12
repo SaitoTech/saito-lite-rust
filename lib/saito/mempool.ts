@@ -206,6 +206,9 @@ class Mempool {
       console.log(
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
       );
+      if (!this.app.miner.isMining()) {
+	this.app,miner.startMining();
+      }
       return;
     }
 
