@@ -665,7 +665,7 @@ class Network {
 
         console.log("RECEIVED REQGSTCN with fork_id: " + fork_id + " and block_id " + block_id);
 
-        const last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
+        let last_shared_ancestor = this.app.blockchain.generateLastSharedAncestor(
           block_id,
           fork_id
         );

@@ -81,9 +81,6 @@ class Blockchain {
   ) {
     this.indexing_active = true;
 
-    console.log("adding Ghost to Blockchain!");
-console.log(this.app.modules.returnModule("Registry").publickey);
-
     ////////////////////
     // insert indexes //
     ////////////////////
@@ -118,17 +115,12 @@ console.log(this.app.modules.returnModule("Registry").publickey);
       this.blocks[block.hash] = block;
     }
 
-    console.log("block hash now added, but nothing is longest-chain!");
-
     // update longest-chain
     this.indexing_active = false;
     return;
   }
 
   async addBlockToBlockchain(block, force = 0) {
-    console.log("ABTB: " + block.returnHash());
-
-console.log(this.app.modules.returnModule("Registry").publickey);
 
     //
     //

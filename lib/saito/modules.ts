@@ -312,13 +312,6 @@ class Mods {
     for (let i = 0; i < this.mods.length; i++) {
       this.mods[i].onPeerHandshakeComplete(this.app, peer);
     }
-
-    for (let i = 0; i < this.mods.length; i++) {
-      if (this.mods[i].publickey != "") {
-console.log(this.mods[i].name + " -- " + this.mods[i].publickey);
-      }
-    }
-
   }
 
   onConnectionStable(peer) {

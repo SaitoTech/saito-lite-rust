@@ -1751,10 +1751,7 @@ console.log("message is: " + JSON.stringify(thistxmsg));
       let remove_this_game = 0;
       let include_this_game = 0;
 
-console.log("PLAYERS: " + JSON.stringify(this.games[i].msg));
-
       if (this.games[i].msg?.players?.includes(this.app.wallet.returnPublicKey())) {
-console.log("INCLUDING GAME!");
 	include_this_game = 1;
       }
 

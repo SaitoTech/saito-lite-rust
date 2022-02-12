@@ -128,11 +128,13 @@ console.log("SENDING TX TO ADDRESS: " + this.publickey);
 
     let registry_self = app.modules.returnModule("Registry");
 
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT *****
     if (registry_self.app.options.server != undefined) {
-      //registry_self.publickey = registry_self.app.wallet.returnPublicKey();
+      registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
+    *******************************************/
 
   }
 
