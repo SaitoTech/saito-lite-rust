@@ -157,6 +157,7 @@ class Mempool {
   }
 
   addTransaction(transaction: Transaction) {
+
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
@@ -168,12 +169,16 @@ class Mempool {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
           console.debug("similar golden tickets already exists");
+          this.app.miner.stopMining();
           return false;
         }
       }
 
       this.mempool.golden_tickets.push(transaction);
+      this.app.miner.stopMining();
+
     } else {
+
       for (let i = 0; i < this.mempool.transactions.length; i++) {
         if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
           console.debug("transaction already exists");
@@ -182,6 +187,7 @@ class Mempool {
       }
 
       this.mempool.transactions.push(transaction);
+
     }
 
     return true;
@@ -207,7 +213,7 @@ class Mempool {
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
       );
       if (!this.app.miner.isMining()) {
-	this.app,miner.startMining();
+	this.app.miner.startMining();
       }
       return;
     }

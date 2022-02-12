@@ -23,7 +23,11 @@ class Miner {
   initialize() {
     this.app.connection.on("BlockchainNewLongestChainBlock", (msg) => {
       this.stopMining();
-      this.startMining(msg.block_hash, msg.difficulty);
+      if (msg.block_hash) {
+        this.startMining(msg.block_hash, msg.difficulty);
+      } else {
+        this.startMining();
+      }
     });
   }
 
@@ -73,7 +77,6 @@ class Miner {
         transaction.transaction.type = TransactionType.GoldenTicket;
         transaction.transaction.m = this.app.goldenticket.serialize(this.target, random_hash);
         transaction.sign(this.app);
-        this.stopMining();
         this.app.network.propagateTransaction(transaction);
       }
     }
