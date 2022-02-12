@@ -23,11 +23,11 @@ class Miner {
   initialize() {
     this.app.connection.on("BlockchainNewLongestChainBlock", (msg) => {
       this.stopMining();
-      if (msg.block_hash) {
-        this.startMining(msg.block_hash, msg.difficulty);
-      } else {
-        this.startMining();
-      }
+      //if (msg.block_hash) {
+      //  this.startMining(msg.block_hash, msg.difficulty);
+      //} else {
+      this.startMining();
+      //}
     });
   }
 
@@ -54,6 +54,7 @@ class Miner {
 
     this.mining_active = true;
     this.mining_timer = setInterval(async () => {
+console.log("mining here: " + this.difficulty);
       await this.mine();
     }, this.mining_speed);
   }

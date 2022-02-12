@@ -160,6 +160,7 @@ class Mempool {
 
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
+
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //
@@ -189,7 +190,9 @@ class Mempool {
       if (!this.app.miner.isMining()) {
 	if (this.mempool.golden_tickets.length == 0) {
 	  this.app.miner.startMining();
-	}
+	} else {
+console.log("mining mining");
+        }
       }
 
       this.mempool.transactions.push(transaction);
