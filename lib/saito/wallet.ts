@@ -162,14 +162,6 @@ export default class Wallet {
 
   createUnsignedTransaction(publickey = "", amount = BigInt(0), fee = BigInt(0), force_merge = 0) {
 
-//
-// DEBUGGING
-//
-let registry_self = this.app.modules.returnModule("Registry");
-if (registry_self) {
-  console.log("Registry PublickEy: " + registry_self.publickey);
-}
-
     // convert from human-readable to NOLAN
     amount = BigInt(amount) * BigInt(100000000);
     fee = BigInt(fee) * BigInt(100000000);
