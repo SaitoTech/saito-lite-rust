@@ -283,14 +283,10 @@ console.log("mining mining");
   }
 
   canBundleBlock(): boolean {
-    if (
-      this.app.mempool.mempool.golden_tickets.length == 0 &&
-      this.app.blockring.returnLatestBlockId() > 2
-    ) {
-      console.log(
-        "CANNOT PRODUCE AS MEMPOOL HAS NO GOLDEN TICKET -- want to avoid producing failed block"
-      );
-      return false;
+    if (this.app.mempool.mempool.golden_tickets.length === 0) {
+      if (!this.app.miner.isMining()) {
+	this.app.miner.startMining();
+      }
     }
     if (this.app.mempool.mempool.transactions.length === 0) {
       // console.log(
