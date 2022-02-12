@@ -673,7 +673,9 @@ class Network {
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
         if (last_shared_ancestor > 0) {
-	  last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
+          if (this.app.blockchain.returnLatestBlockId() > 10) {
+	    last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
+          }
         }
 
         let syncobj = {
