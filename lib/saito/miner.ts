@@ -33,6 +33,8 @@ class Miner {
 
   startMining(previous_block_hash=null, difficulty=null) {
 
+    if (this.isMining()) { this.stopMining(); }
+
     // browsers do not need to hash currently
     if (this.app.BROWSER == 1) {
       return;
@@ -54,7 +56,6 @@ class Miner {
 
     this.mining_active = true;
     this.mining_timer = setInterval(async () => {
-console.log("mining here: " + this.difficulty);
       await this.mine();
     }, this.mining_speed);
   }
@@ -70,6 +71,7 @@ console.log("mining here: " + this.difficulty);
 
   async mine() {
     if (this.mining_active) {
+console.log("mining loop...");
       const random_hash = this.app.crypto.generateRandomNumber();
       if (
         this.app.goldenticket.validate(

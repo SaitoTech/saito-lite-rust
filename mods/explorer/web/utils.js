@@ -58,7 +58,7 @@ function listTransactions(blk, hash) {
       html += '<div class="table-header">type</div>';
       html += '<div class="table-header">module</div>';
 
-      for (var mt = 1; mt < blk.transactions.length; mt++) {
+      for (var mt = 0; mt < blk.transactions.length; mt++) {
 
         var tmptx = blk.transactions[mt];
         tmptx.transaction.id = mt;
