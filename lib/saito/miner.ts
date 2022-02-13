@@ -13,7 +13,7 @@ class Miner {
     this.app = app;
 
     this.mining_active = false;
-    this.mining_speed = 100;
+    this.mining_speed = 1000;
     this.mining_timer = null;
 
     this.target = "";
