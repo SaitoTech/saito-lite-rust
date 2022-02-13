@@ -222,10 +222,9 @@
       }
     }
 
-    return menu;
+    return fmenu;
 
   }
-
 
 
 
@@ -237,12 +236,9 @@
 
     html += '<ul>';
     for (let key in this.spaces) {
-console.log("submitting: " + key);
       if (filter_func(this.spaces[key]) == 1) {
-console.log("cleared through here");
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
       }
-console.log("and  done 2");
     }
     if (cancel_func != null) {
       html += '<li class="textchoice" id="cancel">cancel</li>';
@@ -253,9 +249,7 @@ console.log("and  done 2");
 
     $('.textchoice').off();
     $('.textchoice').on('click', function () {
-
       let action = $(this).attr("id");
-
       if (action == "cancel") {
         cancel_func();
         return 0;
@@ -280,67 +274,184 @@ console.log("and  done 2");
 
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
     his_self.attachCardboxEvents(function(card) {
-      his_self.playerTurnCardSelected(card, player);
+      his_self.playerPlayCard(card, this.game.player);
     });
 
-    let menu = this.returnPlayerActionMenuOptions(this.game.player);
-
-    this.updateStatusAndListCards("Select a card...");
 
   }
+
+  playerPlayCard(card) {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="ops">play for ops</li>`;
+    html    += `<li class="card" id="event">play for event</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions('Playing card:', html, true);
+    this.bindBackButtonFunction(() => {
+      this.playerTurnCardSelected(card, player);
+    });
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "ops") {
+        this.playerPlayOps();
+        return;
+      }
+      if (user_choice === "event") {
+        this.playerPlayEvent();
+        return;
+      }
+      return;
+    });
+
+  }
+
+  async playerPlayOps(card, ops=null) {
+
+    let menu = this.returnActionMenuOptions(this.game.player);
+    let faction = this.returnPlayerFaction(this.game.player);
+    let faction_key = faction.key;
+    if (ops == null) { ops = 2; }
+
+    let html = `<ul>`;
+    for (let i = 0; i < menu.length; i++) {
+      for (let z = 0; z < menu[i].factions.length; z++) {
+        if (menu[i].factions[z] === faction_key) {
+	  if (menu[i].cost[z] <= ops) {
+            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+          }
+        }
+      }
+    }
+    html    += `<li class="card" id="end_turn">end turn</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.attachCardboxEvents(async (user_choice) => {      
+
+      if (user_choice === "end_turn") {
+        this.endTurn();
+        return;
+      }
+
+      for (let z = 0; z < menu[user_choice].factions.length; z++) {
+        if (menu[user_choice].factions[z] === faction_key) {
+          ops -= menu[user_choice].cost[z];
+        }
+      }
+
+      await menu[user_choice].fnct(this.game.player);
+      if (ops > 0) {
+	this.playerPlayOps(card, ops);
+      } else {
+	this.endTurn();
+      }
+      return;
+
+    });
+  }
+  playerPlayEvent(card) {
+
+console.log("playing ops");
+
+  }
+
 
   playerActionMenu(player) {
     let menu_options = this.returnActionMenuOptions();
   }
 
-  playerReformationAttempt(player) {
+  async playerReformationAttempt(player) {
 
     this.updateStatus("Attempting Reformation Attempt");
-
+    return;
   }
-  playerCounterReformationAttempt(player) {
+  async playerCounterReformationAttempt(player) {
+console.log("1");
+return;
   }
-  playerMoveFormationInClear(player) {
+  async playerMoveFormationInClear(player) {
+console.log("2");
+return;
   }
-  playerMoveFormationOverPass(player) {
+  async playerMoveFormationOverPass(player) {
+console.log("3");
+return;
   }
-  playerNavalMove(player) {
+  async playerNavalMove(player) {
+console.log("4");
+return;
   }
-  playerBuyMercenary(player) {
+  async playerBuyMercenary(player) {
+console.log("5");
+return;
   }
-  playerRaiseRegular(player) {
+  async playerRaiseRegular(player) {
+console.log("6");
+return;
   }
-  playerBuildNavalSquadron(player) {
+  async playerBuildNavalSquadron(player) {
+console.log("7");
+return;
   }
-  playerAssault(player) {
+  async playerAssault(player) {
+console.log("8");
+return;
   }
-  playerControlUnfortifiedSpace(player) {
+  async playerControlUnfortifiedSpace(player) {
+console.log("9");
+return;
   }
-  playerExplore(player) {
+  async playerExplore(player) {
+console.log("10");
+return;
   }
-  playerColonize(player) {
+  async playerColonize(player) {
+console.log("11");
+return;
   }
-  playerConquer(player) {
+  async playerConquer(player) {
+console.log("12");
+return;
   }
-  playerInitiatePiracyInASea(player) {
+  async playerInitiatePiracyInASea(player) {
+console.log("13");
+return;
   }
-  playerRaiseCavalry(player) {
+  async playerRaiseCavalry(player) {
+console.log("14");
+return;
   }
-  playerBuildCorsair(player) {
+  async playerBuildCorsair(player) {
+console.log("15");
+return;
   }
-  playerTranslateScripture(player) {
+  async playerTranslateScripture(player) {
+console.log("16");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(player) {
+console.log("17");
+return;
   }
-  playerCallTheologicalDebate(player) {
+  async playerCallTheologicalDebate(player) {
+console.log("");
+return;
   }
-  playerBuildSaintPeters(player) {
+  async playerBuildSaintPeters(player) {
+console.log("");
+return;
   }
-  playerBurnBooks(player) {
+  async playerBurnBooks(player) {
+console.log("");
+return;
   }
-  playerFoundJesuitUniversity(player) {
+  async playerFoundJesuitUniversity(player) {
+console.log("jesuit");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(player) {
+console.log("treatise");
+return;
   }
 
 

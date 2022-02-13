@@ -32,13 +32,23 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.game.queue.push("victory_determination_phase");
+	  this.game.queue.push("new_world_phase");
+	  this.game.queue.push("winter_phase");
+	  this.game.queue.push("action_phase");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("card_draw_phase");
+	  this.game.queue.push("ACKNOWLEDGE\ttest");
+
+
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-	  if (this.game.state.round == 1) {
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
-	  }
+//	  if (this.game.state.round == 1) {
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+//	  }
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");
@@ -59,8 +69,76 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
-        if (mv[0] === "play") {
+        if (mv[0] === "victory_determination_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "new_world_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "winter_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "action_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "spring_deployment_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "diplomacy_phase") {
 
+console.log("just in diplomacy phase!");
+console.log("cards in hand: " + JSON.stringify(this.game.deck[0].hand));
+
+	  this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].hand);
+          this.attachCardboxEvents(function(card) {
+            this.playerPlayCard(card, this.game.player);
+          });
+
+
+	  this.game.queue.splice(qe, 1);
+          return 0;
+        }
+        if (mv[0] === "card_draw_phase") {
+this.updateLog("Deal Cards to Players");
+this.updateLog("Discards Reshuffled into Deck");
+this.updateLog("New Units and New Cards Added");
+
+	  let cards_to_deal = [];
+
+	  for (let i = 0; i < this.game.players_info.length; i++) {
+	    let pf = this.game.players_info[i].faction;
+console.log("faction: " + pf);
+	    cards_to_deal.push(this.factions[pf].returnCardsDealt(this));
+          }
+
+console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
+
+	  //
+	  // generate new deck
+	  //
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DEAL\t1\t"+(i)+"\t"+(cards_to_deal[(i-1)]));
+	  }
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
+	  }
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DECKXOR\t1\t"+(i));
+	  }
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
+
+console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
+
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+
+        if (mv[0] === "play") {
           this.displayBoard();
           this.playMove();
           return 0;

@@ -19,6 +19,8 @@ class HereIStand extends GameTemplate {
     this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
     this.categories      = "Games Arcade Entertainment";
 
+    this.interface = 1; // graphical interface
+
     //
     // this sets the ratio used for determining
     // the size of the original pieces

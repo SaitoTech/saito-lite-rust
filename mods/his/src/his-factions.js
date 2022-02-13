@@ -6,6 +6,7 @@
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.key == null)	        { obj.key = name; }
+    if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
@@ -14,9 +15,14 @@
 	`;
       }
     }
+    if (obj.returnCardsDealt == null) {
+      obj.returnCardsDealt = function(faction) {
+	return 1;
+      }
+    }
 
     obj = this.addEvents(obj);
-    this.factions[name] = obj;
+    this.factions[obj.key] = obj;
 
   }
 

@@ -134,7 +134,7 @@
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction1"); 
+        game_mod.displayFactionSheet("hapsburg"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -142,7 +142,7 @@
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction2"); 
+        game_mod.displayFactionSheet("england"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -150,7 +150,7 @@
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction3");
+        game_mod.displayFactionSheet("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -158,7 +158,7 @@
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction5");
+        game_mod.displayFactionSheet("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -166,7 +166,7 @@
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction6");
+        game_mod.displayFactionSheet("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -174,7 +174,7 @@
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction4");
+        game_mod.displayFactionSheet("papacy");
       }
     });
 

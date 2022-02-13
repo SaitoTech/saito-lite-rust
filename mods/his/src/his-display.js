@@ -221,90 +221,90 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	    if (army >= 4) {
               tile += `HapsburgReg-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `HapsburgReg-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `HapsburgReg-1.svg`;
 	      army -= 1;
-	    }
+	    } } }
           }
           if (owner === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `EnglandReg-2.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `EnglandReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `FrenchReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `FrenchReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyReg-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `PapacyReg-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `PapacyReg-1.svg`;
 	      army -= 1;
-	    }
+	    } } }
           }
           if (owner === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `ProtestantReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `ProtestantReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `OttomanReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `OttomanReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
         }
         html += `<img class="army_tile" src="${tile}" />`;
