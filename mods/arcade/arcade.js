@@ -265,6 +265,8 @@ class Arcade extends ModTemplate {
     let x = app.browser.returnURLParameter("game");
     if (x) { this.viewing_game_homepage = 1; }
 
+    this.renderArcadeMain(this.app, this);
+
     if (x) {
       ArcadeGameSidebar.render(app, this);
       ArcadeGameSidebar.attachEvents(app, this);
@@ -272,10 +274,9 @@ class Arcade extends ModTemplate {
       ArcadeSidebar.render(app, this);
       ArcadeSidebar.attachEvents(app, this);
     }   
-
-    this.renderArcadeMain(this.app, this);
-
   }
+
+  
   isMyGame(invite, app) {
     for(let i = 0; i < invite.msg.players.length; i++) {
       if (invite.msg.players[i] == app.wallet.returnPublicKey()) {

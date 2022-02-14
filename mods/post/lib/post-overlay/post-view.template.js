@@ -5,7 +5,10 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
   for (let i = 0; i < mod.posts.length; i++) {
     if (sig === mod.posts[i].transaction.sig) { tx = mod.posts[i]; }
   }
-  if (tx == null) { return; }
+  for (let i = 0; i < mod.forums.length; i++) {
+    if (sig === mod.forums[i].transaction.sig) { tx = mod.forums[i]; }
+  }
+  if (tx == null) { return "<div>Post not found!</div>"; }
 
   // from timestamp to friendly time
   const time =  datetimeRelative(tx.transaction.ts);

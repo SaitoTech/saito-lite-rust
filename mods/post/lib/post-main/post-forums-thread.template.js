@@ -28,10 +28,8 @@ module.exports = PostForumsThreadTemplate = (obj) => {
         <div class="forum-topic-latest-post" id="forum-topic-latest-post-${obj.ft_mod}" style="visibility:hidden">
           <div class="forum-topic-latest-post-image" id="forum-topic-latest-post-image-${obj.ft_mod}"><i class="fas fa-user"></i></div>
           <div class="forum-topic-latest-post-details">
-            <a class="forum-topic-link" href="?forum=${obj.ft_mod}">
-              <div class="forum-topic-latest-post-title" id="forum-topic-latest-post-title-${obj.ft_mod}">${ft_ptitle}</div>
-              <div class="forum-topic-latest-post-info" id="forum-topic-latest-post-info-${obj.ft_mod}"><span id="forum-topic-latest-post-user-${obj.ft_mod}">${obj.ft_puser}</span>, <span id="forum-topic-latest-post-date-${obj.ft_mod}">${obj.ft_pdate}</span></div>
-            </a>
+            <div class="forum-topic-latest-post-title" id="forum-topic-latest-post-title-${obj.ft_mod}">${ft_ptitle}</div>
+            <div class="forum-topic-latest-post-info" id="forum-topic-latest-post-info-${obj.ft_mod}"><span id="forum-topic-latest-post-user-${obj.ft_mod}">${obj.ft_puser}</span>, <span id="forum-topic-latest-post-date-${obj.ft_mod}">${obj.ft_pdate}</span></div>
           </div>
         </div>
       </div>

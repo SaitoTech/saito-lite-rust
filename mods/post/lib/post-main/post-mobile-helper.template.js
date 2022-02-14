@@ -6,8 +6,8 @@ module.exports = PostMobileHelper = (game_mod) => {
     </div>
     <div class="post-mobile-btn-wrapper">
      <ul class="mobile-helper">
-      <li class="button tip post-return-to-main"><i class="fas fa-arrow-circle-left"></i> Forum Main</li>
-      <li class="button tip post-sidebar-create-btn"><i class="fas fa-plus-circle"></i> New Post</li>
+      <li class="button post-return-to-main"><i class="fas fa-arrow-circle-left"></i> Forum Main</li>
+      <li class="button post-create-btn"><i class="fas fa-plus-circle"></i> New Post</li>
     </ul>
     </div>
   `;
