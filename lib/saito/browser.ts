@@ -450,6 +450,10 @@ class Browser {
     if (!document.getElementById(`hidden_file_element_${id}`)) {
       this.addElementToDom(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
+      if (!dropArea){
+        console.error("Undefined id in browser",id);
+        return null;
+      }
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
         dropArea.addEventListener(eventName, this.preventDefaults, false);
       });

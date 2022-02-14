@@ -110,24 +110,18 @@ body {
 .arcade-games-wrapper {
   background-color: black;
 } 
-.email-chat {
-  height: unset;
-  min-height: 300px;
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
+
 .arcade-navigator-bars-menu {
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
 }
+
 .arcade-apps-wrapper {
   overflow-y: scroll;
+  border: 1px solid var(--saito-red);
 }
 
-.chat-list {
-  overflow-y: scroll;
-}
 .arcade-main {
   height: calc(100vh - 5em - 5px);
   /* new design does not required a grid
@@ -197,8 +191,10 @@ body {
 
 .arcade-game-mobile-header .arcade-game-mobile-return-to-arcade{
   position: absolute;
-  left: 1em;
+  left: 5%;
+  font-size: 32px;
 }
+
 .arcade-apps.mobile-helper{
   display: flex;
 }
@@ -208,6 +204,7 @@ body {
   height: 45px;
   line-height: 45px;
   padding: unset;
+  border: 1px solid var(--saito-red);
 }
 
 /*
@@ -451,6 +448,7 @@ body {
 }
 
 .arcade-sub {
+  position: relative;
   display: grid;
   /* grid-template-columns: 3fr 2fr; */
   grid-template-columns: 1fr;
@@ -471,7 +469,7 @@ body {
   margin-right: auto;
 }
 
-.arcade-posts {
+.arcade-posts-container {
   padding-left: 0.5em;
   padding-top: 0.5em;
   font-size: 1em;
@@ -516,10 +514,9 @@ body {
 /* Post */
 
 .arcade-posts-add {
-  position: relative;
+  position: absolute;
   top: 0;
   right: 0;
-  float: right;
 }
 
 .arcade-post {
@@ -549,7 +546,6 @@ body {
 }
 
 .arcade-post-title {
-  float: left;
   font-size: 25px;
   font-weight: bold;
   cursor: pointer;
@@ -686,6 +682,7 @@ button.add-games {
 #arcade-play-btn {
   padding-bottom: 1.7em;
 }
+
 .chat-header {
   background: var(--saito-nightscape);
   border: 1px solid var(--saito-red);
@@ -698,6 +695,8 @@ button.add-games {
   border: 1px solid var(--saito-red);
   background: #1e1e1f50;
 }
+
+
 .arcade-gamelist {
   width: 100%;
 }
@@ -1044,9 +1043,6 @@ button.add-games {
   font-size: 1.2em;
   line-height: 1.4em;
   /* padding: 10px 0px; */
-}
-.arcade-apps-wrapper {
-  border: 1px solid var(--saito-red);
 }
 .arcade-navigator {
   border-bottom: 1px solid grey;
@@ -1430,6 +1426,12 @@ span.rewards-row-name {
     max-height: calc(100vh - 7em);
   }
 
+  /* Top sitting controls */
+  #arcade-mobile-helper{
+    display: block;
+  }
+
+
   /* Pop out side bar*/
   .arcade-sidebar {
     position: absolute;
@@ -1484,9 +1486,6 @@ span.rewards-row-name {
     grid-template-rows: 1.3em auto 1fr;
   }
 
-  #arcade-mobile-helper{
-    display: block;
-  }
 
   .invite-tile-wrapper {
     grid-template-rows: 1fr;

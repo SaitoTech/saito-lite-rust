@@ -19,6 +19,7 @@ module.exports = ArcadeForums = {
     app.modules.respondTo("post-forum").forEach(mod => {
       modforums.push(mod);
     });
+
     for (let i = 0; i < modforums.length; i++) {
 
       let img = "/saito/img/background.png";
@@ -74,16 +75,16 @@ module.exports = ArcadeForums = {
     }
    
 
-    if (!document.querySelector(".arcade-posts")) { 
+    if (!document.querySelector(".arcade-posts-container")) { 
 
       app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
-      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', "arcade-posts");
+      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', "arcade-posts-container");
       for (let i = 0; i < sobj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts");
+        app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts-container");
       }
-      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', "arcade-posts");
+      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', "arcade-posts-container");
       for (let i = 0; i < obj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts");
+        app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts-container");
       }
 
     }

@@ -96,6 +96,7 @@ module.exports = ArcadeMain = {
     */
 
     if (x){
+      //Events for this are same as side bar (and attached via arcade-game-sidebar.js)
       app.browser.addElementToElement(ArcadeMobileHelper(app.modules.returnModuleBySlug(x)), document.getElementById("arcade-mobile-helper"));
     }
 
@@ -188,9 +189,9 @@ module.exports = ArcadeMain = {
 
 
     
-    if (x) {
+    if (x) { //Add game-specific posts
       ArcadePosts.render(app, mod);
-    } else {
+    } else { //Add summary of game pages with latest post teaser
       ArcadeForums.render(app, mod);
     }
 
@@ -225,7 +226,12 @@ module.exports = ArcadeMain = {
   },
 
   attachEvents(app, mod) {
-    ArcadePosts.attachEvents(app, mod);
+    if (mod.app.browser.returnURLParameter("game")){
+      ArcadePosts.attachEvents(app, mod);  
+    }else{
+      ArcadeForums.attachEvents(app, mod);
+    }
+    
   },
 
   async joinGame(app, mod, game_id) {

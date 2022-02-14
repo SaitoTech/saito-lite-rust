@@ -30,26 +30,23 @@ module.exports = ArcadeGameSidebar = {
     let game_mod = app.modules.returnModuleBySlug(gameStub);
 
     //Launch Game on Click
-    let newGameBtn = document.querySelector("#new-game");
-    if (newGameBtn){
+    Array.from(document.querySelectorAll("#new-game")).forEach(newGameBtn => {
       newGameBtn.addEventListener('click', (e) => {
         //Should we create a new Event tag?
         app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", game_mod.name); 
         let tx = new saito.default.transaction();
         tx.msg.game = game_mod.name;
         ArcadeGameDetails.render(app, mod, tx);
-        ArcadeGameDetails.attachEvents(app, mod, tx);
-        
+        ArcadeGameDetails.attachEvents(app, mod, tx); 
       });
-    }
+    });
     
     //Fetch Instructions
-    let howToBtn = document.querySelector("#how-to-play");
-    if (howToBtn){
+    Array.from(document.querySelectorAll("#how-to-play")).forEach(howToBtn => {
       howToBtn.addEventListener('click', (e) => {
         mod.overlay.show(app, mod, game_mod.returnGameRulesHTML());
       });
-    }          
+    });
 
     //Bread crumbs
     Array.from(document.getElementsByClassName('navigation-return-to-arcade')).forEach(link => {

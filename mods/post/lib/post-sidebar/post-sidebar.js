@@ -24,10 +24,13 @@ module.exports = PostSidebar = {
 
 
   attachEvents(app, mod) {
-    document.querySelector(".post-sidebar-create-btn").onclick = (e) => {
+    Array.from(document.querySelectorAll(".post-create-btn")).forEach(btn => {
+      btn.onclick = (e) => {
       PostCreate.render(app, mod);
       PostCreate.attachEvents(app, mod);
-    };
+      };
+    }); 
+    
 
     //Bread crumbs
     Array.from(document.getElementsByClassName('post-return-to-main')).forEach(link => {

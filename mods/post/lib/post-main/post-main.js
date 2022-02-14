@@ -25,10 +25,6 @@ module.exports = PostMain = {
     }
 
     if (mod.forum === "") {
-      if (document.querySelector(".post-return-to-main")){
-        document.querySelector(".post-return-to-main").remove();
-      }
-
       if (!document.querySelector(".post-forums")) { 
         app.browser.addElementToDom(PostForumsTemplate(app, mod), "forum-main"); 
         PostForums.render(app, mod);
@@ -56,15 +52,7 @@ module.exports = PostMain = {
 
   attachEvents(app, mod) {
 
-    document.querySelectorAll('.post-teaser-title').forEach(el => { 
-      el.onclick = (e) => {
-	let sig = e.currentTarget.getAttribute("data-id");
-        PostView.render(app, mod, sig);
-        PostView.attachEvents(app, mod, sig);
-      }
-    });
-
-    document.querySelectorAll('.post-teaser-comments').forEach(el => { 
+    document.querySelectorAll('.post-teaser-title, .post-teaser-comments, .forum-topic-latest-post-title').forEach(el => { 
       el.onclick = (e) => {
 	let sig = e.currentTarget.getAttribute("data-id");
         PostView.render(app, mod, sig);
@@ -96,7 +84,10 @@ module.exports = PostMain = {
     let fuid  = app.keys.returnIdenticon(forum.transaction.from[0].add);
 
     try {
-      document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = txmsg.title;
+      let postTitle = document.querySelector(`#forum-topic-latest-post-title-${topic}`);
+      postTitle.innerHTML = txmsg.title;
+      postTitle.setAttribute("data-id", forum.transaction.sig);
+
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = fuser;
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = fdate;
       document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = fpost_num;

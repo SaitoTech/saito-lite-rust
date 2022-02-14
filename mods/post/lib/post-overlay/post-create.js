@@ -44,6 +44,7 @@ module.exports = PostCreate = {
       document.querySelector(".post-create-image-link-container").style.display = "none";
     }
 
+    document.querySelector('.post-create-textarea').focus();
   },
 
   attachEvents(app, mod) {
