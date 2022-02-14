@@ -3665,6 +3665,207 @@ console.log("x is: " + x);
   }
 
 
+  playerMoveUnits(msg, cancel_func = null) {
+
+    let his_self = this;
+
+    this.playerSelectSpaceWithFilter(
+      "Select Town from Which to Move Units:",
+
+      function(space) {
+	if (space.units[his_self.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+	let units_to_move = [];
+
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey)) {
+	  	return 1;
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[this.game.player-1].length; i++) {
+	    if (units_to_move.contains(i)) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (index > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(id);
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+
+
+
+	
+      },
+
+      cancel_func,
+
+    );
+
+  }
+
+
+
+
+/*********************
+  playerSelectUnitsInSpace(spacekey) {
+
+    this.playerSelectUnitsWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      function(unit) {
+	if (space.units[this.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+	let space = this.spaces[spacekey];
+	let units = this.playerSelectUnitsWithFilter(
+
+
+        );
+	console.log("Space key: " + spacekey);
+      },
+
+      null,
+
+  }
+
+
+  playerSelectUnitsWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+      for (let i = 0; i < this.spaces[key].units.length; i++) {
+        for (let z = 0; z < this.spaces[key].units[i].length; z++) {
+          if (filter_func(this.spaces[key].units[i][z]) == 1) {
+            html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+          }
+        }
+      }
+    }
+    html += '<li class="textchoice" id="done">done selecting</li>';
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+
+  playerSelectUnitsInSpaceWithFilter(msg, space, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let i = 0; i < space.units.length; i++) {
+      for (let z = 0; z < space.units[i].length; z++) {
+        if (filter_func(space.units[i][z]) == 1) {
+          html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        }
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+*********************/
+
+
+
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
