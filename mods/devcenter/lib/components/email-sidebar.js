@@ -42,6 +42,12 @@ module.exports = EmailSidebar = {
             item.classList.remove("active");
           });
           e.currentTarget.classList.add("active");
+
+	  if (e.currentTarget.id === "welcome-nav-inbox") {
+	    window.reload();
+	    return;
+	  }
+
 	  let modname = e.currentTarget.id.substring(10);
           for (let i = 0; i < mod.mods.length; i++) {
             let module = mod.mods[i];
