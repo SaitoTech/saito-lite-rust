@@ -259,10 +259,7 @@ class Network {
           wsProtocol = "wss";
         }
       }
-      console.log(
-        "attempting to connect 1 to: " +
-          `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
-      );
+      //console.log("attempting to connect 1 to: " + `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
@@ -304,12 +301,9 @@ class Network {
       if (peer.peer.protocol === "https") {
         wsProtocol = "wss";
       } else {
-        console.log("non secure peer : ", peer.peer);
+        //console.log("non secure peer : ", peer.peer);
       }
-      console.log(
-        "attempting to connect 2 to: " +
-          `${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`
-      );
+      //console.log("attempting to connect 2 to: " +`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket = new WSWebSocket(`${wsProtocol}://${peer.peer.host}:${peer.peer.port}/wsopen`);
       peer.socket.peer = peer;
 
