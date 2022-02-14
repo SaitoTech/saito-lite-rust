@@ -9,7 +9,13 @@
   --identicon-height: 1em;
   --arcade-games-sidebar-height: 60%;
 }
-
+#settings-dropdown {
+  width: 400px;
+  right: -405px;
+  position: absolute;
+  background: var(--saito-nightscape);
+  color: white;
+}
 body {
   min-height: 100vh;
   font-size: 1em;

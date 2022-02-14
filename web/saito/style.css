@@ -1355,8 +1355,8 @@ div#message-wrapper {
   width: 400px;
   right: -405px;
   position: absolute;
-  background: var(--saito-nightscape);
-  color: white;
+  background: white;
+  color: black;
 }
 
 .show-right-sidebar,
