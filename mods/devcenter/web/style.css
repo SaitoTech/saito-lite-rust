@@ -1,0 +1,158 @@
+/** Email **/
+
+
+.welcome-right-sidebar {
+  float: right;
+  width: 25vw;
+  font-size: 0.9em;
+  padding-top: 0px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+}
+.welcome-link {
+  color: var(--saito-red);
+  font-weight: bold;
+}
+.welcome-link a {
+  text-decoration: none;
+}
+.welcome-text {
+ font-size: 0.9em;
+}
+h3 {
+  margin: 0px;
+}
+
+hr {
+  margin: 1em 50% 1em 0;
+  border: 1px solid #f004;
+}
+
+.email-navigator-item.active {
+  background-color: var(--saito-red);
+  color: white;
+  font-weight: bold;
+}
+.email-apps-item.active {
+  background-color: var(--saito-red);
+  color: white;
+  font-weight: bold;
+}
+
+.welcome-container {
+  font-size: 1.5em;
+  line-height: 1.4em;
+  max-width: 1000px;
+}
+.welcome-container p {
+  margin-bottom: 20px;
+}
+
+.email-container {
+  max-width: var(--saito-width);
+  display: grid;
+  grid-column-gap: 1.5em;
+  grid-template-columns: 15em auto;
+  grid-template-areas: "email-sidebar email-main";
+}
+
+.email-apps-item, .email-navigator-item {
+  background-color: white;
+  list-style: none;
+  font-weight: normal;
+  padding: 6px;
+  font-size: 1.3em;
+  color: black;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+
+.email-content {
+  display: grid;
+}
+
+.email-header {
+  padding-bottom: 0.5em;
+}
+
+.email-icons {
+  /* display: grid; */
+  /* grid-auto-flow: column; */
+  padding-bottom: 0.5em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  width: 100%;
+  border-bottom: 1px solid var(--saito-cyber-black);
+}
+
+.email-main {
+  padding-right: 0.5em;
+}
+
+.email-body {
+  padding: 0 0 0 0;
+}
+
+.email-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.email-form input[type="text"] {
+  border: none;
+  border-bottom: 1px solid var(--saito-cyber-black-wash);
+  padding: 10px 3px;
+  outline: none;
+}
+
+.email-title {
+  border-top: 1px solid lightgrey;
+}
+
+@media only screen and (max-width: 900px) {
+
+  input[type="checkbox"] {
+    margin: 0 0.65em;
+  }
+  .main {
+    max-width: unset;
+    padding: 1em 0;
+  }
+  .email-body {
+    padding: 3px;
+  }
+  .email-header {
+    padding: 0 0.4em 0 0.4em;
+  }
+  .email-main {
+    padding-right: unset;
+  }
+  .email-container {
+    display: block;
+    padding-left: 10px;
+  }
+  .email-sidebar {
+    display: none;
+  }
+  .email-bars-menu {
+    position: absolute;
+    z-index: 10000;
+    top: 9em;
+    padding: 0 1em;
+    background: white;
+    font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+    display: block;
+    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+  }
+  .email-apps {
+    border-bottom: 1px solid black;
+  }
+  #qrcode img {
+    width: 66%;
+    margin: 0.5em 16.6% 1em;
+  }
+}
+

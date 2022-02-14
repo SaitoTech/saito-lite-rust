@@ -39,7 +39,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\ttest");
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+this.returnPlayerFaction(this.game.player).name);
 
 
 	  //

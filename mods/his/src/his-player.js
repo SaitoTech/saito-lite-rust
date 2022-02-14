@@ -540,7 +540,7 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
         }
       }
 
-      await menu[user_choice].fnct(this.game.player);
+      await menu[user_choice].fnct(this, this.game.player);
       if (ops > 0) {
 	this.playerPlayOps(card, ops);
       } else {
@@ -570,87 +570,88 @@ console.log("playing ops");
 console.log("1");
 return;
   }
-  async playerMoveFormationInClear(player) {
+  async playerMoveFormationInClear(his_self, player) {
+    his_self.playerMoveUnits();      
 console.log("2");
 return;
   }
-  async playerMoveFormationOverPass(player) {
+  async playerMoveFormationOverPass(his_self, player) {
 console.log("3");
 return;
   }
-  async playerNavalMove(player) {
+  async playerNavalMove(his_self, player) {
 console.log("4");
 return;
   }
-  async playerBuyMercenary(player) {
+  async playerBuyMercenary(his_self, player) {
 console.log("5");
 return;
   }
-  async playerRaiseRegular(player) {
+  async playerRaiseRegular(his_self, player) {
 console.log("6");
 return;
   }
-  async playerBuildNavalSquadron(player) {
+  async playerBuildNavalSquadron(his_self, player) {
 console.log("7");
 return;
   }
-  async playerAssault(player) {
+  async playerAssault(his_self, player) {
 console.log("8");
 return;
   }
-  async playerControlUnfortifiedSpace(player) {
+  async playerControlUnfortifiedSpace(his_self, player) {
 console.log("9");
 return;
   }
-  async playerExplore(player) {
+  async playerExplore(his_self, player) {
 console.log("10");
 return;
   }
-  async playerColonize(player) {
+  async playerColonize(his_self, player) {
 console.log("11");
 return;
   }
-  async playerConquer(player) {
+  async playerConquer(his_self, player) {
 console.log("12");
 return;
   }
-  async playerInitiatePiracyInASea(player) {
+  async playerInitiatePiracyInASea(his_self, player) {
 console.log("13");
 return;
   }
-  async playerRaiseCavalry(player) {
+  async playerRaiseCavalry(his_self, player) {
 console.log("14");
 return;
   }
-  async playerBuildCorsair(player) {
+  async playerBuildCorsair(his_self, player) {
 console.log("15");
 return;
   }
-  async playerTranslateScripture(player) {
+  async playerTranslateScripture(his_self, player) {
 console.log("16");
 return;
   }
-  async playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
 console.log("17");
 return;
   }
-  async playerCallTheologicalDebate(player) {
+  async playerCallTheologicalDebate(his_self, player) {
 console.log("");
 return;
   }
-  async playerBuildSaintPeters(player) {
+  async playerBuildSaintPeters(his_self, player) {
 console.log("");
 return;
   }
-  async playerBurnBooks(player) {
+  async playerBurnBooks(his_self, player) {
 console.log("");
 return;
   }
-  async playerFoundJesuitUniversity(player) {
+  async playerFoundJesuitUniversity(his_self, player) {
 console.log("jesuit");
 return;
   }
-  async playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
 console.log("treatise");
 return;
   }
