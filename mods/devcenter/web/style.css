@@ -1,5 +1,28 @@
 /** Email **/
 
+
+.welcome-right-sidebar {
+  float: right;
+  width: 25vw;
+  font-size: 0.9em;
+  padding-top: 0px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+}
+.welcome-link {
+  color: var(--saito-red);
+  font-weight: bold;
+}
+.welcome-link a {
+  text-decoration: none;
+}
+.welcome-text {
+ font-size: 0.9em;
+}
+h3 {
+  margin: 0px;
+}
+
 hr {
   margin: 1em 50% 1em 0;
   border: 1px solid #f004;
@@ -19,7 +42,7 @@ hr {
 .welcome-container {
   font-size: 1.5em;
   line-height: 1.4em;
-  max-width: 800px;
+  max-width: 1000px;
 }
 .welcome-container p {
   margin-bottom: 20px;
