@@ -2,6 +2,7 @@ module.exports = EmailMainTemplate = (app, mod) => {
 
   let html = `
     <div id="email-main" class="email-main">
+      <div id="email-appspace" class="email-appspace">
       <div class="welcome-container">
 
         <h2>Welcome to the Saito Development Center</h2>
@@ -22,6 +23,7 @@ module.exports = EmailMainTemplate = (app, mod) => {
 
         Curious more about how Saito works? A good place to start is our off-chain Saito Wiki, which includes practical description of how the network works. For other great resources, we recommend visiting the <a href="https://github.com/0xluminous/awesome-saito" target="_awesome">Awesome Saito</a> or the <a href="https://saitofaqs.com/" target="_saitofaqs">Saito FAQ</a> page...
 
+      </div>
       </div>
     </div>
   `;

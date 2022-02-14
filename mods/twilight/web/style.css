@@ -1,15 +1,29 @@
+
+
+/*********************/
+/*** MOD DEFAULTS ****/
+/*********************/
+/*.hud-long .status-cardbox {
+  grid-template-columns: repeat(auto-fit, minmax(40px, 125px) );
+  grid-gap: 0px;
+}*/
+
+
+
 .noncard {
   color: black;
   padding: 10px;
 }
 
-.cardbox-menu.cardbox-card {
-  bottom: 10px;
-  width: 83%;
+.hud-header{
+  max-width: 500px;
+  margin: auto;
 }
-
-.hud-long {
-  max-width:90vw;
+.hud-header.soviet{
+  background:  linear-gradient(to right, rgba(255,0,0,0.6), rgba(255,255,0,0.4), rgba(255,0,0,0.6));
+}
+.hud-header.american{
+  background:  linear-gradient(to right, rgba(0,0,255,0.6), rgba(255,255,255,0.4), rgba(0,0,255,0.6));
 }
 
 .status-message {
@@ -17,16 +31,37 @@
   padding-right: 0;
   border-radius: 0px;
 }
+.status-header {
+}
 
+/*Stats overlay*/
+tbody th {
+  text-align: left;
+  max-width: 70px;
+}
+tbody td{
+  text-align: center;
+}
+table{
+  font-size: 20px;
+}
+table caption{
+  font-weight: bolder;
+  margin: 0.5em;
+}
 .statistics-overlay {
-  min-width:50vw;
+  min-width: min(750px,90vw);
   min-height: 50vh;
   padding: 10px;
   background-color: whitesmoke;
 }
 .statistics-round-table {
   min-width:50vw;
+  width: 100%;
   text-align: center;
+}
+.headline-statistics-table{
+  width: 100%;
 }
 
 .china_card_status_us_faceup {
@@ -224,11 +259,6 @@ body {
   border-bottom: 1px dashed;
 }
 
-.logcard {
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 1px dashed;
-}
 
 .gameboard {
   position: relative;
@@ -249,13 +279,6 @@ body {
 
 }
 
-#back_button {
-  font-size: 1.2em;
-  /* position: absolute; */
-  cursor:pointer;
-  width:30px;
-  height:30px;
-}
 
 
 .round {
@@ -333,30 +356,12 @@ body {
   cursor: pointer;
 }
 
-.showcard {
-  text-decoration: none;
-  cursor: pointer;
-}
 
-.cardbox_event_blocker {
- position:absolute;
- width:0px;
- height:0px;
- background-color: black;
- z-index: 89999;
- display:none;
- opacity: 0.4;
-}
 
-.us {
-  display: inline;
+.us, .ussr {
   float: left;
 }
 
-.ussr {
-  display: inline;
-  float: left;
-}
 
 .us_control {
   color: #FFFFFF;
@@ -364,7 +369,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .us_uncontrol {
@@ -373,7 +378,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .ussr_control {
@@ -382,7 +387,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .ussr_uncontrol {
@@ -391,7 +396,7 @@ body {
   background-image: url("img/SovietInfluenceUnControlledBackground.png");
   text-align: center;
   line-height: 48px;
-  padding-top:2px;
+  padding-top:3px;
 }
 
 .loader {
@@ -406,15 +411,16 @@ body {
 
 
 .cardlist-container {
-  height: 80vh;
-  width: 80vw;
-  overflow-y: scroll;
+  max-height: 80vh;
+  min-width: 90vh;
+  max-width: 80vw;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background: rgba(0,0,0,0.4);
 }
-.cardlist-card {
-  position: relative;
-  float:left;
-  margin-right:10px;
-  margin-bottom: 10px;
+.cardlist-container .card {
   height: 30vh;
   max-height: 520px;
   width: calc(30vh * 0.72110);
@@ -426,7 +432,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.cardimg-hud {
+.cardimg {
   position: absolute;
   width: 100%;
   height: auto;
@@ -434,11 +440,6 @@ body {
   left: 0px;
 }
 
-.cardimg {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
 
 .hud-card {
   background-image: url(/twilight/img/Base.svg);
@@ -446,12 +447,18 @@ body {
   background-repeat: no-repeat;
   /*max-width: 120px;*/
 }
+
+.game-cardbox{
+  width: calc(55vh * 0.712);
+}
+
 .cardbox-card {
+  left: 6px;
   background-image: url("/twilight/img/Base.svg");
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
-  width: 388px;
-  height: 543px;
+  /*width: 388px;
+  height: 543px;*/
 }
 
 

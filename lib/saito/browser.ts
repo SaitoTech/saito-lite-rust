@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import screenfull from "screenfull";
+import html2canvas from 'html2canvas';
 
 class Browser {
   public app: any;
@@ -391,7 +392,7 @@ class Browser {
   makeElement(elemType, elemId, elemClass) {
     const headerDiv = document.createElement(elemType);
     headerDiv.id = elemId;
-    headerDiv.class = elemClass;
+    headerDiv.classList.add(elemClass);
     return headerDiv;
   }
 
@@ -532,7 +533,7 @@ class Browser {
     try {
       const element_to_move = document.getElementById(id_to_move);
       let element_to_drag = element_to_move;
-      if (id_to_drag != "") {
+      if (id_to_drag) {
         element_to_drag = document.getElementById(id_to_drag);
       }
 
@@ -546,90 +547,81 @@ class Browser {
       let element_start_top = 0;
 
       element_to_drag.onmousedown = function (e) {
-        if (
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag) ||
-          e.currentTarget.id === undefined
-        ) {
-          document.ontouchend = null;
-          document.ontouchmove = null;
+        e = e || window.event;
+
+        if (!e.currentTarget.id ||
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)) {
           document.onmouseup = null;
           document.onmousemove = null;
           return;
         }
 
-        e = e || window.event;
-
-        //e.preventDefault();
-        //if (e.stopPropagation) { e.stopPropagation(); }
-        //if (e.preventDefault) { e.preventDefault(); }
-        //e.cancelBubble = true;
-        //e.returnValue = false;
-
+        element_to_move.style.transition = "unset";
+       
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;
+
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;
-        mouse_current_left = mouse_down_left;
-        mouse_current_top = mouse_down_top;
-
+      
+        element_moved = false;
         //console.log("Element Start Left: " + element_start_left);
         //console.log("Element Start Top: " + element_start_top);
         //console.log("Mouse Down Left: " + mouse_down_left);
         //console.log("Mouse Down Top: " + mouse_down_top);
 
         document.onmouseup = function (e) {
-          document.ontouchend = null;
-          document.ontouchmove = null;
           document.onmouseup = null;
           document.onmousemove = null;
 
-          if (mycallback != null) {
-            if (element_moved == 1) {
-              mycallback();
-            }
+          element_to_move.style.transition = "";
+          if (mycallback && element_moved) {
+            mycallback();
           }
         };
 
         document.onmousemove = function (e) {
           e = e || window.event;
-          //e.preventDefault();
+          e.preventDefault();
 
           mouse_current_left = e.clientX;
           mouse_current_top = e.clientY;
           const adjustmentX = mouse_current_left - mouse_down_left;
           const adjustmentY = mouse_current_top - mouse_down_top;
-
-          if (adjustmentX > 0) {
-            element_moved = 1;
+         
+          if (adjustmentX !== 0 || adjustmentY !== 0) {
+            element_moved = true;
           }
-          if (adjustmentY > 0) {
-            element_moved = 1;
-          }
-
+         
           // set the element's new position:
           element_to_move.style.left = element_start_left + adjustmentX + "px";
           element_to_move.style.top = element_start_top + adjustmentY + "px";
+         
+          //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";
           element_to_move.style.right = "unset";
+          //Styles that adjust where the element goes, need to go away!
           element_to_move.style.transform = "unset";
-          element_to_move.style.transform = "unset";
+          element_to_move.style.marginTop = "unset";
+          element_to_move.style.marginLeft = "unset";
         };
+
+        return false;
       };
 
       element_to_drag.ontouchstart = function (e) {
-        if (
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag) ||
-          e.currentTarget.id === undefined
-        ) {
+        e = e || window.event;
+
+        if (!e.currentTarget.id || 
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)) {
           document.ontouchend = null;
           document.ontouchmove = null;
-          document.onmouseup = null;
-          document.onmousemove = null;
           return;
         }
 
-        e = e || window.event;
+        element_to_move.style.transition = "unset";
+        
         //e.preventDefault();
         //if (e.stopPropagation) { e.stopPropagation(); }
         //if (e.preventDefault) { e.preventDefault(); }
@@ -651,12 +643,8 @@ class Browser {
         document.ontouchend = function (e) {
           document.ontouchend = null;
           document.ontouchmove = null;
-          document.onmouseup = null;
-          document.onmousemove = null;
-          if (mycallback != null) {
-            if (element_moved == 1) {
-              mycallback();
-            }
+          if (mycallback && element_moved) {
+            mycallback();
           }
         };
 
@@ -673,24 +661,24 @@ class Browser {
           const adjustmentX = mouse_current_left - mouse_down_left;
           const adjustmentY = mouse_current_top - mouse_down_top;
 
-          if (adjustmentX > 0) {
-            element_moved = 1;
+          if (adjustmentX !== 0 || adjustmentY !== 0) {
+            element_moved = true;
           }
-          if (adjustmentY > 0) {
-            element_moved = 1;
-          }
-
+          
           // set the element's new position:
           element_to_move.style.left = element_start_left + adjustmentX + "px";
           element_to_move.style.top = element_start_top + adjustmentY + "px";
           element_to_move.style.bottom = "unset";
           element_to_move.style.right = "unset";
           element_to_move.style.transform = "unset";
-          element_to_move.style.transform = "unset";
+          element_to_move.style.marginTop = "unset";
+          element_to_move.style.marginLeft = "unset";
+     
         };
       };
     } catch (err) {
-      console.log("error: " + err);
+      console.error("error: " + err);
+      console.log(element_to_move,element_to_drag);
     }
   }
 
@@ -859,6 +847,21 @@ class Browser {
   //////////////////////////////////////////////////////////////////////////////
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+  async captureScreenshot(callback=null) {
+
+    html2canvas(document.body).then(function(canvas) {
+      let img  = canvas.toDataURL("image/jpeg", 0.35);
+console.log("img: " + img);
+      if (callback != null) { callback(img); }
+    });
+  };
+
+
 }
 
 export default Browser;

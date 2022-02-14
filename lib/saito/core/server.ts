@@ -281,6 +281,7 @@ class Server {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       const block = this.app.blockchain.blocks[bsh];
+
       if (block) {
         if (block.hasKeylistTransactions(bsh, keylist) === 0) {
           res.writeHead(200, {
@@ -305,8 +306,15 @@ class Server {
         // @ts-ignore
         const blk = await this.app.storage.loadBlockByHash(bsh);
 
+        console.log("and here...");
+
         if (blk == null) {
+          res.writeHead(200, {
+            "Content-Type": "text/plain",
+            "Content-Transfer-Encoding": "utf8",
+          });
           res.send("{}");
+          res.end();
           return;
         } else {
           const newblk = blk.returnLiteBlock(keylist);
@@ -323,8 +331,13 @@ class Server {
           res.end();
           return;
         }
+
+        console.log("hit end...");
         return;
       }
+
+      console.log("block doesn't exist...");
+      return;
     });
 
     app.get("/block/:hash", async (req, res) => {
@@ -341,7 +354,37 @@ class Server {
         return res.sendStatus(404); // Not Found
       }
       let buffer = block.serialize();
-      buffer = Buffer.from(buffer, "binary").toString("base64");
+      let bufferString = Buffer.from(buffer).toString("base64");
+
+      res.status(200);
+      res.end(bufferString);
+    });
+
+    app.get("/json-block/:hash", async (req, res) => {
+      const hash = req.params.hash;
+      console.debug("fetching block : " + hash);
+
+      if (!hash) {
+        console.warn("hash not provided");
+        return res.sendStatus(400); // Bad request
+      }
+
+      const block = await this.app.blockchain.loadBlockAsync(hash);
+      if (!block) {
+        console.warn("block not found for : " + hash);
+        return res.sendStatus(404); // Not Found
+      }
+
+      let block_to_return = { block: {}, transactions: {} };
+      if (block?.block) {
+        block_to_return.block = JSON.parse(JSON.stringify(block.block));
+      }
+      if (block?.transactions) {
+        block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+      }
+
+      let buffer = JSON.stringify(block_to_return).toString("utf-8");
+      buffer = Buffer.from(buffer, "utf-8");
 
       res.status(200);
       res.end(buffer);

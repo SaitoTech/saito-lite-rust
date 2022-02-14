@@ -9,7 +9,7 @@ body {
   padding: 0px;
   margin: 0px;
   background-color: #024;
-  background:  url("img/background.png");
+  background:  url("img/background_small.png");
   background-size: cover;
   overflow-x: hidden;
   overflow-y: auto;
@@ -34,6 +34,9 @@ body {
 /*  left: 1em; */
 /*  top: 50vh; */
 /*  transform: translateY(-50%); */
+}
+.plog {
+  padding: 0.5em;
 }
 
 .opponents > .player-box{
@@ -132,6 +135,7 @@ thead,  tfoot{
 
 .wb-main {
   max-width: 902px;
+  margin: 0 auto;
 }
 
 .gameboard {
@@ -178,6 +182,7 @@ thead,  tfoot{
 .tiles {
   margin: auto;
   display: flex;
+  height: 76px;
 }
 
 .tile {
@@ -468,6 +473,7 @@ thead,  tfoot{
 
     .tiles {
     width: auto;
+    height: 72px;
   }
   .tiles div.tile {
     font-weight: bold;
@@ -490,6 +496,7 @@ thead,  tfoot{
   }
 
   .opponents > .player-box{
+    min-height: unset;
     width: 20vh;
     max-width: 23vw;
     padding: 0.25em;
@@ -504,7 +511,7 @@ thead,  tfoot{
   }
 
   .player-box .plog, .player-box .player-box-info{
-    margin: 0.25em;
+    padding: 0.25em;
   }
 }
 

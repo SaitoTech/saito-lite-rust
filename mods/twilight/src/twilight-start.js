@@ -1,5 +1,4 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
-const helpers = require('../../lib/helpers/index');
 const JSON = require('json-bigint');
 
 
@@ -29,6 +28,8 @@ class Twilight extends GameTemplate {
 
     super(app);
 
+console.log("start HUD: " + this.hud.card_width);
+
     this.app             = app;
 
     this.name  		 = "Twilight";
@@ -40,32 +41,28 @@ class Twilight extends GameTemplate {
     this.categories      = "Games Arcade Entertainment";
 
     this.boardWidth  = 5100; //Pieces originally scaled to 5100px wide board
-
     this.card_height_ratio = 1.39; // height is 1.39x width
 
     this.moves           = [];
     this.cards    	 = [];
     this.is_testing 	 = 0;
 
-    //
     // newbie mode
-    //
     this.confirm_moves = 1;
 
-    this.interface 	 = 1;
+    this.interface 	 = 1;  //Graphical card display
     
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
     this.type       	 = "Strategy Boardgame";
     this.categories 	 = "Bordgame Game"
 
-    // long-horizontal
-    this.hud.mode = 0;
+    this.hud.mode = 0;  // long-horizontal
+    this.hud.enable_mode_change = 1;
+    this.hud.card_width = 120;
 
+console.log("start HUD 2: " + this.hud.card_width);
   }
-
-
-
 
 
   //
@@ -89,70 +86,14 @@ class Twilight extends GameTemplate {
   }
 
 
-
-  handleCardsMenu() {
-
-    let twilight_self = this;
-    let html =
-    `
-      <div class="game-overlay-menu" id="game-overlay-menu">
-        <div>SELECT DECK:</div>
-       <ul>
-          <li class="menu-item" id="hand">Your Hand</li>
-          <li class="menu-item" id="discards">Discarded Cards</li>
-          <li class="menu-item" id="removed">Removed Events</li>
-          <li class="menu-item" id="unplayed">Unplayed Cards</li>
-        </ul>
-      </div>
-    `;
-
-    twilight_self.overlay.show(twilight_self.app, twilight_self, html);
-
-    $('.menu-item').on('click', function() {
-
-      let player_action = $(this).attr("id");
-      var deck = twilight_self.game.deck[0];
-      var html = "";
-      var cards;
-
-      switch (player_action) {
-        case "hand":
-          cards = deck.hand
-          break;
-        case "discards":
-          cards = Object.keys(deck.discards)
-          break;
-        case "removed":
-          cards = Object.keys(deck.removed)
-          break;
-        case "unplayed":
-          cards = Object.keys(twilight_self.returnUnplayedCards())
-          break;
-        default:
-          break;
-      }
-
-      html += '<div class="cardlist-container">';
-      for (let i = 0; i < cards.length; i++) {
-        html += '<div class="cardlist-card">';
-        if (cards[i] != undefined) {
-	  html += twilight_self.returnCardImage(cards[i], 1);
-	}
-        html += '</div>';
-      }
-      html += '</div>';
-
+  showCardOverlay(cards){
+    let html = `<div class="cardlist-container">${this.returnCardList(cards)}</div>`;
       if (cards.length == 0) { 
-        html = `
-          <div style="text-align:center; margin: auto;">
-            There are no cards in ${player_action}
-          </div>
-        `;
+        html = `<div style="text-align:center; margin: auto;">
+                There are no cards to display
+                </div>`;
       }
-
-      twilight_self.overlay.show(twilight_self.app, twilight_self, html);
-    });
-
+      this.overlay.show(this.app, this, html);
   }
 
 
@@ -191,155 +132,164 @@ class Twilight extends GameTemplate {
   
 
   handleStatsMenu() {
-
     let twilight_self = this;
 
     let us_bg = 0;
     let ussr_bg = 0;
 
     for (var i in twilight_self.countries) {
-      let countryname  = i;
-      let divname      = '#'+i;
-  
-      if ( twilight_self.countries[countryname].bg == 1 ){
-  
-          if (this.isControlled("us", i) == 1) {us_bg++}
-          if (this.isControlled("ussr", i) == 1) {ussr_bg++}
+      let countryname = i;
+      let divname = "#" + i;
+
+      if (twilight_self.countries[countryname].bg == 1) {
+        if (this.isControlled("us", i) == 1) {
+          us_bg++;
+        }
+        if (this.isControlled("ussr", i) == 1) {
+          ussr_bg++;
+        }
       }
-  }
+    }
 
-
-    let html =
-    `
-      <div class="game-overlay-menu statistics-overlay" id="game-overlay-menu">
-        <div>Headline Statistics</div>
-	<table class="headline-statistics-table" style="max-width:80vw; width:50%;">
-	  <atr>
-	    <th></th>
-	    <th>US</th>
-	    <th>USSR</th>
-	  </tr>
-	  <tr>
-	    <td><b>Played OPS</b></td>
-	    <td>${this.game.state.stats.us_ops}</td>
-	    <td>${this.game.state.stats.ussr_ops}</td>
-	  </tr>
-	  <tr>
-	    <td><b>Spaced OPS</b></td>
-	    <td>${this.game.state.stats.us_ops_spaced}</td>
-	    <td>${this.game.state.stats.ussr_ops_spaced}</td>
-	  </tr>
-	  <tr>
-	    <td><b>Scoring Cards</b></td>
-	    <td>${this.game.state.stats.us_scorings}</td>
-	    <td>${this.game.state.stats.ussr_scorings}</td>
-    </tr>
-    <tr>
-      <td><b>Battlegrounds Controlled</b></td>
-      <td>${us_bg}</td>
-      <td>${ussr_bg}</td>
-    </tr>
-	  <tr>
-	    <td><b>Coups</b></td>
-	    <td>`;
-            if (this.game.state.stats.us_coups.length > 0) { html += JSON.stringify(this.game.state.stats.us_coups); }
-	    html += `</td><td>`;
-	    if (this.game.state.stats.ussr_coups.length > 0) { html += JSON.stringify(this.game.state.stats.ussr_coups); }
-	    html += `</td>
-	  </tr>
+    let html = `
+      <div class="game-overlay-menu statistics-overlay">
+      <table class="headline-statistics-table">
+        <caption>Overall Statistics</caption>
+        <thead>
+        <tr>
+          <th></th>
+          <th>US</th>
+          <th>USSR</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <th>OPS Played</th>
+          <td>${this.game.state.stats.us_ops}</td>
+          <td>${this.game.state.stats.ussr_ops}</td>
+        </tr>
+        <tr>
+          <th>OPS Spaced</th>
+          <td>${this.game.state.stats.us_ops_spaced}</td>
+          <td>${this.game.state.stats.ussr_ops_spaced}</td>
+        </tr>
+        <tr>
+          <th>Scoring Cards</th>
+          <td>${this.game.state.stats.us_scorings}</td>
+          <td>${this.game.state.stats.ussr_scorings}</td>
+        </tr>
+        <tr>
+          <th>Battlegrounds Controlled</th>
+          <td>${us_bg}</td>
+          <td>${ussr_bg}</td>
+        </tr>
+        <tr>
+          <th>Coups</th>
+          <td>`;
+    if (this.game.state.stats.us_coups.length > 0) {
+      html += JSON.stringify(this.game.state.stats.us_coups);
+    }else {
+      html += "0";
+    }
+    html += `</td><td>`;
+    if (this.game.state.stats.ussr_coups.length > 0) {
+      html += JSON.stringify(this.game.state.stats.ussr_coups);
+    }else {
+      html += "0";
+    }
+    html += `</td>
+        </tr>
         </table>
-	<div style="margin-top:20px;margin-bottom:10px;clear:both">Round-by-Round Statistics</div>
-	<table class="statistics-round-table">
-	  <tr>
-	`;
+      
+      <table class="statistics-round-table">
+      <caption>Round-by-Round Statistics</caption>
+        <thead>
+        <tr><th></th>`;
 
-	for (let z = 0; z < 11; z++) {
-	  if (z == 0) { 
-	    html += '<th></th>'; 
-	  } else { 
-	    html += `<th>R${(z)}</th>`; 
-	  }
-	}
-	html += `
-	  </tr>
-       `;
-	for (let y = 0; y < 10; y++) {
-	  html += '<tr>';
+    for (let z = 1; z < 11; z++) {
+      html += `<th>R${z}</th>`;
+    }
 
-	  if (y == 0) { html += '<td style="text-align:left">OPS</td>'; }
-	  if (y == 1) { html += '<td style="text-align:left">VP</td>'; }
-	  if (y == 2) { html += '<td style="text-align:left">US Scoring</td>'; }
-	  if (y == 3) { html += '<td style="text-align:left">USSR Scoring</td>'; }
+    html += `</tr></thead>`;
 
-	  for (let z = 0; z < 10; z++) {
+    html += '<tbody><th>OPS</th>';
+    for (let z = 0; z < 10; z++) {
+      if (z > this.game.state.stats.round.length) {
+        html += `<td> - </td>`;
+      } else {
+        if (z == this.game.state.stats.round.length) {
+          html += `<td>${this.game.state.stats.us_ops - this.game.state.stats.ussr_ops}</td>`;
+        } else {
+          html += `<td>${
+            this.game.state.stats.round[z].us_ops - this.game.state.stats.round[z].ussr_ops
+          }</td>`;
+        }
+      }
+    }
+    html += "</tr>";
 
-	    if (y == 0) {
-	      if (z > this.game.state.stats.round.length) {
-	        html += `<td> - </td>`;
-	      } else {
-		if (z == this.game.state.stats.round.length) {
-	          html += `<td>${this.game.state.stats.us_ops-this.game.state.stats.ussr_ops}</th>`;
-		} else {
-	          html += `<td>${this.game.state.stats.round[z].us_ops-this.game.state.stats.round[z].ussr_ops}</th>`;
-	        }
-	      }
-	    }
+    html += "<tr>";
+    html += '<th>VP</th>';
 
-	    if (y == 1) {
-	      if (z > this.game.state.stats.round.length) {
-	          html += `<td> - </td>`;
-	      } else {
-		if (z == this.game.state.stats.round.length) {
-	          html += `<td>${this.game.state.vp}</th>`;
-		} else {
-	          html += `<td>${this.game.state.stats.round[z].vp}</th>`;
-	        }
-	      }
-	    }
+    for (let z = 0; z < 10; z++) {
+      if (z > this.game.state.stats.round.length) {
+        html += `<td> - </td>`;
+      } else {
+        if (z == this.game.state.stats.round.length) {
+          html += `<td>${this.game.state.vp}</th>`;
+        } else {
+          html += `<td>${this.game.state.stats.round[z].vp}</th>`;
+        }
+      }
+    }
 
-	    if (y == 2) {
-	      if (z > this.game.state.stats.round.length) {
-	          html += `<td> - </td>`;
-	      } else {
-		if (z == this.game.state.stats.round.length) {
-	          html += `<td>${this.game.state.stats.us_scorings}</th>`;
-		} else {
-	          html += `<td>${this.game.state.stats.round[z].us_scorings}</th>`;
-	        }
-	      }
-	    }
+    html += "</tr>";
+    html += "<tr>";
+    html += '<th>US Scoring</th>';
 
-	    if (y == 3) {
-	      if (z > this.game.state.stats.round.length) {
-	          html += `<td> - </td>`;
-	      } else {
-		if (z == this.game.state.stats.round.length) {
-	          html += `<td>${this.game.state.stats.ussr_scorings}</th>`;
-		} else {
-	          html += `<td>${this.game.state.stats.round[z].ussr_scorings}</th>`;
-	        }
-	      }
-	    }
-	  }
-	  html += '</tr>';
-	}
+    for (let z = 0; z < 10; z++) {
+      if (z > this.game.state.stats.round.length) {
+        html += `<td> - </td>`;
+      } else {
+        if (z == this.game.state.stats.round.length) {
+          html += `<td>${this.game.state.stats.us_scorings}</th>`;
+        } else {
+          html += `<td>${this.game.state.stats.round[z].us_scorings}</th>`;
+        }
+      }
+    }
+    html += "</tr>";
+    html += "<tr>";
+    html += '<th>USSR Scoring</th>';
+    for (let z = 0; z < 10; z++) {
+      if (z > this.game.state.stats.round.length) {
+        html += `<td> - </td>`;
+      } else {
+        if (z == this.game.state.stats.round.length) {
+          html += `<td>${this.game.state.stats.ussr_scorings}</th>`;
+        } else {
+          html += `<td>${this.game.state.stats.round[z].ussr_scorings}</th>`;
+        }
+      }
+    }
+
+    html += "</tr>";
 
     html += `
-        </table>
-    `;
+            </table>
+        `;
     html += `
-      </div>
-    `;
+          </div>
+        `;
 
     twilight_self.overlay.show(twilight_self.app, twilight_self, html);
-
   }
 
 
+  /* Mostly deprecated, but potential useful logic for adding game clock to menu */
   handleDisplayMenu() {
 
     let twilight_self = this;
-
     let use_clock_html = '';
     if (twilight_self.useClock == 1) { use_clock_html = '<li class="menu-item" id="move_clock">Move Clock</li>'; }
 
@@ -347,9 +297,6 @@ class Twilight extends GameTemplate {
       <div class="game-overlay-menu" id="game-overlay-menu">
         <div>DISPLAY MODE:</div>
        <ul>
-          <li class="menu-item" id="english">English</li>
-          <li class="menu-item" id="chinese">简体中文</li>
-          <li class="menu-item" id="enable_observer_mode">Observer Mode</li>
           ${use_clock_html}
         </ul>
       </div>`;
@@ -366,24 +313,6 @@ class Twilight extends GameTemplate {
 	return;
       }
 
-      if (action2 === "enable_observer_mode") {
-        twilight_self.game.saveGameState = 1;
-	let msgobj = {
-	  game_id : twilight_self.game.id ,
-	  player : twilight_self.app.wallet.returnPublicKey() ,
-	  module : twilight_self.game.module
-	};
-        let msg = twilight_self.app.crypto.stringToBase64(JSON.stringify(msgobj));
-	let observe_link = window.location.href;
-	let tmpar = observe_link.split("/");
-	let oblink = tmpar[0] + "//" + tmpar[2];
-
-	let html  = '<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:';
-	html += '<div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">'+oblink+'/arcade/?i=watch&msg='+msg+'</div>';
-	html += '</div>';
-	twilight_self.overlay.show(twilight_self.app, twilight_self, html);
-
-      }
 
       if (action2 === "text") {
         twilight_self.displayModal("Card Menu options changed to text-mode. Please reload.");
@@ -403,88 +332,11 @@ class Twilight extends GameTemplate {
 	}, 1000);
       }
 
-      if (action2 === "english") {
-        twilight_self.displayModal("Language Settings", "Card settings changed to English");
-        twilight_self.lang = "en";
-        twilight_self.saveGamePreference("lang", "en");
-	setTimeout(function() {
-          window.location.reload();
-	}, 1000);
-      }
-
-      if (action2 === "chinese") {
-        twilight_self.displayModal("语言设定", "卡牌语言改成简体中文");
-        twilight_self.lang = "zh";
-        twilight_self.saveGamePreference("lang", "zh");
-	setTimeout(function() {
-          window.location.reload();
-	}, 1000);
-      }
-
-      /* These aren't even valid options*/
-      if (action2 == "enable_hud_vertical") {
-        twilight_self.hud.mode = 2;
-        twilight_self.hud.render(twilight_self.app, twilight_self);
-        twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.cardbox.attachCardEvents();
-        return;
-      }
-      if (action2 == "enable_hud_square") {
-        twilight_self.hud.mode = 1;
-        twilight_self.hud.render(twilight_self.app, twilight_self);
-        twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.cardbox.attachCardEvents();
-	twilight_self.overlay.hide();
-        return;
-      }
-      if (action2 == "enable_hud_horizontal") {
-        twilight_self.hud.mode = 0;
-        twilight_self.hud.render(twilight_self.app, twilight_self);
-        twilight_self.hud.attachEvents(twilight_self.app, twilight_self);
-        twilight_self.cardbox.attachCardEvents();
-	twilight_self.overlay.hide();
-        return;
-      }
-
     });
   }
 
 
-  async handlePlayerMenu() {
-
-    try {
-
-      let opponent = this.game.opponents[0];
-      if (this.app.crypto.isPublicKey(opponent)) {
-        opponent = opponent.substring(0, 16);
-      }
-
-      let user_message = `
-        <div class="status-message" id="status-message">
-          <div>Opponent: ${opponent}</div>
-        </div>
-      `;
-
-      this.overlay.show(this.app, this, user_message);
-
-    } catch (err) {
-console.log(err);
-    }
-
-  }
-
-
-  handleLogMenuItem() {
-    //
-    // we explicitly add this in the mobile version
-    //
-    $('.status-overlay').html(`<div style="padding: 0.5em">${$('.log').html()}</div>`);
-    this.addLogCardEvents();
-  }
-
-
-
-
+ 
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -513,45 +365,93 @@ console.log(err);
 	game_mod.menu.showSubMenu("game-game");
       }
     });
+   
     this.menu.addSubMenuOption("game-game", {
-      text : "Log",
-      id : "game-log",
-      class : "game-log",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.log.toggleLog();
-      }
-    });
-    let initial_confirm_moves = "Newbie Mode"; 
-    if (this.confirm_moves == 1) {
-      initial_confirm_moves = "Expert Mode"; 
-    }
-    this.menu.addSubMenuOption("game-game", {
-      text : initial_confirm_moves,
+      text : "Play Mode",
       id : "game-confirm",
       class : "game-confirm",
       callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	if (game_mod.confirm_moves == 0) {
-	  game_mod.confirm_moves = 1;
-          game_mod.saveGamePreference('twilight_expert_mode', 0);
-	  window.location.reload();	
-	} else {
-	  game_mod.confirm_moves = 0;
-          game_mod.saveGamePreference('twilight_expert_mode', 1);
-	  window.location.reload();	
-	}
+         game_mod.menu.showSubSubMenu("game-confirm"); 
       }
     });
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 0){
+          game_mod.displayModal("Game Settings", "Will confirm moves before committing");
+          game_mod.confirm_moves = 1;
+          game_mod.saveGamePreference('twilight_expert_mode', 0);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves ==1){
+          game_mod.displayModal("Game Settings", "No need to confirm moves");
+          game_mod.confirm_moves = 0;
+          game_mod.saveGamePreference('twilight_expert_mode', 1);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+
+    if (app.modules.returnModule("Post")) {
+    this.menu.addSubMenuOption("game-game", {
+      text : "Screenshot",
+      id : "game-post",
+      class : "game-post",
+      callback : async function(app, game_mod) {
+        await app.browser.captureScreenshot(function(image) {
+          game_mod.app.modules.returnModule("Post").postImage(image, game_mod.returnSlug());
+        });
+      },
+    });
+    }
+
     this.menu.addSubMenuOption("game-game", {
       text : "Stats",
       id : "game-stats",
       class : "game-stats",
-      callback : function(app, game_mod) {
+      callback : async function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
         game_mod.handleStatsMenu();
       }
     });
+
+/****
+    this.menu.addSubMenuOption("game-game", {
+      text: "Invite Observer",
+      id: "game-observer",
+      class: "game-observer",
+      callback: function(app, game_mod){
+        game_mod.game.saveGameState = 1;
+        let msgobj = {
+          game_id : game_mod.game.id ,
+          player : app.wallet.returnPublicKey() ,
+          module : game_mod.game.module
+        };
+        let msg = app.crypto.stringToBase64(JSON.stringify(msgobj));
+        let observe_link = window.location.href;
+        let tmpar = observe_link.split("/");
+        let oblink = tmpar[0] + "//" + tmpar[2];
+        let html  = `<div class="status-message" id="status-message">Observer Mode will be enabled on your next move (reload to cancel). Make your move and then share this link:
+        <div style="padding:15px;font-size:0.9em;overflow-wrap:anywhere">${oblink}/arcade/?i=watch&msg=${msg}</div></div>`;
+        game_mod.overlay.show(app, game_mod, html);
+      }
+    });
+****/
+
     this.menu.addSubMenuOption("game-game", {
       text : "Exit",
       id : "game-exit",
@@ -567,90 +467,116 @@ console.log(err);
       id : "game-cards",
       class : "game-cards",
       callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.handleCardsMenu();
+        game_mod.menu.showSubMenu("game-cards");
+	     }
+    });
+    this.menu.addSubMenuOption("game-cards",{
+      text: "My Hand",
+      id: "game-cards-hand",
+      class: "game-cards-hand",
+      callback: function(app,game_mod){
+        game_mod.menu.hideSubMenus();
+        game_mod.showCardOverlay(game_mod.game.deck[0].hand);
       }
     });
+    this.menu.addSubMenuOption("game-cards",{
+      text: "Discards",
+      id: "game-cards-discards",
+      class: "game-cards-discards",
+      callback: function(app,game_mod){
+        game_mod.menu.hideSubMenus();
+        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].discards));
+      }
+    });
+    this.menu.addSubMenuOption("game-cards",{
+      text: "Removed",
+      id: "game-cards-removed",
+      class: "game-cards-removed",
+      callback: function(app,game_mod){
+        game_mod.menu.hideSubMenus();
+        game_mod.showCardOverlay(Object.keys(game_mod.game.deck[0].removed));
+      }
+    });
+    this.menu.addSubMenuOption("game-cards",{
+      text: "Unplayed",
+      id: "game-cards-unplayed",
+      class: "game-cards-unplayed",
+      callback: function(app,game_mod){
+        game_mod.menu.hideSubMenus();
+        game_mod.showCardOverlay(Object.keys(game_mod.returnUnplayedCards()));
+      }
+    });
+
+
     this.menu.addMenuOption({
       text : "Display",
       id : "game-display",
       class : "game-display",
       callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-        game_mod.handleDisplayMenu();
+	       game_mod.menu.showSubMenu("game-display");
       }
     });
 
-
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-	for (let ii = 0; ii < this.game.players.length; ii++) {
-	  if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-	    // add main menu
-	    if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-          	id : "game-chat",
-          	class : "game-chat",
-          	callback : function(app, game_mod) {
-		  game_mod.menu.showSubMenu("game-chat");
-          	}
-              })
-	      main_menu_added = 1;
-	    }
-
-	    if (community_menu_added == 0) {
-    	      this.menu.addSubMenuOption("game-chat", {
-    	        text : "Community",
-      	        id : "game-chat-community",
-      	        class : "game-chat-community",
-      	        callback : function(app, game_mod) {
-	  	  game_mod.menu.hideSubMenus();
-        	  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.mute_community_chat = 0;
-		  chatmod.openChatBox();
-    	        }
-              });
-	      community_menu_added = 1;
-	    }
-
-	    // add peer chat
-  	    let data = {};
-	    let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-	    let gid = this.app.crypto.hash(members.join('_'));
-	    let name = "Player "+(ii+1);
-	    let chatmod = this.app.modules.mods[i];
-	
-    	    this.menu.addSubMenuOption("game-chat", {
-    	      text : name,
-      	      id : "game-chat-"+(ii+1),
-      	      class : "game-chat-"+(ii+1),
-      	      callback : function(app, game_mod) {
-		game_mod.menu.hideSubMenus();
-	        chatmod.createChatGroup(members, name);
-		chatmod.openChatBox(gid);
-        	chatmod.sendEvent('chat-render-request', {});
-        	chatmod.saveChat();
-    	      }
-            });
-	  }
-	}
+    this.menu.addSubMenuOption("game-display",{
+      text: "Language",
+      id: "game-language",
+      class: "game-language",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubSubMenu("game-language");
       }
-    }
+    });
+
+    this.menu.addSubMenuOption("game-language", {
+      text: `English ${(this.lang=="en")?"✔":""}`,
+      id: "game-language-en",
+      callback: function(app, game_mod){
+        game_mod.displayModal("Language Settings", "Card settings changed to English");
+        game_mod.lang = "en";
+        game_mod.saveGamePreference("lang", "en");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+  this.menu.addSubMenuOption("game-language", {
+      text: `简体中文 ${(this.lang=="zh")?"✔":""}`,
+      id: "game-language-zh",
+      callback: function(app, game_mod){
+        game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
+        game_mod.lang = "zh";
+        game_mod.saveGamePreference("lang", "zh");
+        setTimeout(function() { window.location.reload(); }, 1000);
+      }
+    });
+
+    this.menu.addSubMenuOption("game-display", {
+      text : "Log",
+      id : "game-log",
+      class : "game-log",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      }
+    });
+    this.menu.addSubMenuOption("game-display", {
+      text : "HUD",
+      id : "game-display-hud",
+      class : "game-display-hud",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.hud.toggleHud();
+      }
+    });
+    this.menu.addChatMenu(app, this);
+
     this.menu.addMenuIcon({
       text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id : "game-menu-fullscreen",
       callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
+	      game_mod.menu.hideSubMenus();
         app.browser.requestFullscreen();
       }
     });
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
-
 
     this.log.render(app, this);
     this.log.attachEvents(app, this);
@@ -661,10 +587,10 @@ console.log(err);
     //
     // add card events -- text shown and callback run if there
     //
-    this.cardbox.addCardType("logcard", "", null);
-    this.cardbox.addCardType("showcard", "select", this.cardbox_callback);
+    this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
-    
+    this.attachCardboxEvents();
+
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -674,6 +600,7 @@ console.log(err);
         this.hammer.attachEvents(this.app, this, '.gameboard');
 
       } else {
+        this.hud.card_width = 120; // hardcode max card size
         this.sizer.render(this.app, this);
         this.sizer.attachEvents(this.app, this, '.gameboard');
       }
@@ -682,7 +609,15 @@ console.log(err);
 
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
-
+    //this.game.player == 1 --> ussr, == 2 --> usa
+    let hh = document.querySelector(".hud-header");
+    if (hh){
+      switch(this.game.player){
+        case 1: hh.classList.add("soviet"); break;
+        case 2: hh.classList.add("american"); break;
+        default:
+      }  
+    }
 
   }
 
@@ -897,8 +832,7 @@ try {
   handleGameLoop() {
 
     let twilight_self = this;
-    let player = "ussr"; 
-    if (this.game.player === 2) { player = "us"; } 
+    let player = (this.game.player ===1) ? "ussr" : "us"; 
 
     //
     // support observer mode
@@ -1106,7 +1040,7 @@ try {
                   //
                   // move to discard pile
                   //
-                  this.updateLog("<span>" + mv[1].toUpperCase() + " discards</span> <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
+                  this.updateLog(mv[1].toUpperCase() + ` discards <span class="showcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
                   //
                   // discard pile is parallel to normal
                   //
@@ -1132,7 +1066,7 @@ try {
                 //
                 // remove from discards
                 //
-                this.updateLog("<span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[deckidx-1].cards[mv[2]].name + "</span> <span>removed from discard pile</span>");
+                this.updateLog(`<span class="showcard" id="${mv[2]}">${this.game.deck[deckidx-1].cards[mv[2]].name}</span> removed from discard pile`);
 		delete this.game.deck[deckidx-1].discards[i];
               }
             }
@@ -1228,13 +1162,14 @@ try {
 
             if (this.game.player == 2) {
 
-              let html  = "<div class='status-message' id='status-message'><span>Grain Sales pulls</span> <span class=\"showcard\" style=\"border-bottom: 1px dashed\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span> <span>from USSR. Do you want to play this card?</span>";
+              let user_message  = `Grain Sales pulls <span class="showcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span> from USSR. Do you want to play this card?`;
+              let html = "<ul>";
               if (mv[2] == "unintervention" && this.game.state.headline == 1) {} else {
-                  html += '<ul><li class="card noncard" id="play">play card</li>';
+                  html += '<li class="card noncard" id="play">play card</li>';
               }
                   html += '<li class="card noncard" id="nope">return card</li>';
-                  html += '</ul></div>';
-              this.updateStatus(html);
+                  html += '</ul>';
+              this.updateStatusWithOptions(user_message, html, false);
 
               let twilight_self = this;
 
@@ -1324,12 +1259,12 @@ try {
                   twilight_self.updateStatus("<div class='status-message' id='status-message'>Pick second target for coup:</div>");
                   twilight_self.playerFinishedPlacingInfluence();
 
-                  let user_message = "<div class='status-message' id='status-message'>Che takes effect. Pick first target for coup:<ul>";
-                      user_message += '<li class="card" id="skipche">or skip coup</li>';
-                      user_message += '</ul></div>';
-                  twilight_self.updateStatus(user_message);
+                  let user_message = "Che takes effect. Pick first target for coup:";
+                  let html =  '<ul><li class="card" id="skipche">or skip coup</li></ul>';
+                      
+                  twilight_self.updateStatusWithOptions(user_message, html, false);
 
-		  twilight_self.attachCardboxEvents(function(action2) {
+		              twilight_self.attachCardboxEvents(function(action2) {
                     if (action2 == "skipche") {
                       twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Che coups...</div>");
                       twilight_self.addMove("resolve\tchecoup");
@@ -1433,7 +1368,7 @@ try {
 
           let roll = this.rollDice(6);
 
-          this.updateLog(mv[1].toUpperCase() + " </span>rolls a<span> " + roll);
+          this.updateLog(mv[1].toUpperCase() + " rolls a " + roll);
 
           if (roll < 5) {
 
@@ -1500,12 +1435,13 @@ try {
               }
 
 
-              let user_message = "<div class='status-message' id='status-message'>Select cards to discard:<ul>";
+              let user_message = "Select cards to discard:";
+              let html = "<ul>";
               for (let i = 0; i < cardoptions.length; i++) {
-                user_message += '<li class="card card_'+this.game.deck[0].crypt[i]+'" id="'+this.game.deck[0].crypt[i]+'_'+cardoptions[i]+'">'+this.game.deck[0].cards[cardoptions[i]].name+'</li>';
+                html += `<li class="card card_${this.game.deck[0].crypt[i]}" id="${this.game.deck[0].crypt[i]}_${cardoptions[i]}">${this.game.deck[0].cards[cardoptions[i]].name}</li>`;
               }
-              user_message += '</ul> When you are done discarding <span class="card dashed showcard nocard" id="finished">click here</span>.</div>';
-              twilight_self.updateStatus(user_message);
+              html += '<li class="card dashed nocard" id="finished">Done discarding</li></ul>';
+              twilight_self.updateStatusWithOptions(user_message, html, false);
 
               //
               // cardoptions is in proper order
@@ -1529,7 +1465,7 @@ try {
                   pos_to_discard.push(tmpar[0]);
                   cards_discarded++;
                   twilight_self.addMove("discard\tus\t"+tmpar[1]);
-                  twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+tmpar[1]+"\">"+twilight_self.game.deck[0].cards[tmpar[1]].name +"</span>");
+                  twilight_self.addMove(`notify\tUS discards <span class="showcard" id="${tmpar[1]}">${twilight_self.game.deck[0].cards[tmpar[1]].name}</span>`);
 
                 }
               });
@@ -1632,7 +1568,7 @@ try {
             }
 
 
-            this.updateStatus("<div class='status-message' id='status-message'><span>Select</span> "+countries_to_double+" <span>countries in South America to double USSR influence</span></div>");
+            this.updateStatus("<div class='status-message' id='status-message'>Select "+countries_to_double+" countries in South America to double USSR influence</div>");
 
             //
             // double influence in two countries
@@ -1682,11 +1618,12 @@ try {
             this.updateStatus(html);
           }
           if (this.game.player == 2) {
-            let html  = "<span>Do you wish to take an extra turn:<span><ul>";
-            html += '<li class="card" id="play">play turn</li>';
-            html += '<li class="card" id="nope">no turn</li>';
-            html += '</ul>';
-            this.updateStatus(html);
+            let user_message  = "Do you wish to take an extra turn?";
+            let html = `<ul>
+                        <li class="card" id="play">yes</li>
+                        <li class="card" id="nope">no</li>
+                        </ul>`;
+            this.updateStatusWithOptions(user_message, html, false);
 
             let twilight_self = this;
 
@@ -1782,15 +1719,16 @@ try {
           if (mv[1] == "us") {
 
             let num = mv[2];
-            let html = "<div class='status-message' id='status-message'><span>Aldrich Ames triggered. USSR discard card from US hand:<span><ul>";
+            let user_message = "Aldrich Ames triggered. USSR discard card from US hand:";
+            let html = "<ul>";
             this.game.queue.splice(qe, 1);
 
             for (let i = 0; i < num; i++) {
               let uscard = this.game.queue[this.game.queue.length-1];
-              html += '<li class="card showcard" id="'+uscard+'">'+this.game.deck[0].cards[uscard].name+'</li>';
+              html += '<li class="card" id="'+uscard+'">'+this.game.deck[0].cards[uscard].name+'</li>';
               this.game.queue.splice(this.game.queue.length-1, 1);
             }
-            html += '</ul></div>';
+            html += '</ul>';
 
             if (this.game.player == 2) {
               this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
@@ -1798,7 +1736,7 @@ try {
 
             if (this.game.player == 1) {
 
-              this.updateStatus(html);
+              this.updateStatusWithOptions(user_message, html, false);
 
               let twilight_self = this;
 
@@ -1819,7 +1757,7 @@ try {
             }
 
             this.game.queue.splice(qe, 1);
-            this.updateLog("<span>USSR discards </span><span class=\"logcard\" id=\""+mv[2]+"\">"+this.game.deck[0].cards[mv[2]].name + "</span>");
+            this.updateLog(`USSR discards <span class="showcard" id="${mv[2]}">${this.game.deck[0].cards[mv[2]].name}</span>`);
             shd_continue = 1;
           }
 
@@ -1874,15 +1812,16 @@ try {
 
           }
 
-          let user_message = "<div class='status-message' id='status-message'><span>Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.</span><ul>";
-              user_message += '<li class="card" id="taketear"><span>make coup or realign</span></li>';
-              user_message += '<li class="card" id="skiptear"><span>skip coup</span></li>';
-              user_message += '</ul></div>';
-          twilight_self.updateStatus(user_message);
+          let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
+          let html = `<ul>
+              <li class="card" id="taketear">make coup or realign</li>
+              <li class="card" id="skiptear">skip coup</li>
+              </ul>`;
+          twilight_self.updateStatusWithOptions(user_message, html,false);
           twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "skiptear") {
-              twilight_self.updateStatus("<div class='status-message' id='status-message'><span>Skipping Tear Down this Wall...</span></div>");
+              twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Tear Down this Wall...</div>");
               twilight_self.addMove("resolve\tteardownthiswall");
               twilight_self.endTurn();
             }
@@ -1944,9 +1883,9 @@ try {
             }
             this.endTurn();
           } else {
-            this.updateStatus("<div class='status-message' id='status-message'><span>Opponent is being dealt new cards.</span></div>");
+            this.updateStatus("<div class='status-message' id='status-message'>Opponent is being dealt new cards.</div>");
           }
-          this.updateStatus("<div class='status-message' id='status-message'>"+player.toUpperCase() + " <span>is fetching new cards</span></div>");
+          this.updateStatus("<div class='status-message' id='status-message'>"+player.toUpperCase() + " is fetching new cards</div>");
           return 0;
         }
 
@@ -1954,7 +1893,7 @@ try {
 
           if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
 
-          this.updateLog("<span>" + mv[1].toUpperCase() + " plays </span><span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> <span>for " + mv[3] + " OPS</span>");
+          this.updateLog(mv[1].toUpperCase() + ` plays <span class="showcard" id="${mv[2]}">${this.game.state.event_name}</span> for ${mv[3]} OPS`);
 
           // stats
           if (mv[1] == "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
@@ -1996,7 +1935,7 @@ try {
           shd_continue = 0;
         }
         if (mv[0] === "milops") {
-          this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> <span>" + mv[2] + "</span> <span>milops");
+          this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
           if (mv[1] === "us") {
             this.game.state.milops_us += parseInt(mv[2]);
           } else {
@@ -2008,7 +1947,7 @@ try {
         if (mv[0] === "vp") {
           if (mv.length > 3) {
             if (parseInt(mv[3]) == 1) {
-              this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP", 1);
+              this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP", 1);
               if (mv[1] === "us") {
                 this.game.state.vp_outstanding += parseInt(mv[2]);
               } else {
@@ -2022,7 +1961,7 @@ try {
               }
 	   }
           } else {
-            this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> <span>" + mv[2] + "</span> <span>VP");
+            this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
             if (mv[1] === "us") {
               this.game.state.vp += parseInt(mv[2]);
             } else {
@@ -2037,7 +1976,7 @@ try {
           let card = "";
           if (mv.length >= 5) { card = mv[4]; }
 
-          this.updateLog("<span>" + mv[1].toUpperCase() + "</span> <span>coups</span> <span>" + this.countries[mv[2]].name + "</span> <span>with</span> <span>" + mv[3] + "</span> <span>OPS</span>");
+          this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS");
           if (this.game.state.limit_milops != 1) {
             //
             // modify ops is handled incoherently with milops, so we calculate afresh here
@@ -2062,7 +2001,7 @@ try {
 
 
         if (mv[0] === "realign") {
-          this.updateLog("<span>" + mv[1].toUpperCase() + " <span>realigns</span> <span>" + this.countries[mv[2]].name + "</span> <span>with 1 OPS</span>");
+          this.updateLog(mv[1].toUpperCase() + " realigns " + this.countries[mv[2]].name + " with 1 OPS");
           if (mv[1] != player) { this.playRealign(mv[2]); }
           this.game.queue.splice(qe, 1);
         }
@@ -2105,7 +2044,7 @@ try {
         if (mv[0] === "event") {
 
           if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
-          this.updateLog("<span>" + mv[1].toUpperCase() + "</span> <span>triggers</span> <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> <span>event</span>");
+          this.updateLog(mv[1].toUpperCase() + ` triggers <span class="showcard" id="${mv[2]}">${this.game.state.event_name}</span> event`);
 
           shd_continue = this.playEvent(mv[1], mv[2]);
 
@@ -2185,19 +2124,19 @@ try {
 
                     if (event_removal == 1) {
 
-                      this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>removed from game</span>");
+                      this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> removed from game");
                       this.game.deck[0].removed[i] = this.game.deck[0].cards[i];
                       delete this.game.deck[0].cards[i];
 
                     } else {
 
                       // just discard -- NATO catch mostly
-                      this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
+                      this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> discarded");
                       this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
 
                     }
                   } else {
-                    this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
+                    this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> discarded");
                     this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
                   }
                 }
@@ -2376,11 +2315,11 @@ try {
           for (var i in this.game.deck[0].cards) {
             if (mv[1] == i) {
               if (this.game.deck[0].cards[i].recurring != 1) {
-                this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>removed from game</span>");
+                this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> removed from game");
                 this.game.deck[0].removed[i] = this.game.deck[0].cards[i];
                 delete this.game.deck[0].cards[i];
               } else {
-                this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
+                this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> discarded");
                 this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
               }
             }
@@ -2602,11 +2541,11 @@ try {
             //
             // US gets extra move
             //
-            let html  = "<div class='status-message' id='status-message'><span>Do you want to take an extra turn: (North Sea Oil)</span><ul>";
-                html += '<li class="card" id="play">play extra turn</li>';
-                html += '<li class="card" id="nope">do not play</li>';
-                html += '</ul></div>';
-            this.updateStatus(html);
+            let html  = `<ul>
+                        <li class="card" id="play">play extra turn</li>
+                        <li class="card" id="nope">do not play</li>
+                        </ul>`;
+            this.updateStatusWithOptions(`Do you want to take an extra turn? (North Sea Oil)`,html,false);
 
             let twilight_self = this;
 
@@ -2663,13 +2602,12 @@ try {
             //
             // DISCARD CARD
             //
-            let html  = '<div id="status-message" class="status-message">US may discard a card: (Eagle Has Landed)<ul>';
-            if (bonus_player == 1) { html  = '<div id="status-message" class="status-message">USSR may discard a card: (Bear Has Landed)<ul>'; }
-                html += '<li class="card" id="discard">discard card</li>';
-                html += '<li class="card" id="nope">do not discard</li>';
-                html += '</ul>';
-                html += '</div>';
-            this.updateStatus(html);
+            let user_message = (bonus_player == 1)? 'USSR may discard a card: (Bear Has Landed)' : 'US may discard a card: (Eagle Has Landed)';
+            let html = `<ul><li class="card" id="discard">discard card</li>
+                        <li class="card" id="nope">do not discard</li>
+                        </ul>`;
+                
+            this.updateStatusWithOptions(user_message, html, false);
 
             let twilight_self = this;
 	    
@@ -2685,21 +2623,21 @@ try {
                 let cards_discarded = 0;
 
                 let cards_to_discard = 0;
-                let user_message = "<div class='status-message' id='status-message'><span>Select card to discard:</span><ul>";
+                let html = "<ul>";
                 for (let i = 0; i < available_cards.length; i++) {
-                  user_message += '<li class="card showcard" id="'+available_cards[i]+'">'+twilight_self.game.deck[0].cards[available_cards[i]].name+'</li>';
+                  html += `<li class="card" id="${available_cards[i]}">${twilight_self.game.deck[0].cards[available_cards[i]].name}</li>`;
                   cards_to_discard++;
                 }
 
                 if (cards_to_discard == 0) {
-                  twilight_self.updateStatus("<div class='status-message' id='status-message'><span>No cards available to discard! Please wait for next turn...</span></div>");
+                  twilight_self.updateStatus("<div class='status-message' id='status-message'>No cards available to discard! Please wait for next turn...</div>");
                   twilight_self.addMove("notify\tUS has no cards available to discard");
                   twilight_self.endTurn(1);
                   return;
                 }
 
-                user_message += '</ul> </span>If you wish to cancel your discard,</span> <span class="card dashed showcard nocard" id="finished">click here</span>.</div>';
-                twilight_self.updateStatus(user_message);
+                html += '<li class="card dashed nocard" id="finished">cancel</li>';
+                twilight_self.updateStatusWithOptions("Select card to discard:", html, false);
 
                 twilight_self.attachCardboxEvents(function(action2) {
                   if (action2 == "finished") {
@@ -2711,7 +2649,7 @@ try {
                     cards_discarded++;
                     twilight_self.removeCardFromHand(action2);
                     twilight_self.addMove("discard\t"+twilight_self.game.state.eagle_has_landed+"\t"+action2);
-                    twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
+                    twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+` discards <span class="showcard" id="${action2}">${twilight_self.game.deck[0].cards[action2].name}</span>`);
                     twilight_self.endTurn(1);
                     return 0;
                   }
@@ -2739,18 +2677,16 @@ try {
             if (this.game.state.space_shuttle == "us") { bonus_player = 2; }
 
             if (this.game.player != bonus_player) {
-              this.updateStatus(this.game.state.space_shuttle.toUpperCase() + "</span> <span>is deciding whether to take extra turn");
+              this.updateStatus(this.game.state.space_shuttle.toUpperCase() + " is deciding whether to take extra turn");
               return 0;
             }
 
             //
             // player gets extra move
             //
-            let html  = "<span>Do you want to take an extra turn: (Space Shuttle)</span><ul>";
-                html += '<li class="card" id="play">play extra turn</li>';
-                html += '<li class="card" id="nope">do not play</li>';
-                html += '</ul>';
-            this.updateStatus(html);
+            let html  = `<ul><li class="card" id="play">play extra turn</li>
+                         <li class="card" id="nope">do not play</li></ul>`;
+            this.updateStatusWithOptions("Do you want to take an extra turn: (Space Shuttle)",html,false);
 
             let twilight_self = this;
 
@@ -2781,7 +2717,7 @@ try {
           }
           this.endRound();
 
-          this.updateStatus("<div class='status-message' id='status-message'><span>Preparing for round</span> " + this.game.state.round+"</div>");
+          this.updateStatus("<div class='status-message' id='status-message'>Preparing for round " + this.game.state.round+"</div>");
 
           let rounds_in_turn = 6;
           if (this.game.state.round > 3) { rounds_in_turn = 7; }
@@ -2810,7 +2746,7 @@ try {
           //
           if (this.game.state.round > 1) {
 
-            this.updateLog(this.game.deck[0].crypt.length + " <span>cards remaining in deck...</span>");
+            this.updateLog(this.game.deck[0].crypt.length + " cards remaining in deck...");
 
             this.game.queue.push("deal\t2");
             this.game.queue.push("deal\t1");
@@ -3374,13 +3310,13 @@ if (this.game.player == 0) {
 
       if (us_plays_defectors == 1) {
 
-        this.updateLog("<span>US headlines</span> <span class=\"logcard\" id=\"defectors\">Defectors</span>");
+        this.updateLog(`US headlines <span class="showcard" id="defectors">Defectors</span>`);
 
         this.game.turn = [];
         if (my_card != "defectors") {
-          this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+          this.updateLog(`<span>USSR headlines</span> <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         } else {
-          this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>");
+          this.updateLog(`<span>USSR headlines</span> <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>`);
         }
 
         this.updateLog("Defectors cancels USSR headline.");
@@ -3400,13 +3336,13 @@ if (this.game.player == 0) {
 
         // show headline card information to both players
         if (this.game.player == 1) {
-          this.updateStatus("<div class='status-message' id='status-message'><span>US headlines</span> <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. USSR headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span></div>");
-          this.updateLog("<span>US headlines</span> <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
-          this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+          this.updateStatus(`<div class='status-message' id='status-message'>US headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>. USSR headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span></div>`);
+          this.updateLog(`US headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
+          this.updateLog(`USSR headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         } else {
-          this.updateStatus("<div class='status-message' id='status-message'><span>USSR headlines</span> <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span></div>");
-          this.updateLog("<span>USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
-          this.updateLog("<span>US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+          this.updateStatus(`<div class='status-message' id='status-message'>USSR headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>. US headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span></div>`);
+          this.updateLog(`USSR headlines <span class="showcard" id="${opponent_card}">${this.game.deck[0].cards[opponent_card].name}</span>.`);
+          this.updateLog(`US headlines <span class="showcard" id="${my_card}">${this.game.deck[0].cards[my_card].name}</span>`);
         }
 
 
@@ -3595,25 +3531,20 @@ if (this.game.player == 0) {
 	    }
 	  }
 
-	  let html = `<div class="status-message">Great Society is active. US may earn a VP for either skipping its turn or playing a scoring card:<ul>`;
+	  let user_message = `Great Society is active. US may earn a VP for either skipping its turn or playing a scoring card:`;
+    let html = "<ul>";
 	  if (scoring_cards.length > 0) { 
-	    html += `
-		<li class='card' id='scoring'>play scoring card</li>
-		<li class='card' id='scoring_w_card'>play scoring card and draw card</li>
-	    `;
-	  }
-	  html += `
-		<li class='card' id='skip'>skip turn</li>
-		<li class='card' id='skip_w_card'>skip turn and draw card</li>
-	  `;
+	    html += `<li class='card' id='scoring'>play scoring card</li>
+          		 <li class='card' id='scoring_w_card'>play scoring card and draw card</li>`;
+	   }
+	  html += `<li class='card' id='skip'>skip turn</li>
+		        <li class='card' id='skip_w_card'>skip turn and draw card</li>`;
 	  if (this.game.deck[0].hand.length > 0) {
-	    html += `
-		<li class='card' id='select'>select card</li>
-	    `;
+	    html += `<li class='card' id='select'>select card</li>`;
 	  }
 	  html += '</ul>';
-	  html += '</div>';
-	  this.updateStatus(html);
+	  
+	  this.updateStatusWithOptions(user_message, html, false);
 
 	  let twilight_self = this;
 
@@ -3722,8 +3653,9 @@ if (this.game.player == 0) {
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.back_button_cancelled == 1) { bind_back_button_state = false; }
 
-      let html = twilight_self.formatPlayOpsStatus(player, ops, bind_back_button_state); // back button
-      twilight_self.updateStatus(html);
+      let html = twilight_self.formatPlayOpsStatus(player, ops, bind_back_button_state); 
+      
+      twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`,html,true);
 
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
@@ -3766,15 +3698,15 @@ if (this.game.player == 0) {
             twilight_self.endTurn();
           } else {
 
-            let user_message = "<div class='status-message' id='status-message'>Select country from which to remove influence:<ul>";
+            let html = "<ul>";
             if (twilight_self.countries['turkey'].us >= 2) {
-              user_message += '<li class="card showcard" id="turkey">Turkey</li>';
+              html += '<li class="card" id="turkey">Turkey</li>';
             }
             if (twilight_self.countries['westgermany'].us >= 2) {
-              user_message += '<li class="card showcard" id="westgermany">West Germany</li>';
+              html += '<li class="card" id="westgermany">West Germany</li>';
             }
-            user_message += '</ul></div>';
-            twilight_self.updateStatus(user_message);
+            html += '</ul>';
+            twilight_self.updateStatus("Select country from which to remove influence:",html,false);
             twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 === "turkey") {
@@ -3806,7 +3738,7 @@ if (this.game.player == 0) {
         if (action2 == "place") {
 
           let j = ops;
-          let html = twilight_self.formatStatusHeader("Place " + j + " influence", "", true)
+          let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
           twilight_self.updateStatus(html);
           twilight_self.prePlayerPlaceInfluence(player);
           if (j == 1) {
@@ -3829,7 +3761,7 @@ if (this.game.player == 0) {
               twilight_self.uneventOpponentControlledCountries(player, card);
             }
 
-            let html = twilight_self.formatStatusHeader("Place " + j + " influence", "",  true)
+            let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
             twilight_self.updateStatus(html);
 
             if (j <= 0) {
@@ -3869,7 +3801,7 @@ if (this.game.player == 0) {
 
         if (action2 == "coup") {
 
-          let html = twilight_self.formatStatusHeader("Pick a country to coup", "", true);
+          let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
           twilight_self.updateStatus(html);
           twilight_self.playerCoupCountry(player, ops, card);
 
@@ -3879,9 +3811,8 @@ if (this.game.player == 0) {
         if (action2 == "realign") {
 
           let header_msg = `Realign with ${ops} OPS, or:`;
-          let html = `<ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
-              html = twilight_self.formatStatusHeader(header_msg, html, true);
-          twilight_self.updateStatus(html);
+          let html = `<ul><li class="card" id="cancelrealign">end turn</li></ul>`;
+          twilight_self.updateStatusWithOptions(header_msg,html,true);
 
           twilight_self.attachCardboxEvents(function(action2) {
 
@@ -3919,10 +3850,10 @@ if (this.game.player == 0) {
 
             j--;
 
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with " + j + " OPS, or:<ul><li class=\"card\" id=\"cancelrealign\">stop realigning</li></ul></div>");
-            let html = `<ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
-                html = twilight_self.formatStatusHeader(`Realign with ${j} OPS, or:`, html, true);
-            twilight_self.updateStatus(html);
+            
+            let html = `<ul><li class="card" id="cancelrealign">end turn</li></ul>`;
+             
+            twilight_self.updateStatusWithOptions(`Realign with ${j} OPS, or:`,html,true);
             twilight_self.attachCardboxEvents(function(action2) {
 
               if (action2 == "cancelrealign") {
@@ -3990,12 +3921,10 @@ if (this.game.player == 0) {
   }
 
   confirmEvent() {
-    return confirm("Confirm your desire to play this event");
+    return sconfirm("Confirm your desire to play this event");
   }
 
   formatPlayOpsStatus(player, ops, bind_back_button=false) {
-
-    let header_msg = `<span>${player.toUpperCase()} plays ${ops} OPS:</span><ul>`;
     let html = '<ul>';
 
     if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
@@ -4016,7 +3945,6 @@ if (this.game.player == 0) {
     }
 
     html += '</ul>';
-    html = this.formatStatusHeader(header_msg, html, bind_back_button);
     return html;
   }
 
@@ -4029,56 +3957,30 @@ if (this.game.player == 0) {
 
   playerPickHeadlineCard() {
 
-this.startClock();
+    this.startClock();
 
     let twilight_self = this;
 
     if (this.browser_active == 0) { return; }
 
-    let player = "us";
-    if (this.game.player == 1) { player = "ussr"; }
+    let player = (this.game.player == 1)? "ussr": "us";
     let x = "";
 
     //
     // HEADLINE PEEKING / man in earth orbit
-    //
     if (this.game.state.man_in_earth_orbit != "") {
-      if (this.game.state.man_in_earth_orbit === "us") {
-        if (this.game.player == 1) {
-          x = `
-            <div class="status-message" class="status-message"><span>${player.toUpperCase()}</span> <span>pick your headline card first</span></div>
-            ${this.returnCardList(this.game.deck[0].hand)}
-          `;
-        } else {
-          x = `
-            <div class="status-message" id="status-message"><span>${player.toUpperCase()}</span> <span>pick your headline card second (opponent selected: ${twilight_self.game.state.headline_opponent_card})</span></div>
-            ${this.returnCardList(this.game.deck[0].hand)}
-          `;
-        }
+      if (this.game.state.man_in_earth_orbit === player) {
+        x = `${player.toUpperCase()} pick your headline card second (opponent selected: ${twilight_self.game.state.headline_opponent_card})`;
       } else {
-        if (this.game.player == 1) {
-          x = `
-            <div class="status-message" id="status-message"><span>${player.toUpperCase()}</span> <span>pick your headline card second (opponent selected: ${twilight_self.game.state.headline_opponent_card})</span></div>
-            ${this.returnCardList(this.game.deck[0].hand)}
-          `;
-        } else {
-          x = `
-            <div class="status-message" id="status-message"><span>${player.toUpperCase()}</span> <span>pick your headline card first</span></div>
-            ${this.returnCardList(this.game.deck[0].hand)}
-          `;
-        }
+        x = `${player.toUpperCase()} pick your headline card first`;
       }
     //
     // NORMAL HEADLINE ORDER
-    //
     } else {
-      x = `
-        <div class="status-message" id="status-message"><span>${player.toUpperCase()}</span> <span>pick your headline card</span></div>
-        ${this.returnCardList(this.game.deck[0].hand)}
-      `;
+      x = `${player.toUpperCase()} pick your headline card`;
     }
 
-    this.updateStatus(x);
+    this.updateStatusAndListCards(x,this.game.deck[0].hand);
 
 
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
@@ -4174,7 +4076,7 @@ this.startClock();
     twilight_self.game.turn = [];
 
     $('.card').off();
-    $('.showcard').off();
+    //$('.showcard').off();
     twilight_self.hideCard();
     twilight_self.endTurn();
 
@@ -4193,7 +4095,7 @@ this.startClock();
     //
     // if the clock is going, ask to confirm moves
     //
-    twilight_self.confirm_this_move = 1;
+    //twilight_self.confirm_this_move = 1;
 
     //
     // END OF HISTORY
@@ -4230,9 +4132,9 @@ this.startClock();
 
 	  is_player_skipping_playing_china_card = 1;
 
-          let html = '<div class="status-message" id="status-message">You only have the China Card remaining. Do you wish to play it this turn?';
-              html += '<ul><li class="card" id="play">play card</li><li class="card" id="skipturn">skip turn</li></ul></div>';
-          this.updateStatus(html);
+          let user_message = 'You only have the China Card remaining. Do you wish to play it this turn?';
+          let html = '<ul><li class="card" id="play">play card</li><li class="card" id="skipturn">skip turn</li></ul>';
+          this.updateStatusWithOptions(user_message, html,false);
           this.attachCardboxEvents(function(action) {
 
 	    if (action === "play") {
@@ -4516,7 +4418,7 @@ this.startClock();
       }
 
       if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
-        let c = confirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
+        let c = sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
         if (c) {} else { return; }
       }
 
@@ -4565,15 +4467,15 @@ this.startClock();
           twilight_self.endTurn();
         } else {
 
-          let user_message = "Select country from which to remove influence:<ul>";
+          let html = "<ul>";
           if (twilight_self.countries['turkey'].us >= 2) {
-            user_message += '<li class="card showcard" id="turkey">Turkey</li>';
+            html += '<li class="card" id="turkey">Turkey</li>';
           }
           if (twilight_self.countries['westgermany'].us >= 2) {
-            user_message += '<li class="card showcard" id="westgermany">West Germany</li>';
+            html += '<li class="card" id="westgermany">West Germany</li>';
           }
-          user_message += '</ul>';
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
+          html += '</ul>';
+          twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html,false);
           twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 === "turkey") {
@@ -4623,16 +4525,15 @@ this.startClock();
 
       if (twilight_self.game.deck[0].cards[card].scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
-        let html = ``;
-        html += `<ul><li class="card" id="event">score region</li></ul>`
+        let html = `<ul><li class="card" id="event">score region</li></ul>`;
 
         // true means we want to include the back button in our functionality
-        if (this.game.state.back_button_cancelled == 1) {
+        /*if (this.game.state.back_button_cancelled == 1) {
           html = twilight_self.formatStatusHeader(status_header, html, false);
         } else {
           html = twilight_self.formatStatusHeader(status_header, html, true);
-        }
-        twilight_self.updateStatus(html);
+        }*/
+        twilight_self.updateStatusWithOptions(status_header, html, (this.game.state.back_button_cancelled != 1));
       } else {
 
         let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, twilight_self.game.player, 0);
@@ -4726,22 +4627,14 @@ this.startClock();
             announcement += '<li class="card" id="cancel_cmc">cancel cuban missile crisis</li>';
           }
         }
-
-        if (twilight_self.game.state.back_button_cancelled == 1) {
-          announcement = twilight_self.formatStatusHeader(
-            `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-	    announcement,
-            false
-          );
+        let header_msg = `${player.toUpperCase()} playing <span>${twilight_self.game.deck[0].cards[card].name}</span>`; 
+        /*if (twilight_self.game.state.back_button_cancelled == 1) {
+          announcement = twilight_self.formatStatusHeader(header_msg, announcement,false);
         } else {
-          announcement = twilight_self.formatStatusHeader(
-            `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-	    announcement,
-            true
-          );
-        }
+          announcement = twilight_self.formatStatusHeader(header_msg, announcement, true);
+        }*/
 
-        twilight_self.updateStatus(announcement);
+        twilight_self.updateStatusWithOptions(header_msg, announcement, (twilight_self.game.state.back_button_cancelled!=1));
       }
 
       $('#back_button').off();
@@ -4779,15 +4672,16 @@ this.startClock();
             twilight_self.endTurn();
           } else {
 
-            let user_message = "Select country from which to remove influence:<ul>";
+            let user_message = "Select country from which to remove influence:";
+            let user_options = "<ul>";
             if (twilight_self.countries['turkey'].us >= 2) {
-              user_message += '<li class="card showcard" id="turkey">Turkey</li>';
+              user_options += '<li class="card" id="turkey">Turkey</li>';
             }
             if (twilight_self.countries['westgermany'].us >= 2) {
-              user_message += '<li class="card showcard" id="westgermany">West Germany</li>';
+              user_options += '<li class="card" id="westgermany">West Germany</li>';
             }
-            user_message += '</ul>';
-            twilight_self.updateStatus("<div class='status-message' id='status-message'>" + user_message + "</div>");
+            user_options += '</ul>';
+            twilight_self.updateStatusWithOptions(user_message, user_options, false);
 
             twilight_self.attachCardboxEvents(function(action2) {
 
@@ -4829,27 +4723,19 @@ this.startClock();
           //
           if (twilight_self.game.deck[0].cards[card].player != "both" && twilight_self.game.deck[0].cards[card].player != player) {
 
-            let fr =  "<div class='status-message' id='status-message'><span>This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?</span><ul>";
-                fr += '<li class="card" id="playevent">play event</li>';
-                fr += '<li class="card" id="pickagain">pick again</li>';
-                fr += '</ul></div>';
+            let fr_header =  "This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?";
+            let fr_msg = '<ul><li class="card" id="playevent">play event</li></ul>';
 
-            twilight_self.updateStatus(fr);
+            twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
 
             twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
-
               if (action == "playevent") {
                 twilight_self.playerTriggerEvent(player, card);
                 return;
               }
-              if (action == "pickagain") {
-                twilight_self.playerTurn(original_selected_card);
-                return;
-              }
-
             });
-
+            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -4858,44 +4744,30 @@ this.startClock();
           //
           if (twilight_self.confirm_moves == 1) {
 
-            let fr_header = 
-              `
-              Confirm you want to play this event:
-	      `;
+            let fr_header = `Confirm you want to play this event: `;
             let fr_msg = `
-             <ul>
-              <li class="card" id="playevent">play event</li>
-              <li class="card" id="pickagain">pick again</li>
-              </ul>
-              <input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> don't confirm moves (expert mode)...
-              `;
+              <ul><li class="card" id="playevent">play event</li>
+              <li><input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"/> don't ask again (expert mode)...</li>
+              <ul>`;
 
-            let html = twilight_self.formatStatusHeader(fr_header, fr_msg, false);
-	    twilight_self.updateStatus(html);
-
-//            twilight_self.updateStatus(fr);
+	           twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
             twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
-
               if (action == "playevent") {
                 twilight_self.playerTriggerEvent(player, card);
                 return;
               }
-              if (action == "pickagain") {
-                twilight_self.playerTurn(original_selected_card);
-                return;
-              }
-
             });
 
             $('input:checkbox').change(function() {
               if ($(this).is(':checked')) {
                 twilight_self.confirm_moves = 0;
                 twilight_self.saveGamePreference('confirm_moves', 1);
-		try { $(".game-confirm").text("Newbie Mode"); } catch (err) {}
+          		try { $(".game-confirm").text("Newbie Mode"); } catch (err) {}
               }
-            })
+            });
 
+            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -4909,49 +4781,35 @@ this.startClock();
 
           //
           // our event or both
-          //
           if (twilight_self.confirm_moves == 1 && (card != "missileenvy" || is_this_missile_envy_noneventable == 0)) {
 
             let fr_header = "Confirm you want to play for ops:";
-	    let fr_msg = `
-              <ul>
+      	    let fr_msg = `<ul>
               <li class="card" id="playevent">play for ops</li>
-              <li class="card" id="pickagain">pick again</li>
+              <li><input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"/> don't ask again (expert mode)...</li>
               </ul>
               `;
-	    if (twilight_self.confirm_moves == 1) {
-              fr_msg += `<input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> don't confirm moves (expert mode)...`;
-	    }
-	    fr_msg += `
-	      </div>
-	    `;
+	        
+  	       twilight_self.updateStatusWithOptions(fr_header, fr_msg, true);
 
-            let html = twilight_self.formatStatusHeader(fr_header, fr_msg,  false)
-	    twilight_self.updateStatus(html);
-
-//            twilight_self.updateStatus(fr);
-            twilight_self.attachCardboxEvents(function(action) {
+           twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
               if (action == "playevent") {
                 twilight_self.playerTriggerOps(player, card);
                 return;
               }
-              if (action == "pickagain") {
-                twilight_self.playerTurn(original_selected_card);
-                return;
-              }
-
-            });
+             });
 
             $('input:checkbox').change(function() {
               if ($(this).is(':checked')) {
                 twilight_self.confirm_moves = 0;
                 twilight_self.saveGamePreference('confirm_moves', 0);
-		try { $(".game-confirm").text("Newbie Mode"); } catch (err) {}
+          		try { $(".game-confirm").text("Newbie Mode"); } catch (err) {}
               }
-            })
+            });
 
+            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -4964,20 +4822,12 @@ this.startClock();
         if (action == "space") {
 
           if (twilight_self.confirm_moves == 1) {
+            let fr_header = `Confirm you want to space ${twilight_self.game.deck[0].cards[card].name}`;
+            let fr_msg =  `<ul><li class="card" id="playevent">send into orbit</li>
+              <li><input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"/> don't ask again (expert mode)...</li>
+              </ul>`;
 
-            let fr =
-              `
-	      <div class="status-message" id="status-message">
-              <div>Confirm you want to space ${twilight_self.game.deck[0].cards[card].name}</div>
-             <ul>
-              <li class="card" id="playevent">send into orbit</li>
-              <li class="card" id="pickagain">pick again</li>
-              </ul>
-              <input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> don't confirm moves (expert mode)...
-	      </div>
-              `;
-
-            twilight_self.updateStatus(fr);
+            twilight_self.updateStatusWithOptions(fr_header,fr_msg,true);
             twilight_self.attachCardboxEvents(function(action) {
               $('.card').off();
 
@@ -4987,11 +4837,6 @@ this.startClock();
                 twilight_self.endTurn();
                 return;
               }
-              if (action == "pickagain") {
-                twilight_self.playerTurn(original_selected_card);
-                return;
-              }
-
             });
 
             $('input:checkbox').change(function() {
@@ -5000,8 +4845,9 @@ this.startClock();
                 twilight_self.saveGamePreference('confirm_moves', 1);
 		try { $(".game-confirm").text("Newbie Mode"); } catch (err) {}
               }
-            })
+            });
 
+            twilight_self.bindBackButtonFunction(()=>{twilight_self.playerTurn(original_selected_card)});
             return;
           }
 
@@ -5062,8 +4908,8 @@ this.startClock();
         }
 
         let html = '<ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>';
-            html = twilight_self.formatStatusHeader('Playing opponent card:', html, true);
-        twilight_self.updateStatus(html);
+        twilight_self.updateStatusWithOptions('Playing opponent card:', html, true);
+
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.playerTurnCardSelected(card, player);
         });
@@ -5449,7 +5295,7 @@ this.startClock();
 
       twilight_self.addMove("resolve\tplacement_bonus");
 
-      this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
+      this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
       let ops_to_place = bonus;
 
@@ -5484,7 +5330,7 @@ this.startClock();
 
       twilight_self.addMove("resolve\tplacement_bonus");
 
-      this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
+      this.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
 
       let ops_to_place = bonus;
 
@@ -5549,7 +5395,7 @@ this.startClock();
       this.showInfluence(country, "us");
     }
 
-    this.updateLog(player.toUpperCase() + "</span> <span>removes </span> " + inf + "<span> from</span> <span>" + this.countries[country].name);
+    this.updateLog(player.toUpperCase() + " removes " + inf + " from " + this.countries[country].name);
 
     this.showInfluence(country, player, mycallback);
 
@@ -5563,7 +5409,7 @@ this.startClock();
       this.countries[country].ussr = parseInt(this.countries[country].ussr) + parseInt(inf);
     }
 
-    this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name, 1);
+    this.updateLog(player.toUpperCase() + " places " + inf + " in " + this.countries[country].name, 1);
 
     this.showInfluence(country, player, mycallback);
 
@@ -5880,7 +5726,7 @@ this.startClock();
                     //
                     if (twilight_self.app.BROWSER == 1) {
 
-                      let removeinf = confirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+                      let removeinf = sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                       if (removeinf) {
 
                         if (countryname === "turkey") {
@@ -5947,7 +5793,7 @@ this.startClock();
                     //
                     if (twilight_self.app.BROWSER == 1) {
 
-                      let removeinf = confirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+                      let removeinf = sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                       if (removeinf) {
 
                         if (countryname === "cuba") {
@@ -6019,13 +5865,13 @@ this.startClock();
     if (next_box == 7) { if (roll < 4) { successful = 1; } }
     if (next_box == 8) { if (roll < 3) { successful = 1; } }
 
-    this.updateLog("<span>" + player.toUpperCase() + "</span> <span>attempts space race (rolls</span> " + roll + ")");
+    
 
     if (successful == 1) {
-      this.updateLog("<span>" + player.toUpperCase() + "</span> <span>advances in the Space Race</span>");
+      this.updateLog(player.toUpperCase() + ` advances in the Space Race with roll ${roll}`);
       this.advanceSpaceRace(player);
     } else {
-      this.updateLog("<span>" + player.toUpperCase() + "</span> <span>fails in the Space Race</span>");
+      this.updateLog(player.toUpperCase() + ` fails in the Space Race with roll ${roll}`);
     }
 
   }
@@ -6055,7 +5901,7 @@ this.startClock();
         // sanity DEFCON check
         //
         if (twilight_self.game.state.defcon == 2 && twilight_self.game.countries[countryname].bg == 1) {
-          if (confirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)")) {
+          if (sconfirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)")) {
           } else {
             twilight_self.playOps(player, ops, card);
             return;
@@ -6068,7 +5914,7 @@ this.startClock();
         if (twilight_self.game.state.events.cubanmissilecrisis == 2 && player =="us" ||
             twilight_self.game.state.events.cubanmissilecrisis == 1 && player =="ussr"
         ) {
-          if (confirm("Are you sure you wish to coup during the Cuban Missile Crisis?")) {
+          if (sconfirm("Are you sure you wish to coup during the Cuban Missile Crisis?")) {
           } else {
             twilight_self.playOps(player, ops, card);
             return;
@@ -6278,7 +6124,7 @@ this.startClock();
         this.displayModal(`COUP SUCCEEDED: ${player.toUpperCase()} rolls ${roll} (${this.game.countries[countryname].name})`);
       }
 
-      this.updateLog(player.toUpperCase() + " <span>rolls</span> " + roll);
+      this.updateLog(player.toUpperCase() + " rolls " + roll);
 
       while (winning > 0) {
 
@@ -6305,7 +6151,7 @@ this.startClock();
     } else {
 
       if (this.browser_active == 1) {
-        this.updateLog(player.toUpperCase() + "</span> <span>rolls</span> " + roll + " <span>(no change)");
+        this.updateLog(player.toUpperCase() + " rolls " + roll + " (no change)");
       }
     }
 
@@ -6373,8 +6219,7 @@ this.startClock();
       let roll_us   = this.rollDice(6);
       let roll_ussr = this.rollDice(6);
 
-      this.updateLog("<span>US bonus</span> " + bonus_us + " <span>vs. USSR bonus</span> " + bonus_ussr);
-      this.updateLog("<span>US roll</span> " + roll_us + " <span>vs. USSR roll</span> " + roll_ussr);
+      this.updateLog(`US bonus (${bonus_us}) + US roll (${roll_us}) vs. USSR bonus (${bonus_ussr}) + USSR roll (${roll_ussr})`);
 
       roll_us   = roll_us + bonus_us;
       roll_ussr = roll_ussr + bonus_ussr;
@@ -6529,8 +6374,8 @@ this.startClock();
     }
 
     if (this.browser_active == 1) {
-      this.displayModal("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
-      this.updateStatus("<div class='status-message' id='status-message'><span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span></div>");
+      this.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
+      this.updateStatus("<div class='status-message' id='status-message'>The Game is Over - " + winner.toUpperCase() + " wins by " + method + "</div>");
     }
   }
 
@@ -6580,11 +6425,11 @@ this.startClock();
 
       if (ussr_milops_deficit > 0) {
         this.game.state.vp += ussr_milops_deficit;
-        this.updateLog("<span>USSR penalized</span> " + ussr_milops_deficit + " <span>VP (milops)</span>");
+        this.updateLog("USSR penalized " + ussr_milops_deficit + " VP (milops)");
       }
       if (us_milops_deficit > 0) {
         this.game.state.vp -= us_milops_deficit;
-        this.updateLog("<span>US penalized</span> " + us_milops_deficit + " <span>VP (milops)</span>");
+        this.updateLog("US penalized " + us_milops_deficit + " VP (milops)");
       }
     }
 
@@ -7643,32 +7488,32 @@ this.startClock();
     vp_adjustment = this.calculateScoring("europe");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>Europe:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("Europe: " + total_vp + " VP");
  
     vp_adjustment = this.calculateScoring("asia");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>Asia:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("Asia: " + total_vp + " VP");
 
     vp_adjustment = this.calculateScoring("mideast");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>Middle East:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("Middle East: " + total_vp + " VP");
 
     vp_adjustment = this.calculateScoring("africa");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>Africa:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("Africa: " + total_vp + " VP");
 
     vp_adjustment = this.calculateScoring("southamerica");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>South America:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("South America: " + total_vp + " VP");
 
     vp_adjustment = this.calculateScoring("centralamerica");
     total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
     this.game.state.vp += total_vp;
-    this.updateLog("<span>Central America:</span> " + total_vp + " <span>VP</span>");
+    this.updateLog("Central America: " + total_vp + " VP");
 
     this.updateVictoryPoints();
 
@@ -8398,83 +8243,7 @@ this.startClock();
 
 
 
-
-  returnCardItem(card) {
-
-    if (this.interface == 1) {
-      if (this.game.deck[0].cards[card] == undefined) {
-        return `<div id="${card.replace(/ /g,'')}" class="card hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
-      }
-      return `<div id="${card.replace(/ /g,'')}" class="card showcard hud-card cardbox-hud-status">${this.returnCardImage(card, 1)}</div>`;
-    } else {
-      if (this.game.deck[0].cards[card] == undefined) {
-        return '<li class="card showcard" id="'+card+'">'+this.game.deck[0].cards[card].name+'</li>';
-      }
-      return '<li class="card showcard" id="'+card+'">'+this.game.deck[0].cards[card].name+'</li>';
-    }
-
-  }
-
-
-
-
-
-  returnCardList(cardarray=[]) {
-
-    let hand = this.game.deck[0].hand;
-
-    let html = "";
-
-
-    if (this.interface == 1) {
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i]);
-      }
-      html = `
-        <div class="status-cardbox" id="status-cardbox">
-          ${html}
-        </div>`;
-    } else {
-
-      html = "<ul>";
-      for (i = 0; i < cardarray.length; i++) {
-        html += this.returnCardItem(cardarray[i]);
-      }
-      html += '</ul>';
-
-    }
-
-    return html;
-
-  }
-
-
-
-  updateStatusAndListCards(message, cards=null) {
-
-    //
-    // OBSERVER MODE
-    //
-    if (this.game.player == 0) {
-      this.updateStatus(`<div id="status-message" class="status-message">${message}</div>`);
-      //this.attachCardboxEvents();
-      return;
-    }
-
-    if (cards == null) {
-      cards = this.game.deck[0].hand;
-    }
-
-    html = `
-        <div id="status-message" class="status-message">${message}</div>
-        ${this.returnCardList(cards)}
-    `
-
-    this.updateStatus(html);
-    this.attachCardboxEvents();
-  }
-
-
+  
   updateRound() {
 
     let dt = 0;
@@ -8544,7 +8313,7 @@ this.startClock();
     if ((this.game.state.events.manwhosavedtheworld === "us" && this.game.state.turn == 1) || (this.game.state.events.manwhosavedtheworld === "ussr" && this.game.state.turn == 0)) {
       if (this.game.state.defcon == 2) {
         this.game.state.events.manwhosavedtheworld = "";
-        this.updateLog("<span>Man Who Saved the World prevents thermonuclear war</span>");
+        this.updateLog("Man Who Saved the World prevents thermonuclear war");
         return;
       }
     }
@@ -8552,7 +8321,7 @@ this.startClock();
 
     this.game.state.defcon--;
 
-    this.updateLog("<span>DEFCON falls to</span> " + this.game.state.defcon);
+    this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
     if (this.game.state.defcon == 2) {
       if (this.game.state.events.norad == 1) {
@@ -8569,17 +8338,17 @@ this.startClock();
         // phasing player in headline loses
         //
         if (this.game.state.player_to_go == 1) {
-          this.endGame("us", "<span>USSR triggers thermonuclear war</span>");
+          this.endGame("us", "USSR triggers thermonuclear war");
         }
         if (this.game.state.player_to_go == 2) {
-          this.endGame("ussr", "<span>US triggers thermonuclear war</span>");
+          this.endGame("ussr", "US triggers thermonuclear war");
         }
         return;
       }
       if (this.game.state.turn == 0) {
-        this.endGame("us", "<span>USSR triggers thermonuclear war 1</span>");
+        this.endGame("us", "USSR triggers thermonuclear war 1");
       } else {
-        this.endGame("ussr", "<span>US triggers thermonuclear war 2</span>");
+        this.endGame("ussr", "US triggers thermonuclear war 2");
       }
     }
 
@@ -8723,7 +8492,7 @@ this.startClock();
 
   advanceSpaceRace(player) {
 
-    this.updateLog("<span>" + player.toUpperCase() + "</span> <span>has advanced in the space race</span>");
+    //this.updateLog(player.toUpperCase() + " has advanced in the space race");
 
     if (player == "us") {
 
@@ -9449,40 +9218,8 @@ this.startClock();
 
 
 
-
-
-
-
-  mobileCardSelect(card, player, mycallback, prompttext="play") {
-
-    let twilight_self = this;
-
-    twilight_self.hideCard();
-    twilight_self.showPlayableCard(card);
-
-    $('.cardbox_menu_playcard').html(prompttext);
-    $('.cardbox_menu_playcard').css('display','block');
-    $('.cardbox_menu_playcard').off();
-    $('.cardbox_menu_playcard').on('click', function () {
-      $('.cardbox_menu').css('display','none');
-      twilight_self.hideCard();
-      mycallback();
-      $(this).hide();
-      $('.cardbox-exit').hide();
-    });
-    $('.cardbox-exit').off();
-    $('.cardbox-exit').on('click', function () {
-      twilight_self.hideCard();
-      $('.cardbox_menu_playcard').css('display','none');
-      $(this).css('display', 'none');
-    });
-
-  }
-
-  returnCardImage(cardname, hud=0) {
-
+  returnCardImage(cardname) {
     let cardclass = "cardimg";
-    if (hud == 1) { cardclass = "cardimg-hud"; }
 
     var c = this.game.deck[0].cards[cardname];
     if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
@@ -9544,20 +9281,34 @@ this.startClock();
     return html
   }
 
-  showCard(cardname) {
-    let card_html = this.returnCardImage(cardname);
-    let cardbox_html = this.app.browser.isMobileBrowser(navigator.userAgent) ?
-      `${card_html}
-        <div id="cardbox-exit-background">
-          <div class="cardbox-exit" id="cardbox-exit">×</div>
-        </div>` : card_html;
+  
+   mobileCardSelect(card, player, mycallback, prompttext="play") {
 
-    $('#cardbox').html(cardbox_html);
-    $('#cardbox').show();
+    let twilight_self = this;
+
+    twilight_self.hideCard();
+    twilight_self.showPlayableCard(card);
+
+    $('.cardbox_menu_playcard').html(prompttext);
+    $('.cardbox_menu_playcard').css('display','block');
+    $('.cardbox_menu_playcard').off();
+    $('.cardbox_menu_playcard').on('click', function () {
+      $('.cardbox_menu').css('display','none');
+      twilight_self.hideCard();
+      mycallback();
+      $(this).hide();
+      $('.cardbox-exit').hide();
+    });
+    $('.cardbox-exit').off();
+    $('.cardbox-exit').on('click', function () {
+      twilight_self.hideCard();
+      $('.cardbox_menu_playcard').css('display','none');
+      $(this).css('display', 'none');
+    });
+
   }
-
   showPlayableCard(cardname) {
-    let card_html = this.returnCardImage(cardname);
+    let card_html = this.returnCardImage(cardname,0);
     let cardbox_html = this.app.browser.isMobileBrowser(navigator.userAgent) ?
       `${card_html}
       <div id="cardbox-exit-background">
@@ -9573,10 +9324,6 @@ this.startClock();
 
   hideCard() {
     this.cardbox.hide(1);
-    //$('#cardbox').hide();
-    //$('.cardbox_event_blocker').css('height','0px');
-    //$('.cardbox_event_blocker').css('width','0px');
-    //$('.cardbox_event_blocker').css('display','none');
   }
 
 
@@ -9813,6 +9560,37 @@ this.startClock();
 
   }
 
+
+  returnGameRulesHTML(){
+    return `<div class="rules-overlay">
+    <h1>Twilight Struggle</h1>
+    <p>Players take the roles of the US and the USSR and vie for global dominance over ten turns that cover the cold war. Twilight Struggle is a card-based board game. Most cards describes an EVENT, which may be associated with the US, the USSR, or neutral. Every card has an OPERATIONS value. Some SCORING cards trigger a pause to score the current board state. The board show the amount of influence each player has in various countries across the globe. Every country has a STABILITY number and lines on the board show adjacency between countries.</p>
+    <p>Each turn begins with the selection of a HEADLINE, wherein both players select one card from their hand to play first. The card with the higher OPERATIONS value takes effect first, or in the event of a tie the US player's card goes into effect first. A HEADLINE card must be chosen and played, regardless of whether the event helps the player or their opponent.</p>
+    <p>After the HEADLINE, the players alternate playing cards for 6-7 ACTION ROUNDS. The USSR always starts. Cards may be played for EVENTS or OPERATIONS. Playing a card associated with one's opponent (for OPERATION points) still triggers the EVENT as if the opponent had played it themselves. OPERATIONS may be used to place INFLUENCE markers, make REALIGNMENT rolls, attempt COUPS, or advance in the SPACE RACE. </p>
+    <dl>
+    <dt>INFLUENCE</dt><dd>Influence markers are placed on countries with friendly influence or their immediate neighbors. It costs 1 OP to place influence in a friendly or uncontrolled country, and 2 OP to place influence in an enemy controlled country. To control a country, your influence must exceed your opponent's by at least the STABILITY number of the country.</dd>
+    <dt>REALIGNMENT</dt><dd>Realignment rolls reduce enemy influence in a country regardless of whether the player has any influence in the country or its neighbors. It costs 1 OP per roll. Both players roll and the high roller can remove the difference in die values of influence in the target country. Players get +1 if the target country borders their SUPERPOWER, +1 if they have more influence in the target country, and +1 for each adjacent controlled country.</dd>
+    <dt>COUP</dt><dd>A Coup is an attempt to replace the enemy's influence in a target country with that of your own. Roll the dice and add the OP of the card and subtract double the STABILITY number of the country. The result, if positive, is a successful coup and the player may first remove that many enemy influence then add any remaining amount of friendly influence.</dd>
+    <dt>SPACE RACE</dt><dd>Players gain victory points and special abilities for advancing in the SPACE RACE. A player may only attempt to advance in the SPACE RACE once per turn and success depends upon a dice roll. The player must DISCARD a card with a minimum OPERATIONS values. Unlike other actions, the EVENT of the discarded card does not get triggered.</dd>
+    </dl>
+    <h3>DEFCON STATUS</h3>
+    <p>If the DEFCON level (a measure of threat of nuclear war) ever reaches 1, the game immediately ends and the PHASING player (who plays the card) loses. DEFCON level degrades for any COUP in a BATTLEGROUND country. Any DEFCON level below 5 will place geographic restrictions on where COUPS or REALIGNMENT rolls may be attempted. DEFCON is improved at the beginning of each turn. Many Events will improve or degrade the DEFCON level.</p>
+    <h3>MILITARY OPERATIONS</h3>
+    <p>Each player must conduct a minimum amount of military operations per turn (determined by DEFCON), or risk losing VP. Wars and COUPS are military operations. The OP spent on the COUP or the amount specified in the text of the war EVENT card. </p>
+    <h3>CHINA CARD</h3>
+    <p>The USSR starts with the China card, which may be played like any regular card. When played, the China card is passed to the opponent who may use it in the next turn. </p>
+    <h3>SCORING</h3>
+    <p>Scoring is conducted regionally when a SCORING card is played. SCORING cards must be played at some point during the turn if in your hand. The card specifies the number of VP for each of the possible conditions:</p>
+    <ul>
+    <li>PRESENCE: You control at least one country in the region.</li>
+    <li>DOMINATION: You control more countries and more Battleground countries than your opponent in the region</li>
+    <li>CONTROL: You control more countries than your opponent and all of the Battleground countries.</li>
+    </ul>
+    <p>Players are also awarded +1 VP for each Battleground country they control in the region and +1 VP for each controlled country adjacent to the enemy superpower.</p>
+    <p>If a player ever reaches a 20 VP lead over the opponent, then they win the game. </p>
+    </div>`;
+  }
+
   settleVPOutstanding() {
 
     if (this.game.state.vp_outstanding != 0) {
@@ -9824,42 +9602,7 @@ this.startClock();
   }
 
 
-  addLogCardEvents() {
-
-    try {
-    let twilight_self = this;
-
-    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-
-      $('.logcard').off();
-      $('.logcard').mouseover(function() {
-        let card = $(this).attr("id");
-        twilight_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        twilight_self.hideCard(card);
-      });
-
-    } else {
-
-      $('.logcard').off();
-      $('.logcard').on('click', function() {
-
-        let card = $(this).attr("id");
-
-        twilight_self.showCard(card);
-        $('.cardbox-exit').off();
-        $('.cardbox-exit').on('click', function () {
-          twilight_self.hideCard();
-          $('.cardbox_menu_playcard').css('display','none');
-          $(this).css('display', 'none');
-        });
-      });
-
-    }
-    } catch (err) {}
-  }
-
+  
   returnFormattedGameOptions(options) {
     let new_options = {};
     for (var index in options) {
@@ -9884,21 +9627,7 @@ this.startClock();
 
 
 
-  formatStatusHeader(status_header, status_message, include_back_button=false) {
-    let back_button_html = `<i class="fa fa-arrow-left" id="back_button"></i>`;
-    return `
-    <div class="status-header">
-      ${include_back_button ? back_button_html : ""}
-      <div style="text-align: center;">
-        ${status_header}
-      </div>
-    </div>
-    <div class="status-message">
-      ${status_message}
-    </div>
-    `
-  }
-
+  
 
   displayChinaCard() {
 
@@ -9943,7 +9672,7 @@ this.startClock();
   playEvent(player, card) {
 
     if (this.game.deck[0].cards[card] != undefined) {
-      this.updateStatus("<div class='status-message' id='status-message'><span>Playing event:</span> <span>" + this.game.deck[0].cards[card].name + "</span></div>");
+      this.updateStatus(`<div class='status-message' id='status-message'>Playing event: <span class="showcard" id="${card}">${this.game.deck[0].cards[card].name}</span></div>`);
     } else {
       //
       // event already run - sync loading error

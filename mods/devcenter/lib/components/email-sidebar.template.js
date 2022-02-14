@@ -4,7 +4,7 @@ module.exports = EmailSidebarTemplate = () => {
     <div id="email-controls" class="email-controls">
       <div class="email-bars-menu">
         <ul class="email-navigator" id="email-navigator">
-          <li class="email-navigator-item active-navigator-item" id="welcome-nav-inbox">Welcome</li>
+          <li class="email-navigator-item active-navigator-item active" id="welcome-nav-inbox">welcome</li>
         </ul>
         <ul class="email-apps" id="email-apps"></ul>
       </div>

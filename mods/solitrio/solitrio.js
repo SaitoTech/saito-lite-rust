@@ -28,8 +28,8 @@ class Solitrio extends GameTemplate {
 
 
   returnGameRulesHTML(){
-    return `<div class="intro">
-  <h1>Instrutions</h1>
+    return `<div class="rules-overlay">
+  <h1>Solitrio</h1>
   <ul>
   <li>Cards (2-10 in each suit) are randomly arranged in four rows of ten with four blank spaces.</li>
   <li>The goal is to arrange the cards in sequential order with one suit per row.</li>
@@ -94,6 +94,8 @@ class Solitrio extends GameTemplate {
 
   initializeHTML(app) {
 
+    if (!this.browser_active) { return; }
+    
     super.initializeHTML(app);
 
     this.app.modules.respondTo("chat-manager").forEach(mod => {

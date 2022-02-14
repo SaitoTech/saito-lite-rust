@@ -61,9 +61,15 @@ class Registry extends ModTemplate {
   }
 
   tryRegisterIdentifier(identifier, domain="@saito") {
-    
-      let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
-      if (newtx == null) {
+
+      let registry_self = this.app.modules.returnModule("Registry");
+
+console.log("REGISTERING TO WHICH MODULE: " + this.name);
+console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+
+      let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
+      if (!newtx) {
         console.log("NULL TX CREATED IN REGISTRY MODULE")
         throw Error("NULL TX CREATED IN REGISTRY MODULE");
       }
@@ -86,11 +92,13 @@ class Registry extends ModTemplate {
       } else {
         throw TypeError("identifier must be a string");
       }
-
+      return false;
   }
 
   // DEPRECATED, USE tryRegisterIdentifier()
   registerIdentifier(identifier, domain="@saito") {
+
+console.log("SENDING TX TO ADDRESS: " + this.publickey);
 
     let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (newtx == null) {
@@ -120,11 +128,13 @@ class Registry extends ModTemplate {
 
     let registry_self = app.modules.returnModule("Registry");
 
+    /***** UNCOMMENT FOR LOCAL DEVELOPMENT *****
     if (registry_self.app.options.server != undefined) {
-      //registry_self.publickey = registry_self.app.wallet.returnPublicKey();
+      registry_self.publickey = registry_self.app.wallet.returnPublicKey();
     } else {
       registry_self.publickey = peer.peer.publickey;
     }
+    *******************************************/
 
   }
 
@@ -283,46 +293,8 @@ class Registry extends ModTemplate {
     return 0;
   }
 
-
-  sendSuccessResponse(tx) {
-
-    let fee = tx.returnPaymentTo(this.app.wallet.returnPublicKey());
-
-    let  newtx = registry_self.app.wallet.createUnsignedTransaction(to, 0.0, fee);
-    if (newtx == null) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE")
-      return;
-    }
-
-    newtx.msg.module   = "Email";
-    newtx.msg.data     = "You have successfully registered your address";
-    newtx.msg.title    = "Address Registration Success!";
-
-    newtx = this.app.wallet.signTransaction(tx);
-    this.app.network.propagateTransaction(newtx); 
-
-  }
-
-  sendFailureResponse(tx) {
-
-    let fee = tx.returnPaymentTo(this.app.wallet.returnPublicKey());
-
-    let  newtx = registry_self.app.wallet.createUnsignedTransaction(to, 0.0, fee);
-    if (newtx == null) {
-      console.log("NULL TX CREATED IN REGISTRY MODULE")
-      return;
-    }
-
-    newtx.msg.module   = "Email";
-    newtx.msg.data     = "You have successfully registered your address";
-    newtx.msg.title    = "Address Registration Success!";
-
-    newtx = this.app.wallet.signTransaction(tx);
-    this.app.network.propagateTransaction(newtx); 
-
-  }
-
 }
+
 module.exports = Registry;
 
 

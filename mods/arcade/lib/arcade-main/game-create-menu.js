@@ -23,7 +23,7 @@ module.exports = GameCreateMenu = {
   
   attachEvents(app, mod) {
 
-    if (!document.getElementById("games-add-game")) { return; }
+    if (!document.getElementById("games-add-game") && !document.getElementById("arcade-games")) { return; }
 
     if (app.modules.returnModule("AppStore") != null) {
       document.getElementById("games-add-game").onclick = () => {

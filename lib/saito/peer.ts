@@ -134,7 +134,7 @@ class Peer {
     //
     // respect prohibitions
     //
-    console.debug("peer.sendRequest : " + message);
+    // console.debug("peer.sendRequest : " + message);
     // block as Block.serialize(BlockType.Header)
     if (message === "SNDBLOCK") {
       this.app.networkApi.send(this.socket, "SNDBLOCK", data);
@@ -151,8 +151,20 @@ class Peer {
       return;
     }
     // transaction as Transaction.serialize()
+    if (message === "REQGSTCN") {
+      this.app.networkApi.send(this.socket, "REQGSTCN", data);
+      return;
+    }
     if (message === "REQCHAIN") {
       this.app.networkApi.send(this.socket, "REQCHAIN", data);
+      return;
+    }
+    if (message === "SPVCHAIN") {
+      this.app.networkApi.send(this.socket, "SPVCHAIN", data);
+      return;
+    }
+    if (message === "GSTCHAIN") {
+      this.app.networkApi.send(this.socket, "GSTCHAIN", data);
       return;
     }
     if (message === "PINGPING") {
@@ -209,7 +221,6 @@ class Peer {
           if (callback) {
             let content = Buffer.from(response).toString("utf-8");
             content = JSON.parse(content);
-            //console.log("SENDMESG callback: ", content);
             callback(content);
           }
         })

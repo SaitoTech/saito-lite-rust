@@ -134,7 +134,7 @@
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction1"); 
+        game_mod.displayFactionSheet("hapsburg"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -142,7 +142,7 @@
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction2"); 
+        game_mod.displayFactionSheet("england"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -150,7 +150,7 @@
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction3");
+        game_mod.displayFactionSheet("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -158,7 +158,7 @@
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction5");
+        game_mod.displayFactionSheet("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -166,7 +166,7 @@
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction6");
+        game_mod.displayFactionSheet("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -174,69 +174,12 @@
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction4");
+        game_mod.displayFactionSheet("papacy");
       }
     });
 
 
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-	for (let ii = 0; ii < this.game.players.length; ii++) {
-	  if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-	    // add main menu
-	    if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-          	id : "game-chat",
-          	class : "game-chat",
-          	callback : function(app, game_mod) {
-		  game_mod.menu.showSubMenu("game-chat");
-          	}
-              })
-	      main_menu_added = 1;
-	    }
-
-	    if (community_menu_added == 0) {
-    	      this.menu.addSubMenuOption("game-chat", {
-    	        text : "Community",
-      	        id : "game-chat-community",
-      	        class : "game-chat-community",
-      	        callback : function(app, game_mod) {
-	  	  game_mod.menu.hideSubMenus();
-        	  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.mute_community_chat = 0;
-		  chatmod.openChatBox();
-    	        }
-              });
-	      community_menu_added = 1;
-	    }
-
-	    // add peer chat
-  	    let data = {};
-	    let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-	    let gid = this.app.crypto.hash(members.join('_'));
-	    let name = "Player "+(ii+1);
-	    let chatmod = this.app.modules.mods[i];
-	
-    	    this.menu.addSubMenuOption("game-chat", {
-    	      text : name,
-      	      id : "game-chat-"+(ii+1),
-      	      class : "game-chat-"+(ii+1),
-      	      callback : function(app, game_mod) {
-		game_mod.menu.hideSubMenus();
-	        chatmod.createChatGroup(members, name);
-		chatmod.openChatBox(gid);
-        	chatmod.sendEvent('chat-render-request', {});
-        	chatmod.saveChat();
-    	      }
-            });
-	  }
-	}
-      }
-    }
+    this.menu.addChatMenu(app, this);
     this.menu.addMenuIcon({
       text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id : "game-menu-fullscreen",
@@ -258,7 +201,7 @@
     //
     // add card events -- text shown and callback run if there
     //
-    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     if (app.browser.isMobileBrowser(navigator.userAgent)) {
       this.cardbox.skip_card_prompt = 0;

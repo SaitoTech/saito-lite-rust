@@ -14,7 +14,7 @@ class Blackjack extends GameTemplate {
     this.app = app;
     this.name = "Blackjack";
     this.gamename = "Blackjack";
-    this.description = 'This game is a playable demo under active development!';
+    this.description = 'Classic casino game with home rules. Try to get closest to 21 without busting, beat the dealer and win your bet, but look out! You may be dealer next hand.';
     this.categories = "Games Arcade Entertainment";
     this.type            = "Classic Cardgame";
 
@@ -50,6 +50,8 @@ class Blackjack extends GameTemplate {
 
 
   initializeHTML(app) {
+    if (!this.browser_active) { return; }
+
     super.initializeHTML(app);
 
     this.app.modules.respondTo("chat-manager").forEach(mod => {
@@ -110,62 +112,12 @@ class Blackjack extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-        for (let ii = 0; ii < this.game.players.length; ii++) {
-          if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-            // add main menu
-            if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-                id : "game-chat",
-                class : "game-chat",
-              })
-              main_menu_added = 1;
-            }
-            if (community_menu_added == 0) {
-              this.menu.addSubMenuOption("game-chat", {
-                text : "Community",
-                id : "game-chat-community",
-                class : "game-chat-community",
-                callback : function(app, game_mod) {
-                  game_mod.menu.hideSubMenus();
-                  chatmod.mute_community_chat = 0;
-                  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.openChatBox();
-                }
-              });
-              community_menu_added = 1;
-            }
-            // add peer chat
-            let data = {};
-            let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-            let gid = this.app.crypto.hash(members.join('_'));
-            let name = "Player "+(ii+1);
-            let chatmod = this.app.modules.mods[i];
-            this.menu.addSubMenuOption("game-chat", {
-              text : name,
-              id : "game-chat-"+(ii+1),
-              class : "game-chat-"+(ii+1),
-              callback : function(app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                chatmod.createChatGroup(members, name);
-                chatmod.openChatBox(gid);
-                chatmod.sendEvent('chat-render-request', {});
-                chatmod.saveChat();
-              }
-            });
-          }
-        }
-      }
-    }
+    this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -176,7 +128,7 @@ class Blackjack extends GameTemplate {
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
     
-    this.restoreLog();
+    
   }
 
 
@@ -810,8 +762,9 @@ class Blackjack extends GameTemplate {
 
     if (!this.areThereAnyBets() && this.game.player == this.game.state.dealer){  
       //Check if Dealer need to play -- blackjacks too!
-      html = `<div class="menu-player">There is no one left to play against</div>`;
-      html += `<ul><li class="menu_option" id="stand">stand</li></ul>`;
+      html = this.getLastNotice();
+      html += `<div class="menu-player">There is no one left to play against</div>`;
+      html += `<ul><li class="menu_option" id="stand">end round</li></ul>`;
     }else{ //Let Player or Dealer make choice
       html = `<div class="menu-player">You have ${this.game.state.player[this.game.player-1].total}, your move:</div><ul>`;
       html += `<li class="menu_option" id="stand" title="end your turn">stand</li>`;
@@ -1194,16 +1147,16 @@ class Blackjack extends GameTemplate {
     
     //Consolidated log message
     this.updateLog(logMsg);        
-    this.showSplash(dealerHTML+playerHTML);
+    this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
 
     return 1;
   }
 
 
   returnGameRulesHTML() {
-    return `<div class="intro">
+    return `<div class="rules-overlay">
     <h1>Homestyle Blackjack</h1>
-    <p><strong>Homestyle Blackjack is quite different than Casino Blackjack. </strong></p>
+    <p><strong>Homestyle Blackjack is quite different from Casino Blackjack. </strong></p>
     <p>The game is played with a single deck (shuffled between each round) and <strong>each player takes turns as dealer</strong>, acting as the house against the other players. This means the dealer stakes the bets of all the other players. <strong>Each player is dealt a single card and given the chance to place a bet.</strong> After all the players (excluding the dealer) have placed their bets, one more card is dealt face up and gameplay begins.</p>
     <p>Beginning to the left of the dealer, each player takes a turn, at which time all other players may view their full hand. Players may hit (take another card) or stand (end their turn). Players may hit as many times as they like, but they lose if they exceed 21 points (bust).
     Cards are scored as usual per the number value and with J, Q, and K counting as 10. Aces count as either 1 or 11. If the player busts, the dealer immediately collects their bet and the player loses. The dealer is the last to play and may use their discretion, i.e. no mandatory casino rule of hitting below 17. If the dealer busts, remaining players win automatically. Any player with a higher score than the dealer wins their bet. <strong>The dealer wins all ties.</strong></p>
@@ -1312,28 +1265,6 @@ class Blackjack extends GameTemplate {
     return "";
   }
 
-  /*
-  Load preformatted html into a pseudo overlay for the endgame info dump
-  */
-  showSplash(message) {
-    var shim = document.querySelector('.shim');
-    shim.classList.remove('hidden');
-    shim.firstElementChild.innerHTML = message;
-    shim.addEventListener('click', (e) => {
-      shim.classList.add('hidden');
-      shim.firstElementChild.innerHTML = "";
-    });
-  }
-
-  handToHTML(hand) {
-    _this = this;
-    var htmlHand = " <span class='htmlCards'>";
-    hand.forEach((card) => {
-      htmlHand += `<img class="card" src="${_this.card_img_dir}/${card}.png">`;
-    });
-    htmlHand += "</span> ";
-    return htmlHand;
-  }
 
 
 

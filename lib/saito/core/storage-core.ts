@@ -37,7 +37,12 @@ class StorageCore extends Storage {
   }
 
   deleteBlockFromDisk(filename) {
-    return fs.unlinkSync(filename);
+    try {
+      return fs.unlinkSync(filename);
+    } catch (error) {
+      console.error(`failed deleting the block file ${filename} from disk`);
+      console.error(error);
+    }
   }
 
   returnFileSystem() {
@@ -65,9 +70,9 @@ class StorageCore extends Storage {
 
   generateBlockFilename(block): string {
     let filename = this.data_dir + "/" + this.dest + "/";
-    filename += Buffer.from(this.app.binary.u64AsBytes(block.block.timestamp).toString("hex"));
+    filename += block.block.timestamp;
     filename += "-";
-    filename += Buffer.from(block.hash).toString("hex");
+    filename += block.hash;
     filename += ".sai";
     return filename;
   }
@@ -171,26 +176,13 @@ class StorageCore extends Storage {
     const blk = await this.loadBlockByHash(bsh);
     if (blk != null) {
       //
-      // delete txs
+      // delete txs utxoset
       //
       if (blk.transactions != undefined) {
         for (let b = 0; b < blk.transactions.length; b++) {
-          // TODO : @david : no id field in transaction
-          // for (
-          //   let bb = 0;
-          //   bb < blk.transactions[b].transaction.to.length;
-          //   bb++
-          // ) {
-          //   blk.transactions[b].transaction.to[bb].bid = bid;
-          //   blk.transactions[b].transaction.to[bb].bhash = bsh;
-          //   blk.transactions[b].transaction.to[bb].tid =
-          //     blk.transactions[b].transaction.id;
-          //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //   // @ts-ignore
-          //   shashmap.delete_slip(
-          //     blk.transactions[b].transaction.to[bb].returnIndex()
-          //   );
-          // }
+	  for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
+	    this.app.utxoset.delete(blk.transactions[b].transaction.to[bb].returnKey());
+	  }
         }
       }
 
@@ -220,8 +212,6 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (!this.app.blockchain.blocks[bsh]) {
       return null;
     }

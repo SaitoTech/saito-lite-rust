@@ -5,6 +5,17 @@ hr {
   border: 1px solid #f004;
 }
 
+.email-navigator-item.active {
+  background-color: var(--saito-red);
+  color: white;
+  font-weight: bold;
+}
+.email-apps-item.active {
+  background-color: var(--saito-red);
+  color: white;
+  font-weight: bold;
+}
+
 .welcome-container {
   font-size: 1.5em;
   line-height: 1.4em;
@@ -20,6 +31,17 @@ hr {
   grid-column-gap: 1.5em;
   grid-template-columns: 15em auto;
   grid-template-areas: "email-sidebar email-main";
+}
+
+.email-apps-item, .email-navigator-item {
+  background-color: white;
+  list-style: none;
+  font-weight: normal;
+  padding: 6px;
+  font-size: 1.3em;
+  color: black;
+  text-transform: lowercase;
+  cursor: pointer;
 }
 
 .email-content {

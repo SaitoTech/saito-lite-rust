@@ -74,6 +74,8 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
   }
 
 
+  let comment_spinner = "";
+  if (tx.children >= 1) { comment_spinner = '<div class="post-loader-spinner loader" id="post-loader-spinner"></div>'; }
   let comment_filler = '<div class="post-loader-spinner loader" id="post-loader-spinner"></div>';
   if (tx.msg.comment) { comment_filler = tx.msg.comment; }
 
@@ -95,8 +97,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
 
   html += `
     <hr />
-    <div id="post-view-comments" class="post-view-comments">
-    </div>
+    <div id="post-view-comments" class="post-view-comments">${comment_spinner}</div>
     <div id="post-view-leave-comment" class="post-view-leave-comment">
       <div id="comment-create" class="post-view-textarea markdown medium-editor-element" placeholder="Your post..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true" data-medium-editor-editor-index="1" medium-editor-index="37877e4c-7415-e298-1409-7dca41eed3b8"></div>
 
@@ -107,7 +108,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
 
 
 
-      <button class="post-submit-btn">Submit</button>
+      <button class="post-submit-btn">Comment</button>
     </div>
   </div>
   `;

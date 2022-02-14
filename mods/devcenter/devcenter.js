@@ -86,8 +86,11 @@ class DevCenter extends ModTemplate {
   }
   renderSidebar(app) {
     if (app.BROWSER != 1 || this.browser_active != 1 ) { return; }
+console.log("### 1");
     EmailSidebar.render(app, this);
+console.log("### 2");
     EmailSidebar.attachEvents(app, this);
+console.log("### 3");
   }
 
   respondTo(type = "") {

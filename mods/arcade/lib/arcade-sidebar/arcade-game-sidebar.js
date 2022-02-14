@@ -1,6 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
 const ArcadeGameSidebarTemplate = require('./arcade-game-sidebar.template');
-const ArcadeGamesFullListOverlayTemplate = require('./arcade-games-full-list-overlay.template');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
 const ArcadeGameDetails = require('../arcade-game/arcade-game-details');

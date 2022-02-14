@@ -32,6 +32,8 @@ class Wuziqi extends GameTemplate {
 
     initializeHTML(app) {
 
+        if (!this.browser_active) { return; }
+
         // Override the game template initializeHTML function
         super.initializeHTML(app);
 
@@ -80,63 +82,8 @@ class Wuziqi extends GameTemplate {
         });
 
         // Add Chat Features to Menu
-        let main_menu_added = 0;
-        let community_menu_added = 0;
-        for (let i = 0; i < this.app.modules.mods.length; i++) {
-            if (this.app.modules.mods[i].slug === "chat") {
-                for (let ii = 0; ii < this.game.players.length; ii++) {
-                    if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-                        // add main menu
-                        if (main_menu_added == 0) {
-                            this.menu.addMenuOption({
-                                text: "Chat",
-                                id: "game-chat",
-                                class: "game-chat",
-                                callback: function (app, game_mod) {
-                                    game_mod.menu.showSubMenu("game-chat");
-                                }
-                            })
-                            main_menu_added = 1;
-                        }
-
-                        if (community_menu_added == 0) {
-                            this.menu.addSubMenuOption("game-chat", {
-                                text: "Community",
-                                id: "game-chat-community",
-                                class: "game-chat-community",
-                                callback: function (app, game_mod) {
-                                    game_mod.menu.hideSubMenus();
-                                    chatmod.mute_community_chat = 0;
-                                    chatmod.sendEvent('chat-render-request', {});
-                                    chatmod.openChatBox();
-                                }
-                            });
-                            community_menu_added = 1;
-                        }
-                        // add peer chat
-                        let data = {};
-                        let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-                        let gid = this.app.crypto.hash(members.join('_'));
-                        let name = this.game.sides[ii].toUpperCase();//"Player " + (ii + 1);
-                        let chatmod = this.app.modules.mods[i];
-
-                        this.menu.addSubMenuOption("game-chat", {
-                            text: name,
-                            id: "game-chat-" + (ii + 1),
-                            class: "game-chat-" + (ii + 1),
-                            callback: function (app, game_mod) {
-                                game_mod.menu.hideSubMenus();
-                                chatmod.createChatGroup(members, name);
-                                chatmod.openChatBox(gid);
-                                chatmod.sendEvent('chat-render-request', {});
-                                chatmod.saveChat();
-                            }
-                        });
-                    }
-                }
-            }
-        }
+        this.menu.addChatMenu(app, this, this.game.sides);
+        
         // Add icon to switch to full screen mode
         this.menu.addMenuIcon({
             text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
@@ -208,7 +155,7 @@ class Wuziqi extends GameTemplate {
     //html for game intro/rules
     returnGameRulesHTML() {
 
-        let overlay_html = `<div class="intro">
+        let overlay_html = `<div class="rules-overlay intro">
           <h2>Wuziqi （五子棋）</h2>
            <p> Wuziqi, also known as Gokomu and Gobang, is a simple two player game played on a Go board. It is similar to <abbr title="also known as Naughts and Crosses">Tic-Tac-Toe</abbr> or Connect Four in that players alternately place tokens in an attempt to create a line of five consecutive tokens of their color. Tokens may be placed anywhere on the board not already occupied.</p>
            <p> The first player to place five of their own tokens in a continuous line--vertical, horizontal or diagonally--wins the round. The player who wins the most rounds, wins the match.</p><p> Matches are best out of three by default, but you can change this in the advanced options in the arcade. You may also specify the size of the board for added challenge.</p>

@@ -1,4 +1,15 @@
 
+.hud-header {
+  opacity: 0.5;
+  background-color: #0005;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 500px;
+}
+
+.cardimg {
+  width: 100%;
+}
 
 .faction_sheet {
   width: 1240px;

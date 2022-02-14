@@ -1,7 +1,7 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const GameHexGrid = require("../../lib/saito/ui/game-hexgrid/game-hexgrid");
 const SettlersSkin = require("./lib/settlers.skin.js");
-const helpers = require("../../lib/helpers/index");
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -80,7 +80,7 @@ class Settlers extends GameTemplate {
     }
     let overlay_html = `
 
-  <div class="trade_overlay">
+  <div class="rules-overlay trade_overlay">
   <h1>${skin.gametitle}</h1>
   <h2>Overview</h2>
   <p>The game mechanics should be familiar to anyone who has played resource-acquisition boardgames based on trading and building.</p>
@@ -111,9 +111,8 @@ class Settlers extends GameTemplate {
   }
 
   initializeHTML(app) {
-    if (this.browser_active == 0) {
-      return;
-    }
+
+    if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
 
@@ -157,73 +156,8 @@ class Settlers extends GameTemplate {
       },
     });
 
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-        for (let ii = 0; ii < this.game.players.length; ii++) {
-          if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-            // add main menu
-            if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text: "Chat",
-                id: "game-chat",
-                class: "game-chat",
-                callback: function (app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                },
-              });
-              main_menu_added = 1;
-            }
-
-            if (community_menu_added == 0) {
-              this.menu.addSubMenuOption("game-chat", {
-                text: "Community",
-                id: "game-chat-community",
-                class: "game-chat-community",
-                callback: function (app, game_mod) {
-                  game_mod.menu.hideSubMenus();
-                  chatmod.sendEvent("chat-render-request", {});
-                  chatmod.openChatBox();
-                },
-              });
-              community_menu_added = 1;
-            }
-
-            // add peer chat
-            let data = {};
-            let members = [
-              this.game.players[ii],
-              this.app.wallet.returnPublicKey(),
-            ].sort();
-            let gid = this.app.crypto.hash(members.join("_"));
-            let name = "Player " + (ii + 1);
-            let chatmod = this.app.modules.mods[i];
-
-            this.menu.addSubMenuOption("game-chat", {
-              text: name,
-              id: "game-chat-" + (ii + 1),
-              class: "game-chat-" + (ii + 1),
-              callback: function (app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                // load the chat window
-                let newgroup = chatmod.createChatGroup(members);
-                if (newgroup) {
-                  chatmod.addNewGroup(newgroup);
-                  chatmod.sendEvent("chat-render-request", {});
-                  chatmod.saveChat();
-                  chatmod.openChatBox(newgroup.id);
-                } else {
-                  chatmod.sendEvent("chat-render-request", {});
-                  chatmod.openChatBox(gid);
-                }
-              },
-            });
-          }
-        }
-      }
-    }
-
+    this.menu.addChatMenu(this.app, this);
+    
     this.menu.addMenuIcon({
       text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id: "game-menu-fullscreen",
@@ -263,6 +197,7 @@ class Settlers extends GameTemplate {
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -317,7 +252,7 @@ class Settlers extends GameTemplate {
     if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }
-    this.restoreLog();
+    
 
   }
 
@@ -1269,14 +1204,8 @@ class Settlers extends GameTemplate {
           }
         }
 
-        discardString = discardString.substring(0, discardString.length - 2); //cut the final ,
-        if (confirmsNeeded >= 2) {
-          let index = discardString.lastIndexOf(",");
-          discardString =
-            discardString.slice(0, index) +
-            " and" +
-            discardString.slice(index + 1);
-        }
+        discardString = this.prettifyList(discardString);
+        
         this.game.queue.push(
           `NOTIFY\t${discardString} must discard half their hand.`
         );
@@ -3777,14 +3706,7 @@ class Settlers extends GameTemplate {
     }
   }
 
-  prettifyList(list) {
-    list = list.substring(0, list.length - 2); //cut the final ,
-    if (list.split(",").length >= 2) {
-      let index = list.lastIndexOf(",");
-      list = list.slice(0, index) + " and" + list.slice(index + 1);
-    }
-    return list;
-  }
+
 }
 
 module.exports = Settlers;

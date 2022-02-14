@@ -13,7 +13,7 @@ class Blockchain {
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 5,
+    genesis_period: 100000,
     genesis_block_id: 0,
     genesis_timestamp: 0,
     genesis_block_hash: "",
@@ -71,7 +71,57 @@ class Blockchain {
     this.callback_limit = 2; // 2 blocks
   }
 
+  addGhostToBlockchain(
+    id = 0,
+    previous_block_hash = "",
+    ts = 0,
+    prehash = "",
+    gt = false,
+    hash = ""
+  ) {
+    this.indexing_active = true;
+
+    ////////////////////
+    // insert indexes //
+    ////////////////////
+    let block = new Block(this.app);
+    block.block.id = id;
+    block.block.previous_block_hash = previous_block_hash;
+    block.block.timestamp = ts;
+    block.has_golden_ticket = gt;
+    block.prehash = prehash;
+    block.hash = hash;
+    block.block_type = BlockType.Ghost;
+
+    //
+    // sanity checks
+    //
+    if (this.isBlockIndexed(block.hash)) {
+      console.error("ERROR 581023: block exists in blockchain index");
+      this.indexing_active = false;
+      return;
+    }
+
+    if (!this.app.blockring.containsBlockHashAtBlockId(block.block.id, block.hash)) {
+      this.app.blockring.addBlock(block);
+    }
+
+    //
+    // blocks are stored in a hashmap indexed by the block_hash. we expect all
+    // all block_hashes to be unique, so simply insert blocks one-by-one on
+    // arrival if they do not exist.
+    //
+    if (!this.isBlockIndexed(block.hash)) {
+      this.blocks[block.hash] = block;
+    }
+
+    // update longest-chain
+    this.indexing_active = false;
+    return;
+  }
+
   async addBlockToBlockchain(block, force = 0) {
+
     //
     //
     //
@@ -110,9 +160,10 @@ class Blockchain {
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
       console.log("fetching unknown block: " + parent_block_hash);
       if (!parent_block_hash) {
-        console.log("hash is empty", block);
+        console.log("hash is empty for parent: ", block.returnHash());
+      } else {
+        await this.app.network.fetchBlock(parent_block_hash);
       }
-      await this.app.network.fetchBlock(parent_block_hash);
     }
 
     // pre-validation
@@ -227,7 +278,7 @@ class Blockchain {
         // connection or network issues.
         //
         if (
-          previous_block_hash === this.blockchain.last_block_hash &&
+          block.block.previous_block_hash === this.blockchain.last_block_hash &&
           block.block.previous_block_hash !== ""
         ) {
           //
@@ -378,12 +429,12 @@ class Blockchain {
           block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
         }
 
-        console.log(
-          "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
-        );
-        console.log(
-          "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
-        );
+        //console.log(
+        //  "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
+        //);
+        //console.log(
+        //  "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
+        //);
 
         if (block_id_from_which_to_run_callbacks > 0) {
           for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
@@ -405,19 +456,11 @@ class Blockchain {
               }
             }
 
-            console.log("running callbacks? " + run_callbacks);
-
             if (run_callbacks === 1) {
               let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
               if (callback_block_hash !== "") {
-                console.log("running on block: " + callback_block_hash);
                 let callback_block = this.blocks[callback_block_hash];
                 if (callback_block) {
-                  console.log(
-                    `running the callbacks on block: ${callback_block.returnHash()} callback count = ${
-                      callback_block.callbacks.length
-                    }`
-                  );
                   await callback_block.runCallbacks(this_confirmation);
                 }
               }
@@ -756,6 +799,7 @@ class Blockchain {
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
         console.warn(`block is not found in disk : ${block_hash}`);
+        return null;
       }
       block.block_type = BlockType.Full;
       return block;

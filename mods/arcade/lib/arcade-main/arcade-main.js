@@ -1,5 +1,6 @@
 const ArcadeMainTemplate = require("./templates/arcade-main.template");
 const ArcadeContainerTemplate = require("./templates/arcade-container.template");
+const ArcadeMobileHelper = require("./templates/arcade-mobile-helper.template");
 const ArcadeForums = require("./arcade-forums");
 const ArcadePosts = require("./arcade-posts");
 const ArcadeInfobox = require("./arcade-infobox");
@@ -30,6 +31,8 @@ module.exports = ArcadeMain = {
     if (document.getElementById("arcade-main")) {
       document.getElementById("arcade-main").destroy();
     }
+
+    let x = mod.app.browser.returnURLParameter("game");
 
     //
     // put active games first
@@ -92,15 +95,22 @@ module.exports = ArcadeMain = {
     });
     */
 
+    if (x){
+      app.browser.addElementToElement(ArcadeMobileHelper(app.modules.returnModuleBySlug(x)), document.getElementById("arcade-mobile-helper"));
+    }
+
     //
     // add games
     //
     if (document.querySelector(".arcade-hero")) {
       mod.games.forEach((invite, i) => {
-        app.browser.addElementToElement(
+        console.log(invite.msg.game, x);
+        if (!x || invite.msg.game.toLowerCase() === x){
+          app.browser.addElementToElement(
           ArcadeInviteTemplate(app, mod, invite, i),
           document.querySelector(".arcade-hero")
-        );
+        );  
+        }
       });
       mod.observer.forEach((observe, i) => {
         app.browser.addElementToElement(
@@ -177,14 +187,15 @@ module.exports = ArcadeMain = {
     });
 
 
-    let x = mod.app.browser.returnURLParameter("game");
+    
     if (x) {
       ArcadePosts.render(app, mod);
     } else {
       ArcadeForums.render(app, mod);
     }
 
-    ArcadeInfobox.render(app, mod);
+    //ArcadeInfobox.render(app, mod); //Not doing anything right now
+
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
@@ -379,6 +390,9 @@ module.exports = ArcadeMain = {
       //
       // ready to go? check with server game is not taken
       //
+      GameLoader.render(app, mod);
+      GameLoader.attachEvents(app, mod);
+
       mod.sendPeerRequestWithFilter(
         () => {
           let msg = {};
@@ -432,8 +446,6 @@ if (relay_mod != null) {
   relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
 }
 
-              GameLoader.render(app, mod);
-              GameLoader.attachEvents(app, mod);
 
               return;
             } else {

@@ -16,15 +16,11 @@
         twilight_self.playerFinishedPlacingInfluence();
 
         let html = `
-          <div class="status-message" id="status-message">
-          <div>USSR establishes the Warsaw Pact:</div>
           <ul>
             <li class="card" id="remove">remove all US influence in four countries in Eastern Europe</li>
             <li class="card" id="add">add five USSR influence in Eastern Europe (max 2 per country)</li>
-          </ul>
-          </div>
-        `;
-        twilight_self.updateStatus(html);
+          </ul>`;
+        twilight_self.updateStatusWithOptions("USSR establishes the Warsaw Pact:",html,false);
 
         twilight_self.attachCardboxEvents(function(action2) {
 

@@ -15,13 +15,12 @@
 
       } else {
 
-        let html = `<div class="status-message" id="status-message"><span>Do you choose to:</span>
-          <ul>
-            <li class="card" id="place">place 1 influence in Argentina</li>
-            <li class="card" id="couporrealign">coup or realign Argentina</li>
-          </ul></div>`;
+        let html = `<ul>
+                    <li class="card" id="place">place 1 influence in Argentina</li>
+                    <li class="card" id="couporrealign">coup or realign Argentina</li>
+                    </ul>`;
 
-        this.updateStatus(html);
+        this.updateStatusWithOptions("Do you choose to:",html,false);
 
         twilight_self.attachCardboxEvents(function(action2) {
           if (action2 == "place") {
@@ -34,14 +33,13 @@
 
           }
           if (action2 == "couporrealign") {
+            let user_message = "Do you choose to:";
+            html = `<ul>
+                    <li class="card" id="coup">coup in Argentina</li>
+                    <li class="card" id="realign">realign in Argentina</li>
+                    </ul>`;
 
-            html = `<div class="status-message" id="status-message"><span>Do you choose to:</span>
-              <ul>
-                <li class="card" id="coup">coup in Argentina</li>
-                <li class="card" id="realign">realign in Argentina</li>
-            </ul></div>`;
-
-            twilight_self.updateStatus(html);
+            twilight_self.updateStatusWithOptions(user_message,html,false);
             twilight_self.attachCardboxEvents(function(action2) {
 
               let modified_ops = twilight_self.modifyOps(1,"peronism");
@@ -56,12 +54,12 @@
                 let result = twilight_self.playRealign("argentina");
                 modified_ops--;
                 if (modified_ops > 0) {
-
-                  html = `<div class="status-message" id="status-message"><span>You have an OP Bonus. Realign again?:</span>
-                  <ul>
-                    <li class="card" id="realign">realign in Argentina</li>
-                    <li class="card" id="skip">no, please stop</li>
-                  </ul></div>`;
+                  user_message = "You have an OP Bonus. Realign again?:";
+                  html = `<ul>
+                          <li class="card" id="realign">realign in Argentina</li>
+                          <li class="card" id="skip">no, please stop</li>
+                          </ul>`;
+                  //Is there a bug here?? 
 
                   let action2 = $(this).attr("id");
                   if (action2 == "realign") {

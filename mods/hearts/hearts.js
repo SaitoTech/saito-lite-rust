@@ -101,6 +101,8 @@ class Hearts extends GameTemplate {
   //
   initializeHTML(app) {
 
+    if (!this.browser_active) { return; }
+
     super.initializeHTML(app);
 
     //
@@ -154,61 +156,8 @@ class Hearts extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-        for (let ii = 0; ii < this.game.players.length; ii++) {
-          if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
+    this.menu.addChatMenu(app, this);
 
-            // add main menu
-            if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-                id : "game-chat",
-                class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
-              })
-              main_menu_added = 1;
-            }
-            if (community_menu_added == 0) {
-              this.menu.addSubMenuOption("game-chat", {
-                text : "Community",
-                id : "game-chat-community",
-                class : "game-chat-community",
-                callback : function(app, game_mod) {
-                  game_mod.menu.hideSubMenus();
-                  chatmod.mute_community_chat = 0;
-                  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.openChatBox();
-                }
-              });
-              community_menu_added = 1;
-            }
-            // add peer chat
-            let data = {};
-            let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-            let gid = this.app.crypto.hash(members.join('_'));
-            let name = "Player "+(ii+1);
-            let chatmod = this.app.modules.mods[i];
-            this.menu.addSubMenuOption("game-chat", {
-              text : name,
-              id : "game-chat-"+(ii+1),
-              class : "game-chat-"+(ii+1),
-              callback : function(app, game_mod) {
-                game_mod.menu.hideSubMenus();
-                chatmod.createChatGroup(members, name);
-                chatmod.openChatBox(gid);
-                chatmod.sendEvent('chat-render-request', {});
-                chatmod.saveChat();
-              }
-            });
-          }
-        }
-      }
-    }
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
@@ -423,7 +372,7 @@ alert(`You picked: ${card}`);
       return '<div class="noncard">'+cardidx+'</div>';
     }
 
-    return `<img class="cardimg showcard" id="${cardidx}" src="/${this.returnSlug()}/img/cards/${c.name}" />`;
+    return `<img class="cardimg" id="${cardidx}" src="/${this.returnSlug()}/img/cards/${c.name}" />`;
 
 
 

@@ -15,6 +15,7 @@ module.exports = ArcadePosts = {
         this.updateForum(app, mod, mod.forums[i]);
       }
       for (let i = mod.posts.length-1; i >= 0; i--) {
+console.log("rendering: " + mod.posts[i].transaction.sig);
         this.addPost(app, mod, mod.posts[i]);
       }
     } catch (err) {}
@@ -49,7 +50,6 @@ module.exports = ArcadePosts = {
 
       }
     } catch (err) {
-console.log("ERROR: " + err);
     }
 
   },

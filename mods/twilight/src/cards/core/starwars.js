@@ -22,14 +22,14 @@
 
       this.addMove("resolve\tstarwars");
 
-      let user_message = "<div class='status-message' id='status-message'>Choose card to reclaim: <ul>";
+      let html = "<ul>";
       for (var i in this.game.deck[0].discards) {
         if (this.game.state.headline == 1 && i == "unintervention") {} else {
           if (this.game.deck[0].cards[i] != undefined) {
             if (this.game.deck[0].cards[i].name != undefined) {
               if (this.game.deck[0].cards[i].scoring != 1) {
                 if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-                  user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+                  html += '<li class="card" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
                 } else {
                   discardlength--;
                 }
@@ -46,8 +46,8 @@
         return 1;
       }
 
-      user_message += '</li></ul></div>';
-      twilight_self.updateStatus(user_message);
+      html += '</ul>';
+      twilight_self.updateStatusWithOptions("Choose card to reclaim:",html,false);
       twilight_self.attachCardboxEvents(function(action2) {
         twilight_self.addMove("event\tus\t"+action2);
         twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);

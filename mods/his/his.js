@@ -19,6 +19,8 @@ class HereIStand extends GameTemplate {
     this.publisher_message = "Here I Stand is owned by GMT Games. This module is made available under an open source license provided by GMT Games that permits usage provided that at least one player per game has purchased a copy of the game.";
     this.categories      = "Games Arcade Entertainment";
 
+    this.interface = 1; // graphical interface
+
     //
     // this sets the ratio used for determining
     // the size of the original pieces
@@ -82,7 +84,33 @@ class HereIStand extends GameTemplate {
       name		: 	"English",
       nickname		: 	"English",
       img		:	"england.png",
+      cards_bonus	:	1,
       marital_status    :       0,
+      returnCardsDealt  :	function(game_mod) {
+
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let base = 0;
+
+	switch (kc) {
+	  case 1: { base = 1; break; }
+	  case 2: { base = 1; break; }
+	  case 3: { base = 2; break; }
+	  case 4: { base = 2; break; }
+	  case 5: { base = 3; break; }
+	  case 6: { base = 3; break; }
+	  case 7: { base = 4; break; }
+	  case 8: { base = 4; break; }
+	  case 9: { base = 5; break; }
+	  case 10: { base = 5; break; }
+	  case 11: { base = 6; break; }
+	  case 12: { base = 6; break; }
+	  default: { base = 1; break; }
+	}
+
+	// TODO - bonus for home spaces under protestant control
+	return base;
+
+      },
     });
  
 
@@ -93,6 +121,32 @@ class HereIStand extends GameTemplate {
       name		: 	"French",
       nickname		: 	"French",
       img		:	"france.png",
+      cards_bonus	:	1,
+      returnCardsDealt  :       function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("france");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 1; break; }
+          case 2: { base = 1; break; }
+          case 3: { base = 1; break; }
+          case 4: { base = 2; break; }
+          case 5: { base = 2; break; }
+          case 6: { base = 3; break; }
+          case 7: { base = 3; break; }
+          case 8: { base = 4; break; }
+          case 9: { base = 4; break; }
+          case 10: { base = 5; break; }
+          case 11: { base = 6; break; }
+          case 12: { base = 6; break; }
+          default: { base = 0; break; }
+        }
+        
+        // TODO - bonus for home spaces under protestant control
+        return base;
+
+      },
     });
  
 
@@ -104,6 +158,33 @@ class HereIStand extends GameTemplate {
       name		: 	"Hapsburg",
       nickname		: 	"Hapsburg",
       img		:	"hapsburgs.png",
+      cards_bonus	:	0,
+      returnCardsDealt  :       function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("hapsburg");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 1; break; }
+          case 2: { base = 2; break; }
+          case 3: { base = 2; break; }
+          case 4: { base = 3; break; }
+          case 5: { base = 3; break; }
+          case 6: { base = 4; break; }
+          case 7: { base = 4; break; }
+          case 8: { base = 5; break; }
+          case 9: { base = 5; break; }
+          case 10: { base = 6; break; }
+          case 11: { base = 6; break; }
+          case 12: { base = 7; break; }
+          case 13: { base = 7; break; }
+          default: { base = 0; break; }
+        }
+        
+        // TODO - bonus for home spaces under protestant control
+        return base;
+
+      },
     });
  
 
@@ -115,6 +196,31 @@ class HereIStand extends GameTemplate {
       name		: 	"Ottoman Empire",
       nickname		: 	"Ottoman",
       img		:	"ottoman.png",
+      cards_bonus	:	0,
+      returnCardsDealt  :       function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 2; break; }
+          case 3: { base = 3; break; }
+          case 4: { base = 3; break; }
+          case 5: { base = 4; break; }
+          case 6: { base = 4; break; }
+          case 7: { base = 5; break; }
+          case 8: { base = 5; break; }
+          case 9: { base = 6; break; }
+          case 10: { base = 6; break; }
+          default: { base = 0; break; }
+        }
+        
+        // TODO - bonus for home spaces under protestant control
+        return base;
+
+      },
+
     });
  
 
@@ -126,6 +232,26 @@ class HereIStand extends GameTemplate {
       name		: 	"Papacy",
       nickname		: 	"Papacy",
       img		:	"papacy.png",
+      cards_bonus	:	0,
+      returnCardsDealt  :       function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 3; break; }
+          case 3: { base = 3; break; }
+          case 4: { base = 4; break; }
+          case 5: { base = 4; break; }
+          case 6: { base = 4; break; }
+          default: { base = 0; break; }
+        }
+        
+        // TODO - bonus for home spaces under protestant control
+        return base;
+
+      },
     });
  
 
@@ -137,6 +263,16 @@ class HereIStand extends GameTemplate {
       name		: 	"Protestant",
       nickname		: 	"Protestant",
       img		:	"protestant.png",
+      cards_bonus	:	0,
+      returnCardsDealt  :       function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
+        if (kc > 4) { return 5; }
+
+	return 4;
+        
+      },
+
     });
  
 
@@ -174,7 +310,9 @@ class HereIStand extends GameTemplate {
       this.game.spaces = this.returnSpaces();
       this.game.players_info = this.returnPlayers(this.game.players.length);
 
-      this.initializeDice();
+      if (this.game.dice === "") {
+        this.initializeDice();
+      }
 
 console.log("\n\n\n\n");
 console.log("---------------------------");
@@ -374,7 +512,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-hapsburgs",
       class : "game-hapsburgs",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction1"); 
+        game_mod.displayFactionSheet("hapsburg"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -382,7 +520,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-england",
       class : "game-england",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction2"); 
+        game_mod.displayFactionSheet("england"); 
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -390,7 +528,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-france",
       class : "game-france",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction3");
+        game_mod.displayFactionSheet("france");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -398,7 +536,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction5");
+        game_mod.displayFactionSheet("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -406,7 +544,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-protestants",
       class : "game-protestants",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction6");
+        game_mod.displayFactionSheet("protestant");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -414,69 +552,12 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.displayFactionSheet("faction4");
+        game_mod.displayFactionSheet("papacy");
       }
     });
 
 
-    let main_menu_added = 0;
-    let community_menu_added = 0;
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-	for (let ii = 0; ii < this.game.players.length; ii++) {
-	  if (this.game.players[ii] != this.app.wallet.returnPublicKey()) {
-
-	    // add main menu
-	    if (main_menu_added == 0) {
-              this.menu.addMenuOption({
-                text : "Chat",
-          	id : "game-chat",
-          	class : "game-chat",
-          	callback : function(app, game_mod) {
-		  game_mod.menu.showSubMenu("game-chat");
-          	}
-              })
-	      main_menu_added = 1;
-	    }
-
-	    if (community_menu_added == 0) {
-    	      this.menu.addSubMenuOption("game-chat", {
-    	        text : "Community",
-      	        id : "game-chat-community",
-      	        class : "game-chat-community",
-      	        callback : function(app, game_mod) {
-	  	  game_mod.menu.hideSubMenus();
-        	  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.mute_community_chat = 0;
-		  chatmod.openChatBox();
-    	        }
-              });
-	      community_menu_added = 1;
-	    }
-
-	    // add peer chat
-  	    let data = {};
-	    let members = [this.game.players[ii], this.app.wallet.returnPublicKey()].sort();
-	    let gid = this.app.crypto.hash(members.join('_'));
-	    let name = "Player "+(ii+1);
-	    let chatmod = this.app.modules.mods[i];
-	
-    	    this.menu.addSubMenuOption("game-chat", {
-    	      text : name,
-      	      id : "game-chat-"+(ii+1),
-      	      class : "game-chat-"+(ii+1),
-      	      callback : function(app, game_mod) {
-		game_mod.menu.hideSubMenus();
-	        chatmod.createChatGroup(members, name);
-		chatmod.openChatBox(gid);
-        	chatmod.sendEvent('chat-render-request', {});
-        	chatmod.saveChat();
-    	      }
-            });
-	  }
-	}
-      }
-    }
+    this.menu.addChatMenu(app, this);
     this.menu.addMenuIcon({
       text : '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id : "game-menu-fullscreen",
@@ -498,7 +579,7 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
     //
     // add card events -- text shown and callback run if there
     //
-    this.cardbox.addCardType("logcard", "", null);
+    this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     if (app.browser.isMobileBrowser(navigator.userAgent)) {
       this.cardbox.skip_card_prompt = 0;
@@ -585,24 +666,84 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
 
   addUnit(player, space, type) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, type));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, type));
   }
 
   addRegular(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "regular"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "regular"));
   }
 
   addMercenary(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "mercenary"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "mercenary"));
   }
 
   addDebater(player, space) {
-    this.spaces[space].units[player-1].push(this.newUnit(player, "debater"));
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[player-1].push(this.newUnit(player, "debater"));
   }
 
   convertSpace(religion, space) {
-    this.spaces[space].religion = religion;
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.religion = religion;
     this.displayBoard();
+  }
+
+
+  isSpaceAdjacentToReligion(space, religion) {
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.neighbours.length; i++) {
+      if (this.spaces[space.neighbours[i]].religion === religion) {
+	return true;
+      }
+    }
+    return false;
+  }
+
+  returnNumberOfElectoratesControlledByCatholics() {
+    let controlled_keys = 0;
+    if (this.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
+    if (this.spaces['mainz'].religion === "catholic") { controlled_keys++; }
+    if (this.spaces['trier'].religion === "catholic") { controlled_keys++; }
+    if (this.spaces['cologne'].religion === "catholic") { controlled_keys++; }
+    if (this.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
+    if (this.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfElectoratesControlledByProtestants() {
+    let controlled_keys = 0;
+    if (this.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
+    if (this.spaces['mainz'].religion === "protestant") { controlled_keys++; }
+    if (this.spaces['trier'].religion === "protestant") { controlled_keys++; }
+    if (this.spaces['cologne'].religion === "protestant") { controlled_keys++; }
+    if (this.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
+    if (this.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
+    return controlled_keys;
+  }
+  returnNumberOfKeysControlledByFaction(faction) {
+    let controlled_keys = 0;
+    for (let key in this.spaces) {
+      if (this.spaces[key].type === "key") {
+        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+          controlled_keys++;
+        }
+      }
+    }
+    return controlled_keys;
+  }
+  returnNumberOfKeysControlledByPlayer(player_num) {
+    let faction = this.game.players_info[player_num-1].faction;
+    let controlled_keys = 0;
+    for (let key in this.spaces) {
+      if (this.spaces[key].type === "key") {
+        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+          controlled_keys++;
+        }
+      }
+    }
+    return controlled_keys;
   }
 
 
@@ -616,6 +757,10 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.tmp_protestant_reformation_bonus = 0;
+    state.tmp_catholic_reformation_bonus = 0;
+    state.tmp_protestant_counter_reformation_bonus = 0;
+    state.tmp_catholic_counter_reformation_bonus = 0;
 
     return state;
 
@@ -881,12 +1026,15 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
     let spaces = {};
 
+
     spaces['stirling'] = {
       top: 70,
       left: 1265,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["glasgow","edinburgh"],
+      language: "english",
       type: "fortress"
     }
     spaces['glasgow'] = {
@@ -894,7 +1042,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1285,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stirling","edinburgh","carlisle"],
+      language: "english",
       type: "town"
     }
     spaces['edinburgh'] = {
@@ -902,7 +1052,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1420,
       home: "scotland",
       political: "scotland",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stirling","carlisle","berwick"],
+      language: "english",
       type: "key"
     }
     spaces['berwick'] = {
@@ -910,7 +1062,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1572,
       home: "england",
       political: "england",
-      religious: "catholic",
+      neighbours: ["edinburgh","carlisle","york"],
+      language: "english",
+      religion: "catholic",
       type: "town"
     }
     spaces['carlisle'] = {
@@ -918,7 +1072,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1447,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["glasgow","berwick","york","shrewsbury"],
+      language: "english",
       type: "town"
     }
     spaces['york'] = {
@@ -926,7 +1082,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1595,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["berwick","carlisle","shrewsbury","lincoln"],
+      language: "english",
       type: "key"
     }
     spaces['wales'] = {
@@ -934,15 +1092,20 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1398,
       home: "england",
       political: "england",
-      religious: "catholic",
-      type: "town"
+      religion: "catholic",
+      neighbours: ["shrewsbury","bristol"],
+      language: "english",
+      type: "key"
+
     }
     spaces['shrewsbury'] = {
       top: 521,
       left: 1535,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wales","carlisle","york","london","bristol"],
+      language: "english",
       type: "town"
     }
     spaces['lincoln'] = {
@@ -950,7 +1113,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1706,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["london","york"],
+      language: "english",
       type: "town"
     }
     spaces['norwich'] = {
@@ -958,7 +1123,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1896,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours:["london"],
+      language: "english",
       type: "town"
     }
     spaces['bristol'] = {
@@ -966,7 +1133,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1554,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      language: "english",
+      neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
       type: "key"
     }
     spaces['london'] = {
@@ -974,7 +1143,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1785,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
+      language: "english",
       type: "key"
     }
     spaces['plymouth'] = {
@@ -982,7 +1153,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1398,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bristol","portsmouth"],
+      language: "english",
       type: "town"
     }
     spaces['portsmouth'] = {
@@ -990,7 +1163,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1661,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["plymouth","bristol","london"],
+      language: "english",
       type: "town"
     }
     spaces['calais'] = {
@@ -998,7 +1173,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2022,
       home: "england",
       political: "england",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["boulogne","brussels","antwerp"],
+      language: "french",
       type: "key"
     }
 
@@ -1007,7 +1184,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1955,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["calais","rouen","paris","stquentin"],
+      language: "french",
       type: "town"
     }
     spaces['stquentin'] = {
@@ -1015,7 +1194,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2093,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brussels","stdizier","paris","boulogne"],
       type: "town"
     }
     spaces['stdizier'] = {
@@ -1023,7 +1203,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2205,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brussels","stquentin","paris","dijon","metz"],
+      language: "french",
       type: "town"
     }
     spaces['paris'] = {
@@ -1031,7 +1213,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2009,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rouen","boulogne","stquentin","stdizier","dijon","orleans"],
+      language: "french",
       type: "key"
     }
     spaces['rouen'] = {
@@ -1039,7 +1223,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1805,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["boulogne","paris","tours","nantes"],
+      language: "french",
       type: "key"
     }
     spaces['orleans'] = {
@@ -1047,7 +1233,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2018,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["paris","tours","dijon","lyon"],
+      language: "french",
       type: "town"
     }
     spaces['dijon'] = {
@@ -1055,7 +1243,8 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2204,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stdizier","paris","orleans","lyon","besancon"],
       type: "town"
     }
     spaces['limoges'] = {
@@ -1063,7 +1252,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1975,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["tours","bordeaux","lyon"],
+      language: "french",
       type: "town"
     }
     spaces['tours'] = {
@@ -1071,7 +1262,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1849,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rouen","nantes","bordeaux","limoges","orleans"],
+      language: "french",
       type: "town"
     }
     spaces['nantes'] = {
@@ -1079,7 +1272,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1650,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brest","rouen","tours","bordeaux"],
+      language: "french",
       type: "town"
     }
     spaces['brest'] = {
@@ -1087,7 +1282,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1409,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes"],
+      language: "french",
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1095,7 +1292,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1780,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes","tours","limoges"],
+      language: "french",
       type: "key"
     }
     spaces['lyon'] = {
@@ -1103,7 +1302,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2312,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["avignon","limoges","orleans","dijon","geneva","grenoble"],
+      language: "french",
       type: "key"
     }
     spaces['grenoble'] = {
@@ -1111,7 +1312,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2437,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lyon","geneva"],
+      language: "french",
       type: "town"
     }
     spaces['avignon'] = {
@@ -1119,7 +1322,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2292,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["toulouse","lyon","marseille"],
+      language: "french",
       type: "town"
     }
     spaces['marseille'] = {
@@ -1127,7 +1332,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2390,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["avignon","nice"],
+      language: "french",
       type: "key"
     }
     spaces['toulouse'] = {
@@ -1135,7 +1342,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1990,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bordeaux","avignon"],
+      language: "french",
       type: "town"
     }
     spaces['bordeaux'] = {
@@ -1143,7 +1352,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1780,
       home: "france",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nantes","tours","limoges","toulouse"],
+      language: "french",
       type: "key"
     }
 
@@ -1152,7 +1363,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2500,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","kassel","cologne","amsterdam"],
+      language: "german",
       type: "town"
     }
     spaces['bremen'] = {
@@ -1160,7 +1373,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2595,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours:["munster","brunswick","hamburg"],
+      language: "german",
       type: "town"
     }
     spaces['hamburg'] = {
@@ -1168,7 +1383,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2758,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","brunswick","lubeck"],
+      language: "german",
       type: "town"
     }
     spaces['lubeck'] = {
@@ -1176,7 +1393,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2985,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
+      language: "german",
       type: "town"
     }
     spaces['stettin'] = {
@@ -1184,7 +1403,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3214,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lubeck","brandenburg"],
+      language: "german",
       type: "town"
     }
     spaces['brandenburg'] = {
@@ -1192,7 +1413,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3077,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["stettin","lubeck","magdeburg","wittenberg","breslau"],
+      language: "german",
       type: "electorate"
     }
     spaces['wittenberg'] = {
@@ -1200,7 +1423,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3130,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brandenburg","magdeburg","leipzig","prague","breslau"],
+      language: "german",
       type: "electorate"
     }
     spaces['magdeburg'] = {
@@ -1208,7 +1433,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2932,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["lubeck","brandenburg","wittenberg","erfurt","brunswick"],
+      language: "german",
       type: "town"
     }
     spaces['brunswick'] = {
@@ -1216,7 +1443,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2722,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bremen","hamburg","magdeburg","kassel"],
+      language: "german",
       type: "town"
     }
     spaces['cologne'] = {
@@ -1224,7 +1453,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2500,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["munster","mainz","liege"],
+      language: "german",
       type: "electorate"
     }
     spaces['kassel'] = {
@@ -1232,7 +1463,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2665,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["munster","brunswick","erfurt","nuremberg","mainz"],
+      language: "german",
       type: "town"
     }
     spaces['erfurt'] = {
@@ -1240,7 +1473,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2824,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["magdeburg","kassel","leipzig"],
+      language: "german",
       type: "town"
     }
     spaces['leipzig'] = {
@@ -1248,7 +1483,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2983,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wittenberg","prague","nuremberg","erfurt"],
+      language: "german",
       type: "town"
     }
     spaces['regensburg'] = {
@@ -1256,7 +1493,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3033,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["nuremberg","augsburg","salzburg","linz"],
+      language: "german",
       type: "town"
     }
     spaces['salzburg'] = {
@@ -1264,7 +1503,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3147,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["linz","regensburg","augsburg","innsbruck"],
+      language: "german",
       type: "town"
     }
     spaces['augsburg'] = {
@@ -1272,7 +1513,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2860,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["worms","nuremberg","regensburg","salzburg"],
+      language: "german",
       type: "electorate"
     }
     spaces['nuremberg'] = {
@@ -1280,7 +1523,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2834,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["augsburg","worms","mainz","kassel","leipzig","regensburg"],
+      language: "german",
       type: "town"
     }
     spaces['mainz'] = {
@@ -1288,7 +1533,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2666,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trier","cologne","kassel","nuremberg","worms"],
+      language: "german",
       type: "electorate"
     }
     spaces['trier'] = {
@@ -1296,7 +1543,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2516,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["liege","metz","mainz"],
+      language: "german",
       type: "town"
     }
     spaces['strasburg'] = {
@@ -1304,7 +1553,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2578,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["metz","besancon","basel","worms"],
+      language: "german",
       type: "town"
     }
     spaces['worms'] = {
@@ -1312,17 +1563,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2704,
       home: "",
       political: "hapsburg",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["strasburg","mainz","nuremberg","augsburg"],
+      language: "german",
       type: "town"
     }
-
-
     spaces['navarre'] = {
       top: 1814,
       left: 1702,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zaragoza","bilbao"],
+      language: "spanish",
       type: "key"
     }
     spaces['bilbao'] = {
@@ -1330,15 +1583,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1533,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["corunna","valladolid","zaragoza","navarre"],
+      language: "spanish",
       type: "town"
     }
-    spaces['corunnas'] = {
+    spaces['corunna'] = {
       top: 1870,
       left: 1015,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["bilbao","valladolid"],
+      language: "spanish",
       type: "town"
     }
     spaces['valladolid'] = {
@@ -1346,7 +1603,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1394,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["corunna","bilbao","madrid"],
+      language: "spanish",
       type: "key"
     }
     spaces['zaragoza'] = {
@@ -1354,7 +1613,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1777,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["navarre","bilbao","madrid","barcelona"],
+      language: "spanish",
       type: "town"
     }
     spaces['barcelona'] = {
@@ -1362,7 +1623,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2106,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zaragoza","valencia"],
+      language: "spanish",
       type: "key"
     }
     spaces['palma'] = {
@@ -1370,7 +1633,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2211,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      neighbours: ["cartagena","cagliari"],
+      language: "other",
+      religion: "catholic",
       type: "town"
     }
     spaces['madrid'] = {
@@ -1378,7 +1643,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1550,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cordoba","valladolid","zaragoza","valencia"],
+      language: "spanish",
       type: "town"
     }
     spaces['valencia'] = {
@@ -1386,7 +1653,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1871,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cartagena","madrid","barcelona"],
+      language: "spanish",
       type: "town"
     }
     spaces['cartagena'] = {
@@ -1394,7 +1663,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1830,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["granada","valencia"],
+      language: "spanish",
       type: "town"
     }
     spaces['granada'] = {
@@ -1402,7 +1673,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1558,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cordoba","gibraltar","cartagena"],
+      language: "spanish",
       type: "town"
     }
     spaces['seville'] = {
@@ -1410,7 +1683,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1319,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cordoba","gibraltar"],
+      language: "spanish",
       type: "key"
     }
     spaces['cordoba'] = {
@@ -1418,7 +1693,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1446,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["madrid","seville","granada"],
+      language: "spanish",
       type: "town"
     }
     spaces['gibraltar'] = {
@@ -1426,16 +1703,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 1374,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["seville","granada"],
+      language: "spanish",
       type: "fortress"
     }
-
     spaces['oran'] = {
       top: 2822,
       left: 1902,
       home: "hapsburg ottoman",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['algiers'] = {
@@ -1443,7 +1723,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2275,
       home: "ottoman independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "key"
     }
     spaces['tunis'] = {
@@ -1451,7 +1733,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2945,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "key"
     }
     spaces['cagliari'] = {
@@ -1459,7 +1743,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2828,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['palermo'] = {
@@ -1467,7 +1753,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3260,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["messina"],
+      language: "italian",
       type: "town"
     }
     spaces['messina'] = {
@@ -1475,7 +1763,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3475,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["palermo","naples","taranto"],
+      language: "italian",
       type: "town"
     }
     spaces['cerignola'] = {
@@ -1483,7 +1773,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3426,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["taranto","ancona","rome"],
+      language: "italian",
       type: "town"
     }
     spaces['taranto'] = {
@@ -1491,7 +1783,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3597,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cerignola","naples","messina"],
+      language: "italian",
       type: "town"
     }
     spaces['naples'] = {
@@ -1499,7 +1793,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3358,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["rome","taranto","messina"],
+      language: "italian",
       type: "key"
     }
     spaces['malta'] = {
@@ -1507,7 +1803,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3380,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
     spaces['vienna'] = {
@@ -1515,7 +1813,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3474,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brunn","linz","graz","pressburg"],
+      language: "german",
       type: "key"
     }
     spaces['linz'] = {
@@ -1523,7 +1823,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3288,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["prague","regensburg","salzburg","vienna"],
+      language: "german",
       type: "town"
     }
     spaces['graz'] = {
@@ -1531,7 +1833,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3380,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","mohacs","agram","trieste"],
+      language: "german",
       type: "town"
     }
     spaces['trieste'] = {
@@ -1539,7 +1843,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3257,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["graz","agram","zara","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['innsbruck'] = {
@@ -1547,17 +1853,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3016,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zurich","salzburg"],
+      language: "german",
       type: "town"
     }
-
-
     spaces['tripoli'] = {
       top: 3030,
       left: 3316,
       home: "hapsburg ottoman",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['candia'] = {
@@ -1565,7 +1873,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4484,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
     spaces['rhodes'] = {
@@ -1573,7 +1883,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4730,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['corfu'] = {
@@ -1581,17 +1893,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3868,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "fortress"
     }
-
-
     spaces['coron'] = {
       top: 2510,
       left: 4146,
       home: "",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["athens"],
+      language: "other",
       type: "town"
     }
     spaces['athens'] = {
@@ -1599,7 +1913,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4286,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","lepanto","coron"],
+      language: "other",
       type: "key"
     }
     spaces['lepanto'] = {
@@ -1607,7 +1923,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4057,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","athens"],
+      language: "other",
       type: "town"
     }
     spaces['larissa'] = {
@@ -1615,7 +1933,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4130,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["lepanto","athens","salonika"],
+      language: "other",
       type: "town"
     }
     spaces['salonika'] = {
@@ -1623,7 +1943,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4164,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["larissa","edirne"],
+      language: "other",
       type: "key"
     }
     spaces['durazzo'] = {
@@ -1631,7 +1953,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3844,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["scutari"],
+      language: "other",
       type: "town"
     }
     spaces['scutari'] = {
@@ -1639,7 +1963,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3819,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["ragusa","durazzo"],
+      language: "other",
       type: "fortress"
     }
     spaces['edirne'] = {
@@ -1647,7 +1973,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4532,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["varna","istanbul","salonika","sofia",],
+      language: "other",
       type: "key"
     }
     spaces['istanbul'] = {
@@ -1655,7 +1983,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4775,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["edirne","varna"],
+      language: "other",
       type: "key"
     }
     spaces['varna'] = {
@@ -1663,7 +1993,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4653,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["bucharest","edirne","istanbul"],
+      language: "other",
       type: "town"
     }
     spaces['bucharest'] = {
@@ -1671,7 +2003,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4459,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["nicopolis","varna"],
+      language: "other",
       type: "town"
     }
     spaces['nicopolis'] = {
@@ -1679,7 +2013,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4336,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["bucharest","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['sofia'] = {
@@ -1687,7 +2023,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4275,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["nezh","edirne"],
+      language: "other",
       type: "town"
     }
     spaces['nezh'] = {
@@ -1695,7 +2033,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 4070,
       home: "ottoman",
       political: "",
-      religious: "other",
+      religion: "other",
+      neighbours: ["belgrade","sofia"],
+      language: "other",
       type: "town"
     }
 
@@ -1705,7 +2045,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3894,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["szegedin","mohacs","agram","nezh","nicopolis"],
+      language: "other",
       type: "key"
     }
     spaces['szegedin'] = {
@@ -1713,7 +2055,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3846,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["buda","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['mohacs'] = {
@@ -1721,7 +2065,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3710,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["buda","graz","agram","belgrade"],
+      language: "other",
       type: "town"
     }
     spaces['graz'] = {
@@ -1729,7 +2075,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3374,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","mohacs","agram","trieste"],
+      language: "german",
       type: "town"
     }
     spaces['agram'] = {
@@ -1737,7 +2085,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3460,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["graz","trieste","belgrade","mohacs"],
+      language: "other",
       type: "town"
     }
     spaces['buda'] = {
@@ -1745,7 +2095,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3746,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["pressburg","mohacs","szegedin"],
+      language: "other",
       type: "key"
     }
     spaces['pressburg'] = {
@@ -1753,7 +2105,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3613,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["vienna","buda"],
+      language: "other",
       type: "town"
     }
     spaces['brunn'] = {
@@ -1761,7 +2115,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3526,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["breslau","prague","vienna"],
+      language: "other",
       type: "town"
     }
     spaces['breslau'] = {
@@ -1769,7 +2125,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3466,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["brandenburg","wittenberg","brunn"],
+      language: "other",
       type: "town"
     }
     spaces['prague'] = {
@@ -1777,17 +2135,19 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3230,
       home: "hungary",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["wittenberg","leipzig","linz"],
+      language: "other",
       type: "key"
     }
-
-
     spaces['amsterdam'] = {
       top: 546,
       left: 2244,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","munster"],
+      language: "other",
       type: "town"
     }
     spaces['antwerp'] = {
@@ -1795,7 +2155,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2168,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","liege","brussels","calais"],
+      language: "other",
       type: "key"
     }
     spaces['brussels'] = {
@@ -1803,7 +2165,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2201,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["antwerp","calais","stquentin","stdizier","liege"],
+      language: "french",
       type: "fortress"
     }
     spaces['liege'] = {
@@ -1811,7 +2175,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2351,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["cologne","trier","metz","brussels","antwerp"],
+      language: "french",
       type: "town"
     }
     spaces['metz'] = {
@@ -1819,7 +2185,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2384,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["liege","trier","strasburg","besancon","stdizier"],
+      language: "french",
       type: "key"
     }
     spaces['besancon'] = {
@@ -1827,7 +2195,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2390,
       home: "hapsburg",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["metz","dijon","geneva","basel","strasburg"],
+      language: "french",
       type: "fortress"
     }
     spaces['basel'] = {
@@ -1835,7 +2205,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2558,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["strasburg","besancon","geneva","zurich"],
+      language: "german",
       type: "town"
     }
     spaces['zurich'] = {
@@ -1843,7 +2215,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2712,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["basel","innsbruck"],
+      language: "german",
       type: "town"
     }
     spaces['geneva'] = {
@@ -1851,7 +2225,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2474,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["basel","besancon","lyon","grenoble"],
+      language: "french",
       type: "town"
     }
     spaces['milan'] = {
@@ -1859,7 +2235,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2746,
       home: "independent",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","modena","pavia","turin"],
+      language: "italian",
       type: "key"
     }
     spaces['trent'] = {
@@ -1867,7 +2245,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2933,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","modena","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['modena'] = {
@@ -1875,7 +2255,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2951,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","milan","pavia","florence","ravenna","venice"],
+      language: "italian",
       type: "town"
     }
     spaces['pavia'] = {
@@ -1883,7 +2265,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2800,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","turin","genoa","modena"],
+      language: "italian",
       type: "town"
     }
     spaces['turin'] = {
@@ -1891,7 +2275,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2585,
       home: "independent",
       political: "france",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["milan","pavia","genoa"],
+      language: "italian",
       type: "town"
     }
     spaces['nice'] = {
@@ -1899,7 +2285,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2580,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["marseille"],
+      language: "french",
       type: "town"
     }
     spaces['florence'] = {
@@ -1907,7 +2295,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2976,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["modena","genoa","siena"],
+       language: "italian",
       type: "key"
     }
     spaces['siena'] = {
@@ -1915,7 +2305,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2988,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["genoa","florence","rome"],
+      language: "italian",
       type: "town"
     }
     spaces['bastia'] = {
@@ -1923,7 +2315,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2784,
       home: "genoa",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: [],
+      language: "other",
       type: "town"
     }
     spaces['genoa'] = {
@@ -1931,7 +2325,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 2726,
       home: "genoa",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["pavia","turin","modena","siena"],
+      language: "italian",
       type: "key"
     }
     spaces['rome'] = {
@@ -1939,7 +2335,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3125,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["siena","ancona","cerignola","naples"],
+      language: "italian",
       type: "key"
     }
     spaces['ancona'] = {
@@ -1947,7 +2345,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3238,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["ravenna","rome","cerignola"],
+      language: "italian",
       type: "town"
     }
     spaces['ravenna'] = {
@@ -1955,7 +2355,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3130,
       home: "papacy",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["venice","modena","ancona"],
+      language: "italian",
       type: "key"
     }
     spaces['venice'] = {
@@ -1963,7 +2365,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3086,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["trent","modena","ravenna","trieste"],
+      language: "italian",
       type: "key"
     }
     spaces['zara'] = {
@@ -1971,7 +2375,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3374,
       home: "venice",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["ragusa","trieste"],
+      language: "other",
       type: "town"
     }
     spaces['ragusa'] = {
@@ -1979,7 +2385,9 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       left: 3660,
       home: "independent",
       political: "",
-      religious: "catholic",
+      religion: "catholic",
+      neighbours: ["zara","scutari"],
+      language: "italian",
       type: "town"
     }
 
@@ -2064,37 +2472,41 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
 
     // EARLY WAR
     deck['001'] = { 
-      img : "HIS-001.svg" , 
+      img : "cards/HIS-001.svg" , 
       name : "Card" ,
     }
     deck['002'] = { 
-      img : "HIS-002.svg" , 
+      img : "cards/HIS-002.svg" , 
       name : "Card" ,
     }
     deck['003'] = { 
-      img : "HIS-003.svg" , 
+      img : "cards/HIS-003.svg" , 
       name : "Card" ,
     }
     deck['004'] = { 
-      img : "HIS-004.svg" , 
+      img : "cards/HIS-004.svg" , 
       name : "Card" ,
     }
     deck['005'] = { 
-      img : "HIS-005.svg" , 
+      img : "cards/HIS-005.svg" , 
       name : "Card" ,
     }
     deck['006'] = { 
-      img : "HIS-006.svg" , 
+      img : "cards/HIS-006.svg" , 
       name : "Card" ,
     }
     deck['007'] = { 
-      img : "HIS-007.svg" , 
+      img : "cards/HIS-007.svg" , 
       name : "Card" ,
     }
     deck['008'] = { 
-      img : "HIS-008.svg" , 
+      img : "cards/HIS-008.svg" , 
       name : "Card" ,
       onEvent : function(game_mod, player) {
+
+	// protestant gets 2 roll bonus at start
+	game_mod.game.state.tmp_protestant_reformation_bonus = 2;
+	game_mod.game.state.tmp_catholic_reformation_bonus = 0;
 
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
@@ -2116,10 +2528,39 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
+console.log("player is: " + player + " -- i am " + game_mod.game.player);
+
           game_mod.game.queue.splice(qe, 1);
 
-	  if (this.game.player == player) {
-            game_mod.playerReformationAttempt(player);
+	  if (game_mod.game.player == player) {
+            game_mod.playerSelectSpaceWithFilter(
+
+	      "Select Reformation Attempt",
+
+	      //
+	      // catholic spaces adjacent to protestant 
+	      //
+	      function(space) {
+		if (
+		  space.religion === "catholic" &&
+		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+	        ) {
+		  return 1;
+	        }
+		return 0;
+	      },
+
+	      //
+	      // launch reformation
+	      //
+	      function(spacekey) {
+		game_mod.addMove("reformation\t"+spacekey);
+		game_mod.endTurn();
+	      },
+
+	      null
+
+	    );
 	  }
 
           return 0;
@@ -2130,847 +2571,511 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
       }
     }
     deck['009'] = { 
-      img : "HIS-009.svg" , 
+      img : "cards/HIS-009.svg" , 
       name : "Card" ,
     }
     deck['010'] = { 
-      img : "HIS-010.svg" , 
+      img : "cards/HIS-010.svg" , 
       name : "Card" ,
     }
     deck['011'] = { 
-      img : "HIS-011.svg" , 
+      img : "cards/HIS-011.svg" , 
       name : "Card" ,
     }
     deck['012'] = { 
-      img : "HIS-012.svg" , 
+      img : "cards/HIS-012.svg" , 
       name : "Card" ,
     }
     deck['013'] = { 
-      img : "HIS-013.svg" , 
+      img : "cards/HIS-013.svg" , 
       name : "Card" ,
     }
     deck['014'] = { 
-      img : "HIS-014.svg" , 
+      img : "cards/HIS-014.svg" , 
       name : "Card" ,
     }
     deck['015'] = { 
-      img : "HIS-015.svg" , 
+      img : "cards/HIS-015.svg" , 
       name : "Card" ,
     }
     deck['016'] = { 
-      img : "HIS-016.svg" , 
+      img : "cards/HIS-016.svg" , 
       name : "Card" ,
     }
     deck['017'] = { 
-      img : "HIS-017.svg" , 
+      img : "cards/HIS-017.svg" , 
       name : "Card" ,
     }
     deck['018'] = { 
-      img : "HIS-018.svg" , 
+      img : "cards/HIS-018.svg" , 
       name : "Card" ,
     }
     deck['019'] = { 
-      img : "HIS-019.svg" , 
+      img : "cards/HIS-019.svg" , 
       name : "Card" ,
     }
     deck['020'] = { 
-      img : "HIS-020.svg" , 
+      img : "cards/HIS-020.svg" , 
       name : "Card" ,
     }
     deck['021'] = { 
-      img : "HIS-021.svg" , 
+      img : "cards/HIS-021.svg" , 
       name : "Card" ,
     }
     deck['022'] = { 
-      img : "HIS-022.svg" , 
+      img : "cards/HIS-022.svg" , 
       name : "Card" ,
     }
     deck['023'] = { 
-      img : "HIS-023.svg" , 
+      img : "cards/HIS-023.svg" , 
       name : "Card" ,
     }
     deck['024'] = { 
-      img : "HIS-024.svg" , 
+      img : "cards/HIS-024.svg" , 
       name : "Card" ,
     }
     deck['025'] = { 
-      img : "HIS-025.svg" , 
+      img : "cards/HIS-025.svg" , 
       name : "Card" ,
     }
     deck['026'] = { 
-      img : "HIS-026.svg" , 
+      img : "cards/HIS-026.svg" , 
       name : "Card" ,
     }
     deck['027'] = { 
-      img : "HIS-027.svg" , 
+      img : "cards/HIS-027.svg" , 
       name : "Card" ,
     }
     deck['028'] = { 
-      img : "HIS-028.svg" , 
+      img : "cards/HIS-028.svg" , 
       name : "Card" ,
     }
     deck['029'] = { 
-      img : "HIS-029.svg" , 
+      img : "cards/HIS-029.svg" , 
       name : "Card" ,
     }
     deck['030'] = { 
-      img : "HIS-030.svg" , 
+      img : "cards/HIS-030.svg" , 
       name : "Card" ,
     }
     deck['031'] = { 
-      img : "HIS-031.svg" , 
+      img : "cards/HIS-031.svg" , 
       name : "Card" ,
     }
     deck['032'] = { 
-      img : "HIS-032.svg" , 
+      img : "cards/HIS-032.svg" , 
       name : "Card" ,
     }
     deck['033'] = { 
-      img : "HIS-033.svg" , 
+      img : "cards/HIS-033.svg" , 
       name : "Card" ,
     }
     deck['034'] = { 
-      img : "HIS-034.svg" , 
+      img : "cards/HIS-034.svg" , 
       name : "Card" ,
     }
     deck['035'] = { 
-      img : "HIS-035.svg" , 
+      img : "cards/HIS-035.svg" , 
       name : "Card" ,
     }
     deck['036'] = { 
-      img : "HIS-036.svg" , 
+      img : "cards/HIS-036.svg" , 
       name : "Card" ,
     }
     deck['037'] = { 
-      img : "HIS-037.svg" , 
+      img : "cards/HIS-037.svg" , 
       name : "Card" ,
     }
     deck['038'] = { 
-      img : "HIS-038.svg" , 
+      img : "cards/HIS-038.svg" , 
       name : "Card" ,
     }
     deck['039'] = { 
-      img : "HIS-039.svg" , 
+      img : "cards/HIS-039.svg" , 
       name : "Card" ,
     }
     deck['040'] = { 
-      img : "HIS-040.svg" , 
+      img : "cards/HIS-040.svg" , 
       name : "Card" ,
     }
     deck['041'] = { 
-      img : "HIS-041.svg" , 
+      img : "cards/HIS-041.svg" , 
       name : "Card" ,
     }
     deck['042'] = { 
-      img : "HIS-042.svg" , 
+      img : "cards/HIS-042.svg" , 
       name : "Card" ,
     }
     deck['043'] = { 
-      img : "HIS-043.svg" , 
+      img : "cards/HIS-043.svg" , 
       name : "Card" ,
     }
     deck['044'] = { 
-      img : "HIS-044.svg" , 
+      img : "cards/HIS-044.svg" , 
       name : "Card" ,
     }
     deck['045'] = { 
-      img : "HIS-045.svg" , 
+      img : "cards/HIS-045.svg" , 
       name : "Card" ,
     }
     deck['046'] = { 
-      img : "HIS-046.svg" , 
+      img : "cards/HIS-046.svg" , 
       name : "Card" ,
     }
     deck['047'] = { 
-      img : "HIS-047.svg" , 
+      img : "cards/HIS-047.svg" , 
       name : "Card" ,
     }
     deck['048'] = { 
-      img : "HIS-048.svg" , 
+      img : "cards/HIS-048.svg" , 
       name : "Card" ,
     }
     deck['049'] = { 
-      img : "HIS-049.svg" , 
+      img : "cards/HIS-049.svg" , 
       name : "Card" ,
     }
     deck['050'] = { 
-      img : "HIS-050.svg" , 
+      img : "cards/HIS-050.svg" , 
       name : "Card" ,
     }
     deck['051'] = { 
-      img : "HIS-051.svg" , 
+      img : "cards/HIS-051.svg" , 
       name : "Card" ,
     }
     deck['052'] = { 
-      img : "HIS-052.svg" , 
+      img : "cards/HIS-052.svg" , 
       name : "Card" ,
     }
     deck['053'] = { 
-      img : "HIS-053.svg" , 
+      img : "cards/HIS-053.svg" , 
       name : "Card" ,
     }
     deck['054'] = { 
-      img : "HIS-054.svg" , 
+      img : "cards/HIS-054.svg" , 
       name : "Card" ,
     }
     deck['055'] = { 
-      img : "HIS-055.svg" , 
+      img : "cards/HIS-055.svg" , 
       name : "Card" ,
     }
     deck['056'] = { 
-      img : "HIS-056.svg" , 
+      img : "cards/HIS-056.svg" , 
       name : "Card" ,
     }
     deck['057'] = { 
-      img : "HIS-057.svg" , 
+      img : "cards/HIS-057.svg" , 
       name : "Card" ,
     }
     deck['058'] = { 
-      img : "HIS-058.svg" , 
+      img : "cards/HIS-058.svg" , 
       name : "Card" ,
     }
     deck['059'] = { 
-      img : "HIS-059.svg" , 
+      img : "cards/HIS-059.svg" , 
       name : "Card" ,
     }
     deck['060'] = { 
-      img : "HIS-060.svg" , 
+      img : "cards/HIS-060.svg" , 
       name : "Card" ,
     }
     deck['061'] = { 
-      img : "HIS-061.svg" , 
+      img : "cards/HIS-061.svg" , 
       name : "Card" ,
     }
     deck['062'] = { 
-      img : "HIS-062.svg" , 
+      img : "cards/HIS-062.svg" , 
       name : "Card" ,
     }
     deck['063'] = { 
-      img : "HIS-063.svg" , 
+      img : "cards/HIS-063.svg" , 
       name : "Card" ,
     }
     deck['064'] = { 
-      img : "HIS-064.svg" , 
+      img : "cards/HIS-064.svg" , 
       name : "Card" ,
     }
     deck['065'] = { 
-      img : "HIS-065.svg" , 
+      img : "cards/HIS-065.svg" , 
       name : "Card" ,
     }
     deck['066'] = { 
-      img : "HIS-066.svg" , 
+      img : "cards/HIS-066.svg" , 
       name : "Card" ,
     }
     deck['067'] = { 
-      img : "HIS-067.svg" , 
+      img : "cards/HIS-067.svg" , 
       name : "Card" ,
     }
     deck['068'] = { 
-      img : "HIS-068.svg" , 
+      img : "cards/HIS-068.svg" , 
       name : "Card" ,
     }
     deck['069'] = { 
-      img : "HIS-069.svg" , 
+      img : "cards/HIS-069.svg" , 
       name : "Card" ,
     }
     deck['070'] = { 
-      img : "HIS-070.svg" , 
+      img : "cards/HIS-070.svg" , 
       name : "Card" ,
     }
     deck['071'] = { 
-      img : "HIS-071.svg" , 
+      img : "cards/HIS-071.svg" , 
       name : "Card" ,
     }
     deck['072'] = { 
-      img : "HIS-072.svg" , 
+      img : "cards/HIS-072.svg" , 
       name : "Card" ,
     }
     deck['073'] = { 
-      img : "HIS-073.svg" , 
+      img : "cards/HIS-073.svg" , 
       name : "Card" ,
     }
     deck['074'] = { 
-      img : "HIS-074.svg" , 
+      img : "cards/HIS-074.svg" , 
       name : "Card" ,
     }
     deck['075'] = { 
-      img : "HIS-075.svg" , 
+      img : "cards/HIS-075.svg" , 
       name : "Card" ,
     }
     deck['076'] = { 
-      img : "HIS-076.svg" , 
+      img : "cards/HIS-076.svg" , 
       name : "Card" ,
     }
     deck['077'] = { 
-      img : "HIS-077.svg" , 
+      img : "cards/HIS-077.svg" , 
       name : "Card" ,
     }
     deck['078'] = { 
-      img : "HIS-078.svg" , 
+      img : "cards/HIS-078.svg" , 
       name : "Card" ,
     }
     deck['079'] = { 
-      img : "HIS-079.svg" , 
+      img : "cards/HIS-079.svg" , 
       name : "Card" ,
     }
     deck['080'] = { 
-      img : "HIS-080.svg" , 
+      img : "cards/HIS-080.svg" , 
       name : "Card" ,
     }
     deck['081'] = { 
-      img : "HIS-081.svg" , 
+      img : "cards/HIS-081.svg" , 
       name : "Card" ,
     }
     deck['082'] = { 
-      img : "HIS-082.svg" , 
+      img : "cards/HIS-082.svg" , 
       name : "Card" ,
     }
     deck['083'] = { 
-      img : "HIS-083.svg" , 
+      img : "cards/HIS-083.svg" , 
       name : "Card" ,
     }
     deck['084'] = { 
-      img : "HIS-084.svg" , 
+      img : "cards/HIS-084.svg" , 
       name : "Card" ,
     }
     deck['085'] = { 
-      img : "HIS-085.svg" , 
+      img : "cards/HIS-085.svg" , 
       name : "Card" ,
     }
     deck['086'] = { 
-      img : "HIS-086.svg" , 
+      img : "cards/HIS-086.svg" , 
       name : "Card" ,
     }
     deck['087'] = { 
-      img : "HIS-087.svg" , 
+      img : "cards/HIS-087.svg" , 
       name : "Card" ,
     }
     deck['088'] = { 
-      img : "HIS-088.svg" , 
+      img : "cards/HIS-088.svg" , 
       name : "Card" ,
     }
     deck['089'] = { 
-      img : "HIS-089.svg" , 
+      img : "cards/HIS-089.svg" , 
       name : "Card" ,
     }
     deck['090'] = { 
-      img : "HIS-090.svg" , 
+      img : "cards/HIS-090.svg" , 
       name : "Card" ,
     }
     deck['091'] = { 
-      img : "HIS-091.svg" , 
+      img : "cards/HIS-091.svg" , 
       name : "Card" ,
     }
     deck['092'] = { 
-      img : "HIS-092.svg" , 
+      img : "cards/HIS-092.svg" , 
       name : "Card" ,
     }
     deck['093'] = { 
-      img : "HIS-093.svg" , 
+      img : "cards/HIS-093.svg" , 
       name : "Card" ,
     }
     deck['094'] = { 
-      img : "HIS-094.svg" , 
+      img : "cards/HIS-094.svg" , 
       name : "Card" ,
     }
     deck['095'] = { 
-      img : "HIS-095.svg" , 
+      img : "cards/HIS-095.svg" , 
       name : "Card" ,
     }
     deck['096'] = { 
-      img : "HIS-096.svg" , 
+      img : "cards/HIS-096.svg" , 
       name : "Card" ,
     }
     deck['097'] = { 
-      img : "HIS-097.svg" , 
+      img : "cards/HIS-097.svg" , 
       name : "Card" ,
     }
     deck['098'] = { 
-      img : "HIS-098.svg" , 
+      img : "cards/HIS-098.svg" , 
       name : "Card" ,
     }
     deck['099'] = { 
-      img : "HIS-099.svg" , 
+      img : "cards/HIS-099.svg" , 
       name : "Card" ,
     }
     deck['100'] = { 
-      img : "HIS-100.svg" , 
+      img : "cards/HIS-100.svg" , 
       name : "Card" ,
     }
     deck['101'] = { 
-      img : "HIS-101.svg" , 
+      img : "cards/HIS-101.svg" , 
       name : "Card" ,
     }
     deck['102'] = { 
-      img : "HIS-102.svg" , 
+      img : "cards/HIS-102.svg" , 
       name : "Card" ,
     }
     deck['103'] = { 
-      img : "HIS-103.svg" , 
+      img : "cards/HIS-103.svg" , 
       name : "Card" ,
     }
     deck['104'] = { 
-      img : "HIS-104.svg" , 
+      img : "cards/HIS-104.svg" , 
       name : "Card" ,
     }
     deck['105'] = { 
-      img : "HIS-105.svg" , 
+      img : "cards/HIS-105.svg" , 
       name : "Card" ,
     }
     deck['106'] = { 
-      img : "HIS-106.svg" , 
+      img : "cards/HIS-106.svg" , 
       name : "Card" ,
     }
     deck['107'] = { 
-      img : "HIS-107.svg" , 
+      img : "cards/HIS-107.svg" , 
       name : "Card" ,
     }
     deck['108'] = { 
-      img : "HIS-108.svg" , 
+      img : "cards/HIS-108.svg" , 
       name : "Card" ,
     }
     deck['109'] = { 
-      img : "HIS-109.svg" , 
+      img : "cards/HIS-109.svg" , 
       name : "Card" ,
     }
     deck['110'] = { 
-      img : "HIS-110.svg" , 
+      img : "cards/HIS-110.svg" , 
       name : "Card" ,
     }
     deck['111'] = { 
-      img : "HIS-111.svg" , 
+      img : "cards/HIS-111.svg" , 
       name : "Card" ,
     }
     deck['112'] = { 
-      img : "HIS-112.svg" , 
+      img : "cards/HIS-112.svg" , 
       name : "Card" ,
     }
     deck['113'] = { 
-      img : "HIS-113.svg" , 
+      img : "cards/HIS-113.svg" , 
       name : "Card" ,
     }
     deck['114'] = { 
-      img : "HIS-114.svg" , 
+      img : "cards/HIS-114.svg" , 
       name : "Card" ,
     }
     deck['115'] = { 
-      img : "HIS-115.svg" , 
+      img : "cards/HIS-115.svg" , 
       name : "Card" ,
     }
     deck['116'] = { 
-      img : "HIS-116.svg" , 
-      name : "Card" ,
-    }
-    deck['117'] = { 
-      img : "HIS-117.svg" , 
-      name : "Card" ,
-    }
-    deck['118'] = { 
-      img : "HIS-118.svg" , 
-      name : "Card" ,
-    }
-    deck['119'] = { 
-      img : "HIS-119.svg" , 
-      name : "Card" ,
-    }
-    deck['120'] = { 
-      img : "HIS-120.svg" , 
-      name : "Card" ,
-    }
-    deck['121'] = { 
-      img : "HIS-121.svg" , 
-      name : "Card" ,
-    }
-    deck['122'] = { 
-      img : "HIS-122.svg" , 
-      name : "Card" ,
-    }
-    deck['123'] = { 
-      img : "HIS-123.svg" , 
-      name : "Card" ,
-    }
-    deck['124'] = { 
-      img : "HIS-124.svg" , 
-      name : "Card" ,
-    }
-    deck['125'] = { 
-      img : "HIS-125.svg" , 
-      name : "Card" ,
-    }
-    deck['126'] = { 
-      img : "HIS-126.svg" , 
-      name : "Card" ,
-    }
-    deck['127'] = { 
-      img : "HIS-127.svg" , 
-      name : "Card" ,
-    }
-    deck['128'] = { 
-      img : "HIS-128.svg" , 
-      name : "Card" ,
-    }
-    deck['129'] = { 
-      img : "HIS-129.svg" , 
-      name : "Card" ,
-    }
-    deck['130'] = { 
-      img : "HIS-130.svg" , 
-      name : "Card" ,
-    }
-    deck['131'] = { 
-      img : "HIS-131.svg" , 
-      name : "Card" ,
-    }
-    deck['132'] = { 
-      img : "HIS-132.svg" , 
-      name : "Card" ,
-    }
-    deck['133'] = { 
-      img : "HIS-133.svg" , 
-      name : "Card" ,
-    }
-    deck['134'] = { 
-      img : "HIS-134.svg" , 
-      name : "Card" ,
-    }
-    deck['135'] = { 
-      img : "HIS-135.svg" , 
-      name : "Card" ,
-    }
-    deck['136'] = { 
-      img : "HIS-136.svg" , 
-      name : "Card" ,
-    }
-    deck['137'] = { 
-      img : "HIS-137.svg" , 
-      name : "Card" ,
-    }
-    deck['138'] = { 
-      img : "HIS-138.svg" , 
-      name : "Card" ,
-    }
-    deck['139'] = { 
-      img : "HIS-139.svg" , 
-      name : "Card" ,
-    }
-    deck['140'] = { 
-      img : "HIS-140.svg" , 
-      name : "Card" ,
-    }
-    deck['141'] = { 
-      img : "HIS-141.svg" , 
-      name : "Card" ,
-    }
-    deck['142'] = { 
-      img : "HIS-142.svg" , 
-      name : "Card" ,
-    }
-    deck['143'] = { 
-      img : "HIS-143.svg" , 
-      name : "Card" ,
-    }
-    deck['144'] = { 
-      img : "HIS-144.svg" , 
-      name : "Card" ,
-    }
-    deck['145'] = { 
-      img : "HIS-145.svg" , 
-      name : "Card" ,
-    }
-    deck['146'] = { 
-      img : "HIS-146.svg" , 
-      name : "Card" ,
-    }
-    deck['147'] = { 
-      img : "HIS-147.svg" , 
-      name : "Card" ,
-    }
-    deck['148'] = { 
-      img : "HIS-148.svg" , 
-      name : "Card" ,
-    }
-    deck['149'] = { 
-      img : "HIS-149.svg" , 
-      name : "Card" ,
-    }
-    deck['150'] = { 
-      img : "HIS-150.svg" , 
-      name : "Card" ,
-    }
-    deck['151'] = { 
-      img : "HIS-151.svg" , 
-      name : "Card" ,
-    }
-    deck['152'] = { 
-      img : "HIS-152.svg" , 
-      name : "Card" ,
-    }
-    deck['153'] = { 
-      img : "HIS-153.svg" , 
-      name : "Card" ,
-    }
-    deck['154'] = { 
-      img : "HIS-154.svg" , 
-      name : "Card" ,
-    }
-    deck['155'] = { 
-      img : "HIS-155.svg" , 
-      name : "Card" ,
-    }
-    deck['156'] = { 
-      img : "HIS-156.svg" , 
-      name : "Card" ,
-    }
-    deck['157'] = { 
-      img : "HIS-157.svg" , 
-      name : "Card" ,
-    }
-    deck['158'] = { 
-      img : "HIS-158.svg" , 
-      name : "Card" ,
-    }
-    deck['159'] = { 
-      img : "HIS-159.svg" , 
-      name : "Card" ,
-    }
-    deck['160'] = { 
-      img : "HIS-160.svg" , 
-      name : "Card" ,
-    }
-    deck['161'] = { 
-      img : "HIS-161.svg" , 
-      name : "Card" ,
-    }
-    deck['162'] = { 
-      img : "HIS-162.svg" , 
-      name : "Card" ,
-    }
-    deck['163'] = { 
-      img : "HIS-163.svg" , 
-      name : "Card" ,
-    }
-    deck['164'] = { 
-      img : "HIS-164.svg" , 
-      name : "Card" ,
-    }
-    deck['165'] = { 
-      img : "HIS-165.svg" , 
-      name : "Card" ,
-    }
-    deck['166'] = { 
-      img : "HIS-166.svg" , 
-      name : "Card" ,
-    }
-    deck['167'] = { 
-      img : "HIS-167.svg" , 
-      name : "Card" ,
-    }
-    deck['168'] = { 
-      img : "HIS-168.svg" , 
-      name : "Card" ,
-    }
-    deck['169'] = { 
-      img : "HIS-169.svg" , 
-      name : "Card" ,
-    }
-    deck['170'] = { 
-      img : "HIS-170.svg" , 
-      name : "Card" ,
-    }
-    deck['171'] = { 
-      img : "HIS-171.svg" , 
-      name : "Card" ,
-    }
-    deck['172'] = { 
-      img : "HIS-172.svg" , 
-      name : "Card" ,
-    }
-    deck['173'] = { 
-      img : "HIS-173.svg" , 
-      name : "Card" ,
-    }
-    deck['174'] = { 
-      img : "HIS-174.svg" , 
-      name : "Card" ,
-    }
-    deck['175'] = { 
-      img : "HIS-175.svg" , 
-      name : "Card" ,
-    }
-    deck['176'] = { 
-      img : "HIS-176.svg" , 
-      name : "Card" ,
-    }
-    deck['177'] = { 
-      img : "HIS-177.svg" , 
-      name : "Card" ,
-    }
-    deck['178'] = { 
-      img : "HIS-178.svg" , 
-      name : "Card" ,
-    }
-    deck['179'] = { 
-      img : "HIS-179.svg" , 
-      name : "Card" ,
-    }
-    deck['180'] = { 
-      img : "HIS-180.svg" , 
-      name : "Card" ,
-    }
-    deck['181'] = { 
-      img : "HIS-181.svg" , 
-      name : "Card" ,
-    }
-    deck['182'] = { 
-      img : "HIS-182.svg" , 
-      name : "Card" ,
-    }
-    deck['183'] = { 
-      img : "HIS-183.svg" , 
-      name : "Card" ,
-    }
-    deck['184'] = { 
-      img : "HIS-184.svg" , 
-      name : "Card" ,
-    }
-    deck['185'] = { 
-      img : "HIS-185.svg" , 
-      name : "Card" ,
-    }
-    deck['186'] = { 
-      img : "HIS-186.svg" , 
-      name : "Card" ,
-    }
-    deck['187'] = { 
-      img : "HIS-187.svg" , 
-      name : "Card" ,
-    }
-    deck['188'] = { 
-      img : "HIS-188.svg" , 
-      name : "Card" ,
-    }
-    deck['189'] = { 
-      img : "HIS-189.svg" , 
-      name : "Card" ,
-    }
-    deck['190'] = { 
-      img : "HIS-190.svg" , 
-      name : "Card" ,
-    }
-    deck['191'] = { 
-      img : "HIS-191.svg" , 
-      name : "Card" ,
-    }
-    deck['192'] = { 
-      img : "HIS-192.svg" , 
-      name : "Card" ,
-    }
-    deck['193'] = { 
-      img : "HIS-193.svg" , 
-      name : "Card" ,
-    }
-    deck['194'] = { 
-      img : "HIS-194.svg" , 
-      name : "Card" ,
-    }
-    deck['195'] = { 
-      img : "HIS-195.svg" , 
-      name : "Card" ,
-    }
-    deck['196'] = { 
-      img : "HIS-196.svg" , 
-      name : "Card" ,
-    }
-    deck['197'] = { 
-      img : "HIS-197.svg" , 
-      name : "Card" ,
-    }
-    deck['198'] = { 
-      img : "HIS-198.svg" , 
-      name : "Card" ,
-    }
-    deck['199'] = { 
-      img : "HIS-199.svg" , 
-      name : "Card" ,
-    }
-    deck['200'] = { 
-      img : "HIS-200.svg" , 
+      img : "cards/HIS-116.svg" , 
       name : "Card" ,
     }
     deck['201'] = { 
-      img : "HIS-201.svg" , 
+      img : "cards/HIS-201.svg" , 
       name : "Card" ,
     }
     deck['202'] = { 
-      img : "HIS-202.svg" , 
+      img : "cards/HIS-202.svg" , 
       name : "Card" ,
     }
     deck['203'] = { 
-      img : "HIS-203.svg" , 
+      img : "cards/HIS-203.svg" , 
       name : "Card" ,
     }
     deck['204'] = { 
-      img : "HIS-204.svg" , 
+      img : "cards/HIS-204.svg" , 
       name : "Card" ,
     }
     deck['205'] = { 
-      img : "HIS-205.svg" , 
+      img : "cards/HIS-205.svg" , 
       name : "Card" ,
     }
     deck['206'] = { 
-      img : "HIS-206.svg" , 
+      img : "cards/HIS-206.svg" , 
       name : "Card" ,
     }
     deck['207'] = { 
-      img : "HIS-207.svg" , 
+      img : "cards/HIS-207.svg" , 
       name : "Card" ,
     }
     deck['208'] = { 
-      img : "HIS-208.svg" , 
+      img : "cards/HIS-208.svg" , 
       name : "Card" ,
     }
     deck['209'] = { 
-      img : "HIS-209.svg" , 
+      img : "cards/HIS-209.svg" , 
       name : "Card" ,
     }
     deck['210'] = { 
-      img : "HIS-210.svg" , 
+      img : "cards/HIS-210.svg" , 
       name : "Card" ,
     }
     deck['211'] = { 
-      img : "HIS-211.svg" , 
+      img : "cards/HIS-211.svg" , 
       name : "Card" ,
     }
     deck['212'] = { 
-      img : "HIS-212.svg" , 
+      img : "cards/HIS-212.svg" , 
       name : "Card" ,
     }
     deck['213'] = { 
-      img : "HIS-213.svg" , 
+      img : "cards/HIS-213.svg" , 
       name : "Card" ,
     }
     deck['214'] = { 
-      img : "HIS-214.svg" , 
+      img : "cards/HIS-214.svg" , 
       name : "Card" ,
     }
     deck['215'] = { 
-      img : "HIS-215.svg" , 
+      img : "cards/HIS-215.svg" , 
       name : "Card" ,
     }
     deck['216'] = { 
-      img : "HIS-216.svg" , 
+      img : "cards/HIS-216.svg" , 
       name : "Card" ,
     }
     deck['217'] = { 
-      img : "HIS-217.svg" , 
+      img : "cards/HIS-217.svg" , 
       name : "Card" ,
     }
     deck['218'] = { 
-      img : "HIS-218.svg" , 
+      img : "cards/HIS-218.svg" , 
       name : "Card" ,
     }
     deck['219'] = { 
-      img : "HIS-219.svg" , 
+      img : "cards/HIS-219.svg" , 
       name : "Card" ,
     }
 
@@ -3078,14 +3183,28 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
+	  this.game.queue.push("victory_determination_phase");
+	  this.game.queue.push("new_world_phase");
+	  this.game.queue.push("winter_phase");
+	  this.game.queue.push("action_phase");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("card_draw_phase");
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+this.returnPlayerFaction(this.game.player).name);
+
+
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-	  if (this.game.state.round == 1) {
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
-	  }
+//	  if (this.game.state.round == 1) {
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+//	  }
 
+	  if (this.game.state.round > 1) {
+	    this.updateStatus("Game Over");
+	    return 0;
+	  }
           return 1;
         }
 
@@ -3101,12 +3220,197 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
-        if (mv[0] === "play") {
+        if (mv[0] === "victory_determination_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "new_world_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "winter_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "action_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "spring_deployment_phase") {
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+        if (mv[0] === "diplomacy_phase") {
 
+console.log("just in diplomacy phase!");
+console.log("cards in hand: " + JSON.stringify(this.game.deck[0].hand));
+
+	  this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].hand);
+          this.attachCardboxEvents(function(card) {
+            this.playerPlayCard(card, this.game.player);
+          });
+
+
+	  this.game.queue.splice(qe, 1);
+          return 0;
+        }
+        if (mv[0] === "card_draw_phase") {
+this.updateLog("Deal Cards to Players");
+this.updateLog("Discards Reshuffled into Deck");
+this.updateLog("New Units and New Cards Added");
+
+	  let cards_to_deal = [];
+
+	  for (let i = 0; i < this.game.players_info.length; i++) {
+	    let pf = this.game.players_info[i].faction;
+console.log("faction: " + pf);
+	    cards_to_deal.push(this.factions[pf].returnCardsDealt(this));
+          }
+
+console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
+
+	  //
+	  // generate new deck
+	  //
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DEAL\t1\t"+(i)+"\t"+(cards_to_deal[(i-1)]));
+	  }
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
+	  }
+	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("DECKXOR\t1\t"+(i));
+	  }
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
+
+console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
+
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+
+        if (mv[0] === "play") {
           this.displayBoard();
           this.playMove();
           return 0;
         }
+
+	if (mv[0] === "convert") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  let religion = mv[2];
+
+	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
+
+	  this.game.spaces[space].religion = religion;
+	  this.displaySpace(space);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  let p_player = mv[2];
+	  let c_player = mv[3];
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let protestants_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+	  if (this.spaces[space].language !== "german") {
+	    ties_resolve = "catholic";
+ 	  }
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
+	  for (let i = 0; i < p_rolls; i++) {
+console.log("i: " + i);
+	    let x = this.rollDice(6);
+console.log("x is: " + x);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
+	  }
+
+this.updateLog("Catholics: " + c_rolls);
+
+	  for (let i = 0; i < c_rolls; i++) {
+console.log("i: " + i);
+	    let x = this.rollDice(6);
+console.log("x is: " + x);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
+	  }
+
+	  //
+	  // do protestants win?
+	  //
+	  if (p_high > c_high) { protestants_win = 1; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+	
+	  //
+	  // handle victory
+	  //
+	  if (protestants_win == 1) {
+	    this.updateLog("Protestants win!");
+	    this.game.queue.push("convert\t"+space+"\tprotestant");
+	  } else {
+	    this.updateLog("Catholics win!");
+	  }
+
+	  return 1;
+
+	}
+
+
+
 
 
 	//
@@ -3205,6 +3509,13 @@ console.log("MOVE: " + mv[0]);
 
     return players;
 
+  }
+
+  resetPlayerTurn(player_num) {
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
   returnPlayerFaction(player) {
@@ -3349,9 +3660,246 @@ console.log("MOVE: " + mv[0]);
       }
     }
 
-    return menu;
+    return fmenu;
 
   }
+
+
+  playerMoveUnits(msg, cancel_func = null) {
+
+    let his_self = this;
+
+    this.playerSelectSpaceWithFilter(
+      "Select Town from Which to Move Units:",
+
+      function(space) {
+	if (space.units[his_self.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+	let units_to_move = [];
+
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey)) {
+	  	return 1;
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[this.game.player-1].length; i++) {
+	    if (units_to_move.contains(i)) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (index > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(id);
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+
+
+
+	
+      },
+
+      cancel_func,
+
+    );
+
+  }
+
+
+
+
+/*********************
+  playerSelectUnitsInSpace(spacekey) {
+
+    this.playerSelectUnitsWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      function(unit) {
+	if (space.units[this.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+	let space = this.spaces[spacekey];
+	let units = this.playerSelectUnitsWithFilter(
+
+
+        );
+	console.log("Space key: " + spacekey);
+      },
+
+      null,
+
+  }
+
+
+  playerSelectUnitsWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+      for (let i = 0; i < this.spaces[key].units.length; i++) {
+        for (let z = 0; z < this.spaces[key].units[i].length; z++) {
+          if (filter_func(this.spaces[key].units[i][z]) == 1) {
+            html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+          }
+        }
+      }
+    }
+    html += '<li class="textchoice" id="done">done selecting</li>';
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+
+  playerSelectUnitsInSpaceWithFilter(msg, space, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let i = 0; i < space.units.length; i++) {
+      for (let z = 0; z < space.units[i].length; z++) {
+        if (filter_func(space.units[i][z]) == 1) {
+          html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        }
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+*********************/
+
+
+
+
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+      if (filter_func(this.spaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
 
 
 
@@ -3361,69 +3909,189 @@ console.log("MOVE: " + mv[0]);
 
     let his_self = this;
 
+    this.resetPlayerTurn(this.game.player);
+
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
     his_self.attachCardboxEvents(function(card) {
-      his_self.playerTurnCardSelected(card, player);
+      his_self.playerPlayCard(card, this.game.player);
     });
 
-    let menu = this.returnPlayerActionMenuOptions(this.game.player);
-
-    this.updateStatusAndListCards("Select a card...");
 
   }
+
+  playerPlayCard(card) {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="ops">play for ops</li>`;
+    html    += `<li class="card" id="event">play for event</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions('Playing card:', html, true);
+    this.bindBackButtonFunction(() => {
+      this.playerTurnCardSelected(card, player);
+    });
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "ops") {
+        this.playerPlayOps();
+        return;
+      }
+      if (user_choice === "event") {
+        this.playerPlayEvent();
+        return;
+      }
+      return;
+    });
+
+  }
+
+  async playerPlayOps(card, ops=null) {
+
+    let menu = this.returnActionMenuOptions(this.game.player);
+    let faction = this.returnPlayerFaction(this.game.player);
+    let faction_key = faction.key;
+    if (ops == null) { ops = 2; }
+
+    let html = `<ul>`;
+    for (let i = 0; i < menu.length; i++) {
+      for (let z = 0; z < menu[i].factions.length; z++) {
+        if (menu[i].factions[z] === faction_key) {
+	  if (menu[i].cost[z] <= ops) {
+            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+          }
+        }
+      }
+    }
+    html    += `<li class="card" id="end_turn">end turn</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.attachCardboxEvents(async (user_choice) => {      
+
+      if (user_choice === "end_turn") {
+        this.endTurn();
+        return;
+      }
+
+      for (let z = 0; z < menu[user_choice].factions.length; z++) {
+        if (menu[user_choice].factions[z] === faction_key) {
+          ops -= menu[user_choice].cost[z];
+        }
+      }
+
+      await menu[user_choice].fnct(this, this.game.player);
+      if (ops > 0) {
+	this.playerPlayOps(card, ops);
+      } else {
+	this.endTurn();
+      }
+      return;
+
+    });
+  }
+  playerPlayEvent(card) {
+
+console.log("playing ops");
+
+  }
+
 
   playerActionMenu(player) {
     let menu_options = this.returnActionMenuOptions();
   }
 
-  playerReformationAttempt(player) {
+  async playerReformationAttempt(player) {
 
     this.updateStatus("Attempting Reformation Attempt");
-
+    return;
   }
-  playerCounterReformationAttempt(player) {
+  async playerCounterReformationAttempt(player) {
+console.log("1");
+return;
   }
-  playerMoveFormationInClear(player) {
+  async playerMoveFormationInClear(his_self, player) {
+    his_self.playerMoveUnits();      
+console.log("2");
+return;
   }
-  playerMoveFormationOverPass(player) {
+  async playerMoveFormationOverPass(his_self, player) {
+console.log("3");
+return;
   }
-  playerNavalMove(player) {
+  async playerNavalMove(his_self, player) {
+console.log("4");
+return;
   }
-  playerBuyMercenary(player) {
+  async playerBuyMercenary(his_self, player) {
+console.log("5");
+return;
   }
-  playerRaiseRegular(player) {
+  async playerRaiseRegular(his_self, player) {
+console.log("6");
+return;
   }
-  playerBuildNavalSquadron(player) {
+  async playerBuildNavalSquadron(his_self, player) {
+console.log("7");
+return;
   }
-  playerAssault(player) {
+  async playerAssault(his_self, player) {
+console.log("8");
+return;
   }
-  playerControlUnfortifiedSpace(player) {
+  async playerControlUnfortifiedSpace(his_self, player) {
+console.log("9");
+return;
   }
-  playerExplore(player) {
+  async playerExplore(his_self, player) {
+console.log("10");
+return;
   }
-  playerColonize(player) {
+  async playerColonize(his_self, player) {
+console.log("11");
+return;
   }
-  playerConquer(player) {
+  async playerConquer(his_self, player) {
+console.log("12");
+return;
   }
-  playerInitiatePiracyInASea(player) {
+  async playerInitiatePiracyInASea(his_self, player) {
+console.log("13");
+return;
   }
-  playerRaiseCavalry(player) {
+  async playerRaiseCavalry(his_self, player) {
+console.log("14");
+return;
   }
-  playerBuildCorsair(player) {
+  async playerBuildCorsair(his_self, player) {
+console.log("15");
+return;
   }
-  playerTranslateScripture(player) {
+  async playerTranslateScripture(his_self, player) {
+console.log("16");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
+console.log("17");
+return;
   }
-  playerCallTheologicalDebate(player) {
+  async playerCallTheologicalDebate(his_self, player) {
+console.log("");
+return;
   }
-  playerBuildSaintPeters(player) {
+  async playerBuildSaintPeters(his_self, player) {
+console.log("");
+return;
   }
-  playerBurnBooks(player) {
+  async playerBurnBooks(his_self, player) {
+console.log("");
+return;
   }
-  playerFoundJesuitUniversity(player) {
+  async playerFoundJesuitUniversity(his_self, player) {
+console.log("jesuit");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
+console.log("treatise");
+return;
   }
 
 
@@ -3435,6 +4103,7 @@ console.log("MOVE: " + mv[0]);
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.key == null)	        { obj.key = name; }
+    if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
@@ -3443,9 +4112,14 @@ console.log("MOVE: " + mv[0]);
 	`;
       }
     }
+    if (obj.returnCardsDealt == null) {
+      obj.returnCardsDealt = function(faction) {
+	return 1;
+      }
+    }
 
     obj = this.addEvents(obj);
-    this.factions[name] = obj;
+    this.factions[obj.key] = obj;
 
   }
 
@@ -3698,90 +4372,90 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	    if (army >= 4) {
               tile += `HapsburgReg-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `HapsburgReg-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `HapsburgReg-1.svg`;
 	      army -= 1;
-	    }
+	    } } }
           }
           if (owner === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `EnglandReg-2.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `EnglandReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `FrenchReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `FrenchReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyReg-4.svg`;
 	      army -= 4;
-	    }
+	    } else {
 	    if (army >= 2) {
               tile += `PapacyReg-2.svg`;
 	      army -= 2;
-	    }
+	    } else {
 	    if (army >= 1) {
               tile += `PapacyReg-1.svg`;
 	      army -= 1;
-	    }
+	    } } }
           }
           if (owner === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `ProtestantReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `ProtestantReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
           if (owner === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanReg-4.svg`;
 	      army -= 4;
-            }
+            } else {
 	    if (army >= 2) {
               tile += `OttomanReg-2.svg`;
 	      army -= 2;
-            }
+            } else {
 	    if (army >= 1) {
               tile += `OttomanReg-1.svg`;
 	      army -= 1;
-            }
+            } } }
           }
         }
         html += `<img class="army_tile" src="${tile}" />`;
@@ -3991,14 +4665,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     for (let key in this.spaces) {
       if (this.spaces.hasOwnProperty(key)) {
 	this.displaySpace(key);
-      }
-    }
-
-    //
-    // add click event
-    //
-    for (let key in this.spaces) {
-      if (this.spaces.hasOwnProperty(key)) {
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }
@@ -4006,6 +4672,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     }
 
   }
+
 
   displayVictoryTrack() {
   }

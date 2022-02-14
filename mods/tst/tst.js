@@ -4,7 +4,7 @@ class TST extends CryptoModule {
 
   constructor(app) {
     super(app, 'TST');
-    this.name = 'TestCrypto';
+    this.name = 'TST';
     this.description = 'This module implement CryptoModule functions without moving tokens';
     this.categories = "Cryptocurrency";
     this.information = "This is some important information you may care to read about when enabling the TST crypto module";

@@ -73,6 +73,13 @@
 
   }
 
+  resetPlayerTurn(player_num) {
+    this.game.state.tmp_protestant_reformation_bonus = 0;
+    this.game.state.tmp_catholic_reformation_bonus = 0;
+    this.game.state.tmp_protestant_counter_reformation_bonus = 0;
+    this.game.state.tmp_catholic_counter_reformation_bonus = 0;
+  }
+
   returnPlayerFaction(player) {
     let key = this.game.players_info[player-1].faction;
     return this.factions[key];
@@ -215,9 +222,246 @@
       }
     }
 
-    return menu;
+    return fmenu;
 
   }
+
+
+  playerMoveUnits(msg, cancel_func = null) {
+
+    let his_self = this;
+
+    this.playerSelectSpaceWithFilter(
+      "Select Town from Which to Move Units:",
+
+      function(space) {
+	if (space.units[his_self.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+	let units_to_move = [];
+
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey)) {
+	  	return 1;
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[this.game.player-1].length; i++) {
+	    if (units_to_move.contains(i)) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (index > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(id);
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+
+
+
+
+	
+      },
+
+      cancel_func,
+
+    );
+
+  }
+
+
+
+
+/*********************
+  playerSelectUnitsInSpace(spacekey) {
+
+    this.playerSelectUnitsWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      function(unit) {
+	if (space.units[this.game.player-1].length > 0) {
+	  return 1;
+        }
+	return 0;
+      },
+
+      function(spacekey) {
+	let space = this.spaces[spacekey];
+	let units = this.playerSelectUnitsWithFilter(
+
+
+        );
+	console.log("Space key: " + spacekey);
+      },
+
+      null,
+
+  }
+
+
+  playerSelectUnitsWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+      for (let i = 0; i < this.spaces[key].units.length; i++) {
+        for (let z = 0; z < this.spaces[key].units[i].length; z++) {
+          if (filter_func(this.spaces[key].units[i][z]) == 1) {
+            html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+          }
+        }
+      }
+    }
+    html += '<li class="textchoice" id="done">done selecting</li>';
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+
+  playerSelectUnitsInSpaceWithFilter(msg, space, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let i = 0; i < space.units.length; i++) {
+      for (let z = 0; z < space.units[i].length; z++) {
+        if (filter_func(space.units[i][z]) == 1) {
+          html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        }
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+*********************/
+
+
+
+
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.spaces) {
+      if (filter_func(this.spaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
 
 
 
@@ -227,69 +471,189 @@
 
     let his_self = this;
 
+    this.resetPlayerTurn(this.game.player);
+
     this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
     his_self.attachCardboxEvents(function(card) {
-      his_self.playerTurnCardSelected(card, player);
+      his_self.playerPlayCard(card, this.game.player);
     });
 
-    let menu = this.returnPlayerActionMenuOptions(this.game.player);
-
-    this.updateStatusAndListCards("Select a card...");
 
   }
+
+  playerPlayCard(card) {
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="ops">play for ops</li>`;
+    html    += `<li class="card" id="event">play for event</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions('Playing card:', html, true);
+    this.bindBackButtonFunction(() => {
+      this.playerTurnCardSelected(card, player);
+    });
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "ops") {
+        this.playerPlayOps();
+        return;
+      }
+      if (user_choice === "event") {
+        this.playerPlayEvent();
+        return;
+      }
+      return;
+    });
+
+  }
+
+  async playerPlayOps(card, ops=null) {
+
+    let menu = this.returnActionMenuOptions(this.game.player);
+    let faction = this.returnPlayerFaction(this.game.player);
+    let faction_key = faction.key;
+    if (ops == null) { ops = 2; }
+
+    let html = `<ul>`;
+    for (let i = 0; i < menu.length; i++) {
+      for (let z = 0; z < menu[i].factions.length; z++) {
+        if (menu[i].factions[z] === faction_key) {
+	  if (menu[i].cost[z] <= ops) {
+            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+          }
+        }
+      }
+    }
+    html    += `<li class="card" id="end_turn">end turn</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.attachCardboxEvents(async (user_choice) => {      
+
+      if (user_choice === "end_turn") {
+        this.endTurn();
+        return;
+      }
+
+      for (let z = 0; z < menu[user_choice].factions.length; z++) {
+        if (menu[user_choice].factions[z] === faction_key) {
+          ops -= menu[user_choice].cost[z];
+        }
+      }
+
+      await menu[user_choice].fnct(this, this.game.player);
+      if (ops > 0) {
+	this.playerPlayOps(card, ops);
+      } else {
+	this.endTurn();
+      }
+      return;
+
+    });
+  }
+  playerPlayEvent(card) {
+
+console.log("playing ops");
+
+  }
+
 
   playerActionMenu(player) {
     let menu_options = this.returnActionMenuOptions();
   }
 
-  playerReformationAttempt(player) {
+  async playerReformationAttempt(player) {
 
     this.updateStatus("Attempting Reformation Attempt");
-
+    return;
   }
-  playerCounterReformationAttempt(player) {
+  async playerCounterReformationAttempt(player) {
+console.log("1");
+return;
   }
-  playerMoveFormationInClear(player) {
+  async playerMoveFormationInClear(his_self, player) {
+    his_self.playerMoveUnits();      
+console.log("2");
+return;
   }
-  playerMoveFormationOverPass(player) {
+  async playerMoveFormationOverPass(his_self, player) {
+console.log("3");
+return;
   }
-  playerNavalMove(player) {
+  async playerNavalMove(his_self, player) {
+console.log("4");
+return;
   }
-  playerBuyMercenary(player) {
+  async playerBuyMercenary(his_self, player) {
+console.log("5");
+return;
   }
-  playerRaiseRegular(player) {
+  async playerRaiseRegular(his_self, player) {
+console.log("6");
+return;
   }
-  playerBuildNavalSquadron(player) {
+  async playerBuildNavalSquadron(his_self, player) {
+console.log("7");
+return;
   }
-  playerAssault(player) {
+  async playerAssault(his_self, player) {
+console.log("8");
+return;
   }
-  playerControlUnfortifiedSpace(player) {
+  async playerControlUnfortifiedSpace(his_self, player) {
+console.log("9");
+return;
   }
-  playerExplore(player) {
+  async playerExplore(his_self, player) {
+console.log("10");
+return;
   }
-  playerColonize(player) {
+  async playerColonize(his_self, player) {
+console.log("11");
+return;
   }
-  playerConquer(player) {
+  async playerConquer(his_self, player) {
+console.log("12");
+return;
   }
-  playerInitiatePiracyInASea(player) {
+  async playerInitiatePiracyInASea(his_self, player) {
+console.log("13");
+return;
   }
-  playerRaiseCavalry(player) {
+  async playerRaiseCavalry(his_self, player) {
+console.log("14");
+return;
   }
-  playerBuildCorsair(player) {
+  async playerBuildCorsair(his_self, player) {
+console.log("15");
+return;
   }
-  playerTranslateScripture(player) {
+  async playerTranslateScripture(his_self, player) {
+console.log("16");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
+console.log("17");
+return;
   }
-  playerCallTheologicalDebate(player) {
+  async playerCallTheologicalDebate(his_self, player) {
+console.log("");
+return;
   }
-  playerBuildSaintPeters(player) {
+  async playerBuildSaintPeters(his_self, player) {
+console.log("");
+return;
   }
-  playerBurnBooks(player) {
+  async playerBurnBooks(his_self, player) {
+console.log("");
+return;
   }
-  playerFoundJesuitUniversity(player) {
+  async playerFoundJesuitUniversity(his_self, player) {
+console.log("jesuit");
+return;
   }
-  playerPublishTreatise(player) {
+  async playerPublishTreatise(his_self, player) {
+console.log("treatise");
+return;
   }
 
 

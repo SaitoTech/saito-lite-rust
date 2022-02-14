@@ -157,8 +157,10 @@ class Mempool {
   }
 
   addTransaction(transaction: Transaction) {
+
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
+
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //
@@ -168,12 +170,16 @@ class Mempool {
         const gt = this.app.goldenticket.deserializeFromTransaction(this.mempool.golden_tickets[i]);
         if (gt.target_hash === new_gt.target_hash) {
           console.debug("similar golden tickets already exists");
+          this.app.miner.stopMining();
           return false;
         }
       }
 
       this.mempool.golden_tickets.push(transaction);
+      this.app.miner.stopMining();
+
     } else {
+
       for (let i = 0; i < this.mempool.transactions.length; i++) {
         if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
           console.debug("transaction already exists");
@@ -181,7 +187,16 @@ class Mempool {
         }
       }
 
+      if (!this.app.miner.isMining()) {
+	if (this.mempool.golden_tickets.length == 0) {
+	  this.app.miner.startMining();
+	} else {
+console.log("mining mining");
+        }
+      }
+
       this.mempool.transactions.push(transaction);
+
     }
 
     return true;
@@ -206,6 +221,9 @@ class Mempool {
       console.log(
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
       );
+      if (!this.app.miner.isMining()) {
+	this.app.miner.startMining();
+      }
       return;
     }
 
@@ -265,14 +283,10 @@ class Mempool {
   }
 
   canBundleBlock(): boolean {
-    if (
-      this.app.mempool.mempool.golden_tickets.length == 0 &&
-      this.app.blockring.returnLatestBlockId() > 2
-    ) {
-      console.log(
-        "CANNOT PRODUCE AS MEMPOOL HAS NO GOLDEN TICKET -- want to avoid producing failed block"
-      );
-      return false;
+    if (this.app.mempool.mempool.golden_tickets.length === 0) {
+      if (!this.app.miner.isMining()) {
+	this.app.miner.startMining();
+      }
     }
     if (this.app.mempool.mempool.transactions.length === 0) {
       // console.log(
@@ -457,9 +471,9 @@ class Mempool {
     }
     this.clearing_active = true;
     for (let b = this.mempool.blocks.length - 1; b >= 0; b--) {
-      if (this.mempool.blocks[b].returnHash() === blk.returnHash()) {
-        this.block_size_current -= this.blocks[b].size;
-        this.blocks.splice(b, 1);
+      if (this.mempool.blocks[b] && this.mempool.blocks[b].returnHash() === blk.returnHash()) {
+        this.block_size_current -= this.mempool.blocks[b].size;
+        this.mempool.blocks.splice(b, 1);
       }
     }
     this.clearing_active = false;

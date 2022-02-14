@@ -154,7 +154,7 @@ module.exports = SettingsAppspace = {
       if(confirmation){
         app.wallet.resetWallet();
         app.modules.returnModule('Arcade').onResetWallet();
-        app.storage.saveOptions();
+        app.storage.resetOptions();
 
         mod.emails.inbox = [];
         mod.emails.sent = [];

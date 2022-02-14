@@ -2,7 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PostMain = require('./lib/post-main/post-main');
 const PostSidebar = require('./lib/post-sidebar/post-sidebar');
-const PostCreate = require('./lib/post-overlay/post-create');
+var PostCreate = require('./lib/post-overlay/post-create');
 const ArcadePosts = require('./lib/arcade-posts/arcade-posts');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Base58            = require("base-58");
@@ -111,11 +111,26 @@ class Post extends ModTemplate {
     this.header.render(app, this);
     this.header.attachEvents(app, this);
 
+    if (!document.getElementById("post-container")) {
+      app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
+    }
+
+
     PostSidebar.render(this.app, this);
     PostSidebar.attachEvents(this.app, this);
 
     PostMain.render(app, this);
     PostMain.attachEvents(app, this);
+
+    this.urlParams = new URLSearchParams(window.location.search);
+    if (this.urlParams.get('delete')) {
+      let confirmed = sconfirm("Are you sure you want to delete these post:<br />" + decodeURIComponent(this.urlParams.get('title')));
+      if(confirmed) {
+        let delete_tx = this.createDeleteTransaction(this.urlParams.get('delete'));
+        this.app.network.propagateTransaction(delete_tx);
+      }
+    }
+
   }
 
 
@@ -236,7 +251,12 @@ class Post extends ModTemplate {
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
+let x = JSON.parse(res.rows[i].lite_tx);
+console.log(res.rows[i].lite_tx);
+console.log("ORIGINAL SIG: " + x.sig);
                 this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
+console.log("NEW SIG: " + this.posts[this.posts.length-1].transaction.sig);
+
                 this.posts[this.posts.length-1].children = res.rows[i].children;
                 this.posts[this.posts.length-1].img = res.rows[i].img;
               }
@@ -306,7 +326,12 @@ class Post extends ModTemplate {
   }
 
 
-
+  postImage(image, forum="") {
+    PostCreate.render(this.app, this, image);
+    PostCreate.attachEvents(this.app, this);
+    try { document.querySelector('.post-create-forum').value = forum; } catch (err) {}
+    try { document.querySelector('.post-create').prepend("Post Screenshot to Game Forum:"); } catch (err) {}
+  }
 
 
   createPostTransaction(title, comment, link, forum, images) {
@@ -331,7 +356,8 @@ class Post extends ModTemplate {
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
-        plitetx = this.app.wallet.signTransaction(plitetx);
+        // this destroys sig and prevents comment-fetching
+        //plitetx = this.app.wallet.signTransaction(plitetx);
         plitetx = JSON.stringify(plitetx.transaction);
     let ptitle = txmsg.title;
 
@@ -647,6 +673,9 @@ class Post extends ModTemplate {
   }
   async receiveEditTransaction(tx) {
     let txmsg = tx.returnMessage();
+
+console.log("EDITING: " + JSON.stringify(txmsg));
+
     let is_parent_id = 0;
     let sql = `SELECT parent_id FROM posts WHERE id = $id`;
     let params = { $id : txmsg.sig }
@@ -669,11 +698,17 @@ class Post extends ModTemplate {
       if (rows.length > 0) {
         if (rows[0].publickey === tx.transaction.from[0].add) {
 
-          sql = `UPDATE posts SET id = $newid, text = $text, tx = $tx WHERE publickey = $author AND id = $id`;
+          let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
+          plitetx.msg.comment = "";
+          plitetx.msg.images = [];
+
+
+          sql = `UPDATE posts SET id = $newid, text = $text, tx = $tx, lite_tx = $lite_tx WHERE publickey = $author AND id = $id`;
           params = {
-            $id		: txmsg.sig,
+            $newid	: tx.transaction.sig,
             $text	: txmsg.comment ,
             $tx		: JSON.stringify(tx.transaction) ,
+            $lite_tx	: JSON.stringify(plitetx.transaction) ,
             $author	: tx.transaction.from[0].add ,
             $id		: txmsg.sig
           };
@@ -733,11 +768,14 @@ class Post extends ModTemplate {
     // it is signed by the node storing it in the database.
     //
     let txmsg = tx.returnMessage();
+console.log("Received Comment: " + JSON.stringify(txmsg));
+console.log("With Sig: " + tx.transaction.sig);
     let pfulltx = JSON.stringify(tx.transaction);   
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
 	plitetx.msg.comment = "";
 	plitetx.msg.images = [];
-        plitetx = this.app.wallet.signTransaction(plitetx);
+	//below screws up sig preventing dupe-detection
+        //plitetx = this.app.wallet.signTransaction(plitetx);
         plitetx = JSON.stringify(plitetx.transaction);
 
 
@@ -853,6 +891,8 @@ class Post extends ModTemplate {
         <b>Post #${txmsg.title} was reported.<br/></b>
         Post ID${txmsg.post_id}<br/><br/>
         <a href="https://saito.io/post/delete/${base_58_tx}">Delete Post</a><hr/>.
+        <a href="https://saito.io/post?delete=${txmsg.post_id}&title=${encodeURIComponent(txmsg.title)}">Review and Delete Post</a><hr/>.
+        
       `
     });
   }

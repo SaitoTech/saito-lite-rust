@@ -1,4 +1,10 @@
-module.exports = AppStoreAppspaceTemplate = (app, row) => {
+module.exports = AppStoreAppspaceTemplate = (app, mod, search_options) => {
+
+  let default_text = "Install Applications";
+
+  if (search_options?.search) {
+    default_text = "Search: " + search_options.search;
+  }
 
   return `
   

@@ -17,10 +17,11 @@
         let cards_discarded = 0;
 
         let cards_to_discard = 0;
-        let user_message = "<div class='status-message' id='status-message'>Select cards to discard:<ul>";
+        let user_message = "Select cards to discard:";
+        let html = "<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
-            user_message += '<li class="card showcard card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
             cards_to_discard++;
           }
         }
@@ -31,9 +32,9 @@
           return;
         }
 
-        user_message += '</ul> When you are done discarding <span class="card dashed showcard nocard" id="finished">click here</span>.</div>';
+        html += '<span class="card dashed nocard" id="finished">done discarding</span></ul>';
 
-        twilight_self.updateStatus(user_message);
+        twilight_self.updateStatusWithOptions(user_message, html, false);
         twilight_self.addMove("resolve\tasknot");
         twilight_self.attachCardboxEvents(function(action2) {
 
