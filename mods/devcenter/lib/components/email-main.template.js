@@ -4,7 +4,7 @@ module.exports = EmailMainTemplate = (app, mod) => {
     <div id="email-main" class="email-main">
       <div id="email-appspace" class="email-appspace">
         <div class="welcome-container">
-          <h2>Welcome to the Saito Dev Center</h2>
+          <h2>Welcome to the Saito Development Center</h2>
           <div class="welcome-right-sidebar">
 
             <div class="welcome-link"><a href="https://github.com/0xluminous/awesome-saito">Awesome Saito</a></div>
