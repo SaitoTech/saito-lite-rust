@@ -486,7 +486,6 @@ class Keychain {
 
     this.modtemplate.sendPeerDatabaseRequestWithFilter(
       "Registry",
-
       'SELECT * FROM records WHERE publickey = "' + publickey + '"',
       (res) => {
         let rows = [];
@@ -599,42 +598,39 @@ class Keychain {
     });
   }
 
-  fetchPublicKey(identifier = null, mycallback) {
+  fetchPublicKey(identifier = null, mycallback = null) {
     if (!identifier) {
       return null;
     }
+    console.log(1);
     if (this.app.crypto.isPublicKey(identifier)) {
-      mycallback(identifier);
+      return identifier;
     }
-
+    console.log(2);
     const publickey = this.returnPublicKeyByIdentifier(identifier);
     if (publickey != "") {
-      mycallback({ err: "", rows: [publickey] });
+      return publickey;
     }
-
+    console.log(3);
     //
     // if no result, fetch from server (modtemplate)
     //
-    this.modtemplate.sendPeerDatabaseRequest(
-      "registry",
-      "records",
-      "*",
-      `identifier = '${identifier}'`,
-      null,
+    this.modtemplate.sendPeerDatabaseRequestWithFilter(
+      "Registry",
+      `SELECT * FROM records WHERE identifier = '${identifier}'`,
       (res) => {
-        const rows = [];
-        if (res.rows == undefined) {
-          mycallback(rows);
+        console.log(4);
+        if (res.rows && res.rows.length > 0) {
+          //It should be unique....
+          res.rows.forEach((row) => {
+            const { publickey, identifier, bid, bsh, lc } = row;
+            this.addKey(publickey, identifier, false, "", bid, bsh, lc);
+          });
+          return res.rows[0].publickey;
         }
-        res.rows.forEach((row) => {
-          const { publickey, identifier, bid, bsh, lc } = row;
-          this.addKey(publickey, identifier, false, "", bid, bsh, lc);
-        });
-        //
-        // should only get back one row
-        mycallback(res);
       }
     );
+    return null;
   }
 
   returnPublicKeyByIdentifier(identifier) {
