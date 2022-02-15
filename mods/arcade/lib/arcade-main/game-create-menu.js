@@ -22,10 +22,8 @@ module.exports = GameCreateMenu = {
 
   
   attachEvents(app, mod) {
-
-    if (!document.getElementById("games-add-game") && !document.getElementById("arcade-games")) { return; }
-
-    if (app.modules.returnModule("AppStore") != null) {
+    try{
+    if (document.getElementById("games-add-game")) {
       document.getElementById("games-add-game").onclick = () => {
         let appstore_mod = app.modules.returnModule("AppStore");
         if (appstore_mod) {
@@ -34,6 +32,9 @@ module.exports = GameCreateMenu = {
         }
       };
     }
+    }catch(err){
+      console.error(err);
+    } 
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
