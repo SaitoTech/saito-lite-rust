@@ -266,6 +266,8 @@ hr {
   margin-right: auto;
   background-color: transparent;
   z-index: 1000;
+  min-width: 10%;
+  min-height: 10%;
   /*padding: 10px;*/
 }
 

@@ -26,6 +26,7 @@ class Pandemic extends GameTemplate {
     this.interface = 1; // default to graphics (as opposed to text interface)
 
     this.hud.mode = 0;
+    this.hud.card_width = 120;
     let temp_self = this;
     this.menu_backup_callback = function(){temp_self.playerMakeMove();};
     this.changeable_callback = function(){};
@@ -65,18 +66,12 @@ class Pandemic extends GameTemplate {
     let playerHand = this.game.players_info[player_num - 1].cards;
 
     for (let i = 0; i < playerHand.length; i++) {
-      //let city = pandemic_self.game.deck[1].cards[deck[i]];
-      html += `<div class="card" id="${playerHand[i]}">${this.returnCardImage(
-        playerHand[i],
-        1
-      )}</div>`;
+      let card = this.returnCardImage(playerHand[i], 1).replace("img", `img id="${playerHand[i]}"`);
+      html += card; //this.returnCardImage(playerHand[i], 1);
+      //html += `<div class="card" id="${playerHand[i]}">${}</div>`;
     }
-
-    this.overlay.show(
-      this.app,
-      this,
-      `<div class="cardfan cardfan-loose">${html}</div>`
-    );
+    html = html.replace(/cardimg/g,"card");
+    this.overlay.show(this.app, this, `<div class="cardfan bighand">${html}</div>`);
     this.attachCardboxEvents(); //Don't do anything on click
   }
 
@@ -1449,9 +1444,7 @@ class Pandemic extends GameTemplate {
         //
         // add three cubes
         //
-        this.game.queue.push(
-          "ACKNOWLEDGE\tEPIDEMIC CARD! 3 " + virus + " in " + city
-        );
+        //this.game.queue.push("ACKNOWLEDGE\tEPIDEMIC CARD! 3 " + virus + " in " + city);
 
         this.addDiseaseCube(city, virus);
         this.addDiseaseCube(city, virus);
@@ -1462,8 +1455,9 @@ class Pandemic extends GameTemplate {
         //
         this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
         document.querySelector(".close_epidemic_overlay").onclick = (e) => {
-          this.overlay.hide();
+          pandemic_self.overlay.hide();
         };
+        this.overlay.blockClose();
 
         //
         // shuffle cards into TOP of infection deck
@@ -3083,11 +3077,11 @@ class Pandemic extends GameTemplate {
   returnEpidemicOverlay(city) {
     let html = `
       <div class="epidemic_overlay">
-        Epidemic in ${this.game.cities[city].name}!!!
-
-        <p></p>
-
-        <div class="button" class="close_epidemic_overlay" id="close_epidemic_overlay">close</div>
+        <h1>Epidemic in ${this.game.cities[city].name}!!!</h1>
+        <div class="epidemic-card">
+          <img src="/pandemic/img/Epidemic.jpg"/>
+        </div>
+        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
     `;
 
