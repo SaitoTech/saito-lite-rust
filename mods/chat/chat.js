@@ -214,16 +214,16 @@ class Chat extends ModTemplate {
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
 
             this.sendPeerDatabaseRequestWithFilter(
-          
+
               "Archive" ,
-          
+
               sql ,
-        
+
               (res) => {
                 if (res) {
                   if (res.rows) {
                     for (let i = 0; i < res.rows.length; i++) {
-            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx)); 
+            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
             	      let txmsg = tx.returnMessage();
                       this.binaryInsert(this.groups[this.groups.length-1].txs, tx, (a, b) => {
                         return a.transaction.ts - b.transaction.ts;
@@ -233,7 +233,7 @@ class Chat extends ModTemplate {
                   }
                 }
               },
-    
+
               (p) => {
                 if (p.peer.publickey === peer.peer.publickey) {
 		  return 1;
@@ -332,12 +332,12 @@ class Chat extends ModTemplate {
             if (this.groups[i].id === group_id) {
                 let element_to_update = 'chat-last-message-' + group_id;
                 try {
-                    document.getElementById(element_to_update).innerHTML = msg;
+                    document.getElementById(element_to_update).innerHTML = sanitize(msg);
                 } catch (err) {
                 }
                 element_to_update = 'chat-last-message-timestamp-' + group_id;
                 try {
-                    document.getElementById(element_to_update).innerHTML = `${datetime.hours}-${datetime.minutes}`;
+                    document.getElementById(element_to_update).innerHTML = sanitize(`${datetime.hours}-${datetime.minutes}`);
                 } catch (e) {
                 }
             }
@@ -596,8 +596,7 @@ class Chat extends ModTemplate {
                 'a': sanitizeHtml.simpleTransform('a', {target: '_blank'})
             }
         });
-
-        return msg;
+        return sanitize(msg);
     }
 
 

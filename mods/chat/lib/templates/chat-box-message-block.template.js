@@ -72,7 +72,6 @@ module.exports = ChatBoxMessageBlockTemplate = (app, mod, group, message_block) 
 
   if (comments_to_add == 0) { return ''; }
 
-
   return `
     <div class="chat-message-set chat-message-set-${type} chat-message-set-${first_comment_sig}" id="chat-message-set-${first_comment_sig}">
       <img src="${identicon}" class="chat-room-message-identicon"/>
@@ -82,7 +81,7 @@ module.exports = ChatBoxMessageBlockTemplate = (app, mod, group, message_block) 
               <p class="chat-message-timestamp">${datetime.hours}:${datetime.minutes}</p>
         </div>
         <div class="chat-box-message-container chat-box-message-container-${type}" style="border-color:${identicon_color};">
-          ${emoji.emojify(messages_html)}
+          ${sanitize(emoji.emojify(messages_html))}
         </div>
       </div>
     </div>

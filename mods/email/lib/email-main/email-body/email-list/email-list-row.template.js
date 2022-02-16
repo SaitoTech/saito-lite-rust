@@ -13,7 +13,7 @@ module.exports = EmailListRowTemplate = (tx, addr_html, helpers) => {
   //console.log("DATETIME: " + JSON.stringify(datetime));
 
   var tmp = document.createElement("DIV");
-  tmp.innerHTML = message;
+  tmp.innerHTML = sanitize(message);
   message = tmp.innerText;
 
   message = message.length > 64 ? `${message.substring(0, 64)}...`: message;

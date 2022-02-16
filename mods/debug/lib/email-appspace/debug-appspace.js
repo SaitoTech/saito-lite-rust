@@ -4,7 +4,7 @@ const jsonTree = require('json-tree-viewer');
 module.exports = DebugAppspace = {
 
     render(app, mod) {
-      document.querySelector(".email-appspace").innerHTML = DebugAppspaceTemplate();
+      document.querySelector(".email-appspace").innerHTML = sanitize(DebugAppspaceTemplate());
 try {
       var tree = jsonTree.create(app.options, document.getElementById("email-appspace-debug"));
 } catch (err) {

@@ -133,7 +133,7 @@ console.log("E");
       }
 
       let opponent_elem = document.getElementById('opponent_id');
-      if (opponent_elem) opponent_elem.innerHTML = opponent;
+      if (opponent_elem) opponent_elem.innerHTML = sanitize(opponent);
 
       this.updateStatusMessage();
       this.attachEvents();
@@ -209,7 +209,7 @@ console.log(JSON.stringify(msg));
 
     this.saveGame(this.game.id);
     return 0;
-   
+
   }
 
   endTurn(data) {
@@ -225,7 +225,7 @@ console.log(JSON.stringify(msg));
     this.sendMessage("game", extra);
     this.updateLog(data.move);
     this.updateStatusMessage();
-    
+
   }
 
   attachEvents() {
@@ -305,7 +305,7 @@ console.log(JSON.stringify(msg));
     // print message if provided
     //
     if (str != "") {
-      statusEl.innerHTML = str;
+      statusEl.innerHTML = sanitize(str);
       return;
     }
 
@@ -342,12 +342,12 @@ console.log(JSON.stringify(msg));
 
     }
 
-    statusEl.innerHTML = status;
+    statusEl.innerHTML = sanitize(status);
     console.log(this.game.position);
     console.log(this.engine.fen());
     console.log(this.returnCaptured(this.engine.fen()));
     console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
-    document.getElementById('captured').innerHTML = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()));
+    document.getElementById('captured').innerHTML = sanitize(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
     // test - no blank update
     //this.updateLog();
 
