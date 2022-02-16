@@ -14,7 +14,7 @@ module.exports = PostTeaserTemplate = (app, mod, tx) => {
   const html = `
     <div data-id="${tx.transaction.sig}" id="arcade-post" class="arcade-post">
       <div class="arcade-post-front">
-        <div id="arcade-post-thumbnail" class="arcade-post-thumbnail" style=""><img src="${app.keys.returnIdenticon(tx.transaction.from[0].add)}" style="max-height: 50px; max-width: 50px;" /></div>
+        <div id="arcade-post-thumbnail" class="arcade-post-thumbnail tip"><img class="identicon" src="${app.keys.returnIdenticon(tx.transaction.from[0].add)}"/><div class="tiptext">${app.browser.returnAddressHTML(tx.transaction.from[0].add)}</div></div>
       </div>
       <div class="arcade-post-back">
         <div class="arcade-post-header">

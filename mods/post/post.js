@@ -2,9 +2,10 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const PostMain = require("./lib/post-main/post-main");
 const PostSidebar = require("./lib/post-sidebar/post-sidebar");
-var PostCreate = require("./lib/post-overlay/post-create");
+const PostCreate = require("./lib/post-overlay/post-create");
 const ArcadePosts = require("./lib/arcade-posts/arcade-posts");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+const datetimeRelative = require("../../lib/helpers/datetime_formatter");
 const Base58 = require("base-58");
 const JSON = require("json-bigint");
 
