@@ -39,7 +39,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+this.returnPlayerFaction(this.game.player).name);
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
 
 	  //
@@ -67,6 +67,24 @@ console.log("MOVE: " + mv[0]);
 	  if (!this.deck[card].onEvent(this, player)) { return 0; }
 
 	  return 1;
+	}
+
+        if (mv[0] === "move") {
+
+	  let player = mv[1];
+	  let movetype = mv[1];
+	  let source = mv[1];
+	  let destination = mv[1];
+	  let unitidx = mv[1];
+
+          this.spaces[destination].units[player-1].push(this.spaces[source].units[player-1][unitidx].splice(unitidx, 1));
+	  this.updateLog("Player "+player+" moves unit from " + source + " to " + destination);
+
+	  this.displaySpace(source);
+	  this.displaySpace(destination);
+
+	  this.game.queue.splice(qe, 1);
+          return 1;
 	}
 
         if (mv[0] === "victory_determination_phase") {
@@ -111,9 +129,12 @@ this.updateLog("New Units and New Cards Added");
 	  let cards_to_deal = [];
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    let pf = this.game.players_info[i].faction;
-console.log("faction: " + pf);
-	    cards_to_deal.push(this.factions[pf].returnCardsDealt(this));
+	    let cardnum = 0;
+	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	      let pf = this.game.players_info[i].factions[z];
+	      cardnum += this.factions[pf].returnCardsDealt(this);
+	    }
+	    cards_to_deal.push(cardnum);
           }
 
 console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
@@ -139,8 +160,33 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
         }
 
         if (mv[0] === "play") {
+
+	  let player = mv[1];
           this.displayBoard();
-          this.playMove();
+
+	  if (this.game.player == player) {
+	    this.updateStatusAndListCards("Select a Card:", this.game.deck[0].hand);
+            this.attachCardboxEvents(function(card) {
+              this.playerPlayCard(card, this.game.player);
+            });
+	  } else {
+	    this.updateStatusAndListCards("Opponent Turn:", this.game.deck[0].hand);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+          return 0;
+        }
+	if (mv[0] === "continue") {
+
+	  let player = mv[1];
+	  let card = mv[2];
+	  let ops = mv[3];
+
+	  if (this.game.player == player) {
+            this.playerPlayOps(card, ops);
+	  }
+
+	  this.game.queue.splice(qe, 1);
           return 0;
         }
 

@@ -579,6 +579,13 @@
   width: 100px;
 }
 
+.figures_tile {
+  z-index: 10;
+  display: block;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
 .army_tile {
   z-index: 20;
   position: absolute;

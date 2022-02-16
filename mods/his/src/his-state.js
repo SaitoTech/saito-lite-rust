@@ -1,22 +1,54 @@
 
-  addUnit(player, space, type) {
+  addUnit(faction, space, type) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-    space.units[player-1].push(this.newUnit(player, type));
+    space.units[faction].push(this.newUnit(faction, type));
   }
 
-  addRegular(player, space) {
+  addRegular(faction, space, num=1) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-    space.units[player-1].push(this.newUnit(player, "regular"));
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "regular"));
+    }
   }
 
-  addMercenary(player, space) {
+  addMercenary(faction, space, num=1) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-    space.units[player-1].push(this.newUnit(player, "mercenary"));
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "mercenary"));
+    }
   }
 
-  addDebater(player, space) {
+  addCavalry(faction, space, num=1) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-    space.units[player-1].push(this.newUnit(player, "debater"));
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "cavalry"));
+    }
+  }
+
+  addNavalSquadron(faction, space, num=1) {
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "naval-squadron"));
+    }
+  }
+
+  addCorsair(faction, space, num=1) {
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < num; i++) {
+      space.units[faction].push(this.newUnit(faction, "corsair"));
+    }
+  }
+
+  addDebater(faction, space, debater) {
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.newDebater(faction, debater));
+  }
+
+  addPersonage(faction, space, personage) {
+    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+console.log(faction);
+console.log(JSON.stringify(space.units));
+    space.units[faction].push(this.newPersonage(faction, personage));
   }
 
   convertSpace(religion, space) {
@@ -88,6 +120,8 @@
 
     let state = {};
 
+    state.scenario = "1517";
+    if (this.game.options.scenario) { state.scenario = this.game.options.scenario; }
     state.round = 0;
     state.players = [];
     state.events = {};
@@ -1727,10 +1761,18 @@
 
 
     for (let key in spaces) {
-      spaces[key].units = [];
-      for (let i = 0; i < this.game.players.length; i++) {
-	spaces[key].units.push([]);
-      }
+      spaces[key].units = {};
+      spaces[key].units['england'] = [];
+      spaces[key].units['france'] = [];
+      spaces[key].units['hapsburg'] = [];
+      spaces[key].units['ottoman'] = [];
+      spaces[key].units['papacy'] = [];
+      spaces[key].units['protestant'] = [];
+      spaces[key].units['venice'] = [];
+      spaces[key].units['genoa'] = [];
+      spaces[key].units['hungary'] = [];
+      spaces[key].units['scotland'] = [];
+      spaces[key].units['independent'] = [];
     }
 
     return spaces;
@@ -1850,9 +1892,8 @@
 	game_mod.game.queue.push("protestant_reformation\t"+player);
         game_mod.game.queue.push("ACKNOWLEDGE\tThe Reformation.!");
         game_mod.convertSpace("protestant", "wittenberg");
-        game_mod.addUnit(1, "wittenberg", "regular");
-        game_mod.addUnit(1, "wittenberg", "regular");
-        game_mod.addUnit(1, "wittenberg", "debater");
+        game_mod.addUnit("protestant", "wittenberg", "regular");
+        game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.displaySpace("wittenberg");
 
 	return 1;

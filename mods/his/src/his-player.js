@@ -4,7 +4,41 @@
   returnPlayers(num = 0) {
 
     var players = [];
-    let factions = JSON.parse(JSON.stringify(this.factions));
+    let factions  = JSON.parse(JSON.stringify(this.factions));
+    let factions2 = JSON.parse(JSON.stringify(this.factions));
+
+    // < 6 player games
+    if (num == 2) {
+      for (let key in factions) {
+	if (key !== "protestant" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 3) {
+      for (let key in factions) {
+	if (key !== "protestant" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 3) {
+      for (let key in factions) {
+	if (key !== "protestant" && key != "france" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 4) {
+      for (let key in factions) {
+	if (key !== "protestant" && key != "france" && key != "ottoman" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
 
     for (let i = 0; i < num; i++) {
 
@@ -65,8 +99,42 @@
 
 
       players[i] = {};
-      players[i].faction = rf;
+      players[i].factions = [];
+      players[i].factions.push(rf);
 
+    }
+
+    if (num == 3) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+	if (players[i].factions[0] === "papacy") {
+	  players[i].factions.push("hapsburg");
+	}
+	if (players[i].factions[0] === "france") {
+	  players[i].factions.push("ottoman");
+	}
+      }
+    }
+
+    if (num == 4) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+	if (players[i].factions[0] === "papacy") {
+	  players[i].factions.push("hapsburg");
+	}
+      }
+    }
+
+    if (num == 5) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+      }
     }
 
     return players;
@@ -80,9 +148,8 @@
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
-  returnPlayerFaction(player) {
-    let key = this.game.players_info[player-1].faction;
-    return this.factions[key];
+  returnPlayerFactions(player) {
+    return this.game.players_info[player-1].factions;
   }
 
   returnActionMenuOptions(player=null) {
@@ -212,15 +279,19 @@
 
     if (player == null) { return menu; }
 
-    let pfaction = this.returnPlayerFaction(player);
+    let pfactions = this.returnPlayerFactions(player);
     let fmenu = [];
 
-
     for (let i = 0; i < menu.length; i++) {
-      if (menu[i].factions.includes(pfaction.key)) {
-        fmenu.push(menu[i]);
+      for (let z = 0; z < pfactions.length; z++) {
+        if (menu[i].factions.includes(pfactions[z])) {
+          fmenu.push(menu[i]);
+	  z = pfactions.length+1;
+        }
       }
     }
+
+console.log("FMENU: " + JSON.stringify(fmenu));
 
     return fmenu;
 
@@ -230,22 +301,27 @@
   playerMoveUnits(msg, cancel_func = null) {
 
     let his_self = this;
+    let units_to_move = [];
+    let faction = "";
 
-    this.playerSelectSpaceWithFilter(
+    his_self.playerSelectSpaceWithFilter(
+
       "Select Town from Which to Move Units:",
 
+      // TODO - select only cities where I can move units
       function(space) {
-	if (space.units[his_self.game.player-1].length > 0) {
-	  return 1;
-        }
+	for (let z in space.units) {
+	  if (space.units[z].length > 0) {
+	    faction = z;
+	    return 1;
+          }
+	}
 	return 0;
       },
 
       function(spacekey) {
 
         let space = his_self.spaces[spacekey];
-	let units_to_move = [];
-
 
 	let selectDestinationInterface = function(his_self, units_to_move) {  
     	  his_self.playerSelectSpaceWithFilter(
@@ -260,7 +336,16 @@
             },
 
       	    function(destination_spacekey) {
+	
 console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
+	      units_to_move.sort();
+	      units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		this.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+	      }
+	      this.endTurn();
+
 	    },
 
 	    cancel_func,
@@ -270,12 +355,14 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+console.log("Units to Move: " + JSON.stringify(units_to_move));
+
 	  let html = "<ul>";
-	  for (let i = 0; i < space.units[this.game.player-1].length; i++) {
-	    if (units_to_move.contains(i)) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (units_to_move.includes(parseInt(i))) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
+	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -295,22 +382,17 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
 	    if (units_to_move.includes(id)) {
 	      let idx = units_to_move.indexOf(id);
-	      if (index > -1) {
+	      if (idx > -1) {
   		units_to_move.splice(idx, 1);
 	      }
 	    } else {
-	      units_to_move.push(id);
+	      units_to_move.push(parseInt(id));
 	    }
 
-	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
-
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
 	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
-
-
-
-
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	
       },
 
@@ -319,113 +401,6 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
     );
 
   }
-
-
-
-
-/*********************
-  playerSelectUnitsInSpace(spacekey) {
-
-    this.playerSelectUnitsWithFilter(
-
-      "Select Town from Which to Move Units:",
-
-      function(unit) {
-	if (space.units[this.game.player-1].length > 0) {
-	  return 1;
-        }
-	return 0;
-      },
-
-      function(spacekey) {
-	let space = this.spaces[spacekey];
-	let units = this.playerSelectUnitsWithFilter(
-
-
-        );
-	console.log("Space key: " + spacekey);
-      },
-
-      null,
-
-  }
-
-
-  playerSelectUnitsWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
-
-    let his_self = this;
-
-    let html = '<div class="message">' + msg + '</div>';
-
-    html += '<ul>';
-    for (let key in this.spaces) {
-      for (let i = 0; i < this.spaces[key].units.length; i++) {
-        for (let z = 0; z < this.spaces[key].units[i].length; z++) {
-          if (filter_func(this.spaces[key].units[i][z]) == 1) {
-            html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
-          }
-        }
-      }
-    }
-    html += '<li class="textchoice" id="done">done selecting</li>';
-    if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
-    }
-    html += '</ul>';
-
-    this.updateStatus(html);
-
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
-      let action = $(this).attr("id");
-      if (action == "cancel") {
-        cancel_func();
-        return 0;
-      }
-
-      mycallback(action);
-
-    });
-
-  }
-
-
-  playerSelectUnitsInSpaceWithFilter(msg, space, filter_func, mycallback = null, cancel_func = null) {
-
-    let his_self = this;
-
-    let html = '<div class="message">' + msg + '</div>';
-
-    html += '<ul>';
-    for (let i = 0; i < space.units.length; i++) {
-      for (let z = 0; z < space.units[i].length; z++) {
-        if (filter_func(space.units[i][z]) == 1) {
-          html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
-        }
-      }
-    }
-    if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
-    }
-    html += '</ul>';
-
-    this.updateStatus(html);
-
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
-      let action = $(this).attr("id");
-      if (action == "cancel") {
-        cancel_func();
-        return 0;
-      }
-
-      mycallback(action);
-
-    });
-
-  }
-*********************/
-
 
 
 
@@ -509,17 +484,20 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
   async playerPlayOps(card, ops=null) {
 
     let menu = this.returnActionMenuOptions(this.game.player);
-    let faction = this.returnPlayerFaction(this.game.player);
-    let faction_key = faction.key;
+    let pfactions = this.returnPlayerFactions(this.game.player);
+
+console.log("PFACTIONS: " + JSON.stringify(pfactions));
+
     if (ops == null) { ops = 2; }
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
       for (let z = 0; z < menu[i].factions.length; z++) {
-        if (menu[i].factions[z] === faction_key) {
+        if (pfactions.includes(menu[i].factions[z])) {
 	  if (menu[i].cost[z] <= ops) {
-            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops] [${menu[i].factions[z]}]</li>`;
           }
+	  z = menu[i].factions.length+1;
         }
       }
     }
@@ -535,17 +513,16 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
       }
 
       for (let z = 0; z < menu[user_choice].factions.length; z++) {
-        if (menu[user_choice].factions[z] === faction_key) {
+        if (pfactions.includes(menu[user_choice].factions[z])) {
           ops -= menu[user_choice].cost[z];
+	  z = menu[user_choice].factions.length+1;
         }
       }
 
-      await menu[user_choice].fnct(this, this.game.player);
       if (ops > 0) {
-	this.playerPlayOps(card, ops);
-      } else {
-	this.endTurn();
+	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
       }
+      menu[user_choice].fnct(this, this.game.player);
       return;
 
     });
@@ -562,7 +539,6 @@ console.log("playing ops");
   }
 
   async playerReformationAttempt(player) {
-
     this.updateStatus("Attempting Reformation Attempt");
     return;
   }

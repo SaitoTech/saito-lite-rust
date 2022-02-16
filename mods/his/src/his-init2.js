@@ -1,10 +1,12 @@
 
+    let first_time_running = 0;
 
     //
     // initialize
     //
     if (!this.game.state) {
 
+      first_time_running = 1;
       this.game.state = this.returnState();
       this.game.spaces = this.returnSpaces();
       this.game.players_info = this.returnPlayers(this.game.players.length);
@@ -43,6 +45,7 @@ console.log("\n\n\n\n");
 
     }
 
+
 console.log("INIT GAME SPACES!");
 
     //
@@ -56,16 +59,54 @@ console.log("INIT GAME SPACES!");
 console.log("DONE INIT GAME SPACES!");
 
     //
-    // add some units
+    // add initial units
     //
-    this.addRegular(1, "london");
-    this.addRegular(1, "london");
-    this.addRegular(1, "london");
-    this.addRegular(1, "london");
-    this.addRegular(1, "worms");
-    this.addMercenary(2, "paris");
-    this.addDebater(2, "venice");
-console.log("TEST: " + JSON.stringify(this.spaces['london']));
+    if (first_time_running == 1) {
+
+      //
+      // add some units
+      //
+      if (this.game.state.scenario === "1517") {
+
+	// OTTOMAN
+        this.addPersonage("ottoman", "istanbul", "suleiman");
+        this.addPersonage("ottoman", "istanbul", "ibrahim-pasha");
+        this.addRegular("ottoman", "istanbul", 7);
+        this.addCavalry("ottoman", "istanbul", 1);
+        this.addNavalSquadron("ottoman", "istanbul", 1);
+        this.addRegular("ottoman", "edirne");
+        this.addRegular("ottoman", "salonika", 1);
+        this.addNavalSquadron("ottoman", "salonika", 1);
+        this.addRegular("ottoman", "athens", 1);
+        this.addNavalSquadron("ottoman", "athens", 1);
+
+	// HAPSBURG
+	this.addPersonage("hapsburg", "valladolid", "charles-v");
+	this.addPersonage("hapsburg", "valladolid", "duke-of-alva");
+        this.addRegular("hapsburg", "seville", 1);
+        this.addNavalSquadron("hapsburg", "seville", 1);
+        this.addRegular("hapsburg", "barcelona", 1);
+        this.addNavalSquadron("hapsburg", "barcelona", 1);
+        this.addRegular("hapsburg", "navarre", 1);
+        this.addRegular("hapsburg", "tunis", 1);
+        this.addRegular("hapsburg", "naples", 2);
+        this.addNavalSquadron("hapsburg", "naples", 2);
+        this.addRegular("hapsburg", "besancon", 1);
+        this.addRegular("hapsburg", "brussels", 1);
+	this.addPersonage("hapsburg", "vienna", "ferdinand");
+        this.addRegular("hapsburg", "vienna", 4);
+        this.addRegular("hapsburg", "antwerp", 3);
+
+      }
+
+      if (this.game.state.scenario === "1532") {
+
+      }
+
+      if (this.game.state.scenario === "tournament") {
+
+      }
+    }
 
     //
     // and show the board

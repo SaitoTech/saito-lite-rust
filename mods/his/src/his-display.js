@@ -191,6 +191,14 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
           tile += `Ottoman_${stype}.svg`;
         }
       }
+      if (owner === "independent") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
     }
 
     return tile;
@@ -204,15 +212,21 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (owner == "") { owner = space.home; }
     let tile = "";
 
+if (space.name === "Istanbul") {
+console.log("Istanbul units: ");
+  console.log(JSON.stringify(space.units));
+}
 
-    for (let z = 0; z < this.game.players.length; z++) {
+    for (let z in space.units) {
 
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
+console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
       }
+
 
       while (army >= 1) {
         if (owner != "") {
@@ -326,7 +340,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (owner == "") { owner = space.home; }
     let tile = "";
 
-    for (let z = 0; z < this.game.players.length; z++) {
+    for (let z in space.units) {
 
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
@@ -440,17 +454,21 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
   }
 
-  returnDebaters(space) {
+  returnPersonages(space) {
 
-    let html = '<div class="debater_tile" id="">';
+    let html = '<div class="figures_tile" id="">';
     let owner = space.political;
     if (owner == "") { owner = space.home; }
     let tile = "";
 
-    for (let z = 0; z < this.game.players.length; z++) {
+    for (let z in space.units) {
       for (let zz = 0; zz < space.units[z].length; zz++) {
-	if (space.units[z][zz].type === "debater") {
-          html += '<img src="/his/img/tiles/debaters/AleanderDebater_back.svg" />';
+	if (space.units[z][zz].debater === true) {
+          html += `<img src="/his/img/tiles/debater/${space.units[z][zz].img}" />`;
+	  tile = html;
+	}
+	if (space.units[z][zz].personage === true) {
+          html += `<img src="/his/img/tiles/personages/${space.units[z][zz].img}" />`;
 	  tile = html;
 	}
       }
@@ -497,10 +515,11 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (tile === "") { show_tile = 0; }
 
     if (show_tile === 1) {
+console.log("key: " + key);
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
       obj.innerHTML += this.returnArmies(space);
       obj.innerHTML += this.returnMercenaries(space);
-      obj.innerHTML += this.returnDebaters(space);
+      obj.innerHTML += this.returnPersonages(space);
     }
 
   }
