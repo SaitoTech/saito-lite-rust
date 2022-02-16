@@ -1184,6 +1184,43 @@ i.menu_icon_icon{
   left: 8vh;
 }
 
+
+.bighand>.card:nth-child(5n+1) {
+  transform: rotate(-20deg);
+  left: 0px;
+}
+
+.bighand>.card:nth-child(5n+2) {
+  transform: rotate(-10deg);
+  left: 2vh;
+}
+
+.bighand>.card:nth-child(5n+3) {
+  transform: rotate(0deg);
+  left: 4vh;
+}
+
+.bighand>.card:nth-child(5n+4) {
+  transform: rotate(10deg);
+  left: 6vh;
+}
+
+.bighand>.card:nth-child(5n+5) {
+  transform: rotate(20deg);
+  left: 8vh;
+}
+
+.bighand>.card:nth-child(n+6) {
+  top: 3vh;
+}
+.bighand>.card:nth-child(n+11) {
+  top: 6vh;
+}
+.bighand>.card:nth-child(n+16) {
+  top: 9vh;
+}
+
+
 /** MOBILE STYLING FOR CARDFAN**/
 @media screen and (orientation: landscape) and (max-height: 600px) {
   .cardfan{
