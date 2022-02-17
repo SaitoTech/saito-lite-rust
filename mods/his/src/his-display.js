@@ -199,6 +199,38 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
           tile += `Independent_${stype}.svg`;
         }
       }
+      if (owner === "hungary") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "scotland") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "venice") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "genoa") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
     }
 
     return tile;
@@ -212,25 +244,17 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (owner == "") { owner = space.home; }
     let tile = "";
 
-if (space.name === "Istanbul") {
-console.log("Istanbul units: ");
-  console.log(JSON.stringify(space.units));
-}
-
     for (let z in space.units) {
 
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
-console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
       }
 
-
       while (army >= 1) {
-        if (owner != "") {
-          if (owner === "hapsburg") {
+          if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
 	    if (army >= 4) {
               tile += `HapsburgReg-4.svg`;
@@ -245,7 +269,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
 	    } } }
           }
-          if (owner === "england") {
+          if (z === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandReg-4.svg`;
@@ -260,7 +284,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "france") {
+          if (z === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchReg-4.svg`;
@@ -275,7 +299,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "papacy") {
+          if (z === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyReg-4.svg`;
@@ -290,7 +314,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
 	    } } }
           }
-          if (owner === "protestant") {
+          if (z === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantReg-4.svg`;
@@ -305,7 +329,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "ottoman") {
+          if (z === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanReg-4.svg`;
@@ -320,9 +344,69 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-        }
+          if (z === "independent") {
+            tile = "/his/img/tiles/independent/";	  
+	    if (army >= 2) {
+              tile += `IndependentReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `IndependentReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "venice") {
+            tile = "/his/img/tiles/venice/";	  
+	    if (army >= 2) {
+              tile += `VeniceReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `VeniceReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "hungary") {
+            tile = "/his/img/tiles/hungary/";	  
+	    if (army >= 4) {
+              tile += `HungaryReg-4.svg`;
+	      army -= 4;
+            } else {
+	    if (army >= 2) {
+              tile += `HungaryReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `HungaryReg-1.svg`;
+	      army -= 1;
+            } } }
+          }
+          if (z === "genoa") {
+            tile = "/his/img/tiles/genoa/";	  
+	    if (army >= 2) {
+              tile += `GenoaReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `GenoaReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "scotland") {
+            tile = "/his/img/tiles/scotland/";	  
+	    if (army >= 2) {
+              tile += `ScottishReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `ScottishReg-1.svg`;
+	      army -= 1;
+            } } 
+          }
+	}
+
         html += `<img class="army_tile" src="${tile}" />`;
-      }
+ 
     }
 
     html += '</div>';

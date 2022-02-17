@@ -361,6 +361,56 @@ class HereIStand extends GameTemplate {
       command_value	:	6,
     });
  
+    this.importUnit('henry-viii', {
+      type		:	"henry-viii" ,
+      name		: 	"Henry VIII",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Henry_VIII.svg",
+      battle_rating	:	1,
+      command_value	:	8,
+    });
+ 
+    this.importUnit('charles-brandon', {
+      type		:	"charles-brandon" ,
+      name		: 	"Charles Brandon",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Brandon.svg",
+      battle_rating	:	1,
+      command_value	:	6,
+    });
+ 
+    this.importUnit('francis-i', {
+      type		:	"francis-i" ,
+      name		: 	"Francis I",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Francis_I.svg",
+      battle_rating	:	1,
+      command_value	:	8,
+    });
+ 
+    this.importUnit('montmorency', {
+      type		:	"montmorency" ,
+      name		: 	"Montmorency",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Montmorency.svg",
+      battle_rating	:	1,
+      command_value	:	6,
+    });
+ 
+    this.importUnit('andrea-doria', {
+      type		:	"andrea-doria" ,
+      name		: 	"Andrea Doria",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Andrea_Doria.svg",
+      battle_rating	:	2,
+      command_value	:	0,
+    });
+ 
 
 
     let first_time_running = 0;
@@ -427,10 +477,14 @@ console.log("DONE INIT GAME SPACES!");
     //
     if (first_time_running == 1) {
 
+console.log("is first tiem running: " + this.game.state.scenario);
+
       //
       // add some units
       //
-      if (this.game.state.scenario === "1517") {
+      if (this.game.state.scenario == "1517") {
+
+console.log("adding stuff!");
 
 	// OTTOMAN
         this.addPersonage("ottoman", "istanbul", "suleiman");
@@ -451,7 +505,7 @@ console.log("DONE INIT GAME SPACES!");
         this.addNavalSquadron("hapsburg", "seville", 1);
         this.addRegular("hapsburg", "barcelona", 1);
         this.addNavalSquadron("hapsburg", "barcelona", 1);
-        this.addRegular("hapsburg", "naverre", 1);
+        this.addRegular("hapsburg", "navarre", 1);
         this.addRegular("hapsburg", "tunis", 1);
         this.addRegular("hapsburg", "naples", 2);
         this.addNavalSquadron("hapsburg", "naples", 2);
@@ -461,7 +515,61 @@ console.log("DONE INIT GAME SPACES!");
         this.addRegular("hapsburg", "vienna", 4);
         this.addRegular("hapsburg", "antwerp", 3);
 
+	// ENGLAND
+        this.addPersonage("england", "london", "henry-viii");
+        this.addPersonage("england", "london", "charles-brandon");
+        this.addRegular("england", "london", 3);
+        this.addNavalSquadron("england", "london", 1);
+        this.addNavalSquadron("england", "portsmouth", 1);
+        this.addRegular("england", "calais", 2);
+        this.addRegular("england", "york", 1);
+        this.addRegular("england", "bristol", 1);
+
+	// FRANCE
+        this.addPersonage("france", "paris", "francis-i");
+        this.addPersonage("france", "paris", "montmorency");
+        this.addRegular("france", "paris", 4);
+        this.addRegular("france", "rouen", 1);
+        this.addNavalSquadron("france", "rouen", 1);
+        this.addRegular("france", "bordeaux", 2);
+        this.addRegular("france", "lyon", 1);
+        this.addRegular("france", "marseille", 1);
+        this.addNavalSquadron("france", "marseille", 1);
+        this.addRegular("france", "milan", 2);
+
+	// PAPACY
+        this.addRegular("papacy", "rome", 1);
+        this.addNavalSquadron("papacy", "rome", 1);
+        this.addRegular("papacy", "ravenna", 1);
+	
+	// PROTESTANT
+        this.addRegular("papacy", "rome", 1);
+        this.addNavalSquadron("papacy", "rome", 1);
+        this.addRegular("papacy", "ravenna", 1);
+	
+	// VENICE
+        this.addRegular("venice", "venice", 2);
+        this.addNavalSquadron("venice", "venice", 3);
+        this.addRegular("venice", "corfu", 1);
+        this.addRegular("venice", "candia", 1);
+	
+	// GENOA
+        this.addPersonage("genoa", "genoa", "andrea-doria");
+        this.addNavalSquadron("genoa", "genoa", 1);
+        this.addRegular("genoa", "genoa", 2);
+	
+	// SCOTLAND
+        this.addRegular("scotland", "edinburgh", 3);
+        this.addNavalSquadron("scotland", "edinburgh", 1);
+	
+	// INDEPENDENT
+        this.addRegular("independent", "rhodes", 1);
+        this.addNavalSquadron("independent", "metz", 1);
+        this.addRegular("independent", "florence", 1);
+	
       }
+
+
 
       if (this.game.state.scenario === "1532") {
 
@@ -4557,6 +4665,38 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
           tile += `Independent_${stype}.svg`;
         }
       }
+      if (owner === "hungary") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "scotland") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "venice") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
+      if (owner === "genoa") {
+        tile = "/his/img/tiles/independent/";	  
+        if (space.religion === "protestant") {
+          tile += `Independent_${stype}_back.svg`;
+        } else {
+          tile += `Independent_${stype}.svg`;
+        }
+      }
     }
 
     return tile;
@@ -4570,25 +4710,17 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (owner == "") { owner = space.home; }
     let tile = "";
 
-if (space.name === "Istanbul") {
-console.log("Istanbul units: ");
-  console.log(JSON.stringify(space.units));
-}
-
     for (let z in space.units) {
 
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
-console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
       }
 
-
       while (army >= 1) {
-        if (owner != "") {
-          if (owner === "hapsburg") {
+          if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
 	    if (army >= 4) {
               tile += `HapsburgReg-4.svg`;
@@ -4603,7 +4735,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
 	    } } }
           }
-          if (owner === "england") {
+          if (z === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandReg-4.svg`;
@@ -4618,7 +4750,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "france") {
+          if (z === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchReg-4.svg`;
@@ -4633,7 +4765,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "papacy") {
+          if (z === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyReg-4.svg`;
@@ -4648,7 +4780,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
 	    } } }
           }
-          if (owner === "protestant") {
+          if (z === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantReg-4.svg`;
@@ -4663,7 +4795,7 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-          if (owner === "ottoman") {
+          if (z === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanReg-4.svg`;
@@ -4678,9 +4810,69 @@ console.log("UNIT: " + JSON.stringify(space.units[z][zz]));
 	      army -= 1;
             } } }
           }
-        }
+          if (z === "independent") {
+            tile = "/his/img/tiles/independent/";	  
+	    if (army >= 2) {
+              tile += `IndependentReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `IndependentReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "venice") {
+            tile = "/his/img/tiles/venice/";	  
+	    if (army >= 2) {
+              tile += `VeniceReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `VeniceReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "hungary") {
+            tile = "/his/img/tiles/hungary/";	  
+	    if (army >= 4) {
+              tile += `HungaryReg-4.svg`;
+	      army -= 4;
+            } else {
+	    if (army >= 2) {
+              tile += `HungaryReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `HungaryReg-1.svg`;
+	      army -= 1;
+            } } }
+          }
+          if (z === "genoa") {
+            tile = "/his/img/tiles/genoa/";	  
+	    if (army >= 2) {
+              tile += `GenoaReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `GenoaReg-1.svg`;
+	      army -= 1;
+            } }
+          }
+          if (z === "scotland") {
+            tile = "/his/img/tiles/scotland/";	  
+	    if (army >= 2) {
+              tile += `ScottishReg-2.svg`;
+	      army -= 2;
+            } else {
+	    if (army >= 1) {
+              tile += `ScottishReg-1.svg`;
+	      army -= 1;
+            } } 
+          }
+	}
+
         html += `<img class="army_tile" src="${tile}" />`;
-      }
+ 
     }
 
     html += '</div>';

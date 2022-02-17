@@ -63,10 +63,14 @@ console.log("DONE INIT GAME SPACES!");
     //
     if (first_time_running == 1) {
 
+console.log("is first tiem running: " + this.game.state.scenario);
+
       //
       // add some units
       //
-      if (this.game.state.scenario === "1517") {
+      if (this.game.state.scenario == "1517") {
+
+console.log("adding stuff!");
 
 	// OTTOMAN
         this.addPersonage("ottoman", "istanbul", "suleiman");
@@ -97,7 +101,61 @@ console.log("DONE INIT GAME SPACES!");
         this.addRegular("hapsburg", "vienna", 4);
         this.addRegular("hapsburg", "antwerp", 3);
 
+	// ENGLAND
+        this.addPersonage("england", "london", "henry-viii");
+        this.addPersonage("england", "london", "charles-brandon");
+        this.addRegular("england", "london", 3);
+        this.addNavalSquadron("england", "london", 1);
+        this.addNavalSquadron("england", "portsmouth", 1);
+        this.addRegular("england", "calais", 2);
+        this.addRegular("england", "york", 1);
+        this.addRegular("england", "bristol", 1);
+
+	// FRANCE
+        this.addPersonage("france", "paris", "francis-i");
+        this.addPersonage("france", "paris", "montmorency");
+        this.addRegular("france", "paris", 4);
+        this.addRegular("france", "rouen", 1);
+        this.addNavalSquadron("france", "rouen", 1);
+        this.addRegular("france", "bordeaux", 2);
+        this.addRegular("france", "lyon", 1);
+        this.addRegular("france", "marseille", 1);
+        this.addNavalSquadron("france", "marseille", 1);
+        this.addRegular("france", "milan", 2);
+
+	// PAPACY
+        this.addRegular("papacy", "rome", 1);
+        this.addNavalSquadron("papacy", "rome", 1);
+        this.addRegular("papacy", "ravenna", 1);
+	
+	// PROTESTANT
+        this.addRegular("papacy", "rome", 1);
+        this.addNavalSquadron("papacy", "rome", 1);
+        this.addRegular("papacy", "ravenna", 1);
+	
+	// VENICE
+        this.addRegular("venice", "venice", 2);
+        this.addNavalSquadron("venice", "venice", 3);
+        this.addRegular("venice", "corfu", 1);
+        this.addRegular("venice", "candia", 1);
+	
+	// GENOA
+        this.addPersonage("genoa", "genoa", "andrea-doria");
+        this.addNavalSquadron("genoa", "genoa", 1);
+        this.addRegular("genoa", "genoa", 2);
+	
+	// SCOTLAND
+        this.addRegular("scotland", "edinburgh", 3);
+        this.addNavalSquadron("scotland", "edinburgh", 1);
+	
+	// INDEPENDENT
+        this.addRegular("independent", "rhodes", 1);
+        this.addNavalSquadron("independent", "metz", 1);
+        this.addRegular("independent", "florence", 1);
+	
       }
+
+
 
       if (this.game.state.scenario === "1532") {
 
