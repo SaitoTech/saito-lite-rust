@@ -17,7 +17,7 @@ class DevCenter extends ModTemplate {
     this.categories = "Core Admin Productivity Utilities";
     this.chat = null;
     this.events = ['chat-render-request'];
-    this.icon_fa = "fas fa-wallet";
+    this.icon_fa = "fas fa-code";
 
     this.header = null;
 
