@@ -10708,6 +10708,16 @@ console.log("Active Agenda: " + active_agenda);
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "Save",
+      id : "game-save",
+      class : "game-save",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.addMove("SAVE");
+	game_mod.endTurn();
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",
@@ -10912,7 +10922,7 @@ console.log("Active Agenda: " + active_agenda);
 
     // runs before init then issues, so try/catch
     try {
-  let fullname = [];
+      let fullname = [];
       let nickname = [];
       for (let ii = 0; ii < this.game.players.length; ii++) {
         fullname.push(imperium_self.returnFaction((ii+1)));

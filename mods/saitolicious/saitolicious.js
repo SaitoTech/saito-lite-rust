@@ -1,7 +1,7 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
-class SaitoForum extends ModTemplate {
+class Saitolicious extends ModTemplate {
 
   constructor(app) {
 
@@ -27,6 +27,6 @@ class SaitoForum extends ModTemplate {
 
 }
 
-module.exports = SaitoForum;
+module.exports = Saitolicious;
 
 
