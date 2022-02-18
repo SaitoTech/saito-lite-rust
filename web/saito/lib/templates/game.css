@@ -413,7 +413,7 @@ ul li a {
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
 .status-icon-menu {
-  width:550px;
+  width:525px;
   height: 130px;
   margin:auto;
   display: flex;
@@ -421,9 +421,10 @@ ul li a {
 }
 
 .menu_icon{
-  margin: 5px;
+  /*margin: 5px;*/
   width: 100px;
   color: var(--saito-white);
+  cursor: pointer;
 }
 
 .menu_icon_icon {
@@ -1183,6 +1184,43 @@ i.menu_icon_icon{
   transform: rotate(20deg);
   left: 8vh;
 }
+
+
+.bighand>.card:nth-child(5n+1) {
+  transform: rotate(-20deg);
+  left: 0px;
+}
+
+.bighand>.card:nth-child(5n+2) {
+  transform: rotate(-10deg);
+  left: 2vh;
+}
+
+.bighand>.card:nth-child(5n+3) {
+  transform: rotate(0deg);
+  left: 4vh;
+}
+
+.bighand>.card:nth-child(5n+4) {
+  transform: rotate(10deg);
+  left: 6vh;
+}
+
+.bighand>.card:nth-child(5n+5) {
+  transform: rotate(20deg);
+  left: 8vh;
+}
+
+.bighand>.card:nth-child(n+6) {
+  top: 3vh;
+}
+.bighand>.card:nth-child(n+11) {
+  top: 6vh;
+}
+.bighand>.card:nth-child(n+16) {
+  top: 9vh;
+}
+
 
 /** MOBILE STYLING FOR CARDFAN**/
 @media screen and (orientation: landscape) and (max-height: 600px) {
