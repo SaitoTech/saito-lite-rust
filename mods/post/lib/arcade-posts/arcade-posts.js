@@ -12,11 +12,10 @@ module.exports = ArcadePosts = {
         app.browser.addElementToDom(ArcadePostsTemplate());
       }
       for (let i = mod.forums.length-1; i >= 0; i--) {
-        console.log(mod.forums[i]);
         this.updateForum(app, mod, mod.forums[i]);
       }
       for (let i = mod.posts.length-1; i >= 0; i--) {
-        console.log("rendering: " + mod.posts[i].transaction.sig);
+        //console.log("rendering: " + mod.posts[i].transaction.sig);
         this.addPost(app, mod, mod.posts[i]);
       }
     } catch (err) {
@@ -70,7 +69,7 @@ module.exports = ArcadePosts = {
 
 
   updateForum(app, mod, forum) {
-    console.log(forum);
+
     let txmsg = forum.returnMessage();
     let topic = txmsg.forum;
     let divid = "forum-topic-"+topic;
@@ -78,7 +77,7 @@ module.exports = ArcadePosts = {
     let fdate = datetimeRelative(forum.transaction.ts);
     let fpost_num = forum.post_num;
     let fuid  = app.keys.returnIdenticon(forum.transaction.from[0].add);
-
+    console.log(txmsg.forum);
     let ptitle = txmsg.title;
     if (ptitle.indexOf("\n") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("\n")); }
     if (ptitle.indexOf("<div>") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<div>")); }
@@ -97,7 +96,10 @@ module.exports = ArcadePosts = {
       document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
-      document.querySelector(`#forum-topic-latest-post-image-${topic}`).innerHTML = sanitize(`<img src="${fuid}" class="identicon" />`);
+
+      let identicon = document.querySelector(`#forum-topic-latest-post-image-${topic}`);
+      identicon.classList.add("tip");
+      identicon.innerHTML = sanitize(`<img class="identicon" src="${fuid}" /><div class="tiptext">${app.browser.returnAddressHTML(forum.transaction.from[0].add)}</div>`);
 
       if (fpost_num == 1) {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";

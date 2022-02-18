@@ -413,7 +413,7 @@ ul li a {
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
 .status-icon-menu {
-  width:550px;
+  width:525px;
   height: 130px;
   margin:auto;
   display: flex;
@@ -421,9 +421,10 @@ ul li a {
 }
 
 .menu_icon{
-  margin: 5px;
+  /*margin: 5px;*/
   width: 100px;
   color: var(--saito-white);
+  cursor: pointer;
 }
 
 .menu_icon_icon {

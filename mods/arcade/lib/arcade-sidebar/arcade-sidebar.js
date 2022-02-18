@@ -32,18 +32,20 @@ module.exports = ArcadeSidebar = {
 
   
   attachEvents(app, mod) {
-
-    if (!document.getElementById("games-add-game")) { return; }
-
-    if (app.modules.returnModule("AppStore") != null) {
-      document.getElementById("games-add-game").onclick = () => {
-        let appstore_mod = app.modules.returnModule("AppStore");
-        if (appstore_mod) {
-          let options = { search : "" , category : "Entertainment" , featured : 1 };
-          appstore_mod.openAppstoreOverlay(options);
+  
+      let addGames = document.getElementById("games-add-game");
+      let appstore_mod = app.modules.returnModule("AppStore");
+      if (addGames){
+        if (appstore_mod){
+          addGames.onclick = () => {
+            let options = { search : "" , category : "Entertainment" , featured : 1 };
+            appstore_mod.openAppstoreOverlay(options);
+          };
+        }else{
+          addGames.remove();
         }
-      };
-    }
+      }
+          
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
