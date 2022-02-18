@@ -1205,8 +1205,8 @@ div#message-wrapper {
   padding: 5px;
   border-bottom: 1px solid #888 !important;
   margin: 5px 0;
-  background: var(--saito-nightscape);
-  color: white;
+  background: white;
+  color: black;
 }
 
 .pulsey {
