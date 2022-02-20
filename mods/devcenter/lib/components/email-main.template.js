@@ -10,26 +10,26 @@ module.exports = EmailMainTemplate = (app, mod) => {
             Saito is a platform for running in-browser blockchain applications like the Saito Arcade, Appstore, and Saito Chat programs. If you are a developer you can find developer tools and documentation here or learn how you can help.
           </div>
           <div class="actions">
-            <div class="install">
+            <div class="install" onclick="document.getElementById('email-nav-AppStore').click();">
               <i class="fas fa-download"></i>
-              Install&nbsp;Apps
+              install apps
             </div>
             <div class="tutorials">
               <a href="https://org.saito.tech/tutorial-1-deploy-a-new-application/" target="_blank">
                 <i class="fas fa-graduation-cap"></i>
-                Tutorials
+                tutorials
                 </a>
             </div>
-            <div class="wallet">
+            <div class="wallet" onclick="document.getElementById('email-nav-Settings').click();">
               <i class="fas fa-wallet"></i>
-              Manage Wallet
+              wallet settings
             </div>
           </div>
           <div class="">
-            Not a developer? Please help us use and improve the Saito Applications. We also ask supporters to spend time learning how Saito works - we need more brains focused on improving Saito Consensus in order to improve scalability, optimize consensus, and increase cost-of-attack against the blockchain.
-            </div>
-          <div>
+            Curious how Saito works? We recommend the following resources for learning what Saito is and why it matters. Be warned: once you start down the Saito rabbit-hole you will never look at proof-of-work and proof-of-stake networks the same way again!
+          </div>
           <div class="learn">
+            <div>
               <div class="welcome-link"><a href="https://github.com/0xluminous/awesome-saito">Awesome Saito</a></div>
               <div class="welcome-text">A community-curated collection of resources explaining what Saito is and how it works.</div>
             </div>
