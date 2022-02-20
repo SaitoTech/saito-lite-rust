@@ -1,14 +1,7 @@
 module.exports = PostMobileHelper = (game_mod) => {
-  let gamename = (game_mod.gamename)? game_mod.gamename: game_mod.name;
+  let forumname = (game_mod.gamename)? game_mod.gamename: game_mod.name;
   return `
-    <div class="post-mobile-header" id="post-mobile-header">
-      ${gamename}
-    </div>
-    <div class="post-mobile-btn-wrapper">
-     <ul class="mobile-helper">
-      <li class="button post-return-to-main"><i class="fas fa-arrow-circle-left"></i> Forum Main</li>
-      <li class="button post-create-btn"><i class="fas fa-plus-circle"></i> New Post</li>
-    </ul>
-    </div>
+   <div id="post-return-to-main" class="post-return-to-main"><i class="fas fa-arrow-circle-left"></i> ${forumname}</div>
+   <div class="post-create-btn">[add post]</div>
   `;
 }
