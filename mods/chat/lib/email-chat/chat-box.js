@@ -4,6 +4,7 @@ const ChatBoxMessageBlockTemplate = require("./../templates/chat-box-message-blo
 var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
+
 module.exports = ChatBox = {
   render(app, mod) {
     let chat_self = this;
@@ -25,7 +26,7 @@ module.exports = ChatBox = {
       }
 
       if (mod.groups[idx].txs.length == 0) {
-        chat_box_main.innerHTML = `<p id="chat-box-default-message-${group_id}" class="chat-box-default-message">No messages in this group :(</p>`;
+        chat_box_main.innerHTML = sanitize(`<p id="chat-box-default-message-${group_id}" class="chat-box-default-message">No messages in this group :(</p>`);
       }
 
       //
@@ -554,7 +555,7 @@ module.exports = ChatBox = {
     });
     //msg = emoji.emojify(msg);
 
-    return msg;
+    return sanitize(msg);
   },
 
   removeDefaultMessage(group_id) {

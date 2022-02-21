@@ -13,7 +13,7 @@ module.exports = EmailListRowTemplate = (tx, addr_html, helpers) => {
   //console.log("DATETIME: " + JSON.stringify(datetime));
 
   var tmp = document.createElement("DIV");
-  tmp.innerHTML = message;
+  tmp.innerHTML = sanitize(message);
   message = tmp.innerText;
 
   message = message.length > 64 ? `${message.substring(0, 64)}...`: message;
@@ -23,9 +23,9 @@ module.exports = EmailListRowTemplate = (tx, addr_html, helpers) => {
       <input class="email-selected" type="checkbox">
       <div class="email-message-content">
           <div class="email-message-from">${addr_html}</div>
-          <div class="email-message-title">${title}</div>
-          <div class="email-message-message">${message}</div>
+          <div class="email-message-title">${sanitize(title)}</div>
+          <div class="email-message-message">${sanitize(message)}</div>
       </div>
-      <p class="email-message-timestamp">${datetime.hours}:${datetime.minutes}</p>
+      <p class="email-message-timestamp">${sanitize(datetime.hours)}:${sanitize(datetime.minutes)}</p>
   </div>`
 };

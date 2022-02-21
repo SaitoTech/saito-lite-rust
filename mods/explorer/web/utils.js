@@ -14,7 +14,7 @@ async function fetchBlock(hash) {
       .then(data => {
         listTransactions(data, hash);
       });
-  
+
 
 }
 
@@ -58,11 +58,7 @@ function listTransactions(blk, hash) {
       html += '<div class="table-header">type</div>';
       html += '<div class="table-header">module</div>';
 
-<<<<<<< HEAD
-      for (var mt = 1; mt < blk.transactions.length; mt++) {
-=======
       for (var mt = 0; mt < blk.transactions.length; mt++) {
->>>>>>> master
 
         var tmptx = blk.transactions[mt];
         tmptx.transaction.id = mt;
@@ -79,13 +75,13 @@ function listTransactions(blk, hash) {
               inputs += parseFloat(tmptx.transaction.from[v].amt);
             }
           }
-    
+
           //
           // sum outputs
           //
           let outputs = 0;
           for (let v = 0; v < tmptx.transaction.to.length; v++) {
-    
+
             //
             // only count non-gt transaction outputs
             //
@@ -93,7 +89,7 @@ function listTransactions(blk, hash) {
               outputs += parseFloat(tmptx.transaction.to[v].amt);
             }
           }
-    
+
           tx_fees = inputs - outputs;
 
         //}
@@ -119,7 +115,7 @@ function listTransactions(blk, hash) {
 
       }
       html += '</div>';
-      
+
     }
     //return html;
     document.querySelector('.txlist').innerHTML = html;
@@ -146,11 +142,11 @@ console.log("B");
     const reader = response.body.getReader();
     let { value: chunk, done: readerDone } = await reader.read();
     chunk = chunk ? utf8Decoder.decode(chunk) : '';
-  
+
     const re = /\n|\r|\r\n/gm;
     let startIndex = 0;
     let result;
-  
+
     for (;;) {
       let result = re.exec(chunk);
       if (!result) {
@@ -172,4 +168,4 @@ console.log("B");
     }
   }
 
-  
+

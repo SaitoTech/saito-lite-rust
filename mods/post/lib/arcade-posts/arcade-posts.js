@@ -69,7 +69,7 @@ module.exports = ArcadePosts = {
 
 
   updateForum(app, mod, forum) {
-    
+
     let txmsg = forum.returnMessage();
     let topic = txmsg.forum;
     let divid = "forum-topic-"+topic;
@@ -83,30 +83,30 @@ module.exports = ArcadePosts = {
     if (ptitle.indexOf("<div>") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<div>")); }
     if (ptitle.indexOf("<br") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<br")); }
     if (ptitle.length > 80) { ptitle = ptitle.substring(0, 80) + "..."; }
-   
+
     try {
       let postTitle = document.querySelector(`#arcade-post-latest-forum-topic-${topic}`);
-      postTitle.innerHTML = ptitle;
+      postTitle.innerHTML = sanitize(ptitle);
       postTitle.setAttribute("data-id", forum.transaction.sig);
-      document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = fuser;
-      document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = fdate;
-      document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = fpost_num;
+      document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
+      document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
+      document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = sanitize(fpost_num);
 
       document.querySelector(`#forum-topic-latest-post-image-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
+
       let identicon = document.querySelector(`#forum-topic-latest-post-image-${topic}`);
       identicon.classList.add("tip");
-      identicon.innerHTML = `<img class="identicon" src="${fuid}" /><div class="tiptext">${app.browser.returnAddressHTML(forum.transaction.from[0].add)}</div>`;
-
+      identicon.innerHTML = sanitize(`<img class="identicon" src="${fuid}" /><div class="tiptext">${app.browser.returnAddressHTML(forum.transaction.from[0].add)}</div>`);
 
       if (fpost_num == 1) {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";
       } else {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
       }
-    } catch (err) { 
+    } catch (err) {
       console.error(err);
     }
 

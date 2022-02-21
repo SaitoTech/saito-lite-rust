@@ -26,7 +26,7 @@ module.exports = PostView = {
     mod.originalSig = sig;
 
     mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig), function () {});
-    
+
     mod.sendPeerDatabaseRequestWithFilter(
       "Post",
 
@@ -51,14 +51,14 @@ module.exports = PostView = {
               if (tx.transaction.sig == sig) {
                 add_this_comment = 0;
                 try {
-                  document.getElementById("post-view-parent-comment").innerHTML = txmsg.comment;
+                  document.getElementById("post-view-parent-comment").innerHTML = sanitize(txmsg.comment);
                   let gallery = document.getElementById("post-view-gallery");
                   let html = "";
                   if (txmsg.images.length > 0) {
                     for (let i = 0; i < tx.msg.images.length; i++) {
                       html += `<img class="post-view-gallery-image" src="${tx.msg.images[i]}" />`;
                     }
-                    gallery.innerHTML = html;
+                    gallery.innerHTML = sanitize(html);
                     gallery.style.display = "block";
                   }
                 } catch (err) {
@@ -78,7 +78,7 @@ module.exports = PostView = {
         }
       }
     );
-    
+
 
     app.browser.addDragAndDropFileUploadToElement(
       "post-view-leave-comment",
@@ -152,7 +152,7 @@ module.exports = PostView = {
                 <button id="edit-button-${post_sig}" data-id="${post_sig}" type="button" class="comment-edit-button" value="Edit Post">edit comment</button>
               `;
 
-                el2.innerHTML = replacement_html;
+                el2.innerHTML = sanitize(replacement_html);
                 document.getElementById(`edit-button-${post_sig}`).onclick = (e) => {
                   let revised_text = document.querySelector(`#textedit-field-${post_sig}`).value;
                   let this_post = null;
@@ -180,7 +180,7 @@ module.exports = PostView = {
                     }
                   }
                   el2.setAttribute("mode", "read");
-                  el2.innerHTML = revised_text;
+                  el2.innerHTML = sanitize(revised_text);
                   document
                     .querySelectorAll(".post-view-parent-comment, .post-view-edit")
                     .forEach((el2) => {
@@ -212,7 +212,7 @@ module.exports = PostView = {
                 <textarea data-id="${comment_sig}" class="post-view-comment-textarea" id="textedit-field-${comment_sig}">${el2.innerHTML}</textarea>
                 <button id="edit-button-${comment_sig}" data-id="${comment_sig}" type="button" class="comment-edit-button" value="Edit Comment">edit comment</button>
               `;
-              el2.innerHTML = replacement_html;
+              el2.innerHTML = sanitize(replacement_html);
               document.getElementById(`edit-button-${comment_sig}`).onclick = (e) => {
                 let revised_text = document.querySelector(`#textedit-field-${comment_sig}`).value;
                 let newtx = mod.createEditTransaction(comment_sig, revised_text);
@@ -231,7 +231,7 @@ module.exports = PostView = {
                   }
                 }
 
-                el2.innerHTML = revised_text;
+                el2.innerHTML = sanitize(revised_text);
               };
             }
           });

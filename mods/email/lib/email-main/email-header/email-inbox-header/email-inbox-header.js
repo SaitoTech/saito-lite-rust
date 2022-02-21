@@ -4,7 +4,7 @@ module.exports = EmailInboxHeader = {
 
   render(app, mod) {
     let subPage = app.browser.parseHash(window.location.hash).subpage;
-    document.querySelector('.email-header').innerHTML = EmailInboxHeaderTemplate(app, mod, subPage);
+    document.querySelector('.email-header').innerHTML = sanitize(EmailInboxHeaderTemplate(app, mod, subPage));
   },
 
   attachEvents(app, mod) {
@@ -20,10 +20,10 @@ module.exports = EmailInboxHeader = {
             .addEventListener('click', (e) => {
               let email_list = document.querySelector('.email-list');
               let subPage = app.browser.parseHash(window.location.hash).subpage
-              
+
               Array.from(document.getElementsByClassName('email-message')).forEach(mail => {
                 let is_checked = mail.children[0].checked;
-                
+
                 if (is_checked) {
                   email_list.removeChild(mail);
                   //

@@ -25,8 +25,8 @@ module.exports = PostMain = {
     }
 
     if (mod.forum === "") {
-      if (!document.querySelector(".post-forums")) { 
-        app.browser.addElementToDom(PostForumsTemplate(app, mod), "forum-main"); 
+      if (!document.querySelector(".post-forums")) {
+        app.browser.addElementToDom(PostForumsTemplate(app, mod), "forum-main");
         PostForums.render(app, mod);
         PostForums.attachEvents(app, mod);
       }
@@ -37,12 +37,12 @@ module.exports = PostMain = {
 
       if (!document.getElementById("post-mobile-header")){
         if (!document.getElementById("post-return-to-main")){
-          app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");  
+          app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");
         }
       }
 
-      if (!document.querySelector(".post-main")) { 
-        app.browser.addElementToDom(PostMainTemplate(app, mod), "forum-main"); 
+      if (!document.querySelector(".post-main")) {
+        app.browser.addElementToDom(PostMainTemplate(app, mod), "forum-main");
       }
       for (let i = mod.posts.length-1; i >= 0; i--) {
         this.addPost(app, mod, mod.posts[i]);
@@ -55,7 +55,7 @@ module.exports = PostMain = {
 
   attachEvents(app, mod) {
 
-    document.querySelectorAll('.post-teaser-title, .post-teaser-comments, .forum-topic-latest-post-title').forEach(el => { 
+    document.querySelectorAll('.post-teaser-title, .post-teaser-comments, .forum-topic-latest-post-title').forEach(el => {
       el.onclick = (e) => {
 	let sig = e.currentTarget.getAttribute("data-id");
         PostView.render(app, mod, sig);
@@ -88,18 +88,18 @@ module.exports = PostMain = {
 
     try {
       let postTitle = document.querySelector(`#forum-topic-latest-post-title-${topic}`);
-      postTitle.innerHTML = txmsg.title;
+      postTitle.innerHTML = sanitize(txmsg.title);
       postTitle.setAttribute("data-id", forum.transaction.sig);
 
-      document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = fuser;
-      document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = fdate;
-      document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = fpost_num;
+      document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
+      document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
+      document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = sanitize(fpost_num);
 
       document.querySelector(`#forum-topic-latest-post-image-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
       document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
-      document.querySelector(`#forum-topic-latest-post-image-${topic}`).innerHTML = `<img src="${fuid}" class="identicon" />`;
+      document.querySelector(`#forum-topic-latest-post-image-${topic}`).innerHTML = sanitize(`<img src="${fuid}" class="identicon" />`);
 
       if (fpost_num == 1) {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";

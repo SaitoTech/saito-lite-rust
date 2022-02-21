@@ -4,9 +4,9 @@ module.exports = EmailAppspace = {
 
   render(app, mod) {
 
-    document.querySelector(".email-body").innerHTML = EmailAppspaceTemplate();
+    document.querySelector(".email-body").innerHTML = sanitize(EmailAppspaceTemplate());
     try {
-      let subPage = app.browser.parseHash(window.location.hash).subpage;  
+      let subPage = app.browser.parseHash(window.location.hash).subpage;
       let submod = app.modules.returnModule(subPage);
       let modobj = submod.respondTo("email-appspace");
       modobj.render(app, mod);

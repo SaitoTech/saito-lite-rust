@@ -6,11 +6,11 @@ module.exports = EmailList = {
 
     render(app, mod) {
       console.log('------render inbox-------')
-      document.querySelector('.email-body').innerHTML = EmailListTemplate();
+      document.querySelector('.email-body').innerHTML = sanitize(EmailListTemplate());
       let inbox_emails;
       try {
         let subPage = app.browser.parseHash(window.location.hash).subpage;
-        inbox_emails = mod.emails[subPage]; //.reverse();  
+        inbox_emails = mod.emails[subPage]; //.reverse();
       } catch(error) {
         mod.locationErrorFallback(`Error fetching emails.<br/>${error}`, error);
       }

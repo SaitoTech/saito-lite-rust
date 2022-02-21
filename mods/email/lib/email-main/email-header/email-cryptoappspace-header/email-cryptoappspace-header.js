@@ -3,11 +3,11 @@ const EmailCryptoAppspaceHeaderTemplate = require('./email-cryptoappspace-header
 
 module.exports = EmailAppspaceHeader = {
   render(app, mod) {
-    document.querySelector('.email-header').innerHTML = EmailCryptoAppspaceHeaderTemplate(app, mod);
+    document.querySelector('.email-header').innerHTML = sanitize(EmailCryptoAppspaceHeaderTemplate(app, mod));
   },
 
   attachEvents(app, mod) {
-  
+
   },
 }
 
