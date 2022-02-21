@@ -34,8 +34,11 @@ module.exports = PostMain = {
         this.updateForum(app, mod, mod.forums[i]);
       }
     } else {
+
       if (!document.getElementById("post-mobile-header")){
-        app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");
+        if (!document.getElementById("post-return-to-main")){
+          app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");
+        }
       }
 
       if (!document.querySelector(".post-main")) {
