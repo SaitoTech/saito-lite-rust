@@ -136,6 +136,7 @@ module.exports = PostView = {
               `;
 
                 el2.innerHTML = sanitize(replacement_html);
+                el2.setAttribute("contentEditable", "true");
                 document.getElementById(`edit-button-${post_sig}`).onclick = (e) => {
                   let revised_text = document.querySelector(`#textedit-field-${post_sig}`).innerHTML;
                   
@@ -162,7 +163,7 @@ module.exports = PostView = {
                   //Strip basic HTML tags from title
                   newTitle = newTitle.replace(/\n/gi,"");
                   newTitle = newTitle.replace(/<[^<]+>/gi,"");
-                  if (newTitle > 40) { newTitle = newTitle.substr(0, 40) + "...";  }
+                  if (newTitle.length > 40) { newTitle = newTitle.substr(0, 40) + "...";  }
                 
                   let newtx = mod.createEditPostTransaction(post_sig, newTitle, revised_text, this_post.msg.link, this_post.msg.forum, this_post.msg.images);
                   app.network.propagateTransaction(newtx);
@@ -223,6 +224,7 @@ module.exports = PostView = {
                   <button id="edit-button-${comment_sig}" data-id="${comment_sig}" type="button" class="comment-edit-button" value="Edit Comment">edit comment</button>
                 `;
                 el2.innerHTML = sanitize(replacement_html);
+                el2.setAttribute("contentEditable", "true");
                 document.getElementById(`edit-button-${comment_sig}`).onclick = (e) => {
                   let revised_text = document.querySelector(`#textedit-field-${comment_sig}`).innerHTML;
 
