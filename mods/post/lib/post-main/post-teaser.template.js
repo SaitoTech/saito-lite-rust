@@ -10,12 +10,7 @@ module.exports = PostTeaserTemplate = (app, mod, tx) => {
   if (img == "")        { img = '/post/img/post-logo.png'; }
 
   let ptitle = tx.msg.title;
-  if (ptitle.indexOf("\n") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("\n")); }
-  if (ptitle.indexOf("<div>") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<div>")); }
-  if (ptitle.indexOf("<br") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<br")); }
-  if (ptitle.length > 80) { ptitle = ptitle.substring(0, 80) + "..."; }
-
-
+  
   return `
     <div data-id="${tx.transaction.sig}" id="post-teaser" class="post-teaser">
       <div class="post-teaser-front">

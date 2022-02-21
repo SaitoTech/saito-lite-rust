@@ -1,4 +1,4 @@
-const ShowPostTemplate = require('./show-post.template');
+/*const ShowPostTemplate = require('./show-post.template');
 const elParser = require('../../../../lib/helpers/el_parser');
 const JSON = require('json-bigint');
 
@@ -20,3 +20,4 @@ module.exports = ShowPost = {
     }
 
 }
+*/

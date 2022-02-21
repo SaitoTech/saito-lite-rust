@@ -23,7 +23,7 @@ class Post extends ModTemplate {
     this.post.domain = "saito";
     this.posts = [];
     this.forums = [];
-    this.comments = [];
+    //this.comments = [];
 
     this.fetch = 0;
 
@@ -98,6 +98,7 @@ class Post extends ModTemplate {
     return services;
   }
 
+  /* Does this still get called or only render???*/
   initializeHTML(app) {
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
@@ -135,7 +136,7 @@ class Post extends ModTemplate {
 
         if (txmsg.module === "Post") {
           let post_self = app.modules.returnModule("Post");
-
+          console.log("PROCESSING: "+txmsg.type);
           if (txmsg.type == "post") {
             post_self.receivePostTransaction(tx);
             this.render();
@@ -144,8 +145,8 @@ class Post extends ModTemplate {
             post_self.receiveCommentTransaction(tx);
             this.render();
           }
-          if (txmsg.type == "edit") {
-            post_self.receiveEditTransaction(tx);
+          if (txmsg.type == "editreply") {
+            post_self.receiveEditReplyTransaction(tx);
             this.render();
           }
           if (txmsg.type == "editpost") {
@@ -181,30 +182,61 @@ class Post extends ModTemplate {
       }
     }
 
-    let forum_splash = 1;
-
+    
     //
     // fetch posts from server
     //
-    let sql = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
+    let sql;// = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
     
-    let forum = app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game");
-    if (forum) {
+    //Fetch last 12 posts in a specific topic
+    if (app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game")) {
+      let forum = app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game");
       sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
-      forum_splash = 0;
-    } 
-
-    if (forum_splash == 1) {
-      sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
-      this.sendPeerDatabaseRequestWithFilter(
-        "Post",
-
-        sql,
-
+      this.sendPeerDatabaseRequestWithFilter("Post", sql,
         (res) => {
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
+                let x = JSON.parse(res.rows[i].lite_tx);
+                console.log(res.rows[i].lite_tx);
+                console.log("ORIGINAL SIG: " + x.sig);
+                this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
+                console.log("NEW SIG: " + this.posts[this.posts.length - 1].transaction.sig);
+                this.posts[this.posts.length - 1].children = res.rows[i].children;
+                this.posts[this.posts.length - 1].img = res.rows[i].img;
+              }
+            }
+          }
+          this.render();
+        },
+
+        (p) => {
+          if (p.peer.services) {
+            for (let i = 0; i < p.peer.services.length; i++) {
+              let s = p.peer.services[i];
+              if (s.service === "post") {
+                return 1;
+              }
+            }
+          }
+          if (this.app.network.peers[0] == p) {
+            return 1;
+          }
+          return 0;
+        }
+      );
+
+
+    }else {
+      //Fetch the latest post from every topic
+
+      sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
+      this.sendPeerDatabaseRequestWithFilter("Post",  sql,
+        (res) => {
+          if (res) {
+            if (res.rows) {
+              for (let i = 0; i < res.rows.length; i++) {
+                console.log(res.rows[i].lite_tx);
                 this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
                 this.forums[this.forums.length - 1].post_num = res.rows[i].post_num;
               }
@@ -228,47 +260,8 @@ class Post extends ModTemplate {
           return 0;
         }
       );
-    } else {
-      this.sendPeerDatabaseRequestWithFilter(
-        "Post",
-
-        sql,
-
-        (res) => {
-          if (res) {
-            if (res.rows) {
-              for (let i = 0; i < res.rows.length; i++) {
-                let x = JSON.parse(res.rows[i].lite_tx);
-                console.log(res.rows[i].lite_tx);
-                console.log("ORIGINAL SIG: " + x.sig);
-                this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
-                console.log("NEW SIG: " + this.posts[this.posts.length - 1].transaction.sig);
-
-                this.posts[this.posts.length - 1].children = res.rows[i].children;
-                this.posts[this.posts.length - 1].img = res.rows[i].img;
-              }
-            }
-          }
-
-          this.render();
-        },
-
-        (p) => {
-          if (p.peer.services) {
-            for (let i = 0; i < p.peer.services.length; i++) {
-              let s = p.peer.services[i];
-              if (s.service === "post") {
-                return 1;
-              }
-            }
-          }
-          if (this.app.network.peers[0] == p) {
-            return 1;
-          }
-          return 0;
-        }
-      );
     }
+    
   }
 
   render() {
@@ -332,6 +325,7 @@ class Post extends ModTemplate {
 
     return this.app.wallet.signTransaction(newtx);
   }
+ 
   async receivePostTransaction(tx) {
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);
@@ -341,46 +335,10 @@ class Post extends ModTemplate {
     // this destroys sig and prevents comment-fetching
     //plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
-    let ptitle = txmsg.title;
 
-    let sql = `
-        INSERT INTO 
-            posts (
-                id,
-                thread_id,
-                parent_id, 
-                type,
-    publickey,
-                title,
-                img,
-                text,
-    forum,
-    link,
-                tx, 
-                lite_tx, 
-                ts,
-                children,
-                flagged,
-                deleted
-                ) 
-            VALUES (
-                $pid ,
-          $pthread_id ,
-                $pparent_id ,
-                $ptype ,
-    $ppublickey ,
-    $ptitle ,
-    $pimg ,
-    $ptext ,
-    $pforum ,
-    $plink ,
-    $pfulltx ,
-    $plitetx ,
-    $pts ,
-    $pchildren ,
-    $pflagged ,
-    $pdeleted
-            );
+    let sql = `INSERT INTO posts 
+              (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted) 
+       VALUES ($pid, $pthread_id, $pparent_id, $ptype, $ppublickey, $ptitle, $pimg, $ptext, $pforum, $plink, $pfulltx, $plitetx, $pts, $pchildren, $pflagged, $pdeleted);
         `;
     let params = {
       $pid: tx.transaction.sig,
@@ -388,7 +346,7 @@ class Post extends ModTemplate {
       $pparent_id: "",
       $ptype: "post",
       $ppublickey: tx.transaction.from[0].add,
-      $ptitle: ptitle,
+      $ptitle: txmsg.title,
       $pimg: "",
       $ptext: txmsg.comment,
       $pforum: txmsg.forum,
@@ -404,9 +362,9 @@ class Post extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "post");
 
     let post_num = 1;
-
-    let sql2 = `SELECT post_num FROM first_posts WHERE forum = $forum`;
-    let params2 = { $forum: txmsg.forum };
+    //Read the number of posts (stored in a second table)
+    let sql2 = `SELECT post_num FROM first_posts WHERE forum = $pforum`;
+    let params2 = { $pforum: txmsg.forum };
     let rows = await this.app.storage.queryDatabase(sql2, params2, "post");
     if (rows) {
       if (rows.length > 0) {
@@ -416,15 +374,16 @@ class Post extends ModTemplate {
       }
     }
 
-    // delete
+    // delete the row
     let csql = `DELETE FROM first_posts WHERE forum = $pforum`;
     let cparams = { pforum: txmsg.forum };
     await this.app.storage.executeDatabase(csql, cparams, "post");
 
-    // insert first_posts
+    // insert replacement row first_posts
     let fpsql = `INSERT INTO first_posts 
             (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted, post_num) 
             VALUES ($pid , $pthread_id , $pparent_id , $ptype , $ppublickey , $ptitle , $pimg , $ptext , $pforum , $plink , $pfulltx , $plitetx ,  $pts ,  $pchildren , $pflagged , $pdeleted , $post_num);`;
+ 
     let fpparams = {
       $pid: tx.transaction.sig,
       $pthread_id: tx.transaction.sig,
@@ -455,20 +414,22 @@ class Post extends ModTemplate {
     }
   }
 
-  createEditPostTransaction(title, comment, link, forum, images, post_id) {
+  /* For editing a post (the parent post at top of thread)*/
+  createEditPostTransaction(title, comment, post_id) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg.module = "Post";
     newtx.msg.type = "editpost";
     newtx.msg.title = title;
     newtx.msg.comment = comment;
-    newtx.msg.link = link;
-    newtx.msg.forum = forum;
-    newtx.msg.images = images;
+    //newtx.msg.link = link;
+    //newtx.msg.forum = forum;
+    //newtx.msg.images = images;
     newtx.msg.post_id = post_id;
 
     return this.app.wallet.signTransaction(newtx);
   }
+  
   async receiveEditPostTransaction(tx) {
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);
@@ -478,10 +439,53 @@ class Post extends ModTemplate {
     plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
 
-    if (txmsg.title == "") {
+    console.log("########Edit POST########");
+    let sql = `SELECT * FROM posts WHERE id = $id`;
+    let params = { $id: txmsg.post_id };
+    let rows = await this.app.storage.queryDatabase(sql, params, "post");
+    if (rows) {
+      if (rows.length > 0) {
+        if (rows[0].publickey === tx.transaction.from[0].add) {
+          //Just change minimal fields in SQL record
+          sql = `UPDATE posts SET title = $ptitle, text = $ptext, tx = $pfulltx, lite_tx = $plitetx WHERE id = $pid;`;
+          params = {
+            $pid: txmsg.post_id,
+            $ptitle: txmsg.title,
+            $ptext: txmsg.comment,
+            $pfulltx: pfulltx,
+            $plitetx: plitetx,
+          };
+          await this.app.storage.executeDatabase(sql, params, "post");
+          //Also update first_posts
+         
+        
+          //Read the number of posts (stored in a second table)
+          let sql2 = `SELECT * FROM first_posts WHERE id = $pid;`;
+          let params2 = { $pid: txmsg.post_id };
+          let rows2 = await this.app.storage.queryDatabase(sql2, params2, "post");
+          if (rows2) {
+            if (rows2.length > 0) {
+                sql = `UPDATE first_posts SET title = $ptitle, text = $ptext, tx = $pfulltx, lite_tx = $plitetx WHERE id = $pid;`;
+                params = {
+                  $pid: txmsg.post_id,
+                  $ptitle: txmsg.title,
+                  $ptext: txmsg.comment,
+                  $pfulltx: pfulltx,
+                  $plitetx: plitetx,
+                };  
+                await this.app.storage.executeDatabase(sql, params, "post");
+              }
+          }
+
+        }
+      }
+    }
+    
+
+    /*if (txmsg.title == "") {
       return;
     }
-
+    console.log("Edit POST");
     let is_parent_id = 0;
     let sql = `SELECT parent_id FROM posts WHERE id = $id`;
     let params = { $id: txmsg.post_id };
@@ -560,23 +564,26 @@ class Post extends ModTemplate {
           }
         }
       }
-    }
+    }*/
   }
 
-  createEditTransaction(sig, comment) {
+  /* For editting a reply to a post*/
+  createEditReplyTransaction(sig, comment) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg.module = "Post";
-    newtx.msg.type = "edit";
+    newtx.msg.type = "editreply";
     newtx.msg.sig = sig;
     newtx.msg.comment = comment;
 
     return this.app.wallet.signTransaction(newtx);
   }
-  async receiveEditTransaction(tx) {
+
+
+  async receiveEditReplyTransaction(tx) {
     let txmsg = tx.returnMessage();
 
-    console.log("EDITING: " + JSON.stringify(txmsg));
+    console.log("EDITING Reply: " + JSON.stringify(txmsg));
 
     let is_parent_id = 0;
     let sql = `SELECT parent_id FROM posts WHERE id = $id`;
@@ -671,44 +678,9 @@ class Post extends ModTemplate {
     //plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
 
-    let sql = `
-        INSERT INTO 
-            posts (
-                id,
-                thread_id,
-                parent_id, 
-                type,
-                publickey,
-                title,
-                text,
-                forum,
-                link,
-                img,
-                tx, 
-                lite_tx, 
-                ts,
-                children,
-                flagged,
-                deleted
-                ) 
-            VALUES (
-                $pid ,
-                $pthread_id ,
-                $pparent_id ,
-                $ptype ,
-                $ppublickey ,
-                $ptitle ,
-                $ptext ,
-                $pforum ,
-                $pimg ,
-                $plink ,
-                $ptx ,
-                $plite_tx ,
-                $pts ,
-                $pchildren ,
-                $pflagged ,
-                $pdeleted
-            );
+    let sql = `INSERT INTO posts 
+              (id, thread_id, parent_id, type, publickey, title, text, forum, link, img, tx, lite_tx, ts, children, flagged, deleted) 
+       VALUES ($pid , $pthread_id , $pparent_id , $ptype , $ppublickey , $ptitle , $ptext , $pforum , $pimg , $plink , $ptx , $plite_tx , $pts ,$pchildren , $pflagged , $pdeleted);
         `;
     let params = {
       $pid: tx.transaction.sig,
@@ -795,13 +767,7 @@ class Post extends ModTemplate {
   }
 
   async receiveDeleteTransaction(tx) {
-    if (
-      this.app.crypto.verifyHash(
-        this.app.crypto.hash(tx.returnSignatureSource(this.app)),
-        tx.transaction.sig,
-        tx.transaction.from[0].add
-      )
-    ) {
+    if (this.app.crypto.verifyHash(this.app.crypto.hash(tx.returnSignatureSource(this.app)), tx.transaction.sig,  tx.transaction.from[0].add)) {
       let txmsg = tx.returnMessage();
       //console.log(txmsg);
       let sql = `UPDATE posts SET deleted = 1 WHERE id = $post_id`;

@@ -1,4 +1,4 @@
-const NewPostTemplate = require('./new-post.template');
+/*const NewPostTemplate = require('./new-post.template');
 const elParser = require('../../../../lib/helpers/el_parser');
 
 module.exports = NewPost = {
@@ -22,3 +22,4 @@ module.exports = NewPost = {
     }
 
 }
+*/

@@ -57,7 +57,7 @@ module.exports = PostMain = {
 
     document.querySelectorAll('.post-teaser-title, .post-teaser-comments, .forum-topic-latest-post-title').forEach(el => {
       el.onclick = (e) => {
-	let sig = e.currentTarget.getAttribute("data-id");
+	      let sig = e.currentTarget.getAttribute("data-id");
         PostView.render(app, mod, sig);
         PostView.attachEvents(app, mod, sig);
       }
