@@ -25,7 +25,7 @@ module.exports = EmailMainTemplate = (app, mod) => {
               wallet settings
             </div>
           </div>
-          <div class="">
+          <div class="" style="margin-bottom:15px">
             Curious how Saito works? We recommend the following resources for learning what Saito is and why it matters. Be warned: once you start down the Saito rabbit-hole you will never look at proof-of-work and proof-of-stake networks the same way again!
           </div>
           <div class="learn">
@@ -35,15 +35,15 @@ module.exports = EmailMainTemplate = (app, mod) => {
             </div>
             <div>
               <div class="welcome-link"><a href="https://saitofaqs.com">Saito FAQ</a></div>
-              <div class="welcome-text">Got questions? We have answers to the most frequently asked on this page.</div>
+              <div class="welcome-text">Got questions? Find answers to the most frequently asked on this page.</div>
             </div>
             <div>
               <div class="welcome-link"><a href="https://saito.io/saito-whitepaper.pdf">Saito Whitepaper</a></div>
-              <div class="welcome-text">The original whitepaper that got everything started.</div>
+              <div class="welcome-text">Original description of Saito network consensus mechanism</div>
             </div>
             <div>
               <div class="welcome-link"><a href="https://t.me/SaitoIO">Saito Telegram</a></div>
-              <div class="welcome-text">Our Official Saito Telegram Group. There are fake ones, but this is the real one.</div>
+              <div class="welcome-text">Our Official Saito Telegram Group.</div>
             </div>
           </div>
 
