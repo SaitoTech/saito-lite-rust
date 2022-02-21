@@ -18,12 +18,26 @@ class Settings extends ModTemplate {
     this.description = "User settings module.";
     this.categories  = "Admin Users";
     
-//    if (app.modules.returnModule("Email") != null) { this.link = "/email?module=settings"; }
-
     return this;
   }
 
 
+  initialize(app) {
+    let settings_self = this;
+    this.app.connection.on("update_identifier", (tmpkey) => {
+console.log("1- 1");
+console.log(JSON.stringify(tmpkey));
+      if (document.getElementById("register-identifier-btn")) {
+console.log("1- 2");
+	if (tmpkey.publickey === settings_self.app.wallet.returnPublicKey()) {
+console.log("1- 3");
+          let username = settings_self.app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
+          document.getElementById("register-identifier-btn").innerHTML = username;
+console.log("1- 4");
+	}
+      }
+    });
+  }
 
 
   respondTo(type) {

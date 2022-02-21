@@ -154,10 +154,12 @@ class Keychain {
 
     if (added_identifier == 1) {
       this.app.connection.emit("update_identifier", tmpkey);
+      this.app.browser.updateAddressHTML(publickey, identifier);
     }
     if (added_tag == 1) {
       this.app.connection.emit("update_tag", tmpkey);
     }
+
   }
 
   decryptMessage(publickey, encrypted_msg) {
