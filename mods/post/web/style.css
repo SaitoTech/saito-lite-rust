@@ -7,6 +7,20 @@
   --identicon-height: 1em;
 }
 
+#forum-mobile-helper {
+  display: none;
+  height: 30px;
+  border-bottom: 1px dashed var(--saito-red);
+  margin-bottom: 10px;
+}
+.post-create-btn {
+  float:right;
+}
+.post-return-to-main {
+  float:left;
+  font-size: 1.2em;
+}
+
 .post-container {
   min-height: 100%;
   margin: 5em auto;
@@ -66,7 +80,6 @@
 .post-teaser-title {
   float: left;
   font-size: 25px;
-  font-weight: bold;
   cursor: pointer;
 }
 
@@ -119,8 +132,7 @@
 
 .post-create-container {
   background-color: whitesmoke;
-  padding: 2em;
-  padding-bottom: 1.5em;
+  padding: 1em;
   border-radius: 3px;
   color: #333;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
@@ -128,6 +140,8 @@
   width:700px;
   max-width: 80vw;
   font-size: 1.2em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .post-create-header {
@@ -250,7 +264,7 @@
 
 .post-view-container {
   color: #333;
-  width: 90vw;
+  width: 95vw;
   max-width: 900px;
   max-height: 90vh;
   background-color: whitesmoke;
@@ -260,6 +274,8 @@
   border-radius: 3px;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
   font-size: 1.15em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .post-header {
@@ -431,7 +447,10 @@
   font-size: 1em;
   opacity: 0.8;
 }
-
+.post-teaser-identicon {
+  width: 50px;
+  height: 50px;
+}
 .post-teaser-thumbnail {
   background-size: contain;
   background-repeat: no-repeat;
@@ -451,7 +470,8 @@
 
 
 .post-main {
-  width: 90vw;
+  width: 97vw;
+  clear:both;
 }
 
 
@@ -504,18 +524,6 @@
   width: 100%;
 }
 
-.chat-header {
-  background-image: url("/saito/img/dreamscape.png");
-  border: 1px solid var(--saito-red);
-  border-bottom: 0px;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-.chat-list {
-  border: 1px solid var(--saito-red);
-
-}
-
 
 
 .post-posts {
@@ -557,13 +565,17 @@
   /*height: 90px;*/
   grid-template-columns: 100px minmax(275px, 3fr) minmax(225px, 2fr);
   align-items: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .forum-topic-image {
   cursor: pointer;
+  height: 100%;
+  padding-top: 2px;
 }
 .forum-topic-center {
   display: grid;
-  padding: 0.8vw;
+  padding-left: 8px;
   grid-template-columns: 8fr minmax(50px, 1fr);
   align-items: center;
   height: inherit;
@@ -576,11 +588,11 @@
 .forum-topic-title {
   display: flex;
   align-items: flex-end;
-  font-size: 1.4em;
+  font-size: 1.2em;
   font-weight: bold;
 }
 .forum-topic-description {
-  font-size: 1.15em;
+  font-size: 1em;
 }
 .forum-topic-posts {
   text-align: center;
@@ -609,7 +621,7 @@
 .forum-topic-latest-post-details {
 }
 .forum-topic-latest-post-title {
-  font-size: 24px;
+  font-size: 1em;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -628,6 +640,9 @@
   .forum-topic{
     grid-template-columns: 80px minmax(250px, 3fr) minmax(225px, 1fr);
   }
+  #forum-mobile-helper {
+    display: block;
+  }
   .identicon{
     width: max(5vw,1em);
     height: max(5vw,1em);
@@ -645,12 +660,25 @@
   .post-mobile-btn-wrapper{
     display: block;
   }
-  /*.post-teaser-title {
-    font-size: 17px;
+  .post-container {
+    font-size: 1em;
+  }
+  .post-posts {
+    font-size:1em;
+  }
+  .post-teaser-title {
+    font-size: 1em;
   }
   .post-teaser-sublinks {
-    font-size: 12px;
-  }*/
+    font-size: 0.9em;
+  }
+  .post-teaser-identicon {
+    width: 30px;
+    height: 30px;
+  }
+  .post-teaser {
+    grid-template-columns: 30px auto;
+  }
 }
 
 
@@ -661,22 +689,29 @@
   .forum-topic-latest-post {
     display: none;
   }
-
+  #forum-mobile-helper {
+    display: block;
+  }
   .post-create-header {
     flex-direction: column;
     flex-flow: column;
   }
   .post-view-container {
     max-height: 80vh;
-    max-width: 90vw;
+    max-width: 96vw;
     overflow-y: auto;
+    margin-left: auto;
+    margin-right: auto;
   }
-  /*.post-teaser-title {
-    font-size: 17px;
+  .post-posts {
+    font-size:1em;
+  }
+  .post-teaser-title {
+    font-size: 1em;
   }
   .post-teaser-sublinks {
-    font-size: 12px;
-  }*/
+    font-size: 0.9em;
+  }
   .post-sidebar {
     display: none;
   }
@@ -697,8 +732,8 @@
     overflow: hidden;
     padding-top: 0px;
     margin-top: 90px;
+    font-size: 1em;
   }
- 
   .post-create-container {
     background-color: whitesmoke;
     padding: 2em;
@@ -710,6 +745,15 @@
     width:580px;
     max-width: 90vw;
     font-size: 1.2em;
+  }
+  .post-teaser-identicon {
+    width: 30px;
+    height: 30px;
+  }
+  .post-teaser {
+    grid-template-columns: 30px auto;
+  }
 }
-}
+
+
 

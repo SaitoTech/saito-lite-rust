@@ -40,6 +40,7 @@ module.exports = PostForums = {
       if (modforums[i].img) { img = modforums[i].img; }
       let desc = modforums[i].description;
       if (desc.length > 80) { desc = desc.substr(0, 80) + "..."; }
+      if (desc.indexOf(".") > 0 && desc.indexOf(".") < 80) { desc = desc.substr(0, desc.indexOf(".")+1); }
       let title = modforums[i].name;
 
       sobj.push({
@@ -68,6 +69,7 @@ module.exports = PostForums = {
 
       let desc = modgames[i].description;
       if (desc.length > 80) { desc = desc.substr(0, 80) + "..."; }
+      if (desc.indexOf(".") > 0 && desc.indexOf(".") < 80) { desc = desc.substr(0, desc.indexOf(".")+1); }
       let title = modgames[i].gamename;
       if (!title) { title = modgames[i].name; }
 

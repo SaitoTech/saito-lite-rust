@@ -19,7 +19,7 @@ module.exports = PostTeaserTemplate = (app, mod, tx) => {
   return `
     <div data-id="${tx.transaction.sig}" id="post-teaser" class="post-teaser">
       <div class="post-teaser-front">
-        <div id="post-teaser-thumbnail" class="post-teaser-thumbnail" style=""><img src="${app.keys.returnIdenticon(tx.transaction.from[0].add)}" style="max-height: 50px; max-width: 50px;" /></div>
+        <div id="post-teaser-thumbnail" class="post-teaser-thumbnail" style=""><img src="${app.keys.returnIdenticon(tx.transaction.from[0].add)}" class="post-teaser-identicon" /></div>
       </div>
       <div class="post-teaser-back">
         <div  data-id="${tx.transaction.sig}" id="post-teaser-title" class="post-teaser-title">${ptitle}</div>

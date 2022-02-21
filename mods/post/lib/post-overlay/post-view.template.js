@@ -54,8 +54,12 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
           <div id="post-view-ts" class="post-view-ts">${time}</div>
         </div>
       </div>
-      <h2 class="post-view-title">${tx.msg.title}</h2>
   `;
+  if (text) {
+    if (text.indexOf(title) != 0) {
+      html += `<h2 class="post-view-title">${tx.msg.title}</h2>`;
+    }
+  }
   if (tx.msg.link != "") {
     html = `
     <div id="post-view-container" class="post-view-container">
