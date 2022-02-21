@@ -78,14 +78,10 @@ class Registry extends ModTemplate {
       let signed_message = tx.msg.signed_message;
       let sig            = tx.msg.sig;
 
-console.log("identifier: " + identifier + " -- " + signed_message + " -- " + sig);
-
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-alert("added: " + identifier);
           registry_self.app.keys.addKey(tx.transaction.to[0].add, identifier, true, "", registry_self.app.blockchain.returnLatestBlockId(), registry_self.app.blockchain.returnLatestBlockHash(), 1);
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
-alert("and our HTML is updated now too!");
         }
       } catch (err) {
         console.log("ERROR verifying username registration message: " + err);
