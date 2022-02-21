@@ -2,6 +2,7 @@ const ArcadePostsTemplate = require('./arcade-posts.template');
 const PostTeaserTemplate = require('./post-teaser.template');
 const PostView = require('./../post-overlay/post-view');
 const PostCreate = require('./../post-overlay/post-create');
+const JSON = require("json-bigint");
 
 module.exports = ArcadePosts = {
 
@@ -11,11 +12,17 @@ module.exports = ArcadePosts = {
       if (!document.getElementById("arcade-posts-container")) {
         app.browser.addElementToDom(ArcadePostsTemplate());
       }
+      if (mod.posts.length > 0){
+        document.querySelector("#arcade-posts-container").innerHTML = "";
+      }
+
       for (let i = mod.forums.length-1; i >= 0; i--) {
+        console.log("rendering forum: " + JSON.stringify(mod.forums[i]));
         this.updateForum(app, mod, mod.forums[i]);
       }
+      
       for (let i = mod.posts.length-1; i >= 0; i--) {
-        //console.log("rendering: " + mod.posts[i].transaction.sig);
+        console.log("rendering posts: " + JSON.stringify(mod.posts[i]));
         this.addPost(app, mod, mod.posts[i]);
       }
     } catch (err) {
@@ -86,8 +93,8 @@ module.exports = ArcadePosts = {
 
     try {
       let postTitle = document.querySelector(`#arcade-post-latest-forum-topic-${topic}`);
-      postTitle.innerHTML = sanitize(ptitle);
-      postTitle.setAttribute("data-id", forum.transaction.sig);
+      postTitle.innerHTML = ptitle;
+      postTitle.setAttribute("data-id", forum.id);
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
       document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = sanitize(fpost_num);

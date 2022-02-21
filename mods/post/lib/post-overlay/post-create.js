@@ -75,13 +75,14 @@ module.exports = PostCreate = {
         //Strip basic HTML tags from title
         title = title.replace(/\n/gi,"");
         title = title.replace(/<[^<]+>/gi,"");
-      	if (title > 40) { title = title.substr(0, 40) + "..."; 	}
+      	if (title.length > 40) { title = title.substr(0, 40) + "..."; 	}
         this.new_post.title = title;
       }
 
       let newtx = mod.createPostTransaction(this.new_post.title, this.new_post.comment, this.new_post.link, this.new_post.forum, this.new_post.images);
       app.network.propagateTransaction(newtx);
       newtx.children = 0;
+      newtx.id = newtx.transaction.sig;
       mod.posts.push(newtx);
       mod.render(); //this should refresh the forum?
       mod.overlay.hide();

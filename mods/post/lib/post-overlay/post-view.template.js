@@ -3,12 +3,12 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
 
   let tx = null;
   for (let i = 0; i < mod.posts.length; i++) {
-    if (sig === mod.posts[i].transaction.sig) { tx = mod.posts[i]; }
+    if (sig === mod.posts[i].id) { tx = mod.posts[i]; }
   }
   for (let i = 0; i < mod.forums.length; i++) {
-    if (sig === mod.forums[i].transaction.sig) { tx = mod.forums[i]; }
+    if (sig === mod.forums[i].id) { tx = mod.forums[i]; }
   }
-  if (tx == null) { return "<div>Post not found!</div>"; }
+  if (tx == null) { throw new Error("Unable to find post"); }
 
   // from timestamp to friendly time
   const time =  datetimeRelative(tx.transaction.ts);
@@ -17,7 +17,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
   
   const title = tx.msg.title;
   const text = tx.msg.comment; 
-  console.log("TITLE:"+title,"TEXT:"+text);
+  //console.log("TITLE:"+title,"TEXT:"+text);
 
   let edit = "";
   if (tx.transaction.from[0].add === app.wallet.returnPublicKey()) {
@@ -96,7 +96,7 @@ module.exports = PostViewTemplate = (app, mod, sig) => {
   html += `<div data-id="${sig}" id="post-view-parent-comment" class="post-view-parent-comment">${filler}</div>`;
 
 
-  if (tx.msg.images.length > 0) {
+  if (tx.msg.images && tx.msg.images.length > 0) {
       html += '<div id="post-view-gallery" class="post-view-gallery">';
       for (let i = 0; i < tx.msg.images.length; i++) {
       	html += `<img class="post-view-gallery-image" src="${tx.msg.images[i]}" />`;

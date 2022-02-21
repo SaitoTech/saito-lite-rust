@@ -186,27 +186,28 @@ class Post extends ModTemplate {
     //
     // fetch posts from server
     //
-    let sql;// = `SELECT id, children, img, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
-    
+    let sql;
+    let forum = app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game");
     //Fetch last 12 posts in a specific topic
-    if (app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game")) {
-      let forum = app.browser.returnURLParameter("forum") || app.browser.returnURLParameter("game");
+    if (forum) {
       sql = `SELECT id, children, img, lite_tx FROM posts WHERE forum = "${forum}" AND parent_id = "" AND deleted = 0 ORDER BY ts DESC LIMIT 12`;
       this.sendPeerDatabaseRequestWithFilter("Post", sql,
         (res) => {
           if (res) {
             if (res.rows) {
               for (let i = 0; i < res.rows.length; i++) {
-                let x = JSON.parse(res.rows[i].lite_tx);
+                //let x = JSON.parse(res.rows[i].lite_tx);
                 console.log(res.rows[i].lite_tx);
-                console.log("ORIGINAL SIG: " + x.sig);
+                console.log("ORIGINAL SIG: " + res.rows[i].id);
                 this.posts.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
                 console.log("NEW SIG: " + this.posts[this.posts.length - 1].transaction.sig);
                 this.posts[this.posts.length - 1].children = res.rows[i].children;
                 this.posts[this.posts.length - 1].img = res.rows[i].img;
+                this.posts[this.posts.length - 1].id = res.rows[i].id;
               }
             }
           }
+          console.log(this.posts);
           this.render();
         },
 
@@ -230,15 +231,25 @@ class Post extends ModTemplate {
     }else {
       //Fetch the latest post from every topic
 
-      sql = `SELECT id, tx, lite_tx, post_num FROM first_posts WHERE deleted = 0 ORDER BY ts DESC`;
+      sql = `SELECT id, children, img, forum, lite_tx FROM posts WHERE parent_id = "" AND deleted = 0 ORDER BY ts ASC`;
       this.sendPeerDatabaseRequestWithFilter("Post",  sql,
         (res) => {
           if (res) {
             if (res.rows) {
+              let temp = {};
               for (let i = 0; i < res.rows.length; i++) {
-                console.log(res.rows[i].lite_tx);
-                this.forums.push(new saito.default.transaction(JSON.parse(res.rows[i].lite_tx)));
-                this.forums[this.forums.length - 1].post_num = res.rows[i].post_num;
+                if (!temp[res.rows[i].forum]){
+                  temp[res.rows[i].forum] = { post_num : 0};
+                }
+                temp[res.rows[i].forum].post_num++;
+                temp[res.rows[i].forum].id = res.rows[i].id;
+                temp[res.rows[i].forum].latest = res.rows[i].lite_tx;
+              }
+              console.log(temp);
+              for (let f in temp){
+                this.forums.push(new saito.default.transaction(JSON.parse(temp[f].latest)));
+                this.forums[this.forums.length - 1].post_num = temp[f].post_num;
+                this.forums[this.forums.length - 1].id = temp[f].id;
               }
             }
           }
@@ -335,7 +346,8 @@ class Post extends ModTemplate {
     // this destroys sig and prevents comment-fetching
     //plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
-
+    console.log("Create POST: "+plitetx);
+    console.log(txmsg);
     let sql = `INSERT INTO posts 
               (id, thread_id, parent_id, type, publickey, title, img, text, forum, link, tx, lite_tx, ts, children, flagged, deleted) 
        VALUES ($pid, $pthread_id, $pparent_id, $ptype, $ppublickey, $ptitle, $pimg, $ptext, $pforum, $plink, $pfulltx, $plitetx, $pts, $pchildren, $pflagged, $pdeleted);
@@ -361,7 +373,7 @@ class Post extends ModTemplate {
 
     await this.app.storage.executeDatabase(sql, params, "post");
 
-    let post_num = 1;
+    /*let post_num = 1;
     //Read the number of posts (stored in a second table)
     let sql2 = `SELECT post_num FROM first_posts WHERE forum = $pforum`;
     let params2 = { $pforum: txmsg.forum };
@@ -405,7 +417,7 @@ class Post extends ModTemplate {
     };
 
     await this.app.storage.executeDatabase(fpsql, fpparams, "post");
-
+    */
     //
     // fetch image if needed
     //
@@ -415,22 +427,24 @@ class Post extends ModTemplate {
   }
 
   /* For editing a post (the parent post at top of thread)*/
-  createEditPostTransaction(title, comment, post_id) {
+  createEditPostTransaction(post_id, title, comment, link, forum, images) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg.module = "Post";
     newtx.msg.type = "editpost";
     newtx.msg.title = title;
     newtx.msg.comment = comment;
-    //newtx.msg.link = link;
-    //newtx.msg.forum = forum;
-    //newtx.msg.images = images;
+    newtx.msg.link = link;
+    newtx.msg.forum = forum;
+    newtx.msg.images = images;
     newtx.msg.post_id = post_id;
 
     return this.app.wallet.signTransaction(newtx);
   }
   
   async receiveEditPostTransaction(tx) {
+    console.log("########Edit POST########");
+
     let txmsg = tx.returnMessage();
     let pfulltx = JSON.stringify(tx.transaction);
     let plitetx = new saito.default.transaction(JSON.parse(JSON.stringify(tx.transaction)));
@@ -438,14 +452,16 @@ class Post extends ModTemplate {
     plitetx.msg.images = [];
     plitetx = this.app.wallet.signTransaction(plitetx);
     plitetx = JSON.stringify(plitetx.transaction);
-
-    console.log("########Edit POST########");
+    
+    
     let sql = `SELECT * FROM posts WHERE id = $id`;
     let params = { $id: txmsg.post_id };
     let rows = await this.app.storage.queryDatabase(sql, params, "post");
     if (rows) {
       if (rows.length > 0) {
         if (rows[0].publickey === tx.transaction.from[0].add) {
+          console.log("DB FULL TX:",rows[0].tx);
+          console.log("DB LITE TX:",rows[0].tx);
           //Just change minimal fields in SQL record
           sql = `UPDATE posts SET title = $ptitle, text = $ptext, tx = $pfulltx, lite_tx = $plitetx WHERE id = $pid;`;
           params = {
@@ -458,7 +474,7 @@ class Post extends ModTemplate {
           await this.app.storage.executeDatabase(sql, params, "post");
           //Also update first_posts
          
-        
+          /*
           //Read the number of posts (stored in a second table)
           let sql2 = `SELECT * FROM first_posts WHERE id = $pid;`;
           let params2 = { $pid: txmsg.post_id };
@@ -476,7 +492,7 @@ class Post extends ModTemplate {
                 await this.app.storage.executeDatabase(sql, params, "post");
               }
           }
-
+          */
         }
       }
     }

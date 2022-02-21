@@ -20,34 +20,35 @@ module.exports = PostView = {
 
     mod.originalSig = sig;
 
-    mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig));
-    
+    try{
+      mod.overlay.show(app, mod, PostViewTemplate(app, mod, sig));  
+    }catch(err){
+      console.error(err);
+      return;
+    }
+        
     mod.sendPeerDatabaseRequestWithFilter(
       "Post",
-
       sql,
-
       (res) => {
         try {
           document.getElementById("post-loader-spinner").style.display = "none";
         } catch (err) {}
         if (res) {
-          console.log("******DB RESULTS******");
-          console.log(res);
           if (res.rows) {
             for (let i = 0; i < res.rows.length; i++) {
               let add_this_comment = 1;
               let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
-              console.log(tx);
+              //console.log(tx);
               let txmsg = tx.returnMessage();
-              console.log(txmsg);
+              //console.log(txmsg);
               for (let z = 0; z < mod.comments.length; z++) {
                 if (mod.comments[z].transaction.sig == tx.transaction.sig) {
                   add_this_comment = 0;
                 }
               }
-              console.log(tx.transaction.sig, sig);
-              if (tx.transaction.sig == sig) {
+              //console.log(tx.transaction.sig, sig);
+              if (tx.transaction.sig == sig || res.rows[i].id == sig) {
                 add_this_comment = 0;
                 try {
                   document.getElementById("post-view-parent-comment").innerHTML = sanitize(txmsg.comment);
@@ -138,21 +139,24 @@ module.exports = PostView = {
                 document.getElementById(`edit-button-${post_sig}`).onclick = (e) => {
                   let revised_text = document.querySelector(`#textedit-field-${post_sig}`).innerHTML;
                   
-                  /*let this_post = null;
+                  let this_post = null;
 
                   for (let i = 0; i < mod.posts.length; i++) {
-                    if (mod.posts[i].transaction.sig === post_sig) {
+                    if (mod.posts[i].transaction.sig === post_sig || mod.posts[i].id === post_sig) {
                       this_post = mod.posts[i];
                     }
                   }
                   for (let i = 0; i < mod.forums.length; i++) {
-                    if (mod.forums[i].transaction.sig === post_sig) {
+                    if (mod.forums[i].transaction.sig === post_sig || mod.forums[i].id === post_sig) {
                       this_post = mod.forums[i];
                     }
                   }
                   if (!this_post){
-                    console.error("Post not found!");
-                  }*/
+                    console.error("Cannot find post we are editing!  "+post_sig);
+                    mod.overlay.hide();
+                    salert("Post id error");
+                    return;
+                  }
 
                   let newTitle = revised_text;
                   //Strip basic HTML tags from title
@@ -160,21 +164,24 @@ module.exports = PostView = {
                   newTitle = newTitle.replace(/<[^<]+>/gi,"");
                   if (newTitle > 40) { newTitle = newTitle.substr(0, 40) + "...";  }
                 
-                  let newtx = mod.createEditPostTransaction(newTitle, revised_text, post_sig);
+                  let newtx = mod.createEditPostTransaction(post_sig, newTitle, revised_text, this_post.msg.link, this_post.msg.forum, this_post.msg.images);
                   app.network.propagateTransaction(newtx);
 
-                  /*for (let i = 0; i < mod.posts.length; i++) {
-                    if (mod.posts[i].transaction.sig === post_sig) {
+                  for (let i = 0; i < mod.posts.length; i++) {
+                    if (mod.posts[i].transaction.sig === post_sig || mod.posts[i].id === post_sig) {
                       newtx.children = mod.posts[i].children;
+                      newtx.id = post_sig;
                       mod.posts[i] = newtx;
                     }
                   }
                   for (let i = 0; i < mod.forums.length; i++) {
-                   if (mod.forums[i].transaction.sig === post_sig) {
+                   if (mod.forums[i].transaction.sig === post_sig || mod.forums[i].id === post_sig) {
                       newtx.children = mod.forums[i].children;
+                      newtx.id = post_sig;
+                      newtx.post_num = mod.forums[i].post_num;
                       mod.forums[i] = newtx;
                     }
-                  } */
+                  }
 
                   el2.setAttribute("mode", "read");
 
@@ -186,7 +193,7 @@ module.exports = PostView = {
                     });
                     */
                   mod.render();
-                  this.render(app, mod, post_sig);
+                  //this.render(app, mod, post_sig);
                 };
               }
             }
