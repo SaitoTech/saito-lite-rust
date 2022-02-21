@@ -391,7 +391,6 @@ class Server {
     });
 
     app.get("/json-block/:hash", async (req, res) => {
-
       const hash = req.params.hash;
       console.debug("fetching block : " + hash);
 
@@ -406,13 +405,13 @@ class Server {
         return res.sendStatus(404); // Not Found
       }
 
-      let block_to_return = { block : null , transactions : null };
+      let block_to_return = { block: null, transactions: null };
 
       block_to_return.block = JSON.parse(JSON.stringify(block.block));
       block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
 
       let buffer = JSON.stringify(block_to_return).toString("utf-8");
-console.log("buffer is created!");
+      console.log("buffer is created!");
       buffer = Buffer.from(buffer, "utf-8");
 
       res.status(200);

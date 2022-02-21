@@ -161,7 +161,6 @@ export default class Wallet {
   }
 
   createUnsignedTransaction(publickey = "", amount = BigInt(0), fee = BigInt(0), force_merge = 0) {
-
     // convert from human-readable to NOLAN
     amount = BigInt(amount) * BigInt(100000000);
     fee = BigInt(fee) * BigInt(100000000);

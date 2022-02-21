@@ -121,7 +121,6 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block, force = 0) {
-
     //
     //
     //
@@ -506,9 +505,9 @@ class Blockchain {
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
-	if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
+        if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
           await this.deleteBlock(delete_block_id, block_hashes[i]);
-	}
+        }
       }
     }
   }
@@ -533,9 +532,9 @@ class Blockchain {
 
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
-	if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
+        if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
           block_hashes_copy.push(block_hashes[i]);
-	}
+        }
       }
     }
 
