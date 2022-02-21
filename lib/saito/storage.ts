@@ -59,7 +59,6 @@ class Storage {
   }
 
   loadTransactionsByKeys(keys, type = "all", num = 50, mycallback) {
-
     const message = "archive";
     const data: any = {};
     data.request = "load_keys";
@@ -68,7 +67,6 @@ class Storage {
     data.num = num;
 
     this.app.network.sendRequestWithCallback(message, data, function (obj) {
-
       if (obj == undefined) {
         mycallback([]);
         return;

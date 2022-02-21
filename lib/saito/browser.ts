@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import screenfull from "screenfull";
-import html2canvas from 'html2canvas';
+import html2canvas from "html2canvas";
 
 class Browser {
   public app: any;
@@ -450,8 +450,8 @@ class Browser {
     if (!document.getElementById(`hidden_file_element_${id}`)) {
       this.addElementToDom(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
-      if (!dropArea){
-        console.error("Undefined id in browser",id);
+      if (!dropArea) {
+        console.error("Undefined id in browser", id);
         return null;
       }
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -553,22 +553,24 @@ class Browser {
       element_to_drag.onmousedown = function (e) {
         e = e || window.event;
 
-        if (!e.currentTarget.id ||
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)) {
+        if (
+          !e.currentTarget.id ||
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)
+        ) {
           document.onmouseup = null;
           document.onmousemove = null;
           return;
         }
 
         element_to_move.style.transition = "unset";
-       
+
         const rect = element_to_move.getBoundingClientRect();
         element_start_left = rect.left;
         element_start_top = rect.top;
 
         mouse_down_left = e.clientX;
         mouse_down_top = e.clientY;
-      
+
         element_moved = false;
         //console.log("Element Start Left: " + element_start_left);
         //console.log("Element Start Top: " + element_start_top);
@@ -593,15 +595,15 @@ class Browser {
           mouse_current_top = e.clientY;
           const adjustmentX = mouse_current_left - mouse_down_left;
           const adjustmentY = mouse_current_top - mouse_down_top;
-         
+
           if (adjustmentX !== 0 || adjustmentY !== 0) {
             element_moved = true;
           }
-         
+
           // set the element's new position:
           element_to_move.style.left = element_start_left + adjustmentX + "px";
           element_to_move.style.top = element_start_top + adjustmentY + "px";
-         
+
           //We are changing to Top/Left so get rid of bottom/right
           element_to_move.style.bottom = "unset";
           element_to_move.style.right = "unset";
@@ -617,15 +619,17 @@ class Browser {
       element_to_drag.ontouchstart = function (e) {
         e = e || window.event;
 
-        if (!e.currentTarget.id || 
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)) {
+        if (
+          !e.currentTarget.id ||
+          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)
+        ) {
           document.ontouchend = null;
           document.ontouchmove = null;
           return;
         }
 
         element_to_move.style.transition = "unset";
-        
+
         //e.preventDefault();
         //if (e.stopPropagation) { e.stopPropagation(); }
         //if (e.preventDefault) { e.preventDefault(); }
@@ -668,7 +672,7 @@ class Browser {
           if (adjustmentX !== 0 || adjustmentY !== 0) {
             element_moved = true;
           }
-          
+
           // set the element's new position:
           element_to_move.style.left = element_start_left + adjustmentX + "px";
           element_to_move.style.top = element_start_top + adjustmentY + "px";
@@ -677,12 +681,11 @@ class Browser {
           element_to_move.style.transform = "unset";
           element_to_move.style.marginTop = "unset";
           element_to_move.style.marginLeft = "unset";
-     
         };
       };
     } catch (err) {
       console.error("error: " + err);
-      console.log(element_to_move,element_to_drag);
+      console.log(element_to_move, element_to_drag);
     }
   }
 
@@ -852,20 +855,15 @@ class Browser {
   /////////////////////// end url-hash helper functions ////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-  async captureScreenshot(callback=null) {
-
-    html2canvas(document.body).then(function(canvas) {
-      let img  = canvas.toDataURL("image/jpeg", 0.35);
-console.log("img: " + img);
-      if (callback != null) { callback(img); }
+  async captureScreenshot(callback = null) {
+    html2canvas(document.body).then(function (canvas) {
+      let img = canvas.toDataURL("image/jpeg", 0.35);
+      console.log("img: " + img);
+      if (callback != null) {
+        callback(img);
+      }
     });
-  };
-
-
+  }
 }
 
 export default Browser;

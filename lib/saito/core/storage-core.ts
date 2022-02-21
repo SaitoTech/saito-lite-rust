@@ -180,9 +180,9 @@ class StorageCore extends Storage {
       //
       if (blk.transactions != undefined) {
         for (let b = 0; b < blk.transactions.length; b++) {
-	  for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
-	    this.app.utxoset.delete(blk.transactions[b].transaction.to[bb].returnKey());
-	  }
+          for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
+            this.app.utxoset.delete(blk.transactions[b].transaction.to[bb].returnKey());
+          }
         }
       }
 

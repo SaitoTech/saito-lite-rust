@@ -214,7 +214,6 @@ class Mods {
     }
   }
 
-
   render() {
     for (let icb = 0; icb < this.mods.length; icb++) {
       if (this.mods[icb].browser_active == 1) {

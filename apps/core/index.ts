@@ -134,7 +134,6 @@ class Saito {
       );
       console.log(err);
     }
-
   }
 
   async reset(config) {
