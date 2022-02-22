@@ -511,7 +511,9 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.debug("network.receiveRequest : ", message);
+
+    console.debug("network.receiveRequest : ", message);
+    console.log("network.receiveRequest!");
 
     let block;
     let block_hash;
@@ -575,7 +577,7 @@ class Network {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-        console.log("RECEIVED GSTCHAIN: " + JSON.stringify(syncobj));
+        console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj));
 
         let previous_block_hash = syncobj.start;
 
@@ -604,7 +606,6 @@ class Network {
           previous_block_hash = block_hash;
         }
 
-        console.log("RECEIVED GHOSTCHAIN: " + JSON.stringify(syncobj));
         break;
       }
 
@@ -645,6 +646,7 @@ class Network {
       }
 
       case "REQGSTCN": {
+
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -703,6 +705,8 @@ class Network {
             }
           }
         }
+console.log("ABOUT TO SEND GSTCHAIN");
+
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
       }
