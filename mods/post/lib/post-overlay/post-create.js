@@ -57,9 +57,11 @@ module.exports = PostCreate = {
       if (this.new_post.images.length > 0) {
 	      salert("It may take up to a minute to update large images. Please be patient!");
       }
-
-      this.new_post.title = document.querySelector('.post-create-title').value;
-      this.new_post.comment = document.querySelector('.post-create-textarea').innerHTML;
+      // ===== USER INPUT =====
+      this.new_post.title = sanitize(document.querySelector('.post-create-title').value);
+      // ===== USER INPUT =====
+      this.new_post.comment = sanitize(document.querySelector('.post-create-textarea').innerHTML);
+      
       //this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
@@ -71,10 +73,14 @@ module.exports = PostCreate = {
       }
 
       if (!this.new_post.title) {
-        let title = this.new_post.comment;
-        //Strip basic HTML tags from title
-        title = title.replace(/\n/gi,"");
-        title = title.replace(/<[^<]+>/gi,"");
+        let title = "";
+        this.new_post.comment.split(/<[^<]+>/gi).forEach(line =>{
+          if (!title){
+            title += line.replaceAll("&nbsp;"," ");
+          }
+          title = title.trim(); //Doesn't help because white space is coded as &nbsp;
+        });
+        
       	if (title.length > 40) { title = title.substr(0, 40) + "..."; 	}
         this.new_post.title = title;
       }

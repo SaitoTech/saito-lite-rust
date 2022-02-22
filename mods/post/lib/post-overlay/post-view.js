@@ -135,10 +135,11 @@ module.exports = PostView = {
                 <button id="edit-button-${post_sig}" data-id="${post_sig}" type="button" class="comment-edit-button" value="Edit Post">edit</button>
               `;
 
-                el2.innerHTML = sanitize(replacement_html);
-                el2.setAttribute("contentEditable", "true");
+                el2.innerHTML = replacement_html;
+                //el2.setAttribute("contentEditable", "true");
                 document.getElementById(`edit-button-${post_sig}`).onclick = (e) => {
-                  let revised_text = document.querySelector(`#textedit-field-${post_sig}`).innerHTML;
+                  // ===== USER INPUT =====
+                  let revised_text = sanitize(document.querySelector(`#textedit-field-${post_sig}`).innerHTML);
                   
                   let this_post = null;
 
@@ -159,10 +160,16 @@ module.exports = PostView = {
                     return;
                   }
 
-                  let newTitle = revised_text;
-                  //Strip basic HTML tags from title
-                  newTitle = newTitle.replace(/\n/gi,"");
-                  newTitle = newTitle.replace(/<[^<]+>/gi,"");
+
+                  
+                  let newTitle = "";
+                  revised_text.split(/<[^<]+>/gi).forEach(line =>{
+                    if (!newTitle){
+                        newTitle += line.replaceAll("&nbsp;"," ");
+                      }
+                      newTitle = newTitle.trim();
+                    });
+                    
                   if (newTitle.length > 40) { newTitle = newTitle.substr(0, 40) + "...";  }
                 
                   let newtx = mod.createEditPostTransaction(post_sig, newTitle, revised_text, this_post.msg.link, this_post.msg.forum, this_post.msg.images);
@@ -186,7 +193,7 @@ module.exports = PostView = {
 
                   el2.setAttribute("mode", "read");
 
-                  el2.innerHTML = sanitize(revised_text);
+                  el2.innerHTML = revised_text;
                     /*document.querySelectorAll(".post-view-parent-comment, .post-view-edit").forEach((el2) => {
                       // This is necessary so that the edit button has the new sig, i.e. data-id
                       // need to be correct for the edit button to work again...
@@ -223,10 +230,11 @@ module.exports = PostView = {
                   <div id="textedit-field-${comment_sig}" data-id="${comment_sig}" class="post-create-textarea post-view-comment-textarea markdown medium-editor-element" contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true" data-medium-editor-editor-index="1" medium-editor-index="37877e4c-7415-e298-1409-7dca41eed3b8">${el2.innerHTML}</div>
                   <button id="edit-button-${comment_sig}" data-id="${comment_sig}" type="button" class="comment-edit-button" value="Edit Comment">edit comment</button>
                 `;
-                el2.innerHTML = sanitize(replacement_html);
-                el2.setAttribute("contentEditable", "true");
+                el2.innerHTML = replacement_html;
+                //el2.setAttribute("contentEditable", "true");
                 document.getElementById(`edit-button-${comment_sig}`).onclick = (e) => {
-                  let revised_text = document.querySelector(`#textedit-field-${comment_sig}`).innerHTML;
+                  // ===== USER INPUT =====
+                  let revised_text = sanitize(document.querySelector(`#textedit-field-${comment_sig}`).innerHTML);
 
                   let newtx = mod.createEditReplyTransaction(comment_sig, revised_text);
                   app.network.propagateTransaction(newtx);
@@ -245,7 +253,7 @@ module.exports = PostView = {
                   }
                 
                 el2.setAttribute("mode", "read");
-                el2.innerHTML = sanitize(revised_text);
+                el2.innerHTML = revised_text;
                 mod.render();
                 };
               }
