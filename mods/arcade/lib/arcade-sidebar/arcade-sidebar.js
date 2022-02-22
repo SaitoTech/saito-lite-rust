@@ -7,11 +7,10 @@ const ArcadeGameDetails = require('../arcade-game/arcade-game-details');
 const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-container.template');
 module.exports = ArcadeSidebar = {
 
-
   render(app, mod) {
 
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
-    if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeSidebarTemplate(), "arcade-container"); }
+    if (!document.querySelector(".arcade-sidebar")) { app.browser.prependElementToDom(ArcadeSidebarTemplate(), document.getElementById("arcade-container")); }
 
     app.modules.respondTo("email-chat").forEach(module => {
       if (module != null) {

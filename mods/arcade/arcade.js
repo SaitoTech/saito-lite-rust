@@ -55,7 +55,6 @@ class Arcade extends ModTemplate {
     if (type == 'chat-render-request') {
       if (this.browser_active) {
 	this.renderSidebar();
-
 	try {
           let chat_mod = this.app.modules.returnModule("Chat");
 	  if (chat_mod.groups.length > 0 && this.chat_open == 0) {
