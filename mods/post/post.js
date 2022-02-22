@@ -207,7 +207,7 @@ class Post extends ModTemplate {
               }
             }
           }
-          console.log(this.posts);
+          //console.log(this.posts);
           this.render();
         },
 
@@ -245,7 +245,7 @@ class Post extends ModTemplate {
                 temp[res.rows[i].forum].id = res.rows[i].id;
                 temp[res.rows[i].forum].latest = res.rows[i].lite_tx;
               }
-              console.log(temp);
+              //console.log(temp);
               for (let f in temp){
                 this.forums.push(new saito.default.transaction(JSON.parse(temp[f].latest)));
                 this.forums[this.forums.length - 1].post_num = temp[f].post_num;
