@@ -1,4 +1,6 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const saito = require("../../lib/saito/saito");
+
 
 var this_chess = null;
 var chess = null;
@@ -57,6 +59,77 @@ class Chessgame extends GameTemplate {
     this.app.modules.respondTo("chat-manager").forEach(mod => {
       mod.respondTo('chat-manager').render(this_chess.app, this_chess);
     });
+
+        //
+    // ADD CHAT
+    //
+    this.app.modules.respondTo("chat-manager").forEach((mod) => {
+      mod.respondTo("chat-manager").render(app, this);
+      mod.respondTo("chat-manager").attachEvents(app, this);
+    });
+
+    //
+    // ADD MENU
+    //
+    this.menu.addMenuOption({
+      text: "Game",
+      id: "game-game",
+      class: "game-game",
+      callback: function (app, game_mod) {
+        game_mod.menu.showSubMenu("game-game");
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Rules",
+      id: "game-rules",
+      class: "game-rules",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Log",
+      id: "game-log",
+      class: "game-log",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Stats",
+      id: "game-stats",
+      class: "game-stats",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleStatsMenu();
+      },
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Exit",
+      id: "game-exit",
+      class: "game-exit",
+      callback: function (app, game_mod) {
+        window.location.href = "/arcade";
+      },
+    });
+    this.menu.addMenuIcon({
+      text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
+      id: "game-menu-fullscreen",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        app.browser.requestFullscreen();
+      },
+    });
+
+    this.menu.addChatMenu(app, this);
+    this.menu.render(app, this);
+    this.menu.attachEvents(app, this);
+
+    this.restoreLog();
+    this.log.render(app, this);
+    this.log.attachEvents(app, this);
   }
 
   async initializeGame(game_id) {
@@ -70,12 +143,6 @@ class Chessgame extends GameTemplate {
     console.log('######################################################');
 
     if (this.browser_active == 1) {
-
-      // enable chat
-      //if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-      //  const chat = this.app.modules.returnModule("Chat");
-      //  chat.addPopUpChat();
-      //}
 
 console.log("A");
       chess = require('./lib/chess.js');
