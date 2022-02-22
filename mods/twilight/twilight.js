@@ -28,8 +28,6 @@ class Twilight extends GameTemplate {
 
     super(app);
 
-console.log("start HUD: " + this.hud.card_width);
-
     this.app             = app;
 
     this.name  		 = "Twilight";
@@ -56,12 +54,11 @@ console.log("start HUD: " + this.hud.card_width);
     this.maxPlayers 	 = 2;
     this.type       	 = "Strategy Boardgame";
     this.categories 	 = "Bordgame Game"
-    this.hud.draggable = 0;
+    //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
 
-console.log("start HUD 2: " + this.hud.card_width);
   }
 
 
@@ -4301,7 +4298,7 @@ if (this.game.player == 0) {
         // do we have any cards to play?
         //
         if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
-          this.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
+          //this.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
           playable_cards = [];
           for (i = 0; i < this.game.deck[0].hand.length; i++) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -4374,7 +4371,6 @@ if (this.game.player == 0) {
       return;
     }
 
-    console.log("Hello world");
     twilight_self.attachCardboxEvents(function(card) {
       twilight_self.playerTurnCardSelected(card, player);
     });
