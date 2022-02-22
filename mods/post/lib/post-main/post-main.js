@@ -31,6 +31,7 @@ module.exports = PostMain = {
         PostForums.attachEvents(app, mod);
       }
       for (let i = mod.forums.length-1; i >= 0; i--) {
+        //console.log(mod.forums[i]);
         this.updateForum(app, mod, mod.forums[i]);
       }
     } else {
@@ -44,7 +45,10 @@ module.exports = PostMain = {
       if (!document.querySelector(".post-main")) {
         app.browser.addElementToDom(PostMainTemplate(app, mod), "forum-main");
       }
+
+      document.getElementById("post-posts").innerHTML = ""; //Force reloading?  
       for (let i = mod.posts.length-1; i >= 0; i--) {
+        //console.log(mod.posts[i]);
         this.addPost(app, mod, mod.posts[i]);
       }
     }
@@ -57,7 +61,7 @@ module.exports = PostMain = {
 
     document.querySelectorAll('.post-teaser-title, .post-teaser-comments, .forum-topic-latest-post-title').forEach(el => {
       el.onclick = (e) => {
-	let sig = e.currentTarget.getAttribute("data-id");
+	      let sig = e.currentTarget.getAttribute("data-id");
         PostView.render(app, mod, sig);
         PostView.attachEvents(app, mod, sig);
       }
@@ -69,8 +73,7 @@ module.exports = PostMain = {
   addPost(app, mod, post) {
     let post_this = 1;
     document.querySelectorAll('.post-teaser').forEach(el => {
-      let sig = el.getAttribute("data-id");
-      if (sig === post.transaction.sig) { post_this = 0; }
+      if (el.getAttribute("data-id") == post.transaction.sig) { post_this = 0; }
     });
     if (post_this == 0) { return; }
     app.browser.prependElementToDom(PostTeaserTemplate(app, mod, post), document.getElementById("post-posts"));
@@ -89,7 +92,7 @@ module.exports = PostMain = {
     try {
       let postTitle = document.querySelector(`#forum-topic-latest-post-title-${topic}`);
       postTitle.innerHTML = sanitize(txmsg.title);
-      postTitle.setAttribute("data-id", forum.transaction.sig);
+      postTitle.setAttribute("data-id", forum.id);
 
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
@@ -107,6 +110,7 @@ module.exports = PostMain = {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
       }
     } catch (err) {
+      console.error(err);
     }
 
   }
