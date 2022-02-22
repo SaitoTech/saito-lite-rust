@@ -74,9 +74,16 @@ class Keychain {
   }
 
   addKey(publickey = "", identifier = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
+
     if (publickey === "") {
       return;
     }
+
+    //
+    // eliminate excessive keys if needed
+    //
+    this.pruneKeys();
+
     publickey = publickey.trim();
 
     let tmpkey = this.findByPublicKey(publickey);
@@ -307,6 +314,28 @@ class Keychain {
   saveGrouos() {
     this.app.options.groups = this.groups;
     this.app.storage.saveOptions();
+  }
+
+  pruneKeys() {
+    let replacement_key_array = [];
+    let keys_replaced = 0;
+    if (this.keys.length > 200) {
+      for (let x = 0; x < this.keys.length && keys_replaced < 50; x++) {
+	let k = this.keys[x];
+	let keep_key = 0;
+	if (k.watched) { keep_key = 1; }
+	if (k.aes_publickey) { keep_key = 1; }
+	if (k.aes_secret) { keep_key = 1; }
+	if (k.tags.length > 0) { keep_key = 1; }
+	if (k.data) { keep_key = 1; }
+	if (keep_key) {
+	  replacement_key_array.push(k);
+	} else {
+	  keys_replaced++;
+	}
+      }
+      this.keys = replacement_key_array;
+    }
   }
 
   removeKey(publickey) {
