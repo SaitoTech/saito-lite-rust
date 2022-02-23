@@ -268,30 +268,32 @@ module.exports = PostView = {
     try {
       document.querySelectorAll(".post-view-report").forEach((el) => {
         el.onclick = async (e) => {
+          let title = "";
+          let text = "";
           const reportit = await sconfirm("Report this post or comments to the mods?");
           if (reportit) {
             const sig = el.getAttribute("data-id");
-            //this only works for posts - needs fix for comments.
-            //solution will be to add the coment id and title from post to
-            // the data element.
-            const title = el.getAttribute("data-title");
-            const text = el.getAttribute("data-text");
-            await salert("Thank you for flagging this");
+
+            //Remove post/comment from the POSt data structures (just to hide it for now)
             for (let i = 0; i < mod.posts.length; i++) {
-              if (mod.posts[i].transaction.sig === sig) {
+              if (mod.posts[i].id === sig) {
+                title = mod.posts[i].msg.title;
+                text = mod.posts[i].msg.comment; 
                 mod.posts.splice(i, 1);
               }
             }
             for (let i = 0; i < mod.comments.length; i++) {
-              if (mod.comments[i].transaction.sig === sig) {
+              if (mod.comments[i].id === sig) {
+                text = mod.comments[i].msg.comment; 
                 mod.comments.splice(i, 1);
               }
             }
-            mod.render();
-            mod.overlay.hide();
 
             const newtx = mod.createReportTransaction(sig, title, text);
             app.network.propagateTransaction(newtx);
+
+            mod.render();
+            mod.overlay.hide();
           }
         };
       });
