@@ -294,7 +294,7 @@ class Blackjack extends GameTemplate {
         for (let box of boxes){
           box.remove();
         }
-        this.playerbox.render(this,this.game);
+        this.playerbox.render(this.app,this);
       }catch(err){
 
       }
