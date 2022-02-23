@@ -724,7 +724,7 @@ class Post extends ModTemplate {
     await this.app.storage.executeDatabase(sql, params, "post");
   }
 
-  createReportTransaction(post_id, title, text, comment) {
+  createReportTransaction(post_id, title, text) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg.module = "Post";
@@ -741,9 +741,7 @@ class Post extends ModTemplate {
   */
   async receiveReportTransaction(tx) {
     let txmsg = tx.returnMessage();
-    let sql = `
-        UPDATE posts SET flagged = 1 WHERE id = $pid
-    `;
+    let sql = `UPDATE posts SET flagged = 1 WHERE id = $pid`;
     let params = {
       $pid: txmsg.post_id,
     };
@@ -761,13 +759,12 @@ class Post extends ModTemplate {
       subject: `Saito.io - Post #${txmsg.post_id} was reported.`,
       ishtml: true,
       body: `
-        <b>Post #${txmsg.title} was reported.<br/></b>
-        Post ID${txmsg.post_id}<br/><br/>
-        <a href="https://saito.io/post/delete/${base_58_tx}">Delete Post</a><hr/>.
-        <a href="https://saito.io/post?delete=${txmsg.post_id}&title=${encodeURIComponent(
-        txmsg.title
-      )}">Review and Delete Post</a><hr/>.
-        
+        <h2>Post ID ${txmsg.post_id} was reported.</h2>
+        <h3>Content:</h3>
+        <div>${txmsg.text}</div>
+        <hr/>
+        <a href="/post/delete/${base_58_tx}">Delete Post</a><hr/>.
+        <a href="/post?delete=${txmsg.post_id}&title=${encodeURIComponent(txmsg.title)}">Review and Delete Post</a><hr/>.
       `,
     });
   }
