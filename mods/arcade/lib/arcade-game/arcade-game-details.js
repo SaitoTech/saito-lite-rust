@@ -88,8 +88,10 @@ module.exports = ArcadeGameDetails = {
 
     //go to game home page
     document.querySelector(".game-home-link").addEventListener("click", (e)=>{
+
       let options = getOptions();
       let gamemod = app.modules.returnModule(options.gamename);
+      app.browser.logMatomoEvent("Navigation", "GameDetailtoPage",gamemod.returnSlug());
       window.location = "/arcade/?game="+gamemod.returnSlug();
     });
 
@@ -107,7 +109,7 @@ module.exports = ArcadeGameDetails = {
     document.getElementById('game-invite-btn').addEventListener('click', async (e) => {
       try {
         let options = getOptions();
-
+        app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
       //
       // if crypto and stake selected, make sure creator has it
       //
@@ -145,7 +147,7 @@ module.exports = ArcadeGameDetails = {
       }
 
 
-        //app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
+       
         let gamemod = app.modules.returnModule(options.gamename);
 	let players_needed = 0;
         if (document.querySelector('.game-wizard-players-select')) {

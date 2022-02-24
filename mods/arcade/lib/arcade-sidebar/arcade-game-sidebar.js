@@ -33,7 +33,7 @@ module.exports = ArcadeGameSidebar = {
     Array.from(document.querySelectorAll("#new-game")).forEach(newGameBtn => {
       newGameBtn.addEventListener('click', (e) => {
         //Should we create a new Event tag?
-        app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", game_mod.name); 
+        app.browser.logMatomoEvent("Arcade", "GamePageClick", game_mod.name); 
         let tx = new saito.default.transaction();
         tx.msg.game = game_mod.name;
         ArcadeGameDetails.render(app, mod, tx);
@@ -44,6 +44,7 @@ module.exports = ArcadeGameSidebar = {
     //Fetch Instructions
     Array.from(document.querySelectorAll("#how-to-play")).forEach(howToBtn => {
       howToBtn.addEventListener('click', (e) => {
+        app.browser.logMatomoEvent("Arcade", "GameRules", game_mod.name); 
         mod.overlay.show(app, mod, game_mod.returnGameRulesHTML());
       });
     });
@@ -51,6 +52,7 @@ module.exports = ArcadeGameSidebar = {
     //Bread crumbs
     Array.from(document.getElementsByClassName('navigation-return-to-arcade')).forEach(link => {
       link.addEventListener("click", (e) => {
+        app.browser.logMatomoEvent("Navigation", "GamePageToArcade", game_mod.name); 
         window.location = "/arcade";
       });
     });
