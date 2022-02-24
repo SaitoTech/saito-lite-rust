@@ -96,9 +96,9 @@ class Network {
     // do not connect to ourselves
     //
     if (this.app.options.server != null) {
-      if (peerhost === "localhost") {
-        return;
-      }
+      // if (peerhost === "localhost") {
+      //   return;
+      // }
       if (this.app.options.server.host === peerhost && this.app.options.server.port === peerport) {
         console.log(
           "ERROR 185203: not adding " +
@@ -514,7 +514,6 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-
     //console.debug("network.receiveRequest : ", message);
 
     let block;
@@ -648,7 +647,6 @@ class Network {
       }
 
       case "REQGSTCN": {
-
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -707,7 +705,7 @@ class Network {
             }
           }
         }
-console.log("ABOUT TO SEND GSTCHAIN");
+        console.log("ABOUT TO SEND GSTCHAIN");
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;

@@ -9,7 +9,7 @@ module.exports = ArcadePosts = {
   render(app, mod) {
     mod.renderMethod = "arcade";
     try {
-      if (!document.getElementById("arcade-posts-container")) {
+      if (!document.getElementById("arcade-posts")) {
         app.browser.addElementToDom(ArcadePostsTemplate());
       }
       if (mod.posts.length > 0){

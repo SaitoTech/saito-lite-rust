@@ -98,7 +98,7 @@ class Mempool {
   }
 
   addBlock(block) {
-    //console.debug("Mempool : adding block...");
+    console.debug("Mempool : adding block... : " + block.returnHash());
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
       return false;
@@ -338,7 +338,7 @@ class Mempool {
         }
       }
       if (this.app.options.peers) {
-        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.length === 0) {
+        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.size === 0) {
           console.log("ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN...");
           return false;
         }
