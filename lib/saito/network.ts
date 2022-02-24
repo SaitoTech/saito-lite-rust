@@ -266,11 +266,14 @@ class Network {
         console.log("connected to network", event);
         this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
+        this.app.connection.emit("peer_connect", peer);
+        this.app.connection.emit("connection_up", peer);
       };
       peer.socket.onclose = (event) => {
         console.log(
           `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
         );
+        this.app.connection.emit("connection_dropped", peer);
         this.app.connection.emit("peer_disconnect", peer);
       };
       peer.socket.onerror = (event) => {
@@ -512,8 +515,7 @@ class Network {
 
   async receiveRequest(peer, message) {
 
-    console.debug("network.receiveRequest : ", message);
-    console.log("network.receiveRequest!");
+    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;

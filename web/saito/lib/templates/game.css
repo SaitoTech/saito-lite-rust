@@ -562,7 +562,6 @@ i.menu_icon_icon{
 .showcard{
   font-weight: bold;
   cursor: pointer;
-  text-decoration: underline dotted;
 }
 
 @media screen and (max-width: 525px) {

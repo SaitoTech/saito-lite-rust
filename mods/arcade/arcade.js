@@ -245,6 +245,25 @@ class Arcade extends ModTemplate {
 
 
 
+  //
+  //
+  // ON CONNECTION STABLE
+  //
+  // this function runs "connect" event
+  onConnectionStable(app, peer) { 
+    siteMessage("Connection Restored", 1000);
+  }
+
+  //
+  //
+  // ON CONNECTION UNSTABLE
+  //
+  // this function runs "disconnect" event
+  onConnectionUnstable(app, peer) { 
+    siteMessage("Connection Unstable", 5000);
+  }
+
+
   async render(app) {
 
     if (!document.getElementById("arcade-container")) { 
@@ -301,6 +320,8 @@ class Arcade extends ModTemplate {
     }
   }
   notifyPeers(app, tx) {
+    // lite-clients can skip
+    if (app.BROWSER == 1) { return; } 
     for (let i = 0; i < app.network.peers.length; i++) {
       if (app.network.peers[i].peer.synctype == "lite") {
         //
@@ -411,7 +432,6 @@ try {
       //
       if (app.BROWSER == 0 && txmsg.request == "open" || txmsg.request == "join" || txmsg.request == "accept" || txmsg.request == "close") {
   	if (this.doesGameExistLocally(tx.transaction.sig)) {
-console.log("SERVER NOTIFY PEERS");
           this.notifyPeers(app, tx);
 	}
       }
@@ -473,6 +493,14 @@ console.log("SERVER NOTIFY PEERS");
       // acceptances
       //
       if (txmsg.request === "accept") {
+
+        //
+	// notify lite-clients and remove game from list available
+        //
+console.log("on conf - server notify peers of accept!");
+        this.notifyPeers(app, tx);
+	this.removeGameFromOpenList(txmsg.sig);
+
 
         //
         // remove game from server
@@ -754,7 +782,16 @@ console.log("SERVER NOTIFY PEERS");
       //
       if (txmsg.request == "accept") {
 
+        //
+	// notify lite-clients and remove game from list available
+        //
+	this.removeGameFromOpenList(txmsg.game_id);
+        if (this.app.BROWSER == 0) {
+console.log("on hpr - server notify peers of accept!");
+	  this.notifyPeers(this.app, tx);
+	}
 console.log("ACCEPT RECEIVED!");
+console.log(JSON.stringify(txmsg));
 
         //
         // multiplayer games might hit here without options.games
@@ -762,7 +799,6 @@ console.log("ACCEPT RECEIVED!");
         // options, etc.
         //
         if (this.app.BROWSER == 1) {
-
 
           //
           // do not process if transaction is not for us
@@ -865,8 +901,8 @@ console.log("GAME NOT FOUND!");
             }
           }
 
-
           this.removeGameFromOpenList(txmsg.game_id);
+
           if (txmsg.players.includes(app.wallet.returnPublicKey())) {
 
 	    let already_inited = this.viewing_arcade_initialization_page;
@@ -921,7 +957,9 @@ console.log("... and done launching the game");
           if (!tx.isTo(this.app.wallet.returnPublicKey())) {
 	    if (tx.transaction.relayed != 1) {
 	      tx.transaction.relayed = 1;
-	      this.notifyPeers(app, tx);
+	      if (app.BROWSER == 0) { 
+	        this.notifyPeers(app, tx);
+	      }
 	    }
 	  }
 
@@ -1784,6 +1822,7 @@ console.log("message is: " + JSON.stringify(thistxmsg));
       }
     });
 
+console.log("removed and new games list: " + JSON.stringify(this.games));
 /*** FEB 28 -- crypt issue? deleting game from options after init?
     if (this.app.options) {
       if (this.app.options.games) {
