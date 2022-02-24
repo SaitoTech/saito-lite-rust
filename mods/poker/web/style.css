@@ -72,7 +72,7 @@ body {
 
 .player-info-chips {
   text-align: center;
-  font-size: max(1em,3vh);
+  font-size: max(1em,2.5vh);
   overflow: hidden;
 }
 
