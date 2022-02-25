@@ -235,6 +235,27 @@ class Arcade extends ModTemplate {
     );
   }
 
+
+
+  //
+  //
+  // ON CONNECTION STABLE
+  //
+  // this function runs "connect" event
+  onConnectionStable(app, peer) { 
+    siteMessage("Connection Restored", 1000);
+  }
+
+  //
+  //
+  // ON CONNECTION UNSTABLE
+  //
+  // this function runs "disconnect" event
+  onConnectionUnstable(app, peer) { 
+    siteMessage("Connection Unstable", 5000);
+  }
+
+
   async render(app) {
     console.log("RENDERING ARCADE");
     if (!document.getElementById("arcade-container")) {
@@ -282,6 +303,8 @@ class Arcade extends ModTemplate {
     }
   }
   notifyPeers(app, tx) {
+    // lite-clients can skip
+    if (app.BROWSER == 1) { return; } 
     for (let i = 0; i < app.network.peers.length; i++) {
       if (app.network.peers[i].peer.synctype == "lite") {
         //
@@ -415,7 +438,15 @@ class Arcade extends ModTemplate {
         }
 
         //
-        // join msgs -- add myself to game list
+	     // notify lite-clients and remove game from list available
+      //
+      console.log("on conf - server notify peers of accept!");
+      this.notifyPeers(app, tx);
+	     this.removeGameFromOpenList(txmsg.sig);
+
+
+        //
+        // remove game from server
         //
         if (txmsg.request == "join") {
           this.joinGame(app, tx);
@@ -735,7 +766,17 @@ class Arcade extends ModTemplate {
       // accept msgs -- remove games from list
       //
       if (txmsg.request == "accept") {
-        console.log("ACCEPT RECEIVED!");
+
+        //
+	// notify lite-clients and remove game from list available
+        //
+	this.removeGameFromOpenList(txmsg.game_id);
+        if (this.app.BROWSER == 0) {
+console.log("on hpr - server notify peers of accept!");
+	  this.notifyPeers(this.app, tx);
+	}
+console.log("ACCEPT RECEIVED!");
+console.log(JSON.stringify(txmsg));
 
         //
         // multiplayer games might hit here without options.games
@@ -856,6 +897,7 @@ class Arcade extends ModTemplate {
           }
 
           this.removeGameFromOpenList(txmsg.game_id);
+
           if (txmsg.players.includes(app.wallet.returnPublicKey())) {
             let already_inited = this.viewing_arcade_initialization_page;
             console.log("ALREADY INITED? " + already_inited);
@@ -914,11 +956,13 @@ class Arcade extends ModTemplate {
         } else {
           // NOTIFY MY PEERS -- server notifying clients
           if (!tx.isTo(this.app.wallet.returnPublicKey())) {
-            if (tx.transaction.relayed != 1) {
-              tx.transaction.relayed = 1;
-              this.notifyPeers(app, tx);
-            }
-          }
+	    if (tx.transaction.relayed != 1) {
+	      tx.transaction.relayed = 1;
+	      if (app.BROWSER == 0) { 
+	        this.notifyPeers(app, tx);
+	      }
+	    }
+	  }
 
           if (this.app.options) {
             if (this.app.options.games) {
@@ -1752,7 +1796,8 @@ class Arcade extends ModTemplate {
       }
     });
 
-    /*** FEB 28 -- crypt issue? deleting game from options after init?
+console.log("removed and new games list: " + JSON.stringify(this.games));
+/*** FEB 28 -- crypt issue? deleting game from options after init?
     if (this.app.options) {
       if (this.app.options.games) {
         for (let i = 0; i < this.app.options.games.length; i++) {
