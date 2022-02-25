@@ -137,7 +137,7 @@ module.exports = ChatBox = {
           }
           app.browser.logMatomoEvent(
             "Chat",
-            "ArcadeChatSendMessage",
+            "ChatBoxSendMessage",
             "PressedEnter"
           );
           let newtx = mod.createMessage(group_id, msg_input.value);
@@ -164,6 +164,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnTouch"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);
@@ -182,6 +187,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnClick"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);

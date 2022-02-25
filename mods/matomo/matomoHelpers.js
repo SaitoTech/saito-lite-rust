@@ -6,16 +6,16 @@ function injectMatomo(siteId) {
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
-  // Manually Add javascript error tracking
-  _paq.push(['enableJSErrorTracking']);
   (function() {
     var u="https://saitotech.matomo.cloud/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '2']);
+    _paq.push(['setSiteId', siteId]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.src='//cdn.matomo.cloud/saitotech.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+    g.type='text/javascript'; g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
   })();
 }
+// '//cdn.matomo.cloud/saitotech.matomo.cloud/matomo.js'
+
 export function addToDOM() {
   if (window.location.hostname === "localhost") {
     // Tracking for website localhost. This is for dev/testing purposes.
@@ -25,6 +25,7 @@ export function addToDOM() {
   } else {
     injectMatomo('2');
   }
+  // Manually Add javascript error tracking
   _paq.push(['enableJSErrorTracking']);
 }
 
@@ -42,7 +43,8 @@ export function logToMatomo(category, action, name, value = 0) {
     } else {
       _paq.push(['trackEvent', category, action]);
     }
-  
+  }else{
+    console.error("no _paq");
   }
 }
 // We want to push the function into matomo's _paq stack so that it can do what
