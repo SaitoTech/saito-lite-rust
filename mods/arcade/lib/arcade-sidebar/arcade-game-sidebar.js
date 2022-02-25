@@ -8,9 +8,7 @@ const ArcadeContainerTemplate = require('../arcade-main/templates/arcade-contain
 module.exports = ArcadeGameSidebar = {
 
   render(app, mod) {
-
-    let x = app.browser.returnURLParameter("game");
-    let game_mod = app.modules.returnModuleBySlug(x);
+    let game_mod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
 
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
     if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeGameSidebarTemplate(game_mod), "arcade-container"); }
@@ -25,9 +23,7 @@ module.exports = ArcadeGameSidebar = {
 
   
   attachEvents(app, mod) {
-   /* We probably need a better way to pass the game name around */
-    let gameStub = app.browser.returnURLParameter("game");
-    let game_mod = app.modules.returnModuleBySlug(gameStub);
+    let game_mod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
 
     //Launch Game on Click
     Array.from(document.querySelectorAll("#new-game")).forEach(newGameBtn => {
