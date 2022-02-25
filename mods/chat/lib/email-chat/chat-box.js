@@ -279,6 +279,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);
@@ -288,6 +292,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);

@@ -3,13 +3,11 @@ const ArcadeForumsThreadTemplate = require("./templates/arcade-forums-thread.tem
 
 module.exports = ArcadeForums = {
   render(app, mod) {
-    let sobj = [];
+   
     let modforums = [];
-    console.log("RENDER FORUMS");
-    //
-    // set forum to renderMode.arcade if needed
-    //
-    try {
+    let modgames = [];
+     
+    try {    // set forum to renderMode.arcade if needed
       let post_mod = this.app.returnModule("Post");
       post_mod.renderMethod = "arcade";
     } catch (err) {}
@@ -18,78 +16,44 @@ module.exports = ArcadeForums = {
       modforums.push(mod);
     });
 
-    for (let i = 0; i < modforums.length; i++) {
-      let img = "/saito/img/background.png";
-      if (modforums[i].img) {
-        img = modforums[i].img;
-      }
-      let desc = modforums[i].description;
-      if (desc.length > 80) {
-        desc = desc.substr(0, 80) + "...";
-      }
-      let title = modforums[i].name;
-
-      sobj.push({
-        ft_link: "/post/?forum=" + modforums[i].returnSlug(),
-        ft_img: img,
-        ft_mod: modforums[i].returnSlug(),
-        ft_title: title,
-        ft_desc: desc,
-        ft_pnum: 0,
-        ft_ptext: "",
-        ft_ptitle: "",
-        ft_puser: "",
-        ft_pdate: "",
-      });
-    }
-
-    //
-    // listen for txs from arcade-supporting games
-    //
-    let modgames = [];
     app.modules.respondTo("arcade-games").forEach((mod) => {
       modgames.push(mod);
     });
 
+    //Create an array of objects for each module that responds to post-forum
+    let sobj = [];
+    
+    for (let i = 0; i < modforums.length; i++) {
+      sobj.push({
+        ft_link: "/post/?forum=" + modforums[i].returnSlug(),
+        ft_img: (modforums[i].img)? modforums[i].img: "/saito/img/background.png",
+        ft_mod: modforums[i].returnSlug(),
+        ft_title: modforums[i].name,
+        ft_desc: modforums[i].description,
+      });
+    }
+
+    //Create an array of objects for each module that responds to arcade-games
     let obj = [];
     for (let i = 0; i < modgames.length; i++) {
-      let desc = modgames[i].description;
-      if (desc.length > 80) {
-        desc = desc.substr(0, 80) + "...";
-      }
-      let title = modgames[i].gamename;
-      if (!title) {
-        title = modgames[i].name;
-      }
-
       obj.push({
         ft_link: "/arcade/?game=" + modgames[i].returnSlug(),
         ft_img: `/${modgames[i].returnSlug()}/img/arcade.jpg`,
         ft_mod: modgames[i].returnSlug(),
-        ft_title: title,
-        ft_desc: desc,
-        ft_pnum: 0,
-        ft_ptext: "",
-        ft_ptitle: "",
-        ft_puser: "",
-        ft_pdate: "",
+        ft_title: modgames[i].gamename || modgames[i].name,
+        ft_desc: modgames[i].description,
       });
     }
 
     if (!document.querySelector(".arcade-posts-container")) {
-      console.log("Insert forums");
       app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
-      app.browser.addElementToDom(
-        '<div class="forum-post-header">Saito Discussions</div>',
-        "arcade-posts-container"
-      );
+      
+      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', "arcade-posts-container");
       for (let i = 0; i < sobj.length; i++) {
         app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts-container");
       }
-      app.browser.addElementToDom(
-        '<div class="forum-post-header">Game-Specific Forums</div>',
-        "arcade-posts-container"
-      );
+      
+      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', "arcade-posts-container");
       for (let i = 0; i < obj.length; i++) {
         app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts-container");
       }

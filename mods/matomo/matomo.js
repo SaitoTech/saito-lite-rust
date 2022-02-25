@@ -22,7 +22,6 @@ class Matomo extends ModTemplate {
       // It shouldnt' be necessary to track alreadyAdded but let's do it anyway
       // just to be 100% sure the tracking isn't inserted multiple times.
       if(!this.alreadyAdded) {
-        console.log("Adding matomo to dom");
         this.alreadyAdded = true;
         addToDOM();
       }

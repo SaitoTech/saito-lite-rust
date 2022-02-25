@@ -25,14 +25,21 @@ module.exports = ChatSidebar = {
       // open chat window if clicked
       //
       document.querySelectorAll(".chat-row").forEach(row => {
-	row.onclick = (e) => {
-	  mod.mute_community_chat = 0;
-          try {
+	       row.onclick = (e) => {
+	         try {
             let chatName = document.querySelector(`#${e.currentTarget.id} .chat-group-name`).innerHTML;
             app.browser.logMatomoEvent("Chat", "ArcadeSidebarChatOpenedClick", chatName);
-          } catch (e) {
+          } catch (err) {
+            console.error(err);
             // This sometimes fails if the id is formed a certain way the querySelector throws an error..
             app.browser.logMatomoEvent("Chat", "ArcadeSidebarChatOpenedClick", "unknownChat");
+          }
+          if (mod.returnCommunityChat().id === e.currentTarget.id){
+            mod.mute_community_chat = 0;
+            if (!mod.app.options.auto_open_chat_box){
+              mod.app.options.auto_open_chat_box = 1;
+              mod.app.storage.saveOptions();
+            }
           }
           mod.openChatBox(e.currentTarget.id);
         };
