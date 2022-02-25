@@ -836,7 +836,7 @@ class Network {
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (peer.socket.readyState !== peer.socket.OPEN) {
+      if (peer.socket.readyState === peer.socket.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }
