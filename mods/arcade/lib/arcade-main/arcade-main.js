@@ -17,7 +17,6 @@ let tabNames = [];
 
 module.exports = ArcadeMain = {
   render(app, mod) {
-    console.log("RENDER MAIN: " + mod.viewing_game_homepage);
     // avoid rendering over inits
     if (mod.viewing_arcade_initialization_page == 1) {
       return;

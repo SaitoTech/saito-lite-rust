@@ -5,7 +5,6 @@ module.exports = ArcadeForums = {
   render(app, mod) {
     let sobj = [];
     let modforums = [];
-    console.log("RENDER FORUMS");
     //
     // set forum to renderMode.arcade if needed
     //
@@ -77,7 +76,6 @@ module.exports = ArcadeForums = {
     }
 
     if (!document.querySelector(".arcade-posts-container")) {
-      console.log("Insert forums");
       app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
       app.browser.addElementToDom(
         '<div class="forum-post-header">Saito Discussions</div>',

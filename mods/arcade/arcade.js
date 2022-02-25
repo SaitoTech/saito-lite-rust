@@ -54,6 +54,7 @@ class Arcade extends ModTemplate {
       if (this.browser_active) {
         //this.renderSidebar();
         try {
+          console.log("Open chat box: "+this.chat_open);
           let chat_mod = this.app.modules.returnModule("Chat");
           if (chat_mod.groups.length > 0 && this.chat_open == 0) {
             this.chat_open = 1;
@@ -84,7 +85,6 @@ class Arcade extends ModTemplate {
   }
 
   renderSidebar() {
-    console.log("RENDER SIDEBAR: "+this.viewing_game_homepage);
     if (this.viewing_game_homepage) {
       ArcadeGameSidebar.render(this.app, this);
       ArcadeGameSidebar.attachEvents(this.app, this);
@@ -257,7 +257,6 @@ class Arcade extends ModTemplate {
 
 
   async render(app) {
-    console.log("RENDERING ARCADE");
     if (!document.getElementById("arcade-container")) {
       app.browser.addElementToDom(ArcadeContainerTemplate());
     }
