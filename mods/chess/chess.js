@@ -86,6 +86,8 @@ class Chessgame extends GameTemplate {
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
+        console.log("Button Press: Rules");
+        console.log(returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-game", {
@@ -93,6 +95,7 @@ class Chessgame extends GameTemplate {
       id: "game-log",
       class: "game-log",
       callback: function (app, game_mod) {
+        console.log("Button Press: Log");
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
       },
