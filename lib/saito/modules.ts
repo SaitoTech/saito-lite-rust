@@ -322,7 +322,6 @@ console.log("connection dropped -- triggering on connection unstable");
 
   onConnectionUnstable(peer) {
     for (let i = 0; i < this.mods.length; i++) {
-console.log("mod: " + i + " - ocu");
       this.mods[i].onConnectionUnstable(this.app, peer);
     }
   }
