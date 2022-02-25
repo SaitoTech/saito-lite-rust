@@ -23,7 +23,7 @@ class Network {
   public block_sample_size: any;
   public dead_peers: any;
   public socket: any;
-  public peer_monitor_timer_speed = 5000;
+  public peer_monitor_timer_speed = 7500;
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
 
