@@ -39,7 +39,6 @@ module.exports = ArcadeMain = {
 
     // purge existing content
     if (document.getElementById("arcade-main")) {
-      console.log("Destroy main");
       document.getElementById("arcade-main").destroy();
     }
 
@@ -51,7 +50,6 @@ module.exports = ArcadeMain = {
       app.browser.addElementToDom(ArcadeContainerTemplate(app, mod));
     }
     if (!document.querySelector(".arcade-main")) {
-      console.log("Insert main");
       app.browser.addElementToDom(ArcadeMainTemplate(app, mod), "arcade-container");
     }
 

@@ -52,11 +52,15 @@ class Arcade extends ModTemplate {
   receiveEvent(type, data) {
     if (type == "chat-render-request") {
       if (this.browser_active) {
+        if (this.app.options.auto_open_chat_box == undefined){
+          this.app.options.auto_open_chat_box = 1;
+          this.app.storage.saveOptions();
+        }
         //this.renderSidebar();
         try {
-          console.log("Open chat box: "+this.chat_open);
+          console.log("Open chat box: "+this.app.options.auto_open_chat_box);
           let chat_mod = this.app.modules.returnModule("Chat");
-          if (chat_mod.groups.length > 0 && this.chat_open == 0) {
+          if (chat_mod.groups.length > 0 && this.chat_open == 0 && this.app.options.auto_open_chat_box) {
             this.chat_open = 1;
             chat_mod.openChatBox();
           }

@@ -17,12 +17,12 @@ module.exports = ArcadePosts = {
       }
 
       for (let i = mod.forums.length-1; i >= 0; i--) {
-        console.log("rendering forum: " + JSON.stringify(mod.forums[i]));
+        //console.log("rendering forum: " + JSON.stringify(mod.forums[i]));
         this.updateForum(app, mod, mod.forums[i]);
       }
       
       for (let i = mod.posts.length-1; i >= 0; i--) {
-        console.log("rendering posts: " + JSON.stringify(mod.posts[i]));
+        //console.log("rendering posts: " + JSON.stringify(mod.posts[i]));
         this.addPost(app, mod, mod.posts[i]);
       }
     } catch (err) {
@@ -64,7 +64,7 @@ module.exports = ArcadePosts = {
   },
 
   addPost(app, mod, post) {
-    console.log(post);
+    //console.log(post);
     let post_this = 1;
     document.querySelectorAll('.arcade-post').forEach(el => {
       let sig = el.getAttribute("data-id");
@@ -84,7 +84,7 @@ module.exports = ArcadePosts = {
     let fdate = datetimeRelative(forum.transaction.ts);
     let fpost_num = forum.post_num;
     let fuid  = app.keys.returnIdenticon(forum.transaction.from[0].add);
-    console.log(txmsg.forum);
+    //console.log(txmsg.forum);
     let ptitle = txmsg.title;
     if (ptitle.indexOf("\n") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("\n")); }
     if (ptitle.indexOf("<div>") > 0) { ptitle = ptitle.substring(0, ptitle.indexOf("<div>")); }
