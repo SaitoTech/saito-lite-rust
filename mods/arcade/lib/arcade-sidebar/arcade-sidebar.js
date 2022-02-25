@@ -58,7 +58,7 @@ module.exports = ArcadeSidebar = {
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
-        app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", gameName);
+        app.browser.logMatomoEvent("Arcade", "GameListArcadeSidebarClick", gameName);
         let doGameDetails = () => {
           let tx = new saito.default.transaction();
           tx.msg.game = gameName;

@@ -25,10 +25,10 @@ class Chat extends ModTemplate {
         this.renderMode = "none";
         this.relay_moves_onchain_if_possible = 1;
 
-        //
-        // if someone closes community chat, don't pop it back open
-        //
-        this.mute_community_chat = 0;
+        /* if someone closes community chat, don't pop it back open
+           any navigation to another page with re-construct chat and forget this
+         */
+        this.mute_community_chat = 0;  
         //this.max_msg_size = 1*1024*1024;
         this.max_msg_size = 1 * 300 * 1024;
 
@@ -751,7 +751,6 @@ class Chat extends ModTemplate {
     // UI Functions //
     //////////////////
     openChatBox(group_id = null) {
-
         if (this.renderMode != "email" && this.renderMode != "none") {
             return;
         }
@@ -764,12 +763,10 @@ class Chat extends ModTemplate {
             if (group.id == undefined || group.id == null) {
                 return;
             }
-            this.openChatBox(group.id);
-            return;
+           group_id = group.id;
         }
 
-        let community_chat_group = this.returnCommunityChat();
-//alert(community_chat_group.id + " -- " + group_id + " -- " + this.mute_community_chat);
+        let community_chat_group = this.returnCommunityChat(); 
         if (community_chat_group.id == group_id && this.mute_community_chat == 1) {
             return;
         }
