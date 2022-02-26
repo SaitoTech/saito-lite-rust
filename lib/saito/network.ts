@@ -345,7 +345,7 @@ class Network {
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
       // it has to be this peer, and the socket must be closed
-      if (this.peers[c] === peer && this.peers[c].socket.readyState === this.peers[c].socket.CLOSED) {
+      if (this.peers[c].id === peer.id && this.peers[c].socket.readyState === this.peers[c].socket.CLOSED) {
 
         let keep_peer = -1;
 
