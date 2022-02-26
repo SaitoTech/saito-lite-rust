@@ -691,6 +691,10 @@ console.log("TEST: " + JSON.stringify(this.spaces['london']));
     this.displayBoard();
   }
 
+  returnImpulseOrder() {
+    return ["ottoman","hapsburg","england","france","papacy","protestant"];
+  }
+
 
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
@@ -3233,6 +3237,11 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
         if (mv[0] === "action_phase") {
+	  let io = this.returnImpulseOrder();
+	  // added in reverse order as last added goes first
+	  for (let i = io.length-1; i>= 0; i--) {
+	    this.game.queue.push("play\t"+io[i]);
+	  }
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -3245,10 +3254,6 @@ console.log("MOVE: " + mv[0]);
 console.log("just in diplomacy phase!");
 console.log("cards in hand: " + JSON.stringify(this.game.deck[0].hand));
 
-	  this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].hand);
-          this.attachCardboxEvents(function(card) {
-            this.playerPlayCard(card, this.game.player);
-          });
 
 
 	  this.game.queue.splice(qe, 1);
@@ -3273,6 +3278,7 @@ console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
 	  // generate new deck
 	  //
 	  for (let i = this.game.players_info.length; i > 0; i--) {
+    	    this.game.queue.push("hand_to_fhand\t1\t"+(i)+"\t"+this.game.players_info[i].factions[0]);
     	    this.game.queue.push("DEAL\t1\t"+(i)+"\t"+(cards_to_deal[(i-1)]));
 	  }
 	  for (let i = this.game.players_info.length; i > 0; i--) {
@@ -3290,8 +3296,26 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
         }
 
         if (mv[0] === "play") {
+
+	  let faction = mv[1];
+	  let player_turn = -1;
+
+	  for (let i = 0; i < this.game.players_info.length; i++) {
+	    if (this.game.players_info.factions.includes(faction)) {
+	      player_turn = i+1;
+	    }
+	  }
+
           this.displayBoard();
-          this.playMove();
+
+	  // no-one controls this faction, so skip
+	  if (player_turn === -1) { return 1; }
+
+	  // let the player who controls play turn
+	  if (this.game.player === player_turn) {
+            this.playerTurn(faction);
+	  }
+
           return 0;
         }
 
@@ -3306,6 +3330,33 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
 
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "hand_to_fhand") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let deckidx = parseInt(mv[1])-1;
+	  let player = mv[2];
+	  let faction = mv[3];
+	  let fhand_idx = this.returnFactionHandIndex(player, faction);
+
+	  if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
+	  while (this.game.deck[deckidx].fhand.length < fhand_idx) { this.game.deck[deckidx].fhand.push([]); }
+
+	  for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
+	    this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].fhand[i]);
+	  }
+
+	  // and clear the hand we have dealt
+	  this.game.deck[deckidx].hand = [];
+
+	  this.updateLog("hand entries copied over to fhand at indexthis.game.spaces[space].name + " converts to the " + religion + " religion");
+
+console.log(this.game.deck[deckidx]);
 
 	  return 1;
 
@@ -3503,7 +3554,8 @@ console.log("x is: " + x);
 
 
       players[i] = {};
-      players[i].faction = rf;
+      players[i].factions = [];
+      players[i].factions.push(rf);
 
     }
 
@@ -3903,19 +3955,20 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
 
 
-  playerTurn(selected_card=null) {
+  playerTurn(faction, selected_card=null) {
 
     this.startClock();
 
     let his_self = this;
+    let faction_hand_idx = this.returnFactionHandIdx(faction, this.game.player);
 
-    this.resetPlayerTurn(this.game.player);
 
-    this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.attachCardboxEvents(function(card) {
-      his_self.playerPlayCard(card, this.game.player);
-    });
+    this.resetPlayerTurn(this.game.player, faction);
 
+    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    this.attachCardboxEvents(function(card) {
+      this.playerPlayCard(card, this.game.player);
+    });  
 
   }
 
@@ -4074,23 +4127,23 @@ console.log("17");
 return;
   }
   async playerCallTheologicalDebate(his_self, player) {
-console.log("");
+console.log("18");
 return;
   }
   async playerBuildSaintPeters(his_self, player) {
-console.log("");
+console.log("19");
 return;
   }
   async playerBurnBooks(his_self, player) {
-console.log("");
+console.log("20");
 return;
   }
   async playerFoundJesuitUniversity(his_self, player) {
-console.log("jesuit");
+console.log("21 jesuit");
 return;
   }
   async playerPublishTreatise(his_self, player) {
-console.log("treatise");
+console.log("22 treatise");
 return;
   }
 
@@ -4123,6 +4176,13 @@ return;
 
   }
 
+  returnFactionHandIdx(player, faction) {
+    for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
+      if (this.game.players_info[player-1].factions[i] === faction) {
+	return i;
+      }
+    }
+  }
 
 
 

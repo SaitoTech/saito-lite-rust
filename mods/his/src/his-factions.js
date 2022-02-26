@@ -26,5 +26,12 @@
 
   }
 
+  returnFactionHandIdx(player, faction) {
+    for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
+      if (this.game.players_info[player-1].factions[i] === faction) {
+	return i;
+      }
+    }
+  }
 
 

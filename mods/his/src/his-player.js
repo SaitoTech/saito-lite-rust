@@ -65,7 +65,8 @@
 
 
       players[i] = {};
-      players[i].faction = rf;
+      players[i].factions = [];
+      players[i].factions.push(rf);
 
     }
 
@@ -465,19 +466,20 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
 
 
-  playerTurn(selected_card=null) {
+  playerTurn(faction, selected_card=null) {
 
     this.startClock();
 
     let his_self = this;
+    let faction_hand_idx = this.returnFactionHandIdx(faction, this.game.player);
 
-    this.resetPlayerTurn(this.game.player);
 
-    this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.attachCardboxEvents(function(card) {
-      his_self.playerPlayCard(card, this.game.player);
-    });
+    this.resetPlayerTurn(this.game.player, faction);
 
+    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    this.attachCardboxEvents(function(card) {
+      this.playerPlayCard(card, this.game.player);
+    });  
 
   }
 
@@ -636,23 +638,23 @@ console.log("17");
 return;
   }
   async playerCallTheologicalDebate(his_self, player) {
-console.log("");
+console.log("18");
 return;
   }
   async playerBuildSaintPeters(his_self, player) {
-console.log("");
+console.log("19");
 return;
   }
   async playerBurnBooks(his_self, player) {
-console.log("");
+console.log("20");
 return;
   }
   async playerFoundJesuitUniversity(his_self, player) {
-console.log("jesuit");
+console.log("21 jesuit");
 return;
   }
   async playerPublishTreatise(his_self, player) {
-console.log("treatise");
+console.log("22 treatise");
 return;
   }
 

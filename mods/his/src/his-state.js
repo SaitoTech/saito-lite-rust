@@ -25,6 +25,10 @@
     this.displayBoard();
   }
 
+  returnImpulseOrder() {
+    return ["ottoman","hapsburg","england","france","papacy","protestant"];
+  }
+
 
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
