@@ -123,11 +123,6 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
           return 1;
         }
         if (mv[0] === "card_draw_phase") {
-this.updateLog("Deal Cards to Players");
-this.updateLog("Discards Reshuffled into Deck");
-this.updateLog("New Units and New Cards Added");
-
-console.log("PI: " + JSON.stringify(this.game.players_info));
 
 	  //
 	  // generate new deck
@@ -136,10 +131,8 @@ console.log("PI: " + JSON.stringify(this.game.players_info));
 	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
               let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
     	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
-
-console.log("DEALING: " + cardnum + " to " + this.game.players_info[i].factions[z]);
-
 	    }
 	  }
 	  for (let i = this.game.players_info.length; i > 0; i--) {
@@ -148,11 +141,38 @@ console.log("DEALING: " + cardnum + " to " + this.game.players_info[i].factions[
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
-    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
+
+	  let deck_to_deal = this.returnDeck()
+	  delete deck_to_deal['001'];
+	  delete deck_to_deal['002'];
+	  delete deck_to_deal['003'];
+	  delete deck_to_deal['004'];
+	  delete deck_to_deal['005'];
+	  delete deck_to_deal['006'];
+	  delete deck_to_deal['007'];
+	  delete deck_to_deal['008'];
+
+    	  this.game.queue.push("restore_home_cards_to_deck");
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(deck_to_deal));
 
 	  this.game.queue.splice(qe, 1);
           return 1;
+
         }
+
+        if (mv[0] === "restore_home_cards_to_deck") {
+	  let d = this.returnDeck();
+	  this.game.deck[0].cards['001'] = d['001'];
+	  this.game.deck[0].cards['002'] = d['002'];
+	  this.game.deck[0].cards['003'] = d['003'];
+	  this.game.deck[0].cards['004'] = d['004'];
+	  this.game.deck[0].cards['005'] = d['005'];
+	  this.game.deck[0].cards['006'] = d['006'];
+	  this.game.deck[0].cards['007'] = d['007'];
+	  this.game.deck[0].cards['008'] = d['008'];
+	  this.game.queue.splice(qe, 1);
+          return 1;
+	}
 
         if (mv[0] === "play") {
 
@@ -219,6 +239,25 @@ console.log("DEALING: " + cardnum + " to " + this.game.players_info[i].factions[
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
 
+	  return 1;
+
+	}
+
+	if (mv[0] === "add_home_card") {
+
+	  let player = parseInt(mv[1]);
+ 	  let faction = mv[2];
+ 	  let hc = this.returnDeck();
+
+	  if (this.game.player === player) {
+	    for (let key in hc) {
+	      if (hc[key].faction === faction) {
+	        this.game.deck[0].hand.push(key);
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}

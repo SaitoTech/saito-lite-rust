@@ -1845,40 +1845,55 @@ console.log(JSON.stringify(space.units));
   }
 
 
-
   returnDeck() {
 
     var deck = {};
 
-    // EARLY WAR
+    /// HOME CARDS
     deck['001'] = { 
       img : "cards/HIS-001.svg" , 
       name : "Card" ,
+      faction : "ottoman" ,
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
       name : "Card" ,
+      faction : "hapsburg" ,
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
       name : "Card" ,
+      faction : "england" ,
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
       name : "Card" ,
+      faction : "french" ,
     }
-    deck['005'] = { 
-      img : "cards/HIS-005.svg" , 
-      name : "Card" ,
+    if (this.game.players.length == 2) {
+      deck['005'] = { 
+        img : "cards/HIS-005.svg" , 
+        name : "Card" ,
+        faction : "papacy" ,
+      }
+    } else {
+      deck['005'] = { 
+        img : "cards/HIS-005-2P.svg" , 
+        name : "Card" ,
+        faction : "papacy" ,
+      }
     }
     deck['006'] = { 
       img : "cards/HIS-006.svg" , 
       name : "Card" ,
+      faction : "papacy" ,
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
       name : "Card" ,
+      faction : "protestant" ,
     }
+    // 95 Theses
     deck['008'] = { 
       img : "cards/HIS-008.svg" , 
       name : "Card" ,
