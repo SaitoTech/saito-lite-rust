@@ -842,7 +842,6 @@ class Network {
       if (peer.socket.readyState === peer.socket.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
-          break;
         }
       }
     });
