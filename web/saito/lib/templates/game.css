@@ -387,7 +387,7 @@ ul li a {
   width: 500px;
   max-width: 100%;
   min-height: 40px;
-  margin: 0 auto 10px auto;
+  margin-bottom: 10px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   padding: 10px 0; 
   font-size: 0.9em;
@@ -413,7 +413,7 @@ ul li a {
 
 /*** Icon/pictorial (but not card) container for menu options in hud > hud-body > status ***/ 
 .status-icon-menu {
-  width:550px;
+  width:525px;
   height: 130px;
   margin:auto;
   display: flex;
@@ -421,9 +421,10 @@ ul li a {
 }
 
 .menu_icon{
-  margin: 5px;
+  /*margin: 5px;*/
   width: 100px;
   color: var(--saito-white);
+  cursor: pointer;
 }
 
 .menu_icon_icon {
@@ -452,6 +453,14 @@ i.menu_icon_icon{
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+}
+
+/* If dragging, need to anchor to left side of hud */
+.user_dragged .hud-body .status{
+  align-items: flex-start;
+}
+.user_dragged .hud-header{
+  margin-left: 0;
 }
 
 /*** Text listed menu options in hud > hud-body > status ***/ 
@@ -553,7 +562,6 @@ i.menu_icon_icon{
 .showcard{
   font-weight: bold;
   cursor: pointer;
-  text-decoration: underline dotted;
 }
 
 @media screen and (max-width: 525px) {
@@ -1183,6 +1191,43 @@ i.menu_icon_icon{
   transform: rotate(20deg);
   left: 8vh;
 }
+
+
+.bighand>.card:nth-child(5n+1) {
+  transform: rotate(-20deg);
+  left: 0px;
+}
+
+.bighand>.card:nth-child(5n+2) {
+  transform: rotate(-10deg);
+  left: 2vh;
+}
+
+.bighand>.card:nth-child(5n+3) {
+  transform: rotate(0deg);
+  left: 4vh;
+}
+
+.bighand>.card:nth-child(5n+4) {
+  transform: rotate(10deg);
+  left: 6vh;
+}
+
+.bighand>.card:nth-child(5n+5) {
+  transform: rotate(20deg);
+  left: 8vh;
+}
+
+.bighand>.card:nth-child(n+6) {
+  top: 3vh;
+}
+.bighand>.card:nth-child(n+11) {
+  top: 6vh;
+}
+.bighand>.card:nth-child(n+16) {
+  top: 9vh;
+}
+
 
 /** MOBILE STYLING FOR CARDFAN**/
 @media screen and (orientation: landscape) and (max-height: 600px) {

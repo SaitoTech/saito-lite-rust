@@ -197,6 +197,7 @@ class Mods {
 
     const onConnectionUnstable = this.onConnectionUnstable.bind(this);
     this.app.connection.on("connection_dropped", (peer: Peer) => {
+console.log("connection dropped -- triggering on connection unstable");
       onConnectionUnstable(peer);
     });
 
@@ -213,7 +214,6 @@ class Mods {
       await this.app.modules.render();
     }
   }
-
 
   render() {
     for (let icb = 0; icb < this.mods.length; icb++) {

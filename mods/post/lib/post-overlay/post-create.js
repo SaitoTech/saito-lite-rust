@@ -17,21 +17,24 @@ module.exports = PostCreate = {
     mod.overlay.show(app, mod, PostCreateTemplate(app, mod), function() {
     });
 
-    document.querySelector(".post-create-header").style.display = "none";
-
-    this.showTab("discussion");
-
+    //document.querySelector(".post-create-header").style.display = "none";
+    //this.showTab("discussion");
     //document.querySelector('.post-create-header-discussion').onclick = (e) => { this.showTab("discussion"); }
     //document.querySelector('.post-create-header-link').onclick = (e) =>       { this.showTab("link"); }
     //document.querySelector('.post-create-header-image').onclick = (e) =>      { this.showTab("image"); }
-    document.querySelector('.post-create-image-link-container').onclick = (e) =>       { this.showTab("link"); }
+    //document.querySelector('.post-create-image-link-container').onclick = (e) =>       { this.showTab("link"); }
 
-    app.browser.addDragAndDropFileUploadToElement("post-create-container", (file) => {
-      console.log(file);
-      this.new_post.images.push(file);
-      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
-      this.attachEvents(app, mod);
-    }, false);
+    app.browser.addDragAndDropFileUploadToElement("post-create-container", 
+      (file) => {
+          console.log(file);
+          this.new_post.images.push(file);
+          app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+          this.attachEvents(app, mod);
+          document.querySelector(".post-create-title").style.display = "block";
+          document.querySelector(".post-create-title").placeholder = "Give Your File a Title";
+          document.querySelector(".post-create-textarea").style.display = "none";
+      }, 
+      false);
 
     if (img_src != null) {
       this.new_post.images.push(img_src);
@@ -40,8 +43,8 @@ module.exports = PostCreate = {
       document.querySelector(".post-create-title").style.display = "block";
       document.querySelector(".post-create-title").placeholder = "Give Your Screenshot a Title";
       document.querySelector(".post-create-textarea").style.display = "none";
-      document.querySelector(".post-create-link").style.display = "none";
-      document.querySelector(".post-create-image-link-container").style.display = "none";
+      //document.querySelector(".post-create-link").style.display = "none";
+      //document.querySelector(".post-create-image-link-container").style.display = "none";
     }
 
     document.querySelector('.post-create-textarea').focus();
@@ -52,36 +55,43 @@ module.exports = PostCreate = {
     document.querySelector('.post-submit-btn').onclick = async (e) => {
 
       if (this.new_post.images.length > 0) {
-	alert("It may take up to a minute to update large images. Please be patient!");
+	      salert("It may take up to a minute to update large images. Please be patient!");
       }
-
-      this.new_post.title = document.querySelector('.post-create-title').value;
-      this.new_post.comment = document.querySelector('.post-create-textarea').innerHTML;
-      this.new_post.link = document.querySelector('.post-create-link-input').value;
+      // ===== USER INPUT =====
+      this.new_post.title = sanitize(document.querySelector('.post-create-title').value);
+      // ===== USER INPUT =====
+      this.new_post.comment = sanitize(document.querySelector('.post-create-textarea').innerHTML);
+      
+      //this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
+
+      console.log("NEW POST: "+this.new_post.comment);
 
       if (this.new_post.title === "" && this.new_post.content === "") {
         salert("Cannot submit untitled/empty post!");
         return;
       }
 
-      if (this.new_post.title === "") {
-	let maxlen = 80;
-	if (this.new_post.comment.length > maxlen) {
-	  this.new_post.title = this.new_post.comment.substr(0, maxlen) + "..."; 
-	} else {
-	  this.new_post.title = this.new_post.comment;
-	}
+      if (!this.new_post.title) {
+        let title = "";
+        this.new_post.comment.split(/<[^<]+>/gi).forEach(line =>{
+          if (!title){
+            title += line.replaceAll("&nbsp;"," ");
+          }
+          title = title.trim(); //Doesn't help because white space is coded as &nbsp;
+        });
+        
+      	if (title.length > 40) { title = title.substr(0, 40) + "..."; 	}
+        this.new_post.title = title;
       }
-
 
       let newtx = mod.createPostTransaction(this.new_post.title, this.new_post.comment, this.new_post.link, this.new_post.forum, this.new_post.images);
       app.network.propagateTransaction(newtx);
       newtx.children = 0;
+      newtx.id = newtx.transaction.sig;
       mod.posts.push(newtx);
-      mod.render();
+      mod.render(); //this should refresh the forum?
       mod.overlay.hide();
-
     }
 
 
@@ -107,20 +117,17 @@ module.exports = PostCreate = {
 
 
 
-
-  showTab(tab) {
+/*  showTab(tab) {
 
     if (tab === "link") {
       try {
         if (document.querySelector(".post-create-link").style.display === "block") {
-	  tab = "discussion";
-	}
+	         tab = "discussion";
+      	}
       } catch (err) {
 
       }
     }
-
-
     let classname = ".post-create-header-"+tab;
 
     document.querySelectorAll('.post-create-header-item').forEach(el => { el.classList.remove("post-create-active"); }); 
@@ -158,6 +165,6 @@ module.exports = PostCreate = {
 
     return url.protocol === "http:" || url.protocol === "https:";
   }
-
+*/
 }
 

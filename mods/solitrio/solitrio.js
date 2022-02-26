@@ -160,31 +160,7 @@ class Solitrio extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].slug === "chat") {
-              let chatmod = this.app.modules.mods[i];
-              this.menu.addMenuOption({
-                text : "Chat",
-                id : "game-chat",
-                class : "game-chat",
-                callback : function(app, game_mod) {
-                  game_mod.menu.showSubMenu("game-chat");
-                }
-              })
-              this.menu.addSubMenuOption("game-chat", {
-                text : "Community",
-                id : "game-chat-community",
-                class : "game-chat-community",
-                callback : function(app, game_mod) {
-                  game_mod.menu.hideSubMenus();
-                  chatmod.mute_community_chat = 0;
-                  chatmod.sendEvent('chat-render-request', {});
-                  chatmod.openChatBox();
-                } 
-              });
-      }
-    }
-
+    this.menu.addChatMenu(this.app, this);
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 

@@ -7,10 +7,24 @@
 
 
 .epidemic_overlay {
-  display: block;
-  width: 70vw;
-  height: 70vh;
-  background-color: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2em;
+  max-width: 70vw;
+  max-height: 70vh;
+  background-color: black;
+  color: whitesmoke;
+  border: 5px dashed red;
+}
+
+.epidemic_overlay .epidemic-card{
+  margin: 2em;
+}
+.close_epidemic_overlay{
+  background-color: var(--saito-red);
+  color: #fefefe;
   text-align: center;
 }
 
@@ -137,34 +151,6 @@
   top: 100%;
   z-index: 900009;
 }
-
-
-
-
-.acknowledge-message {
-  background: whitesmoke;
-  display: inline-block;
-  padding-left: 25px;
-  padding-right: 25px;
-}
-.acknowledge-message:hover {
-  font-weight: bold;
-}
-.acknowledge_message ul {
-  width: 100%;
-  display: table;
-}
-.status ul #confirmit {
-  background-color: whitesmoke;
-  border-radius: 10px;
-  margin-top: 10px;
-  width: 500px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-
-
 
 
 

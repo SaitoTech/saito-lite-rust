@@ -26,6 +26,8 @@ class Pandemic extends GameTemplate {
     this.interface = 1; // default to graphics (as opposed to text interface)
 
     this.hud.mode = 0;
+    this.hud.card_width = 120;
+    this.hud.enable_mode_change = 1;
     let temp_self = this;
     this.menu_backup_callback = function(){temp_self.playerMakeMove();};
     this.changeable_callback = function(){};
@@ -65,18 +67,12 @@ class Pandemic extends GameTemplate {
     let playerHand = this.game.players_info[player_num - 1].cards;
 
     for (let i = 0; i < playerHand.length; i++) {
-      //let city = pandemic_self.game.deck[1].cards[deck[i]];
-      html += `<div class="card" id="${playerHand[i]}">${this.returnCardImage(
-        playerHand[i],
-        1
-      )}</div>`;
+      let card = this.returnCardImage(playerHand[i], 1).replace("img", `img id="${playerHand[i]}"`);
+      html += card; //this.returnCardImage(playerHand[i], 1);
+      //html += `<div class="card" id="${playerHand[i]}">${}</div>`;
     }
-
-    this.overlay.show(
-      this.app,
-      this,
-      `<div class="cardfan cardfan-loose">${html}</div>`
-    );
+    html = html.replace(/cardimg/g,"card");
+    this.overlay.show(this.app, this, `<div class="cardfan bighand">${html}</div>`);
     this.attachCardboxEvents(); //Don't do anything on click
   }
 
@@ -84,22 +80,8 @@ class Pandemic extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
-    //
-    // enable chat
-    //
-
-    //if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
-    //  const chat = this.app.modules.returnModule("Chat");
-    //  chat.addPopUpChat();
-    //}
-
-    this.updateStatus("<div class='status-message'>loading game...</div>");
+ 
     this.loadGame(game_id);
-    if (this.game.status != "") {
-      this.updateStatus(
-        '<div class="status-message">' + this.game.status + "</div>"
-      );
-    }
     this.restoreLog(); //from gameTemplate
 
     //
@@ -108,15 +90,11 @@ class Pandemic extends GameTemplate {
     if (this.game.dice == "") {
       this.initializeDice();
     }
+
     if (this.game.cities == undefined) {
-      this.game.events = this.returnEvents();
       this.game.cities = this.returnCities();
       this.game.state = this.returnState();
       this.game.players_info = this.returnPlayers(this.game.players.length);
-
-      this.updateStatus(
-        '<div class="status-message">Generating the Game</div>'
-      );
 
       //
       // start game once here
@@ -125,62 +103,46 @@ class Pandemic extends GameTemplate {
       this.game.queue.push("round");
 
       this.game.queue.push("initialize_player_deck");
-
-      //
+      
       // Deal Player Cards
-      //
-      let cards_to_deal = 2;
-      if (this.game.opponents.length + 1 == 3) {
-        cards_to_deal = 3;
-      }
-      if (this.game.opponents.length + 1 == 2) {
-        cards_to_deal = 4;
-      }
-
-      for (let i = 0; i < this.game.opponents.length + 1; i++) {
-        this.game.queue.push(
-          "draw_player_card\t" + (i + 1) + "\t" + cards_to_deal
-        );
+      // 2 P => 4 cards each, 3 P => 3 cards each, 4 P => 2 cards each
+      let cards_to_deal = 6 - this.game.players.length;
+      
+      for (let i = 1; i <= this.game.players.length; i++) {
+        this.game.queue.push(`draw_player_card\t${i}\t${cards_to_deal}`);
       }
 
       this.game.queue.push("place_initial_infection");
 
-      //
-      // Shuffle Infection Cards
-      //
+
       this.game.queue.push("READY\t1");
-
-      //
-      // Shuffle Player Cards
-      //
-      let playerCards = this.returnPlayerCards();
       this.game.queue.push("SHUFFLE\t2");
-      this.game.queue.push("DECK\t2\t" + JSON.stringify(playerCards));
-
+      this.game.queue.push("DECK\t2\t" + JSON.stringify(this.returnPlayerCards()));
       this.game.queue.push("SHUFFLE\t1");
-      this.game.queue.push(
-        "DECK\t1\t" + JSON.stringify(this.returnInfectionCards())
+      this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnInfectionCards())
       );
     }
-    console.log(this.game.cities);
-    //
-    // interface
-    //
-    for (var i in this.game.cities) {
-      let divname = "#" + i;
-
-      try {
-        $(divname).css("top", this.scale(this.game.cities[i].top) + "px");
-        $(divname).css("left", this.scale(this.game.cities[i].left) + "px");
-      } catch (err) {}
-    }
-
-    this.showBoard();
-
+    
+    
     //
     // if the browser is active, shift to the game that way
     //
     if (this.browser_active == 1) {
+
+      //
+      // interface
+      //
+      for (var i in this.game.cities) {
+        let divname = "#" + i;
+
+        try {
+          $(divname).css("top", this.scale(this.game.cities[i].top) + "px");
+          $(divname).css("left", this.scale(this.game.cities[i].left) + "px");
+        } catch (err) {}
+      }
+
+      this.showBoard();
+    
       let msg = {};
       msg.extra = {};
       msg.extra.target = this.game.target;
@@ -307,83 +269,35 @@ class Pandemic extends GameTemplate {
   }
 
   playerTurn() {
-    let pandemic_self = this;
-
     //Reset number of actions for the player (Generalist = 5, otherwise 4)
     this.active_moves = this.game.players_info[this.game.player-1].moves;
-  
     // reset events
     this.game.state.one_quiet_night = 0;
-
-    // next turn -- !!! this shouldn't have to be part of the game module
-    this.addMove("turn\t" + this.returnNextPlayer(this.game.player));
-
-    // infect cities
-    this.addMove("infect");
-
-    // draw two player cards
-    this.addMove("draw_player_card\t" + this.game.player + "\t2");
-
-    // ### Should move to draw_player_card
-    // discard extra cards
-    if (
-      this.game.players_info[this.game.player - 1].cards.length >
-      this.maxHandSize
-    ) {
-      this.playerDiscardCards(function () {
-        pandemic_self.playerMakeMove();
-      });
-    } else {
-      this.playerMakeMove();
-    }
+    this.playerMakeMove();
   }
 
-  playerDiscardCards(mycallback) {
+  playerDiscardCards() {
     let pandemic_self = this;
-
-    $(".card").off();
-    this.updateStatusAndListCards(
-      "Pick a card to discard: ",
-      this.game.players_info[this.game.player - 1].cards
-    );
-    $(".card").on("click", function () {
-      let cid = $(this).attr("id");
-
-      //
-      // if we click to discard an event card, we can play it instead
-      //
-      if (cid.indexOf("event") > -1) {
-        let c = confirm(
-          "Do you want to play this event card instead of discarding it?"
-        );
-        if (c) {
-          pandemic_self.playEventCard(function () {
-            if (
-              pandemic_self.game.players_info[pandemic_self.game.player - 1]
-                .cards.length > pandemic_self.maxHandSize
-            ) {
-              pandemic_self.playerDiscardCards(mycallback);
-            } else {
-              mycallback();
-            }
-          });
-          return;
+ 
+    if (pandemic_self.game.players_info[pandemic_self.game.player - 1].cards.length > pandemic_self.maxHandSize) {
+      this.updateStatusAndListCards("Pick a card to discard: ",  this.game.players_info[this.game.player - 1].cards);
+      $(".card").off();
+      $(".card").on("click", function () {
+        let cid = $(this).attr("id");
+        if (cid.indexOf("event") > -1) {
+          let c = sconfirm("Do you want to play this event card instead of discarding it?");
+          if (c) {
+            pandemic_self.playEvent(cid);
+          }
+        }else{
+          pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${cid}`);
+          pandemic_self.removeCardFromHand(pandemic_self.game.player, cid);  
         }
-      }
-
-      pandemic_self.addMove(
-        "discard\t" + pandemic_self.game.player + "\t" + cid
-      );
-      pandemic_self.removeCardFromHand(pandemic_self.game.player, cid);
-      if (
-        pandemic_self.game.players_info[pandemic_self.game.player - 1].cards
-          .length <= pandemic_self.maxHandSize
-      ) {
-        mycallback();
-      } else {
-        pandemic_self.playerDiscardCards(mycallback);
-      }
-    });
+        pandemic_self.playerDiscardCards();
+      });
+    }else{
+      super.endTurn();
+    }
   }
 
   removeEvents() {
@@ -393,20 +307,36 @@ class Pandemic extends GameTemplate {
     } catch (err) {}
   }
 
+
   playerMakeMove() {
     if (this.browser_active == 0) {
       return;
     }
-    if (this.active_moves <= 0) {
-      this.endTurn();
-      return;
-    }
-
-
+ 
     let pandemic_self = this;
     let player = this.game.players_info[this.game.player - 1];
     let city = player.city;
+    console.log(player.cards);
 
+    if (player.type === 3){ //Medic
+      //Medics automatically remove cured diseases
+      for (let v in this.game.cities[city].virus){
+        if (this.game.cities[city].virus[v] > 0 && this.game.state.cures[v]){
+          let cubes_to_cure = Math.min(3,this.game.cities[city].virus[v]);
+          this.game.cities[city].virus[v] -= cubes_to_cure;
+          this.game.state.active[v] -= cubes_to_cure;
+          this.addMove(`cure\t${this.game.player}\t${city}\t${cubes_to_cure}\t${v}`);        
+        }
+      }
+      this.showBoard();
+    }
+
+   $(".city").off();
+
+   if (this.active_moves <= 0) {
+      this.endTurn();
+      return;
+    }
 
 
     /* Determine which actions the player is allowed to do and update HUD controls */
@@ -421,7 +351,7 @@ class Pandemic extends GameTemplate {
     let can_share_knowledge = 0;
 
     if (this.isCityInfected(city) == 1) {
-      treat_opacity = 1;
+      treat_opacity = 1; 
     }
     if (this.canPlayerBuildResearchStation(city) == 1) {
       build_opacity = 1;
@@ -471,8 +401,8 @@ class Pandemic extends GameTemplate {
             <div class='status-icon-menu'>
             <div class="menu_icon" id="goback" title="return to previous menu"><i class="menu_icon_icon far fa-arrow-alt-circle-left"></i><div class="menu-text">Go back</div></div>
             <div class="menu_icon" id="move" title="ground transportation to an adjacent city"><i class="menu_icon_icon fas fa-car-side"></i><div class="menu-text">Drive/Ferry</div></div>
-            <div class="menu_icon" id="flight" style="opacity:${flight1}" title="Play a card from your hand to go to that city"><i class="menu_icon_icon fas fa-plane-arrival"></i><div class="menu-text">Direct flight</div></div>
-            <div class="menu_icon" id="flight" style="opacity:${flight2}" title="Play the ${city} card to go anywhere in the world"><i class="menu_icon_icon fas fa-plane-departure"></i><div class="menu-text">Charter flight</div></div>
+            <div class="menu_icon" id="direct" style="opacity:${flight1}" title="Play a card from your hand to go to that city"><i class="menu_icon_icon fas fa-plane-arrival"></i><div class="menu-text">Direct flight</div></div>
+            <div class="menu_icon" id="charter" style="opacity:${flight2}" title="Play the ${city} card to go anywhere in the world"><i class="menu_icon_icon fas fa-plane-departure"></i><div class="menu-text">Charter flight</div></div>
             <div class="menu_icon" id="shuttle" style="opacity:${flight3}" title="move between research stations"><i class="menu_icon_icon fas fa-plane"></i><div class="menu-text">Shuttle flight</div></div>
             </div>`;
 
@@ -486,8 +416,11 @@ class Pandemic extends GameTemplate {
             if (action === "move") {
               pandemic_self.movePlayer();
             }
-            if (action === "flight" && (flight1 === 1 || flight2 === 1)) {
+            if (action === "direct") {
               pandemic_self.directFlight();
+            }
+            if (action === "charter"){
+              pandemic_self.charterFlight(city);
             }
             if (action === "shuttle" && flight3 === 1) {
               pandemic_self.shuttleFlight();
@@ -553,7 +486,7 @@ class Pandemic extends GameTemplate {
 
         default:
           // "pass"?
-          pandemic_self.endTurn();
+          pandemic_self.playerMakeMove();
       }
     });
   }
@@ -680,44 +613,12 @@ class Pandemic extends GameTemplate {
 
     return 0;
   }
-  playEventCard(mycallback = null) {
-    let cards = this.game.players_info[this.game.player - 1].cards;
-    let pandemic_self = this;
 
-    let html = "<ul>";
-    for (let i = 0; i < cards.length; i++) {
-      if (
-        cards[i] == "event1" ||
-        cards[i] == "event2" ||
-        cards[i] == "event3" ||
-        cards[i] == "event4" ||
-        cards[i] == "event5"
-      ) {
-        html +=
-          '<li id="' +
-          cards[i] +
-          '" class="card">' +
-          this.game.deck[1].cards[cards[i]].name +
-          "</li>";
-      }
-    }
-    html += "</ul>";
-
-    this.updateStatusWithOptions(`Play an event card:`, html,true);
-
-    $(".card").off();
-    $(".card").on("click", function () {
-      let id = $(this).attr("id");
-
-      pandemic_self.addMove(
-        "discard\t" + pandemic_self.game.player + "\t" + id
-      );
-      pandemic_self.removeCardFromHand(pandemic_self.game.player, id);
-
+  playEvent(event){
       //
       // AIRLIFT
       //
-      if (id == "event1") {
+      if (event == "event1") {
         html = "<ul>";
         for (let i = 0; i < pandemic_self.game.players_info.length; i++) {
           html +=
@@ -725,9 +626,7 @@ class Pandemic extends GameTemplate {
         }
         html += "</ul>";
 
-        pandemic_self.updateStatusWithOptions(
-          `Pick a pawn to move to another city:`,
-          html);
+        pandemic_self.updateStatusWithOptions(`Pick a pawn to move to another city:`, html, true);
 
         $(".card").off();
         $(".card").on("click", function () {
@@ -760,14 +659,10 @@ class Pandemic extends GameTemplate {
               pandemic_self.game.player - 1
             ].city = city_destination;
             pandemic_self.showBoard();
-            pandemic_self.addMove(
-              "move\t" + player_to_move + "\t" + city_destination
-            );
-            if (mycallback == null) {
-                pandemic_self.playerMakeMove();
-            } else {
-              mycallback();
-            }
+            pandemic_self.addMove(`move\t${player_to_move}\t${city_destination}`);
+            pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+            pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
+
           });
         });
       }
@@ -775,23 +670,14 @@ class Pandemic extends GameTemplate {
       //
       // RESILIENT POPULATION
       //
-      if (id == "event2") {
+      if (event == "event2") {
         pandemic_self.game.state.infection_drawn.sort();
 
         html = "<ul>";
-        for (
-          let i = 0;
-          i < pandemic_self.game.state.infection_drawn.length;
-          i++
-        ) {
-          html +=
-            '<li class="card" id="' +
-            pandemic_self.game.state.infection_drawn[i] +
-            '">' +
-            pandemic_self.game.cities[
-              pandemic_self.game.state.infection_drawn[i]
-            ].name +
-            "</li>";
+        for (let i = 0; i < pandemic_self.game.state.infection_drawn.length; i++) {
+          html += `<li class="card" id="${pandemic_self.game.state.infection_drawn[i]}">
+                    ${pandemic_self.game.cities[pandemic_self.game.state.infection_drawn[i]].name}
+                  </li>`;
         }
         html += "</ul>";
 
@@ -804,52 +690,39 @@ class Pandemic extends GameTemplate {
           let id = $(this).attr("id");
 
           pandemic_self.addMove("resilientpopulation\t" + id);
-          if (mycallback == null) {
-            pandemic_self.playerMakeMove();
-          } else {
-            mycallback();
-          }
-        });
+          pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+          pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
+      
+          });
       }
 
       //
       // ONE QUIET NIGHT
       //
-      if (id == "event3") {
-        pandemic_self.updateLog(
-          "One Quiet Night: skipping the next infection stage."
-        );
+      if (event == "event3") {
+        pandemic_self.updateLog("One Quiet Night: skipping the next infection stage.");
         pandemic_self.game.state.one_quiet_night = 1;
         pandemic_self.addMove("onequietnight");
-        if (mycallback == null) {
-          pandemic_self.playerMakeMove();
-        } else {
-          mycallback();
-        }
+        pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+        pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
       }
 
       //
       // FORECAST
       //
-      if (id == "event4") {
+      if (event == "event4") {
+        pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+        pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
+
         let forecast = [];
         let forecast2 = [];
         for (let i = 0; i < 6; i++) {
-          forecast.push(
-            pandemic_self.app.crypto.hexToString(
-              pandemic_self.game.deck[0].crypt[i]
-            )
-          );
+          forecast.push(pandemic_self.app.crypto.hexToString(pandemic_self.game.deck[0].crypt[i]));
         }
 
         let html = "<ul>";
         for (let i = 0; i < forecast.length; i++) {
-          html +=
-            '<li id="' +
-            forecast[i] +
-            '" class="card">' +
-            pandemic_self.game.cities[forecast[i]].name +
-            "</li>";
+          html += `<li id="${forecast[i]}" class="card">${pandemic_self.game.cities[forecast[i]].name}</li>`;
         }
         html += "</ul>";
 
@@ -881,42 +754,38 @@ class Pandemic extends GameTemplate {
             y += "\t";
             y += forecast2[0];
             pandemic_self.addMove(y);
-            if (mycallback == null) {
-              pandemic_self.playerMakeMove();
-            } else {
-              mycallback();
-            }
           }
         });
       }
 
       //
       // GOVERNMENT GRANT
-      if (id == "event5") {
+      if (event == "event5") {
         let cities_array = [];
 
         html = "<ul>";
-        for (let key in pandemic_self.game.cities) {
+        for (let key in pandemic_self.game.cities) { //Get keys of object
           cities_array.push(key);
         }
         cities_array.sort();
 
-        for (let i in cities_array) {
-          if (!this.game.state.research_stations.includes(i)) {
-            html += `<li id="${i}" class="nocard">${this.game.cities[i].name}</li>`;
+        for (let i of cities_array) { //Iterate over array
+          console.log(i);
+          if (!pandemic_self.game.state.research_stations.includes(i)) {
+            html += `<li id="${i}" class="nocard">${pandemic_self.game.cities[i].name}</li>`;
           }
         }
         html += "</ul>";
+        
+        pandemic_self.updateStatusWithOptions(`Pick a city for a free research station:`, html);
 
-        pandemic_self.updateStatusWithOptions(
-          `Pick a city for a free research station:`,
-          html
-        );
-
-        $(".nocard").off();
-        $(".nocard").on("click", function () {
+        let pickedStation = function () {
           let city = $(this).attr("id");
-          let slot = this.game.state.research_stations.length;
+          if (pandemic_self.game.state.research_stations.includes(city)){
+            salert(`${pandemic_self.game.cities[city].name} already has a research station!`);
+            return;
+          }
+          let slot = pandemic_self.game.state.research_stations.length;
 
           //Maximum of 6 
           if (slot == 6) {
@@ -931,32 +800,46 @@ class Pandemic extends GameTemplate {
 
             $(".nocard").off();
             $(".nocard").on("click", function () {
-        
               slot = $(this).attr("id");
-              pandemic_self.game.state.research_stations[slot] = city;
-              pandemic_self.addMove(`buildresearchstation\t${pandemic_self.game.player}\t${city}\t${slot}`);
-              pandemic_self.showBoard();
-              if (mycallback == null) {
-                  pandemic_self.playerMakeMove();
-              } else {
-                mycallback();
-              }
+              pandemic_self.placeStation(slot, city, false);
+              pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+              pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
             });
           
-          }else{ //To avoid asynch, just use logic and a bit of repetition
-              pandemic_self.game.state.research_stations[slot] = city;
-              pandemic_self.addMove(`buildresearchstation\t${pandemic_self.game.player}\t${city}\t${slot}`);
-              pandemic_self.showBoard();
-              if (mycallback == null) {
-                  pandemic_self.playerMakeMove();
-              } else {
-                mycallback();
-              }
+          }else{ 
+              pandemic_self.placeStation(slot, city, false);
+              pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${event}`);
+              pandemic_self.removeCardFromHand(pandemic_self.game.player, event);
           }
-        });
-      }
+        };
 
-      return;
+        $(".nocard").off();
+        $(".nocard").on("click", pickedStation);
+        $(".city").off();
+        $(".city").on("click", pickedStation);
+      }
+  }
+
+  playEventCard() {
+    let cards = this.game.players_info[this.game.player - 1].cards;
+    let pandemic_self = this;
+
+    let html = "<ul>";
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i].includes("event")) {
+        html += `<li id="${cards[i]}" class="card">${this.game.deck[1].cards[cards[i]].name}</li>`;
+      }
+    }
+    html += "</ul>";
+
+    this.updateStatusWithOptions(`Play an event card:`, html,true);
+
+    $(".card").off();
+    $(".card").on("click", function () {
+      let id = $(this).attr("id");
+
+      pandemic_self.playEvent(id);
+      pandemic_self.playerMakeMove();
     });
   }
   discoverCure() {
@@ -991,16 +874,13 @@ class Pandemic extends GameTemplate {
     $(".nocard").on("click", function () {
       let c = $(this).attr("id");
 
-      let cards =
-        pandemic_self.game.players_info[pandemic_self.game.player - 1].cards;
+      let cards =  pandemic_self.game.players_info[pandemic_self.game.player - 1].cards;
 
       for (let i = 0, k = 0; k < research_limit && i < cards.length; i++) {
         if (pandemic_self.game.deck[0].cards[cards[i]] != undefined) {
           if (pandemic_self.game.deck[0].cards[cards[i]].virus == c) {
-            pandemic_self.addMove(
-              "discard\t" + pandemic_self.game.player + "\t" + cards[i]
-            );
-            cards.splice(i, 1);
+            pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${cards[i]}`);
+            pandemic_self.removeCardFromHand(pandemic_self.game.player,cards[i]);
             i--; //reset index after removal
             k++;
           }
@@ -1110,37 +990,83 @@ class Pandemic extends GameTemplate {
     }
     html += "</ul>";
 
-    this.updateStatusWithOptions(`Move where:`, html,true);
+    this.updateStatusWithOptions(`Move where (or click board):`, html,true);
 
-    $(".city").off();
+
     $(".city").on("click", function () {
-      let c = $(this).attr("id");
-      city =
-        pandemic_self.game.players_info[pandemic_self.game.player - 1].city;
-      let hops = pandemic_self.returnHopsToCityFromCity(c, city);
+      let selection = $(this).attr("id");
+      let startCity = pandemic_self.game.players_info[pandemic_self.game.player - 1].city;
+      let hops = pandemic_self.returnHopsToCityFromCity(selection, startCity);
 
       if (hops > pandemic_self.active_moves) {
         alert("Invalid Move -- too many hops");
       } else {
-        pandemic_self.game.players_info[pandemic_self.game.player - 1].city = c;
-        pandemic_self.active_moves -= hops; // because we subtract one move by default
-        pandemic_self.showBoard();
-
-        pandemic_self.addMove("move\t" + pandemic_self.game.player + "\t" + c);
-        pandemic_self.playerMakeMove();
+        pandemic_self.moveHelper(selection, hops);
       }
     });
 
     $(".card").off();
     $(".card").on("click", function () {
       let c = $(this).attr("id");
-      pandemic_self.game.players_info[pandemic_self.game.player - 1].city = c;
-      pandemic_self.showBoard();
-      pandemic_self.active_moves--;
-      pandemic_self.addMove("move\t" + pandemic_self.game.player + "\t" + c);
-      pandemic_self.playerMakeMove();
+      pandemic_self.moveHelper(c, 1);
     });
   }
+
+  moveHelper(destination, numMoves){
+    this.active_moves -= numMoves;
+    this.addMove(`move\t${this.game.player}\t${destination}`);
+    this.game.players_info[this.game.player-1].city = destination;
+    this.showBoard();
+    this.playerMakeMove();
+  }
+
+ //>>>>>>>>>>>>
+  directFlight() {
+    let pandemic_self = this;
+    let city = this.game.players_info[this.game.player - 1].city;
+    let cards = this.game.players_info[this.game.player - 1].cards.filter(c => !c.includes("event") && c !== city);
+
+    this.updateStatusAndListCards("Take a direct flight to which city:", cards, true);
+    this.attachCardboxEvents(function (c) {
+      pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${c}`);
+      pandemic_self.removeCardFromHand(pandemic_self.game.player, c);
+      pandemic_self.moveHelper(c, 1);
+    });
+  }
+
+  charterFlight(city){
+    let pandemic_self = this;
+    this.updateStatusWithOptions(`Discard [${this.game.cities[city].name}] to go anywhere on the board`,"",true);
+    $(".city").off();
+    $(".city").on("click", function(){
+      let c = $(this).attr("id");
+      pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${city}`);
+      pandemic_self.removeCardFromHand(pandemic_self.game.player, city);
+      pandemic_self.moveHelper(c,1);
+    });
+  }
+
+  shuttleFlight() {
+    let pandemic_self = this;
+    let city = this.game.players_info[this.game.player - 1].city;
+
+    let html = "<ul>";
+    for (let rs of this.game.state.research_stations) {
+      if (rs !== city){
+        html += `<li class="card" id="${rs}">${this.game.cities[rs].name}</li>`;  
+      }
+    }
+    html += "</ul>";
+
+    this.updateStatusWithOptions(`Take a shuttle flight:`, html, true);
+
+    $(".card").off();
+    $(".card").on("click", function () {
+      let c = $(this).attr("id");
+      pandemic_self.moveHelper(c,1);
+    });
+  }
+
 
   cureDisease() {
     // 0 = me
@@ -1199,50 +1125,7 @@ class Pandemic extends GameTemplate {
     }
   }
 
-  //>>>>>>>>>>>>
-  directFlight() {
-    let pandemic_self = this;
-    let city = this.game.players_info[this.game.player - 1].city;
-    let cards = this.game.players_info[this.game.player - 1].cards;
-
-    this.updateStatusAndListCards("Take a direct flight:", cards, true);
-    this.attachCardboxEvents(function (c) {
-      pandemic_self.addMove("move\t" + pandemic_self.game.player + "\t" + c);
-      pandemic_self.active_moves--;
-      pandemic_self.game.players_info[pandemic_self.game.player - 1].city = c;
-      pandemic_self.addMove("discard\t" + pandemic_self.game.player + "\t" + c);
-      pandemic_self.removeCardFromHand(pandemic_self.game.player, c);
-      pandemic_self.showBoard();
-
-      pandemic_self.playerMakeMove();
-    });
-  }
-
-  shuttleFlight() {
-    let pandemic_self = this;
-    let city = this.game.players_info[this.game.player - 1].city;
-
-    let html = "<ul>";
-    for (let rs of this.game.state.research_stations.length) {
-      html += `<li class="card" id="${rs}">${this.game.cities[rs].name}</li>`;
-    }
-    html += "</ul>";
-
-    this.updateStatusWithOptions(`Take a shuttle flight:`, html, true);
-
-    $(".card").off();
-    $(".card").on("click", function () {
-      let c = $(this).attr("id");
-
-      pandemic_self.active_moves--;
-      pandemic_self.game.players_info[pandemic_self.game.player - 1].city = c;
-      pandemic_self.addMove("move\t" + pandemic_self.game.player + "\t" + c);
-
-      pandemic_self.showBoard();
-
-      pandemic_self.playerMakeMove();
-    });
-  }
+ 
 
   /* Done */
   buildResearchStation() {
@@ -1265,31 +1148,33 @@ class Pandemic extends GameTemplate {
 
       $(".nocard").off();
       $(".nocard").on("click", function () {
-        if (player.type !== 4){ //Free if Operations Expert
-          pandemic_self.addMove("discard\t" + pandemic_self.game.player + "\t" + city);
-          pandemic_self.removeCardFromHand(pandemic_self.game.player,city);
-        }
-  
         slot = $(this).attr("id");
-        pandemic_self.game.state.research_stations[slot] = city;
-        pandemic_self.addMove(`buildresearchstation\t${pandemic_self.game.player}\t${city}\t${slot}`);
-        pandemic_self.active_moves--;
-        pandemic_self.showBoard();
-        pandemic_self.playerMakeMove();
+        this.active_moves--;
+        pandemic_self.placeStation(slot, city, (player.type !== 4));
       });
     
     }else{ //To avoid asynch, just use logic and a bit of repetition
-        if (player.type !== 4){ //Free if Operations Expert
-          this.addMove("discard\t" + pandemic_self.game.player + "\t" + city);
-          this.removeCardFromHand(pandemic_self.game.player,city);
-        }
-        pandemic_self.game.state.research_stations[slot] = city;
-        pandemic_self.addMove(`buildresearchstation\t${pandemic_self.game.player}\t${city}\t${slot}`);
-        pandemic_self.active_moves--;
-        pandemic_self.showBoard();
-        pandemic_self.playerMakeMove();
+      this.active_moves--;
+      this.placeStation(slot, city, (player.type !== 4));
     } 
   }
+
+
+  placeStation(slot, city, discard = true){
+      let player = this.game.players_info[this.game.player - 1];
+
+      if (discard){
+          this.addMove(`discard\t${this.game.player}\t${city}`);
+          this.removeCardFromHand(this.game.player,city);
+      }
+      this.game.state.research_stations[slot] = city;
+      this.addMove(`buildresearchstation\t${this.game.player}\t${city}\t${slot}`);
+      this.showBoard();
+      this.playerMakeMove();
+  }
+    
+
+
 
   //
   // Core Game Logic
@@ -1338,29 +1223,24 @@ class Pandemic extends GameTemplate {
         }
         this.game.queue.splice(qe, 1);
       }
-      if (mv[0] === "resolve") {
-        if (this.game.queue.length <= 1) {
-          this.game.queue = [];
-        }
-        this.game.queue.splice(qe - 1, 2);
-      }
+
       if (mv[0] === "discard") {
         let player = parseInt(mv[1]);
         let card = mv[2];
 
-        for (
-          let i = 0;
-          i < this.game.players_info[player - 1].cards.length;
-          i++
-        ) {
-          if (this.game.players_info[player - 1].cards[i] == card) {
-            this.game.players_info[player - 1].cards.splice(i, 1);
-          }
+        this.game.queue.splice(qe, 1);
+        
+        if (player != this.game.player){
+          this.removeCardFromHand(player,card);
         }
-
-        this.game.queue.splice(qe - 1, 2);
+      
       }
+
+
+
+
       if (mv[0] === "round") {
+
         this.game.queue.push("turn\t1");
         this.game.state.welcome = 0;
       }
@@ -1379,9 +1259,8 @@ class Pandemic extends GameTemplate {
           } else {
             this.removeEvents();
             this.updateStatusAndListCards(
-              `Waiting for ${this.app.keys.returnUsername(
-                this.game.players[parseInt(mv[1]) - 1]
-              )} (${this.game.players_info[parseInt(mv[1]) - 1].role})`,
+              `Waiting for ${this.app.keys.returnUsername(this.game.players[parseInt(mv[1]) - 1])} 
+              (${this.game.players_info[parseInt(mv[1]) - 1].role})`,
               this.game.players_info[this.game.player - 1].cards
             );
             this.attachCardboxEvents();
@@ -1390,68 +1269,58 @@ class Pandemic extends GameTemplate {
         return 0;
       }
       if (mv[0] === "draw_player_card") {
-        this.updateLog(this.game.deck[1].crypt.length + " cards left in deck.");
-
+        this.updateLog(`${this.game.deck[1].crypt.length} cards left in deck. Player ${mv[1]} drawing ${mv[2]}.`);
+        this.game.queue.splice(qe, 1); //Remove this draw_player_card
         let player = parseInt(mv[1]) - 1;
         let cards = parseInt(mv[2]);
 
-        for (let i = 0; i < cards; i++) {
+        for (let i = cards - 1; i >= 0; i--) {
           if (this.game.deck[1].crypt.length == 0) {
-            this.endGame(
-              "No more cards. You have failed to contain the pandemic in time."
-            );
+            this.endGame("No more cards. You have failed to contain the pandemic in time.");
             return;
           }
 
-          let cards_left = cards - i - 1;
           let card = this.drawPlayerCard(player);
 
-          if (
-            card == "epidemic1" ||
-            card == "epidemic2" ||
-            card == "epidemic3" ||
-            card == "epidemic4" ||
-            card == "epidemic5" ||
-            card == "epidemic6"
-          ) {
+          if (card.includes("epidemic")){
             this.updateLog("EPIDEMIC!");
-            this.addMove("RESOLVE");
-            this.addMove(
-              "draw_player_card\t" + (player + 1) + "\t" + cards_left
-            );
-            this.addMove("epidemic");
-            this.game.queue.splice(qe, 1);
-            this.endTurn();
-
-            return 0;
+            
+            //this.addMove("RESOLVE");
+            this.game.queue.push("draw_player_card\t" + mv[1] + "\t" + i);
+            this.game.queue.push("epidemic");
+            return 1;
           } else {
-            console.log(
-              "PLAYER: " +
-                player +
-                " --- " +
-                " need to overwrite now that players is pkeys"
-            );
-            //this.updateLog("Player "+(player+1)+": draws "+this.game.deck[1].cards[card].name);
             this.game.players_info[player].cards.push(card);
-            console.log(this.game.players_info[player].cards);
           }
         }
-
-        this.game.queue.splice(qe, 1);
+      
+      /*   console.log(JSON.parse(JSON.stringify(this.moves)));
+         this.moves.reverse();
+         for (let m in moves){
+          this.game.queue.push(m);
+         } 
+      */
+        //Here is where we need to check if players have overly large hands
+        //...
+            // discard extra cards
+        if (this.game.players_info[player].cards.length > this.maxHandSize) {
+          if (player + 1 === this.game.player){
+            this.playerDiscardCards();  
+          }else{
+            this.updateStatusAndListCards(`Player ${player} has to discard some cards`,this.game.players_info[this.game.player - 1].cards);
+          }
+          return 0;
+        }else{
+          return 1;
+        } 
       }
       if (mv[0] === "epidemic") {
+        this.game.queue.splice(qe, 1);
         this.game.state.infection_rate++;
 
         this.outbreaks = [];
         let city = this.drawInfectionCardFromBottomOfDeck();
         let virus = this.game.deck[0].cards[city].virus;
-
-        //
-        // add three cubes
-        //
-        this.game.queue.push(
-          "ACKNOWLEDGE\tEPIDEMIC CARD! 3 " + virus + " in " + city
-        );
 
         this.addDiseaseCube(city, virus);
         this.addDiseaseCube(city, virus);
@@ -1462,8 +1331,9 @@ class Pandemic extends GameTemplate {
         //
         this.overlay.show(this.app, this, this.returnEpidemicOverlay(city));
         document.querySelector(".close_epidemic_overlay").onclick = (e) => {
-          this.overlay.hide();
+          pandemic_self.overlay.hide();
         };
+        this.overlay.blockClose();
 
         //
         // shuffle cards into TOP of infection deck
@@ -1488,8 +1358,6 @@ class Pandemic extends GameTemplate {
         this.game.deck[0].discards = [];
 
         this.showBoard();
-
-        this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "infect") {
         let infection_cards = 2;
@@ -1509,28 +1377,22 @@ class Pandemic extends GameTemplate {
 
             let city = this.drawInfectionCard();
             let virus = this.game.deck[0].cards[city].virus;
-            let place_virus = 1;
 
-            //Check if Eradicated before placing
-            if (this.game.state.cures[virus]) {
-              let total = 0;
-              for (let key in this.game.cities) {
-                total += this.game.cities[key].virus.blue;
-              }
-              if (total == 0) {
-                place_virus = 0;
-              }
-            }
-
-            if (place_virus == 1) {
+            if (!this.game.state.cures[virus] || this.game.state.active[virus] > 0) { 
               this.updateLog(this.game.cities[city].name + " gains 1 disease cube");
-              this.game.queue.push(`ACKNOWLEDGE\tInfection: 1 ${virus} added to ${this.game.cities[city].name}`);
+              
+              this.prependMove(`ACKNOWLEDGE\tInfection: 1 ${virus} added to ${this.game.cities[city].name}`);
+              
               this.addDiseaseCube(city, virus);
             } else {
               this.updateLog(`Eradicated disease prevents infection in ${this.game.cities[city].name}`);
             }
           }
-          
+         console.log(JSON.parse(JSON.stringify(this.moves)));
+         for (let m of this.moves){
+          this.game.queue.push(m);
+         } 
+         this.moves = [];
         }else{
           this.updateLog(`Quiet Night -- Skipping Infection Stage`);
           this.game.state.one_quiet_night = 0;
@@ -1549,6 +1411,7 @@ class Pandemic extends GameTemplate {
             let newcard = this.drawInfectionCard();
             let virus = this.game.deck[0].cards[newcard].virus || this.game.deck[0].discards[newcard].virus;
             this.game.cities[newcard].virus[virus] = i;
+            this.game.state.active[virus] += i;
             console.log(this.game.cities[newcard].virus);
             this.updateLog(`${this.game.cities[newcard].name} infected with ${i} ${virus}`);
           }
@@ -1556,62 +1419,20 @@ class Pandemic extends GameTemplate {
         this.game.queue.splice(qe, 1);
       }
 
+      //Insert Epidemics into player deck
       if (mv[0] === "initialize_player_deck") {
-        let epidemics = 4; //difficulty = "easy"
-        let undrawn_cards = this.game.deck[1].crypt.length;
-        let section_length = Math.floor(undrawn_cards / epidemics);
+        let epidemics = (this.game.options.difficulty) ? parseInt(this.game.options.difficulty) : 4;  
+        let section_length = Math.floor(this.game.deck[1].crypt.length / epidemics);
 
-        //
-        // adjustable difficulty
-        //
-        if (this.game.options.difficulty != undefined) {
-          if (this.game.options.difficulty === "medium") {
-            epidemics = 5;
-          }
-          if (this.game.options.difficulty === "hard") {
-            epidemics = 6;
-          }
-        }
-
-        //
-        // add epidemic cards to deck
-        this.game.deck[1].cards["epidemic1"] = { img: "Epidemic.jpg" };
-        this.game.deck[1].cards["epidemic2"] = { img: "Epidemic.jpg" };
-        this.game.deck[1].cards["epidemic3"] = { img: "Epidemic.jpg" };
-        this.game.deck[1].cards["epidemic4"] = { img: "Epidemic.jpg" };
-        this.game.deck[1].cards["epidemic5"] = { img: "Epidemic.jpg" };
-        this.game.deck[1].cards["epidemic6"] = { img: "Epidemic.jpg" };
-
-        //
         // shuffle them into the undrawn pile
         for (let i = 0, starting_point = 0; i < epidemics; i++) {
           let cardname = "epidemic" + (i + 1);
+          this.game.deck[1].cards[cardname] = { img: "Epidemic.jpg" };
+            
           let insertion_point = this.rollDice(section_length);
           this.game.deck[1].crypt.splice(starting_point + insertion_point, 0, this.app.crypto.stringToHex(cardname));
           starting_point += 1;
           starting_point += section_length;
-        }
-
-        //
-        // add events to deck
-        let total_events = 0;
-        for (var i in this.game.events) {
-          total_events++;
-          this.game.deck[1].cards[i] = this.game.events[i];
-        }
-
-        //
-        // shuffle them into the undrawn pile
-        for (let i = 0; i < total_events; i++) {
-          let cardname = "event" + (i + 1);
-          let insertion_point = this.rollDice(
-            this.game.deck[1].crypt.length - 1
-          );
-          this.game.deck[1].crypt.splice(
-            insertion_point,
-            0,
-            this.app.crypto.stringToHex(cardname)
-          );
         }
 
         console.log("\n\n\nCARDS AS INITED: ");
@@ -1628,7 +1449,10 @@ class Pandemic extends GameTemplate {
           this.game.state.cures[virus] = true;
         }
         this.game.queue.splice(qe, 1);
-        this.updateLog(`Player ${player} found the cure for ${virus} disease`);
+        this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) found the cure for ${virus} disease`);
+        if (this.game.state.active[virus] === 0){
+          this.updateLog(`${virus} is eradicated!!!`);
+        }
       }
 
       if (mv[0] === "onequietnight") {
@@ -1644,7 +1468,7 @@ class Pandemic extends GameTemplate {
           this.game.state.research_stations[slot] = city;
         }
         this.game.queue.splice(qe, 1);
-        this.updateLog(`Player ${player} built a research station in ${city}.`);
+        this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) built a research station in ${this.game.cities[city].name}.`);
       }
       if (mv[0] === "notify") {
         this.updateLog(mv[1]);
@@ -1662,31 +1486,37 @@ class Pandemic extends GameTemplate {
         if (this.game.player !== sender) {
          this.removeCardFromHand(sender, card);
         }
-        this.updateLog(`Player ${sender} shared the ${city} card with Player ${recipient}`);
+        this.updateLog(`Player ${sender} (${this.game.players_info[sender - 1].role}) shared the ${city} card with Player ${recipient} (${this.game.players_info[recipient - 1].role})`);
       }
       if (mv[0] === "move") {
-        pandemic_self.updateLog(
-          pandemic_self.game.players_info[parseInt(mv[1]) - 1].role +
-            " moves to " +
-            this.game.cities[mv[2]].city
-        );
-        pandemic_self.game.players_info[parseInt(mv[1]) - 1].city = mv[2];
-        pandemic_self.showBoard();
+        let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
+
+        this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) moves to ${this.game.cities[mv[2]].name}`);
+
+        if (this.game.player != player){
+          pandemic_self.game.players_info[player - 1].city = mv[2];
+          pandemic_self.showBoard();  
+        }        
       }
       if (mv[0] === "cure") {
         let player = parseInt(mv[1]);
         let city = mv[2];
         let numCubes = parseInt(mv[3]);
         let virus = mv[4];
+        this.game.queue.splice(qe, 1);
 
-        if (this.game.player !== parseInt(mv[1])) {
+        this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) removed ${numCubes} ${virus} cube${(numCubes>1?'s':"")} from ${this.game.cities[city].name}`);
+
+        if (this.game.player !== player) {
           this.game.cities[city].virus[virus] -= numCubes;
           this.game.state.active[virus] -= numCubes;
           pandemic_self.showBoard();
+        }        
+
+        if (!this.game.state.active[virus] && this.game.state.cures[virus]){
+          this.updateLog(`${virus} is eradicated!!!`);
         }
-        this.game.queue.splice(qe, 1);
-        this.updateLog(`Player ${player} removed ${numCubes} ${virus} cube${(numCubes>1?'s':"")} from ${city}`);
       }
       if (shd_continue == 0) {
         console.log("NOT CONTINUING");
@@ -1699,9 +1529,15 @@ class Pandemic extends GameTemplate {
 
 
   endTurn() {
-    this.updateStatus(
-      "<div class='status-message'>Waiting for information from peers...</div>"
-    );
+
+    this.addMove("draw_player_card\t" + this.game.player + "\t2");
+    this.addMove("infect");
+    this.addMove("turn\t" + this.returnNextPlayer(this.game.player));
+
+    //Flip the order so moves are played in the correct order
+    this.moves.reverse();
+
+    console.log(JSON.parse(JSON.stringify(this.moves)));
 
     let extra = {};
     extra.target = this.returnNextPlayer(this.game.player);
@@ -1717,19 +1553,6 @@ class Pandemic extends GameTemplate {
     this.saveGame(this.game.id);
   }
 
-  drawInfectionCard() {
-    let newcard = this.game.deck[0].crypt[0];
-    newcard = this.app.crypto.hexToString(newcard);
-
-    this.game.state.infection_topcard = newcard;
-    this.game.state.infection_drawn.push(newcard);
-    this.game.deck[0].discards[newcard] = this.game.deck[0].cards[newcard];
-    this.game.deck[0].crypt.splice(0, 1);
-
-    this.showBoard();
-
-    return newcard;
-  }
 
   triggerOutbreak(city, virus) {
     this.game.state.outbreak_rate++;
@@ -1737,10 +1560,7 @@ class Pandemic extends GameTemplate {
 
     for (let i = 0; i < this.game.cities[city].neighbours.length; i++) {
       if (!this.outbreaks.includes(this.game.cities[city].neighbours[i])) {
-        this.game.queue.push(
-          "ACKNOWLEDGE\tOutbreak! Virus expands beyond " +
-            this.game.cities[city].name
-        );
+        this.prependMove(`ACKNOWLEDGE\tOutbreak! Virus expands beyond ${this.game.cities[city].name}`);
         this.addDiseaseCube(this.game.cities[city].neighbours[i], virus);
       }
     }
@@ -1760,6 +1580,20 @@ class Pandemic extends GameTemplate {
     }    
   }
 
+  drawInfectionCard() {
+    let newcard = this.game.deck[0].crypt[0];
+    newcard = this.app.crypto.hexToString(newcard);
+
+    this.game.state.infection_topcard = newcard;
+    this.game.state.infection_drawn.push(newcard);
+    this.game.deck[0].discards[newcard] = this.game.deck[0].cards[newcard];
+    this.game.deck[0].crypt.splice(0, 1);
+
+    this.showBoard();
+
+    return newcard;
+  }
+
   drawInfectionCardFromBottomOfDeck() {
     let newcard = this.game.deck[0].crypt[this.game.deck[0].crypt.length - 1];
     newcard = this.app.crypto.hexToString(newcard);
@@ -1777,10 +1611,6 @@ class Pandemic extends GameTemplate {
   drawPlayerCard(player = 1) {
     let newcard = this.game.deck[1].crypt[0];
     newcard = this.app.crypto.hexToString(newcard);
-
-    this.game.state.player_topcard = newcard;
-
-    this.game.deck[1].discards[newcard] = this.game.deck[1].cards[newcard];
     this.game.deck[1].crypt.splice(0, 1);
 
     this.showBoard();
@@ -2230,37 +2060,6 @@ class Pandemic extends GameTemplate {
     return cities;
   }
 
-  returnEvents() {
-    var events = {};
-
-    events["event1"] = {
-      img: "Special%20Event%20-%20Airlift.jpg",
-      name: "Airlift",
-      virus: "",
-    };
-    events["event2"] = {
-      img: "Special%20Event%20-%20Resilient%20Population.jpg",
-      name: "Resilient Population",
-      virus: "",
-    };
-    events["event3"] = {
-      img: "Special%20Event%20-%20One%20Quiet%20Night.jpg",
-      name: "One Quiet Night",
-      virus: "",
-    };
-    events["event4"] = {
-      img: "Special%20Event%20-%20Forecast.jpg",
-      name: "Forecast",
-      virus: "",
-    };
-    events["event5"] = {
-      img: "Special%20Event%20-%20Government%20Grant.jpg",
-      name: "Government Grant",
-      virus: "",
-    };
-
-    return events;
-  }
 
   returnInfectionCards() {
     var deck = {};
@@ -2389,7 +2188,7 @@ class Pandemic extends GameTemplate {
 
   returnPlayerCards() {
     var deck = {};
-
+    //48 city cards
     deck["sanfrancisco"] = {
       img: "Card%20Blue%20San%20Francisco.jpg",
       name: "San Francisco",
@@ -2631,8 +2430,38 @@ class Pandemic extends GameTemplate {
       virus: "red",
     };
 
+    //and 5 event cards
+
+    deck["event1"] = {
+      img: "Special%20Event%20-%20Airlift.jpg",
+      name: "Airlift",
+      virus: "",
+    };
+    deck["event2"] = {
+      img: "Special%20Event%20-%20Resilient%20Population.jpg",
+      name: "Resilient Population",
+      virus: "",
+    };
+    deck["event3"] = {
+      img: "Special%20Event%20-%20One%20Quiet%20Night.jpg",
+      name: "One Quiet Night",
+      virus: "",
+    };
+    deck["event4"] = {
+      img: "Special%20Event%20-%20Forecast.jpg",
+      name: "Forecast",
+      virus: "",
+    };
+    deck["event5"] = {
+      img: "Special%20Event%20-%20Government%20Grant.jpg",
+      name: "Government Grant",
+      virus: "",
+    };
+
     return deck;
   }
+
+
 
   displayOutbreaks() {
     let t = 982;
@@ -2696,10 +2525,7 @@ class Pandemic extends GameTemplate {
     }
 
     if (this.game.state.player_topcard != "") {
-      let imgurl =
-        'url("/pandemic/img/' +
-        this.game.deck[1].cards[this.game.state.player_topcard].img +
-        '")';
+      let imgurl = `url("/pandemic/img/${this.game.deck[1].cards[this.game.state.player_topcard].img}")`;
       $(".player_discard_pile").css("background-image", imgurl);
     }
   }
@@ -2971,6 +2797,9 @@ class Pandemic extends GameTemplate {
     let player = this.game.players_info[plyr - 1];
     let cards = player.cards;
 
+    this.game.state.player_topcard = card;
+    this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+
     for (let i = 0; i < cards.length; i++) {
       if (cards[i] == card) {
         cards.splice(i, 1);
@@ -3026,9 +2855,9 @@ class Pandemic extends GameTemplate {
         <div class="overlay-input">
           <label for="difficulty">Difficulty:</label>
           <select name="difficulty">
-            <option value="easy">easy</option>
-            <option value="medium" selected default>not so easy</option>
-            <option value="hard">damn hard</option>
+            <option value="4">easy</option>
+            <option value="5" selected default>not so easy</option>
+            <option value="6">damn hard</option>
           </select>
         </div>
       
@@ -3083,11 +2912,11 @@ class Pandemic extends GameTemplate {
   returnEpidemicOverlay(city) {
     let html = `
       <div class="epidemic_overlay">
-        Epidemic in ${this.game.cities[city].name}!!!
-
-        <p></p>
-
-        <div class="button" class="close_epidemic_overlay" id="close_epidemic_overlay">close</div>
+        <h1>Epidemic in ${this.game.cities[city].name}!!!</h1>
+        <div class="epidemic-card">
+          <img src="/pandemic/img/Epidemic.jpg"/>
+        </div>
+        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
     `;
 

@@ -40,12 +40,13 @@ hr {
 }
 
 .welcome-container {
-  font-size: 1.2em;
+  font-size: 1.1em;
   line-height: 1.4em;
-  max-width: 1000px;
+  max-width: 800px;
+  padding: 0 2em;
 }
 .welcome-container p {
-  margin-bottom: 20px;
+  margin: 0 0 20px;
 }
 
 .email-container {
@@ -111,6 +112,52 @@ hr {
 .email-title {
   border-top: 1px solid lightgrey;
 }
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+  margin: 0.5em;
+}
+
+.actions div {
+  padding: 1em;
+  width: 20%;
+  text-align: center;
+  color: var(--saito-red);
+  cursor: pointer;
+}
+
+.actions div:hover {
+  transform: scale(0.9);
+  transition: all 0.25s ease-in-out;
+}
+
+.learn>div {
+  margin: 0 0 1em 1em;
+}
+
+.actions i {
+  display: block;
+}
+
+.actions .fas::before {
+  font-size: 2em;
+  margin: 0 0 10px;
+  display: inline-block;
+}
+
+.actions a {
+  text-decoration: none;
+}
+
+
+
+
+
+
+
+
+
 
 @media only screen and (max-width: 900px) {
 

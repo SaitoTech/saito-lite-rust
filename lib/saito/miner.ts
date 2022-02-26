@@ -31,9 +31,10 @@ class Miner {
     });
   }
 
-  startMining(previous_block_hash=null, difficulty=null) {
-
-    if (this.isMining()) { this.stopMining(); }
+  startMining(previous_block_hash = null, difficulty = null) {
+    if (this.isMining()) {
+      this.stopMining();
+    }
 
     // browsers do not need to hash currently
     if (this.app.BROWSER == 1) {
@@ -42,7 +43,9 @@ class Miner {
 
     if (previous_block_hash == null) {
       let blk = this.app.blockchain.returnLatestBlock();
-      if (!blk) { return; }
+      if (!blk) {
+        return;
+      }
       previous_block_hash = blk.returnHash();
       difficulty = blk.returnDifficulty();
     }
@@ -71,7 +74,7 @@ class Miner {
 
   async mine() {
     if (this.mining_active) {
-console.log("mining loop...");
+      console.log("mining loop...");
       const random_hash = this.app.crypto.generateRandomNumber();
       if (
         this.app.goldenticket.validate(

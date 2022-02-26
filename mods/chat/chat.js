@@ -25,10 +25,10 @@ class Chat extends ModTemplate {
         this.renderMode = "none";
         this.relay_moves_onchain_if_possible = 1;
 
-        //
-        // if someone closes community chat, don't pop it back open
-        //
-        this.mute_community_chat = 0;
+        /* if someone closes community chat, don't pop it back open
+           any navigation to another page with re-construct chat and forget this
+         */
+        this.mute_community_chat = 0;  
         //this.max_msg_size = 1*1024*1024;
         this.max_msg_size = 1 * 300 * 1024;
 
@@ -214,16 +214,16 @@ class Chat extends ModTemplate {
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
 
             this.sendPeerDatabaseRequestWithFilter(
-          
+
               "Archive" ,
-          
+
               sql ,
-        
+
               (res) => {
                 if (res) {
                   if (res.rows) {
                     for (let i = 0; i < res.rows.length; i++) {
-            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx)); 
+            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
             	      let txmsg = tx.returnMessage();
                       this.binaryInsert(this.groups[this.groups.length-1].txs, tx, (a, b) => {
                         return a.transaction.ts - b.transaction.ts;
@@ -233,7 +233,7 @@ class Chat extends ModTemplate {
                   }
                 }
               },
-    
+
               (p) => {
                 if (p.peer.publickey === peer.peer.publickey) {
 		  return 1;
@@ -332,12 +332,12 @@ class Chat extends ModTemplate {
             if (this.groups[i].id === group_id) {
                 let element_to_update = 'chat-last-message-' + group_id;
                 try {
-                    document.getElementById(element_to_update).innerHTML = msg;
+                    document.getElementById(element_to_update).innerHTML = sanitize(msg);
                 } catch (err) {
                 }
                 element_to_update = 'chat-last-message-timestamp-' + group_id;
                 try {
-                    document.getElementById(element_to_update).innerHTML = `${datetime.hours}-${datetime.minutes}`;
+                    document.getElementById(element_to_update).innerHTML = sanitize(`${datetime.hours}-${datetime.minutes}`);
                 } catch (e) {
                 }
             }
@@ -596,8 +596,7 @@ class Chat extends ModTemplate {
                 'a': sanitizeHtml.simpleTransform('a', {target: '_blank'})
             }
         });
-
-        return msg;
+        return sanitize(msg);
     }
 
 
@@ -752,7 +751,6 @@ class Chat extends ModTemplate {
     // UI Functions //
     //////////////////
     openChatBox(group_id = null) {
-
         if (this.renderMode != "email" && this.renderMode != "none") {
             return;
         }
@@ -765,12 +763,10 @@ class Chat extends ModTemplate {
             if (group.id == undefined || group.id == null) {
                 return;
             }
-            this.openChatBox(group.id);
-            return;
+           group_id = group.id;
         }
 
-        let community_chat_group = this.returnCommunityChat();
-//alert(community_chat_group.id + " -- " + group_id + " -- " + this.mute_community_chat);
+        let community_chat_group = this.returnCommunityChat(); 
         if (community_chat_group.id == group_id && this.mute_community_chat == 1) {
             return;
         }

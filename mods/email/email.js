@@ -47,7 +47,7 @@ class Email extends ModTemplate {
       let bobj = document.getElementById("email-balance");
       if (bobj) {
         let bal = await app.wallet.returnPreferredCryptoBalance();
-        bobj.innerHTML = bal;
+        bobj.innerHTML = sanitize(bal);
       }
     });
     if (app.BROWSER && this.browser_active && (!app.options.email || !app.options.email.welcomesent)) {
@@ -102,7 +102,7 @@ class Email extends ModTemplate {
     }
     this.header.render(app, this);
     this.header.attachEvents(app, this);
-    
+
     this.renderMain(app);
     this.renderSidebar(app);
     //
@@ -146,7 +146,7 @@ class Email extends ModTemplate {
   }
 
   respondTo(type = "") {
-    if (type == "header-dropdown") {        
+    if (type == "header-dropdown") {
       return {
         name: this.appname ? this.appname : this.name,
         icon_fa: this.icon_fa,
@@ -167,7 +167,7 @@ class Email extends ModTemplate {
           this.emails[subPage].splice(i, 1);
           // this.emails['trash'].unshift(tx);
         }
-      }  
+      }
     }
   }
 
@@ -231,7 +231,7 @@ console.log("AE");
     this.addToBox(tx, this.emails.inbox);
     this.render(this.app);
   }
- 
+
   // receiveEvent(type, data) {
   //   if (type == 'chat-render-request') {
   //     if (this.browser_active) {
@@ -261,14 +261,14 @@ console.log("AE");
         this.preferredCryptoBalance = value;
         this.renderBalance();
       });
-      
+
     }
     this.renderBalance();
   }
   async renderBalance() {
     if (document.getElementById("email-token")) {
-      document.getElementById("email-token").innerHTML = " " + this.app.wallet.returnPreferredCrypto().ticker;
-      document.getElementById("email-balance").innerHTML = this.preferredCryptoBalance;
+      document.getElementById("email-token").innerHTML = sanitize(" " + this.app.wallet.returnPreferredCrypto().ticker);
+      document.getElementById("email-balance").innerHTML = sanitize(this.preferredCryptoBalance);
     }
   }
   returnAddressHTML(key) {

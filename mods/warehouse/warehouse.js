@@ -25,7 +25,7 @@ class Warehouse extends ModTemplate {
       for (let i = 0; i < blk.transactions.length; i++) {
         if (blk.transactions[i].transaction.type >= -999) {
           for (let ii = 0; ii < blk.transactions[i].transaction.to.length; ii++) {
-            if (blk.transactions[i].transaction.to[ii].type >= -999) {
+            if (blk.transactions[i].transaction.type >= -999) {
               let sql = `INSERT OR IGNORE INTO transactions (
                                 address, 
                                 amt, 

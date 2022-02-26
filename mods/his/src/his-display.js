@@ -599,7 +599,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (tile === "") { show_tile = 0; }
 
     if (show_tile === 1) {
-console.log("key: " + key);
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
       obj.innerHTML += this.returnArmies(space);
       obj.innerHTML += this.returnMercenaries(space);

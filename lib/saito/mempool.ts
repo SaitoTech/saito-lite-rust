@@ -98,7 +98,7 @@ class Mempool {
   }
 
   addBlock(block) {
-    //console.debug("Mempool : adding block...");
+    console.debug("Mempool : adding block... : " + block.returnHash());
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
       return false;
@@ -140,11 +140,11 @@ class Mempool {
     this.mempool.blocks.sort((a, b) => a.block.id - b.block.id);
 
     try {
-      this.processing_timer = setInterval(async () => {
+      this.processing_timer = setInterval(() => {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
             const block = this.mempool.blocks.shift();
-            await this.app.blockchain.addBlockToBlockchain(block);
+            this.app.blockchain.addBlockToBlockchain(block);
           }
         } else {
           this.processing_active = false;
@@ -157,10 +157,8 @@ class Mempool {
   }
 
   addTransaction(transaction: Transaction) {
-
     //console.debug("mempool.addTransaction", transaction);
     if (transaction.isGoldenTicket()) {
-
       const new_gt = this.app.goldenticket.deserializeFromTransaction(transaction);
 
       //
@@ -177,9 +175,7 @@ class Mempool {
 
       this.mempool.golden_tickets.push(transaction);
       this.app.miner.stopMining();
-
     } else {
-
       for (let i = 0; i < this.mempool.transactions.length; i++) {
         if (this.mempool.transactions[i].transaction.sig === transaction.transaction.sig) {
           console.debug("transaction already exists");
@@ -188,15 +184,14 @@ class Mempool {
       }
 
       if (!this.app.miner.isMining()) {
-	if (this.mempool.golden_tickets.length == 0) {
-	  this.app.miner.startMining();
-	} else {
-console.log("mining mining");
+        if (this.mempool.golden_tickets.length == 0) {
+          this.app.miner.startMining();
+        } else {
+          console.log("mining mining");
         }
       }
 
       this.mempool.transactions.push(transaction);
-
     }
 
     return true;
@@ -222,7 +217,7 @@ console.log("mining mining");
         "ERROR 850293: we do not have enough golden ticket support, waiting before bundling..."
       );
       if (!this.app.miner.isMining()) {
-	this.app.miner.startMining();
+        this.app.miner.startMining();
       }
       return;
     }
@@ -285,7 +280,7 @@ console.log("mining mining");
   canBundleBlock(): boolean {
     if (this.app.mempool.mempool.golden_tickets.length === 0) {
       if (!this.app.miner.isMining()) {
-	this.app.miner.startMining();
+        this.app.miner.startMining();
       }
     }
     if (this.app.mempool.mempool.transactions.length === 0) {
@@ -343,7 +338,7 @@ console.log("mining mining");
         }
       }
       if (this.app.options.peers) {
-        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.length === 0) {
+        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.size === 0) {
           console.log("ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN...");
           return false;
         }

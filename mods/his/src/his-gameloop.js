@@ -100,7 +100,14 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
         if (mv[0] === "action_phase") {
+
 	  this.game.queue.splice(qe, 1);
+
+	  let io = this.returnImpulseOrder();
+	  // added in reverse order as last added goes first
+	  for (let i = io.length-1; i>= 0; i--) {
+	    this.game.queue.push("play\t"+io[i]);
+	  }
           return 1;
         }
         if (mv[0] === "spring_deployment_phase") {
@@ -110,40 +117,30 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "diplomacy_phase") {
 
 console.log("just in diplomacy phase!");
-console.log("cards in hand: " + JSON.stringify(this.game.deck[0].hand));
-
-	  this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].hand);
-          this.attachCardboxEvents(function(card) {
-            this.playerPlayCard(card, this.game.player);
-          });
-
+console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  this.game.queue.splice(qe, 1);
-          return 0;
+          return 1;
         }
         if (mv[0] === "card_draw_phase") {
 this.updateLog("Deal Cards to Players");
 this.updateLog("Discards Reshuffled into Deck");
 this.updateLog("New Units and New Cards Added");
 
-	  let cards_to_deal = [];
-
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    let cardnum = 0;
-	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-	      let pf = this.game.players_info[i].factions[z];
-	      cardnum += this.factions[pf].returnCardsDealt(this);
-	    }
-	    cards_to_deal.push(cardnum);
-          }
-
-console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
+console.log("PI: " + JSON.stringify(this.game.players_info));
 
 	  //
 	  // generate new deck
 	  //
-	  for (let i = this.game.players_info.length; i > 0; i--) {
-    	    this.game.queue.push("DEAL\t1\t"+(i)+"\t"+(cards_to_deal[(i-1)]));
+	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
+	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+              let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
+    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
+
+console.log("DEALING: " + cardnum + " to " + this.game.players_info[i].factions[z]);
+
+	    }
 	  }
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
@@ -153,24 +150,26 @@ console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
 	  }
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
-console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
-
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
 
         if (mv[0] === "play") {
 
-	  let player = mv[1];
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
           this.displayBoard();
 
+	  // skip factions not-in-play
+	  if (player == -1) { 
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
 	  if (this.game.player == player) {
-	    this.updateStatusAndListCards("Select a Card:", this.game.deck[0].hand);
-            this.attachCardboxEvents(function(card) {
-              this.playerPlayCard(card, this.game.player);
-            });
+	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards("Opponent Turn:", this.game.deck[0].hand);
+	    this.updateStatusAndListCards("Opponent Turn:", this.game.deck[0].fhand[0]);
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -187,6 +186,24 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
 	  }
 
 	  this.game.queue.splice(qe, 1);
+	  let player_turn = -1;
+
+	  for (let i = 0; i < this.game.players_info.length; i++) {
+	    if (this.game.players_info.factions.includes(faction)) {
+	      player_turn = i+1;
+	    }
+	  }
+
+          this.displayBoard();
+
+	  // no-one controls this faction, so skip
+	  if (player_turn === -1) { return 1; }
+
+	  // let the player who controls play turn
+	  if (this.game.player === player_turn) {
+            this.playerTurn(faction);
+	  }
+
           return 0;
         }
 
@@ -201,6 +218,43 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
 
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "hand_to_fhand") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let deckidx = parseInt(mv[1])-1;
+	  let player = parseInt(mv[2]);
+	  let faction = mv[3];
+	  let fhand_idx = this.returnFactionHandIdx(player, faction);
+
+	  if (this.game.player == player) {
+
+console.log("!!!!!!!!!!!!!!!!!!!!!");
+console.log("!!! HAND TO FHAND !!!");
+console.log("!!!!!!!!!!!!!!!!!!!!!");
+console.log("deckidx: " + deckidx);
+console.log(player + " -- " + faction + " -- " + fhand_idx);
+
+	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
+	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
+
+	    for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
+	      this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].hand[i]);
+	    }
+
+	    // and clear the hand we have dealt
+	    this.game.deck[deckidx].hand = [];
+	    this.updateLog("hand entries copied over to fhand");
+	  }
+
+
+
+console.log(this.game.deck[deckidx]);
 
 	  return 1;
 

@@ -28,8 +28,6 @@ class Twilight extends GameTemplate {
 
     super(app);
 
-console.log("start HUD: " + this.hud.card_width);
-
     this.app             = app;
 
     this.name  		 = "Twilight";
@@ -56,12 +54,11 @@ console.log("start HUD: " + this.hud.card_width);
     this.maxPlayers 	 = 2;
     this.type       	 = "Strategy Boardgame";
     this.categories 	 = "Bordgame Game"
-
+    //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
     this.hud.card_width = 120;
 
-console.log("start HUD 2: " + this.hud.card_width);
   }
 
 
@@ -589,8 +586,7 @@ console.log("start HUD 2: " + this.hud.card_width);
     //
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
-    this.attachCardboxEvents();
-
+    
     try {
 
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -4302,7 +4298,7 @@ if (this.game.player == 0) {
         // do we have any cards to play?
         //
         if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
-          this.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
+          //this.updateStatus("<div class='status-message' id='status-message'>" + user_message + '</div>');
           playable_cards = [];
           for (i = 0; i < this.game.deck[0].hand.length; i++) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -4374,7 +4370,6 @@ if (this.game.player == 0) {
       this.endTurn();
       return;
     }
-
 
     twilight_self.attachCardboxEvents(function(card) {
       twilight_self.playerTurnCardSelected(card, player);
@@ -4907,7 +4902,7 @@ if (this.game.player == 0) {
           }
         }
 
-        let html = '<ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>';
+        let html = '<ul><li class="card" id="before_ops">event before ops</li><li class="card" id="after_ops">event after ops</li></ul>';
         twilight_self.updateStatusWithOptions('Playing opponent card:', html, true);
 
         twilight_self.bindBackButtonFunction(() => {
@@ -4919,7 +4914,7 @@ if (this.game.player == 0) {
           twilight_self.game.state.event_before_ops = 0;
           twilight_self.game.state.event_name = "";
 
-          if (action2 === "before") {
+          if (action2 === "before_ops") {
             twilight_self.game.state.event_before_ops = 1;
             twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
             twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
@@ -4928,7 +4923,7 @@ if (this.game.player == 0) {
             twilight_self.endTurn();
             return;
           }
-          if (action2 === "after") {
+          if (action2 === "after_ops") {
             twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
             twilight_self.addMove("event\t"+player+"\t"+card);
             twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);

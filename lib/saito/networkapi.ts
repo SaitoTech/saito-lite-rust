@@ -68,7 +68,11 @@ class NetworkAPI {
       message_bytes
     );
     this.api_call_index += 1;
-    ws.send(serialized_api_message);
+    try {
+      ws.send(serialized_api_message);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**

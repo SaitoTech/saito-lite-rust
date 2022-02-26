@@ -29,7 +29,7 @@ module.exports = EmailForm = {
           title = `Fwd: ${original.msg.title}`;
           msg = `<br/><hr/><i>Forwarded Text: </i><br/>\nForwarded from: ${original.transaction.from[0].add}\n\n${original.msg.message}`;
         }
-        document.querySelector(".email-body").innerHTML = EmailFormTemplate(address, title, msg);
+        document.querySelector(".email-body").innerHTML = sanitize(EmailFormTemplate(address, title, msg));
 
         if (document.querySelector('.create-button')) { document.querySelector('.create-button').classList.add("mobile-hide"); }
 
@@ -62,7 +62,7 @@ module.exports = EmailForm = {
             }
           }
         });
-    
+
     },
 
     attachEvents(app, mod) {
@@ -100,7 +100,7 @@ module.exports = EmailForm = {
                 email_amount = parseFloat(email_amount_elem.value);
             }
         }
-        
+
         let email_to_key = await mod.returnPublicKey(email_to);
 console.log("SENDING EMAIL TO: " + email_to_key);
 
@@ -123,7 +123,7 @@ console.log("SENDING EMAIL TO: " + email_to_key);
 console.log("about to propagate the tx");
           app.network.propagateTransaction(newtx);
           window.location.hash = mod.goToLocation("#page=email_list&subpage=inbox");
-          
+
           salert("Your message has been sent");
         } else {
           salert("Could not find user " + email_to);

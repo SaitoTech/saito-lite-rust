@@ -60,13 +60,63 @@ class Registry extends ModTemplate {
     RegistryModal.attachEvents(this.app, this);
   }
 
+
+
+  async handlePeerRequest(app, message, peer, mycallback = null) {
+    //
+    // this code doubles onConfirmation
+    //
+    if (message.request === 'registry username update') {
+
+      let tx = message.data.tx;
+      let registry_self = app.modules.returnModule("Registry");
+
+      //
+      // registration from DNS registrar?
+      //
+      let identifier     = tx.msg.identifier;
+      let signed_message = tx.msg.signed_message;
+      let sig            = tx.msg.sig;
+
+      try {
+        if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
+          registry_self.app.keys.addKey(tx.transaction.to[0].add, identifier, true, "", registry_self.app.blockchain.returnLatestBlockId(), registry_self.app.blockchain.returnLatestBlockHash(), 1);
+          registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
+        }
+      } catch (err) {
+        console.log("ERROR verifying username registration message: " + err);
+      }
+    }
+
+    super.handlePeerRequest(app, message, peer, mycallback);
+  }
+
+
+  notifyPeers(app, tx) {
+    for (let i = 0; i < app.network.peers.length; i++) {
+      if (app.network.peers[i].peer.synctype == "lite") {
+        //
+        // fwd tx to peer
+        //
+        let message = {};
+          message.request = "registry username update";
+          message.data = {};
+          message.data.tx = tx;
+        app.network.peers[i].sendRequest(message.request, message.data);
+      }
+    }
+  }
+
+
+
+
   tryRegisterIdentifier(identifier, domain="@saito") {
 
       let registry_self = this.app.modules.returnModule("Registry");
 
-console.log("REGISTERING TO WHICH MODULE: " + this.name);
-console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+      console.log("REGISTERING TO WHICH MODULE: " + this.name);
+      console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+      console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
       let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
       if (!newtx) {
@@ -224,7 +274,13 @@ console.log("SENDING TX TO ADDRESS: " + this.publickey);
 		console.log("ERROR verifying username registration message: " + err);
 	      }
             }
-          }
+          } else {
+
+	    // if i am a server, i will notify lite-peers of 
+	    console.log("notifying lite-peers of registration!");
+  	    this.notifyPeers(app, tx);
+
+	  }
         }
       }
     }

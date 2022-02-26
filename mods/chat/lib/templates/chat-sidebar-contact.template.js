@@ -1,3 +1,4 @@
+
 module.exports = ChatSidebarContactTemplate = (app, group) => {
 
   let datetime = app.browser.formatDate(new Date().getTime());
@@ -15,7 +16,7 @@ module.exports = ChatSidebarContactTemplate = (app, group) => {
       <img class="chat-row-image" src="${app.keys.returnIdenticon(group.members[0])}">
       <div class="chat-content">
           <div class="chat-group-name">${group.name}</div>
-          <div id="chat-last-message-${group.id}" class="chat-last-message">${description}</div>
+          <div id="chat-last-message-${group.id}" class="chat-last-message">${sanitize(description)}</div>
       </div>
       <div style="display; grid;">
         <div class="chat-last-message-timestamp">${datetime.hours}:${datetime.minutes}</div>

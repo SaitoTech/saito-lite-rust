@@ -1,89 +1,45 @@
 const PostForumsThreadTemplate = require('./post-forums-thread.template');
 
+/*
+  This creates a list of all arcade games and other modules for which we could have specific forums 
+  (add a respond to "post-forum" to any module to have it show up) and creates a framework for splash page latest post visible
+*/
 module.exports = PostForums = {
 
   render(app, mod) {
-
-    let sobj = [];
-/****
-    sobj.push({
-	ft_img    : "/saito/img/background.png",
-	ft_mod    : "saito",
-	ft_title  : "Saito Discussion",
-	ft_desc   : "All about Saito and the Saito Post",
-	ft_pnum   : 1423,
-	ft_ptext  : "posts",
-	ft_ptitle : "DEFCON Suicide Misadventures",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 15",
-    });
-    sobj.push({
-	ft_img    : "/saito/img/background.png",
-	ft_mod    : "development",
-	ft_title  : "Saito Development",
-	ft_desc   : "Building on Saito and the Saito Network",
-	ft_pnum   : 1423,
-	ft_ptext  : "posts",
-	ft_ptitle : "DEFCON Suicide Misadventures",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 15",
-    });
-****/
+  
     let modforums = [];
+    let modgames = [];
+    
     app.modules.respondTo("post-forum").forEach(mod => {
       modforums.push(mod);
     });
-
-    for (let i = 0; i < modforums.length; i++) {
-
-      let img = "/saito/img/background.png";
-      if (modforums[i].img) { img = modforums[i].img; }
-      let desc = modforums[i].description;
-      if (desc.length > 80) { desc = desc.substr(0, 80) + "..."; }
-      let title = modforums[i].name;
-
-      sobj.push({
-	ft_img    : img,
-	ft_mod    : modforums[i].returnSlug(),
-	ft_title  : title,
-	ft_desc   : desc,
-	ft_pnum   : modforums[i].post_num,
-	ft_ptext  : "posts",
-	ft_ptitle : "Splitting Hands and Doubling Down",
-	ft_puser  : "david@saito",
-	ft_pdate  :  "Jan 12",
-      });
-    }
-
-    //
-    // listen for txs from arcade-supporting games
-    //
-    let modgames = [];
+    
     app.modules.respondTo("arcade-games").forEach(mod => {
       modgames.push(mod);
     });
 
-    let obj = [];
-    for (let i = 0; i < modgames.length; i++) {
-
-      let desc = modgames[i].description;
-      if (desc.length > 80) { desc = desc.substr(0, 80) + "..."; }
-      let title = modgames[i].gamename;
-      if (!title) { title = modgames[i].name; }
-
-      obj.push({
-	ft_img    : `/${modgames[i].returnSlug()}/img/arcade.jpg`,
-	ft_mod    : modgames[i].returnSlug(),
-	ft_title  : title,
-	ft_desc   : desc,
-	ft_pnum   : modgames[i].post_num,
-	ft_ptext  : "",
-	ft_ptitle : "",
-	ft_puser  : "",
-	ft_pdate  : "",
+    //Create an array of objects for each module that responds to post-forum
+    let sobj = [];
+    for (let i = 0; i < modforums.length; i++) {
+      sobj.push({
+      	ft_img    : (modforums[i].img)? modforums[i].img : "/saito/img/background.png",
+      	ft_mod    : modforums[i].returnSlug(),
+      	ft_title  : modforums[i].name,
+      	ft_desc   : modforums[i].description,
       });
     }
 
+    //Create an array of objects for each module that responds to arcade-games
+    let obj = [];
+    for (let i = 0; i < modgames.length; i++) {
+      obj.push({
+      	ft_img    : `/${modgames[i].returnSlug()}/img/arcade.jpg`,
+      	ft_mod    : modgames[i].returnSlug(),
+      	ft_title  : modgames[i].gamename || modgames[i].name,
+      	ft_desc   : modgames[i].description,
+      });
+    }
    
 
     if (document.querySelector(".post-forums")) { 

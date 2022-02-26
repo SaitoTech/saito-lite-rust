@@ -28,7 +28,7 @@ class Blockchain {
   };
   // public blockring: Blockring;
   // public staking: Staking;
-  public blocks: any;
+  public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
   public indexing_active: boolean;
@@ -46,7 +46,7 @@ class Blockchain {
     //
     // this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
     // this.staking = new Staking(this.app);
-    this.blocks = {}; // hashmap of block_hash => block
+    this.blocks = new Map<string, Block>(); // hashmap of block_hash => block
     // this.utxoset = new UtxoSet();
 
     //
@@ -121,7 +121,6 @@ class Blockchain {
   }
 
   async addBlockToBlockchain(block, force = 0) {
-
     //
     //
     //
@@ -412,8 +411,6 @@ class Blockchain {
       //
       // this block is initialized with zero-confs processed
       //
-      console.log("affixing callbacks");
-
       block.affixCallbacks();
 
       //
@@ -506,9 +503,9 @@ class Blockchain {
     console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
-	if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
+        if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
           await this.deleteBlock(delete_block_id, block_hashes[i]);
-	}
+        }
       }
     }
   }
@@ -533,9 +530,9 @@ class Blockchain {
 
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
-	if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
+        if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
           block_hashes_copy.push(block_hashes[i]);
-	}
+        }
       }
     }
 
@@ -791,10 +788,10 @@ class Blockchain {
 
   async loadBlockAsync(block_hash: string) {
     if (!block_hash) return null;
-    if (this.blocks[block_hash]) {
-      return this.blocks[block_hash];
-    } else if (typeof window === "undefined") {
-      // load from disk if in server
+    if (typeof window === "undefined") {
+      if (this.blocks[block_hash] && this.blocks[block_hash].block_type === BlockType.Full) {
+        return this.blocks[block_hash];
+      }
       console.debug(`loading block from disk : ${block_hash}`);
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
@@ -803,7 +800,12 @@ class Blockchain {
       }
       block.block_type = BlockType.Full;
       return block;
+    } else {
+      if (this.blocks[block_hash]) {
+        return this.blocks[block_hash];
+      }
     }
+
     return null;
   }
 

@@ -34,6 +34,16 @@
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "Save",
+      id : "game-save",
+      class : "game-save",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.addMove("SAVE");
+	game_mod.endTurn();
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
       text : "Log",
       id : "game-log",
       class : "game-log",

@@ -4,6 +4,7 @@ const ChatBoxMessageBlockTemplate = require("./../templates/chat-box-message-blo
 var marked = require("marked");
 var sanitizeHtml = require("sanitize-html");
 const linkifyHtml = require("markdown-linkify");
+
 module.exports = ChatBox = {
   render(app, mod) {
     let chat_self = this;
@@ -25,7 +26,7 @@ module.exports = ChatBox = {
       }
 
       if (mod.groups[idx].txs.length == 0) {
-        chat_box_main.innerHTML = `<p id="chat-box-default-message-${group_id}" class="chat-box-default-message">No messages in this group :(</p>`;
+        chat_box_main.innerHTML = sanitize(`<p id="chat-box-default-message-${group_id}" class="chat-box-default-message">No messages in this group :(</p>`);
       }
 
       //
@@ -136,7 +137,7 @@ module.exports = ChatBox = {
           }
           app.browser.logMatomoEvent(
             "Chat",
-            "ArcadeChatSendMessage",
+            "ChatBoxSendMessage",
             "PressedEnter"
           );
           let newtx = mod.createMessage(group_id, msg_input.value);
@@ -163,6 +164,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnTouch"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);
@@ -181,6 +187,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnClick"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);
@@ -268,6 +279,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);
@@ -277,6 +292,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);
@@ -554,7 +573,7 @@ module.exports = ChatBox = {
     });
     //msg = emoji.emojify(msg);
 
-    return msg;
+    return sanitize(msg);
   },
 
   removeDefaultMessage(group_id) {

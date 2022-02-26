@@ -104,6 +104,7 @@
 
     }
 
+
     if (num == 3) {
       for (let i = 0; i < players.length; i++) {
 	if (players[i].factions[0] === "protestant") {
@@ -440,23 +441,24 @@ console.log("Units to Move: " + JSON.stringify(units_to_move));
 
 
 
-  playerTurn(selected_card=null) {
+  playerTurn(faction, selected_card=null) {
 
     this.startClock();
 
     let his_self = this;
 
-    this.resetPlayerTurn(this.game.player);
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.attachCardboxEvents(function(card) {
-      his_self.playerPlayCard(card, this.game.player);
-    });
+    this.resetPlayerTurn(this.game.player, faction);
 
+    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    this.attachCardboxEvents(function(card) {
+      this.playerPlayCard(card, this.game.player, faction);
+    });  
 
   }
 
-  playerPlayCard(card) {
+  playerPlayCard(card, player, faction) {
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">play for ops</li>`;
@@ -465,15 +467,15 @@ console.log("Units to Move: " + JSON.stringify(units_to_move));
 
     this.updateStatusWithOptions('Playing card:', html, true);
     this.bindBackButtonFunction(() => {
-      this.playerTurnCardSelected(card, player);
+      this.playerTurn(faction);
     });
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "ops") {
-        this.playerPlayOps();
+        this.playerPlayOps(card, faction);
         return;
       }
       if (user_choice === "event") {
-        this.playerPlayEvent();
+        this.playerPlayEvent(card, faction);
         return;
       }
       return;
@@ -481,7 +483,7 @@ console.log("Units to Move: " + JSON.stringify(units_to_move));
 
   }
 
-  async playerPlayOps(card, ops=null) {
+  async playerPlayOps(card, faction, ops=null) {
 
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
@@ -493,9 +495,9 @@ console.log("PFACTIONS: " + JSON.stringify(pfactions));
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
       for (let z = 0; z < menu[i].factions.length; z++) {
-        if (pfactions.includes(menu[i].factions[z])) {
+        if (menu[i].factions[z] === faction) {
 	  if (menu[i].cost[z] <= ops) {
-            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops] [${menu[i].factions[z]}]</li>`;
+            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
           }
 	  z = menu[i].factions.length+1;
         }
@@ -527,7 +529,7 @@ console.log("PFACTIONS: " + JSON.stringify(pfactions));
 
     });
   }
-  playerPlayEvent(card) {
+  playerPlayEvent(card, faction, ops=null) {
 
 console.log("playing ops");
 
@@ -612,23 +614,23 @@ console.log("17");
 return;
   }
   async playerCallTheologicalDebate(his_self, player) {
-console.log("");
+console.log("18");
 return;
   }
   async playerBuildSaintPeters(his_self, player) {
-console.log("");
+console.log("19");
 return;
   }
   async playerBurnBooks(his_self, player) {
-console.log("");
+console.log("20");
 return;
   }
   async playerFoundJesuitUniversity(his_self, player) {
-console.log("jesuit");
+console.log("21 jesuit");
 return;
   }
   async playerPublishTreatise(his_self, player) {
-console.log("treatise");
+console.log("22 treatise");
 return;
   }
 

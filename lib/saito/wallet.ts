@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.038,
+    version: 4.057,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -161,7 +161,6 @@ export default class Wallet {
   }
 
   createUnsignedTransaction(publickey = "", amount = BigInt(0), fee = BigInt(0), force_merge = 0) {
-
     // convert from human-readable to NOLAN
     amount = BigInt(amount) * BigInt(100000000);
     fee = BigInt(fee) * BigInt(100000000);
