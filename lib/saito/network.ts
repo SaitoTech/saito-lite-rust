@@ -344,7 +344,9 @@ class Network {
   cleanupDisconnectedPeer(peer, force = 0) {
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
-      if (this.peers[c] === peer) {
+      // it has to be this peer, and the socket must be closed
+      if (this.peers[c] === peer && this.peers[c].socket.readyState === this.peers[c].socket.CLOSED) {
+
         let keep_peer = -1;
 
         //
@@ -405,6 +407,7 @@ class Network {
           //
           this.dead_peers.push(peer);
         }
+
         console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
@@ -839,6 +842,7 @@ class Network {
       if (peer.socket.readyState === peer.socket.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
+          break;
         }
       }
     });
