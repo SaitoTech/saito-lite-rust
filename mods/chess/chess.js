@@ -79,6 +79,7 @@ class Chessgame extends GameTemplate {
         game_mod.menu.showSubMenu("game-game");
       },
     });
+    
     this.menu.addSubMenuOption("game-game", {
       text: "Rules",
       id: "game-rules",
@@ -98,15 +99,6 @@ class Chessgame extends GameTemplate {
         console.log("Button Press: Log");
         game_mod.menu.hideSubMenus();
         game_mod.log.toggleLog();
-      },
-    });
-    this.menu.addSubMenuOption("game-game", {
-      text: "Stats",
-      id: "game-stats",
-      class: "game-stats",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleStatsMenu();
       },
     });
     this.menu.addSubMenuOption("game-game", {
