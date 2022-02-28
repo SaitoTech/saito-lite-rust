@@ -618,7 +618,6 @@ class Arcade extends ModTemplate {
               if (transaction.sig === tx.msg.game_id) {
                 if (transaction.options) {
                   if (transaction.options.players_needed <= transaction.players.length + 1) {
-                    console.info("ACCEPT MESSAGE SENT ON GAME WAITING FOR ONE PLAYER! -- deleting");
                     this.games.splice(i, 1);
                     this.renderArcadeMain(this.app, this);
                   }
@@ -774,11 +773,8 @@ class Arcade extends ModTemplate {
         //
 	this.removeGameFromOpenList(txmsg.game_id);
         if (this.app.BROWSER == 0) {
-console.log("on hpr - server notify peers of accept!");
 	  this.notifyPeers(this.app, tx);
 	}
-console.log("ACCEPT RECEIVED!");
-console.log(JSON.stringify(txmsg));
 
         //
         // multiplayer games might hit here without options.games
@@ -910,7 +906,6 @@ console.log(JSON.stringify(txmsg));
               txmsg.module + " invite accepted.",
               "game-acceptance-notification"
             );
-            console.log("RECEIVE ACCEPT REQUEST WITH NULL BLOCK AND 0 CONF");
             let accepted = await this.receiveAcceptRequest(null, tx, 0, this.app);
 
             if (accepted == false) {
@@ -1335,7 +1330,6 @@ console.log(JSON.stringify(txmsg));
   }
 
   createAcceptTransaction(gametx) {
-    console.log("CREATE ACCEPT TX");
 
     let txmsg = gametx.returnMessage();
 
@@ -1408,7 +1402,6 @@ console.log(JSON.stringify(txmsg));
   }
 
   async receiveAcceptRequest(blk, tx, conf, app) {
-    console.log("RECEIVE ACCEPT REQUEST!");
 
     if (this.browser_active == 1) {
       if (tx.isTo(app.wallet.returnPublicKey())) {

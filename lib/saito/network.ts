@@ -697,18 +697,18 @@ class Network {
               syncobj.prehash.push(block.prehash);
               syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
-              console.log("checking if " + block.returnHash() + " has txs for " + publickey);
+              //console.log("checking if " + block.returnHash() + " has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
-                console.log("yes");
+                //console.log("yes");
                 syncobj.txs.push(1);
               } else {
-                console.log("no");
+                //console.log("no");
                 syncobj.txs.push(0);
               }
             }
           }
         }
-        console.log("ABOUT TO SEND GSTCHAIN");
+        //console.log("ABOUT TO SEND GSTCHAIN");
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
