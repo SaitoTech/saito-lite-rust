@@ -42,7 +42,7 @@ module.exports = ArcadeGameDetails = {
 
     //Test for advanced options
     let advancedOptions = gamemod.returnGameOptionsHTML();
-    if (advancedOptions === null || advancedOptions == "") {
+    if (!advancedOptions) {
       document.querySelector(".game-wizard-options-toggle").style.display = "none";
     } else {
       //Create (hidden) the advanced options window
@@ -52,7 +52,7 @@ module.exports = ArcadeGameDetails = {
 
       //Attach events to advance options button
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
-        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
+        mod.meta_overlay.show(app, gamemod, advancedOptions);
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {
           if (document.getElementById("game-wizard-advanced-return-btn")) {
