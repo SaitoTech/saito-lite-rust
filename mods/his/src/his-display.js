@@ -103,6 +103,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       this.displayElectorateDisplay();
       this.displayNewWorld();
       this.displaySpaces();
+      this.displayNavalSpaces();
       this.displayVictoryTrack();
     } catch (err) {
       console.log("error displaying board... " + err);
@@ -131,6 +132,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
     }
   }
+
 
   returnSpaceTile(space) {
 
@@ -237,11 +239,115 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
   }
 
+  returnNavies(space) {
+
+    let html = '<div class="space_navy" id="">';
+    let tile = "";
+
+    for (let z in space.units) {
+
+      let squadrons = 0;
+      let corsairs = 0;
+
+      for (let zz = 0; zz < space.units[z].length; zz++) {
+	if (space.units[z][zz].type === "squadron") {
+	  squadrons += 2;
+	}
+	if (space.units[z][zz].type === "corsair") {
+	  corsairs += 1;
+	}
+      }
+
+      while (squadrons >= 2) {
+        if (z === "hapsburg") {
+          tile = "/his/img/tiles/hapsburg/";	  
+	  if (squadrons >= 2) {
+            tile += `Hapsburg_squadron.svg`;
+	    squadrons -= 2;
+	  }
+        }
+        if (z === "england") {
+          tile = "/his/img/tiles/england/";	  
+	  if (squadrons >= 2) {
+            tile += `England_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "france") {
+          tile = "/his/img/tiles/france/";	  
+	  if (squadrons >= 2) {
+            tile += `French_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "papacy") {
+          tile = "/his/img/tiles/papacy/";	  
+	  if (squadrons >= 2) {
+            tile += `Papacy_squadron.svg`;
+	    squadrons -= 2;
+	  }
+        }
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (squadrons >= 2) {
+            tile += `Ottoman_squadron.svg`;
+	    squadrons -= 2;
+          }
+	  if (corsairs >= 1) {
+            tile += `Ottoman_corsair.svg`;
+	    corsairs -= 1;
+          }
+        }
+        if (z === "venice") {
+	  if (squadrons >= 2) {
+            tile += `Venice_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "genoa") {
+          tile = "/his/img/tiles/genoa/";	  
+	  if (squadrons >= 2) {
+            tile += `Genoa_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "scotland") {
+          tile = "/his/img/tiles/scotland/";	  
+	  if (squadrons >= 2) {
+            tile += `Scottish_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+
+        html += `<img class="navy_tile" src="${tile}" />`;
+      }
+
+ 
+      while (corsairs >= 1) {
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (corsairs >= 1) {
+            tile += `Ottoman_corsair.svg`;
+	    corsairs -= 1;
+          }
+        }
+        html += `<img class="navy_tile" src="${tile}" />`;
+      }
+ 
+    }
+
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
   returnArmies(space) {
 
     let html = '<div class="space_army" id="">';
-    let owner = space.political;
-    if (owner == "") { owner = space.home; }
+
     let tile = "";
 
     for (let z in space.units) {
@@ -254,159 +360,179 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       }
 
       while (army >= 1) {
-          if (z === "hapsburg") {
-            tile = "/his/img/tiles/hapsburg/";	  
-	    if (army >= 4) {
-              tile += `HapsburgReg-4.svg`;
-	      army -= 4;
-	    } else {
+        if (z === "hapsburg") {
+          tile = "/his/img/tiles/hapsburg/";	  
+	  if (army >= 4) {
+            tile += `HapsburgReg-4.svg`;
+	    army -= 4;
+	  } else {
 	    if (army >= 2) {
               tile += `HapsburgReg-2.svg`;
 	      army -= 2;
 	    } else {
-	    if (army >= 1) {
-              tile += `HapsburgReg-1.svg`;
-	      army -= 1;
-	    } } }
+	      if (army >= 1) {
+                tile += `HapsburgReg-1.svg`;
+	        army -= 1;
+	      }
+	    }
           }
-          if (z === "england") {
-            tile = "/his/img/tiles/england/";	  
-	    if (army >= 4) {
-              tile += `EnglandReg-4.svg`;
-	      army -= 4;
-            } else {
+	}
+        if (z === "england") {
+          tile = "/his/img/tiles/england/";	  
+	  if (army >= 4) {
+            tile += `EnglandReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `EnglandReg-2.svg`;
-	      army -= 4;
+	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `EnglandReg-1.svg`;
-	      army -= 1;
-            } } }
-          }
-          if (z === "france") {
-            tile = "/his/img/tiles/france/";	  
-	    if (army >= 4) {
-              tile += `FrenchReg-4.svg`;
-	      army -= 4;
-            } else {
+	      if (army >= 1) {
+                tile += `EnglandReg-1.svg`;
+	        army -= 1;
+              }
+            }
+	  }
+        }
+        if (z === "france") {
+          tile = "/his/img/tiles/france/";	  
+	  if (army >= 4) {
+            tile += `FrenchReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `FrenchReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `FrenchReg-1.svg`;
-	      army -= 1;
-            } } }
-          }
-          if (z === "papacy") {
-            tile = "/his/img/tiles/papacy/";	  
-	    if (army >= 4) {
-              tile += `PapacyReg-4.svg`;
-	      army -= 4;
-	    } else {
+	      if (army >= 1) {
+                tile += `FrenchReg-1.svg`;
+	        army -= 1;
+              }
+	    }
+	  }
+        }
+        if (z === "papacy") {
+          tile = "/his/img/tiles/papacy/";	  
+          if (army >= 4) {
+            tile += `PapacyReg-4.svg`;
+            army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `PapacyReg-2.svg`;
 	      army -= 2;
 	    } else {
-	    if (army >= 1) {
-              tile += `PapacyReg-1.svg`;
-	      army -= 1;
-	    } } }
-          }
-          if (z === "protestant") {
-            tile = "/his/img/tiles/protestant/";	  
-	    if (army >= 4) {
-              tile += `ProtestantReg-4.svg`;
-	      army -= 4;
-            } else {
+	      if (army >= 1) {
+                tile += `PapacyReg-1.svg`;
+	        army -= 1;
+	      }
+	    }
+	  }
+        }
+        if (z === "protestant") {
+          tile = "/his/img/tiles/protestant/";	  
+	  if (army >= 4) {
+            tile += `ProtestantReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `ProtestantReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `ProtestantReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `ProtestantReg-1.svg`;
+	        army -= 1;
+              }
+	    }
           }
-          if (z === "ottoman") {
-            tile = "/his/img/tiles/ottoman/";	  
-	    if (army >= 4) {
-              tile += `OttomanReg-4.svg`;
-	      army -= 4;
-            } else {
+        }
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (army >= 4) {
+            tile += `OttomanReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `OttomanReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `OttomanReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `OttomanReg-1.svg`;
+	        army -= 1;
+              }
+            }
           }
-          if (z === "independent") {
-            tile = "/his/img/tiles/independent/";	  
-	    if (army >= 2) {
-              tile += `IndependentReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "independent") {
+          tile = "/his/img/tiles/independent/";	  
+	  if (army >= 2) {
+            tile += `IndependentReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `IndependentReg-1.svg`;
 	      army -= 1;
-            } }
-          }
-          if (z === "venice") {
-            tile = "/his/img/tiles/venice/";	  
-	    if (army >= 2) {
-              tile += `VeniceReg-2.svg`;
-	      army -= 2;
-            } else {
+            } 
+	  }
+        }
+        if (z === "venice") {
+          tile = "/his/img/tiles/venice/";	  
+	  if (army >= 2) {
+            tile += `VeniceReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `VeniceReg-1.svg`;
 	      army -= 1;
-            } }
-          }
-          if (z === "hungary") {
-            tile = "/his/img/tiles/hungary/";	  
-	    if (army >= 4) {
-              tile += `HungaryReg-4.svg`;
-	      army -= 4;
-            } else {
+            }
+	  }
+        }
+        if (z === "hungary") {
+          tile = "/his/img/tiles/hungary/";	  
+	  if (army >= 4) {
+            tile += `HungaryReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `HungaryReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `HungaryReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `HungaryReg-1.svg`;
+	        army -= 1;
+              }
+            }
           }
-          if (z === "genoa") {
-            tile = "/his/img/tiles/genoa/";	  
-	    if (army >= 2) {
-              tile += `GenoaReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "genoa") {
+          tile = "/his/img/tiles/genoa/";	  
+	  if (army >= 2) {
+            tile += `GenoaReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `GenoaReg-1.svg`;
 	      army -= 1;
-            } }
+            }
           }
-          if (z === "scotland") {
-            tile = "/his/img/tiles/scotland/";	  
-	    if (army >= 2) {
-              tile += `ScottishReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "scotland") {
+          tile = "/his/img/tiles/scotland/";	  
+	  if (army >= 2) {
+            tile += `ScottishReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `ScottishReg-1.svg`;
 	      army -= 1;
-            } } 
-          }
-	}
+            }
+          } 
+        }
+      }
 
+      if (tile !== "") {
         html += `<img class="army_tile" src="${tile}" />`;
- 
+      } 
+
     }
 
     html += '</div>';
@@ -420,8 +546,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   returnMercenaries(space) {
 
     let html = '<div class="space_mercenaries" id="">';
-    let owner = space.political;
-    if (owner == "") { owner = space.home; }
     let tile = "";
 
     for (let z in space.units) {
@@ -434,8 +558,8 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       }
 
       for (let i = 0; i < army; i+= 2) {
-        if (owner != "") {
-          if (owner === "hapsburg") {
+        if (z != "") {
+          if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
 	    if (army >= 4) {
               tile += `HapsburgMerc-4.svg`;
@@ -450,7 +574,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
 	    }
           }
-          if (owner === "england") {
+          if (z === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandMerc-4.svg`;
@@ -465,7 +589,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "france") {
+          if (z === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchMerc-4.svg`;
@@ -480,7 +604,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "papacy") {
+          if (z === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyMerc-4.svg`;
@@ -495,7 +619,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
 	    }
           }
-          if (owner === "protestant") {
+          if (z === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantMerc-4.svg`;
@@ -510,7 +634,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "ottoman") {
+          if (z === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanMerc-4.svg`;
@@ -601,12 +725,49 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
       obj.innerHTML += this.returnArmies(space);
+      obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnMercenaries(space);
       obj.innerHTML += this.returnPersonages(space);
     }
 
   }
 
+  displayNavalSpace(key) {
+
+    let obj = document.getElementById(key);
+    let space = this.navalspaces[key];
+
+    //
+    // should we show the tile?
+    //
+    let show_tile = 1;
+
+    //
+    // do not show under some conditions
+    //
+
+    if (show_tile === 1) {
+      obj.innerHTML += this.returnNavies(space);
+      obj.innerHTML += this.returnPersonages(space);
+    }
+
+  }
+
+  displayNavalSpaces() {
+
+    //
+    // add tiles
+    //
+    for (let key in this.navalspaces) {
+      if (this.navalspaces.hasOwnProperty(key)) {
+	this.displayNavalSpace(key);
+        document.getElementById(key).onclick = (e) => {
+	  this.displayNavalSpaceDetailedView(key);
+        }
+      }
+    }
+
+  }
 
   displaySpaces() {
 

@@ -14,9 +14,9 @@
       name		: 	"Cavalry",
     });
  
-    this.importUnit('naval-squadron', {
-      type		:	"naval-squadron" ,
-      name		: 	"Naval Squadron" ,
+    this.importUnit('squadron', {
+      type		:	"squadron" ,
+      name		: 	"Squadron" ,
     });
 
     this.importUnit('corsair', {

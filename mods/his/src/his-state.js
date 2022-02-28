@@ -28,7 +28,7 @@
   addNavalSquadron(faction, space, num=1) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "naval-squadron"));
+      space.units[faction].push(this.newUnit(faction, "squadron"));
     }
   }
 
@@ -46,8 +46,6 @@
 
   addPersonage(faction, space, personage) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-console.log(faction);
-console.log(JSON.stringify(space.units));
     space.units[faction].push(this.newPersonage(faction, personage));
   }
 
@@ -61,6 +59,9 @@ console.log(JSON.stringify(space.units));
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  isSpaceFriendly() {
+    return 1;
+  }
 
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
@@ -394,10 +395,116 @@ console.log(JSON.stringify(space.units));
   }
 
 
+  returnNavalSpaces() {
+
+    let seas = {};
+
+    seas['irish'] = {
+      top : 875 ,
+      left : 900 ,
+      name : "Irish Sea" ,
+      neighbours : ["biscay","north","channel"] ,
+    }
+    seas['biscay'] = {
+      top : 1500 ,
+      left : 1400 ,
+      name : "Bay of Biscay" ,
+      neighbours : ["irish","channel","atlantic"] ,
+    }
+    seas['atlantic'] = {
+      top : 2700 ,
+      left : 850 ,
+      name : "Atlantic Ocean" ,
+      neighbours : ["biscay"] ,
+    }
+    seas['channel'] = {
+      top : 1020 ,
+      left : 1450 ,
+      name : "English Channel" ,
+      neighbours : ["irish","biscay","north"] ,
+    }
+    seas['north'] = {
+      top : 200 ,
+      left : 2350 ,
+      name : "North Sea" ,
+      neighbours : ["irish","channel","baltic"] ,
+    }
+    seas['baltic'] = {
+      top : 50 ,
+      left : 3150 ,
+      name : "Baltic Sea" ,
+      neighbours : ["north"] ,
+    }
+    seas['lyon'] = {
+      top : 1930 ,
+      left : 2430 ,
+      name : "Gulf of Lyon" ,
+      neighbours : ["barbary","tyrrhenian"] ,
+    }
+    seas['barbary'] = {
+      top : 2330 ,
+      left : 2430 ,
+      name : "Barbary Coast" ,
+      neighbours : ["lyon","tyrrhenian","ionian","africa"] ,
+    }
+    seas['tyrrhenian'] = {
+      top : 2260 ,
+      left : 3300 ,
+      name : "Tyrrhenian Sea" ,
+      neighbours : ["barbary","lyon"] ,
+    }
+    seas['africa'] = {
+      top : 2770 ,
+      left : 4200 ,
+      name : "North African Coast" ,
+      neighbours : ["ionian","barbary","aegean"] ,
+    }
+    seas['aegean'] = {
+      top : 2470 ,
+      left : 4450 ,
+      name : "Aegean Sea" ,
+      neighbours : ["black","africa","ionian"] ,
+    }
+    seas['ionian'] = {
+      top : 2390 ,
+      left : 3750 ,
+      name : "Ionian Sea" ,
+      neighbours : ["black","aegean","adriatic"] ,
+    }
+    seas['adriatic'] = {
+      top : 1790 ,
+      left : 3400 ,
+      name : "Adriatic Sea" ,
+      neighbours : ["ionian"] ,
+    }
+    seas['black'] = {
+      top : 1450 ,
+      left : 4750 ,
+      name : "Black Sea" ,
+      neighbours : ["aegean"] ,
+    }
+
+    for (let key in seas) {
+      seas[key].units = {};
+      seas[key].units['england'] = [];
+      seas[key].units['france'] = [];
+      seas[key].units['hapsburg'] = [];
+      seas[key].units['ottoman'] = [];
+      seas[key].units['papacy'] = [];
+      seas[key].units['protestant'] = [];
+      seas[key].units['venice'] = [];
+      seas[key].units['genoa'] = [];
+      seas[key].units['hungary'] = [];
+      seas[key].units['scotland'] = [];
+      seas[key].units['independent'] = [];
+    }
+
+    return seas;
+  }
+
   returnSpaces() {
 
     let spaces = {};
-
 
     spaces['stirling'] = {
       top: 70,
@@ -665,7 +772,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["nantes","tours","limoges"],
+      neighbours: ["navarre", "nantes","tours","limoges"],
+      pass: ["navarre"],
       language: "french",
       type: "key"
     }
@@ -685,7 +793,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["lyon","geneva"],
+      neighbours: ["turin","lyon","geneva"],
+      pass: ["turin"],
       language: "french",
       type: "town"
     }
@@ -695,7 +804,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["toulouse","lyon","marseille"],
+      neighbours: ["barcelona","toulouse","lyon","marseille"],
+      pass: ["barcelona"],
       language: "french",
       type: "town"
     }
@@ -715,7 +825,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["bordeaux","avignon"],
+      neighbours: ["barcelona","bordeaux","avignon"],
+      pass: ["barcelona"],
       language: "french",
       type: "town"
     }
@@ -876,7 +987,8 @@ console.log(JSON.stringify(space.units));
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["linz","regensburg","augsburg","innsbruck"],
+      neighbours: ["graz","linz","regensburg","augsburg","innsbruck"],
+      pass: ["graz"],
       language: "german",
       type: "town"
     }
@@ -886,7 +998,8 @@ console.log(JSON.stringify(space.units));
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["worms","nuremberg","regensburg","salzburg"],
+      neighbours: ["innsbruck","worms","nuremberg","regensburg","salzburg"],
+      pass: ["innsbruck"],
       language: "german",
       type: "electorate"
     }
@@ -996,7 +1109,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zaragoza","valencia"],
+      neighbours: ["toulouse","avignon","zaragoza","valencia"],
+      pass: ["toulouse","avignon"],
       language: "spanish",
       type: "key"
     }
@@ -1206,7 +1320,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["vienna","mohacs","agram","trieste"],
+      neighbours: ["salzburg","vienna","mohacs","agram","trieste"],
+      pass: ["salzburg"],
       language: "german",
       type: "town"
     }
@@ -1226,7 +1341,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zurich","salzburg"],
+      neighbours: ["augsburg","trent","zurich","salzburg"],
+      pass: ["augsburg","trent"],
       language: "german",
       type: "town"
     }
@@ -1306,7 +1422,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["lepanto","athens","salonika"],
+      neighbours: ["durazzo","lepanto","athens","salonika"],
+      pass: ["durazzo"],
       language: "other",
       type: "town"
     }
@@ -1326,7 +1443,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["scutari"],
+      neighbours: ["larissa","scutari"],
+      pass: ["larissa"],
       language: "other",
       type: "town"
     }
@@ -1336,7 +1454,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["ragusa","durazzo"],
+      neighbours: ["nezh","ragusa","durazzo"],
+      pass: ["nezh"],
       language: "other",
       type: "fortress"
     }
@@ -1386,7 +1505,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["bucharest","belgrade"],
+      neighbours: ["szegedin","sofia","bucharest","belgrade"],
+      pass: ["szegedin","sofia"],
       language: "other",
       type: "town"
     }
@@ -1396,7 +1516,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["nezh","edirne"],
+      neighbours: ["nicopolis","nezh","edirne"],
+      pass: ["nicopolis"],
       language: "other",
       type: "town"
     }
@@ -1406,7 +1527,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["belgrade","sofia"],
+      neighbours: ["scutari","belgrade","sofia"],
+      pass: ["scutari"],
       language: "other",
       type: "town"
     }
@@ -1418,7 +1540,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["szegedin","mohacs","agram","nezh","nicopolis"],
+      neighbours: ["ragusa","szegedin","mohacs","agram","nezh","nicopolis"],
+      pass: ["ragusa"],
       language: "other",
       type: "key"
     }
@@ -1428,7 +1551,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["buda","belgrade"],
+      neighbours: ["nicopolis","buda","belgrade"],
+      pass: ["nicopolis"],
       language: "other",
       type: "town"
     }
@@ -1458,7 +1582,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["graz","trieste","belgrade","mohacs"],
+      neighbours: ["zara","graz","trieste","belgrade","mohacs"],
+      pass: ["zara"],
       language: "other",
       type: "town"
     }
@@ -1598,7 +1723,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["basel","besancon","lyon","grenoble"],
+      neighbours: ["basel","besancon","lyon","turin","grenoble"],
+      pass: ["turin"],
       language: "french",
       type: "town"
     }
@@ -1618,7 +1744,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["milan","modena","venice"],
+      neighbours: ["innsbruck","milan","modena","venice"],
+      pass: ["innsbruck"],
       language: "italian",
       type: "town"
     }
@@ -1648,7 +1775,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "france",
       religion: "catholic",
-      neighbours: ["milan","pavia","genoa"],
+      neighbours: ["milan","pavia","geneva","grenoble","genoa"],
+      pass: ["grenoble","geneva"],
       language: "italian",
       type: "town"
     }
@@ -1658,7 +1786,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["marseille"],
+      neighbours: ["genoa","marseille"],
+      pass: ["genoa"],
       language: "french",
       type: "town"
     }
@@ -1698,7 +1827,8 @@ console.log(JSON.stringify(space.units));
       home: "genoa",
       political: "",
       religion: "catholic",
-      neighbours: ["pavia","turin","modena","siena"],
+      neighbours: ["nice","pavia","turin","modena","siena"],
+      pass: ["nice"],
       language: "italian",
       type: "key"
     }
@@ -1748,7 +1878,8 @@ console.log(JSON.stringify(space.units));
       home: "venice",
       political: "",
       religion: "catholic",
-      neighbours: ["ragusa","trieste"],
+      neighbours: ["agram","ragusa","trieste"],
+      pass: ["agram"],
       language: "other",
       type: "town"
     }
@@ -1758,7 +1889,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["zara","scutari"],
+      neighbours: ["belgrade","zara","scutari"],
+      pass: ["belgrade"],
       language: "italian",
       type: "town"
     }

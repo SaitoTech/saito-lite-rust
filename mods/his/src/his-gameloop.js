@@ -57,6 +57,26 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+
+	if (mv[0] === "build") {
+
+	  let land_or_sea = mv[1];
+	  let faction = mv[2];
+	  let unit_type = mv[3];
+	  let spacekey = mv[4];
+
+	  if (land_or_sea === "land") {
+	    this.game.spaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+	  if (land_or_sea === "sea") {
+	    this.game.navalspaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
         if (mv[0] === "event") {
 
 	  let player = mv[1];

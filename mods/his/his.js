@@ -293,9 +293,9 @@ class HereIStand extends GameTemplate {
       name		: 	"Cavalry",
     });
  
-    this.importUnit('naval-squadron', {
-      type		:	"naval-squadron" ,
-      name		: 	"Naval Squadron" ,
+    this.importUnit('squadron', {
+      type		:	"squadron" ,
+      name		: 	"Squadron" ,
     });
 
     this.importUnit('corsair', {
@@ -423,6 +423,7 @@ class HereIStand extends GameTemplate {
       first_time_running = 1;
       this.game.state = this.returnState();
       this.game.spaces = this.returnSpaces();
+      this.game.navalspaces = this.returnNavalSpaces();
       this.game.players_info = this.returnPlayers(this.game.players.length);
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.players_info));
@@ -915,7 +916,7 @@ console.log("adding stuff!");
   addNavalSquadron(faction, space, num=1) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
-      space.units[faction].push(this.newUnit(faction, "naval-squadron"));
+      space.units[faction].push(this.newUnit(faction, "squadron"));
     }
   }
 
@@ -933,8 +934,6 @@ console.log("adding stuff!");
 
   addPersonage(faction, space, personage) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
-console.log(faction);
-console.log(JSON.stringify(space.units));
     space.units[faction].push(this.newPersonage(faction, personage));
   }
 
@@ -948,6 +947,9 @@ console.log(JSON.stringify(space.units));
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  isSpaceFriendly() {
+    return 1;
+  }
 
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
@@ -1281,10 +1283,116 @@ console.log(JSON.stringify(space.units));
   }
 
 
+  returnNavalSpaces() {
+
+    let seas = {};
+
+    seas['irish'] = {
+      top : 875 ,
+      left : 900 ,
+      name : "Irish Sea" ,
+      neighbours : ["biscay","north","channel"] ,
+    }
+    seas['biscay'] = {
+      top : 1500 ,
+      left : 1400 ,
+      name : "Bay of Biscay" ,
+      neighbours : ["irish","channel","atlantic"] ,
+    }
+    seas['atlantic'] = {
+      top : 2700 ,
+      left : 850 ,
+      name : "Atlantic Ocean" ,
+      neighbours : ["biscay"] ,
+    }
+    seas['channel'] = {
+      top : 1020 ,
+      left : 1450 ,
+      name : "English Channel" ,
+      neighbours : ["irish","biscay","north"] ,
+    }
+    seas['north'] = {
+      top : 200 ,
+      left : 2350 ,
+      name : "North Sea" ,
+      neighbours : ["irish","channel","baltic"] ,
+    }
+    seas['baltic'] = {
+      top : 50 ,
+      left : 3150 ,
+      name : "Baltic Sea" ,
+      neighbours : ["north"] ,
+    }
+    seas['lyon'] = {
+      top : 1930 ,
+      left : 2430 ,
+      name : "Gulf of Lyon" ,
+      neighbours : ["barbary","tyrrhenian"] ,
+    }
+    seas['barbary'] = {
+      top : 2330 ,
+      left : 2430 ,
+      name : "Barbary Coast" ,
+      neighbours : ["lyon","tyrrhenian","ionian","africa"] ,
+    }
+    seas['tyrrhenian'] = {
+      top : 2260 ,
+      left : 3300 ,
+      name : "Tyrrhenian Sea" ,
+      neighbours : ["barbary","lyon"] ,
+    }
+    seas['africa'] = {
+      top : 2770 ,
+      left : 4200 ,
+      name : "North African Coast" ,
+      neighbours : ["ionian","barbary","aegean"] ,
+    }
+    seas['aegean'] = {
+      top : 2470 ,
+      left : 4450 ,
+      name : "Aegean Sea" ,
+      neighbours : ["black","africa","ionian"] ,
+    }
+    seas['ionian'] = {
+      top : 2390 ,
+      left : 3750 ,
+      name : "Ionian Sea" ,
+      neighbours : ["black","aegean","adriatic"] ,
+    }
+    seas['adriatic'] = {
+      top : 1790 ,
+      left : 3400 ,
+      name : "Adriatic Sea" ,
+      neighbours : ["ionian"] ,
+    }
+    seas['black'] = {
+      top : 1450 ,
+      left : 4750 ,
+      name : "Black Sea" ,
+      neighbours : ["aegean"] ,
+    }
+
+    for (let key in seas) {
+      seas[key].units = {};
+      seas[key].units['england'] = [];
+      seas[key].units['france'] = [];
+      seas[key].units['hapsburg'] = [];
+      seas[key].units['ottoman'] = [];
+      seas[key].units['papacy'] = [];
+      seas[key].units['protestant'] = [];
+      seas[key].units['venice'] = [];
+      seas[key].units['genoa'] = [];
+      seas[key].units['hungary'] = [];
+      seas[key].units['scotland'] = [];
+      seas[key].units['independent'] = [];
+    }
+
+    return seas;
+  }
+
   returnSpaces() {
 
     let spaces = {};
-
 
     spaces['stirling'] = {
       top: 70,
@@ -1552,7 +1660,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["nantes","tours","limoges"],
+      neighbours: ["navarre", "nantes","tours","limoges"],
+      pass: ["navarre"],
       language: "french",
       type: "key"
     }
@@ -1572,7 +1681,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["lyon","geneva"],
+      neighbours: ["turin","lyon","geneva"],
+      pass: ["turin"],
       language: "french",
       type: "town"
     }
@@ -1582,7 +1692,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["toulouse","lyon","marseille"],
+      neighbours: ["barcelona","toulouse","lyon","marseille"],
+      pass: ["barcelona"],
       language: "french",
       type: "town"
     }
@@ -1602,7 +1713,8 @@ console.log(JSON.stringify(space.units));
       home: "france",
       political: "france",
       religion: "catholic",
-      neighbours: ["bordeaux","avignon"],
+      neighbours: ["barcelona","bordeaux","avignon"],
+      pass: ["barcelona"],
       language: "french",
       type: "town"
     }
@@ -1763,7 +1875,8 @@ console.log(JSON.stringify(space.units));
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["linz","regensburg","augsburg","innsbruck"],
+      neighbours: ["graz","linz","regensburg","augsburg","innsbruck"],
+      pass: ["graz"],
       language: "german",
       type: "town"
     }
@@ -1773,7 +1886,8 @@ console.log(JSON.stringify(space.units));
       home: "",
       political: "hapsburg",
       religion: "catholic",
-      neighbours: ["worms","nuremberg","regensburg","salzburg"],
+      neighbours: ["innsbruck","worms","nuremberg","regensburg","salzburg"],
+      pass: ["innsbruck"],
       language: "german",
       type: "electorate"
     }
@@ -1883,7 +1997,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zaragoza","valencia"],
+      neighbours: ["toulouse","avignon","zaragoza","valencia"],
+      pass: ["toulouse","avignon"],
       language: "spanish",
       type: "key"
     }
@@ -2093,7 +2208,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["vienna","mohacs","agram","trieste"],
+      neighbours: ["salzburg","vienna","mohacs","agram","trieste"],
+      pass: ["salzburg"],
       language: "german",
       type: "town"
     }
@@ -2113,7 +2229,8 @@ console.log(JSON.stringify(space.units));
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zurich","salzburg"],
+      neighbours: ["augsburg","trent","zurich","salzburg"],
+      pass: ["augsburg","trent"],
       language: "german",
       type: "town"
     }
@@ -2193,7 +2310,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["lepanto","athens","salonika"],
+      neighbours: ["durazzo","lepanto","athens","salonika"],
+      pass: ["durazzo"],
       language: "other",
       type: "town"
     }
@@ -2213,7 +2331,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["scutari"],
+      neighbours: ["larissa","scutari"],
+      pass: ["larissa"],
       language: "other",
       type: "town"
     }
@@ -2223,7 +2342,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["ragusa","durazzo"],
+      neighbours: ["nezh","ragusa","durazzo"],
+      pass: ["nezh"],
       language: "other",
       type: "fortress"
     }
@@ -2273,7 +2393,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["bucharest","belgrade"],
+      neighbours: ["szegedin","sofia","bucharest","belgrade"],
+      pass: ["szegedin","sofia"],
       language: "other",
       type: "town"
     }
@@ -2283,7 +2404,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["nezh","edirne"],
+      neighbours: ["nicopolis","nezh","edirne"],
+      pass: ["nicopolis"],
       language: "other",
       type: "town"
     }
@@ -2293,7 +2415,8 @@ console.log(JSON.stringify(space.units));
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["belgrade","sofia"],
+      neighbours: ["scutari","belgrade","sofia"],
+      pass: ["scutari"],
       language: "other",
       type: "town"
     }
@@ -2305,7 +2428,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["szegedin","mohacs","agram","nezh","nicopolis"],
+      neighbours: ["ragusa","szegedin","mohacs","agram","nezh","nicopolis"],
+      pass: ["ragusa"],
       language: "other",
       type: "key"
     }
@@ -2315,7 +2439,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["buda","belgrade"],
+      neighbours: ["nicopolis","buda","belgrade"],
+      pass: ["nicopolis"],
       language: "other",
       type: "town"
     }
@@ -2345,7 +2470,8 @@ console.log(JSON.stringify(space.units));
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["graz","trieste","belgrade","mohacs"],
+      neighbours: ["zara","graz","trieste","belgrade","mohacs"],
+      pass: ["zara"],
       language: "other",
       type: "town"
     }
@@ -2485,7 +2611,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["basel","besancon","lyon","grenoble"],
+      neighbours: ["basel","besancon","lyon","turin","grenoble"],
+      pass: ["turin"],
       language: "french",
       type: "town"
     }
@@ -2505,7 +2632,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["milan","modena","venice"],
+      neighbours: ["innsbruck","milan","modena","venice"],
+      pass: ["innsbruck"],
       language: "italian",
       type: "town"
     }
@@ -2535,7 +2663,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "france",
       religion: "catholic",
-      neighbours: ["milan","pavia","genoa"],
+      neighbours: ["milan","pavia","geneva","grenoble","genoa"],
+      pass: ["grenoble","geneva"],
       language: "italian",
       type: "town"
     }
@@ -2545,7 +2674,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["marseille"],
+      neighbours: ["genoa","marseille"],
+      pass: ["genoa"],
       language: "french",
       type: "town"
     }
@@ -2585,7 +2715,8 @@ console.log(JSON.stringify(space.units));
       home: "genoa",
       political: "",
       religion: "catholic",
-      neighbours: ["pavia","turin","modena","siena"],
+      neighbours: ["nice","pavia","turin","modena","siena"],
+      pass: ["nice"],
       language: "italian",
       type: "key"
     }
@@ -2635,7 +2766,8 @@ console.log(JSON.stringify(space.units));
       home: "venice",
       political: "",
       religion: "catholic",
-      neighbours: ["ragusa","trieste"],
+      neighbours: ["agram","ragusa","trieste"],
+      pass: ["agram"],
       language: "other",
       type: "town"
     }
@@ -2645,7 +2777,8 @@ console.log(JSON.stringify(space.units));
       home: "independent",
       political: "",
       religion: "catholic",
-      neighbours: ["zara","scutari"],
+      neighbours: ["belgrade","zara","scutari"],
+      pass: ["belgrade"],
       language: "italian",
       type: "town"
     }
@@ -3489,6 +3622,26 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+
+	if (mv[0] === "build") {
+
+	  let land_or_sea = mv[1];
+	  let faction = mv[2];
+	  let unit_type = mv[3];
+	  let spacekey = mv[4];
+
+	  if (land_or_sea === "land") {
+	    this.game.spaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+	  if (land_or_sea === "sea") {
+	    this.game.navalspaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
         if (mv[0] === "event") {
 
 	  let player = mv[1];
@@ -4011,7 +4164,7 @@ console.log("x is: " + x);
     return this.game.players_info[player-1].factions;
   }
 
-  returnActionMenuOptions(player=null) {
+  returnActionMenuOptions(player=null, faction=null) {
 
     let menu = [];
 
@@ -4019,120 +4172,140 @@ console.log("x is: " + x);
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Move formation in clear",
+      check : this.canPlayerMoveFormationInClear,
       fnct : this.playerMoveFormationInClear,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [2,2,2,2,2,2],
       name : "Move formation over pass",
+      check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy'],
       cost : [1,1,1,1,1],
       name : "Naval move",
+      check : this.canPlayerNavalMove,
       fnct : this.playerNavalMove,
     });
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
       name : "Buy mercenary",
+      check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [2,2,2,2,2,2],
       name : "Raise regular",
+      check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy'],
       cost : [2,2,2,2,2],
       name : "Build naval squadron",
+      check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Assault",
+      check : this.canPlayerAssault,
       fnct : this.playerAssault,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Control unfortified space",
+      check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [2,2,2],
       name : "Explore",
+      check : this.canPlayerExplore,
       fnct : this.playerExplore,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [2,3,3],
       name : "Colonize",
+      check : this.canPlayerColonize,
       fnct : this.playerColonize,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [4,4,4],
       name : "Conquer",
+      check : this.canPlayerConquer,
       fnct : this.playerConquer,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [2],
       name : "Initiate piracy in a sea",
+      check : this.canPlayerInitiatePiracyInASea,
       fnct : this.playerInitiatePiracyInASea,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [1],
       name : "Raise Cavalry",
+      check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [1],
       name : "Build corsair",
+      check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
     });
     menu.push({
       factions : ['protestant'],
       cost : [1],
       name : "Translate scripture",
+      check : this.canPlayerTranslateScripture,
       fnct : this.playerTranslateScripture,
     });
     menu.push({
       factions : ['england','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Publish treatise",
+      check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
     });
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
       name : "Call theological debate",
+      check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
     });
     menu.push({
       factions : ['papacy'],
       cost : [1],
       name : "Build Saint Peters",
+      check : this.canPlayerBuildSaintPeters,
       fnct : this.playerBuildSaintPeters,
     });
     menu.push({
       factions : ['papacy'],
       cost : [2],
       name : "Burn books",
+      check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
     });
     menu.push({
       factions : ['papacy'],
       cost : [3],
       name : "Found Jesuit University",
+      check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
     });
 
@@ -4150,116 +4323,11 @@ console.log("x is: " + x);
       }
     }
 
-console.log("FMENU: " + JSON.stringify(fmenu));
-
     return fmenu;
 
   }
 
 
-  playerMoveUnits(msg, cancel_func = null) {
-
-    let his_self = this;
-    let units_to_move = [];
-    let faction = "";
-
-    his_self.playerSelectSpaceWithFilter(
-
-      "Select Town from Which to Move Units:",
-
-      // TODO - select only cities where I can move units
-      function(space) {
-	for (let z in space.units) {
-	  if (space.units[z].length > 0) {
-	    faction = z;
-	    return 1;
-          }
-	}
-	return 0;
-      },
-
-      function(spacekey) {
-
-        let space = his_self.spaces[spacekey];
-
-	let selectDestinationInterface = function(his_self, units_to_move) {  
-    	  his_self.playerSelectSpaceWithFilter(
-
-            "Select Destination for these Units",
-
-      	    function(space) {
-	      if (space.neighbours.includes(spacekey)) {
-	  	return 1;
-              }
-	      return 0;
-            },
-
-      	    function(destination_spacekey) {
-	
-console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
-	      units_to_move.sort();
-	      units_to_move.reverse();
-
-	      for (let i = 0; i < units_to_move.length; i++) {
-		this.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
-	      }
-	      this.endTurn();
-
-	    },
-
-	    cancel_func,
-
-	  );
-	}
-
-	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
-
-console.log("Units to Move: " + JSON.stringify(units_to_move));
-
-	  let html = "<ul>";
-	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
-	    }
-	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
-	  html += "</ul>";
-
-	  his_self.updateStatus(html);
-
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
-
-            let id = $(this).attr("id");
-
-	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
-	      return;
-	    }
-
-	    if (units_to_move.includes(id)) {
-	      let idx = units_to_move.indexOf(id);
-	      if (idx > -1) {
-  		units_to_move.splice(idx, 1);
-	      }
-	    } else {
-	      units_to_move.push(parseInt(id));
-	    }
-
-	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	  });
-	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
-	
-      },
-
-      cancel_func,
-
-    );
-
-  }
 
 
 
@@ -4346,18 +4414,19 @@ console.log("Units to Move: " + JSON.stringify(units_to_move));
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
-console.log("PFACTIONS: " + JSON.stringify(pfactions));
-
     if (ops == null) { ops = 2; }
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-      for (let z = 0; z < menu[i].factions.length; z++) {
-        if (menu[i].factions[z] === faction) {
-	  if (menu[i].cost[z] <= ops) {
-            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+console.log(menu[i].name);
+      if (menu[i].check(this, this.game.player, faction)) {
+        for (let z = 0; z < menu[i].factions.length; z++) {
+          if (menu[i].factions[z] === faction) {
+	    if (menu[i].cost[z] <= ops) {
+              html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+            }
+	    z = menu[i].factions.length+1;
           }
-	  z = menu[i].factions.length+1;
         }
       }
     }
@@ -4388,9 +4457,7 @@ console.log("PFACTIONS: " + JSON.stringify(pfactions));
     });
   }
   playerPlayEvent(card, faction, ops=null) {
-
-console.log("playing ops");
-
+console.log("playing event");
   }
 
 
@@ -4406,88 +4473,428 @@ console.log("playing ops");
 console.log("1");
 return;
   }
-  async playerMoveFormationInClear(his_self, player) {
-    his_self.playerMoveUnits();      
-console.log("2");
-return;
+
+
+
+
+
+
+  canPlayerMoveFormationInClear(his_self, player, faction) {
+    return 1;
   }
-  async playerMoveFormationOverPass(his_self, player) {
-console.log("3");
-return;
+  async playerMoveFormationInClear(his_self, player, faction) {
+
+    let units_to_move = [];
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      // TODO - select only cities where I can move units
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && faction === z) {
+	    return 1;
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	  	return 1;
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+	      }
+	      this.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (units_to_move.includes(parseInt(i))) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+    );
+
   }
-  async playerNavalMove(his_self, player) {
+  canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
+  }
+  async playerMoveFormationOverPass(his_self, player, faction) {
+
+    let units_to_move = [];
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      // TODO - select only cities where I can move units
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && z === faction) {
+	    if (space.pass) { if (space.pass.length > 0) { return 1; } }
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey)) {
+		if (space.pass) {
+		  if (space.pass.includes(spacekey)) { return 1; }
+		}
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+	      }
+	      this.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (units_to_move.includes(parseInt(i))) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+    );
+
+  }
+
+
+  canPlayerNavalMove(his_self, player, faction) {
+    return 1;
+  }
+  async playerNavalMove(his_self, player, faction) {
 console.log("4");
 return;
   }
-  async playerBuyMercenary(his_self, player) {
-console.log("5");
-return;
+
+  canPlayerBuyMercenary(his_self, player, faction) {
+    return 1;
   }
-  async playerRaiseRegular(his_self, player) {
-console.log("6");
-return;
+  playerBuyMercenary(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Destination for Mercenary",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
   }
-  async playerBuildNavalSquadron(his_self, player) {
+
+
+  canPlayerRaiseRegular(his_self, player, faction) {
+    return 1;
+  }
+  async playerRaiseRegular(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Destination for Regular",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 1;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
+  }
+
+  canPlayerBuildNavalSquadron(his_self, player, faction) {
+    return 1;
+  }
+  async playerBuildNavalSquadron(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Naval Squadron",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tsea\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
 console.log("7");
 return;
   }
-  async playerAssault(his_self, player) {
+
+  canPlayerAssault(his_self, player, faction) {
+    return 0;
+  }
+  async playerAssault(his_self, player, faction) {
 console.log("8");
 return;
   }
-  async playerControlUnfortifiedSpace(his_self, player) {
+  canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+    return 0;
+  }
+  async playerControlUnfortifiedSpace(his_self, player, faction) {
 console.log("9");
 return;
   }
-  async playerExplore(his_self, player) {
+  canPlayerExplore(his_self, player, faction) {
+    return 0;
+  }
+  async playerExplore(his_self, player, faction) {
 console.log("10");
 return;
   }
-  async playerColonize(his_self, player) {
+  canPlayerColonize(his_self, player, faction) {
+    return 0;
+  }
+  async playerColonize(his_self, player, faction) {
 console.log("11");
 return;
   }
-  async playerConquer(his_self, player) {
+  canPlayerConquer(his_self, player, faction) {
+    return 0;
+  }
+  async playerConquer(his_self, player, faction) {
 console.log("12");
 return;
   }
-  async playerInitiatePiracyInASea(his_self, player) {
+  canPlayerInitiatePiracyInASea(his_self, player, faction) {
+    return 0;
+  }
+  async playerInitiatePiracyInASea(his_self, player, faction) {
 console.log("13");
 return;
   }
-  async playerRaiseCavalry(his_self, player) {
-console.log("14");
-return;
+  canPlayerRaiseCavalry(his_self, player, faction) {
+    return 1;
   }
-  async playerBuildCorsair(his_self, player) {
-console.log("15");
-return;
+  async playerRaiseCavalry(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Naval Squadron",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
   }
-  async playerTranslateScripture(his_self, player) {
+  canPlayerBuildCorsair(his_self, player, faction) {
+    return 1;
+  }
+  async playerBuildCorsair(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Corsair",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
+  }
+  canPlayerTranslateScripture(his_self, player, faction) {
+    return 0;
+  }
+  async playerTranslateScripture(his_self, player, faction) {
 console.log("16");
 return;
   }
-  async playerPublishTreatise(his_self, player) {
+  canPlayerPublishTreatise(his_self, player, faction) {
+    return 0;
+  }
+  async playerPublishTreatise(his_self, player, faction) {
 console.log("17");
 return;
   }
-  async playerCallTheologicalDebate(his_self, player) {
+  canPlayerCallTheologicalDebate(his_self, player, faction) {
+    return 0;
+  }
+  async playerCallTheologicalDebate(his_self, player, faction) {
 console.log("18");
 return;
   }
-  async playerBuildSaintPeters(his_self, player) {
+  canPlayerBuildSaintPeters(his_self, player, faction) {
+    return 0;
+  }
+  async playerBuildSaintPeters(his_self, player, faction) {
 console.log("19");
 return;
   }
-  async playerBurnBooks(his_self, player) {
+  canPlayerBurnBooks(his_self, player, faction) {
+    return 0;
+  }
+  async playerBurnBooks(his_self, player, faction) {
 console.log("20");
 return;
   }
-  async playerFoundJesuitUniversity(his_self, player) {
+  canPlayerFoundJesuitUniversity(his_self, player, faction) {
+    return 0;
+  }
+  async playerFoundJesuitUniversity(his_self, player, faction) {
 console.log("21 jesuit");
 return;
   }
-  async playerPublishTreatise(his_self, player) {
+  canPlayerPublishTreatise(his_self, player, faction) {
+    return 0;
+  }
+  async playerPublishTreatise(his_self, player, faction) {
 console.log("22 treatise");
 return;
   }
@@ -4700,6 +5107,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       this.displayElectorateDisplay();
       this.displayNewWorld();
       this.displaySpaces();
+      this.displayNavalSpaces();
       this.displayVictoryTrack();
     } catch (err) {
       console.log("error displaying board... " + err);
@@ -4728,6 +5136,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
     }
   }
+
 
   returnSpaceTile(space) {
 
@@ -4834,11 +5243,115 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
   }
 
+  returnNavies(space) {
+
+    let html = '<div class="space_navy" id="">';
+    let tile = "";
+
+    for (let z in space.units) {
+
+      let squadrons = 0;
+      let corsairs = 0;
+
+      for (let zz = 0; zz < space.units[z].length; zz++) {
+	if (space.units[z][zz].type === "squadron") {
+	  squadrons += 2;
+	}
+	if (space.units[z][zz].type === "corsair") {
+	  corsairs += 1;
+	}
+      }
+
+      while (squadrons >= 2) {
+        if (z === "hapsburg") {
+          tile = "/his/img/tiles/hapsburg/";	  
+	  if (squadrons >= 2) {
+            tile += `Hapsburg_squadron.svg`;
+	    squadrons -= 2;
+	  }
+        }
+        if (z === "england") {
+          tile = "/his/img/tiles/england/";	  
+	  if (squadrons >= 2) {
+            tile += `England_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "france") {
+          tile = "/his/img/tiles/france/";	  
+	  if (squadrons >= 2) {
+            tile += `French_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "papacy") {
+          tile = "/his/img/tiles/papacy/";	  
+	  if (squadrons >= 2) {
+            tile += `Papacy_squadron.svg`;
+	    squadrons -= 2;
+	  }
+        }
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (squadrons >= 2) {
+            tile += `Ottoman_squadron.svg`;
+	    squadrons -= 2;
+          }
+	  if (corsairs >= 1) {
+            tile += `Ottoman_corsair.svg`;
+	    corsairs -= 1;
+          }
+        }
+        if (z === "venice") {
+	  if (squadrons >= 2) {
+            tile += `Venice_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "genoa") {
+          tile = "/his/img/tiles/genoa/";	  
+	  if (squadrons >= 2) {
+            tile += `Genoa_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+        if (z === "scotland") {
+          tile = "/his/img/tiles/scotland/";	  
+	  if (squadrons >= 2) {
+            tile += `Scottish_squadron.svg`;
+	    squadrons -= 2;
+          }
+        }
+
+        html += `<img class="navy_tile" src="${tile}" />`;
+      }
+
+ 
+      while (corsairs >= 1) {
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (corsairs >= 1) {
+            tile += `Ottoman_corsair.svg`;
+	    corsairs -= 1;
+          }
+        }
+        html += `<img class="navy_tile" src="${tile}" />`;
+      }
+ 
+    }
+
+    html += '</div>';
+
+    if (tile === "") { return tile; }
+
+    return html;
+
+  }
+
   returnArmies(space) {
 
     let html = '<div class="space_army" id="">';
-    let owner = space.political;
-    if (owner == "") { owner = space.home; }
+
     let tile = "";
 
     for (let z in space.units) {
@@ -4851,159 +5364,179 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       }
 
       while (army >= 1) {
-          if (z === "hapsburg") {
-            tile = "/his/img/tiles/hapsburg/";	  
-	    if (army >= 4) {
-              tile += `HapsburgReg-4.svg`;
-	      army -= 4;
-	    } else {
+        if (z === "hapsburg") {
+          tile = "/his/img/tiles/hapsburg/";	  
+	  if (army >= 4) {
+            tile += `HapsburgReg-4.svg`;
+	    army -= 4;
+	  } else {
 	    if (army >= 2) {
               tile += `HapsburgReg-2.svg`;
 	      army -= 2;
 	    } else {
-	    if (army >= 1) {
-              tile += `HapsburgReg-1.svg`;
-	      army -= 1;
-	    } } }
+	      if (army >= 1) {
+                tile += `HapsburgReg-1.svg`;
+	        army -= 1;
+	      }
+	    }
           }
-          if (z === "england") {
-            tile = "/his/img/tiles/england/";	  
-	    if (army >= 4) {
-              tile += `EnglandReg-4.svg`;
-	      army -= 4;
-            } else {
+	}
+        if (z === "england") {
+          tile = "/his/img/tiles/england/";	  
+	  if (army >= 4) {
+            tile += `EnglandReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `EnglandReg-2.svg`;
-	      army -= 4;
+	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `EnglandReg-1.svg`;
-	      army -= 1;
-            } } }
-          }
-          if (z === "france") {
-            tile = "/his/img/tiles/france/";	  
-	    if (army >= 4) {
-              tile += `FrenchReg-4.svg`;
-	      army -= 4;
-            } else {
+	      if (army >= 1) {
+                tile += `EnglandReg-1.svg`;
+	        army -= 1;
+              }
+            }
+	  }
+        }
+        if (z === "france") {
+          tile = "/his/img/tiles/france/";	  
+	  if (army >= 4) {
+            tile += `FrenchReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `FrenchReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `FrenchReg-1.svg`;
-	      army -= 1;
-            } } }
-          }
-          if (z === "papacy") {
-            tile = "/his/img/tiles/papacy/";	  
-	    if (army >= 4) {
-              tile += `PapacyReg-4.svg`;
-	      army -= 4;
-	    } else {
+	      if (army >= 1) {
+                tile += `FrenchReg-1.svg`;
+	        army -= 1;
+              }
+	    }
+	  }
+        }
+        if (z === "papacy") {
+          tile = "/his/img/tiles/papacy/";	  
+          if (army >= 4) {
+            tile += `PapacyReg-4.svg`;
+            army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `PapacyReg-2.svg`;
 	      army -= 2;
 	    } else {
-	    if (army >= 1) {
-              tile += `PapacyReg-1.svg`;
-	      army -= 1;
-	    } } }
-          }
-          if (z === "protestant") {
-            tile = "/his/img/tiles/protestant/";	  
-	    if (army >= 4) {
-              tile += `ProtestantReg-4.svg`;
-	      army -= 4;
-            } else {
+	      if (army >= 1) {
+                tile += `PapacyReg-1.svg`;
+	        army -= 1;
+	      }
+	    }
+	  }
+        }
+        if (z === "protestant") {
+          tile = "/his/img/tiles/protestant/";	  
+	  if (army >= 4) {
+            tile += `ProtestantReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `ProtestantReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `ProtestantReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `ProtestantReg-1.svg`;
+	        army -= 1;
+              }
+	    }
           }
-          if (z === "ottoman") {
-            tile = "/his/img/tiles/ottoman/";	  
-	    if (army >= 4) {
-              tile += `OttomanReg-4.svg`;
-	      army -= 4;
-            } else {
+        }
+        if (z === "ottoman") {
+          tile = "/his/img/tiles/ottoman/";	  
+	  if (army >= 4) {
+            tile += `OttomanReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `OttomanReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `OttomanReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `OttomanReg-1.svg`;
+	        army -= 1;
+              }
+            }
           }
-          if (z === "independent") {
-            tile = "/his/img/tiles/independent/";	  
-	    if (army >= 2) {
-              tile += `IndependentReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "independent") {
+          tile = "/his/img/tiles/independent/";	  
+	  if (army >= 2) {
+            tile += `IndependentReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `IndependentReg-1.svg`;
 	      army -= 1;
-            } }
-          }
-          if (z === "venice") {
-            tile = "/his/img/tiles/venice/";	  
-	    if (army >= 2) {
-              tile += `VeniceReg-2.svg`;
-	      army -= 2;
-            } else {
+            } 
+	  }
+        }
+        if (z === "venice") {
+          tile = "/his/img/tiles/venice/";	  
+	  if (army >= 2) {
+            tile += `VeniceReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `VeniceReg-1.svg`;
 	      army -= 1;
-            } }
-          }
-          if (z === "hungary") {
-            tile = "/his/img/tiles/hungary/";	  
-	    if (army >= 4) {
-              tile += `HungaryReg-4.svg`;
-	      army -= 4;
-            } else {
+            }
+	  }
+        }
+        if (z === "hungary") {
+          tile = "/his/img/tiles/hungary/";	  
+	  if (army >= 4) {
+            tile += `HungaryReg-4.svg`;
+	    army -= 4;
+          } else {
 	    if (army >= 2) {
               tile += `HungaryReg-2.svg`;
 	      army -= 2;
             } else {
-	    if (army >= 1) {
-              tile += `HungaryReg-1.svg`;
-	      army -= 1;
-            } } }
+	      if (army >= 1) {
+                tile += `HungaryReg-1.svg`;
+	        army -= 1;
+              }
+            }
           }
-          if (z === "genoa") {
-            tile = "/his/img/tiles/genoa/";	  
-	    if (army >= 2) {
-              tile += `GenoaReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "genoa") {
+          tile = "/his/img/tiles/genoa/";	  
+	  if (army >= 2) {
+            tile += `GenoaReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `GenoaReg-1.svg`;
 	      army -= 1;
-            } }
+            }
           }
-          if (z === "scotland") {
-            tile = "/his/img/tiles/scotland/";	  
-	    if (army >= 2) {
-              tile += `ScottishReg-2.svg`;
-	      army -= 2;
-            } else {
+        }
+        if (z === "scotland") {
+          tile = "/his/img/tiles/scotland/";	  
+	  if (army >= 2) {
+            tile += `ScottishReg-2.svg`;
+	    army -= 2;
+          } else {
 	    if (army >= 1) {
               tile += `ScottishReg-1.svg`;
 	      army -= 1;
-            } } 
-          }
-	}
+            }
+          } 
+        }
+      }
 
+      if (tile !== "") {
         html += `<img class="army_tile" src="${tile}" />`;
- 
+      } 
+
     }
 
     html += '</div>';
@@ -5017,8 +5550,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   returnMercenaries(space) {
 
     let html = '<div class="space_mercenaries" id="">';
-    let owner = space.political;
-    if (owner == "") { owner = space.home; }
     let tile = "";
 
     for (let z in space.units) {
@@ -5031,8 +5562,8 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       }
 
       for (let i = 0; i < army; i+= 2) {
-        if (owner != "") {
-          if (owner === "hapsburg") {
+        if (z != "") {
+          if (z === "hapsburg") {
             tile = "/his/img/tiles/hapsburg/";	  
 	    if (army >= 4) {
               tile += `HapsburgMerc-4.svg`;
@@ -5047,7 +5578,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
 	    }
           }
-          if (owner === "england") {
+          if (z === "england") {
             tile = "/his/img/tiles/england/";	  
 	    if (army >= 4) {
               tile += `EnglandMerc-4.svg`;
@@ -5062,7 +5593,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "france") {
+          if (z === "france") {
             tile = "/his/img/tiles/france/";	  
 	    if (army >= 4) {
               tile += `FrenchMerc-4.svg`;
@@ -5077,7 +5608,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "papacy") {
+          if (z === "papacy") {
             tile = "/his/img/tiles/papacy/";	  
 	    if (army >= 4) {
               tile += `PapacyMerc-4.svg`;
@@ -5092,7 +5623,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
 	    }
           }
-          if (owner === "protestant") {
+          if (z === "protestant") {
             tile = "/his/img/tiles/protestant/";	  
 	    if (army >= 4) {
               tile += `ProtestantMerc-4.svg`;
@@ -5107,7 +5638,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 	      army -= 1;
             }
           }
-          if (owner === "ottoman") {
+          if (z === "ottoman") {
             tile = "/his/img/tiles/ottoman/";	  
 	    if (army >= 4) {
               tile += `OttomanMerc-4.svg`;
@@ -5198,12 +5729,49 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
       obj.innerHTML += this.returnArmies(space);
+      obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnMercenaries(space);
       obj.innerHTML += this.returnPersonages(space);
     }
 
   }
 
+  displayNavalSpace(key) {
+
+    let obj = document.getElementById(key);
+    let space = this.navalspaces[key];
+
+    //
+    // should we show the tile?
+    //
+    let show_tile = 1;
+
+    //
+    // do not show under some conditions
+    //
+
+    if (show_tile === 1) {
+      obj.innerHTML += this.returnNavies(space);
+      obj.innerHTML += this.returnPersonages(space);
+    }
+
+  }
+
+  displayNavalSpaces() {
+
+    //
+    // add tiles
+    //
+    for (let key in this.navalspaces) {
+      if (this.navalspaces.hasOwnProperty(key)) {
+	this.displayNavalSpace(key);
+        document.getElementById(key).onclick = (e) => {
+	  this.displayNavalSpaceDetailedView(key);
+        }
+      }
+    }
+
+  }
 
   displaySpaces() {
 
