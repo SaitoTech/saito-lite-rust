@@ -23,7 +23,7 @@ class Network {
   public block_sample_size: any;
   public dead_peers: any;
   public socket: any;
-  public peer_monitor_timer_speed = 5000;
+  public peer_monitor_timer_speed = 7500;
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
 
@@ -344,7 +344,9 @@ class Network {
   cleanupDisconnectedPeer(peer, force = 0) {
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
-      if (this.peers[c] === peer) {
+      // it has to be this peer, and the socket must be closed
+      if (this.peers[c].id === peer.id && this.peers[c].socket.readyState === this.peers[c].socket.CLOSED) {
+
         let keep_peer = -1;
 
         //
@@ -405,6 +407,7 @@ class Network {
           //
           this.dead_peers.push(peer);
         }
+
         console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
@@ -666,7 +669,7 @@ class Network {
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
-        if (last_shared_ancestor > 0) {
+        if (last_shared_ancestor <= 0) {
           if (this.app.blockchain.returnLatestBlockId() > 10) {
             last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
           }
@@ -836,7 +839,7 @@ class Network {
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (peer.socket.readyState !== peer.socket.OPEN) {
+      if (peer.socket.readyState === peer.socket.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }

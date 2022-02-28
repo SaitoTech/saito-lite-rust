@@ -411,8 +411,6 @@ class Blockchain {
       //
       // this block is initialized with zero-confs processed
       //
-      console.log("affixing callbacks");
-
       block.affixCallbacks();
 
       //

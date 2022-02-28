@@ -443,7 +443,6 @@ class Arcade extends ModTemplate {
         //
 	     // notify lite-clients and remove game from list available
       //
-      console.log("on conf - server notify peers of accept!");
       this.notifyPeers(app, tx);
 	     this.removeGameFromOpenList(txmsg.sig);
 
@@ -1799,7 +1798,6 @@ console.log(JSON.stringify(txmsg));
       }
     });
 
-console.log("removed and new games list: " + JSON.stringify(this.games));
 /*** FEB 28 -- crypt issue? deleting game from options after init?
     if (this.app.options) {
       if (this.app.options.games) {
