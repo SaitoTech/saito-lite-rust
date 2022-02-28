@@ -88,7 +88,7 @@ class Chessgame extends GameTemplate {
         game_mod.menu.hideSubMenus();
         game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
         console.log("Button Press: Rules");
-        console.log(returnGameRulesHTML());
+        console.log(game_mod.returnGameRulesHTML());
       },
     });
     this.menu.addSubMenuOption("game-game", {
