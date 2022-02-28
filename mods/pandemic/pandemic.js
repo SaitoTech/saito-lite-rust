@@ -268,6 +268,8 @@ class Pandemic extends GameTemplate {
     } catch (err) {
       console.log("ERROR with Sizing: " + err);
     }
+
+    this.definePlayersPawns();
   }
 
   playerTurn() {
@@ -1599,7 +1601,7 @@ class Pandemic extends GameTemplate {
 
 
   triggerOutbreak(city, virus) {
-    this.game.state.outbreak_rate++;
+    this.game.state.outbreaks++;
     this.updateLog("Outbreak in " + this.game.cities[city].name);
 
     for (let i = 0; i < this.game.cities[city].neighbours.length; i++) {
@@ -1670,7 +1672,7 @@ class Pandemic extends GameTemplate {
   returnState() {
     var state = {};
 
-    state.outbreak_rate = 0;
+    state.outbreaks = 0;
     state.infection_rate = 0;
 
     // events
@@ -2523,63 +2525,17 @@ class Pandemic extends GameTemplate {
 
 
   displayOutbreaks() {
-    let t = 982;
-    let l = 90;
-
-    if (this.game.state.infection_rate == 0) {
-      t = 982;
-      l = 90;
-    }
-
-    if (this.game.state.infection_rate == 1) {
-      t = 1067;
-      l = 188;
-    }
-
-    if (this.game.state.infection_rate == 2) {
-      t = 1142;
-      l = 90;
-    }
-
-    if (this.game.state.infection_rate == 3) {
-      t = 1224;
-      l = 188;
-    }
-
-    if (this.game.state.infection_rate == 4) {
-      t = 1302;
-      l = 90;
-    }
-
-    if (this.game.state.infection_rate == 5) {
-      t = 1380;
-      l = 188;
-    }
-
-    if (this.game.state.infection_rate == 6) {
-      t = 1452;
-      l = 90;
-    }
-
-    if (this.game.state.infection_rate == 7) {
-      t = 1530;
-      l = 188;
-    }
-
-    if (this.game.state.infection_rate == 8) {
-      t = 1606;
-      l = 90;
-    }
-
+    let t = 982 + 75 * this.game.state.outbreaks;
+    let l = (this.game.state.outbreaks % 2 ===0) ? 90 : 188;
+    
     $(".marker_outbreak").css("top", this.scale(t) + "px");
     $(".marker_outbreak").css("left", this.scale(l) + "px");
   }
+
   displayDecks() {
     if (this.game.state.infection_topcard != "") {
       let imgurl =
-        'url("/pandemic/img/' +
-        this.game.deck[0].cards[this.game.state.infection_topcard].img +
-        '")';
+        `url("/pandemic/img/${this.game.deck[0].cards[this.game.state.infection_topcard].img}")`;
       $(".infection_discard_pile").css("background-image", imgurl);
     }
 
@@ -2587,9 +2543,85 @@ class Pandemic extends GameTemplate {
       let imgurl = `url("/pandemic/img/${this.game.deck[1].cards[this.game.state.player_topcard].img}")`;
       $(".player_discard_pile").css("background-image", imgurl);
     }
+
+    $(".back_player_card").css("top", this.scale(1390) + "px");
+    $(".back_player_card").css("left", this.scale(1595) + "px");
+
+    $(".back_infection_card").css("top", this.scale(65) + "px");
+    $(".back_infection_card").css("left", this.scale(1590) + "px");
+
+    $(".player_discard_pile").css("top", this.scale(1390) + "px");
+    $(".player_discard_pile").css("left", this.scale(1960) + "px");
+
+    $(".infection_discard_pile").css("top", this.scale(65) + "px");
+    $(".infection_discard_pile").css("left", this.scale(2040) + "px");
+
   }
 
-  displayDisease() {
+displayDisease() {
+    for (var i in this.game.cities) {
+      let divname = "#" + i;
+      let width = 100;
+      let cubedeath = ""; //html for the cubes
+      let cubes = 0;
+      let colors = 0;
+      let color = "";
+
+      for (let v in this.game.state.active){
+        if(this.game.cities[i].virus[v] > 0){
+          colors++;
+          if (this.game.cities[i].virus[v] >= cubes){
+            color = v;  
+          }
+          cubes += this.game.cities[i].virus[v];
+        }
+      }
+
+      if (colors > 0){
+          switch (cubes){
+            case 1: 
+            cubedeath =
+            `<img class="cube" src="/pandemic/img/cube_${color}.png" style="top:${this.scale(10)}px;left:${this.scale(15)}px;"/>`;
+              break;
+            case 2:
+            cubedeath =
+            `<img class="cube" src="/pandemic/img/cube_${color}.png" style="top:${this.scale(0)}px;left:${this.scale(35)}px;"/>
+             <img class="cube" src="/pandemic/img/cube_${color}.png" style="top:${this.scale(10)}px;left:${this.scale(0)}px;"/>`;
+              break;
+            case 3:
+            cubedeath =
+            `<img class="cube" src="/pandemic/img/cube_${color}.png" style="top:-${this.scale(10)}px;left:${this.scale(35)}px;"/>
+             <img class="cube" src="/pandemic/img/cube_${color}.png" style="top:${this.scale(0)}px;left:${this.scale(0)}px;"/>
+             <img class="cube" src="/pandemic/img/cube_${color}.png" style="top:-${this.scale(30)}px;left:${this.scale(20)}px;"/>`;
+              break;
+            default: console.error("Cube death");
+          }
+        if (colors > 1){ //multiple colors
+          console.log(`Placed ${this.game.cities[i].virus[color]} cubes of ${color}`);
+          cubes -= this.game.cities[i].virus[color];
+          console.log(`${cubes} cubes from ${colors-1} other colors to place`);
+          let startTop = 20;
+          let startLeft = 30;
+          if (cubes > 1){
+            startTop = 10;
+            startLeft = 65;
+          }
+         for (let v in this.game.cities[i].virus){
+           if (v !== color && this.game.cities[i].virus[v]>0){
+            for (let i = 1; i <= this.game.cities[i].virus[v]; i++){
+              cubedeath += `<img class="cube" src="/pandemic/img/cube_${v}.png" style="top:${this.scale(startTop)}px;left:${this.scale(startLeft)}px;"/>`;
+              startLeft -= 35;
+              startTop += 10;
+            }
+           }
+         }
+        }
+      document.querySelector(divname).innerHTML = cubedeath;
+      }
+    }
+  }
+
+  /*displayDisease() {
     for (var i in this.game.cities) {
       let divname = "#" + i;
       let width = 100;
@@ -2681,7 +2713,7 @@ class Pandemic extends GameTemplate {
       document.querySelector(divname).innerHTML = cubedeath;
 
     }
-  }
+  }*/
 
   displayVials() {
     let w = 82;
@@ -2710,31 +2742,34 @@ class Pandemic extends GameTemplate {
     }
   }
 
-  displayPlayers() {
+  definePlayersPawns(){
     for (let i = 0; i < this.game.players_info.length; i++) {
-      let imgurl =
-        'url("/pandemic/img/' + this.game.players_info[i].pawn + '")';
-      let divname = ".player" + (i + 1);
+      let player = document.querySelector(`.player${i+1}`);
+      if (!player){
+        console.error("player undefined in DOM");
+        return;
+      }
+      player.style.backgroundImage = `url("/pandemic/img/${this.game.players_info[i].pawn}")`;
       let title = `${this.game.players_info[i].role}`;
       if (this.game.player == i+1){
         title += " (me)";
       }
-      let city = this.game.players_info[i].city;
 
-      let t = this.game.cities[city].top;
-      let l = this.game.cities[city].left + i * 30;
-
-      $(divname).css("top", this.scale(t) + "px");
-      $(divname).css("left", this.scale(l) + "px");
-      $(divname).attr("title",title);
-      $(divname).css("background-image", imgurl);
-    }
-
-    for (let i = this.game.players_info.length; i < 6; i++) {
-      let divname = ".player" + (i + 1);
-      $(divname).css("display", "none");
+      player.title = title;
+      player.style.display = "block";
     }
   }
+
+  displayPlayers() {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      let city = document.getElementById(this.game.players_info[i].city);
+      let player = document.querySelector(`.player${i+1}`);
+      if (city && player){
+        city.appendChild(player);
+      }
+    }
+  }
+
   displayResearchStations() {
     for (let i = 0; i < this.game.state.research_stations.length; i++) {
       let divname = ".research_station" + (i + 1);
@@ -2749,69 +2784,19 @@ class Pandemic extends GameTemplate {
       $(divname).css("display", "block");
     }
   }
+
   displayInfectionRate() {
     let t = 350;
-    let l = 1650;
-
-    if (this.game.state.infection_rate == 1) {
-      t = 350;
-      l = 1745;
-    }
-
-    if (this.game.state.infection_rate == 2) {
-      t = 350;
-      l = 1840;
-    }
-
-    if (this.game.state.infection_rate == 3) {
-      t = 350;
-      l = 1935;
-    }
-
-    if (this.game.state.infection_rate == 4) {
-      t = 350;
-      l = 2030;
-    }
-
-    if (this.game.state.infection_rate == 5) {
-      t = 350;
-      l = 2125;
-    }
-
-    if (this.game.state.infection_rate == 6) {
-      t = 350;
-      l = 2220;
-    }
-
-    if (this.game.state.infection_rate == 7) {
-      t = 350;
-      l = 2315;
-    }
-
+    let l = 1650 + 95* this.game.state.infection_rate;
+    
     $(".marker_infection_rate").css("top", this.scale(t) + "px");
     $(".marker_infection_rate").css("left", this.scale(l) + "px");
   }
+
   showBoard() {
     if (this.browser_active == 0) {
       return;
     }
-
-    //
-    //
-    $(".back_player_card").css("top", this.scale(1390) + "px");
-    $(".back_player_card").css("left", this.scale(1595) + "px");
-
-    $(".back_infection_card").css("top", this.scale(65) + "px");
-    $(".back_infection_card").css("left", this.scale(1590) + "px");
-
-    $(".player_discard_pile").css("top", this.scale(1390) + "px");
-    $(".player_discard_pile").css("left", this.scale(1960) + "px");
-
-    //  $('.infection_deck').css('top', this.scale(800)+"px");
-    //  $('.infection_deck').css('left', this.scale(800)+"px");
-
-    $(".infection_discard_pile").css("top", this.scale(65) + "px");
-    $(".infection_discard_pile").css("left", this.scale(2040) + "px");
 
     this.displayInfectionRate();
     this.displayOutbreaks();

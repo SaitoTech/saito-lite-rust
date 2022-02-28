@@ -179,10 +179,10 @@ body {
   height: 44px;
   width: 72px;
   height: 100px;
-  top: 50px;
   background-size: cover;
-  z-index: 30;
+  display: none;
 }
+
 .research_station {
   position: absolute;
   background-image: url("/pandemic/img/Marker%20Research%20Station.png");
@@ -244,12 +244,7 @@ body {
   width: 340px;
   height: 243px;
 }
-.infection_deck {
-  position: absolute;
-  background-size: cover;
-  width: 340px;
-  height: 243px;
-}
+
 .infection_discard_pile {
   position: absolute;
   background-image: url("/pandemic/img/Back%20Infection.gif");
