@@ -9,6 +9,7 @@ module.exports = PostCreateTemplate = (app, mod) => {
       <div id="post-create" class="post-create-textarea markdown medium-editor-element" placeholder="Your post..." contenteditable="true" spellcheck="true" data-medium-editor-element="true" role="textbox" aria-multiline="true" data-medium-editor-editor-index="1" medium-editor-index="37877e4c-7415-e298-1409-7dca41eed3b8"></div>
       <input type="hidden" class="post-create-forum" name="post-create-forum" value="${subforum}" />
       <div id="post-create-image-preview-container" class="post-create-image-preview-container"></div>
+      <div class="post-loader-spinner loader" id="post-loader-spinner" style="display:none;"></div>
       <button class="post-submit-btn">Submit</button>
     </div>
   </div>
