@@ -34,9 +34,10 @@ module.exports = ArcadePosts = {
 
     try {
 
-      document.querySelectorAll('.arcade-post-title, .arcade-post-comments').forEach(el => {
+      document.querySelectorAll('.arcade-post-title, .arcade-post-comments, .forum-topic-latest-post').forEach(el => {
         el.onclick = (e) => {
           let clickLocation = e.currentTarget.id.replace("arcade-post-", "");
+          clickLocation = clickLocation.replace("forum-topic-","");
           app.browser.logMatomoEvent("Posts", "ArcadePostsViewClick", clickLocation);
           let sig = e.currentTarget.getAttribute("data-id");
           PostView.render(app, mod, sig);
@@ -92,27 +93,28 @@ module.exports = ArcadePosts = {
     if (ptitle.length > 80) { ptitle = ptitle.substring(0, 80) + "..."; }
 
     try {
-      let postTitle = document.querySelector(`#arcade-post-latest-forum-topic-${topic}`);
-      postTitle.innerHTML = ptitle;
-      postTitle.setAttribute("data-id", forum.id);
+      document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = sanitize(ptitle);
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
       document.querySelector(`#forum-topic-posts-num-${topic}`).innerHTML = sanitize(fpost_num);
-
-      document.querySelector(`#forum-topic-latest-post-image-${topic}`).style.visibility = "visible";
-      document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
-      document.querySelector(`#forum-topic-posts-num-${topic}`).style.visibility = "visible";
-      document.querySelector(`#forum-topic-latest-post-${topic}`).style.visibility = "visible";
-
-      let identicon = document.querySelector(`#forum-topic-latest-post-image-${topic}`);
-      identicon.classList.add("tip");
-      identicon.innerHTML = sanitize(`<img class="identicon" src="${fuid}" /><div class="tiptext">${app.browser.returnAddressHTML(forum.transaction.from[0].add)}</div>`);
 
       if (fpost_num == 1) {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "post";
       } else {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
       }
+
+      document.querySelector(`#forum-topic-posts-${topic}`).style.visibility = "visible";
+      let lastEntry = document.querySelector(`#forum-topic-latest-post-${topic}`);
+      lastEntry.style.visibility = "visible";
+      lastEntry.setAttribute("data-id", forum.id);
+
+      //Tip text doesn't work
+      let identicon = document.querySelector(`#forum-topic-latest-post-image-${topic}`);
+      identicon.classList.add("tip");
+      identicon.innerHTML = `<img class="identicon" src="${fuid}" /><div class="tiptext">${app.browser.returnAddressHTML(forum.transaction.from[0].add)}</div>`;
+
+      
     } catch (err) {
       console.error(err);
     }

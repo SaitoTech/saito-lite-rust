@@ -55,7 +55,7 @@ module.exports = PostCreate = {
     document.querySelector('.post-submit-btn').onclick = async (e) => {
 
       if (this.new_post.images.length > 0) {
-	      salert("It may take up to a minute to update large images. Please be patient!");
+	      alert("It may take up to a minute to update large images. Please be patient!");
       }
       // ===== USER INPUT =====
       this.new_post.title = sanitize(document.querySelector('.post-create-title').value);
@@ -65,12 +65,15 @@ module.exports = PostCreate = {
       //this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
-      console.log("NEW POST: "+this.new_post.comment);
+      //console.log("NEW POST: "+this.new_post.comment);
 
-      if (this.new_post.title === "" && this.new_post.content === "") {
+      if (this.new_post.title === "" && this.new_post.comment === "") {
         salert("Cannot submit untitled/empty post!");
         return;
       }
+      document.querySelector('.post-submit-btn').style.display = "none";
+      document.querySelector('#post-loader-spinner').style.display = "block";
+
 
       if (!this.new_post.title) {
         let title = "";
