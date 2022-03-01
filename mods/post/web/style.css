@@ -623,6 +623,7 @@
 .forum-topic-posts-text {
 }
 .forum-topic-latest-post {
+  cursor: pointer;
   width: 100%;
   overflow: hidden;
   display: flex;
