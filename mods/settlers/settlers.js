@@ -231,11 +231,11 @@ class Settlers extends GameTemplate {
         this.hammer.attachEvents(
           this.app,
           this,
-          ".game-hexgrid-container"
+          "#game-hexgrid"
         );
       } else {
         this.sizer.render(this.app, this);
-        this.sizer.attachEvents(this.app, this, ".game-hexgrid-container");
+        this.sizer.attachEvents(this.app, this, "#game-hexgrid");
       }
 
       //
@@ -2188,7 +2188,7 @@ class Settlers extends GameTemplate {
       }
 
       $(".road.new").addClass("rhover");
-      $(".road.new").css("z-index", 900);
+      //$(".road.new").css("z-index", 900);
       $(".road.new").off();
       $(".road.new").on("click", function () {
         $(".road.new").off();
@@ -2206,7 +2206,7 @@ class Settlers extends GameTemplate {
     } else {
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
-      $(".road.empty").css("z-index", 900);
+      //$(".road.empty").css("z-index", 900);
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         $(".road.empty").off();
