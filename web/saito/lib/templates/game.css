@@ -466,7 +466,8 @@ i.menu_icon_icon{
 /*** Text listed menu options in hud > hud-body > status ***/ 
 .status-text-menu {
   width: min(500px,100%); /*I think 350px looks better*/
-  height: fit-content;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 
@@ -1300,7 +1301,7 @@ input#game_board_sizer {
   position:absolute;
   left: 50%;
   top: 13vh;
-  height: 55vh;
+  height: auto;
   width: calc(55vh * 0.730);
   transform: translateX(-50%);
   z-index: -10; /* start behind the board */
@@ -1313,6 +1314,10 @@ input#game_board_sizer {
  position: relative;
  width: 100%;
  height: 100%;
+}
+
+.cardbox-card .cardimg{
+  width: 100%;
 }
 
 .cardbox-exit-background {
