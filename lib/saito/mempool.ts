@@ -140,11 +140,11 @@ class Mempool {
     this.mempool.blocks.sort((a, b) => a.block.id - b.block.id);
 
     try {
-      this.processing_timer = setInterval(async () => {
+      this.processing_timer = setInterval(() => {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
             const block = this.mempool.blocks.shift();
-            await this.app.blockchain.addBlockToBlockchain(block);
+            this.app.blockchain.addBlockToBlockchain(block);
           }
         } else {
           this.processing_active = false;
@@ -338,7 +338,7 @@ class Mempool {
         }
       }
       if (this.app.options.peers) {
-        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.length === 0) {
+        if (this.app.options.peers.length > 0 && this.app.blockchain.blocks.size === 0) {
           console.log("ERROR: 502843: REFUSING TO SELF-GENERATE BLOCK #1 on PEER CHAIN...");
           return false;
         }

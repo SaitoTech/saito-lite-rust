@@ -27,6 +27,16 @@ module.exports = ArcadeSidebar = {
         games_menu.innerHTML += `<li class="arcade-navigator-item tip" id="${module.name}">${title}${status}</li>`;
       }
     });
+
+
+    app.modules.respondTo("arcade-sidebar").forEach(module => {
+      if (module != null) {
+        module.respondTo('arcade-sidebar').render(app, module);
+      }
+    });
+
+
+
   },
 
   
@@ -48,7 +58,7 @@ module.exports = ArcadeSidebar = {
     Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
       game.addEventListener('click', (e) => {
         let gameName = e.currentTarget.id;
-        app.browser.logMatomoEvent("Arcade", "ArcadeSidebarInviteCreateClick", gameName);
+        app.browser.logMatomoEvent("Arcade", "GameListArcadeSidebarClick", gameName);
         let doGameDetails = () => {
           let tx = new saito.default.transaction();
           tx.msg.game = gameName;
@@ -74,6 +84,14 @@ module.exports = ArcadeSidebar = {
     app.modules.respondTo("email-chat").forEach(module => {
       module.respondTo('email-chat').attachEvents(app, mod);
     });
+
+    app.modules.respondTo("arcade-sidebar").forEach(module => {
+      if (module != null) {
+        module.respondTo('arcade-sidebar').render(app, module);
+      }
+    });
+
+
 
   }
 

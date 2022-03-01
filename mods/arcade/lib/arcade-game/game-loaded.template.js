@@ -1,4 +1,4 @@
-module.exports = GameLoadedTemplate = (game_id) => {
+module.exports = GameLoadedTemplate = (game_id = -1) => {
 
   if (game_id === -1) {
     return ` 

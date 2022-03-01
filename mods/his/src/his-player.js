@@ -4,7 +4,41 @@
   returnPlayers(num = 0) {
 
     var players = [];
-    let factions = JSON.parse(JSON.stringify(this.factions));
+    let factions  = JSON.parse(JSON.stringify(this.factions));
+    let factions2 = JSON.parse(JSON.stringify(this.factions));
+
+    // < 6 player games
+    if (num == 2) {
+      for (let key in factions) {
+	if (key !== "protestant" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 3) {
+      for (let key in factions) {
+	if (key !== "protestant" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 3) {
+      for (let key in factions) {
+	if (key !== "protestant" && key != "france" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
+
+    if (num == 4) {
+      for (let key in factions) {
+	if (key !== "protestant" && key != "france" && key != "ottoman" && key !== "papacy") {
+	  delete factions[key];
+	}
+      }
+    }
 
     for (let i = 0; i < num; i++) {
 
@@ -65,8 +99,43 @@
 
 
       players[i] = {};
-      players[i].faction = rf;
+      players[i].factions = [];
+      players[i].factions.push(rf);
 
+    }
+
+
+    if (num == 3) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+	if (players[i].factions[0] === "papacy") {
+	  players[i].factions.push("hapsburg");
+	}
+	if (players[i].factions[0] === "france") {
+	  players[i].factions.push("ottoman");
+	}
+      }
+    }
+
+    if (num == 4) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+	if (players[i].factions[0] === "papacy") {
+	  players[i].factions.push("hapsburg");
+	}
+      }
+    }
+
+    if (num == 5) {
+      for (let i = 0; i < players.length; i++) {
+	if (players[i].factions[0] === "protestant") {
+	  players[i].factions.push("england");
+	}
+      }
     }
 
     return players;
@@ -80,12 +149,11 @@
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
-  returnPlayerFaction(player) {
-    let key = this.game.players_info[player-1].faction;
-    return this.factions[key];
+  returnPlayerFactions(player) {
+    return this.game.players_info[player-1].factions;
   }
 
-  returnActionMenuOptions(player=null) {
+  returnActionMenuOptions(player=null, faction=null) {
 
     let menu = [];
 
@@ -93,132 +161,154 @@
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Move formation in clear",
+      check : this.canPlayerMoveFormationInClear,
       fnct : this.playerMoveFormationInClear,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [2,2,2,2,2,2],
       name : "Move formation over pass",
+      check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy'],
       cost : [1,1,1,1,1],
       name : "Naval move",
+      check : this.canPlayerNavalMove,
       fnct : this.playerNavalMove,
     });
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
       name : "Buy mercenary",
+      check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [2,2,2,2,2,2],
       name : "Raise regular",
+      check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy'],
       cost : [2,2,2,2,2],
       name : "Build naval squadron",
+      check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Assault",
+      check : this.canPlayerAssault,
       fnct : this.playerAssault,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Control unfortified space",
+      check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [2,2,2],
       name : "Explore",
+      check : this.canPlayerExplore,
       fnct : this.playerExplore,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [2,3,3],
       name : "Colonize",
+      check : this.canPlayerColonize,
       fnct : this.playerColonize,
     });
     menu.push({
       factions : ['hapsburg','england','france'],
       cost : [4,4,4],
       name : "Conquer",
+      check : this.canPlayerConquer,
       fnct : this.playerConquer,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [2],
       name : "Initiate piracy in a sea",
+      check : this.canPlayerInitiatePiracyInASea,
       fnct : this.playerInitiatePiracyInASea,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [1],
       name : "Raise Cavalry",
+      check : this.canPlayerRaiseCavalry,
       fnct : this.playerRaiseCavalry,
     });
     menu.push({
       factions : ['ottoman'],
       cost : [1],
       name : "Build corsair",
+      check : this.canPlayerBuildCorsair,
       fnct : this.playerBuildCorsair,
     });
     menu.push({
       factions : ['protestant'],
       cost : [1],
       name : "Translate scripture",
+      check : this.canPlayerTranslateScripture,
       fnct : this.playerTranslateScripture,
     });
     menu.push({
       factions : ['england','protestant'],
       cost : [1,1,1,1,1,1],
       name : "Publish treatise",
+      check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
     });
     menu.push({
       factions : ['papacy','protestant'],
       cost : [3,3],
       name : "Call theological debate",
+      check : this.canPlayerCallTheologicalDebate,
       fnct : this.playerCallTheologicalDebate,
     });
     menu.push({
       factions : ['papacy'],
       cost : [1],
       name : "Build Saint Peters",
+      check : this.canPlayerBuildSaintPeters,
       fnct : this.playerBuildSaintPeters,
     });
     menu.push({
       factions : ['papacy'],
       cost : [2],
       name : "Burn books",
+      check : this.canPlayerBurnBooks,
       fnct : this.playerBurnBooks,
     });
     menu.push({
       factions : ['papacy'],
       cost : [3],
       name : "Found Jesuit University",
+      check : this.canPlayerFoundJesuitUniversity,
       fnct : this.playerFoundJesuitUniversity,
     });
 
     if (player == null) { return menu; }
 
-    let pfaction = this.returnPlayerFaction(player);
+    let pfactions = this.returnPlayerFactions(player);
     let fmenu = [];
 
-
     for (let i = 0; i < menu.length; i++) {
-      if (menu[i].factions.includes(pfaction.key)) {
-        fmenu.push(menu[i]);
+      for (let z = 0; z < pfactions.length; z++) {
+        if (menu[i].factions.includes(pfactions[z])) {
+          fmenu.push(menu[i]);
+	  z = pfactions.length+1;
+        }
       }
     }
 
@@ -226,205 +316,6 @@
 
   }
 
-
-  playerMoveUnits(msg, cancel_func = null) {
-
-    let his_self = this;
-
-    this.playerSelectSpaceWithFilter(
-      "Select Town from Which to Move Units:",
-
-      function(space) {
-	if (space.units[his_self.game.player-1].length > 0) {
-	  return 1;
-        }
-	return 0;
-      },
-
-      function(spacekey) {
-
-        let space = his_self.spaces[spacekey];
-	let units_to_move = [];
-
-
-	let selectDestinationInterface = function(his_self, units_to_move) {  
-    	  his_self.playerSelectSpaceWithFilter(
-
-            "Select Destination for these Units",
-
-      	    function(space) {
-	      if (space.neighbours.includes(spacekey)) {
-	  	return 1;
-              }
-	      return 0;
-            },
-
-      	    function(destination_spacekey) {
-console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to " + destination_spacekey);
-	    },
-
-	    cancel_func,
-
-	  );
-	}
-
-	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
-
-	  let html = "<ul>";
-	  for (let i = 0; i < space.units[this.game.player-1].length; i++) {
-	    if (units_to_move.contains(i)) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[this.game.player-1][i].name}</li>`;
-	    }
-	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
-	  html += "</ul>";
-
-	  his_self.updateStatus(html);
-
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
-
-            let id = $(this).attr("id");
-
-	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
-	      return;
-	    }
-
-	    if (units_to_move.includes(id)) {
-	      let idx = units_to_move.indexOf(id);
-	      if (index > -1) {
-  		units_to_move.splice(idx, 1);
-	      }
-	    } else {
-	      units_to_move.push(id);
-	    }
-
-	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
-
-	  });
-	}
-	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
-
-
-
-
-	
-      },
-
-      cancel_func,
-
-    );
-
-  }
-
-
-
-
-/*********************
-  playerSelectUnitsInSpace(spacekey) {
-
-    this.playerSelectUnitsWithFilter(
-
-      "Select Town from Which to Move Units:",
-
-      function(unit) {
-	if (space.units[this.game.player-1].length > 0) {
-	  return 1;
-        }
-	return 0;
-      },
-
-      function(spacekey) {
-	let space = this.spaces[spacekey];
-	let units = this.playerSelectUnitsWithFilter(
-
-
-        );
-	console.log("Space key: " + spacekey);
-      },
-
-      null,
-
-  }
-
-
-  playerSelectUnitsWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
-
-    let his_self = this;
-
-    let html = '<div class="message">' + msg + '</div>';
-
-    html += '<ul>';
-    for (let key in this.spaces) {
-      for (let i = 0; i < this.spaces[key].units.length; i++) {
-        for (let z = 0; z < this.spaces[key].units[i].length; z++) {
-          if (filter_func(this.spaces[key].units[i][z]) == 1) {
-            html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
-          }
-        }
-      }
-    }
-    html += '<li class="textchoice" id="done">done selecting</li>';
-    if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
-    }
-    html += '</ul>';
-
-    this.updateStatus(html);
-
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
-      let action = $(this).attr("id");
-      if (action == "cancel") {
-        cancel_func();
-        return 0;
-      }
-
-      mycallback(action);
-
-    });
-
-  }
-
-
-  playerSelectUnitsInSpaceWithFilter(msg, space, filter_func, mycallback = null, cancel_func = null) {
-
-    let his_self = this;
-
-    let html = '<div class="message">' + msg + '</div>';
-
-    html += '<ul>';
-    for (let i = 0; i < space.units.length; i++) {
-      for (let z = 0; z < space.units[i].length; z++) {
-        if (filter_func(space.units[i][z]) == 1) {
-          html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
-        }
-      }
-    }
-    if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
-    }
-    html += '</ul>';
-
-    this.updateStatus(html);
-
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
-      let action = $(this).attr("id");
-      if (action == "cancel") {
-        cancel_func();
-        return 0;
-      }
-
-      mycallback(action);
-
-    });
-
-  }
-*********************/
 
 
 
@@ -465,23 +356,24 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
 
 
-  playerTurn(selected_card=null) {
+  playerTurn(faction, selected_card=null) {
 
     this.startClock();
 
     let his_self = this;
 
-    this.resetPlayerTurn(this.game.player);
+    let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
-    this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
-    his_self.attachCardboxEvents(function(card) {
-      his_self.playerPlayCard(card, this.game.player);
-    });
+    this.resetPlayerTurn(this.game.player, faction);
 
+    this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
+    this.attachCardboxEvents(function(card) {
+      this.playerPlayCard(card, this.game.player, faction);
+    });  
 
   }
 
-  playerPlayCard(card) {
+  playerPlayCard(card, player, faction) {
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">play for ops</li>`;
@@ -490,15 +382,15 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
     this.updateStatusWithOptions('Playing card:', html, true);
     this.bindBackButtonFunction(() => {
-      this.playerTurnCardSelected(card, player);
+      this.playerTurn(faction);
     });
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "ops") {
-        this.playerPlayOps();
+        this.playerPlayOps(card, faction);
         return;
       }
       if (user_choice === "event") {
-        this.playerPlayEvent();
+        this.playerPlayEvent(card, faction);
         return;
       }
       return;
@@ -506,19 +398,23 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
 
   }
 
-  async playerPlayOps(card, ops=null) {
+  async playerPlayOps(card, faction, ops=null) {
 
     let menu = this.returnActionMenuOptions(this.game.player);
-    let faction = this.returnPlayerFaction(this.game.player);
-    let faction_key = faction.key;
+    let pfactions = this.returnPlayerFactions(this.game.player);
+
     if (ops == null) { ops = 2; }
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-      for (let z = 0; z < menu[i].factions.length; z++) {
-        if (menu[i].factions[z] === faction_key) {
-	  if (menu[i].cost[z] <= ops) {
-            html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+console.log(menu[i].name);
+      if (menu[i].check(this, this.game.player, faction)) {
+        for (let z = 0; z < menu[i].factions.length; z++) {
+          if (menu[i].factions[z] === faction) {
+	    if (menu[i].cost[z] <= ops) {
+              html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+            }
+	    z = menu[i].factions.length+1;
           }
         }
       }
@@ -535,25 +431,22 @@ console.log("Move " + JSON.stringify(units_to_move) + " from " + spacekey + " to
       }
 
       for (let z = 0; z < menu[user_choice].factions.length; z++) {
-        if (menu[user_choice].factions[z] === faction_key) {
+        if (pfactions.includes(menu[user_choice].factions[z])) {
           ops -= menu[user_choice].cost[z];
+	  z = menu[user_choice].factions.length+1;
         }
       }
 
-      await menu[user_choice].fnct(this, this.game.player);
       if (ops > 0) {
-	this.playerPlayOps(card, ops);
-      } else {
-	this.endTurn();
+	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
       }
+      menu[user_choice].fnct(this, this.game.player);
       return;
 
     });
   }
-  playerPlayEvent(card) {
-
-console.log("playing ops");
-
+  playerPlayEvent(card, faction, ops=null) {
+console.log("playing event");
   }
 
 
@@ -562,7 +455,6 @@ console.log("playing ops");
   }
 
   async playerReformationAttempt(player) {
-
     this.updateStatus("Attempting Reformation Attempt");
     return;
   }
@@ -570,89 +462,429 @@ console.log("playing ops");
 console.log("1");
 return;
   }
-  async playerMoveFormationInClear(his_self, player) {
-    his_self.playerMoveUnits();      
-console.log("2");
-return;
+
+
+
+
+
+
+  canPlayerMoveFormationInClear(his_self, player, faction) {
+    return 1;
   }
-  async playerMoveFormationOverPass(his_self, player) {
-console.log("3");
-return;
+  async playerMoveFormationInClear(his_self, player, faction) {
+
+    let units_to_move = [];
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      // TODO - select only cities where I can move units
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && faction === z) {
+	    return 1;
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	  	return 1;
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+	      }
+	      this.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (units_to_move.includes(parseInt(i))) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+    );
+
   }
-  async playerNavalMove(his_self, player) {
+  canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
+  }
+  async playerMoveFormationOverPass(his_self, player, faction) {
+
+    let units_to_move = [];
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Town from Which to Move Units:",
+
+      // TODO - select only cities where I can move units
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && z === faction) {
+	    if (space.pass) { if (space.pass.length > 0) { return 1; } }
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectSpaceWithFilter(
+
+            "Select Destination for these Units",
+
+      	    function(space) {
+	      if (space.neighbours.includes(spacekey)) {
+		if (space.pass) {
+		  if (space.pass.includes(spacekey)) { return 1; }
+		}
+              }
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+	      }
+	      this.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (units_to_move.includes(parseInt(i))) {
+	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	    } else {
+	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);    
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+    );
+
+  }
+
+
+  canPlayerNavalMove(his_self, player, faction) {
+    return 1;
+  }
+  async playerNavalMove(his_self, player, faction) {
 console.log("4");
 return;
   }
-  async playerBuyMercenary(his_self, player) {
-console.log("5");
-return;
+
+  canPlayerBuyMercenary(his_self, player, faction) {
+    return 1;
   }
-  async playerRaiseRegular(his_self, player) {
-console.log("6");
-return;
+  playerBuyMercenary(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Destination for Mercenary",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
   }
-  async playerBuildNavalSquadron(his_self, player) {
+
+
+  canPlayerRaiseRegular(his_self, player, faction) {
+    return 1;
+  }
+  async playerRaiseRegular(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Destination for Regular",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 1;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
+  }
+
+  canPlayerBuildNavalSquadron(his_self, player, faction) {
+    return 1;
+  }
+  async playerBuildNavalSquadron(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Naval Squadron",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tsea\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
 console.log("7");
 return;
   }
-  async playerAssault(his_self, player) {
+
+  canPlayerAssault(his_self, player, faction) {
+    return 0;
+  }
+  async playerAssault(his_self, player, faction) {
 console.log("8");
 return;
   }
-  async playerControlUnfortifiedSpace(his_self, player) {
+  canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+    return 0;
+  }
+  async playerControlUnfortifiedSpace(his_self, player, faction) {
 console.log("9");
 return;
   }
-  async playerExplore(his_self, player) {
+  canPlayerExplore(his_self, player, faction) {
+    return 0;
+  }
+  async playerExplore(his_self, player, faction) {
 console.log("10");
 return;
   }
-  async playerColonize(his_self, player) {
+  canPlayerColonize(his_self, player, faction) {
+    return 0;
+  }
+  async playerColonize(his_self, player, faction) {
 console.log("11");
 return;
   }
-  async playerConquer(his_self, player) {
+  canPlayerConquer(his_self, player, faction) {
+    return 0;
+  }
+  async playerConquer(his_self, player, faction) {
 console.log("12");
 return;
   }
-  async playerInitiatePiracyInASea(his_self, player) {
+  canPlayerInitiatePiracyInASea(his_self, player, faction) {
+    return 0;
+  }
+  async playerInitiatePiracyInASea(his_self, player, faction) {
 console.log("13");
 return;
   }
-  async playerRaiseCavalry(his_self, player) {
-console.log("14");
-return;
+  canPlayerRaiseCavalry(his_self, player, faction) {
+    return 1;
   }
-  async playerBuildCorsair(his_self, player) {
-console.log("15");
-return;
+  async playerRaiseCavalry(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Naval Squadron",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
   }
-  async playerTranslateScripture(his_self, player) {
+  canPlayerBuildCorsair(his_self, player, faction) {
+    return 1;
+  }
+  async playerBuildCorsair(his_self, player, faction) {
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Port for Corsair",
+
+      function(space) {
+        if (space.owner === faction) { return 1; }
+        if (space.home === faction) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("build\tsea\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
+  }
+  canPlayerTranslateScripture(his_self, player, faction) {
+    return 0;
+  }
+  async playerTranslateScripture(his_self, player, faction) {
 console.log("16");
 return;
   }
-  async playerPublishTreatise(his_self, player) {
+  canPlayerPublishTreatise(his_self, player, faction) {
+    return 0;
+  }
+  async playerPublishTreatise(his_self, player, faction) {
 console.log("17");
 return;
   }
-  async playerCallTheologicalDebate(his_self, player) {
-console.log("");
+  canPlayerCallTheologicalDebate(his_self, player, faction) {
+    return 0;
+  }
+  async playerCallTheologicalDebate(his_self, player, faction) {
+console.log("18");
 return;
   }
-  async playerBuildSaintPeters(his_self, player) {
-console.log("");
+  canPlayerBuildSaintPeters(his_self, player, faction) {
+    return 0;
+  }
+  async playerBuildSaintPeters(his_self, player, faction) {
+console.log("19");
 return;
   }
-  async playerBurnBooks(his_self, player) {
-console.log("");
+  canPlayerBurnBooks(his_self, player, faction) {
+    return 0;
+  }
+  async playerBurnBooks(his_self, player, faction) {
+console.log("20");
 return;
   }
-  async playerFoundJesuitUniversity(his_self, player) {
-console.log("jesuit");
+  canPlayerFoundJesuitUniversity(his_self, player, faction) {
+    return 0;
+  }
+  async playerFoundJesuitUniversity(his_self, player, faction) {
+console.log("21 jesuit");
 return;
   }
-  async playerPublishTreatise(his_self, player) {
-console.log("treatise");
+  canPlayerPublishTreatise(his_self, player, faction) {
+    return 0;
+  }
+  async playerPublishTreatise(his_self, player, faction) {
+console.log("22 treatise");
 return;
   }
 

@@ -1096,7 +1096,6 @@ class Block {
       return this.hash;
     }
     this.prehash = this.app.crypto.hash(this.serializeForSignature().toString("hex"));
-    console.log("BLOCK RETURN HASH: " + this.prehash + " / " + this.block.previous_block_hash);
     this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
     return this.hash;
   }

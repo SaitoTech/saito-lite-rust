@@ -23,7 +23,7 @@ class Network {
   public block_sample_size: any;
   public dead_peers: any;
   public socket: any;
-  public peer_monitor_timer_speed = 5000;
+  public peer_monitor_timer_speed = 7500;
   public peer_monitor_connection_timeout = 2000;
   public peer_monitor_timer: any;
 
@@ -266,11 +266,14 @@ class Network {
         console.log("connected to network", event);
         this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
+        this.app.connection.emit("peer_connect", peer);
+        this.app.connection.emit("connection_up", peer);
       };
       peer.socket.onclose = (event) => {
         console.log(
           `[close] Connection closed cleanly by web client, code=${event.code} reason=${event.reason}`
         );
+        this.app.connection.emit("connection_dropped", peer);
         this.app.connection.emit("peer_disconnect", peer);
       };
       peer.socket.onerror = (event) => {
@@ -341,7 +344,9 @@ class Network {
   cleanupDisconnectedPeer(peer, force = 0) {
     console.debug("cleanupDisconnectedPeer : peer count = " + this.peers.length);
     for (let c = 0; c < this.peers.length; c++) {
-      if (this.peers[c] === peer) {
+      // it has to be this peer, and the socket must be closed
+      if (this.peers[c].id === peer.id && this.peers[c].socket.readyState === this.peers[c].socket.CLOSED) {
+
         let keep_peer = -1;
 
         //
@@ -402,6 +407,7 @@ class Network {
           //
           this.dead_peers.push(peer);
         }
+
         console.debug("keep_peer = " + keep_peer);
         //
         // close and destroy socket, and stop timers
@@ -511,8 +517,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.debug("network.receiveRequest : ", message);
-    console.log("network.receiveRequest!");
+    //console.debug("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -664,7 +669,7 @@ class Network {
 
         console.log("last shared ancestor generated at: " + last_shared_ancestor);
 
-        if (last_shared_ancestor > 0) {
+        if (last_shared_ancestor <= 0) {
           if (this.app.blockchain.returnLatestBlockId() > 10) {
             last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
           }
@@ -692,18 +697,18 @@ class Network {
               syncobj.prehash.push(block.prehash);
               syncobj.previous_block_hash.push(block.returnPreviousBlockHash());
               syncobj.block_ids.push(block.returnId());
-              console.log("checking if " + block.returnHash() + " has txs for " + publickey);
+              //console.log("checking if " + block.returnHash() + " has txs for " + publickey);
               if (block.hasKeylistTransactions([publickey])) {
-                console.log("yes");
+                //console.log("yes");
                 syncobj.txs.push(1);
               } else {
-                console.log("no");
+                //console.log("no");
                 syncobj.txs.push(0);
               }
             }
           }
         }
-        console.log("ABOUT TO SEND GSTCHAIN");
+        //console.log("ABOUT TO SEND GSTCHAIN");
 
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
@@ -834,7 +839,7 @@ class Network {
       // or reconnect if they're in our list of peers
       // to which to connect.
       //
-      if (peer.socket.readyState !== peer.socket.OPEN) {
+      if (peer.socket.readyState === peer.socket.CLOSED) {
         if (!this.dead_peers.includes(peer)) {
           this.cleanupDisconnectedPeer(peer);
         }

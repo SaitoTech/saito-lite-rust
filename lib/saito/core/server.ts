@@ -306,8 +306,6 @@ class Server {
         // @ts-ignore
         const blk = await this.app.storage.loadBlockByHash(bsh);
 
-        console.log("and here...");
-
         if (blk == null) {
           res.writeHead(200, {
             "Content-Type": "text/plain",

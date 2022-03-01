@@ -54,10 +54,22 @@ body {
 
 #game-hexgrid-container{
   z-index: 2;
+  width: fit-content;
+  height: fit-content;
+}
+
+#game-hexgrid{
+  z-index: 2;
+  width: 1000px;
+  padding: 10% 5% 15%; /*Creates space for board overflow*/
+  box-sizing: content-box;
+  border-radius: 1000px;
+  cursor: grab;
+  background-color: rgba(0,0,240,0.09);
 }
 
 .player-box{
-  background-color: #444A;
+  background-color: #444D;
   z-index: 3;
   border: 4px solid;
 }
@@ -70,15 +82,6 @@ body {
   z-index: 1000;
 }
 
-#game-hexgrid, #game-hexgrid-container{
-  
-}
-
-#game-hexgrid{
-  width: 1000px;
-  padding: 10% 5% 15%; /*Creates space for board overflow*/
-  box-sizing: content-box;
-}
 
 
 /* Dice */
@@ -704,7 +707,7 @@ body {
 }
 
 .player-box.me{
-  height: unset;
+  max-height: unset;
 }
 .player-box.notme, .opponents{
   height: fit-content;

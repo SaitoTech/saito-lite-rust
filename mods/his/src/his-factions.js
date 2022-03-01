@@ -26,5 +26,26 @@
 
   }
 
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.game.players_info[i].factions.includes(faction)) {
+	return i+1;
+      }
+    }
+    return -1;
+  }
+
+
+  returnFactionHandIdx(player, faction) {
+console.log("player: " + player);
+console.log("faction: " + faction);
+    for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
+      if (this.game.players_info[player-1].factions[i] === faction) {
+	return i;
+      }
+    }
+    return -1;
+  }
+
 
 
