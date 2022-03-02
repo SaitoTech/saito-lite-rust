@@ -62,8 +62,9 @@ body {
   z-index: 2;
   width: 1000px;
   padding: 10% 5% 15%; /*Creates space for board overflow*/
+  padding:  100px 35px 150px;
   box-sizing: content-box;
-  border-radius: 1000px;
+  border-radius: 400px;
   cursor: grab;
   background-color: rgba(0,0,240,0.09);
 }
@@ -74,24 +75,30 @@ body {
   border: 4px solid;
 }
 
-.player-box > .player-box-graphic{
-  z-index: -1;
-}
 
 .game_board_sizer{
   z-index: 1000;
 }
 
 
+.plog .status-text-menu ul, .plog .status-text-menu ul li{
+  background-color: unset;
+} 
+
+.plog .status-header{
+  background-color: unset;
+  box-shadow: unset;
+}
 
 /* Dice */
 .diceroll{
   display: none;
-  position: absolute;
   width: 10vw;
+  margin: 0 auto;
+ /* position: absolute;
   top: 0px;
   left: 50%;
-  transform: translateX(-5vw);
+  transform: translateX(-5vw);*/
   border: 2px solid black;
   border-radius: 1vw;
   background-color: #222B;
@@ -138,13 +145,14 @@ body {
   pointer-events: none; 
 }
 
-.notme .player-box-graphic .devcards .tinycard{
+/*.notme .player-box-graphic .devcards .tinycard{
   width: 8vh;
 }
 
 .notme .player-box-graphic .rescards .tinycard{
   width: 10vh;
 }
+*/
 
 /* Make room to display two hands of cards*/
 .devcards{
@@ -573,16 +581,26 @@ body {
   text-align: center;
 }
 
+/*Originally for cards, now for dice*/
+.player-box > .player-box-graphic{
+  /*z-index: -1;*/
+}
+
 .me > .player-box-graphic{
-  position: relative;
-  left: calc(150px + 8vw);
+  position: absolute;
+  /*left: calc(150px + 8vw);*/
+  top: -5vw;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .notme > .player-box-graphic{
-  position: relative;
+  position: absolute;
+  left: -10.5vw;
+  /*position: relative;
   z-index: -1;
   top: 5vh;
-  left: 1vw;
+  left: 1vw;*/
 }
 
 .flexline{
