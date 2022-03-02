@@ -67,35 +67,6 @@
   background-image: url("/pandemic/img/Vial%20Black.png");
 }
 
-.popup-confirm-menu{
-  padding: 10px;
-  font-size: 1em;
-  background-color: #a9a9a9a9;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.popup-confirm-menu div{
-  background-color: whitesmoke;
-  margin-bottom: 10px;
-  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-  padding: 5px;
-  width: 100%;
-  border-radius: 5px; 
-}
-.popup-prompt{
-}
-
-.popup-confirm-menu .action{
-  border: 1px black solid;
-  cursor: pointer;
-}
-.popup-confirm-menu .action:hover{
-  background-color: lightgrey;
-  font-weight: bold;
-}
 
 .hud-card .cardimg {
   height: 100%;

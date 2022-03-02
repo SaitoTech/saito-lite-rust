@@ -244,15 +244,10 @@ class Settlers extends GameTemplate {
       this.addPortsToGameboard();
 
       this.displayBoard();
-      //this.displayDice();
+      this.displayDice();
     } catch (err) {
-      //console.log("Intialize HTML: "+err);
+      console.log("Intialize HTML: "+err);
     }
-
-    if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }
-    
 
   }
 
@@ -342,7 +337,7 @@ class Settlers extends GameTemplate {
     state.players = [];
     state.playerTurn = 0;
     state.ports = [];
-    state.lastroll = [0, 0];
+    state.lastroll = [1, 1];
     for (let i = 0; i < this.game.players.length; i++) {
       state.players.push({});
       state.players[i].resources = [];
@@ -1059,6 +1054,7 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
 
         this.game.state.playerTurn = player;
+        this.playerbox.insertGraphic("diceroll",player);
 
         if (this.game.player == player) {
           /*
@@ -2011,28 +2007,73 @@ class Settlers extends GameTemplate {
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
+      let xpos, ypos;
+
       $(".city.empty").addClass("rhover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
-      $(".city.empty").on("click", function () {
-        $(".city.empty").removeClass("rhover");
-        //$('.city').css('z-index', 99999999);
-        $(".city.empty").off();
-        let slot = $(this).attr("id");
-        settlers_self.game.state.placedCity = slot;
-        settlers_self.buildCity(settlers_self.game.player, slot);
-        if (existing_cities == 1)
-          settlers_self.addMove(
-            `secondcity\t${settlers_self.game.player}\t${slot.replace(
-              "city_",
-              ""
-            )}`
-          );
-        settlers_self.addMove(
-          `build_city\t${settlers_self.game.player}\t${slot}`
-        );
-        settlers_self.endTurn();
+        
+      $(".city.empty").on("mousedown", function (e) {
+        xpos = e.clientX;
+        ypos = e.clientY;
       });
+      //Create as menu on the game board to input word from a tile in horizontal or vertical direction
+      $(".city.empty").on("mouseup", function (e) {
+          if (Math.abs(xpos - e.clientX) > 4) {
+            return;
+          }
+          if (Math.abs(ypos - e.clientY) > 4) {
+            return;
+          }
+          $(".city.empty").css("background-color", "");   
+          //Confirm this move
+          let slot = $(this).attr("id");
+          $(this).css("background-color", "yellow");
+
+          let html = `
+          <div class="popup-confirm-menu">
+            <div class="popup-prompt">Place ${settlers_self.skin.c1.name} here?</div>
+            <div class="action" id="confirm">yes</div>
+            <div class="action" id="cancel">cancel</div>
+          </div>`;
+
+          let left = $(this).offset().left + 50;
+          let top = $(this).offset().top + 20;
+          
+          $(".popup-confirm-menu").remove();
+          $("body").append(html);
+          $(".popup-confirm-menu").css({
+                position: "absolute",
+                top: top,
+                left: left,
+              });
+
+            $(".action").off();
+            $(".action").on("click", function () {
+              $("#"+slot).css("background-color", "");
+              let confirmation = $(this).attr("id");
+              $(".action").off();
+              $(".popup-confirm-menu").remove();
+              if (confirmation === "confirm"){
+                $(".city.empty").removeClass("rhover");
+                $(".city.empty").off();
+                  settlers_self.game.state.placedCity = slot;
+                  settlers_self.buildCity(settlers_self.game.player, slot);
+                  if (existing_cities == 1)
+                    settlers_self.addMove(
+                      `secondcity\t${settlers_self.game.player}\t${slot.replace(
+                        "city_",
+                        ""
+                      )}`
+                    );
+                  settlers_self.addMove(
+                    `build_city\t${settlers_self.game.player}\t${slot}`
+                  );
+                  settlers_self.endTurn();
+              } 
+            });
+      });
+      
     } else {
       /* During game, must build roads to open up board for new settlements*/
 
@@ -2286,7 +2327,7 @@ class Settlers extends GameTemplate {
       //html += `<li class="option noselect" id="nospend">spend resources</li>`;
     }
 
-    html += `<li class="option" id="pass">end turn</li>`;
+    html += `<li class="option" id="pass">pass dice</li>`;
     html += "</ul>";
     html += "</div>";
 
