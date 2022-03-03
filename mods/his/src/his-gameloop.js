@@ -91,14 +91,17 @@ console.log("MOVE: " + mv[0]);
 
         if (mv[0] === "move") {
 
-	  let player = mv[1];
-	  let movetype = mv[1];
-	  let source = mv[1];
-	  let destination = mv[1];
-	  let unitidx = mv[1];
+	  let faction = mv[1];
+	  let movetype = mv[2];
+	  let source = mv[3];
+	  let destination = mv[4];
+	  let unitidx = mv[5];
 
-          this.spaces[destination].units[player-1].push(this.spaces[source].units[player-1][unitidx].splice(unitidx, 1));
-	  this.updateLog("Player "+player+" moves unit from " + source + " to " + destination);
+console.log("dest: " + destination);
+console.log("fact: " + faction);
+
+          this.game.spaces[destination].units[faction].push(this.game.spaces[source].units[faction].splice(unitidx, 1));
+	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -217,7 +220,7 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
         }
 	if (mv[0] === "continue") {
 
-	  let player = mv[1];
+	  let faction = mv[1];
 	  let card = mv[2];
 	  let ops = mv[3];
 
@@ -229,7 +232,7 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 	  let player_turn = -1;
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    if (this.game.players_info.factions.includes(faction)) {
+	    if (this.game.players_info[i].factions.includes(faction)) {
 	      player_turn = i+1;
 	    }
 	  }
@@ -346,11 +349,11 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // neighbours
 	  //
-	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_neighbours++;
 	    }
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
 	    }  
 	  }
@@ -358,7 +361,7 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // language zone
 	  //
-	  if (this.spaces[space].language !== "german") {
+	  if (this.game.spaces[space].language !== "german") {
 	    ties_resolve = "catholic";
  	  }
 

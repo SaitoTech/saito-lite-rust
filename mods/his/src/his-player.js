@@ -320,7 +320,7 @@
 
 
 
-  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
 
@@ -330,6 +330,13 @@
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    alert("CLICKED: " + key);
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
       }
     }
     if (cancel_func != null) {
@@ -422,7 +429,7 @@ console.log(menu[i].name);
     html    += `<li class="card" id="end_turn">end turn</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
     this.attachCardboxEvents(async (user_choice) => {      
 
       if (user_choice === "end_turn") {
@@ -438,9 +445,9 @@ console.log(menu[i].name);
       }
 
       if (ops > 0) {
-	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
+	this.addMove("continue\t"+faction+"\t"+card+"\t"+ops);
       }
-      menu[user_choice].fnct(this, this.game.player);
+      menu[user_choice].fnct(this, this.game.player, faction);
       return;
 
     });
@@ -474,12 +481,12 @@ return;
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
+    let cancel_func = null;
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Town from Which to Move Units:",
 
-      // TODO - select only cities where I can move units
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && faction === z) {
@@ -499,7 +506,14 @@ return;
             "Select Destination for these Units",
 
       	    function(space) {
-	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	      if (space.neighbours.includes(spacekey)) {
+	        if (!space.pass) { 
+		  return 1; 
+		} else {
+ 		  if (!space.pass.includes(spacekey)) {
+		    return 1;
+		  }
+		}
 	  	return 1;
               }
 	      return 0;
@@ -513,11 +527,13 @@ return;
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
 	      }
-	      this.endTurn();
+	      his_self.endTurn();
 
 	    },
 
 	    cancel_func,
+
+	    true 
 
 	  );
 	}
@@ -543,7 +559,7 @@ return;
             let id = $(this).attr("id");
 
 	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
+	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
 
@@ -564,6 +580,8 @@ return;
       },
 
       cancel_func,
+
+      true,
 
     );
 

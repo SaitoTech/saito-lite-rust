@@ -695,6 +695,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     let obj = document.getElementById(key);
     let space = this.spaces[key];
     let tile = this.returnSpaceTile(space);
+
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
@@ -721,6 +722,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
+
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;

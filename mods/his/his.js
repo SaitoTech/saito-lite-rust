@@ -561,7 +561,7 @@ console.log("adding stuff!");
 	
 	// INDEPENDENT
         this.addRegular("independent", "rhodes", 1);
-        this.addNavalSquadron("independent", "metz", 1);
+        this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
       }
@@ -3656,14 +3656,17 @@ console.log("MOVE: " + mv[0]);
 
         if (mv[0] === "move") {
 
-	  let player = mv[1];
-	  let movetype = mv[1];
-	  let source = mv[1];
-	  let destination = mv[1];
-	  let unitidx = mv[1];
+	  let faction = mv[1];
+	  let movetype = mv[2];
+	  let source = mv[3];
+	  let destination = mv[4];
+	  let unitidx = mv[5];
 
-          this.spaces[destination].units[player-1].push(this.spaces[source].units[player-1][unitidx].splice(unitidx, 1));
-	  this.updateLog("Player "+player+" moves unit from " + source + " to " + destination);
+console.log("dest: " + destination);
+console.log("fact: " + faction);
+
+          this.game.spaces[destination].units[faction].push(this.game.spaces[source].units[faction].splice(unitidx, 1));
+	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -3794,7 +3797,7 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 	  let player_turn = -1;
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    if (this.game.players_info.factions.includes(faction)) {
+	    if (this.game.players_info[i].factions.includes(faction)) {
 	      player_turn = i+1;
 	    }
 	  }
@@ -3911,11 +3914,11 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // neighbours
 	  //
-	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_neighbours++;
 	    }
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
 	    }  
 	  }
@@ -3923,7 +3926,7 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // language zone
 	  //
-	  if (this.spaces[space].language !== "german") {
+	  if (this.game.spaces[space].language !== "german") {
 	    ties_resolve = "catholic";
  	  }
 
@@ -4331,7 +4334,7 @@ console.log("x is: " + x);
 
 
 
-  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
 
@@ -4341,6 +4344,13 @@ console.log("x is: " + x);
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    alert("CLICKED: " + key);
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
       }
     }
     if (cancel_func != null) {
@@ -4433,7 +4443,7 @@ console.log(menu[i].name);
     html    += `<li class="card" id="end_turn">end turn</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
     this.attachCardboxEvents(async (user_choice) => {      
 
       if (user_choice === "end_turn") {
@@ -4451,7 +4461,7 @@ console.log(menu[i].name);
       if (ops > 0) {
 	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
       }
-      menu[user_choice].fnct(this, this.game.player);
+      menu[user_choice].fnct(this, this.game.player, faction);
       return;
 
     });
@@ -4485,12 +4495,12 @@ return;
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
+    let cancel_func = null;
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Town from Which to Move Units:",
 
-      // TODO - select only cities where I can move units
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && faction === z) {
@@ -4510,7 +4520,14 @@ return;
             "Select Destination for these Units",
 
       	    function(space) {
-	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	      if (space.neighbours.includes(spacekey)) {
+	        if (!space.pass) { 
+		  return 1; 
+		} else {
+ 		  if (!space.pass.includes(spacekey)) {
+		    return 1;
+		  }
+		}
 	  	return 1;
               }
 	      return 0;
@@ -4524,11 +4541,13 @@ return;
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
 	      }
-	      this.endTurn();
+	      his_self.endTurn();
 
 	    },
 
 	    cancel_func,
+
+	    true 
 
 	  );
 	}
@@ -4554,7 +4573,7 @@ return;
             let id = $(this).attr("id");
 
 	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
+	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
 
@@ -4575,6 +4594,8 @@ return;
       },
 
       cancel_func,
+
+      true,
 
     );
 
@@ -5699,6 +5720,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     let obj = document.getElementById(key);
     let space = this.spaces[key];
     let tile = this.returnSpaceTile(space);
+
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
@@ -5725,6 +5747,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
+
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
