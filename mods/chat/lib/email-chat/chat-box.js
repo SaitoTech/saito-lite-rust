@@ -129,7 +129,7 @@ module.exports = ChatBox = {
       //
       // submit on enter
       //
-      msg_input.addEventListener("keypress", (e) => {
+      msg_input.addEventListener("keydown", (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
           if (msg_input.value == "") {
@@ -147,6 +147,21 @@ module.exports = ChatBox = {
           //chat_self.addMessage(app, mod, newtx);
           msg_input.value = "";
         }
+        try{
+        let inputBox = document.getElementById(`chat-box-new-message-input-${group_id}`); 
+
+         if (msg_input.value.length < 40 && !msg_input.value.includes("\n")){
+            document.getElementById(`chat-box-new-message-input-${group_id}`).style.margin = ""; 
+         }else{
+            document.getElementById(`chat-box-new-message-input-${group_id}`).style.margin = "2.5px 8px"; 
+         }
+
+        let numLines = Math.floor((inputBox.scrollHeight)/15);
+        //console.log("num chars: "+inputBox.value.length+", scrollHeight: "+inputBox.scrollHeight+", numLines: "+numLines);
+        document.getElementById(`chat-box-${group_id}`).style.gridTemplateRows = `3.2em auto ${15*Math.min(8,Math.max(2,numLines))+6}px`;    
+
+      }catch(err){}
+        
       });
     });
 
