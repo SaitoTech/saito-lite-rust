@@ -473,7 +473,7 @@ class Post extends ModTemplate {
           };
           await this.app.storage.executeDatabase(sql, params, "post");
           //Also update first_posts
-         
+          
           /*
           //Read the number of posts (stored in a second table)
           let sql2 = `SELECT * FROM first_posts WHERE id = $pid;`;
@@ -740,6 +740,7 @@ class Post extends ModTemplate {
       idea: send to admin email instead of flagging database
   */
   async receiveReportTransaction(tx) {
+    console.log("########Report POST########");
     let txmsg = tx.returnMessage();
     let sql = `UPDATE posts SET flagged = 1 WHERE id = $pid`;
     let params = {
@@ -780,9 +781,10 @@ class Post extends ModTemplate {
   }
 
   async receiveDeleteTransaction(tx) {
+    console.log("########Delete POST########");
     if (this.app.crypto.verifyHash(this.app.crypto.hash(tx.returnSignatureSource(this.app)), tx.transaction.sig,  tx.transaction.from[0].add)) {
       let txmsg = tx.returnMessage();
-      //console.log(txmsg);
+      console.log(txmsg);
       let sql = `UPDATE posts SET deleted = 1 WHERE id = $post_id`;
       let params = { $post_id: txmsg.post_id };
       await this.app.storage.executeDatabase(sql, params, "post");
