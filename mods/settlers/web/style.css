@@ -50,6 +50,7 @@ body {
   background-position: center;*/
   position: unset; /* fixed from game.css does weird stuff*/
   z-index: 0;
+  font-size: 16px;
 }
 
 #game-hexgrid-container{
@@ -73,6 +74,7 @@ body {
   background-color: #444D;
   z-index: 3;
   border: 4px solid;
+  max-width: 25vw;
 }
 
 
@@ -93,7 +95,7 @@ body {
 /* Dice */
 .diceroll{
   display: none;
-  width: 10vw;
+  width: min(12vw,120px);
   margin: 0 auto;
  /* position: absolute;
   top: 0px;
@@ -102,7 +104,7 @@ body {
   border: 2px solid black;
   border-radius: 1vw;
   background-color: #222B;
-  padding: 0.5vw;
+  padding: min(0.5vw,5px);
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -110,7 +112,7 @@ body {
 }
 
 .die{
-  width: 3vw;
+  width: min(4vw,40px);
 }
 .hud-body {
   overflow: unset;
@@ -165,40 +167,6 @@ body {
   position: absolute;
 }
 
-.bighand>.card:nth-child(5n+1) {
-  transform: rotate(-20deg);
-  left: 0px;
-}
-
-.bighand>.card:nth-child(5n+2) {
-  transform: rotate(-10deg);
-  left: 2vh;
-}
-
-.bighand>.card:nth-child(5n+3) {
-  transform: rotate(0deg);
-  left: 4vh;
-}
-
-.bighand>.card:nth-child(5n+4) {
-  transform: rotate(10deg);
-  left: 6vh;
-}
-
-.bighand>.card:nth-child(5n+5) {
-  transform: rotate(20deg);
-  left: 8vh;
-}
-
-.bighand>.card:nth-child(n+6) {
-  top: 3vh;
-}
-.bighand>.card:nth-child(n+11) {
-  top: 6vh;
-}
-.bighand>.card:nth-child(n+16) {
-  top: 9vh;
-}
 
 .card .cardtitle{
   position: absolute;
@@ -232,8 +200,8 @@ body {
 }
 
 .chover:hover, .producer.chover polygon:hover {
-  fill: yellow;
-  stroke: yellow;
+  fill: whitesmoke;
+  stroke: whitesmoke;
   cursor: crosshair;
 }
 
@@ -586,17 +554,20 @@ body {
   /*z-index: -1;*/
 }
 
+/*Sit graphic on top of playerbox*/
 .me > .player-box-graphic{
   position: absolute;
   /*left: calc(150px + 8vw);*/
-  top: -5vw;
+  bottom: calc(100% + 5px);
   left: 50%;
   transform: translateX(-50%);
 }
 
 .notme > .player-box-graphic{
   position: absolute;
-  left: -10.5vw;
+  top: 50%;
+  right: calc(100% + 5px);
+  transform: translateY(-50%);
   /*position: relative;
   z-index: -1;
   top: 5vh;
@@ -709,89 +680,69 @@ body {
 .player-notice{
   margin-bottom: 0.5em;
   line-height: 1.25em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  /*justify-content: space-between;*/
+
 }
+
+
 .player-box .player-notice .icon{
-  height: 1.25em;
-  width: 1.25em;
+  height: 25px;
+  width: 25px;
+  margin: 0 4px;
   border-radius: 5px;
 }
 
-.opponents{
+.player-box.notme, .opponents{
   position: absolute;
+  height: fit-content;
+  top: 50px;
+  right: 40px;
 }
 
+
 .opponents > .player-box{
-  position: unset;
+  position: relative;
+  right: unset;
+  top: unset;
 }
 
 .player-box.me{
   max-height: unset;
+  /*max-width: 25vw;*/
   left: 1px;
+  top: unset;
   bottom: 1px;
 }
 
-.player-box.notme, .opponents{
-  height: fit-content;
-}
-/*
-    Copied from WuziQi
-*/
 
-@media (orientation: landscape) {
-    .player-box, .opponents{
-        top: 40vh;  /*Center in screen:  50vh - 1/2 height */
-        margin: auto auto;
-        max-width: 20vw;
-    }
-
-    /*.player-box.me{
-        left: max(5px, calc(12vw - 7em));
-        /*top:  80vh;
-    }*/
-
-    .player-box.notme, .opponents{
-        right: max(5px, calc(12vw - 7em));
-        top:  10vh;
-    }
-}
-
-@media (orientation: portrait) {
-    .player-box, .opponents{
-        top: calc(65vw + 26vh);
-        max-width: 35vw;
-    }
-
-    /*.player-box.me{
-        left: calc(30vw - 6em);
-    }*/
-
-    .player-box.notme, .opponents{
-        right: calc(30vw - 6em);
-    }
-}
 
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
-@media (max-aspect-ratio:  8/7) and (min-aspect-ratio: 7/8) {
-    .player-box, .opponents{
-        top: unset;
-        bottom: 0px;
-        max-width: 40vw;
-    }
-    /*.player-box.me{
-        left: calc(30vw - 5.5em);
-    }*/
+@media (max-aspect-ratio:  8/7) {
 
-    .player-box.notme, .opponents{
-        right: calc(30vw - 5.5em);
-    }
+  .opponents{
+    width: 75vw;
+    top: unset;
+    right: 1rem;
+    bottom: 1px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+ 
+  .notme > .player-box-graphic{
+    top: unset;
+    right: unset;
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+}   
 }
 
-@media (max-width: 500px) and (orientation: portrait) and (max-aspect-ratio: 7/8){
-    .player-box, .opponents{
-        top: calc(95vw + 15vh);
-        max-width: 38vw;
-    }
-}
-
+/*Still need better layout for small screens*/

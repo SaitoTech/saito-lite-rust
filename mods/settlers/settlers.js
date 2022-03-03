@@ -1283,13 +1283,13 @@ class Settlers extends GameTemplate {
         }
  
         if (this.game.player === thief){
-          this.updateStatus(`<div class="persistent">You stole a: <img class="icon" src="${this.skin.resourceIcon(loot)}"></div>`);
+          this.updateStatus(`<div class="persistent">You stole: <img class="icon" src="${this.skin.resourceIcon(loot)}"></div>`);
         }
         if (this.game.player === victim){
-          this.updateStatus(`<div class="persistent">Player ${thief} stole a <img class="icon" src="${this.skin.resourceIcon(loot)}"> from you</div>`);
+          this.updateStatus(`<div class="persistent">Player ${thief} stole <img class="icon" src="${this.skin.resourceIcon(loot)}"> from you</div>`);
         }
         
-        let victim_name = (victim>0)? `Player ${victim}` ： "nobody";
+        let victim_name = (victim>0)? `Player ${victim}` : "nobody";
         this.updateLog(`Player ${thief} stole ${loot} from ${victim_name}`);
         return 1;
       }
@@ -1385,7 +1385,7 @@ class Settlers extends GameTemplate {
     }
     if (notice) {
       this.updateStatus(
-        `<div class="persistent">You acquired: ${notice}</div>`
+        `<div class="persistent alignme"><span>You acquired: </span>${notice}</div>`
       );
     }
   }
