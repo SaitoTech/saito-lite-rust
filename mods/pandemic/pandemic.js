@@ -557,34 +557,43 @@ class Pandemic extends GameTemplate {
     });
   }
 
-//TODO: Add Researcher -- much more complicated !!!!
-  shareKnowledge() {
-    let pandemic_self = this;
-    let city = this.game.players_info[this.game.player-1].city; //Where am I 
-
-    //Assume I have the card
-    let cardOwner = this.game.player;
-
+  findCardOwner(city){
     //Who has the card matching the city
     for (let i = 0; i < this.game.players_info.length; i++){
       let player = this.game.players_info[i];
       for (let j = 0; j < player.cards.length; j++){
         if (player.cards[j] === city){
-          cardOwner = i+1; //Player Number of actual owner
+          return i+1; //Player Number of actual owner
         }
       }
+    }
+    return 0;
+  }
+
+//TODO: Add Researcher -- much more complicated !!!!
+  shareKnowledge() {
+    let pandemic_self = this;
+    let player = this.game.players_info[this.game.player-1];
+    let city = player.city; //Where am I 
+
+    //Assume I have the card
+    let cardOwner = this.findCardOwner(city);
+    if (cardOwner == 0){
+      console.error("No one has the card!");
+      return;
     }
 
     //Give Me the Card
     if (cardOwner != this.game.player) {
       //CardOwner needs to approve this...!!!!
-      this.addMove(`takecard\t${cardOwner}\t${this.game.player}\t${city}`); //Remove from their hand
-      this.game.players_info[this.game.player - 1].cards.push(city); //Add to my hand (so I can play immediately)
+      this.addMove(`takecard\t${this.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
+      
+      player.cards.push(city); //Add to my hand (so I can play immediately)
       pandemic_self.active_moves--;
       pandemic_self.playerMakeMove();
       
     }else { //I give the card
-      //Pick who to offer the card to
+      //Pick who to offer the card to, even if only one person
 
       let html = "<ul>";
       for (let i = 0; i < this.game.players_info.length; i++) {
@@ -599,55 +608,47 @@ class Pandemic extends GameTemplate {
       $(".nocard").off();
       $(".nocard").on("click", function () {
         let id = $(this).attr("id");
-
-        let player_to_receive = parseInt(id) - 1;
-        pandemic_self.addMove(`takecard\t${pandemic_self.game.player}\t${player_to_receive}\t${city}`);
-        pandemic_self.removeCardFromHand(pandemic_self.game.player,city); //Immediately remove card from my hand
+        pandemic_self.addMove(`givecard\t${pandemic_self.game.player}\t${id}\t${city}`);
+       
+        for (let i = 0; i < player.cards.length; i++) {
+          if (player.cards[i] == city) {
+            player.cards.splice(i, 1);
+          }
+        }
+        //pandemic_self.removeCardFromHand(pandemic_self.game.player,city); //Immediately remove card from my hand
         pandemic_self.active_moves--;
         pandemic_self.playerMakeMove();
-        
       });
     }
 
     return;
   }
 
+  /*
+  Two players must be in the same city and one of them has to have the card
+  */
   canPlayerShareKnowledge() {
     let player = this.game.players_info[this.game.player - 1];
     let city = player.city;
+    let has_city_card = false;
 
-    //
-    // does anyone have this card?
-    //
-    let has_city_card = 0;
-
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let k = 0; k < this.game.players_info[i].cards.length; k++) {
-        if (this.game.players_info[i].cards[k] == city) {
-          has_city_card = 1;
-        }
-      }
-    }
-
-    if (has_city_card == 0) {
-      return 0;
-    }
-
-    //
-    // are two people in the same city?
-    //
     players_in_city = 0;
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].city == city) {
+        for (let k = 0; k < this.game.players_info[i].cards.length; k++) {
+          if (this.game.players_info[i].cards[k] == city) {
+             has_city_card = true;
+          }
+        }  
         players_in_city++;
       }
     }
 
-    if (players_in_city >= 2) {
-      return 1;
+    if (players_in_city >= 2 && has_city_card){
+      return true;
     }
-
-    return 0;
+   
+    return false;
   }
 
 
@@ -1156,13 +1157,16 @@ class Pandemic extends GameTemplate {
     //
     // if there is just one type, cure it
     if (number_of_diseases === 1) {
+      
+      //Medics can clear it all in one move or if we have the cure
       if (this.game.players_info[this.game.player - 1].type == 3 || this.game.state.cures[disease]) {
         cubes_to_cure = Math.min(3,this.game.cities[city].virus[disease]);
-      } //Medics can clear it all in one move or if we have the cure
+      } 
 
-      if (this.game.cities[city].virus[disease] > cubes_to_cure){
+      let cure_capacity = Math.min(this.active_moves,this.game.cities[city].virus[disease]);
+      if (cure_capacity > cubes_to_cure){
         html = `<ul>`;
-        for (let j = 1; j <= Math.min(this.active_moves,this.game.cities[city].virus[disease]); j++){
+        for (let j = 1; j <= cure_capacity; j++){
           html += `<li class="nocard" id="${j}">${j} cube${(j>1?"s":"")}</li>`;
         }
         html +="</ul>";
@@ -1559,23 +1563,48 @@ class Pandemic extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) built a research station in ${this.game.cities[city].name}.`);
       }
-      if (mv[0] === "notify") {
-        this.updateLog(mv[1]);
-        this.game.queue.splice(qe, 1);
-      }
-      if (mv[0] === "takecard") {
-        let sender = parseInt(mv[1]); // player who already executed adding / removing
+      
+      if (mv[0] === "givecard") {
+        let player = parseInt(mv[1])  
         let recipient = parseInt(mv[2]);
         let card = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (this.game.player !==recipient) {
-          this.game.players_info[recipient-1].cards.push(card);
+        this.game.players_info[recipient-1].cards.push(card);
+        console.log(`Player ${recipient} gains a card`);
+        
+        if (this.game.player !== player) {
+          console.log(`Player ${player} loses a card`);
+          let cards = this.game.players_info[player-1].cards;
+          for (let i = 0; i < cards.length; i++) {
+          if (cards[i] == card) {
+            cards.splice(i, 1);
+          }  
         }
-        if (this.game.player !== sender) {
-         this.removeCardFromHand(sender, card);
         }
-        this.updateLog(`Player ${sender} (${this.game.players_info[sender - 1].role}) shared the ${city} card with Player ${recipient} (${this.game.players_info[recipient - 1].role})`);
+        this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) shared the ${this.game.cities[card].name} card with Player ${recipient} (${this.game.players_info[recipient - 1].role})`);
+      }
+  
+      if (mv[0] === "takecard") {
+        let player = parseInt(mv[1])
+        let sender = parseInt(mv[2]); 
+        let card = mv[3];
+        this.game.queue.splice(qe, 1);
+
+        if (this.game.player !== player) {
+          this.game.players_info[player-1].cards.push(card);
+          console.log(`Player ${player} gains a card`);
+        }
+        
+        console.log(`Player ${sender} loses a card`);
+         let cards = this.game.players_info[sender-1].cards;
+         for (let i = 0; i < cards.length; i++) {
+          if (cards[i] == card) {
+            cards.splice(i, 1);
+          }
+        
+        }
+        this.updateLog(`Player ${sender} (${this.game.players_info[sender - 1].role}) shared the ${this.game.cities[card].name} card with Player ${player} (${this.game.players_info[player - 1].role})`);
       }
       if (mv[0] === "move") {
         let player = parseInt(mv[1]);
