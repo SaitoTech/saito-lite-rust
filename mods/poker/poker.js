@@ -370,10 +370,11 @@ class Poker extends GameTemplate {
       }
 
       if (mv[0] === "winner") {
-        this.updateStatus("Game Over: " + this.game.state.player_names[mv[1] - 1] + " wins!");
-        this.updateLog("Game Over: " + this.game.state.player_names[mv[1] - 1] + " wins!");
-        this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[mv[1] - 1]} wins!</h1>${this.updateHTML}</div>`);
-        this.game.winner = this.game.players[mv[1] - 1];
+        let winner = parseInt(mv[1]) - 1;
+        this.updateStatus("Game Over: " + this.game.state.player_names[winner] + " wins!");
+        this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
+        this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
+        this.game.winner = this.game.players[winner];
         this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
         return 0;
       }

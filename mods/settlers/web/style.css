@@ -20,6 +20,18 @@
   --p4-color: orange;
 }
 
+.tip{
+  width: unset;
+}
+
+.tiptext{
+  min-width: 100px;
+  width: fit-content;
+  padding: 0.5em 1em;
+  box-sizing: content-box;
+  white-space: nowrap;
+}
+
 .hexIn{
   overflow: unset;
   padding-bottom: 113%;
@@ -450,9 +462,11 @@ body {
   background-color: whitesmoke;
   padding: 25px;
   font-size: 1.25em;
-  width: 50vw;
+  min-width: 50vw;
+  /*width: 500px;*/
+  max-width: 80vw;
   max-height: 70vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 
 .trade_overlay_title{
@@ -466,22 +480,30 @@ body {
   justify-content: space-evenly;
   margin: 1em 0px;
 }
+.trade_overlay_buttons{
+  align-items: center;
+}
+
+.trade_overlay_buttons .notice{
+  font-style: italic;
+}
 
 .trade_overlay .icon{
   width: 2em;
 }
 
-.trade_overlay .select{
+/*.trade_overlay .select{
   padding: 0.5em;
-}
+  width: 120px;
+}*/
 
 .trade_overlay .selected{
   padding: 0em;
 }
 
 .trade_overlay .noselect{
-  color: grey;
-  font-style: italic;
+  color: lightgrey;
+  /*font-style: italic;*/
 }
 
 .trade_overlay .selected{
@@ -507,7 +529,8 @@ body {
 }
 
 .trade_button {
-  width: fit-content;
+  width: 120px;
+  padding: 0.5em;
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -525,8 +548,31 @@ body {
   font-weight: bold;
 }
 
-.tbd .icon{
+/*.tbd .icon{
   height: 1.25em;
+}*/
+
+.wishlist .icon{
+  display: inline-block;
+}
+
+.horizontal_list{
+  display: flex;
+  flex-wrap: wrap;
+  border-top:  1px solid var(--saito-skyline-grey);
+}
+
+.horizontal_list .option .icon, .bank .option .icon{
+  margin: 0 0.25em;
+  width: 2em;
+  vertical-align: middle;
+}
+
+ul.horizontal_list li.iconoption{
+  margin: 0;
+  width: 20%;
+  height: 3em;
+  border-top: unset;
 }
 
 .status .disabled:hover{
@@ -712,12 +758,42 @@ body {
 
 .player-box.me{
   max-height: unset;
-  /*max-width: 25vw;*/
+  max-width: 300px;
+  min-width: 250px;
   left: 1px;
   top: unset;
   bottom: 1px;
 }
 
+/*Stats overlay table*/
+.rules-overlay{
+  overflow-x: hidden;
+}
+
+.stats-table{
+  font-size: 1.25em;
+  width: 100%;
+  text-align: center;
+  margin: 2em 0;
+}
+
+.stats-table caption{
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.stats-table td, .stats-table th{
+  width: 2em;
+}
+
+.stats-table th:first-child{
+  width: 3em;
+  text-align: left;
+}
+
+.stats-table .icon{
+  width: 50px;
+}
 
 
 /*
