@@ -14,10 +14,10 @@
 */
 
 :root{
-  --p1-color: red;
-  --p2-color: blue;
-  --p3-color: rgb(0,140,0);
-  --p4-color: orange;
+  --p1-color: #e44;
+  --p2-color: #049;
+  --p3-color: #094;
+  --p4-color: #D63;
 }
 
 .tip{
@@ -53,6 +53,7 @@
 }
 
 body {
+	/*
   background-color: lightseagreen !important;
   background: radial-gradient(circle farthest-corner at 50% 0%, lightseagreen 40%, blue 45%, lightseagreen 50%);
   background-size: 25px 25px;
@@ -64,6 +65,26 @@ body {
   z-index: 0;
   font-size: 16px;
 }
+
+body {
+  background: linear-gradient(-75deg, #369, #58b, #58b, #369);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 
 #game-hexgrid-container{
   z-index: 2;
@@ -77,9 +98,7 @@ body {
   padding: 10% 5% 15%; /*Creates space for board overflow*/
   padding:  100px 35px 150px;
   box-sizing: content-box;
-  border-radius: 400px;
   cursor: grab;
-  background-color: rgba(0,0,240,0.09);
 }
 
 .player-box{
@@ -89,6 +108,9 @@ body {
   max-width: 25vw;
 }
 
+.player-info-name {
+  font-weight: lighter;
+}
 
 .game_board_sizer{
   z-index: 1000;
@@ -114,7 +136,7 @@ body {
   left: 50%;
   transform: translateX(-5vw);*/
   border: 2px solid black;
-  border-radius: 1vw;
+  border-radius: 5px;
   background-color: #222B;
   padding: min(0.5vw,5px);
   display: flex;
@@ -301,7 +323,7 @@ body {
   width: 65%;
   height: 10%;
   background-color: transparent;
-
+  border-radius: 10px;
   z-index: 10;
 }
 
@@ -347,6 +369,7 @@ body {
   z-index: 12;
   font-size: 2em;
   text-align: center;
+  border-radius: 10px;
 }
 
 .city > svg{
@@ -355,6 +378,7 @@ body {
   top:  0px;
   left: 0px;
 }
+
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 .p1 {
@@ -369,7 +393,7 @@ body {
 .p4 {
   background-color: var(--p4-color);
 }
-
+/*
 .player-box.c1 {
   border-color: var(--p1-color);
 }
@@ -382,7 +406,27 @@ body {
 .player-box.c4 {
   border-color: var(--p4-color);
 }
+*/
 
+.player-box.c1 {
+  border: 0px;
+  border-left: 10px solid var(--p1-color);
+}
+
+.player-box.c2 {
+  border: 0px;
+  border-left: 10px solid var(--p2-color);
+}
+
+.player-box.c3 {
+  border: 0px;
+  border-left: 10px solid var(--p3-color);
+}
+
+.player-box.c4 {
+  border: 0px;
+  border-left: 10px solid var(--p4-color);
+}
 
 .producer polygon{
   fill: white;
@@ -442,20 +486,19 @@ body {
 
 .city.p1 {
   border: 10px solid var(--p1-color);
-  color: var(--p1-color);
+  background-color: var(--p1-color);
 }
 .city.p2 {
   border: 10px solid var(--p2-color);
-  color: var(--p2-color);
+  background-color: var(--p2-color);
 }
 .city.p3 {
   border: 10px solid var(--p3-color);
-  color: var(--p3-color);
- 
+  background-color: var(--p3-color);
 }
 .city.p4 {
   border: 10px solid var(--p4-color);
-  color: var(--p4-color);
+  background-color: var(--p4-color);
 }
 
 .trade_overlay {
