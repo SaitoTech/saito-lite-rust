@@ -32,6 +32,11 @@
   white-space: nowrap;
 }
 
+.cardfan{
+  top: 45vh;
+  left: 5vw;
+}
+
 .hexIn{
   overflow: unset;
   padding-bottom: 113%;
@@ -50,6 +55,11 @@
 .hex_bg img{
   left: -12.5%;
   right: -12.5%;
+}
+
+dt{
+  margin-top: 0.8em;
+  margin-bottom: 0.5em;
 }
 
 body {
@@ -304,6 +314,7 @@ body {
 
   z-index: 10;
 }
+
 
 .road5{
     transform: rotate(90deg);
@@ -581,6 +592,7 @@ ul.horizontal_list li.iconoption{
 }
 .disabled .icon, .player-box .icon{
   width: 1.5em;
+  vertical-align: middle;
 }
 
 .status-message{

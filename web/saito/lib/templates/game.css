@@ -1224,37 +1224,37 @@ i.menu_icon_icon{
 }
 
 /*Big hand fits seven cards in a row -- useful for games where you have to discard above seven*/
-.bighand>.card:nth-child(5n+1) {
+.bighand>.card:nth-child(7n+1) {
   transform: rotate(-30deg);
   left: 0px;
 }
 
-.bighand>.card:nth-child(5n+2) {
+.bighand>.card:nth-child(7n+2) {
   transform: rotate(-20deg);
   left: 2vh;
 }
 
-.bighand>.card:nth-child(5n+3) {
+.bighand>.card:nth-child(7n+3) {
   transform: rotate(-10deg);
   left: 4vh;
 }
 
-.bighand>.card:nth-child(5n+4) {
+.bighand>.card:nth-child(7n+4) {
   transform: rotate(0deg);
   left: 6vh;
 }
 
-.bighand>.card:nth-child(5n+5) {
+.bighand>.card:nth-child(7n+5) {
   transform: rotate(10deg);
   left: 8vh;
 }
 
-.bighand>.card:nth-child(5n+6) {
+.bighand>.card:nth-child(7n+6) {
   transform: rotate(20deg);
   left: 10vh;
 }
 
-.bighand>.card:nth-child(5n+7) {
+.bighand>.card:nth-child(7n+7) {
   transform: rotate(30deg);
   left: 12vh;
 }

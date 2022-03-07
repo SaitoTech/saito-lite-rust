@@ -489,11 +489,13 @@ class Settlers extends GameTemplate {
         //console.log("Attempting to access DOM elements which haven't been created yet");
         //console.log(e);
       }
+      
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
       //console.log("QUEUE: " + this.game.queue);
-
+      //console.log(JSON.parse(JSON.stringify(this.game.state)));
+      
       /* Game Setup */
 
       if (mv[0] == "init") {
@@ -540,13 +542,15 @@ class Settlers extends GameTemplate {
       if (mv[0] == "buy_card") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        this.boughtCard = true; //So we display dev cards on next refresh
+        
         this.updateLog(`Player ${player} bought a ${this.skin.card.name} card`);
         this.stopTrading();
 
         //this player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
+        }else{
+          this.boughtCard = true; //So we display dev cards on next refresh
         }
         return 1;
       }
@@ -694,9 +698,7 @@ class Settlers extends GameTemplate {
         let slot = mv[2];
         this.game.queue.splice(qe, 1);
 
-        if (this.game.player != player) {
-          this.buildRoad(player, slot);
-        }
+        this.buildRoad(player, slot);
         this.updateLog(`Player ${player} built a ${this.skin.r.name}`);
         this.checkLongestRoad(player); //Everyone checks
         return 1;
@@ -730,6 +732,7 @@ class Settlers extends GameTemplate {
           let bounty = this.game.state.hexes[hextile].resource;
           logMsg += bounty + ", ";
           this.game.state.players[player - 1].resources.push(bounty);
+          this.game.stats.production[bounty][player-1]++; //Initial starting stats
         }
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
@@ -825,21 +828,13 @@ class Settlers extends GameTemplate {
           $(id).on("click", function () {
             // >>>> Launch overlay window for private trade
             if (settlers_self.game.state.canTrade) {
-              if (
-                settlers_self.game.player ===
-                settlers_self.game.state.playerTurn
-              ) {
-                //It's my turn
+              //It's my turn or their turn
+              if (settlers_self.game.player === settlers_self.game.state.playerTurn) {
                 settlers_self.showTradeOverlay(offering_player);
-              } else if (
-                offering_player === settlers_self.game.state.playerTurn
-              ) {
-                //It's their turn
+              } else if (offering_player === settlers_self.game.state.playerTurn) {
                 settlers_self.showTradeOverlay(offering_player);
               } else {
-                salert(
-                  `You can only trade on your turn or during Player ${offering_player}'s turn.`
-                );
+                salert(`You can only trade on your turn or during Player ${offering_player}'s turn.`);
               }
             } else {
               salert(`You cannot trade now.`);
@@ -938,7 +933,7 @@ class Settlers extends GameTemplate {
         return 0;
       }
 
-      /* $$$$$$$$$$$$$$
+      /*
       Set up queue for open trade offer
       */
       if (mv[0] === "multioffer") {
@@ -1254,10 +1249,9 @@ class Settlers extends GameTemplate {
         this.displayDice();
         this.animateDiceRoll(roll);
 
-        //Enable trading
-        this.game.state.canTrade = true; //Toggles false when the player builds or buys
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
+        this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
@@ -1283,6 +1277,12 @@ class Settlers extends GameTemplate {
         } else {
           this.game.queue.push(`collect_harvest\t${roll}`);
         }
+        return 1;
+      }
+
+      if (mv[0] == "enable_trading"){
+        this.game.queue.splice(qe, 1);
+        this.game.state.canTrade = true; //Toggles false when the player builds or buys
         return 1;
       }
 
@@ -1397,16 +1397,16 @@ class Settlers extends GameTemplate {
         let loot = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (victim > 0) { //victim 0 means nobody
+        if (victim > 0 && loot != "nothing") { //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
         }
  
         if (this.game.player === thief){
-          this.updateStatus(`<div class="persistent">You stole: ${this.returnResourceHTML(loot)}</div>`);
+          this.updateStatus(`<div class="persistent">You stole: ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)}</div>`);
         }
         if (this.game.player === victim){
-          this.updateStatus(`<div class="persistent">Player ${thief} stole ${this.returnResourceHTML(loot)} from you</div>`);
+          this.updateStatus(`<div class="persistent">Player ${thief} stole ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)} from you</div>`);
         }
         
         let victim_name = (victim>0)? `Player ${victim}` : "nobody";
@@ -1648,7 +1648,11 @@ class Settlers extends GameTemplate {
       }): <ul>`;
       for (let i in my_resources) {
         if (my_resources[i] > 0)
-          html += `<li id="${i}" class="option">${i} (${my_resources[i]})</li>`;
+          html += `<li id="${i}" class="option">${i}:`;
+          for (let j = 0; j < my_resources[i]; j++){
+            html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}">`;
+          }
+          html += `</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -1796,39 +1800,7 @@ class Settlers extends GameTemplate {
     }
   }
 
-  /*
-  Create DOM structures to hold roads positioned on the edges of the hexagons
-  1 connects city1 to city2 (upper-right edge), 2 is vertical right edge, ...
-  */
-  addRoadsToGameboard() {
-    /*Tops */
-
-    for (const i of this.hexgrid.hexes) {
-      this.addRoadToGameboard(i, 5);
-      this.addRoadToGameboard(i, 6);
-      this.addRoadToGameboard(i, 1);
-    }
-
-    /*Sides */
-    this.addRoadToGameboard("2_4", 2);
-
-    this.addRoadToGameboard("3_1", 4);
-    this.addRoadToGameboard("3_5", 2);
-    this.addRoadToGameboard("3_5", 3);
-
-    this.addRoadToGameboard("4_2", 4);
-    this.addRoadToGameboard("4_5", 2);
-    this.addRoadToGameboard("5_5", 2);
-
-    /*Bottom*/
-    this.addRoadToGameboard("5_3", 4);
-    this.addRoadToGameboard("5_3", 3);
-    this.addRoadToGameboard("5_4", 4);
-    this.addRoadToGameboard("5_4", 3);
-    this.addRoadToGameboard("5_5", 4);
-    this.addRoadToGameboard("5_5", 3);
-  }
-
+ 
   addRoadToGameboard(hex, road_component) {
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
@@ -1938,10 +1910,7 @@ class Settlers extends GameTemplate {
     */
     for (let i in this.game.state.roads) {
       //Not the most efficient, but should work
-      this.buildRoad(
-        this.game.state.roads[i].player,
-        this.game.state.roads[i].slot
-      );
+      this.buildRoad(this.game.state.roads[i].player, this.game.state.roads[i].slot);
     }
 
     this.displayPlayers();
@@ -2191,9 +2160,7 @@ class Settlers extends GameTemplate {
     } else {
       /* During game, must build roads to open up board for new settlements*/
 
-      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(
-        this.game.player
-      );
+      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
       for (let i = 0; i < building_options.length; i++) {
         /*
           Highlight connected areas available to build a new settlement
@@ -2244,6 +2211,7 @@ class Settlers extends GameTemplate {
     if (this.game.player == player) {
       let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
       for (let road of newRoads) {
+        console.log("road: ",road);
         this.addRoadToGameboard(road.substring(2), road[0]);
       }
     }
@@ -2352,10 +2320,8 @@ class Settlers extends GameTemplate {
         $(".road.new").removeClass("new");
 
         let slot = $(this).attr("id");
-        settlers_self.buildRoad(settlers_self.game.player, slot);
-        settlers_self.addMove(
-          `build_road\t${settlers_self.game.player}\t${slot}`
-        );
+        //settlers_self.buildRoad(settlers_self.game.player, slot);
+        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
         settlers_self.endTurn();
       });
     } else {
@@ -2368,10 +2334,8 @@ class Settlers extends GameTemplate {
         $(".road.empty").removeClass("rhover");
         $(".road.empty").removeAttr("style");
         let slot = $(this).attr("id");
-        settlers_self.buildRoad(settlers_self.game.player, slot);
-        settlers_self.addMove(
-          `build_road\t${settlers_self.game.player}\t${slot}`
-        );
+        //settlers_self.buildRoad(settlers_self.game.player, slot);
+        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
         settlers_self.endTurn();
       });
     }
@@ -2416,10 +2380,7 @@ class Settlers extends GameTemplate {
     let settlers_self = this;
     let html = "";
 
-    console.log(
-      "RES: " +
-        JSON.stringify(this.game.state.players[this.game.player - 1].resources)
-    );
+    //console.log("RES: " + JSON.stringify(this.game.state.players[this.game.player - 1].resources));
 
     html += '<div class="tbd">';
     html += "<ul>";
@@ -2762,8 +2723,8 @@ class Settlers extends GameTemplate {
   Must have some resources to trade, lol...maybe?
   */
   canPlayerTrade(player) {
-    if (this.game.state.canTrade)
-      if (this.game.state.players[player - 1].resources.length > 0) return 1;
+    if (this.game.state.canTrade && this.game.state.players[player - 1].resources.length > 0) 
+      return 1;
 
     return 0;
   }
