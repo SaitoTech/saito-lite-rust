@@ -75,9 +75,35 @@ class Settlers extends GameTemplate {
                 <h1>Trading</h1>
                 <p>There are several mechanisms in the game to initiate trades, but two things should be noted. First, you are not technically allowed to initiate trades unless it is your turn, or at the very most, you may propose a trade to the player who turn it is. Secondly, double click anyone's name to open a chat window with them. This is a social game, and you can do all the wheeling and dealing you want simply by talking to the other players.</p>
                 <h2>Open Offers</h2>
-                <p>On your turn, use the </p>
+                <div>
+                  <img style="float:left; margin:1em;" src="/settlers/img/help/tradeBroadcast1.png">
+                  <p>On your turn, you can initiate a trade offer by selecting <em>Make Offer</em> from the Trade menu. This opens an interface where you can specify how many of which resources you want in exchange for what. Click the resource name to add resources to your tender and click the resource images to remove them. </p>
+                </div>
+                <img src="/settlers/img/help/tradeBroadcast2.png">
+                <div>
+                <img style="float:right; margin:1em;" src="/settlers/img/help/tradeBroadcast4.png">
+                <p>If you have more than one opponent, you must wait until either all players have rejected your offer, or one of them has accepted it. The first player to click accept will complete the trade, and any subsequent players will be excluded from the trade. If you change your mind or are tired of waiting for your opponents to decide on the trade, you may "withdraw" the offer.</p>
+                </div>
+                <h2>Incoming Offers</h2>
+                <p>In general, incoming trade offers take the following form:</p>
+                <img src="/settlers/img/help/tradeBroadcast3.png">
+                <p>Assuming you have the requested resources, you will have the choice to accept or reject the trade offer. If you don't have the enough resources, you still get to see the offer, and should close it so that the other player may continue with their turn.</p>
+                <div>
+                  <img style="float:left; margin:1em;" src="/settlers/img/help/privateTrade1.png">
+                  <p>During an opponent's turn, when trading is allowed, you can open the private trading interface to propose an offer to them. You may only make one such offer, so it is best to communicate with them first through chat.</p>
+                </div>
+                <p>On your turn, you will be notified by an alert of any incoming trade offers, and the details will be summarized in your opponents player box.</p>
+                <p>There may be multiple incoming offers to choose from. You may accept the trade as is, reject it, or completely ignore it and carry on with your turn. The offer automatically expires as soon as end the trading phase of your turn.</p>
+                <img style="width:100%" src="/settlers/img/help/tradeIncomingOffer.png">
+                <h2>Passive Offers</h2>
+                <p>It is often the case that you desperately need a particular resource, or are flush with that resource. You are open to trading, but don't have anything in particular in mind. Nevertheless, it may be helpful for your opponents to know what you have and/or want so they can make an offer to you and you don't want to have to keep asking in the chat group "Does anyone have X?". If so, you can use the <em>Advertise</em> option from the trade menu to notify the other players about the state of your hand</p>
+                <img src="/settlers/img/help/tradeAdvert2.png">
+                <p>With this interface, you don't specify exact numbers, just which resources you want or have for trading.</p>
+                <div>
+                <img style="float:right;" src="/settlers/img/help/tradeAdvert3.png">
+                <p>Your status will be reflected in your corresponding playerbox on your opponent's screen. On their turn or your turn, they may directly click your advertisement to open a "Private Trading Interface." They are under no obligation to respect your wishes and may counter your offer with any trade request. Your advertisement will persist across turns. You may select <em>Cancel</em> in the Trade menu to remove it. Note that sending a trade offer to a player on their turn will also clear your advertisment.</p>
+                </div>
                 
-
                 </div>`;
 
     return html;
@@ -489,11 +515,13 @@ class Settlers extends GameTemplate {
         //console.log("Attempting to access DOM elements which haven't been created yet");
         //console.log(e);
       }
+      
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
       //console.log("QUEUE: " + this.game.queue);
-
+      //console.log(JSON.parse(JSON.stringify(this.game.state)));
+      
       /* Game Setup */
 
       if (mv[0] == "init") {
@@ -540,13 +568,15 @@ class Settlers extends GameTemplate {
       if (mv[0] == "buy_card") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        this.boughtCard = true; //So we display dev cards on next refresh
+        
         this.updateLog(`Player ${player} bought a ${this.skin.card.name} card`);
         this.stopTrading();
 
         //this player will update their devcard count on next turn
         if (player != this.game.player) {
           this.game.state.players[player - 1].devcards++; //Add card for display
+        }else{
+          this.boughtCard = true; //So we display dev cards on next refresh
         }
         return 1;
       }
@@ -694,9 +724,7 @@ class Settlers extends GameTemplate {
         let slot = mv[2];
         this.game.queue.splice(qe, 1);
 
-        if (this.game.player != player) {
-          this.buildRoad(player, slot);
-        }
+        this.buildRoad(player, slot);
         this.updateLog(`Player ${player} built a ${this.skin.r.name}`);
         this.checkLongestRoad(player); //Everyone checks
         return 1;
@@ -730,6 +758,7 @@ class Settlers extends GameTemplate {
           let bounty = this.game.state.hexes[hextile].resource;
           logMsg += bounty + ", ";
           this.game.state.players[player - 1].resources.push(bounty);
+          this.game.stats.production[bounty][player-1]++; //Initial starting stats
         }
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
@@ -825,21 +854,13 @@ class Settlers extends GameTemplate {
           $(id).on("click", function () {
             // >>>> Launch overlay window for private trade
             if (settlers_self.game.state.canTrade) {
-              if (
-                settlers_self.game.player ===
-                settlers_self.game.state.playerTurn
-              ) {
-                //It's my turn
+              //It's my turn or their turn
+              if (settlers_self.game.player === settlers_self.game.state.playerTurn) {
                 settlers_self.showTradeOverlay(offering_player);
-              } else if (
-                offering_player === settlers_self.game.state.playerTurn
-              ) {
-                //It's their turn
+              } else if (offering_player === settlers_self.game.state.playerTurn) {
                 settlers_self.showTradeOverlay(offering_player);
               } else {
-                salert(
-                  `You can only trade on your turn or during Player ${offering_player}'s turn.`
-                );
+                salert(`You can only trade on your turn or during Player ${offering_player}'s turn.`);
               }
             } else {
               salert(`You cannot trade now.`);
@@ -938,7 +959,7 @@ class Settlers extends GameTemplate {
         return 0;
       }
 
-      /* $$$$$$$$$$$$$$
+      /*
       Set up queue for open trade offer
       */
       if (mv[0] === "multioffer") {
@@ -1237,11 +1258,7 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe - 1, 2);
 
-        // remove city highlighting from last roll
-        for (let city of this.game.state.cities) {
-          document.querySelector(`#${city.slot}`).classList.remove("producer");
-        }
-
+        
         // everyone rolls the dice
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
@@ -1254,10 +1271,9 @@ class Settlers extends GameTemplate {
         this.displayDice();
         this.animateDiceRoll(roll);
 
-        //Enable trading
-        this.game.state.canTrade = true; //Toggles false when the player builds or buys
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
+        this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
@@ -1283,6 +1299,12 @@ class Settlers extends GameTemplate {
         } else {
           this.game.queue.push(`collect_harvest\t${roll}`);
         }
+        return 1;
+      }
+
+      if (mv[0] == "enable_trading"){
+        this.game.queue.splice(qe, 1);
+        this.game.state.canTrade = true; //Toggles false when the player builds or buys
         return 1;
       }
 
@@ -1397,16 +1419,16 @@ class Settlers extends GameTemplate {
         let loot = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (victim > 0) { //victim 0 means nobody
+        if (victim > 0 && loot != "nothing") { //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
         }
  
         if (this.game.player === thief){
-          this.updateStatus(`<div class="persistent">You stole: ${this.returnResourceHTML(loot)}</div>`);
+          this.updateStatus(`<div class="persistent">You stole: ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)}</div>`);
         }
         if (this.game.player === victim){
-          this.updateStatus(`<div class="persistent">Player ${thief} stole ${this.returnResourceHTML(loot)} from you</div>`);
+          this.updateStatus(`<div class="persistent">Player ${thief} stole ${(loot == "nothing")?"nothing":this.returnResourceHTML(loot)} from you</div>`);
         }
         
         let victim_name = (victim>0)? `Player ${victim}` : "nobody";
@@ -1454,6 +1476,14 @@ class Settlers extends GameTemplate {
         this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
         this.stopTrading();
         this.game.queue.splice(qe - 1, 2);
+
+        // remove city highlighting from last roll
+        for (let city of this.game.state.cities) {
+          document.querySelector(`#${city.slot}`).classList.remove("producer");
+        }
+
+        let divname = `.sector_value:not(.bandit)`;
+        $(divname).removeAttr("style");
         return 1;
       }
     }
@@ -1648,7 +1678,11 @@ class Settlers extends GameTemplate {
       }): <ul>`;
       for (let i in my_resources) {
         if (my_resources[i] > 0)
-          html += `<li id="${i}" class="option">${i} (${my_resources[i]})</li>`;
+          html += `<li id="${i}" class="option">${i}:`;
+          for (let j = 0; j < my_resources[i]; j++){
+            html += `<img class="icon" src="${settlers_self.skin.resourceIcon(i)}">`;
+          }
+          html += `</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -1796,39 +1830,7 @@ class Settlers extends GameTemplate {
     }
   }
 
-  /*
-  Create DOM structures to hold roads positioned on the edges of the hexagons
-  1 connects city1 to city2 (upper-right edge), 2 is vertical right edge, ...
-  */
-  addRoadsToGameboard() {
-    /*Tops */
-
-    for (const i of this.hexgrid.hexes) {
-      this.addRoadToGameboard(i, 5);
-      this.addRoadToGameboard(i, 6);
-      this.addRoadToGameboard(i, 1);
-    }
-
-    /*Sides */
-    this.addRoadToGameboard("2_4", 2);
-
-    this.addRoadToGameboard("3_1", 4);
-    this.addRoadToGameboard("3_5", 2);
-    this.addRoadToGameboard("3_5", 3);
-
-    this.addRoadToGameboard("4_2", 4);
-    this.addRoadToGameboard("4_5", 2);
-    this.addRoadToGameboard("5_5", 2);
-
-    /*Bottom*/
-    this.addRoadToGameboard("5_3", 4);
-    this.addRoadToGameboard("5_3", 3);
-    this.addRoadToGameboard("5_4", 4);
-    this.addRoadToGameboard("5_4", 3);
-    this.addRoadToGameboard("5_5", 4);
-    this.addRoadToGameboard("5_5", 3);
-  }
-
+ 
   addRoadToGameboard(hex, road_component) {
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
@@ -1938,10 +1940,7 @@ class Settlers extends GameTemplate {
     */
     for (let i in this.game.state.roads) {
       //Not the most efficient, but should work
-      this.buildRoad(
-        this.game.state.roads[i].player,
-        this.game.state.roads[i].slot
-      );
+      this.buildRoad(this.game.state.roads[i].player, this.game.state.roads[i].slot);
     }
 
     this.displayPlayers();
@@ -2123,7 +2122,7 @@ class Settlers extends GameTemplate {
     if (existing_cities < 2) {
       let xpos, ypos;
 
-      $(".city.empty").addClass("rhover");
+      $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
         
@@ -2169,7 +2168,7 @@ class Settlers extends GameTemplate {
               $(".action").off();
               $(".popup-confirm-menu").remove();
               if (confirmation === "confirm"){
-                $(".city.empty").removeClass("rhover");
+                $(".city.empty").removeClass("chover");
                 $(".city.empty").off();
                   settlers_self.game.state.placedCity = slot;
                   settlers_self.buildCity(settlers_self.game.player, slot);
@@ -2191,9 +2190,7 @@ class Settlers extends GameTemplate {
     } else {
       /* During game, must build roads to open up board for new settlements*/
 
-      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(
-        this.game.player
-      );
+      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
       for (let i = 0; i < building_options.length; i++) {
         /*
           Highlight connected areas available to build a new settlement
@@ -2202,11 +2199,9 @@ class Settlers extends GameTemplate {
 
         $(divname).addClass("rhover");
 
-        $(divname).css("background-color", "yellow");
         $(divname).off();
         $(divname).on("click", function () {
           //Need to turn of these things for all the potential selections, no?
-          $(".rhover").css("background-color", "");
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
 
@@ -2244,6 +2239,7 @@ class Settlers extends GameTemplate {
     if (this.game.player == player) {
       let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
       for (let road of newRoads) {
+        console.log("road: ",road);
         this.addRoadToGameboard(road.substring(2), road[0]);
       }
     }
@@ -2343,7 +2339,7 @@ class Settlers extends GameTemplate {
       }
 
       $(".road.new").addClass("rhover");
-      //$(".road.new").css("z-index", 900);
+      
       $(".road.new").off();
       $(".road.new").on("click", function () {
         $(".road.new").off();
@@ -2352,26 +2348,22 @@ class Settlers extends GameTemplate {
         $(".road.new").removeClass("new");
 
         let slot = $(this).attr("id");
-        settlers_self.buildRoad(settlers_self.game.player, slot);
-        settlers_self.addMove(
-          `build_road\t${settlers_self.game.player}\t${slot}`
-        );
+        //settlers_self.buildRoad(settlers_self.game.player, slot);
+        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
         settlers_self.endTurn();
       });
     } else {
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
-      //$(".road.empty").css("z-index", 900);
+      
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         $(".road.empty").off();
         $(".road.empty").removeClass("rhover");
         $(".road.empty").removeAttr("style");
         let slot = $(this).attr("id");
-        settlers_self.buildRoad(settlers_self.game.player, slot);
-        settlers_self.addMove(
-          `build_road\t${settlers_self.game.player}\t${slot}`
-        );
+        //settlers_self.buildRoad(settlers_self.game.player, slot);
+        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
         settlers_self.endTurn();
       });
     }
@@ -2416,10 +2408,7 @@ class Settlers extends GameTemplate {
     let settlers_self = this;
     let html = "";
 
-    console.log(
-      "RES: " +
-        JSON.stringify(this.game.state.players[this.game.player - 1].resources)
-    );
+    //console.log("RES: " + JSON.stringify(this.game.state.players[this.game.player - 1].resources));
 
     html += '<div class="tbd">';
     html += "<ul>";
@@ -2762,8 +2751,8 @@ class Settlers extends GameTemplate {
   Must have some resources to trade, lol...maybe?
   */
   canPlayerTrade(player) {
-    if (this.game.state.canTrade)
-      if (this.game.state.players[player - 1].resources.length > 0) return 1;
+    if (this.game.state.canTrade && this.game.state.players[player - 1].resources.length > 0) 
+      return 1;
 
     return 0;
   }
@@ -3808,30 +3797,34 @@ class Settlers extends GameTemplate {
     $(divname)
       .css("color", "#000")
       .css("background", "#FFF6")
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      });
+      /*.delay(800)
       .queue(function () {
         $(this).removeAttr("style").dequeue();
-      });
+      });*/
   }
 
   /*
