@@ -1,23 +1,10 @@
-/*
-  Undo poker playerbox positions....
-.p1, .p2, .p3, .p4 {
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  top: unset;
-  right: unset;
-  left: unset;
-  transform: unset;
-  width: unset;
-  overflow-y: unset;
-}
-*/
+
 
 :root{
-  --p1-color: red;
-  --p2-color: blue;
-  --p3-color: rgb(0,140,0);
-  --p4-color: orange;
+  --p1-color: /*#e44;*/ #fb2215;
+  --p2-color: /*#049;*/ #15eefb;
+  --p3-color: /*#094;*/ #7bfb15;
+  --p4-color: /*#D63;*/ #9515fb;
 }
 
 .tip{
@@ -63,17 +50,14 @@ dt{
 }
 
 body {
-  background-color: lightseagreen !important;
-  background: radial-gradient(circle farthest-corner at 50% 0%, lightseagreen 40%, blue 45%, lightseagreen 50%);
+  background-color: #369 !important;
+  background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
   background-size: 25px 25px;
-  /*background-image: url(/settlers/img/background2.jpg);*/
-  /*background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;*/
   position: unset; /* fixed from game.css does weird stuff*/
   z-index: 0;
   font-size: 16px;
 }
+
 
 #game-hexgrid-container{
   z-index: 2;
@@ -89,16 +73,21 @@ body {
   box-sizing: content-box;
   border-radius: 400px;
   cursor: grab;
-  background-color: rgba(0,0,240,0.09);
+  background-color: rgba(200,200,240,0.1);
 }
 
 .player-box{
   background-color: #444D;
   z-index: 3;
-  border: 4px solid;
+  border: 1px solid;
   max-width: 25vw;
 }
 
+
+
+.player-info-name {
+  font-weight: lighter;
+}
 
 .game_board_sizer{
   z-index: 1000;
@@ -124,7 +113,7 @@ body {
   left: 50%;
   transform: translateX(-5vw);*/
   border: 2px solid black;
-  border-radius: 1vw;
+  border-radius: 5px;
   background-color: #222B;
   padding: min(0.5vw,5px);
   display: flex;
@@ -169,14 +158,6 @@ body {
   pointer-events: none; 
 }
 
-/*.notme .player-box-graphic .devcards .tinycard{
-  width: 8vh;
-}
-
-.notme .player-box-graphic .rescards .tinycard{
-  width: 10vh;
-}
-*/
 
 /* Make room to display two hands of cards*/
 .devcards{
@@ -222,13 +203,19 @@ body {
 }
 
 .chover:hover, .producer.chover polygon:hover {
-  fill: whitesmoke;
-  stroke: whitesmoke;
+  /*fill: whitesmoke;
+  stroke: whitesmoke;*/
+  background-color: whitesmoke;
   cursor: crosshair;
 }
 
+.city.empty.rhover{
+  background-color: rgba(255,255,128,0.95);
+  border: 3px dotted purple;
+}
 
-.rhover:hover {
+
+.rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
   cursor: crosshair;
@@ -311,8 +298,8 @@ body {
   width: 65%;
   height: 10%;
   background-color: transparent;
-
   z-index: 10;
+  border-radius: 10px;
 }
 
 
@@ -358,6 +345,7 @@ body {
   z-index: 12;
   font-size: 2em;
   text-align: center;
+  border-radius: 10px;
 }
 
 .city > svg{
@@ -381,6 +369,13 @@ body {
   background-color: var(--p4-color);
 }
 
+.player-box.me{
+  border-top: 10px solid;
+}
+.player-box.notme{
+  border-left: 10px solid;
+}
+
 .player-box.c1 {
   border-color: var(--p1-color);
 }
@@ -395,13 +390,17 @@ body {
 }
 
 
-.producer polygon{
+/*.producer polygon{
   fill: white;
 }
 
 .producer line{
   stroke: white;
+}*/
+.producer{
+  box-shadow: 0 0 10px 5px whitesmoke;
 }
+
 
 .city1{
   top: -10%;
@@ -436,7 +435,7 @@ body {
   font-size: 2.5em;
   z-index: 15;
   font-weight: bold;
-  border: 1px solid #fff;
+  border: 2px solid #fff;
   border-radius: 50%;
   width: 2em;
   height: 2em;
@@ -449,6 +448,8 @@ body {
 .bandit{
   background-color: black;
   color: darkgray;
+  border-color: black;
+  box-shadow: 0 0 40px 50px rgba(0,0,0,0.75);
 }
 
 .city.p1 {
@@ -607,16 +608,12 @@ ul.horizontal_list li.iconoption{
   text-align: center;
 }
 
-/*Originally for cards, now for dice*/
-.player-box > .player-box-graphic{
-  /*z-index: -1;*/
-}
 
 /*Sit graphic on top of playerbox*/
 .me > .player-box-graphic{
   position: absolute;
   /*left: calc(150px + 8vw);*/
-  bottom: calc(100% + 5px);
+  bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
 }
@@ -624,7 +621,7 @@ ul.horizontal_list li.iconoption{
 .notme > .player-box-graphic{
   position: absolute;
   top: 50%;
-  right: calc(100% + 5px);
+  right: calc(100% + 10px);
   transform: translateY(-50%);
   /*position: relative;
   z-index: -1;
@@ -648,7 +645,11 @@ ul.horizontal_list li.iconoption{
   align-items: center;
   flex-direction: row;
   width: 100%;
-  margin-bottom: 0.5em; 
+  /*margin-bottom: 0.5em;*/ 
+}
+
+.notme .flexline2{
+ margin-bottom: 0.5em; 
 }
 
 .pbtrade ul li{
@@ -721,19 +722,19 @@ ul.horizontal_list li.iconoption{
   stroke: var(--p4-color);
 }
 
-.c1 i {
-  color: rgb(255,100,100); /*a slightly lighter red*/
+/*.c1 i {
+  color: rgb(255,100,100); 
 }
 
 .c2 i{
-  color: rgb(100,100,255); /*a slightly lighter blue*/
+  color: rgb(100,100,255); 
 }
 .c3 i{
-  color: rgb(0, 192, 0); /*a slightly lighter green */
+  color: rgb(0, 192, 0); 
 }
 .c4 i{
   color: var(--p4-color);
-}
+}*/
 
 .player-notice{
   margin-bottom: 0.5em;
@@ -780,6 +781,18 @@ ul.horizontal_list li.iconoption{
 /*Stats overlay table*/
 .rules-overlay{
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.rules-overlay h2{
+  margin-top: 1em;
+  clear: both;
+}
+.rules-overlay img{
+  max-width: 100%;
+  margin: 0 auto;
+  border: 2px solid black;
 }
 
 .stats-table{

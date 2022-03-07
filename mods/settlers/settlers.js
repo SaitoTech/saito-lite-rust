@@ -75,9 +75,35 @@ class Settlers extends GameTemplate {
                 <h1>Trading</h1>
                 <p>There are several mechanisms in the game to initiate trades, but two things should be noted. First, you are not technically allowed to initiate trades unless it is your turn, or at the very most, you may propose a trade to the player who turn it is. Secondly, double click anyone's name to open a chat window with them. This is a social game, and you can do all the wheeling and dealing you want simply by talking to the other players.</p>
                 <h2>Open Offers</h2>
-                <p>On your turn, use the </p>
+                <div>
+                  <img style="float:left; margin:1em;" src="/settlers/img/help/tradeBroadcast1.png">
+                  <p>On your turn, you can initiate a trade offer by selecting <em>Make Offer</em> from the Trade menu. This opens an interface where you can specify how many of which resources you want in exchange for what. Click the resource name to add resources to your tender and click the resource images to remove them. </p>
+                </div>
+                <img src="/settlers/img/help/tradeBroadcast2.png">
+                <div>
+                <img style="float:right; margin:1em;" src="/settlers/img/help/tradeBroadcast4.png">
+                <p>If you have more than one opponent, you must wait until either all players have rejected your offer, or one of them has accepted it. The first player to click accept will complete the trade, and any subsequent players will be excluded from the trade. If you change your mind or are tired of waiting for your opponents to decide on the trade, you may "withdraw" the offer.</p>
+                </div>
+                <h2>Incoming Offers</h2>
+                <p>In general, incoming trade offers take the following form:</p>
+                <img src="/settlers/img/help/tradeBroadcast3.png">
+                <p>Assuming you have the requested resources, you will have the choice to accept or reject the trade offer. If you don't have the enough resources, you still get to see the offer, and should close it so that the other player may continue with their turn.</p>
+                <div>
+                  <img style="float:left; margin:1em;" src="/settlers/img/help/privateTrade1.png">
+                  <p>During an opponent's turn, when trading is allowed, you can open the private trading interface to propose an offer to them. You may only make one such offer, so it is best to communicate with them first through chat.</p>
+                </div>
+                <p>On your turn, you will be notified by an alert of any incoming trade offers, and the details will be summarized in your opponents player box.</p>
+                <p>There may be multiple incoming offers to choose from. You may accept the trade as is, reject it, or completely ignore it and carry on with your turn. The offer automatically expires as soon as end the trading phase of your turn.</p>
+                <img style="width:100%" src="/settlers/img/help/tradeIncomingOffer.png">
+                <h2>Passive Offers</h2>
+                <p>It is often the case that you desperately need a particular resource, or are flush with that resource. You are open to trading, but don't have anything in particular in mind. Nevertheless, it may be helpful for your opponents to know what you have and/or want so they can make an offer to you and you don't want to have to keep asking in the chat group "Does anyone have X?". If so, you can use the <em>Advertise</em> option from the trade menu to notify the other players about the state of your hand</p>
+                <img src="/settlers/img/help/tradeAdvert2.png">
+                <p>With this interface, you don't specify exact numbers, just which resources you want or have for trading.</p>
+                <div>
+                <img style="float:right;" src="/settlers/img/help/tradeAdvert3.png">
+                <p>Your status will be reflected in your corresponding playerbox on your opponent's screen. On their turn or your turn, they may directly click your advertisement to open a "Private Trading Interface." They are under no obligation to respect your wishes and may counter your offer with any trade request. Your advertisement will persist across turns. You may select <em>Cancel</em> in the Trade menu to remove it. Note that sending a trade offer to a player on their turn will also clear your advertisment.</p>
+                </div>
                 
-
                 </div>`;
 
     return html;
@@ -1232,11 +1258,7 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe - 1, 2);
 
-        // remove city highlighting from last roll
-        for (let city of this.game.state.cities) {
-          document.querySelector(`#${city.slot}`).classList.remove("producer");
-        }
-
+        
         // everyone rolls the dice
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
@@ -1454,6 +1476,14 @@ class Settlers extends GameTemplate {
         this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
         this.stopTrading();
         this.game.queue.splice(qe - 1, 2);
+
+        // remove city highlighting from last roll
+        for (let city of this.game.state.cities) {
+          document.querySelector(`#${city.slot}`).classList.remove("producer");
+        }
+
+        let divname = `.sector_value:not(.bandit)`;
+        $(divname).removeAttr("style");
         return 1;
       }
     }
@@ -2092,7 +2122,7 @@ class Settlers extends GameTemplate {
     if (existing_cities < 2) {
       let xpos, ypos;
 
-      $(".city.empty").addClass("rhover");
+      $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
         
@@ -2138,7 +2168,7 @@ class Settlers extends GameTemplate {
               $(".action").off();
               $(".popup-confirm-menu").remove();
               if (confirmation === "confirm"){
-                $(".city.empty").removeClass("rhover");
+                $(".city.empty").removeClass("chover");
                 $(".city.empty").off();
                   settlers_self.game.state.placedCity = slot;
                   settlers_self.buildCity(settlers_self.game.player, slot);
@@ -2169,11 +2199,9 @@ class Settlers extends GameTemplate {
 
         $(divname).addClass("rhover");
 
-        $(divname).css("background-color", "yellow");
         $(divname).off();
         $(divname).on("click", function () {
           //Need to turn of these things for all the potential selections, no?
-          $(".rhover").css("background-color", "");
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
 
@@ -2311,7 +2339,7 @@ class Settlers extends GameTemplate {
       }
 
       $(".road.new").addClass("rhover");
-      //$(".road.new").css("z-index", 900);
+      
       $(".road.new").off();
       $(".road.new").on("click", function () {
         $(".road.new").off();
@@ -2327,7 +2355,7 @@ class Settlers extends GameTemplate {
     } else {
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
-      //$(".road.empty").css("z-index", 900);
+      
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
         $(".road.empty").off();
@@ -3769,30 +3797,34 @@ class Settlers extends GameTemplate {
     $(divname)
       .css("color", "#000")
       .css("background", "#FFF6")
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#000").css("background", "#FFF6").dequeue();
       })
-      .delay(800)
+      .delay(600)
       .queue(function () {
         $(this).css("color", "#FFF").css("background", "#0004").dequeue();
       })
-      .delay(800)
+      .delay(600)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      });
+      /*.delay(800)
       .queue(function () {
         $(this).removeAttr("style").dequeue();
-      });
+      });*/
   }
 
   /*
