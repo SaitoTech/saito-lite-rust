@@ -95,13 +95,23 @@ console.log("MOVE: " + mv[0]);
 	  let movetype = mv[2];
 	  let source = mv[3];
 	  let destination = mv[4];
-	  let unitidx = mv[5];
+	  let unitidx = parseInt(mv[5]);
 
 console.log("dest: " + destination);
 console.log("fact: " + faction);
+console.log("unitidx: " + unitidx);
 
-          this.game.spaces[destination].units[faction].push(this.game.spaces[source].units[faction].splice(unitidx, 1));
+	  let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+console.log("a");
+          this.game.spaces[destination].units[faction].push(unit_to_move);
+console.log("b");
+          this.game.spaces[source].units[faction].splice(unitidx, 1);
+console.log("c");
 	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+console.log("d");
+
+console.log("source: " + JSON.stringify(this.game.spaces[source]));
+console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);

@@ -3682,13 +3682,23 @@ console.log("MOVE: " + mv[0]);
 	  let movetype = mv[2];
 	  let source = mv[3];
 	  let destination = mv[4];
-	  let unitidx = mv[5];
+	  let unitidx = parseInt(mv[5]);
 
 console.log("dest: " + destination);
 console.log("fact: " + faction);
+console.log("unitidx: " + unitidx);
 
-          this.game.spaces[destination].units[faction].push(this.game.spaces[source].units[faction].splice(unitidx, 1));
+	  let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+console.log("a");
+          this.game.spaces[destination].units[faction].push(unit_to_move);
+console.log("b");
+          this.game.spaces[source].units[faction].splice(unitidx, 1);
+console.log("c");
 	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+console.log("d");
+
+console.log("source: " + JSON.stringify(this.game.spaces[source]));
+console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -4562,7 +4572,7 @@ return;
 	      units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
 	      his_self.endTurn();
 
@@ -4670,7 +4680,7 @@ return;
 	      units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
 	      this.endTurn();
 
@@ -5058,9 +5068,9 @@ console.log("faction: " + faction);
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
     let controlled_keys = 0;
     
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
 	}
       }
@@ -5174,6 +5184,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   }
 
   displaySpaceDetailedView(name) {
+    // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
     this.overlay.show(this.app, this, html);
   }
@@ -5182,7 +5193,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
       let obj = document.getElementById(`ed_${key}`);
-      let tile = this.returnSpaceTile(this.spaces[key]);
+      let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
     }
   }
@@ -5747,7 +5758,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displaySpace(key) {
 
     let obj = document.getElementById(key);
-    let space = this.spaces[key];
+    let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
 
     let stype = "hex";
@@ -5771,6 +5782,16 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     //
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
+
+    //
+    // and force if has units
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	show_tile = 1; 
+      }
+    }
+
 
     //
     // sanity check

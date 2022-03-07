@@ -3,6 +3,9 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const MixinAppspace = require('./lib/email-appspace/mixin-appspace');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const fetch = require('node-fetch');
+const forge = require('node-forge');
+import { v4 as uuidv4 } from 'uuid'
+import axios from 'axios'
 
 class Mixin extends ModTemplate {
 
@@ -35,17 +38,147 @@ class Mixin extends ModTemplate {
 
   initialize(app) {
 
-    let auth_token = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI5YmUyZjIxMy1jYTlkLTQ1NzMtODBjYS0zYjI3MTFiYjIxMDUiLCJzaWQiOiJmMDcyY2QyYS03YzgxLTQ5NWMtODk0NS1kNDViMjNlZTY1MTEiLCJpYXQiOjE2NDYxOTU4NDksImV4cCI6MTY0NjE5OTQ0OSwianRpIjoiNDM5MmVkODUtMjBmZC00MDVmLWJhNzctMTJiZmE2Mjg0YmM5Iiwic2lnIjoiNWU2YjU4ZmZhMTBiM2JjNTE3MjRmZjBiYmQyYWZiOTFjNDc3MWVlMzQwZjVkNjg1MzQwZGZhNGM4NTRiYWZiYSIsInNjcCI6IkZVTEwifQ.5oeRfYEIf_oPsuziukGFTLpyb8O1O29qIe139mOL45_cleyxaRCfWfmiza15sF-oU4NIyfyiiknr-Dq4KqLmAQ";
-    let target_url = 'https://api.mixin.one/network/chains';
-    let publickey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd6LIkHvYhqbrahcVIf6LSkf2sBmoeUwuqDjbW4QteFygzcApmDe0EjORmX6zZbgdOWmrqo7b3ss6TT6JfihEOi64rEErS71xjzjzVcxSOxGu2K2FDymFkaXmU7UoFX3SayGu0jQHh2qwyqDOtC0RbMplVFfx7CdkrOb9ugaJYBcubXUcXmp1M8mYjvVE4mUNP1BG4yZZpOTpRgFf7ZKkcMtBuXMO3H0OInnIhdo4c6neW9btvv73cuETdSqiJDq09UCaNgjE5dSzLqIK/6Cdz4HCp2lhQaRg+f8fGa6NVfTUHe4qFoMEyLYnRAsG8+ECm+R8g0ZEBgfqORrBeVGxwIDAQAB";
+/*****
+    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+    const method = 'GET';
+    const uri = '/me';
+    const token = this.signAuthenticationToken(appId, sessionId, privateKey, method, uri);
+    console.log(token);
 
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+          const user = res.data
+console.log("RETURNED DATA: " + JSON.stringify(user));
+          const userData = {
+            user,
+            sessionKey,
+          }
+        }
+      );
+    } catch (err) {
+console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+***/
+
+  const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+  const sessionId = '2237774c-4f90-4dbc-b189-42eb5917e0f7';
+  const method = 'GET';
+  const uri = '/me';
+  const token = this.signAuthenticationToken(appId, sessionId, privateKey, method, uri);
+  console.log(token);
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+          const user = res.data
+console.log("RETURNED DATA: " + JSON.stringify(user));
+        }
+      );
+    } catch (err) {
+console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+
+/****
+
+    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+
+    const user_keypair = forge.pki.ed25519.generateKeyPair();
+    const user_public_key = user_keypair.publicKey.toString('base64');
+    const user_private_key = user_keypair.privateKey.toString('base64');
+
+    const method = "POST";
+    const uri = '/users'; 
+    const body = {
+      session_secret: user_public_key,
+      full_name: "Saito Test User 14",
+    };
+
+console.log("USER PUBKEY: "+user_public_key.toString('base64'));
+console.log("USER PRVKEY: "+user_private_key.toString('base64'));
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+          const user = res.data
+console.log("RETURNED DATA: " + JSON.stringify(user));
+        }
+      );
+    } catch (err) {
+console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+***/
+
+  }
+
+
+
+  base64RawURLEncode(buffer) {
+    return buffer.toString('base64').replace(/\=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  }
+
+
+
+  requestByTokenNoData(method, path, accessToken) {
+    return axios({
+      method,
+      url: 'https://mixin-api.zeromesh.net' + path,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + accessToken,
+      },
+    })
+  }
+
+  requestByToken(method, path, data, accessToken) {
+    return axios({
+      method,
+      url: 'https://mixin-api.zeromesh.net' + path,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + accessToken,
+      },
+    })
+  }
+
+  request(uid, sid, privateKey, method, path, data=null) {
+    const m = method;
+    let accessToken = '';
+    if (data == null) {
+      accessToken = this.signAuthenticationToken(
+        uid,
+        sid,
+        privateKey,
+        method,
+        path
+      )
+      return this.requestByTokenNoData(method, path, accessToken);
+    } else {
+      accessToken = this.signAuthenticationToken(
+        uid,
+        sid,
+        privateKey,
+        method,
+        path,
+        JSON.stringify(data)
+      )
+      return this.requestByToken(method, path, data, accessToken);
+    }
+
+/***
     fetch(`${target_url}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth_token}`
+        'Authorization': `Bearer ${accessToken}`
       },
       method: "POST",
-      //body: `{'full_name': 'Test-Saito-User1','session_secret': 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd6LIkHvYhqbrahcVIf6LSkf2sBmoeUwuqDjbW4QteFygzcApmDe0EjORmX6zZbgdOWmrqo7b3ss6TT6JfihEOi64rEErS71xjzjzVcxSOxGu2K2FDymFkaXmU7UoFX3SayGu0jQHh2qwyqDOtC0RbMplVFfx7CdkrOb9ugaJYBcubXUcXmp1M8mYjvVE4mUNP1BG4yZZpOTpRgFf7ZKkcMtBuXMO3H0OInnIhdo4c6neW9btvv73cuETdSqiJDq09UCaNgjE5dSzLqIK/6Cdz4HCp2lhQaRg+f8fGa6NVfTUHe4qFoMEyLYnRAsG8+ECm+R8g0ZEBgfqORrBeVGxwIDAQAB'}`
+      body: `{'full_name': '${data.full_name}','session_secret': '${data.session_secret}'}`;
     }).then(response => {
       response.json().then(data => {
 
@@ -53,8 +186,49 @@ console.log("DATA IS: " + JSON.stringify(data));
 
       });
     });
+***/
 
   }
+
+
+  signAuthenticationToken(uid, sid, privateKey, method, uri, params, scp) {
+    privateKey = Buffer.from(privateKey, 'base64')
+    method = method.toLocaleUpperCase()
+    if (typeof params === 'object') {
+      params = JSON.stringify(params)
+    } else if (typeof params !== 'string') {
+      params = ''
+    }
+
+    let iat = Math.floor(Date.now() / 1000)
+    let exp = iat + 3600
+    let md = forge.md.sha256.create()
+    md.update(method + uri + params, 'utf8')
+    let payload = {
+      uid: uid,
+      sid: sid,
+      iat: iat,
+      exp: exp,
+      jti: uuidv4(),
+      sig: md.digest().toHex(),
+      scp: scp || 'FULL',
+    }
+
+    let header = this.base64RawURLEncode(Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT" }), 'utf8'));
+    payload = this.base64RawURLEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
+
+    let result = [header, payload]
+    let sign = this.base64RawURLEncode(forge.pki.ed25519.sign({
+      message: result.join('.'),
+      encoding: 'utf8',
+      privateKey
+    }))
+    result.push(sign)
+    return result.join('.')
+  }
+
+
+
 }
 
 module.exports = Mixin;

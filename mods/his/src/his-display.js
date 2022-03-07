@@ -4,9 +4,9 @@
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
     let controlled_keys = 0;
     
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
 	}
       }
@@ -120,6 +120,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   }
 
   displaySpaceDetailedView(name) {
+    // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
     this.overlay.show(this.app, this, html);
   }
@@ -128,7 +129,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
       let obj = document.getElementById(`ed_${key}`);
-      let tile = this.returnSpaceTile(this.spaces[key]);
+      let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
     }
   }
@@ -693,7 +694,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displaySpace(key) {
 
     let obj = document.getElementById(key);
-    let space = this.spaces[key];
+    let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
 
     let stype = "hex";
@@ -717,6 +718,16 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     //
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
+
+    //
+    // and force if has units
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	show_tile = 1; 
+      }
+    }
+
 
     //
     // sanity check
