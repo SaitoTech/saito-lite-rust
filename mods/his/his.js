@@ -296,11 +296,13 @@ class HereIStand extends GameTemplate {
     this.importUnit('squadron', {
       type		:	"squadron" ,
       name		: 	"Squadron" ,
+      land_or_sea	:	"sea" ,
     });
 
     this.importUnit('corsair', {
       type		:	"corsair" ,
       name		: 	"Corsair" ,
+      land_or_sea	:	"sea" ,
     });
 
     this.importUnit('debater', {
@@ -941,6 +943,26 @@ console.log("adding stuff!");
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
     space.religion = religion;
     this.displayBoard();
+  }
+
+  doesFactionHaveNavalUnitsOnBoard(faction) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  return 1;
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
+	    return 1;
+	  }
+	}
+      }
+    }
+    return 0;
   }
 
   returnImpulseOrder() {
@@ -3786,8 +3808,9 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 	if (mv[0] === "continue") {
 
 	  let player = mv[1];
-	  let card = mv[2];
-	  let ops = mv[3];
+	  let faction = mv[2];
+	  let card = mv[3];
+	  let ops = mv[4];
 
 	  if (this.game.player == player) {
             this.playerPlayOps(card, ops);
@@ -4459,7 +4482,7 @@ console.log(menu[i].name);
       }
 
       if (ops > 0) {
-	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
+	this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
       }
       menu[user_choice].fnct(this, this.game.player, faction);
       return;
@@ -4556,10 +4579,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -4660,10 +4685,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -4705,7 +4732,8 @@ return;
 
 
   canPlayerNavalMove(his_self, player, faction) {
-    return 1;
+    if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
+    return 0;
   }
   async playerNavalMove(his_self, player, faction) {
 console.log("4");
@@ -4980,6 +5008,7 @@ console.log("faction: " + faction);
     if (obj.name == null)               { obj.name = "Unit"; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
     if (obj.command_value == null)      { obj.command_value = 0; }

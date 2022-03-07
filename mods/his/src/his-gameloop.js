@@ -220,9 +220,10 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
         }
 	if (mv[0] === "continue") {
 
-	  let faction = mv[1];
-	  let card = mv[2];
-	  let ops = mv[3];
+	  let player = mv[1];
+	  let faction = mv[2];
+	  let card = mv[3];
+	  let ops = mv[4];
 
 	  if (this.game.player == player) {
             this.playerPlayOps(card, ops);

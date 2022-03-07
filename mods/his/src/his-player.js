@@ -445,7 +445,7 @@ console.log(menu[i].name);
       }
 
       if (ops > 0) {
-	this.addMove("continue\t"+faction+"\t"+card+"\t"+ops);
+	this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
       }
       menu[user_choice].fnct(this, this.game.player, faction);
       return;
@@ -542,10 +542,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -646,10 +648,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -691,7 +695,8 @@ return;
 
 
   canPlayerNavalMove(his_self, player, faction) {
-    return 1;
+    if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
+    return 0;
   }
   async playerNavalMove(his_self, player, faction) {
 console.log("4");

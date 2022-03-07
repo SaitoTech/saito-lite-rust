@@ -17,11 +17,13 @@
     this.importUnit('squadron', {
       type		:	"squadron" ,
       name		: 	"Squadron" ,
+      land_or_sea	:	"sea" ,
     });
 
     this.importUnit('corsair', {
       type		:	"corsair" ,
       name		: 	"Corsair" ,
+      land_or_sea	:	"sea" ,
     });
 
     this.importUnit('debater', {

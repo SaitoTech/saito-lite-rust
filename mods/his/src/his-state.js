@@ -55,6 +55,26 @@
     this.displayBoard();
   }
 
+  doesFactionHaveNavalUnitsOnBoard(faction) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  return 1;
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
+	    return 1;
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
