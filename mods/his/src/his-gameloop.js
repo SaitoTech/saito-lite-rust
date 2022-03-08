@@ -101,20 +101,60 @@ console.log("dest: " + destination);
 console.log("fact: " + faction);
 console.log("unitidx: " + unitidx);
 
-	  let unit_to_move = this.game.spaces[source].units[faction][unitidx];
-console.log("a");
-          this.game.spaces[destination].units[faction].push(unit_to_move);
-console.log("b");
-          this.game.spaces[source].units[faction].splice(unitidx, 1);
-console.log("c");
-	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
-console.log("d");
+	  if (source === "sea") {
 
+	    //
+	    // source = land, destination = sea
+	    //
+	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.spaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displaySpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = sea
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = land
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.spaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displaySpace(destination);
+	    }
+
+	  }
+
+	  if (source === "land") {
+
+	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+            this.game.spaces[destination].units[faction].push(unit_to_move);
+            this.game.spaces[source].units[faction].splice(unitidx, 1);
+	    this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
+	  }
 console.log("source: " + JSON.stringify(this.game.spaces[source]));
 console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
-	  this.displaySpace(source);
-	  this.displaySpace(destination);
 
 	  this.game.queue.splice(qe, 1);
           return 1;

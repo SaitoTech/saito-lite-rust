@@ -1858,6 +1858,7 @@
       home: "papacy",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian"],
       neighbours: ["siena","ancona","cerignola","naples"],
       language: "italian",
       type: "key"

@@ -2748,6 +2748,7 @@ console.log("adding stuff!");
       home: "papacy",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian"],
       neighbours: ["siena","ancona","cerignola","naples"],
       language: "italian",
       type: "key"
@@ -3688,20 +3689,60 @@ console.log("dest: " + destination);
 console.log("fact: " + faction);
 console.log("unitidx: " + unitidx);
 
-	  let unit_to_move = this.game.spaces[source].units[faction][unitidx];
-console.log("a");
-          this.game.spaces[destination].units[faction].push(unit_to_move);
-console.log("b");
-          this.game.spaces[source].units[faction].splice(unitidx, 1);
-console.log("c");
-	  this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
-console.log("d");
+	  if (source === "sea") {
 
+	    //
+	    // source = land, destination = sea
+	    //
+	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.spaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displaySpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = sea
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = land
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.spaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displaySpace(destination);
+	    }
+
+	  }
+
+	  if (source === "land") {
+
+	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+            this.game.spaces[destination].units[faction].push(unit_to_move);
+            this.game.spaces[source].units[faction].splice(unitidx, 1);
+	    this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
+	  }
 console.log("source: " + JSON.stringify(this.game.spaces[source]));
 console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
-	  this.displaySpace(source);
-	  this.displaySpace(destination);
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -4379,7 +4420,56 @@ console.log("x is: " + x);
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    alert("CLICKED: " + key);
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+  playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.game.navalspaces) {
+      if (filter_func(this.game.navalspaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
 	    $('.textchoice').off();
 	    mycallback(key);
 	  }
@@ -4569,7 +4659,7 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
@@ -4677,7 +4767,7 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
@@ -4746,8 +4836,133 @@ return;
     return 0;
   }
   async playerNavalMove(his_self, player, faction) {
-console.log("4");
-return;
+
+    let units_to_move = [];
+    let cancel_func = null;
+
+    his_self.playerSelectNavalSpaceWithFilter(
+
+      "Select Naval Space from Which to Move Units:",
+
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length && faction === z) {
+	    for (let i = 0; i < space.units[z].length; i++) {
+	      if (space.units[z][i].land_or_sea == "sea" || space.units[z][i].land_or_sea == "both") {
+	        return 1;
+              }
+            }
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectNavalSpaceWithFilter(
+
+            "Select Naval Destination for these Units",
+
+      	    function(space) {
+	      //
+	      // trying to find out if space is destination for spacekey
+	      //
+	      if (his_self.game.spaces[spacekey]) {
+	        if (space.ports) {
+		  if (space.ports.includes(spacekey)) {
+	  	    return 1; 
+	          } 
+		}
+		return 0;
+	      }
+
+	      if (his_self.game.navalspaces[spacekey]) {
+	        if (space.neighbours.includes(spacekey)) {
+		  return 1;
+		}
+	        if (space.ports.includes(spacekey)) {
+		  return 1;
+		}
+		return 0;
+	      }		
+
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      ////units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+	      }
+	      his_self.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	    true 
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+      true,
+
+    );
+
+  }
+  canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
