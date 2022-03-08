@@ -1,10 +1,20 @@
 module.exports = MixinAppspaceTemplate = (app) => {
 
+  let mixin_mod = app.modules.returnModule("Mixin");
+
+console.log("HERE: " + JSON.stringify(mixin_mod.mixin));
+
   let html = `
 
   <div class="email-appspace-mixin">
 
     <div class="balances_container" id="balances_container">
+
+  `;
+
+  if (mixin_mod.mixin.user_id == "") { html += `<div class="create_account button" id="create_account">Create Account</div>`; }
+
+  html += `
 
       <div class="balances_header" id="balances_header">
 	<div class="balances_header_title">Balances</div>

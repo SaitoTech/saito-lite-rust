@@ -4,8 +4,8 @@ const MixinAppspace = require('./lib/email-appspace/mixin-appspace');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const fetch = require('node-fetch');
 const forge = require('node-forge');
-import { v4 as uuidv4 } from 'uuid'
-import axios from 'axios'
+const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
 
 class Mixin extends ModTemplate {
 
@@ -16,18 +16,32 @@ class Mixin extends ModTemplate {
     this.name = "Mixin";
     this.description = "Adding support for Mixin Network on Saito";
     this.categories = "Finance Utilities";
+
+    this.mixin = {};
+    this.mixin.app_id 		= "";    
+    this.mixin.user_id 		= "";    
+    this.mixin.session_id 	= "";    
+    this.mixin.full_name	= "";
+    this.mixin.publickey 	= "";
+    this.mixin.privatekey 	= "";
+    this.mixin.AccountCreateResponse   = "";
     
+    this.requests		= [];
+    this.responses 		= [];
+
   }
   
   respondTo(type = "") {
 
+    let mixin_self = this;
+
     if (type == 'email-appspace') {
       let obj = {};
-      obj.render = function (app, data) {
-        MixinAppspace.render(app, data);
+      obj.render = function (app, mixin_self) {
+        MixinAppspace.render(app, mixin_self);
       }
-      obj.attachEvents = function (app, data) {
-        MixinAppspace.attachEvents(app, data);
+      obj.attachEvents = function (app, mixin_self) {
+        MixinAppspace.attachEvents(app, mixin_self);
       }
       return obj;
     }
@@ -35,8 +49,64 @@ class Mixin extends ModTemplate {
     return null;
   }
 
+  createAccount(callback=null) {
+
+    //
+    // CREATE ACCOUNT
+    //
+    // todo - ping us and we do this, so that we don't compromise the 
+    // privatekey associated with account creation. for now we will 
+    // just have the module make the call directly for simplified
+    // development.
+    //
+    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+
+    const user_keypair = forge.pki.ed25519.generateKeyPair();
+    const original_user_public_key = user_keypair.publicKey.toString('base64');
+    const original_user_private_key = user_keypair.privateKey.toString('base64');
+    const user_public_key = this.base64RawURLEncode(user_keypair.publicKey.toString('base64'));
+    const user_private_key = this.base64RawURLEncode(user_keypair.privateKey.toString('base64'));
+
+
+    const method = "POST";
+    const uri = '/users';
+    const body = {
+      session_secret: user_public_key,
+      full_name: "Saito Test User 21",
+    };
+
+
+    this.mixin.publickey = original_user_public_key;
+    this.mixin.privatekey = original_user_private_key;
+    this.mixin.user_id          = "";
+    this.mixin.session_id       = "";
+
+console.log("TESTING ACCOUNT CREATION!");
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+	  this.mixin.accountCreateResponse = res.data;
+	  this.mixin.session_id = res.data.session_id;
+	  this.mixin.user_id = res.data.user_id;
+	  this.mixin.full_name = res.data.full_name;
+          console.log("RETURNED DATA: " + JSON.stringify(res.data));
+	  this.save();
+	  callback(res.data);
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+
+  }
 
   initialize(app) {
+
+    //this.load();
 
 /****
     //
@@ -61,7 +131,6 @@ class Mixin extends ModTemplate {
     }
 ****/
 
-/***
     //
     // WORKS - we can create Mixin network users @ /users
     //
@@ -80,7 +149,7 @@ class Mixin extends ModTemplate {
     const uri = '/users'; 
     const body = {
       session_secret: user_public_key,
-      full_name: "Saito Test User 16",
+      full_name: "Saito Test User 18",
     };
 
     console.log("ORIG USER PUBKEY: "+original_user_public_key);
@@ -97,14 +166,12 @@ class Mixin extends ModTemplate {
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-***/
 
-
-/****
+/***
     //
     // FAILS - our new user cannot query their profile @ /me
     //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const appId = '886f09f1-c36c-3ea6-9b0d-798ddcbfedfc'; //must be user_id from step 2
     const sessionId = 'bdd2e1cc-6e66-4ff6-a69b-bda661e7bd81';
     const privateKey = 'HkHtQ5KItj9lbmuTTxnfFvOvJBNH09M7EES/pd7QQGmw/1kBViHNIxZZ++Jrji6+FioVGWIWms993OZrPQ2h5A==';
     const method = 'GET';
@@ -121,7 +188,7 @@ class Mixin extends ModTemplate {
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-
+***/
 
   }
 
@@ -142,6 +209,9 @@ class Mixin extends ModTemplate {
   }
 
   requestByToken(method, path, data, accessToken) {
+console.log("submitting access token: " + accessToken);
+console.log("submitting data: " + JSON.stringify(data));
+
     return axios({
       method,
       url: 'https://mixin-api.zeromesh.net' + path,
@@ -163,7 +233,7 @@ class Mixin extends ModTemplate {
         privateKey,
         method,
         path
-      )
+      );
       return this.requestByTokenNoData(method, path, accessToken);
     } else {
       accessToken = this.signAuthenticationToken(
@@ -173,7 +243,7 @@ class Mixin extends ModTemplate {
         method,
         path,
         JSON.stringify(data)
-      )
+      );
       return this.requestByToken(method, path, data, accessToken);
     }
   }
@@ -213,6 +283,18 @@ class Mixin extends ModTemplate {
     result.push(sign)
     return result.join('.')
   }
+
+
+
+  load() {
+    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; return; }
+  }
+
+  save() {
+    this.app.options.mixin = this.mixin;
+    this.app.storage.saveOptions();
+  }
+
 }
 
 module.exports = Mixin;

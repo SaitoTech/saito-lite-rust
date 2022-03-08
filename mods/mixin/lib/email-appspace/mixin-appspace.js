@@ -10,18 +10,23 @@ module.exports = MixinAppspace = {
   },
 
   attachEvents(app, mod) {
+
+    try {
+      document.querySelector(".create_account").onclick = (e) => {
+        mod.createAccount((res) => { 
+  	  document.getElementById("create_account").innerHTML = JSON.stringify(res.data);;
+        });
+      }
+    } catch (err) {}
+
     document.querySelector(".balances_withdraw").onclick = (e) => {
-alert("A");
       let overlay = new SaitoOverlay(app);
       overlay.show(app, mod, MixinWithdrawTemplate(app), function() {
-
       });
     }
     document.querySelector(".balances_deposit").onclick = (e) => {
-alert("B");
       let overlay = new SaitoOverlay(app);
       overlay.show(app, mod, MixinDepositTemplate(app), function() {
-
       });
     }
   },
