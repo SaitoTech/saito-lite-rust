@@ -66,12 +66,8 @@ class Mixin extends ModTemplate {
     const user_keypair = forge.pki.ed25519.generateKeyPair();
     const original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
     const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
-console.log("original base64 pk: " + original_user_public_key);
     const user_public_key = this.base64RawURLEncode(original_user_public_key);
     const user_private_key = this.base64RawURLEncode(original_user_private_key);
-
-
-console.log("upk: " + user_public_key);
 
     const method = "POST";
     const uri = '/users';
@@ -85,9 +81,6 @@ console.log("upk: " + user_public_key);
     this.mixin.privatekey = original_user_private_key;
     this.mixin.user_id          = "";
     this.mixin.session_id       = "";
-
-console.log("TESTING ACCOUNT CREATION!");
-console.log(JSON.stringify(body));
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
@@ -135,7 +128,6 @@ console.log(JSON.stringify(body));
     }
 ****/
 
-/****
     //
     // WORKS - we can create Mixin network users @ /users
     //
@@ -144,17 +136,24 @@ console.log(JSON.stringify(body));
     const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
 
     const user_keypair = forge.pki.ed25519.generateKeyPair();
+    const original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
+    const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
+    const user_public_key = this.base64RawURLEncode(original_user_public_key);
+    const user_private_key = this.base64RawURLEncode(original_user_private_key);
+
+/***
+    const user_keypair = forge.pki.ed25519.generateKeyPair();
     const original_user_public_key = user_keypair.publicKey.toString('base64');
     const original_user_private_key = user_keypair.privateKey.toString('base64');
     const user_public_key = this.base64RawURLEncode(user_keypair.publicKey.toString('base64'));
     const user_private_key = this.base64RawURLEncode(user_keypair.privateKey.toString('base64'));
-
+***/
 
     const method = "POST";
     const uri = '/users'; 
     const body = {
       session_secret: user_public_key,
-      full_name: "Saito Test User 18",
+      full_name: "Saito Test User 23",
     };
 
     console.log("ORIG USER PUBKEY: "+original_user_public_key);
@@ -171,7 +170,7 @@ console.log(JSON.stringify(body));
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-***/
+
 
 
 /***
