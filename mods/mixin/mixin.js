@@ -64,17 +64,20 @@ class Mixin extends ModTemplate {
     const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
 
     const user_keypair = forge.pki.ed25519.generateKeyPair();
-    const original_user_public_key = user_keypair.publicKey.toString('base64');
-    const original_user_private_key = user_keypair.privateKey.toString('base64');
-    const user_public_key = this.base64RawURLEncode(user_keypair.publicKey.toString('base64'));
-    const user_private_key = this.base64RawURLEncode(user_keypair.privateKey.toString('base64'));
+    const original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
+    const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
+console.log("original base64 pk: " + original_user_public_key);
+    const user_public_key = this.base64RawURLEncode(original_user_public_key);
+    const user_private_key = this.base64RawURLEncode(original_user_private_key);
 
+
+console.log("upk: " + user_public_key);
 
     const method = "POST";
     const uri = '/users';
     const body = {
       session_secret: user_public_key,
-      full_name: "Saito Test User 21",
+      full_name: "Saito Test User 22",
     };
 
 
@@ -84,6 +87,7 @@ class Mixin extends ModTemplate {
     this.mixin.session_id       = "";
 
 console.log("TESTING ACCOUNT CREATION!");
+console.log(JSON.stringify(body));
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
@@ -131,6 +135,7 @@ console.log("TESTING ACCOUNT CREATION!");
     }
 ****/
 
+/****
     //
     // WORKS - we can create Mixin network users @ /users
     //
@@ -166,6 +171,8 @@ console.log("TESTING ACCOUNT CREATION!");
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
+***/
+
 
 /***
     //
@@ -209,9 +216,9 @@ console.log("TESTING ACCOUNT CREATION!");
   }
 
   requestByToken(method, path, data, accessToken) {
-console.log("submitting access token: " + accessToken);
-console.log("submitting data: " + JSON.stringify(data));
 
+console.log("submitting access token: " + accessToken);
+console.log("submitting data: " + data.toString());
     return axios({
       method,
       url: 'https://mixin-api.zeromesh.net' + path,
@@ -271,17 +278,25 @@ console.log("submitting data: " + JSON.stringify(data));
       scp: scp || 'FULL',
     }
 
-    let header = this.base64RawURLEncode(Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT" }), 'utf8'));
-    payload = this.base64RawURLEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
+console.log("PAYLOAD: " + JSON.stringify(payload));
 
-    let result = [header, payload]
-    let sign = this.base64RawURLEncode(forge.pki.ed25519.sign({
-      message: result.join('.'),
+    let header_st = this.base64RawURLEncode(Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT" }), 'utf8'));
+    let payload_st = this.base64RawURLEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
+
+console.log("HEADER: " + JSON.stringify(header_st));
+console.log("PAYLOAD: " + JSON.stringify(payload_st));
+
+    let result_st = header_st.toString() + "." + payload_st.toString();
+console.log("RESULT ST: " + result_st);
+    let sign = forge.pki.ed25519.sign({
+      message: result_st,
       encoding: 'utf8',
       privateKey
-    }))
-    result.push(sign)
-    return result.join('.')
+    });
+    result_st += ".";
+    result_st += this.base64RawURLEncode(Buffer.from(sign).toString('base64'));
+console.log("RESULT ST 2: " + result_st);
+    return result_st;
   }
 
 
