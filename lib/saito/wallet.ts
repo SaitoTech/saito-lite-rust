@@ -959,17 +959,24 @@ console.log("---------------------");
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
+console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
       }
     }
+
+console.log("cryptomod.ticker: " + cryptomod.ticker);
+
     if (ticker == "SAITO") {
       can_we_do_this = 1;
     }
 
     if (can_we_do_this == 1) {
       this.wallet.preferred_crypto = ticker;
+console.log("Activating cryptomod: " + cryptomod.ticker);
+      cryptomod.activate();
       this.saveWallet();
+console.log("emitting set preferred crypto event");
       this.app.connection.emit("set_preferred_crypto", ticker);
     }
 
@@ -1084,7 +1091,7 @@ console.log("---------------------");
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
           try {
-            const hash = await cryptomod.send(amounts[i], receivers[i]);
+            const hash = await cryptomod.sendPayment(amounts[i], receivers[i]);
             // execute callback if exists
             mycallback({ hash: hash });
             break;

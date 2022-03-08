@@ -1,4 +1,5 @@
 const saito = require('./../../lib/saito/saito');
+const MixinModule = require('./lib/mixinmodule');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const MixinAppspace = require('./lib/email-appspace/mixin-appspace');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
@@ -47,6 +48,14 @@ class Mixin extends ModTemplate {
     }
 
     return null;
+  }
+
+  loadCryptos() {
+
+    let eth_module = new MixinModule(this.app, "ETH");
+console.log("ETH MOD: " + eth_module.name);
+    this.app.modules.mods.push(eth_module);
+
   }
 
   createAccount(callback=null) {
@@ -103,7 +112,8 @@ class Mixin extends ModTemplate {
 
   initialize(app) {
 
-    //this.load();
+    this.load();
+    this.loadCryptos();
 
 /****
     //
