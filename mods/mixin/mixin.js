@@ -128,6 +128,8 @@ class Mixin extends ModTemplate {
     }
 ****/
 
+
+/****
     //
     // WORKS - we can create Mixin network users @ /users
     //
@@ -140,14 +142,6 @@ class Mixin extends ModTemplate {
     const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
     const user_public_key = this.base64RawURLEncode(original_user_public_key);
     const user_private_key = this.base64RawURLEncode(original_user_private_key);
-
-/***
-    const user_keypair = forge.pki.ed25519.generateKeyPair();
-    const original_user_public_key = user_keypair.publicKey.toString('base64');
-    const original_user_private_key = user_keypair.privateKey.toString('base64');
-    const user_public_key = this.base64RawURLEncode(user_keypair.publicKey.toString('base64'));
-    const user_private_key = this.base64RawURLEncode(user_keypair.privateKey.toString('base64'));
-***/
 
     const method = "POST";
     const uri = '/users'; 
@@ -170,7 +164,7 @@ class Mixin extends ModTemplate {
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-
+****/
 
 
 /***
