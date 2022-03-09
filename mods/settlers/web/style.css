@@ -11,12 +11,57 @@
   width: unset;
 }
 
-.tiptext{
+.tip .tiptext{
   min-width: 100px;
   width: fit-content;
   padding: 0.5em 1em;
   box-sizing: content-box;
   white-space: nowrap;
+  z-index: 300;
+}
+
+.handy-help{
+  margin: 0 auto;
+  cursor: help;
+}
+
+/* Building costs as cardbox overlay */
+.game-cardbox{
+  display: none;
+  width: fit-content;
+  height: 500px;
+  background-color: rgba(0,0,0,0.75);
+  border: 5px solid black;
+  border-radius: 10px;
+  color: white;
+  transform: unset;
+  left: 5px;
+  top: 20vh;
+
+}
+
+.cardbox-menu{
+  bottom: 1%;
+}
+.construction-costs{
+  font-size: 24px;
+}
+.construction-costs h2{
+  text-align: center;
+}
+.construction-costs .table{
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-gap: 1em;
+  margin: 0.75em;
+}
+
+.construction-costs .table .cost{
+  display: flex;
+}
+.construction-costs .icon, .construction-costs .token{
+  width: 50px;
+  margin: 5px;
 }
 
 .cardfan{
@@ -688,6 +733,10 @@ ul.horizontal_list li.iconoption{
   margin: min(3px,1vh);
   width: 1.2em;
   background-color: unset;
+}
+
+.token polygon{
+  fill: var(--saito-white);
 }
 
 .token.p1 polygon{

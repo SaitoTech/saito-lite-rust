@@ -10,13 +10,11 @@ body {
   padding: 0 0 0 0 ;
 }
 
-.intro {
-  background-color: whitesmoke;
-  padding: 30px;
-  font-size: 1.6em;
-}
 
-.connection_monitor {
+.rules-overlay ul{
+  margin-left: 25px;
+}
+/*.connection_monitor {
   position: fixed;
   display: none;
   min-height: 30px;
@@ -24,26 +22,27 @@ body {
   background: #ef6666;
   font-size: 1.8em;
   padding: 15px;
-}
+}*/
 
 .gameboard {
   position: absolute;
   background-image: url("img/gameboard.jpg");
   background-size: cover;
-  width: 1504px;
-  height: 1000px;
-  min-width: 100%;
-  min-height: 100%;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 200px 1fr;
 }
 
 .logobox {
-  position: absolute;
-  float: left;
-  left: 82%;
-  top: 40px;
-  width: 16%;
-  cursor:pointer;
+  position: relative;
+  margin-top: 50px;
+  font-size: 20px;
 }
+.logobox div{
+  border-radius: 5px;
+}
+
 .logobox img {
   width: 100%;
 }
@@ -54,30 +53,41 @@ body {
  font-size: 1.75em;
 }
 
+.selected .empty:hover{
+  background-color: rgba(240,240,240,0.7);
+  border-radius: 10px;
+}
+
+.selected .valid:hover{
+  background-color: rgba(160,255,160,0.85);
+  border-radius: 10px;
+}
+.selected .invalid:hover{
+  background-color: rgba(255,160,160,0.85);
+  border-radius: 10px;
+}
+
+
 .rowbox {
-  float:left;
-  padding: 50px;
+  /*float:left;*/
+  margin-top: 25px;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(10,1fr);
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  max-width: min(90vw,150vh);
+  grid-gap: min(5px,1vh);
+  height: fit-content;
 }
-.card {
-  position: relative;
-  float:left;
-  #width: 100px;
-  #min-width:10%;
-}
+
 .slot {
- position: relative;
- width:8%;
- #width: 100px;
- min-height: 150px;
- float: left;
+ width:100%;
 }
-.row {
- position:relative;
- #height: 110px;
- clear: both;
-}
+
 .slot img {
  width: 100%;
 }
+
+
 
 

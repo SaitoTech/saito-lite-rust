@@ -22,6 +22,7 @@ class Settlers extends GameTemplate {
     this.hexgrid = new GameHexGrid();
     this.skin = new SettlersSkin();
 
+    this.cardbox.skip_card_prompt = 0;
     this.minPlayers = 2;
     this.maxPlayers = 4;
 
@@ -289,6 +290,10 @@ class Settlers extends GameTemplate {
     try {
       this.skin.render(this.game.options.theme);
 
+      this.cardbox.render(app, this);
+      this.cardbox.attachEvents(app, this);
+      this.cardbox.addCardType("handy-help","okay",this.cardbox_callback);
+      
       //Let's Try a PlayerBox instead of hud
       this.playerbox.render(app, this);
       this.playerbox.attachEvents(app);
@@ -1983,6 +1988,7 @@ class Settlers extends GameTemplate {
     }
   }
 
+  
   /*
     @param {string} deck -- the name of the deck to render (resource || cards), if empty defaults to resource, if no resources, tries dev cards
   */
@@ -2079,6 +2085,11 @@ class Settlers extends GameTemplate {
       this.playerbox.refreshInfo(newhtml, i);
       $(".player-box-info").disableSelection();
     }
+    //Insert tool into name
+    let pbhead = document.querySelector("#player-box-head-1");
+    this.app.browser.addElementToElement(`<i id="construction-costs" class="handy-help fa fa-question-circle" aria-hidden="true"></i>`, pbhead);
+    this.cardbox.attachCardEvents();
+
     //Show player cards and add events (Doesn't need to be in for loop!)
     if (this.boughtCard) {
       this.displayCardfan("cards"); //Only shows this player's
@@ -2491,10 +2502,41 @@ class Settlers extends GameTemplate {
     if (purchase < 0 || purchase > 3) return "";
     let cost = this.skin.priceList[purchase];
     for (let resource of cost) {
-      html += `<img class="icon" src="${this.skin.resourceIcon(resource)}">`;
+      //html += `<img class="icon" src="${this.skin.resourceIcon(resource)}">`;
+      html += this.returnResourceHTML(resource);
     }
     return html;
   }
+
+  /*
+  Overwrite standard card imaging function to hijack the game-cardbox and have it show
+  building costs "help" card
+  */
+  returnCardImage(card){
+    if (card == "construction-costs"){
+      let html = `<div class="construction-costs">
+              <h2>Building Costs</h2>
+              <div class="table">
+              <div class="tip token p${this.game.player}"><svg viewbox="0 0 200 200"><polygon points="0,175 175,0, 200,25 25,200"/></svg>
+                <div class="tiptext">${this.skin.r.name}: Longest road worth 2 VP</div></div>
+                  <div class="cost">${this.visualizeCost(0)}</div>
+                <div class="tip token p${this.game.player}">${this.skin.c1.svg}<div class="tiptext">${this.skin.c1.name}: 1 VP</div></div>
+                    <div class="cost">${this.visualizeCost(1)}</div>
+                    <div class="tip token p${this.game.player}">${this.skin.c2.svg}<div class="tiptext">${this.skin.c2.name}: 2 VP</div></div>
+                    <div class="cost">${this.visualizeCost(2)}</div>
+                <div class="tip token"><svg viewbox="0 0 200 200"><polygon points="25,0 175,0, 175,200 25,200"/>
+                <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
+                <div class="tiptext">${this.skin.card.name} card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(3)}</div>
+              </div>
+              </div>`;
+      return html;
+    }else{
+      return "";
+    }
+  }
+
+
+
 
   /*
   Maybe an intermediate interface for building (like Trading)
