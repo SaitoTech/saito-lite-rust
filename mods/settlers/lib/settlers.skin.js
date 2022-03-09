@@ -48,8 +48,10 @@ class SettlersSkin {
 			break;
 			
 			default: //Classic
-				this.c1 = {name: "village", svg:`<svg viewbox="0 0 200 200"><polygon points="0,75 100,0, 200,75 200,200 0,200"/></svg>`};
-				this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
+				//this.c1 = {name: "village", svg:`<svg viewbox="0 0 200 200"><polygon points="0,75 100,0, 200,75 200,200 0,200"/></svg>`};
+				//this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
+				this.c1 = {name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
+				this.c2 = {name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
 				this.r = {name: "road"};
 				this.b = {name: "bandit"};
 				this.s = {name: "knight", img:`<i class="fas fa-horse-head"></i>`};

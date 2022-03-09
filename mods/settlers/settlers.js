@@ -56,7 +56,17 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    return "";
+    return `
+        <div class="overlay-input">
+            <label for="game_length ">Game Length:</label>
+            <select name="game_length">
+              <option value="8" >8 VP - for a quick sprint</option>
+              <option value="10" selected>10 VP - standard game</option>
+              <option value="12">12 VP - marathon</option>
+            </select>
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+        </div>
+    `;
     /*let html = `
           <div class="overlay-input">
           <label for="theme">Game Version:</label>
@@ -292,7 +302,7 @@ class Settlers extends GameTemplate {
 
       this.cardbox.render(app, this);
       this.cardbox.attachEvents(app, this);
-      this.cardbox.addCardType("handy-help","okay",this.cardbox_callback);
+      this.cardbox.addCardType("handy-help","",this.cardbox_callback);
       
       //Let's Try a PlayerBox instead of hud
       this.playerbox.render(app, this);
@@ -547,7 +557,7 @@ class Settlers extends GameTemplate {
       }
 
       if (mv[0] == "winner") {
-        console.log("Victory!");
+        
         let winner = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
 
@@ -563,6 +573,7 @@ class Settlers extends GameTemplate {
             `<div class="tbd">Player ${winner} wins! Better luck next time.</div>`
           );
         }
+        this.overlay.show(this.app, this, this.returnStatsOverlay());
         this.game.winner = this.game.players[winner - 1];
         this.resignGame(this.game.id); //? post to leaderboard - ignore 'resign'
         return 0;
@@ -1982,7 +1993,7 @@ class Settlers extends GameTemplate {
       this.game.state.players[i].vp = score;
 
       //Check for winner
-      if (score >= 10) {
+      if (score >= this.game.options.game_length) {
         this.game.queue.push(`winner\t${i + 1}`);
       }
     }
@@ -2528,6 +2539,7 @@ class Settlers extends GameTemplate {
                 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="red">?</text></svg>
                 <div class="tiptext">${this.skin.card.name} card: Largest army worth 2 VP</div></div><div class="cost">${this.visualizeCost(3)}</div>
               </div>
+              <div class="message">The first player to reach ${this.game.options.game_length} VP wins!</div>
               </div>`;
       return html;
     }else{
@@ -2826,7 +2838,7 @@ class Settlers extends GameTemplate {
     let gainResource = function (settlers_self) {
       let html = `<div class='tbd'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
       for (let i of resourceList) {
-        html += `<li id="${i}" class="option">${this.returnResourceHTML(i)}</li>`;
+        html += `<li id="${i}" class="option">${settlers_self.returnResourceHTML(i)}</li>`;
       }
       html += "</ul>";
       html += "</div>";
@@ -2866,7 +2878,7 @@ class Settlers extends GameTemplate {
     //Player recursively selects all the resources they want to get rid of
     let html = `<div class='tbd'>Select Desired Resource: <ul class="horizontal_list">`;
     for (let i of resourceList) {
-      html += `<li id="${i}" class="option">${this.returnResourceHTML(i)}</li>`;
+      html += `<li id="${i}" class="option">${settlers_self.returnResourceHTML(i)}</li>`;
     }
     html += "</ul>";
     html += "</div>";
