@@ -44,19 +44,33 @@ class Solitrio extends GameTemplate {
   }
 
 
+  /*
+  Single player games don't allow game-creation and options prior to join
+  returnGameOptionsHTML() {
+    return `
+        <div class="overlay-input">
+            <p>Play Mode:</p>
+            <div><input type="radio" id="auto" value="auto" name="play_mode" checked>
+            <label for="auto">Cards move to available slots</label></div>
+            <div><input type="radio" id="manual" value="manual" name="play_mode">
+            <label for="manual">Click empty slot to move card</label></div>
+            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+        </div>
+    `;
+  }*/
 
 
   initializeGame(game_id) {
     this.updateStatus("loading game...");
-    console.log("Load Game 1: "+game_id);
+    //console.log("Load Game 1: "+game_id);
     this.loadGame(game_id);
 
     //  
     // workaround to save issues
     //
-    console.log("Save Game 1");
+    //console.log("Save Game 1");
     this.saveGame();
-    console.log("Load Game 2: "+this.game.id);
+    //console.log("Load Game 2: "+this.game.id);
     this.loadGame(this.game.id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
@@ -127,6 +141,36 @@ class Solitrio extends GameTemplate {
       }
     });
     this.menu.addSubMenuOption("game-game", {
+      text : "Play Mode",
+      id : "game-play",
+      class : "game-play",
+      callback : function(app, game_mod) {
+        game_mod.menu.showSubSubMenu("game-play"); 
+      }
+    });
+
+    this.menu.addSubMenuOption("game-play",{
+      text: `Auto ${(this.game.options.play_mode=="auto")?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        game_mod.game.options["play_mode"] = "auto";
+        game_mod.attachEventsToBoard();
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-play",{
+      text: `Manual ${(this.game.options.play_mode=="manual")?"✔":""}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+       game_mod.game.options["play_mode"] = "manual";
+      game_mod.attachEventsToBoard(); 
+      }
+    });
+
+
+    this.menu.addSubMenuOption("game-game", {
       text : "How to Play",
       id : "game-intro",
       class : "game-intro",
@@ -151,10 +195,9 @@ class Solitrio extends GameTemplate {
       id : "game-exit",
       class : "game-exit",
       callback : function(app, game_mod) {
-        //How to save game status??
+        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
+        game_mod.prependMove("exit_game\t"+game_mod.game.player);
         game_mod.endTurn();
-        game_mod.saveGame(game_mod.game.id);
-        window.location.href = "/arcade";
       }
     });
     this.menu.addMenuIcon({
@@ -200,17 +243,84 @@ class Solitrio extends GameTemplate {
     <tbody>
     <tr><th>Games Played:</th><td>${this.game.state.round-1}</td></tr>
     <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
-    <tr><th>Win Percentage:</th><td>${Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10}%</td></tr>
+    <tr><th>Win Percentage:</th><td>${(this.game.state.round>1)? Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10 : 0}%</td></tr>
     </tbody>
     </table>
     </div>`;
     return html;
   }
 
-  attachEventsToBoard() {
+  checkBoardStatus(){
+    //Use recycling function to check if in winning state
+    this.displayUserInterface();
+
+    if (this.scanBoard(false)) {
+      salert("Congratulations! You win!");
+      this.prependMove("win");
+      this.endTurn();
+    }else if (!this.hasAvailableMoves()){
+      if (this.game.state.recycles_remaining == 0){
+        salert("No More Available Moves, you lose!");
+      }else{
+        this.shuffleFlash();
+      }
+    }
+  }
+
+  attachEventsToBoard(){
+    console.log(this.game.options);
+    if (this.game.options.play_mode == "auto"){
+      this.attachEventsToBoardAutomatic();
+    }else{
+      this.attachEventsToBoardManual();
+    }
+  }
+
+  attachEventsToBoardAutomatic(){
+    let solitrio_self = this;
+
+    $('.slot').off();
+    $('.slot').on('click', function() {
+
+      let card = $(this).attr("id");
+
+      if (card[0] === 'E') { return; } 
+
+      solitrio_self.toggleCard(card);
+      let slot = solitrio_self.dynamicColoring(card);
+
+      if (slot) {
+        //card = selected, slot = card
+        solitrio_self.prependMove(`move\t${card}\t${slot}`);
+          
+        let x = JSON.stringify(solitrio_self.game.board[card]);
+        let y = JSON.stringify(solitrio_self.game.board[slot]);
+
+        solitrio_self.game.board[card] = JSON.parse(y);
+        solitrio_self.game.board[slot] = JSON.parse(x);
+        
+        solitrio_self.untoggleCard(card);
+     
+        $("#"+card).html(solitrio_self.returnCardImageHTML(solitrio_self.game.board[card]));
+        $("#"+slot).html(solitrio_self.returnCardImageHTML(solitrio_self.game.board[slot]));
+        $("#"+card).toggleClass("empty");
+        $("#"+slot).toggleClass("empty");
+        
+        solitrio_self.checkBoardStatus();
+
+        } else {
+          salert("<p>Sorry, You can't move that card anywhere");
+          solitrio_self.untoggleCard(card);
+        }
+      
+      
+    });
+
+  }
+
+  attachEventsToBoardManual() {
     let solitrio_self = this;
     let selected = "";                // prev selected
-    let card = "";                // slot to swap
 
     $('.slot').off();
     $('.slot').on('click', function() {
@@ -265,18 +375,19 @@ class Solitrio extends GameTemplate {
           selected = "";
           
           //Use recycling function to check if in winning state
+          solitrio_self.displayUserInterface();
+
           if (solitrio_self.scanBoard(false)) {
             salert("Congratulations! You win!");
             solitrio_self.prependMove("win");
             solitrio_self.endTurn();
-            return;
           }else if (!solitrio_self.hasAvailableMoves()){
             if (solitrio_self.game.state.recycles_remaining == 0){
               salert("No More Available Moves, you lose!");
+            }else{
+              solitrio_self.shuffleFlash();
             }
           }
-          
-          solitrio_self.displayUserInterface();
           return;
   
         } else {
@@ -303,18 +414,64 @@ class Solitrio extends GameTemplate {
     });
   }
 
+  shuffleFlash(){
+    
+    $("#shuffle")
+      .css("color", "#000")
+      .css("background", "#FFF6")
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#FFF").css("background", "#0004").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).css("color", "#000").css("background", "#FFF6").dequeue();
+      })
+      .delay(300)
+      .queue(function () {
+        $(this).removeAttr("style").dequeue();
+      });
+  }
+
   dynamicColoring(card){
     let solitrio_self = this;
+    let availableSlot = null;
     $(".valid").removeClass("valid");
     $(".invalid").removeClass("invalid");
 
     $(".empty").each(function(){
       if (solitrio_self.canCardPlaceInSlot(card, $(this).attr("id"))){
+        availableSlot = $(this).attr("id");
         $(this).addClass("valid");
       }else{
         $(this).addClass("invalid");
       }
     });
+    return availableSlot;
   }
 
 
@@ -326,8 +483,6 @@ class Solitrio extends GameTemplate {
   canCardPlaceInSlot(card, slot) {
     let cardValue = this.returnCardNumber(card); 
     let cardSuit = this.returnCardSuite(card);
-
-    console.log(card + "["+ cardSuit+cardValue+"] --> " + slot);
 
     let predecessor = this.getPredecessor(slot);
 
@@ -393,7 +548,6 @@ class Solitrio extends GameTemplate {
 
   /* Copy hand into board*/
   handToBoard(){
-    //console.log(this.game.deck[0]);
     let indexCt = 0;
     for (let i = 1; i <= 4; i++)
       for (let j = 1; j<= 10; j++){
@@ -429,7 +583,7 @@ class Solitrio extends GameTemplate {
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      //console.log(JSON.stringify(this.game.queue));
+      console.log(JSON.stringify(mv));
 
       if (mv[0] === "round") {
         this.newRound();
@@ -450,6 +604,19 @@ class Solitrio extends GameTemplate {
         return 0;
       }
 
+      if (mv[0] === "exit_game"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1])
+        this.saveGame(this.game.id);
+
+        if (this.game.player === player){
+          window.location.href = "/arcade";
+        }else{
+          this.updateStatus("Player has exited the building");
+        }
+        return 0;
+      }
+
       if (mv[0] === "shuffle"){
         this.game.queue.splice(qe, 1);
         this.scanBoard(true);
@@ -465,20 +632,10 @@ class Solitrio extends GameTemplate {
         let x = this.parseIndex(card);
         let y = this.parseIndex(emptySlot);
 
-        /*let x = -1, y = -1;
-        for (let i = 0; i < this.game.deck[0].hand.length; i++){
-          if (this.game.deck[0].cards[this.game.deck[0].hand[i]] == solitrio_self.game.board[card]){
-            x = i;
-          }
-          if (this.game.deck[0].cards[this.game.deck[0].hand[i]] == solitrio_self.game.board[emptySlot]){
-            y = i;
-          }
-        }*/
-        console.log(`${x} <--> ${y}`);
         let temp = this.game.deck[0].hand[x];
         this.game.deck[0].hand[x] = this.game.deck[0].hand[y];
         this.game.deck[0].hand[y] = temp;
-
+        return 1;
       }
 
       //
@@ -517,8 +674,7 @@ class Solitrio extends GameTemplate {
   async displayBoard(timeInterval = 0) {
 
     if (this.browser_active == 0) { return; }
-
-    //console.log(this.game.board);
+    $(".slot").removeClass("empty");
     try {
       //Want to add a timed delay for animated effect
       const timeout = ms => new Promise(res => setTimeout(res, ms));
@@ -546,7 +702,7 @@ no status atm, but this is to update the hud
 
     let solitrio_self = this;
 
-    let html = '<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces.</span>'; 
+    let html = '<span class="hidable">Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces.</span>'; 
     let option = `<ul><li class="menu_option"`;
     if (this.game.state.recycles_remaining > 0) {
       html += '<span>You may shuffle the unarranged cards ';
@@ -645,7 +801,7 @@ no status atm, but this is to update the hud
     for (let i = 0; i < 4; i++) {
       let rowsuite = "none";
 
-      for (let j = 1; j < 11; j++) {
+      for (let j = 1; j < 10; j++) { //Don't read last slot in each row
 
         let slot  = "row"+(i+1)+"_slot"+j;
         let suite = this.returnCardSuite(slot);
@@ -674,8 +830,10 @@ no status atm, but this is to update the hud
         myarray.push(this.game.board[divname]);  
       }
     }
+    /*console.log(JSON.parse(JSON.stringify(rows)));
+    console.log(JSON.parse(JSON.stringify(myarray)));*/
 
-    let winningGame = (myarray.length === 0);
+    let winningGame = (myarray.length === 4);
 
     if (recycle){
       //shuffle array, best method?
