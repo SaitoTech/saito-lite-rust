@@ -63,7 +63,7 @@ class SettlersSkin {
 		      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">2</text></svg><i class="fas fa-horse-head" style="color:gold;"></i>`};
 				this.resources = [{name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
 								  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
-								  {name: "wheat",count:4,ict:1,icon:"/settlers/img/icons/wheat-icon.png"},
+								  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
 								  {name: "wool",count:4,ict:1,icon:"/settlers/img/icons/wool-icon.png"},
 								  {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
 								  {name: "desert",count:1,ict:1}];
