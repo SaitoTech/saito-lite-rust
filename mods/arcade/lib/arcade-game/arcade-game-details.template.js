@@ -36,7 +36,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
             <button type="button" id="game-rules-btn" class="game-rules-btn">How to Play</button>
             <button type="button" id="game-home-btn" class="game-home-btn">Home Page</button>
           </div>  
-          <button type="button" id="game-invite-btn" class="game-invite-btn">Create New Game</button>
+          <button type="button" id="game-invite-btn" class="game-invite-btn">${(mod.maxPlayers == 1) ? "Play":"Create New Game"}</button>
         </div>
       </div>`;
 

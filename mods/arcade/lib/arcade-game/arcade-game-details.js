@@ -13,7 +13,11 @@ const getOptions = () => {
       if (element.checked) {
         options[element.name] = 1;
       }
-    } else {
+    }else if(element.type == "radio"){
+      if (element.checked) {
+        options[element.name] = element.value;
+      }
+    }else {
       options[element.name] = element.value;
     }
   });
@@ -172,7 +176,7 @@ module.exports = ArcadeGameDetails = {
           return;
         }
         if (players_needed == 1) {
-          mod.launchSinglePlayerGame(app, gamedata);
+          mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
           return;
         } else {
           mod.overlay.hide();

@@ -198,7 +198,7 @@ game-overlay-cardlist-button {
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--saito-skyline-grey);
   margin: 1px 1px 3px 3px;
-  z-index: 50;
+  z-index: 500;
 }
 
 .game-menu > ul {
@@ -567,7 +567,7 @@ i.menu_icon_icon{
   display: block;
   width: 500px;
   height: 100vh;
-  z-index: 50;
+  z-index: 500;
   overflow-x: hidden;
   overflow-y: auto;
   color: #fff;
@@ -1260,13 +1260,13 @@ i.menu_icon_icon{
 }
 
 .bighand>.card:nth-child(n+8) {
-  top: 4vh;
+  top: 5vh;
 }
-.bighand>.card:nth-child(n+16) {
-  top: 8vh;
+.bighand>.card:nth-child(n+15) {
+  top: 9vh;
 }
-.bighand>.card:nth-child(n+24) {
-  top: 12vh;
+.bighand>.card:nth-child(n+22) {
+  top: 13vh;
 }
 
 
@@ -1300,6 +1300,7 @@ input#game_board_sizer {
   right: 40px;
   width: 250px;
   background: #0004;
+  z-index: 45;
 }
 
 
@@ -1371,7 +1372,7 @@ input#game_board_sizer {
   border: 3px black solid;
   border-radius: 100px;
   background: #eb2d2d;
-  z-index: 255;
+  z-index: 260;
   display: none;
 }
 
@@ -1400,7 +1401,7 @@ input#game_board_sizer {
   padding: 0.5em 1em;
   text-decoration: none;
   border-radius: 10px;
-  z-index: 255;
+  z-index: 260;
   text-align: center;
   display: none;
 }

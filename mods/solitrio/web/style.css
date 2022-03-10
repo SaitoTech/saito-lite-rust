@@ -14,6 +14,22 @@ body {
 .rules-overlay ul{
   margin-left: 25px;
 }
+
+
+.rules-overlay table{
+  font-size: 1.5em;
+  margin: 0 auto;
+}
+
+.rules-overlay th{
+  text-align: right;
+}
+
+.rules-overlay td{
+  text-align: center;
+  width: 4em;
+}
+
 /*.connection_monitor {
   position: fixed;
   display: none;
@@ -31,13 +47,15 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: minmax(20%,max-content) 1fr;
 }
 
 .logobox {
   position: relative;
   margin-top: 50px;
   font-size: 20px;
+  order: 1;
+  max-width: 200px;
 }
 .logobox div{
   border-radius: 5px;
@@ -46,11 +64,9 @@ body {
 .logobox img {
   width: 100%;
 }
-.chances {
- position: absolute;
- top: 80%;
- left: 25%;
- font-size: 1.75em;
+
+.status-header{
+  padding: 10px 5px;
 }
 
 .selected .empty:hover{
@@ -70,6 +86,7 @@ body {
 
 .rowbox {
   /*float:left;*/
+  order: 2;
   margin-top: 25px;
   padding: 25px;
   display: grid;
@@ -88,6 +105,52 @@ body {
  width: 100%;
 }
 
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .logobox{
+    order: 1;
+    max-width: 150px;
+  }
+  .logobox img{
+    display: none;
+  }
+  .hidable{
+    display: none;
+  }
+  .rowbox{
+    margin-top: 0;
+    padding: 15px;
+    order: 2;
+  }
 
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .gameboard{
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    
+  }
+  .logobox{
+    order: 2;
+    /*grid-row: 2 / 2;*/
+    max-width: unset;
+    margin: 5px auto;
+    font-size: 18px;
+    align-self: end;
+  }
+  .logobox img{
+    display: none;
+  }
+  .hidable{
+    display: none;
+  }
+  .logobox .status, .logobox .status-header, .logobox .status-text-menu{
+    width: min(500px, 90vw);
+  }
+  .rowbox{
+    max-width: 100vw;
+    order: 1;
+  }
+}
 
 
