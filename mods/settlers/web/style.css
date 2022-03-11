@@ -705,6 +705,8 @@ body {
 
 .player-box.me{
   height: unset;
+  left: 1px;
+  bottom: 1px;
 }
 .player-box.notme, .opponents{
   height: fit-content;
@@ -720,10 +722,10 @@ body {
         max-width: 20vw;
     }
 
-    .player-box.me{
+    /*.player-box.me{
         left: max(5px, calc(12vw - 7em));
-        /*top:  80vh;*/
-    }
+        /*top:  80vh;
+    }*/
 
     .player-box.notme, .opponents{
         right: max(5px, calc(12vw - 7em));
@@ -737,9 +739,9 @@ body {
         max-width: 35vw;
     }
 
-    .player-box.me{
+    /*.player-box.me{
         left: calc(30vw - 6em);
-    }
+    }*/
 
     .player-box.notme, .opponents{
         right: calc(30vw - 6em);
@@ -755,9 +757,9 @@ body {
         bottom: 0px;
         max-width: 40vw;
     }
-    .player-box.me{
+    /*.player-box.me{
         left: calc(30vw - 5.5em);
-    }
+    }*/
 
     .player-box.notme, .opponents{
         right: calc(30vw - 5.5em);

@@ -1281,12 +1281,20 @@ class Settlers extends GameTemplate {
         let loot = mv[3];
         this.game.queue.splice(qe, 1);
 
-        if (loot != "nothing") {
+        if (victim > 0) { //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
         }
-
-        this.updateLog(`Player ${thief} stole ${loot} from Player ${victim}`);
+ 
+        if (this.game.player === thief){
+          this.updateStatus(`<div class="persistent">You stole a: <img class="icon" src="${this.skin.resourceIcon(loot)}"></div>`);
+        }
+        if (this.game.player === victim){
+          this.updateStatus(`<div class="persistent">Player ${thief} stole a <img class="icon" src="${this.skin.resourceIcon(loot)}"> from you</div>`);
+        }
+        
+        let victim_name = (victim>0)? `Player ${victim}` : "nobody";
+        this.updateLog(`Player ${thief} stole ${loot} from ${victim_name}`);
         return 1;
       }
 
@@ -1494,7 +1502,7 @@ class Settlers extends GameTemplate {
       });
     } else {
       //No one to steal from
-      settlers_self.addMove(`steal_card\t${player}\tnobody\tnothing`);
+      settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
       settlers_self.endTurn();
     }
   }
