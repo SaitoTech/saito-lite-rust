@@ -118,14 +118,17 @@ class Post extends ModTemplate {
 
     this.urlParams = new URLSearchParams(window.location.search);
     if (this.urlParams.get("delete")) {
-      let confirmed = sconfirm(
+      const confirmIt = async function(){
+        let confirmed = await sconfirm(
         "Are you sure you want to delete these post:<br />" +
           decodeURIComponent(this.urlParams.get("title"))
-      );
-      if (confirmed) {
-        let delete_tx = this.createDeleteTransaction(this.urlParams.get("delete"));
-        this.app.network.propagateTransaction(delete_tx);
+        );
+        if (confirmed) {
+          let delete_tx = this.createDeleteTransaction(this.urlParams.get("delete"));
+          this.app.network.propagateTransaction(delete_tx);
+        }  
       }
+      confirmIt();
     }
   }
 

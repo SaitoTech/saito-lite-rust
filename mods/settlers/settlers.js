@@ -1293,7 +1293,7 @@ class Settlers extends GameTemplate {
           this.updateStatus(`<div class="persistent">Player ${thief} stole a <img class="icon" src="${this.skin.resourceIcon(loot)}"> from you</div>`);
         }
         
-        let victim_name = (victim>0)? `Player ${victim}` ： "nobody";
+        let victim_name = (victim>0)? `Player ${victim}` : "nobody";
         this.updateLog(`Player ${thief} stole ${loot} from ${victim_name}`);
         return 1;
       }
