@@ -17,7 +17,7 @@ const CryptoModule = require('./../../../lib/templates/cryptomodule');
 
 class MixinModule extends CryptoModule {
 
-  constructor(app, ticker) {
+  constructor(app, ticker, mixin_mod, asset_id) {
 
     super(app);
 
@@ -25,10 +25,36 @@ class MixinModule extends CryptoModule {
     this.ticker = ticker;
     this.name = ticker;
     this.categories = "Cryptocurrency";
+    this.mixin = mixin_mod;
+
+    this.asset_id = asset_id;
+    this.chain_id = "";
+    this.icon_url = "";
+    this.balance = "0.0";
+    this.deposit_entries = {};
+    this.destination = "";
+    this.tag = "";
+    this.price_btc = 0;
+    this.price_usd = 0;
+    this.change_btc = 0;
+    this.change_usd = 0;
+    this.asset_key = 0;
+    this.mixin_id = "";
+    this.reserve = "";
+    this.confirmations = 100;
+    this.capitalization = 0;
+    this.liquidity = "";
 
     return this;
 
+  }
 
+  installModule() {
+    if (this.mixin) {
+      if (this.mixin.account_created == 0) {
+	this.mixin.createAccount();
+      }
+    }
   }
 
 }
@@ -39,8 +65,8 @@ class MixinModule extends CryptoModule {
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.returnBalance = function() {
-  return "0.0004";
+MixinModule.prototype.returnBalance = async function() {
+  return this.balance;
 //  throw new Error('returnBalance must be implemented by subclass!');
 };
 
@@ -62,8 +88,10 @@ MixinModule.prototype.sendPayment = function() {
  * @return {String} Pubkey/address
  */
 MixinModule.prototype.returnAddress = function() {
-  return "0x00000000000000000000000000";
-  //throw new Error('returnAddress must be implemented by subclass!');
+  if (this.destination === "") {
+    return "unknown address";
+  }
+  return this.destination;
 };
 /**
  * Abstract method which should get private key
@@ -71,7 +99,7 @@ MixinModule.prototype.returnAddress = function() {
  * @return {String} Private Key
  */
 MixinModule.prototype.returnPrivateKey = function() {
-  return "0x00000000000000000000000000";
+  return this.mixin.mixin.privatekey;
   //throw new Error('returnPrivateKey must be implemented by subclass!');
 };
 

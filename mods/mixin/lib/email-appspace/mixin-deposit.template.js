@@ -1,24 +1,33 @@
-module.exports = MixinDepositTemplate = (app) => {
+module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmations, deposit_ticker) => {
 
   let html = `
 
   <div class="email-appspace-deposit-overlay">
-    <div class="deposit_title">Deposit ETH</div>
-    <div class="deposit_desc">Only FTX Token should be sent to this address over the Ethereum network (L1)! Sending any other coins may result in the loss of your deposit.</div>
-    <div class="deposit_label">ETH deposit address</div>
-    <div class="deposit_address">0x4bcfbe16bed40f2d79891c85383b6556d3a60437</div>
+    <div class="deposit_title">Deposit ${deposit_ticker}</div>
+    <div class="deposit_desc">Only ${deposit_ticker} should be sent to this address. Deposits require ${deposit_confirmations} confirmations. Please do not deposit large amounts while Saito is under development due to risk of wallet compromise.</div>
+    <div class="deposit_address">${deposit_address}</div>
   </div>
 
 <style>
 .email-appspace-deposit-overlay {
+  padding: 50px;
+  border: 1px solid #efefef;
+  background-color: white;
+  max-width: 80vw;
 }
 .deposit_title {
+  font-size: 2em;
 }
 .deposit_desc {
-}
-.deposit_label {
+  font-size: 1.2em;
+  line-height: 1.6em;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .deposit_address {
+  font-size: 1.2em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
 }
   </style>
 

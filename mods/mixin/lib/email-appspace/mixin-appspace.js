@@ -21,12 +21,43 @@ module.exports = MixinAppspace = {
 
     document.querySelector(".balances_withdraw").onclick = (e) => {
       let overlay = new SaitoOverlay(app);
-      overlay.show(app, mod, MixinWithdrawTemplate(app), function() {
-      });
+      let ticker = event.target.getAttribute("data-ticker");
+      let asset_id = event.target.getAttribute("data-assetid");
+      let balance = event.target.getAttribute("data-balance");
+
+      overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
+
+      document.querySelector(".withdraw_submit").onclick = (e) => {
+
+	let amount = document.querySelector(".withdraw_amount").value;
+	let address = document.querySelector(".withdraw_address").value;
+
+	let c = confirm(`Check fee for withdrawing ${amount} to ${address}?`);
+ 	if (c) {
+	  document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Checking withdrawl fee. Please be patient...";
+	  mod.checkWithdrawalFee(asset_id, function(fee) {
+	    document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Withdrawal Fee: "+fee;
+	    let c2 = confirm(`Withdrawal fee is ${fee}. Please confirm withdrawal`);
+	    if (c2) {
+	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
+	      alert("Processing Withdrawal!");
+      	      overlay.hide();
+	    }
+	  });
+	} else {
+	  alert("withdrawal cancelled");
+	}
+      }
     }
     document.querySelector(".balances_deposit").onclick = (e) => {
+
       let overlay = new SaitoOverlay(app);
-      overlay.show(app, mod, MixinDepositTemplate(app), function() {
+      let address = event.target.getAttribute("data-address");
+      let confs = event.target.getAttribute("data-confs");
+      let ticker = event.target.getAttribute("data-ticker");
+
+      overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
+alert("done");
       });
     }
   },

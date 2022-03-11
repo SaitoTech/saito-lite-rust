@@ -2,8 +2,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let mixin_mod = app.modules.returnModule("Mixin");
 
-console.log("HERE: " + JSON.stringify(mixin_mod.mixin));
-
   let html = `
 
   <div class="email-appspace-mixin">
@@ -26,116 +24,42 @@ console.log("HERE: " + JSON.stringify(mixin_mod.mixin));
       <div class="balances_body" id="balances_body">
         <div class="balances_table" id="balances_table">
 	  <div class="balances_tablehead" id="balances_tablehead"></div>
+  `;
+
+  for (let i = 0; i < mixin_mod.mods.length; i++) {
+
+    let xmod = mixin_mod.mods[i];
+
+    html += `
 
 	  <div class="balances_tablerow" id="balances_tablerow">
 	    <div class="balances_tablecell" id="balances_tablecell">
-	      USDC (USDC)
+	      ${xmod.ticker}
 	    </div>
 	    <div class="balances_tablecell" id="balances_tablecell">
-	      231.17
+	      ${xmod.balance}
 	    </div>
 	    <div class="balances_tablecell" id="balances_tablecell">
-	      231.23
+	      ${xmod.change_usd}
 	    </div>
-	    <div class="balances_tablecell balances_link balances_deposit" id="balances_tablecell">
+	    <div class="balances_tablecell balances_link balances_deposit" data-assetid="${xmod.asset_id}" data-confs="${xmod.confirmations}" data-address="${xmod.returnAddress()}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance} id="balances_tablecell">
 	      DEPOSIT
 	    </div>
-	    <div class="balances_tablecell balances_link balances_withdraw" id="balances_tablecell">
+	    <div class="balances_tablecell balances_link balances_withdraw" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" id="balances_tablecell">
 	      WITHDRAW
 	    </div>
 	  </div>
+    `;
+  }
 
-	  <div class="balances_tablerow" id="balances_tablerow">
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      USDT (USDT)
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      4313.12
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      4313.12
-	    </div>
-	    <div class="balances_tablecell balances_link balances_deposit" id="balances_tablecell">
-	      DEPOSIT
-	    </div>
-	    <div class="balances_tablecell balances_link balances_withdraw" id="balances_tablecell">
-	      WITHDRAW
-	    </div>
-	  </div>
-
-	  <div class="balances_tablerow" id="balances_tablerow">
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      EGLD
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      2.03123
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      276.98 USD
-	    </div>
-	    <div class="balances_tablecell balances_link balances_deposit" id="balances_tablecell">
-	      DEPOSIT
-	    </div>
-	    <div class="balances_tablecell balances_link balances_withdraw" id="balances_tablecell">
-	      WITHDRAW
-	    </div>
-	  </div>
+  html += `
 
 	</div>
       </div>
-
     </div>
-
-
-
-    <div class="activity_container" id="activity_container">
-      <div class="balances_header" id="balances_header">
-	<div class="balances_header_title">Activity</div>
-	<div class="balances_header_icons">
-          <svg class="balances_header_icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path fill="none" d="M0 0h24v24H0z"></path><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"></path></svg>
-        </div>
-      </div>
-
-      <div class="balances_body" id="balances_body">
-        <div class="balances_table" id="balances_table">
-	  <div class="balances_tablehead" id="balances_tablehead"></div>
-
-	  <div class="balances_tablerow" id="balances_tablerow">
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      Transfer
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      inbound
-	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      1.22
-	    </div>
-	    <div class="balances_tablecell balances_link balances_deposit" id="balances_tablecell">
-	      EGLD
-	    </div>
-	    <div class="balances_tablecell balances_link balances_withdraw" id="balances_tablecell">
-	      Feb 23-2022 / 14:23:03 UTC
-	    </div>
-	  </div>
-        </div>
-      </div>
-
-    </div>
-
   </div>
 
   <style>
-.activity_container {
-    margin-top: 40px;
-    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 1.5rem;
-    font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    line-height: 1.35417em;
-    padding: 15px;
-}
 .balances_container {
     box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
     border-radius: 4px;

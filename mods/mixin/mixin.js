@@ -25,10 +25,12 @@ class Mixin extends ModTemplate {
     this.mixin.full_name	= "";
     this.mixin.publickey 	= "";
     this.mixin.privatekey 	= "";
-    this.mixin.AccountCreateResponse   = "";
-    
-    this.requests		= [];
-    this.responses 		= [];
+    this.mixin.pin_token	= "";
+    this.mixin.pin_token_base64 = "";
+
+    this.account_created = 0;
+
+    this.mods			= [];
 
   }
   
@@ -52,20 +54,230 @@ class Mixin extends ModTemplate {
 
   loadCryptos() {
 
-    let eth_module = new MixinModule(this.app, "ETH");
-console.log("ETH MOD: " + eth_module.name);
-    this.app.modules.mods.push(eth_module);
+    let mixin_self = this;
+
+    this.app.modules.respondTo("mixin-crypto").forEach(module => {
+
+      let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);
+      crypto_module.installModule(mixin_self.app);
+
+      this.mods.push(crypto_module);
+      this.app.modules.mods.push(crypto_module);
+      let pc = this.app.wallet.returnPreferredCryptoTicker();
+      if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
+        this.checkBalance(crypto_module.asset_id, function(res) {});
+      }
+    });
+
+  }
+
+  
+  processWithdrawal(asset_id, address, amount, fee) {
+
+    const appId = this.mixin.user_id;
+    const sessionId = this.mixin.session_id;
+    const privateKey = this.mixin.privatekey;
+
+    const method = "POST";
+    const uri = '/withdrawals';
+
+    let address_id = "";
+
+    const body = {
+      address_id	: address_id ,
+      amount		: amount ,
+      trace_id		: trace_id ,
+      pin 		: this.base64RawURLEncode(this.mixin.pin_token_base64),
+    };
+
+    try {
+/***
+  "data":{
+    "type":       "address",
+    "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    "tag":        "",
+    "label":      "Eth Address",
+    "fee":        "0.016",
+    "reserve":    "0",
+    "dust":       "0.0001",
+    "updated_at": "2018-07-10T03:58:17.5559296Z"
+  }
+***/
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+	  callback(res.data);
+        }
+      );
+
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+
+  }
+
+
+  addWithdrawalAddress(asset_id, withdrawal_address, callback=null) {
+
+    const appId = this.mixin.user_id;
+    const sessionId = this.mixin.session_id;
+    const privateKey = this.mixin.privatekey;
+
+    const method = "POST";
+    const uri = '/addresses';
+    const body = {
+      asset_id		: asset_id ,
+      label 		: withdrawal_address ,
+      destination 	: withdrawal_address ,
+      tag 		: "standard withdrawal" ,
+      pin 		: this.base64RawURLEncode(this.mixin.pin_token_base64),
+    };
+
+    try {
+/***
+  "data":{
+    "type":       "address",
+    "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    "tag":        "",
+    "label":      "Eth Address",
+    "fee":        "0.016",
+    "reserve":    "0",
+    "dust":       "0.0001",
+    "updated_at": "2018-07-10T03:58:17.5559296Z"
+  }
+***/
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+	  callback(res.data);
+        }
+      );
+
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+  }
+
+
+  checkWithdrawalFee(asset_id, callback=null) {
+    //
+    // CHECK BALANCE
+    //
+    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+
+console.log("checking asset_id: " + asset_id);
+
+    const method = "GET";
+    const uri = `/assets/${asset_id}/fee`;
+
+    let fee = 1000000;
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+	  let d = res.data.data;
+
+console.log("FEE LEVEL: " +JSON.stringify(res));
+
+	  for (let i = 0; i < this.mods.length; i++) {
+	    if (this.mods[i].asset_id === asset_id) {
+
+	      if (d.type && d.amount) {
+	        if (callback) {
+		  callback(d.amount);
+	        }
+	      }
+
+	      return;
+
+	    }
+	  }
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+
+  }
+  checkBalance(asset_id, callback=null) {
+    //
+    // CHECK BALANCE
+    //
+    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+
+    const method = "GET";
+    const uri = `/assets/${asset_id}`;
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+	  let d = res.data.data;
+console.log("RETURNED DATA: " + JSON.stringify(d));
+console.log("submitted assetId: " + asset_id);
+	  for (let i = 0; i < this.mods.length; i++) {
+console.log("checking assetId: " + this.mods[i].asset_id);
+	    if (this.mods[i].asset_id === asset_id) {
+	      let initial_balance = this.mods[i].balance;
+	      let initial_address = this.mods[i].destination;
+
+	      this.mods[i].balance = d.balance;
+              this.mods[i].icon_url = d.icon_url;
+	      this.mods[i].deposit_entries  = d.deposit_entries;
+
+	      this.mods[i].destination = d.destination;
+	      this.mods[i].tag = d.tag;
+	      this.mods[i].price_btc = d.price_btc;
+	      this.mods[i].price_usd = d.price_usd;
+	      this.mods[i].change_btc = d.change_btc;
+	      this.mods[i].change_usd = d.change_usd;
+	      this.mods[i].asset_key = d.asset_key;
+	      this.mods[i].mixin_id = d.mixin_id;
+	      this.mods[i].confirmations = d.confirmations;
+
+console.log("address set to : " + d.destination);
+
+	      if (initial_balance !== this.mods[i].balance || initial_address !== this.mods[i].destination) {
+console.log("updating balance!");
+                this.app.connection.emit("update_balance", this.app.wallet);
+	      }
+	    }
+	  }
+	  if (callback) {
+	    callback(res.data);
+          }
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
 
   }
 
   createAccount(callback=null) {
+
+    if (this.mixin.publickey !== "") { 
+      console.log("Mixin Account already created. Skipping");
+      return;
+    }
+
+    this.account_created = 1;
 
     //
     // CREATE ACCOUNT
     //
     // todo - ping us and we do this, so that we don't compromise the 
     // privatekey associated with account creation. for now we will 
-    // just have the module make the call directly for simplified
+    // have the module make the call directly for simplified
     // development.
     //
     const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
@@ -82,7 +294,7 @@ console.log("ETH MOD: " + eth_module.name);
     const uri = '/users';
     const body = {
       session_secret: user_public_key,
-      full_name: "Saito Test User 22",
+      full_name: `Saito User ${this.app.wallet.returnPublicKey()}`,
     };
 
 
@@ -94,7 +306,6 @@ console.log("ETH MOD: " + eth_module.name);
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-	  this.mixin.accountCreateResponse = res.data;
 	  this.mixin.session_id = res.data.session_id;
 	  this.mixin.user_id = res.data.user_id;
 	  this.mixin.full_name = res.data.full_name;
@@ -281,16 +492,10 @@ console.log("submitting data: " + data.toString());
       scp: scp || 'FULL',
     }
 
-console.log("PAYLOAD: " + JSON.stringify(payload));
-
     let header_st = this.base64RawURLEncode(Buffer.from(JSON.stringify({ alg: "EdDSA", typ: "JWT" }), 'utf8'));
     let payload_st = this.base64RawURLEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
 
-console.log("HEADER: " + JSON.stringify(header_st));
-console.log("PAYLOAD: " + JSON.stringify(payload_st));
-
     let result_st = header_st.toString() + "." + payload_st.toString();
-console.log("RESULT ST: " + result_st);
     let sign = forge.pki.ed25519.sign({
       message: result_st,
       encoding: 'utf8',
@@ -298,14 +503,16 @@ console.log("RESULT ST: " + result_st);
     });
     result_st += ".";
     result_st += this.base64RawURLEncode(Buffer.from(sign).toString('base64'));
-console.log("RESULT ST 2: " + result_st);
     return result_st;
   }
 
 
 
   load() {
-    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; return; }
+    if (this.app?.options?.mixin) { this.mixin = this.app.options.mixin; }
+    if (this.mixin.publickey !== "") {
+      this.account_created = 1;
+    }
   }
 
   save() {
