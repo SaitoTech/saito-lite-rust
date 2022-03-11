@@ -48,8 +48,10 @@ class SettlersSkin {
 			break;
 			
 			default: //Classic
-				this.c1 = {name: "village", svg:`<svg viewbox="0 0 200 200"><polygon points="0,75 100,0, 200,75 200,200 0,200"/></svg>`};
-				this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
+				//this.c1 = {name: "village", svg:`<svg viewbox="0 0 200 200"><polygon points="0,75 100,0, 200,75 200,200 0,200"/></svg>`};
+				//this.c2 = {name: "city", svg:`<svg viewbox="0 0 200 200"><polygon points="0,100 100,100, 100,50 150,0 200,50 200,200 0,200"/></svg>`};
+				this.c1 = {name: "village", svg:`<img src="/settlers/img/icons/village.png"/>`};
+				this.c2 = {name: "city", svg:`<img src="/settlers/img/icons/city.png"/>`};
 				this.r = {name: "road"};
 				this.b = {name: "bandit"};
 				this.s = {name: "knight", img:`<i class="fas fa-horse-head"></i>`};
@@ -61,7 +63,7 @@ class SettlersSkin {
 		      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="132px" fill="saddlebrown">2</text></svg><i class="fas fa-horse-head" style="color:gold;"></i>`};
 				this.resources = [{name: "brick",count:3,ict:3,icon:"/settlers/img/icons/brick-icon.png"},
 								  {name: "wood",count:4,ict:3,icon:"/settlers/img/icons/wood-icon.png"},
-								  {name: "wheat",count:4,ict:1,icon:"/settlers/img/icons/wheat-icon.png"},
+								  {name: "wheat",count:4,ict:3,icon:"/settlers/img/icons/wheat-icon.png"},
 								  {name: "wool",count:4,ict:1,icon:"/settlers/img/icons/wool-icon.png"},
 								  {name: "ore",count:3,ict:3,icon:"/settlers/img/icons/ore-icon.png"},
 								  {name: "desert",count:1,ict:1}];

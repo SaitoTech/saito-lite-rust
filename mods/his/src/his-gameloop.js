@@ -39,7 +39,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+this.returnPlayerFaction(this.game.player).name);
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
 
 	  //
@@ -57,6 +57,26 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+
+	if (mv[0] === "build") {
+
+	  let land_or_sea = mv[1];
+	  let faction = mv[2];
+	  let unit_type = mv[3];
+	  let spacekey = mv[4];
+
+	  if (land_or_sea === "land") {
+	    this.game.spaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+	  if (land_or_sea === "sea") {
+	    this.game.navalspaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
         if (mv[0] === "event") {
 
 	  let player = mv[1];
@@ -67,6 +87,24 @@ console.log("MOVE: " + mv[0]);
 	  if (!this.deck[card].onEvent(this, player)) { return 0; }
 
 	  return 1;
+	}
+
+        if (mv[0] === "move") {
+
+	  let player = mv[1];
+	  let movetype = mv[1];
+	  let source = mv[1];
+	  let destination = mv[1];
+	  let unitidx = mv[1];
+
+          this.spaces[destination].units[player-1].push(this.spaces[source].units[player-1][unitidx].splice(unitidx, 1));
+	  this.updateLog("Player "+player+" moves unit from " + source + " to " + destination);
+
+	  this.displaySpace(source);
+	  this.displaySpace(destination);
+
+	  this.game.queue.splice(qe, 1);
+          return 1;
 	}
 
         if (mv[0] === "victory_determination_phase") {
@@ -82,7 +120,14 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
         if (mv[0] === "action_phase") {
+
 	  this.game.queue.splice(qe, 1);
+
+	  let io = this.returnImpulseOrder();
+	  // added in reverse order as last added goes first
+	  for (let i = io.length-1; i>= 0; i--) {
+	    this.game.queue.push("play\t"+io[i]);
+	  }
           return 1;
         }
         if (mv[0] === "spring_deployment_phase") {
@@ -92,37 +137,23 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "diplomacy_phase") {
 
 console.log("just in diplomacy phase!");
-console.log("cards in hand: " + JSON.stringify(this.game.deck[0].hand));
-
-	  this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].hand);
-          this.attachCardboxEvents(function(card) {
-            this.playerPlayCard(card, this.game.player);
-          });
-
+console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  this.game.queue.splice(qe, 1);
-          return 0;
+          return 1;
         }
         if (mv[0] === "card_draw_phase") {
-this.updateLog("Deal Cards to Players");
-this.updateLog("Discards Reshuffled into Deck");
-this.updateLog("New Units and New Cards Added");
-
-	  let cards_to_deal = [];
-
-	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    let pf = this.game.players_info[i].faction;
-console.log("faction: " + pf);
-	    cards_to_deal.push(this.factions[pf].returnCardsDealt(this));
-          }
-
-console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
 
 	  //
 	  // generate new deck
 	  //
-	  for (let i = this.game.players_info.length; i > 0; i--) {
-    	    this.game.queue.push("DEAL\t1\t"+(i)+"\t"+(cards_to_deal[(i-1)]));
+	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
+	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+              let cardnum = this.factions[this.game.players_info[i].factions[z]].returnCardsDealt(this);
+    	      this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.players_info[i].factions[z]);
+    	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
+	    }
 	  }
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
@@ -130,17 +161,89 @@ console.log("CARDS TO DEAL: " + JSON.stringify(cards_to_deal));
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
-    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
-console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
+	  let deck_to_deal = this.returnDeck()
+	  delete deck_to_deal['001'];
+	  delete deck_to_deal['002'];
+	  delete deck_to_deal['003'];
+	  delete deck_to_deal['004'];
+	  delete deck_to_deal['005'];
+	  delete deck_to_deal['006'];
+	  delete deck_to_deal['007'];
+	  delete deck_to_deal['008'];
+
+    	  this.game.queue.push("restore_home_cards_to_deck");
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(deck_to_deal));
 
 	  this.game.queue.splice(qe, 1);
           return 1;
+
         }
 
+        if (mv[0] === "restore_home_cards_to_deck") {
+	  let d = this.returnDeck();
+	  this.game.deck[0].cards['001'] = d['001'];
+	  this.game.deck[0].cards['002'] = d['002'];
+	  this.game.deck[0].cards['003'] = d['003'];
+	  this.game.deck[0].cards['004'] = d['004'];
+	  this.game.deck[0].cards['005'] = d['005'];
+	  this.game.deck[0].cards['006'] = d['006'];
+	  this.game.deck[0].cards['007'] = d['007'];
+	  this.game.deck[0].cards['008'] = d['008'];
+	  this.game.queue.splice(qe, 1);
+          return 1;
+	}
+
         if (mv[0] === "play") {
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
           this.displayBoard();
-          this.playMove();
+
+	  // skip factions not-in-play
+	  if (player == -1) { 
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
+
+	  if (this.game.player == player) {
+	    this.playerTurn(faction);
+	  } else {
+	    this.updateStatusAndListCards("Opponent Turn:", this.game.deck[0].fhand[0]);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+          return 0;
+        }
+	if (mv[0] === "continue") {
+
+	  let player = mv[1];
+	  let card = mv[2];
+	  let ops = mv[3];
+
+	  if (this.game.player == player) {
+            this.playerPlayOps(card, ops);
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  let player_turn = -1;
+
+	  for (let i = 0; i < this.game.players_info.length; i++) {
+	    if (this.game.players_info.factions.includes(faction)) {
+	      player_turn = i+1;
+	    }
+	  }
+
+          this.displayBoard();
+
+	  // no-one controls this faction, so skip
+	  if (player_turn === -1) { return 1; }
+
+	  // let the player who controls play turn
+	  if (this.game.player === player_turn) {
+            this.playerTurn(faction);
+	  }
+
           return 0;
         }
 
@@ -155,6 +258,62 @@ console.log("ABOUT TO KICK OFF: " + JSON.stringify(this.game.queue));
 
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "add_home_card") {
+
+	  let player = parseInt(mv[1]);
+ 	  let faction = mv[2];
+ 	  let hc = this.returnDeck();
+
+	  if (this.game.player === player) {
+	    for (let key in hc) {
+	      if (hc[key].faction === faction) {
+	        this.game.deck[0].hand.push(key);
+	      }
+	    }
+	  }
+	  
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "hand_to_fhand") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let deckidx = parseInt(mv[1])-1;
+	  let player = parseInt(mv[2]);
+	  let faction = mv[3];
+	  let fhand_idx = this.returnFactionHandIdx(player, faction);
+
+	  if (this.game.player == player) {
+
+console.log("!!!!!!!!!!!!!!!!!!!!!");
+console.log("!!! HAND TO FHAND !!!");
+console.log("!!!!!!!!!!!!!!!!!!!!!");
+console.log("deckidx: " + deckidx);
+console.log(player + " -- " + faction + " -- " + fhand_idx);
+
+	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
+	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
+
+	    for (let i = 0; i < this.game.deck[deckidx].hand.length; i++) {
+	      this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].hand[i]);
+	    }
+
+	    // and clear the hand we have dealt
+	    this.game.deck[deckidx].hand = [];
+	    this.updateLog("hand entries copied over to fhand");
+	  }
+
+
+
+console.log(this.game.deck[deckidx]);
 
 	  return 1;
 

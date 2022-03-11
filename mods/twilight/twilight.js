@@ -3916,8 +3916,9 @@ if (this.game.player == 0) {
 
   }
 
-  confirmEvent() {
-    return sconfirm("Confirm your desire to play this event");
+  async confirmEvent() {
+    let c = await sconfirm("Confirm your desire to play this event");
+    return c;
   }
 
   formatPlayOpsStatus(player, ops, bind_back_button=false) {
@@ -4378,7 +4379,7 @@ if (this.game.player == 0) {
   }
 
 
-  playerTurnCardSelected(card, player) {
+  async playerTurnCardSelected(card, player) {
 
     this.startClock();
 
@@ -4413,7 +4414,7 @@ if (this.game.player == 0) {
       }
 
       if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
-        let c = sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
+        let c = await sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
         if (c) {} else { return; }
       }
 
@@ -5692,7 +5693,7 @@ this.startClock();
             xpos = e.clientX;
             ypos = e.clientY;
           });
-          $(divname).on('mouseup', function (e) {
+          $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
             //$(divname).on('click', function() {
@@ -5721,7 +5722,7 @@ this.startClock();
                     //
                     if (twilight_self.app.BROWSER == 1) {
 
-                      let removeinf = sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+                      let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                       if (removeinf) {
 
                         if (countryname === "turkey") {
@@ -5760,7 +5761,7 @@ this.startClock();
             xpos = e.clientX;
             ypos = e.clientY;
           });
-          $(divname).on('mouseup', function (e) {
+          $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
             //$(divname).on('click', function() {
@@ -5788,7 +5789,7 @@ this.startClock();
                     //
                     if (twilight_self.app.BROWSER == 1) {
 
-                      let removeinf = sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+                      let removeinf = await sconfirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
                       if (removeinf) {
 
                         if (countryname === "cuba") {
@@ -5887,16 +5888,17 @@ this.startClock();
       let divname      = '#'+i;
 
       $(divname).off();
-      $(divname).on('click', function() {
+      $(divname).on('click', async function() {
 
-        let valid_target = 0;
+        
         let countryname = $(this).attr('id');
 
         //
         // sanity DEFCON check
         //
         if (twilight_self.game.state.defcon == 2 && twilight_self.game.countries[countryname].bg == 1) {
-          if (sconfirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)")) {
+          let c = await sconfirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)"); 
+          if (c) {
           } else {
             twilight_self.playOps(player, ops, card);
             return;
@@ -5909,69 +5911,71 @@ this.startClock();
         if (twilight_self.game.state.events.cubanmissilecrisis == 2 && player =="us" ||
             twilight_self.game.state.events.cubanmissilecrisis == 1 && player =="ussr"
         ) {
-          if (sconfirm("Are you sure you wish to coup during the Cuban Missile Crisis?")) {
+          let c = await sconfirm("Are you sure you wish to coup during the Cuban Missile Crisis?"); 
+          if (c) {
           } else {
             twilight_self.playOps(player, ops, card);
             return;
           }
         }
 
+        let coupHeader = `Cannot Coup ${twilight_self.countries[countryname].name}`;
+        let failureReason = ""; //Also tells us if it is a valid target
 
-
-        if (player == "us") {
-          if (twilight_self.countries[countryname].ussr <= 0) { twilight_self.displayModal("Cannot Coup"); } else { valid_target = 1; }
-        } else {
-          if (twilight_self.countries[countryname].us <= 0)   { twilight_self.displayModal("Cannot Coup"); } else { valid_target = 1; }
-        }
+        if ((player == "us" && twilight_self.countries[countryname].ussr <= 0) || (player == "ussr" && twilight_self.countries[countryname].us <= 0)) {
+          failureReason = "No enemy influence";
+        } 
 
         //
         // Coup Restrictions
         //
-        if (twilight_self.game.state.events.usjapan == 1 && countryname == "japan") {
-          twilight_self.displayModal("US / Japan Alliance prevents coups in Japan");
-          valid_target = 0;
-        }
+        
         if (twilight_self.game.state.limit_ignoredefcon == 0) {
           if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
-            twilight_self.displayModal("Invalid Region for this Coup");
-            valid_target = 0;
+            failureReason = "Invalid Region for this Coup";
+            
           }
           if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
-            twilight_self.displayModal("DEFCON prevents coups in Europe");
-            valid_target = 0;
+            failureReason = "DEFCON prevents coups in Europe";
+            
           }
-          if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
-            twilight_self.displayModal("DEFCON prevents coups in Asia");
-            valid_target = 0;
+          if ((twilight_self.countries[countryname].region == "asia" || twilight_self.countries[countryname].region == "seasia") && twilight_self.game.state.defcon < 4) {
+            failureReason = "DEFCON prevents coups in Asia";
           }
-          if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
-            twilight_self.displayModal("DEFCON prevents coups in Asia");
-            valid_target = 0;
-          }
+
           if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
-            twilight_self.displayModal("DEFCON prevents coups in the Middle-East");
-            valid_target = 0;
+            failureReason = "DEFCON prevents coups in the Middle-East";
           }
         }
 
+        /* Though DEFCON is sufficient reason to stop a coup, it may be more interesting to the player to fail in more specific ways, if possible*/
+
+        if (twilight_self.game.state.events.usjapan == 1 && countryname == "japan") {
+          failureReason = "US / Japan Alliance prevents coups in Japan";
+        }
+
+        /*
+        WATCH OUT for LOGIC failure in the next two if-blocks, the realities of defcon blocking coups means that the logic has likely never been tested
+        */
+
         // Nato Coup Restriction
-        if (valid_target == 1 && twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1 && player == "ussr") {
+        if (/*valid_target == 1 &&*/ twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1 && player == "ussr") {
           if (twilight_self.isControlled("us", countryname) == 1) {
-            if ( (countryname == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (countryname == "france" && twilight_self.game.state.events.nato_france == 0) ) {} else {
+            if ( (countryname == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (countryname == "france" && twilight_self.game.state.events.nato_france == 0) ) {
+            } else {
               twilight_self.displayModal("NATO prevents coups of US-controlled countries in Europe");
-              valid_target = 0;
             }
           }
         }
 
         // The Reformer Coup Restriction
-        if (valid_target == 1 && twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.reformer == 1 && player == "ussr") {
+        if (/*valid_target == 1 &&*/ twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.reformer == 1 && player == "ussr") {
           twilight_self.displayModal("The Reformer prevents USSR coup attempts in Europe");
-          valid_target = 0;
         }
 
-        if (valid_target == 1) {
-
+        if (failureReason.length) { 
+          twilight_self.displayModal(coupHeader, failureReason);
+        }else{ //No reason to fail, go ahead and launch coup
           //
           // china card regional bonuses
           //
@@ -5980,9 +5984,9 @@ this.startClock();
             ops++;
           }
           if (player == "ussr" && twilight_self.game.state.events.vietnam_revolts == 1 && twilight_self.game.countries[countryname].region == "seasia") {
-	    if (twilight_self.returnOpsOfCard(card) == 1 && twilight_self.game.state.events.redscare_player1 >= 1) {
+      	    if (twilight_self.returnOpsOfCard(card) == 1 && twilight_self.game.state.events.redscare_player1 >= 1) {
               twilight_self.updateLog("Vietnam Revolts bonus OP removed by Red Purge");
-	    } else { 
+      	    } else { 
               twilight_self.updateLog("Vietnam Revolts bonus OP added to Southeast Asia coup...");
               ops++;
             }

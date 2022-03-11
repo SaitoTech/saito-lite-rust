@@ -129,7 +129,7 @@ module.exports = ChatBox = {
       //
       // submit on enter
       //
-      msg_input.addEventListener("keypress", (e) => {
+      msg_input.addEventListener("keydown", (e) => {
         if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
           e.preventDefault();
           if (msg_input.value == "") {
@@ -137,7 +137,7 @@ module.exports = ChatBox = {
           }
           app.browser.logMatomoEvent(
             "Chat",
-            "ArcadeChatSendMessage",
+            "ChatBoxSendMessage",
             "PressedEnter"
           );
           let newtx = mod.createMessage(group_id, msg_input.value);
@@ -147,6 +147,21 @@ module.exports = ChatBox = {
           //chat_self.addMessage(app, mod, newtx);
           msg_input.value = "";
         }
+        try{
+        let inputBox = document.getElementById(`chat-box-new-message-input-${group_id}`); 
+
+         if (msg_input.value.length < 40 && !msg_input.value.includes("\n")){
+            document.getElementById(`chat-box-new-message-input-${group_id}`).style.margin = ""; 
+         }else{
+            document.getElementById(`chat-box-new-message-input-${group_id}`).style.margin = "2.5px 8px"; 
+         }
+
+        let numLines = Math.floor((inputBox.scrollHeight)/15);
+        //console.log("num chars: "+inputBox.value.length+", scrollHeight: "+inputBox.scrollHeight+", numLines: "+numLines);
+        document.getElementById(`chat-box-${group_id}`).style.gridTemplateRows = `3.2em auto ${15*Math.min(8,Math.max(2,numLines))+6}px`;    
+
+      }catch(err){}
+        
       });
     });
 
@@ -164,6 +179,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnTouch"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);
@@ -182,6 +202,11 @@ module.exports = ChatBox = {
           return;
         }
 
+        app.browser.logMatomoEvent(
+            "Chat",
+            "ChatBoxSendMessage",
+            "OnClick"
+          );
         let newtx = mod.createMessage(group_id, msg_input.value);
         app.modules.returnModule("Chat").sendMessage(app, newtx);
         app.modules.returnModule("Chat").receiveMessage(app, newtx);
@@ -269,6 +294,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);
@@ -278,6 +307,10 @@ module.exports = ChatBox = {
         let group_id = e.currentTarget.id.split("chat-box-close-")[1];
         if (group_id == cgroup.id) {
           mod.mute_community_chat = 1;
+          if (mod.app.options.auto_open_chat_box == undefined || mod.app.options.auto_open_chat_box ==1){
+            mod.app.options.auto_open_chat_box = 0;
+            mod.app.storage.saveOptions();
+          }
         }
         e.stopPropagation();
         let chat_box = document.getElementById(`chat-box-${group_id}`);

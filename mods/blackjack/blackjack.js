@@ -241,7 +241,7 @@ class Blackjack extends GameTemplate {
     for (let i = this.game.players.length; i>0; i--)
       this.game.queue.push(`DECKXOR\t1\t${i}`);
     
-    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnPokerDeck()));
     //this.game.queue.push("BALANCE\t0\t"+this.app.wallet.returnPublicKey()+"\t"+"SAITO");
     
   }
@@ -834,23 +834,7 @@ class Blackjack extends GameTemplate {
   }
 
 
-  returnDeck() {
-    var deck = {};
-    var suits = ["S","C","H","D"];
-    let indexCt = 1;
-    for (let i = 0; i<4; i++){
-      for (let j = 1; j<=13; j++){
-        let cardImg = `${suits[i]}${j}`;
-        deck[indexCt.toString()] = { name: cardImg};
-        indexCt++;
-      }
-    }
-    return deck;
-
-  }
-
   
-
   
   /*
   Player should see their hand in position 1 of player_box, other players are even spaced around "poker table"

@@ -7,7 +7,7 @@ module.exports = ChatBoxTemplate = (group) => {
 	       </div>
 	       <div id="chat-box-main-${group.id}" class="chat-box-main"></div>
 	       <div id="chat-box-input-${group.id}" class="chat-box-input">
-            <textarea class="chat-box-new-message-input" id="chat-box-new-message-input-${group.id}"></textarea>
+            <textarea class="chat-box-new-message-input" id="chat-box-new-message-input-${group.id}" rows="1" cols="40"></textarea>
             <div class="chat-room-submit-button" id="chat-room-submit-button-${group.id}"><i class="icon-small fas fa-arrow-circle-right"></i></div>
          </div>
       </div>

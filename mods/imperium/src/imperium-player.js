@@ -2277,7 +2277,7 @@ playerContinueTurn(player, sector) {
   html += '</ul>';
 
   this.updateStatus(html);
-  $('.option').on('click', function () {
+  $('.option').on('click', async function () {
 
     let action2 = $(this).attr("id");
 
@@ -2323,7 +2323,7 @@ playerContinueTurn(player, sector) {
         if (fleet_supply_in_sector == 1) {
           notice = "You have fleet supply for 1 additional capital ship in this sector. Do you still wish to produce more ships?";
         }
-        let c = sconfirm(notice);
+        let c = await sconfirm(notice);
         if (c) {
           imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
           imperium_self.playerProduceUnits(sector);
