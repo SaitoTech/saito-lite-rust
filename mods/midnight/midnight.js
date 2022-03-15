@@ -101,6 +101,8 @@ class Midnight extends GameTemplate {
       this.menu.render(app, this);
       this.menu.attachEvents(app, this);
 
+      this.playerbox.render(app, this);
+      this.playerbox.attachEvents(app, this);
 
   }
 
@@ -113,12 +115,20 @@ class Midnight extends GameTemplate {
 
     if (!this.game.state) {
       this.updateStatus("Generating the Game");
-      this.game.queue.push("page\t1");
+      this.game.queue.push("page\t0");
       this.game.state = this.returnState();
     }
     this.book = this.returnBook();
   }
 
+  displayPlayer(){
+    let html = `<div class="player_stats">
+                <div>SKILL:</div><div>${this.game.state.skill}</div>
+                <div>STAMINA:</div><div>${this.game.state.stamina}</div>
+                <div>LUCK:</div><div>${this.game.state.luck}</div>
+                </div>`;
+    this.playerbox.refreshInfo(html);
+  }
 
   /* Function stub for adding D&D adventure elements to interactive fiction*/
   returnState() {
@@ -129,13 +139,13 @@ class Midnight extends GameTemplate {
 
     state.inventory = ["Provisions", "Potion", "Lamp", "Torch", "Tinderbox"];
     state.special = [];
-    state.lastpage = 1;
+    state.lastpage = 0;
     return state;
   }
 
   handleGameLoop(msg = null) {
     let midnight_self = this;
-
+    this.displayPlayer();
     ///////////
     // QUEUE //
     ///////////
@@ -211,6 +221,16 @@ The rest of the file is the definition of the interactive book
   returnBook() {
     var book = {};
 
+    book["0"] = {
+      text:"",
+      choices:[
+        {
+          option: "Begin",
+          command: "page\t1",
+        }
+      ],
+    };
+
     book["1"] = {
       text: "As you leave the Guild, your mind works quickly, listing the places where you might find some information as to the gem's whereabouts. Most of the rich merchants in the town have houses near the Field Gate; If you can find Brass's house, you may be able to find some useful information there. Then again, the Merchant's Guild is just across the Market Square, and if Brass is an important merchant, he's bound to have a suite of offices there. Finally, there's the Noose, the area of town around the Thieves' Guild. You hardly ever see a merchant there, but it's the best place in Allansia for picking up all kinds of gossip and rumours. Where will you try first?",
       choices: [
@@ -230,7 +250,7 @@ The rest of the file is the definition of the interactive book
     };
 
     book["2"] = {
-      text: "The water is icy cold. You start to wade across the pond, and instantly your legs are attacked by a packoff small but vicious cold water Piranha. You try tofight them off, but it isn’t easy — you can hardly seethem through the weed-choked water, and you endup splashing a lot but hitting very little, Fight the Piranha as a single enemy, subtracting 1 point From your Attack Strength for this combat.",
+      text: "The water is icy cold. You start to wade across the pond, and instantly your legs are attacked by a pack of small but vicious cold water Piranha. You try to fight them off, but it isn’t easy — you can hardly see them through the weed-choked water, and you endup splashing a lot but hitting very little, Fight the Piranha as a single enemy, subtracting 1 point From your Attack Strength for this combat.",
       choices: [
         {
           option: "Fight Piranha",
@@ -1295,7 +1315,7 @@ The rest of the file is the definition of the interactive book
       text: "On instinct, you set off down the left-hand passage, but you are not sure which is the right way, and soon you realize that you are lost in a maze of tunnels. Test your Luck.",
       choices: [
         {
-          option: "If youre Lucky",
+          option: "If you're Lucky",
           command: "page\t178",
         },
         {
