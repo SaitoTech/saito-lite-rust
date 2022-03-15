@@ -1,7 +1,7 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
-class ETH extends ModTemplate {
+class BSV extends ModTemplate {
 
   constructor(app) {
 
@@ -33,6 +33,6 @@ class ETH extends ModTemplate {
 
 }
 
-module.exports = ETH;
+module.exports = BSV;
 
 

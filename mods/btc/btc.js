@@ -33,6 +33,6 @@ class BTC extends ModTemplate {
 
 }
 
-module.exports = ETH;
+module.exports = BTC;
 
 

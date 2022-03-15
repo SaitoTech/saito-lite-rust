@@ -33,9 +33,18 @@ class Mixin extends ModTemplate {
 
     this.account_created = 0;
 
-    this.mods			= [];
+    this.mods		= [];
+    this.addresses      = [];
+    this.withdrawals    = [];
 
   }
+
+
+  initialize(app) {
+    this.load();
+    this.loadCryptos();
+  }
+
   
   respondTo(type = "") {
 
@@ -55,189 +64,192 @@ class Mixin extends ModTemplate {
     return null;
   }
 
+
+
   loadCryptos() {
 
     let mixin_self = this;
 
     this.app.modules.respondTo("mixin-crypto").forEach(module => {
-
       let crypto_module = new MixinModule(this.app, module.ticker, mixin_self, module.asset_id);
       crypto_module.installModule(mixin_self.app);
-
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
       let pc = this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
         this.checkBalance(crypto_module.asset_id, function(res) {});
+        this.fetchAddresses(crypto_module.asset_id, function(res) {});
       }
     });
 
   }
-
-  initialize(app) {
-
-    this.load();
-    this.loadCryptos();
-
-/****
-    //
-    // WORKS - our private-key can query profiles @ /me
-    //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
-    const method = 'GET';
-    const uri = '/me';
-    const token = this.signAuthenticationToken(appId, sessionId, privateKey, method, uri);
-    console.log(token);
-
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then(
-        (res) => {
-          console.log("RETURNED DATA: " + JSON.stringify(res.data));
-        }
-      );
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
-****/
-
-
-/****
-    //
-    // WORKS - we can create Mixin network users @ /users
-    //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
-
-    const user_keypair = forge.pki.ed25519.generateKeyPair();
-    const original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
-    const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
-    const user_public_key = this.base64RawURLEncode(original_user_public_key);
-    const user_private_key = this.base64RawURLEncode(original_user_private_key);
-
-    const method = "POST";
-    const uri = '/users'; 
-    const body = {
-      session_secret: user_public_key,
-      full_name: "Saito Test User 23",
-    };
-
-    console.log("ORIG USER PUBKEY: "+original_user_public_key);
-    console.log("PRIG USER PRVKEY: "+original_user_private_key);
-    console.log("URI USER PUBKEY: "+user_public_key.toString('base64'));
-    console.log("URI USER PRVKEY: "+user_private_key.toString('base64'));
-
-    try {
-      this.request(appId, sessionId, privateKey, method, uri, body).then(
-        (res) => {
-          console.log("RETURNED DATA: " + JSON.stringify(res.data));
-        }
-      );
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
-****/
-
-
-/***
-    //
-    // FAILS - our new user cannot query their profile @ /me
-    //
-    const appId = '886f09f1-c36c-3ea6-9b0d-798ddcbfedfc'; //must be user_id from step 2
-    const sessionId = 'bdd2e1cc-6e66-4ff6-a69b-bda661e7bd81';
-    const privateKey = 'HkHtQ5KItj9lbmuTTxnfFvOvJBNH09M7EES/pd7QQGmw/1kBViHNIxZZ++Jrji6+FioVGWIWms993OZrPQ2h5A==';
-    const method = 'GET';
-    const uri = '/me';
-    const token = this.signAuthenticationToken(appId, sessionId, privateKey, method, uri);
-    console.log(token);
-
-    try {
-      this.request(appId, sessionId, privateKey, method, uri).then(
-        (res) => {
-          console.log("RETURNED DATA: " + JSON.stringify(res.data));
-        }
-      );
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
-***/
-
-  }
-
 
   
   ///////////
   // MIXIN //
   ///////////
   //
-  // - processWithdrawal
   // - addWithdrawalAddress
   // - checkWithdrawalFee
   // - checkBalance
   // - createAccount
+  // - createWithdrawalAddress
+  // - fetchAddresses
   //
-  processWithdrawal(asset_id, address, amount, fee) {
+  fetchAddresses(asset_id, callback=null) {
 
-  
     const appId = this.mixin.user_id;
     const sessionId = this.mixin.session_id;
     const privateKey = this.mixin.privatekey;
 
+    const method = "GET";
+    const uri = `/assets/${asset_id}/addresses`;
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+console.log(res.data);
+	  let d = res.data;
+	  for (let i = 0; i < d.data.length; i++) {
+	    	/********************************************
+    		  "type":       "address",
+    		  "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    		  "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    		  "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    		  "tag":        "",
+    		  "label":      "Eth Address",
+    		  "fee":        "0.016",
+    		  "reserve":    "0",
+    		  "dust":       "0.0001",
+    		  "updated_at": "2018-07-10T03:58:17.5559296Z"
+		*********************************************/
+	    this.addresses.push(d.data[i]);
+	  }
+	  if (callback) { callback(res.data); }
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+  }
+
+  doesWithdrawalAddressExist(asset_id, address) {
+    for (let i = 0; i < this.addresses.length; i++) {
+      if (this.addresses[i].asset_id === asset_id) {
+        if (this.addresses[i].address_id === address) { return 1; }
+        if (this.addresses[i].destination === address) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  createWithdrawalAddress(asset_id, address, label="", tag="", callback=null) {
+
+    let appId = this.mixin.user_id;
+    let sessionId = this.mixin.session_id;
+    let privateKey = this.mixin.privatekey;
+
+    const method = "POST";
+    const uri = '/addresses';
+
+    const body = {
+      asset_id		: aseet_id ,
+      label		: `Withdrawal Address` ,
+      destination	: address ,
+      tag		: trace_id ,
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
+    };
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+	  console.log("WITHDRAWAL REQUEST ADDED: ");
+	  console.log(res.data);
+	    	/********************************************
+    		  "type":       "address",
+    		  "address_id": "e1524f3c-2e4f-411f-8a06-b5e1b1601308",
+    		  "asset_id":   "43d61dcd-e413-450d-80b8-101d5e903357",
+    		  "destination":"0x86Fa049857E0209aa7D9e616F7eb3b3B78ECfdb0",
+    		  "tag":        "",
+    		  "label":      "Eth Address",
+    		  "fee":        "0.016",
+    		  "reserve":    "0",
+    		  "dust":       "0.0001",
+    		  "updated_at": "2018-07-10T03:58:17.5559296Z"
+		*********************************************/
+	  let d = res.data;
+	  this.addresses.push(d.data);
+	  if (callback) { callback(res.data); }
+	}
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+  }
+
+
+  sendInNetworkTransfer(asset_id, address_id, amount, trace_id="") {
+
+    let appId = this.mixin.user_id;
+    let sessionId = this.mixin.session_id;
+    let privateKey = this.mixin.privatekey;
+
+    let method = "POST";
+    let uri = '/transactions';
+    let body = {
+      asset_id		: asset_id ,
+      address_id	: address_id ,
+      amount		: amount ,
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
+      trace_id		: trace_id ,
+      memo		: "",
+    };
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri, body).then(
+        (res) => {
+console.log("WITHDRAWAL REQUEST SUBMITTED: ");
+console.log(res.data);
+	  let d = res.data;
+	  this.withdrawals.push(d.data);
+	  if (callback) { callback(res.data); }
+        }
+      );
+
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+  }
+
+  sendWithdrawalRequest(asset_id, address_id, address, amount, trace_id="", callback=null) {
+
+    let appId = this.mixin.user_id;
+    let sessionId = this.mixin.session_id;
+    let privateKey = this.mixin.privatekey;
+
     const method = "POST";
     const uri = '/withdrawals';
-
-    let address_id = "";
 
     const body = {
       address_id	: address_id ,
       amount		: amount ,
       trace_id		: trace_id ,
-      pin 		: this.base64RawURLEncode(this.mixin.pin_token_base64),
+      pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-	  callback(res.data);
+console.log("WITHDRAWAL REQUEST SUBMITTED: ");
+console.log(res.data);
+	  let d = res.data;
+	  this.withdrawals.push(d.data);
+	  if (callback) { callback(res.data); }
         }
       );
-
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-
-  }
-
-
-  addWithdrawalAddress(asset_id, withdrawal_address, callback=null) {
-
-    const appId = this.mixin.user_id;
-    const sessionId = this.mixin.session_id;
-    const privateKey = this.mixin.privatekey;
-
-    const method = "POST";
-    const uri = '/addresses';
-    const body = {
-      asset_id		: asset_id ,
-      label 		: withdrawal_address ,
-      destination 	: withdrawal_address ,
-      tag 		: "standard withdrawal" ,
-      pin 		: this.base64RawURLEncode(this.mixin.pin_token_base64),
-    };
-
-    try {
-      this.request(appId, sessionId, privateKey, method, uri, body).then(
-        (res) => {
-	  callback(res.data);
-        }
-      );
-
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
-    }
-
   }
 
 
@@ -361,7 +373,7 @@ console.log("new pin: " + new_pin);
     let encrypted_old_pin = "";
     if (old_pin !== "") { 
       console.log("gen old key 1");
-      this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey); 
+      encrypted_old_pin = this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey); 
       console.log("gen old key 2");
     }
     console.log("gen new key 1");
@@ -608,96 +620,6 @@ console.log("we have updated our pin to: " + new_pin);
     return result_st;
   }
 
-  setupPin(pin, user, sessionKey, callback) {
-    const encryptedPIN = this.encryptPin(
-      pin,
-      user.pin_token,
-      user.session_id,
-      sessionKey
-    )
-
-    return this.updatePin(
-      '',
-      encryptedPIN,
-      user.user_id,
-      user.session_id,
-      sessionKey,
-      callback
-    )
-  }
-
-  updatePin(oldEncryptedPin, encryptedPin, uid, sid, sessionKey, callback) {
-    const data = {
-      old_pin: oldEncryptedPin,
-      pin: encryptedPin,
-    }
-    return this.client.request(uid, sid, sessionKey, 'POST', '/pin/update', data).then(
-      (res) => {
-        if (callback) {
-          callback(res.data)
-        } else {
-          return res.data
-        }
-      }
-    )
-  }
-
-  encryptPin(pin, pinToken, sessionId, privateKey, iterator=null) {
-    const blockSize = 16
-    let Uint64
-
-    try {
-      if (LittleEndian) Uint64 = LittleEndian.Int64LE
-      if (Uint64BE) Uint64 = Uint64LE
-    } catch (error) {}
-
-    privateKey = forge.pki.privateKeyFromPem(privateKey)
-    let pinKey = privateKey.decrypt(forge.util.decode64(pinToken), 'RSA-OAEP', {
-      md: forge.md.sha256.create(),
-      label: sessionId,
-    })
-
-    let _iterator = new Uint8Array(new Uint64(Math.floor((new Date()).getTime() / 1000)).buffer)
-    _iterator = forge.util.createBuffer(_iterator)
-    iterator = iterator || _iterator
-    iterator = iterator.getBytes()
-    let time = new Uint8Array(new Uint64(Math.floor((new Date()).getTime() / 1000)).buffer)
-
-    time = forge.util.createBuffer(time)
-    time = time.getBytes()
-
-    let pinByte = forge.util.createBuffer(pin, 'utf8')
-
-    let buffer = forge.util.createBuffer()
-    buffer.putBytes(pinByte)
-    buffer.putBytes(time)
-    buffer.putBytes(iterator)
-    let paddingLen = blockSize - (pinByte.length() % blockSize)
-    let padding = forge.util.hexToBytes(paddingLen.toString(16))
-
-    while (paddingLen > 0) {
-      paddingLen--
-      buffer.putBytes(padding)
-    }
-
-    let iv = forge.random.getBytesSync(16)
-    let key = this.hexToBytes(forge.util.binary.hex.encode(pinKey))
-    let cipher = forge.cipher.createCipher('AES-CBC', key)
-
-    cipher.start({
-      iv: iv,
-    })
-    cipher.update(buffer)
-
-    cipher.finish(() => true)
-
-    let pin_buff = forge.util.createBuffer()
-    pin_buff.putBytes(iv)
-    pin_buff.putBytes(cipher.output.getBytes())
-
-    const encryptedBytes = pin_buff.getBytes()
-    return forge.util.encode64(encryptedBytes)
-  }
 
   hexToBytes(hex) {
     const bytes = []

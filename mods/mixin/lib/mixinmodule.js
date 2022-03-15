@@ -8,8 +8,8 @@
    returnAddress()
    returnPrivateKey()
    async returnBalance(addresses = "")
-   async sendPayment(amounts="", recipient="")
-   async hasPayment(amounts=[], senders=[], receivers=[], timestamp);
+   async sendPayment(amount="", recipient="", unique_hash="")
+   async hasPayment(howMuch, from, to, timestamp)
 
 **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
@@ -155,8 +155,9 @@ MixinModule.prototype.returnBalance = async function() {
  * @abstract
  * @return {Number}
  */
-MixinModule.prototype.sendPayment = function() {
-  throw new Error('send must be implemented by subclass!');
+MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_hash="") {
+  return this.app.crypto.hash("payment");
+//  throw new Error('send must be implemented by subclass!');
 };
 
 /**
@@ -188,8 +189,9 @@ MixinModule.prototype.returnPrivateKey = function() {
  * @param {timestamp} to - timestamp after which the transaction was sent
  * @return {Boolean}
  */
-MixinModule.prototype.hasPayment = function() {
-  throw new Error('hasPayment must be implemented by subclass!');
+MixinModule.prototype.hasPayment = function(howMuch, from, to, timestamp) {
+  return 1;
+//  throw new Error('hasPayment must be implemented by subclass!');
 };
 
 module.exports = MixinModule;

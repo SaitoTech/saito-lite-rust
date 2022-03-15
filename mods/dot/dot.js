@@ -33,6 +33,6 @@ class DOT extends ModTemplate {
 
 }
 
-module.exports = ETH;
+module.exports = DOT;
 
 

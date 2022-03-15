@@ -1,21 +1,22 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
-class SOL extends ModTemplate {
+class TRX extends ModTemplate {
 
   constructor(app) {
 
     super(app);
 
-    this.appname = "SOL";
-    this.name = "SOL";
-    this.ticker = "SOL";
-    this.description = "Adds support for Mixin-powered Solana transfers on the Saito Network";
+    this.appname = "TRX";
+    this.name = "TRX";
+    this.ticker = "TRX";
+    this.description = "Adds support for Mixin-powered Ethereum transfers on the Saito Network";
     this.categories = "Utility Cryptocurrency Finance";
 
     // MIXIN STUFF
-    this.asset_id = "64692c23-8971-4cf4-84a7-4dd1271dd887";
-    this.chain_id = "64692c23-8971-4cf4-84a7-4dd1271dd887";
+    this.asset_id = "25dabac5-056a-48ff-b9f9-f67395dc407c";
+    this.chain_id = "25dabac5-056a-48ff-b9f9-f67395dc407c";
+
 
   }
   
@@ -33,6 +34,6 @@ class SOL extends ModTemplate {
 
 }
 
-module.exports = SOL;
+module.exports = TRX;
 
 

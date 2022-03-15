@@ -33,6 +33,6 @@ class BCH extends ModTemplate {
 
 }
 
-module.exports = ETH;
+module.exports = BCH;
 
 
