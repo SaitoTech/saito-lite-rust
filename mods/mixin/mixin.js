@@ -8,6 +8,7 @@ const forge = require('node-forge');
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
+const LittleEndian = require('int64-buffer');
 
 class Mixin extends ModTemplate {
 
@@ -207,7 +208,6 @@ class Mixin extends ModTemplate {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
 
-
   }
 
 
@@ -300,9 +300,7 @@ console.log("FEE LEVEL: " +JSON.stringify(res));
         (res) => {
 	  let d = res.data.data;
 console.log("RETURNED DATA: " + JSON.stringify(d));
-console.log("submitted assetId: " + asset_id);
 	  for (let i = 0; i < this.mods.length; i++) {
-console.log("checking assetId: " + this.mods[i].asset_id);
 	    if (this.mods[i].asset_id === asset_id) {
 	      let initial_balance = this.mods[i].balance;
 	      let initial_address = this.mods[i].destination;
@@ -321,10 +319,7 @@ console.log("checking assetId: " + this.mods[i].asset_id);
 	      this.mods[i].mixin_id = d.mixin_id;
 	      this.mods[i].confirmations = d.confirmations;
 
-console.log("address set to : " + d.destination);
-
 	      if (initial_balance !== this.mods[i].balance || initial_address !== this.mods[i].destination) {
-console.log("updating balance!");
                 this.app.connection.emit("update_balance", this.app.wallet);
 	      }
 	    }
@@ -340,7 +335,70 @@ console.log("updating balance!");
 
   }
 
+  updateUserPin(new_pin, callback=null) {
+
+    let mixin_self = this;
+
+    //
+    // CREATE ACCOUNT
+    //
+    // todo - ping us and we do this, so that we don't compromise the 
+    // privatekey associated with account creation. for now we will 
+    // have the module make the call directly for simplified
+    // development.
+    //
+    let user_id = this.mixin.user_id;
+    let session_id = this.mixin.session_id;
+    let privatekey = this.mixin.privatekey;
+    let old_pin = this.mixin.pin;
+
+console.log("PT: " + this.mixin.pin_token);
+console.log("PTB64: " + this.mixin.pin_token_base64);
+console.log("PRIV: " + privatekey);
+console.log("old pin: " + old_pin);
+console.log("new pin: " + new_pin);
+
+    let encrypted_old_pin = "";
+    if (old_pin !== "") { 
+      console.log("gen old key 1");
+      this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey); 
+      console.log("gen old key 2");
+    }
+    console.log("gen new key 1");
+    let encrypted_new_pin = this.signEd25519PIN(new_pin, this.mixin.pin_token, session_id, privatekey);
+    console.log("gen new key 2");
+
+console.log("encrypted op: " + encrypted_old_pin);
+console.log("encrypted np: " + encrypted_new_pin);
+
+    const method = "POST";
+    const uri = '/pin/update';
+    const body = {
+      old_pin: encrypted_old_pin,
+      pin: encrypted_new_pin,
+    };
+
+    try {
+console.log("SENDING PIN UPDATE REQUEST");
+      this.request(user_id, session_id, privatekey, method, uri, body).then(
+        (res) => {
+          console.log("RETURNED PIN DATA: " + JSON.stringify(res.data));
+	  mixin_self.mixin.pin = new_pin;
+	  mixin_self.save();
+console.log("SAVED MIXIN DATA WITH NEW PIN: " + new_pin);
+	  if (callback != null) { callback(res.data); }
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+  }
+
+
+
   createAccount(callback=null) {
+
+    let mixin_self = this;
 
     if (this.mixin.publickey !== "") { 
       console.log("Mixin Account already created. Skipping");
@@ -357,19 +415,19 @@ console.log("updating balance!");
     // have the module make the call directly for simplified
     // development.
     //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+    let appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
+    let sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
+    let privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
 
-    const user_keypair = forge.pki.ed25519.generateKeyPair();
-    const original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
-    const original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
-    const user_public_key = this.base64RawURLEncode(original_user_public_key);
-    const user_private_key = this.base64RawURLEncode(original_user_private_key);
+    let user_keypair = forge.pki.ed25519.generateKeyPair();
+    let original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
+    let original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
+    let user_public_key = this.base64RawURLEncode(original_user_public_key);
+    let user_private_key = this.base64RawURLEncode(original_user_private_key);
 
-    const method = "POST";
-    const uri = '/users';
-    const body = {
+    let method = "POST";
+    let uri = '/users';
+    let body = {
       session_secret: user_public_key,
       full_name: `Saito User ${this.app.wallet.returnPublicKey()}`,
     };
@@ -388,29 +446,48 @@ console.log("privkey: " + user_private_key.toString('base64'));
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
-	  this.mixin.session_id = res.data.session_id;
-	  this.mixin.user_id = res.data.user_id;
-	  this.mixin.full_name = res.data.full_name;
-          console.log("RETURNED DATA: " + JSON.stringify(res.data));
-	  this.save();
+
+console.log("FETCHED PIN TOKEN: " + res.data.pin_token);
+	  let d = res.data;
+
+	  mixin_self.mixin.session_id = d.data.session_id;
+	  mixin_self.mixin.user_id = d.data.user_id;
+	  mixin_self.mixin.full_name = d.data.full_name;
+	  mixin_self.mixin.pin_token = d.data.pin_token;
+	  mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
+
+          console.log("RETURNED DATA: " + JSON.stringify(d.data));
+	  mixin_self.save();
 
 	  //
 	  // we may have activated a crypto to trigger this, in which
 	  // case we need to update the balance and then emit an event
 	  // to trigger UI re-render, including address
 	  //
-	  let pc = this.app.wallet.wallet.preferred_crypto;
-	  for (let i = 0; i < this.mods.length; i++) {
-	    if (this.mods[i].name === pc) {
-console.log("CHECKING BALANCE FOR: " + this.mods[i].name);
-	      this.checkBalance(this.mods[i].asset_id, () => {
-console.log("BALANCE CHECKED AND UPDATING!");
-      	 	this.app.connection.emit('set_preferred_crypto');
+	  let pc = mixin_self.app.wallet.wallet.preferred_crypto;
+	  for (let i = 0; i < mixin_self.mods.length; i++) {
+	    if (mixin_self.mods[i].name === pc) {
+	      mixin_self.checkBalance(mixin_self.mods[i].asset_id, () => {
+		//
+		// this may already have run elsewhere, we be run
+		// it again because of the potential delay here in 
+		// fetching the balance of the module given the need
+		// for mixin account creation.
+		//
+      	 	mixin_self.app.connection.emit('set_preferred_crypto');
 	      });
 	    }
 	  }
 
-
+	  //
+	  // and set our pin
+	  //
+	  let new_pin = (new Date()).getTime().toString().substr(-6);
+console.log("we want to set this pin: " + new_pin);
+console.log("pin token is now: " + res.data.pin_token);
+	  mixin_self.updateUserPin(new_pin, () => {
+console.log("we have updated our pin to: " + new_pin);
+	  });
 
 	  if (callback != null) { callback(res.data); }
         }
@@ -418,8 +495,6 @@ console.log("BALANCE CHECKED AND UPDATING!");
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-
-
   }
 
 
@@ -434,6 +509,18 @@ console.log("BALANCE CHECKED AND UPDATING!");
   //
   base64RawURLEncode(buffer) {
     return buffer.toString('base64').replace(/\=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  }
+
+  privateKeyToCurve25519(privateKey) {
+    const seed = privateKey.subarray(0, 32);
+    const md = forge.md.sha512.create();
+    md.update(seed.toString('binary'));
+    const digestx = md.digest();
+    const digest = Buffer.from(digestx.getBytes(), 'binary');
+    digest[0] &= 248;
+    digest[31] &= 127;
+    digest[31] |= 64;
+    return digest.subarray(0, 32);
   }
 
   requestByTokenNoData(method, path, accessToken) {
@@ -555,7 +642,7 @@ console.log("BALANCE CHECKED AND UPDATING!");
     )
   }
 
-  encryptPin(pin, pinToken, sessionId, privateKey, iterator) {
+  encryptPin(pin, pinToken, sessionId, privateKey, iterator=null) {
     const blockSize = 16
     let Uint64
 
@@ -611,7 +698,6 @@ console.log("BALANCE CHECKED AND UPDATING!");
     const encryptedBytes = pin_buff.getBytes()
     return forge.util.encode64(encryptedBytes)
   }
-
 
   hexToBytes(hex) {
     const bytes = []
@@ -676,7 +762,6 @@ console.log("BALANCE CHECKED AND UPDATING!");
     const encryptedBytes = pin_buff.getBytes()
     return forge.util.encode64(encryptedBytes)
   }
-
 
 
 
