@@ -1,23 +1,73 @@
-/*
-  Undo poker playerbox positions....
-.p1, .p2, .p3, .p4 {
-  min-width: unset;
-  height: unset;
-  bottom: unset;
-  top: unset;
-  right: unset;
-  left: unset;
-  transform: unset;
-  width: unset;
-  overflow-y: unset;
-}
-*/
+
 
 :root{
-  --p1-color: red;
-  --p2-color: blue;
-  --p3-color: rgb(0,140,0);
-  --p4-color: orange;
+  --p1-color: /*#e44;*/ #fb2215;
+  --p2-color: /*#049;*/ #15eefb;
+  --p3-color: /*#094;*/ #7bfb15;
+  --p4-color: /*#D63;*/ #9515fb;
+}
+
+.tip{
+  width: unset;
+}
+
+.tip .tiptext{
+  min-width: 100px;
+  width: fit-content;
+  padding: 0.5em 1em;
+  box-sizing: content-box;
+  white-space: nowrap;
+  z-index: 300;
+}
+
+.handy-help{
+  margin: 0 auto;
+  cursor: help;
+}
+
+/* Building costs as cardbox overlay */
+.game-cardbox{
+  display: none;
+  width: fit-content;
+  height: 460px;
+  background-color: rgba(0,0,0,0.75);
+  border: 5px solid black;
+  border-radius: 10px;
+  color: white;
+  transform: unset;
+  left: 10px;
+  top: 60px;
+
+}
+
+.construction-costs{
+  font-size: 24px;
+}
+.construction-costs h2{
+  text-align: center;
+}
+.construction-costs .table{
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-gap: 1em;
+  margin: 0.75em;
+}
+
+.construction-costs .table .cost{
+  display: flex;
+}
+.construction-costs .icon, .construction-costs .token, .construction-costs img{
+  width: 50px;
+  margin: 2.5px;
+}
+.construction-costs .message{
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.cardfan{
+  top: 45vh;
+  left: 5vw;
 }
 
 .hexIn{
@@ -40,59 +90,93 @@
   right: -12.5%;
 }
 
-body {
-  background-color: lightseagreen !important;
-  background: radial-gradient(circle farthest-corner at 50% 0%, lightseagreen 40%, blue 45%, lightseagreen 50%);
-  background-size: 25px 25px;
-  /*background-image: url(/settlers/img/background2.jpg);*/
-  /*background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;*/
-  position: unset; /* fixed from game.css does weird stuff*/
-  z-index: 0;
+dt{
+  margin-top: 0.8em;
+  margin-bottom: 0.5em;
 }
 
-#game-hexgrid-container{
+
+/*My Background*/
+body {
+  background-color: #369 !important;
+  background: radial-gradient(circle farthest-corner at 50% 0%, #369 40%, lightseagreen 45%, #369 50%);
+  background-size: 25px 25px;
+  position: unset; /* fixed from game.css does weird stuff*/
+  z-index: 0;
+  font-size: 16px;
+}
+
+/*Richard background*/
+body {
+  background: linear-gradient(-75deg, #369, #58b, #58b, #369);
+  background-size: 100% 100%;
+  /*animation: gradient 20s ease infinite;*/
+  height: 100vh;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#game-hexgrid{
   z-index: 2;
+  width: 1000px;
+  padding: 10% 5% 15%; /*Creates space for board overflow*/
+  padding:  100px 35px 150px;
+  box-sizing: content-box;
+  border-radius: 400px;
+  cursor: grab;
+  background-color: rgba(200,200,240,0.1);
 }
 
 .player-box{
-  background-color: #444A;
+  background-color: #444D;
   z-index: 3;
-  border: 4px solid;
+  border: 1px solid;
+  max-width: 25vw;
 }
 
-.player-box > .player-box-graphic{
-  z-index: -1;
+
+
+.player-info-name {
+  font-weight: lighter;
 }
 
 .game_board_sizer{
   z-index: 1000;
 }
 
-#game-hexgrid, #game-hexgrid-container{
-  
-}
 
-#game-hexgrid{
-  width: 1000px;
-  padding: 10% 5% 15%; /*Creates space for board overflow*/
-  box-sizing: content-box;
-}
+.plog .status-text-menu ul, .plog .status-text-menu ul li{
+  background-color: unset;
+} 
 
+.plog .status-header{
+  background-color: unset;
+  box-shadow: unset;
+}
 
 /* Dice */
 .diceroll{
   display: none;
-  position: absolute;
-  width: 10vw;
-  top: 0px;
+  width: min(12vw,120px);
+  margin: 0 auto;
+  /*position: absolute;
+  /*top: 0px;
   left: 50%;
-  transform: translateX(-5vw);
+  transform: translateX(-5vw);*/
   border: 2px solid black;
-  border-radius: 1vw;
+  border-radius: 5px;
   background-color: #222B;
-  padding: 0.5vw;
+  padding: min(0.5vw,5px);
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -100,7 +184,7 @@ body {
 }
 
 .die{
-  width: 3vw;
+  width: min(4vw,40px);
 }
 .hud-body {
   overflow: unset;
@@ -135,13 +219,6 @@ body {
   pointer-events: none; 
 }
 
-.notme .player-box-graphic .devcards .tinycard{
-  width: 8vh;
-}
-
-.notme .player-box-graphic .rescards .tinycard{
-  width: 10vh;
-}
 
 /* Make room to display two hands of cards*/
 .devcards{
@@ -154,40 +231,6 @@ body {
   position: absolute;
 }
 
-.bighand>.card:nth-child(5n+1) {
-  transform: rotate(-20deg);
-  left: 0px;
-}
-
-.bighand>.card:nth-child(5n+2) {
-  transform: rotate(-10deg);
-  left: 2vh;
-}
-
-.bighand>.card:nth-child(5n+3) {
-  transform: rotate(0deg);
-  left: 4vh;
-}
-
-.bighand>.card:nth-child(5n+4) {
-  transform: rotate(10deg);
-  left: 6vh;
-}
-
-.bighand>.card:nth-child(5n+5) {
-  transform: rotate(20deg);
-  left: 8vh;
-}
-
-.bighand>.card:nth-child(n+6) {
-  top: 3vh;
-}
-.bighand>.card:nth-child(n+11) {
-  top: 6vh;
-}
-.bighand>.card:nth-child(n+16) {
-  top: 9vh;
-}
 
 .card .cardtitle{
   position: absolute;
@@ -220,14 +263,21 @@ body {
   z-index: 1000;
 }
 
-.chover:hover, .producer.chover polygon:hover {
-  fill: yellow;
-  stroke: yellow;
+.chover:hover, .producer.chover polygon:hover, .city.chover:hover {
+  /*fill: whitesmoke;
+  stroke: whitesmoke;*/
+  background-color: whitesmoke;
   cursor: crosshair;
+  border-color: whitesmoke;
+}
+
+.city.empty.rhover{
+  background-color: rgba(255,255,128,0.95);
+  border: 3px dotted purple;
 }
 
 
-.rhover:hover {
+.rhover:hover, .city.empty.rhover:hover {
   border: 1px solid white;
   background-color: whitesmoke;
   cursor: crosshair;
@@ -310,9 +360,10 @@ body {
   width: 65%;
   height: 10%;
   background-color: transparent;
-
   z-index: 10;
+  border-radius: 10px;
 }
+
 
 .road5{
     transform: rotate(90deg);
@@ -356,9 +407,10 @@ body {
   z-index: 12;
   font-size: 2em;
   text-align: center;
+  border-radius: 10px;
 }
 
-.city > svg{
+.city > svg, .city > img{
   width: 100%;
   height: 100%;
   top:  0px;
@@ -379,6 +431,13 @@ body {
   background-color: var(--p4-color);
 }
 
+.player-box.me{
+  border-top: 10px solid;
+}
+.player-box.notme{
+  border-left: 10px solid;
+}
+
 .player-box.c1 {
   border-color: var(--p1-color);
 }
@@ -393,13 +452,17 @@ body {
 }
 
 
-.producer polygon{
+/*.producer polygon{
   fill: white;
 }
 
 .producer line{
   stroke: white;
+}*/
+.producer{
+  box-shadow: 0 0 10px 5px whitesmoke;
 }
+
 
 .city1{
   top: -10%;
@@ -434,7 +497,7 @@ body {
   font-size: 2.5em;
   z-index: 15;
   font-weight: bold;
-  border: 1px solid #fff;
+  border: 2px solid #fff;
   border-radius: 50%;
   width: 2em;
   height: 2em;
@@ -447,6 +510,8 @@ body {
 .bandit{
   background-color: black;
   color: darkgray;
+  border-color: black;
+  box-shadow: 0 0 40px 50px rgba(0,0,0,0.75);
 }
 
 .city.p1 {
@@ -471,9 +536,11 @@ body {
   background-color: whitesmoke;
   padding: 25px;
   font-size: 1.25em;
-  width: 50vw;
+  min-width: 50vw;
+  /*width: 500px;*/
+  max-width: 80vw;
   max-height: 70vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 
 .trade_overlay_title{
@@ -487,22 +554,30 @@ body {
   justify-content: space-evenly;
   margin: 1em 0px;
 }
+.trade_overlay_buttons{
+  align-items: center;
+}
+
+.trade_overlay_buttons .notice{
+  font-style: italic;
+}
 
 .trade_overlay .icon{
   width: 2em;
 }
 
-.trade_overlay .select{
+/*.trade_overlay .select{
   padding: 0.5em;
-}
+  width: 120px;
+}*/
 
 .trade_overlay .selected{
   padding: 0em;
 }
 
 .trade_overlay .noselect{
-  color: grey;
-  font-style: italic;
+  color: lightgrey;
+  /*font-style: italic;*/
 }
 
 .trade_overlay .selected{
@@ -528,7 +603,8 @@ body {
 }
 
 .trade_button {
-  width: fit-content;
+  width: 120px;
+  padding: 0.5em;
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -546,8 +622,31 @@ body {
   font-weight: bold;
 }
 
-.tbd .icon{
+/*.tbd .icon{
   height: 1.25em;
+}*/
+
+.wishlist .icon{
+  display: inline-block;
+}
+
+.horizontal_list{
+  display: flex;
+  flex-wrap: wrap;
+  border-top:  1px solid var(--saito-skyline-grey);
+}
+
+.horizontal_list .option .icon, .bank .option .icon{
+  margin: 0 0.25em;
+  width: 2em;
+  vertical-align: middle;
+}
+
+ul.horizontal_list li.iconoption{
+  margin: 0;
+  width: 20%;
+  height: 3em;
+  border-top: unset;
 }
 
 .status .disabled:hover{
@@ -556,6 +655,7 @@ body {
 }
 .disabled .icon, .player-box .icon{
   width: 1.5em;
+  vertical-align: middle;
 }
 
 .status-message{
@@ -570,16 +670,25 @@ body {
   text-align: center;
 }
 
+
+/*Sit graphic on top of playerbox*/
 .me > .player-box-graphic{
-  position: relative;
-  left: calc(150px + 8vw);
+  position: absolute;
+  /*left: calc(150px + 8vw);*/
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .notme > .player-box-graphic{
-  position: relative;
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%);
+  /*position: relative;
   z-index: -1;
   top: 5vh;
-  left: 1vw;
+  left: 1vw;*/
 }
 
 .flexline{
@@ -598,7 +707,11 @@ body {
   align-items: center;
   flex-direction: row;
   width: 100%;
-  margin-bottom: 0.5em; 
+  /*margin-bottom: 0.5em;*/ 
+}
+
+.notme .flexline2{
+ margin-bottom: 0.5em; 
 }
 
 .pbtrade ul li{
@@ -639,6 +752,10 @@ body {
   background-color: unset;
 }
 
+.token polygon{
+  fill: var(--saito-white);
+}
+
 .token.p1 polygon{
   fill: var(--p1-color);
 }
@@ -671,105 +788,128 @@ body {
   stroke: var(--p4-color);
 }
 
-.c1 i {
-  color: rgb(255,100,100); /*a slightly lighter red*/
+/*.c1 i {
+  color: rgb(255,100,100); 
 }
 
 .c2 i{
-  color: rgb(100,100,255); /*a slightly lighter blue*/
+  color: rgb(100,100,255); 
 }
 .c3 i{
-  color: rgb(0, 192, 0); /*a slightly lighter green */
+  color: rgb(0, 192, 0); 
 }
 .c4 i{
   color: var(--p4-color);
-}
+}*/
 
 .player-notice{
   margin-bottom: 0.5em;
   line-height: 1.25em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  /*justify-content: space-between;*/
+
 }
+
+
 .player-box .player-notice .icon{
-  height: 1.25em;
-  width: 1.25em;
+  height: 25px;
+  width: 25px;
+  margin: 0 4px;
   border-radius: 5px;
 }
 
-.opponents{
+.player-box.notme, .opponents{
   position: absolute;
+  height: fit-content;
+  top: 50px;
+  right: 40px;
 }
 
+
 .opponents > .player-box{
-  position: unset;
+  position: relative;
+  right: unset;
+  top: unset;
 }
 
 .player-box.me{
-  height: unset;
+  max-height: unset;
+  max-width: 300px;
+  min-width: 250px;
   left: 1px;
+  top: unset;
   bottom: 1px;
 }
-.player-box.notme, .opponents{
-  height: fit-content;
-}
-/*
-    Copied from WuziQi
-*/
 
-@media (orientation: landscape) {
-    .player-box, .opponents{
-        top: 40vh;  /*Center in screen:  50vh - 1/2 height */
-        margin: auto auto;
-        max-width: 20vw;
-    }
-
-    /*.player-box.me{
-        left: max(5px, calc(12vw - 7em));
-        /*top:  80vh;
-    }*/
-
-    .player-box.notme, .opponents{
-        right: max(5px, calc(12vw - 7em));
-        top:  10vh;
-    }
+/*Stats overlay table*/
+.rules-overlay{
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-@media (orientation: portrait) {
-    .player-box, .opponents{
-        top: calc(65vw + 26vh);
-        max-width: 35vw;
-    }
-
-    /*.player-box.me{
-        left: calc(30vw - 6em);
-    }*/
-
-    .player-box.notme, .opponents{
-        right: calc(30vw - 6em);
-    }
+.rules-overlay h2{
+  margin-top: 1em;
+  clear: both;
 }
+.rules-overlay img{
+  max-width: 100%;
+  margin: 0 auto;
+  border: 2px solid black;
+}
+
+.stats-table{
+  font-size: 1.25em;
+  width: 100%;
+  text-align: center;
+  margin: 2em 0;
+}
+
+.stats-table caption{
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.stats-table td, .stats-table th{
+  width: 2em;
+}
+
+.stats-table th:first-child{
+  width: 3em;
+  text-align: left;
+}
+
+.stats-table .icon{
+  width: 50px;
+}
+
 
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */
-@media (max-aspect-ratio:  8/7) and (min-aspect-ratio: 7/8) {
-    .player-box, .opponents{
-        top: unset;
-        bottom: 0px;
-        max-width: 40vw;
-    }
-    /*.player-box.me{
-        left: calc(30vw - 5.5em);
-    }*/
+@media (max-aspect-ratio:  8/7) {
 
-    .player-box.notme, .opponents{
-        right: calc(30vw - 5.5em);
-    }
+  .opponents{
+    width: 75vw;
+    top: unset;
+    right: 1rem;
+    bottom: 1px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+ 
+  .notme > .player-box-graphic{
+    top: unset;
+    right: unset;
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+}   
 }
 
-@media (max-width: 500px) and (orientation: portrait) and (max-aspect-ratio: 7/8){
-    .player-box, .opponents{
-        top: calc(95vw + 15vh);
-        max-width: 38vw;
-    }
-}
-
+/*Still need better layout for small screens*/

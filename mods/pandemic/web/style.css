@@ -32,7 +32,21 @@
   background-color: #444A;
 }
 
-
+.hud-header.scientist{
+  background-color: #ffffff;
+}
+.hud-header.generalist{
+  background-color: #778281;
+}
+.hud-header.medic{
+  background-color: #de7b38;
+}
+.hud-header.quarantine{
+  background-color: #337c51;
+}
+.hud-header.operations{
+  background-color: #6cb24f;
+}
 
 .vial {
   position: absolute;
@@ -53,10 +67,8 @@
   background-image: url("/pandemic/img/Vial%20Black.png");
 }
 
-.cardimg {
-  position: absolute;
-  left: 0;
-  top: 0;
+
+.hud-card .cardimg {
   height: 100%;
   width: 100%;
 }
@@ -172,17 +184,27 @@ body {
 }
 .cube {
   height: 60px;
+  position: absolute;
 }
 .player {
-  position: absolute;
+  position: relative;
   width: 32px;
-  height: 44px;
-  width: 72px;
+  height: 60px;
+  /*width: 72px;
   height: 100px;
-  top: 50px;
-  background-size: cover;
-  z-index: 30;
+  background-size: cover;*/
+  display: none;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
 }
+.player img{
+  position: relative;
+  width: 175%;
+  left: -25%;
+
+}
+
 .research_station {
   position: absolute;
   background-image: url("/pandemic/img/Marker%20Research%20Station.png");
@@ -223,39 +245,45 @@ body {
   width: 87px;
   height: 88px;
 }
+.deck img{
+  position: absolute;
+}
 .back_player_card {
   position: absolute;
-  background-image: url("/pandemic/img/Back%20Player%20Card.gif");
-  background-size: cover;
+  /*background-image: url("/pandemic/img/Back%20Player%20Card.gif");
+  background-size: cover;*/
   width: 243px;
   height: 341px;
+  top: 1405px;
+  left: 1610px;
 }
 .player_discard_pile {
   position: absolute;
-  background-image: url("/pandemic/img/Back%20Player%20Card.gif");
-  background-size: cover;
+  /*background-image: url("/pandemic/img/Back%20Player%20Card.gif");
+  background-size: cover;*/
   width: 243px;
   height: 341px;
+  top: 1405px;
+  left: 1975px;
 }
 .back_infection_card {
   position: absolute;
-  background-image: url("/pandemic/img/Back%20Infection.gif");
-  background-size: cover;
+  /*background-image: url("/pandemic/img/Back%20Infection.gif");
+  background-size: cover;*/
   width: 340px;
   height: 243px;
+  top: 75px;
+  left: 1605px;
 }
-.infection_deck {
-  position: absolute;
-  background-size: cover;
-  width: 340px;
-  height: 243px;
-}
+
 .infection_discard_pile {
   position: absolute;
-  background-image: url("/pandemic/img/Back%20Infection.gif");
-  background-size: cover;
+  /*background-image: url("/pandemic/img/Back%20Infection.gif");
+  background-size: cover;*/
   width: 340px;
   height: 243px;
+  top: 75px;
+  left: 2055px;
 }
 .gameboard {
   background-image: url("/pandemic/img/Board.jpg");

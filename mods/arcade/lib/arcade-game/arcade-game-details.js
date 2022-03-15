@@ -13,7 +13,11 @@ const getOptions = () => {
       if (element.checked) {
         options[element.name] = 1;
       }
-    } else {
+    }else if(element.type == "radio"){
+      if (element.checked) {
+        options[element.name] = element.value;
+      }
+    }else {
       options[element.name] = element.value;
     }
   });
@@ -42,7 +46,7 @@ module.exports = ArcadeGameDetails = {
 
     //Test for advanced options
     let advancedOptions = gamemod.returnGameOptionsHTML();
-    if (advancedOptions === null || advancedOptions == "") {
+    if (!advancedOptions) {
       document.querySelector(".game-wizard-options-toggle").style.display = "none";
     } else {
       //Create (hidden) the advanced options window
@@ -52,7 +56,7 @@ module.exports = ArcadeGameDetails = {
 
       //Attach events to advance options button
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
-        mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
+        mod.meta_overlay.show(app, gamemod, advancedOptions);
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {
           if (document.getElementById("game-wizard-advanced-return-btn")) {
@@ -172,7 +176,7 @@ module.exports = ArcadeGameDetails = {
           return;
         }
         if (players_needed == 1) {
-          mod.launchSinglePlayerGame(app, gamedata);
+          mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
           return;
         } else {
           mod.overlay.hide();
