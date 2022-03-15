@@ -293,10 +293,10 @@ class Pandemic extends GameTemplate {
     if (pandemic_self.game.players_info[pandemic_self.game.player - 1].cards.length > pandemic_self.maxHandSize) {
       this.updateStatusAndListCards("Pick a card to discard: ",  this.game.players_info[this.game.player - 1].cards);
       $(".card").off();
-      $(".card").on("click", function () {
+      $(".card").on("click", async function () {
         let cid = $(this).attr("id");
         if (cid.indexOf("event") > -1) {
-          let c = sconfirm("Do you want to play this event card instead of discarding it?");
+          let c = await sconfirm("Do you want to play this event card instead of discarding it?");
           if (c) {
             pandemic_self.playEvent(cid, function(){pandemic_self.playerDiscardCards();});
           }
