@@ -51,13 +51,91 @@ class MixinModule extends CryptoModule {
 
   installModule() {
     if (this.mixin) {
-      if (this.mixin.account_created == 0) {
-	this.mixin.createAccount();
+      if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
+        if (this.mixin.account_created == 0) {
+console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
+	  this.mixin.createAccount();
+        }
       }
     }
   }
 
+  activate() {
+    if (this.mixin.account_created == 0) { 
+      if (this.mixin.mixin.session_id === "") {
+        this.mixin.createAccount();
+      }
+    }
+    super.activate();
+  }
+
 }
+
+
+
+
+
+/**
+ * Abstract method which should get balance from underlying crypto endpoint
+ * @abstract
+ * @return {Number}
+ */
+MixinModule.prototype.renderModalSelectCrypto = function() {
+  return `
+    <div class="mixin_crypto_overlay" id="mixin_crypto_overlay">
+
+      <div class="mixin_crypto_title">Heads up!</div>
+
+      <div class="mixin_crypto_warning">
+      Third-party cryptocurrency support in Saito is currently experimental. All users should 
+      be aware that support is experimental. If your browser wallet is compromised you may lose 
+      all crypto you upload.
+
+      <p></p>
+
+      Please be sensible and do not put more than 100 USD worth of crypto in your live wallet
+      while our network is under development.
+      </div>
+
+      <div class="mixin_risk_acknowledge button">i understand</div>
+
+    </div>
+    <style>
+      .mixin_crypto_overlay {
+	padding: 30px;
+	background-color: whitesmoke;
+	color: black;
+	line-height: 1.6em;
+        font-size: 1.5em;
+      }
+      .mixin_crypto_title {
+	margin: 0.5em 0;
+	font-size: 2em;
+	font-weight: bold;
+      }
+      .mixin_crypto_warning {
+	margin-top: 0px;
+	margin-bottom: 20px;
+      }
+      .mixin_risk_acknowledge {
+	max-width: 200px;
+	text-align: center;
+	margin-right: auto;
+      }
+    </style>
+  `;
+}
+
+
+
+MixinModule.prototype.attachEventsModalSelectCrypto = function(app, cryptomod) {
+  let ab = document.querySelector(".mixin_risk_acknowledge");
+  ab.onclick = (e) => {
+    cryptomod.modal_overlay.hide();
+  }
+}
+
+
 
 
 /**
@@ -67,7 +145,6 @@ class MixinModule extends CryptoModule {
  */
 MixinModule.prototype.returnBalance = async function() {
   return this.balance;
-//  throw new Error('returnBalance must be implemented by subclass!');
 };
 
 /**
@@ -100,7 +177,6 @@ MixinModule.prototype.returnAddress = function() {
  */
 MixinModule.prototype.returnPrivateKey = function() {
   return this.mixin.mixin.privatekey;
-  //throw new Error('returnPrivateKey must be implemented by subclass!');
 };
 
 /**
