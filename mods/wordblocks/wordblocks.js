@@ -1910,7 +1910,7 @@ class Wordblocks extends GameTemplate {
     }
 
     if (!this.checkWord(thisword)) {
-      salert(word + " is not in the dictionary.");
+      salert(thisword + " is not in the dictionary.");
       return -1;
     }
 
