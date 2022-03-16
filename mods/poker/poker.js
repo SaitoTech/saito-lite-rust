@@ -164,6 +164,7 @@ class Poker extends GameTemplate {
 
     if (this.browser_active) {
       console.log("INITIALIZE GAME");
+      console.log("CRYPTO: " + this.game.crypto);
       this.displayBoard();
     }
   }
@@ -173,6 +174,9 @@ class Poker extends GameTemplate {
   Call be "turn", "reveal", "fold" if any of them lead to end of round conditions
   */
   startNextRound() {
+
+console.log("--------- SNR ---------");
+
     this.game.state.round++;
     this.game.state.preflop = true;
     this.game.state.all_in = false;
@@ -276,9 +280,10 @@ class Poker extends GameTemplate {
           box.remove();
         }
         this.playerbox.render(this.app,this);
-      }catch(err){
+      } catch(err) {
 
       }
+
       //Fix dealer and blinds Dealer -> Small -> Big
       if (this.game.state.button_player < 1) {
         this.game.state.button_player = this.game.players.length;
@@ -293,23 +298,30 @@ class Poker extends GameTemplate {
       }
     }
 
+    this.startRound();
+  }
+
+  settleLastRound() {
     /*
     We want these at the end of the queue so they get processed first, but if 
     any players got removed, there will be some issues....
     */
     if (this.game.crypto) {
+console.log("PROCESSING THE SETTLEMENT NOW!");
+console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
     }
-
     this.settlement = [];
-   
-   this.startRound();
+
+console.log("new queue: " + JSON.stringify(this.game.queue));
+
   }
 
 
   startRound(){
+
     console.log("START ROUND");
     this.displayBoard();
     this.updateLog("Round: " + this.game.state.round);
@@ -330,6 +342,7 @@ class Poker extends GameTemplate {
   Called by initializeGame and startNextRound
   */
   initializeQueue() {
+
     this.game.queue = [];
 
     this.game.queue.push("round");
@@ -348,6 +361,10 @@ class Poker extends GameTemplate {
       this.game.queue.push(`DECKXOR\t1\t${i}`);
     }
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+
+    // adds any outstanding settlement to queue
+    this.settleLastRound();
+
   }
 
   handleGameLoop() {
@@ -401,12 +418,11 @@ class Poker extends GameTemplate {
             player_left_idx = i;
           }
         }
-        console.log("ACTIVE PLAYERS: "+active_players);
         if (active_players === 1) {
           let winnings = this.game.state.pot - this.game.state.player_pot[player_left_idx];
           this.updateLog(`${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} (${winnings} net)`);
           this.game.state.player_credit[player_left_idx] += this.game.state.pot;
-          
+
           //
           // everyone settles with winner if needed
           //
@@ -416,25 +432,11 @@ class Poker extends GameTemplate {
                 //Only losers
                 if (this.game.state.player_pot[i] > 0) {
                   if (this.game.player - 1 == player_left_idx) {
-                    this.settlement.push(`RECEIVE\t
-                                        ${this.game.players[i]}\t
-                                        ${this.game.players[player_left_idx]}\t
-                                        ${this.game.state.player_pot[i]}\t
-                                        ${new Date().getTime()}\t
-                                        ${this.game.crypto}`);
+		    // do not reformat -- adding whitespace screws with API
+                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
                   } else {
-                     this.settlement.push(`RECEIVE\t
-                                        ${this.game.players[i]}\t
-                                        ${this.game.players[player_left_idx]}\t
-                                        ${this.game.state.player_pot[i]}\t
-                                        ${new Date().getTime()}\t
-                                        ${this.game.crypto}`);
-                     this.settlement.push(`SEND\t
-                                        ${this.game.players[i]}\t
-                                        ${this.game.players[player_left_idx]}\t
-                                        ${this.game.state.player_pot[i]}\t
-                                        ${new Date().getTime()}\t
-                                        ${this.game.crypto}`);
+                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
+                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
                   }
                 }
               }
@@ -662,19 +664,10 @@ class Poker extends GameTemplate {
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                    this.settlement.push(`RECEIVE\t
-                        ${this.game.players[ii]}\t
-                        ${this.game.players[winners[i]]}\t
-                        ${this.game.state.player_pot[ii] / winners.length}\t
-                        ${new Date().getTime()}\t
-                        ${this.game.crypto}`
+		    // do not reformat -- adding whitespace screws with API
+                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${new Date().getTime()}\t${this.game.crypto}`
                     );
-                    this.settlement.push(`SEND\t
-                        ${this.game.players[ii]}\t
-                        ${this.game.players[winners[i]]}\t
-                        ${this.game.state.player_pot[ii] / winners.length}\t
-                        ${new Date().getTime()}\t
-                        ${this.game.crypto}`
+                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${new Date().getTime()}\t${this.game.crypto}`
                     );
                   }
                 }
@@ -686,6 +679,7 @@ class Poker extends GameTemplate {
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+		  // do not reformat -- adding whitespace screws with API
                   this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${new Date().getTime()}\t${this.game.crypto}`);
                   this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${new Date().getTime()}\t${this.game.crypto}`);
                 }
@@ -723,7 +717,6 @@ class Poker extends GameTemplate {
       if (mv[0] === "round") {
         // Start betting to the left of the big blind on first turn
         let lastToBet = (this.game.state.flipped == 0 && this.game.state.plays_since_last_raise < this.game.players.length)? this.game.state.big_blind_player : this.game.state.button_player;
-        console.log("LAST TO BET: "+lastToBet + `(Dealer = ${this.game.state.button_player})`);
         for (let i = lastToBet; i <= lastToBet + this.game.players.length - 1; i++) {
           let player_to_go = i % this.game.players.length;
           if (player_to_go == 0) {
@@ -962,11 +955,11 @@ class Poker extends GameTemplate {
     html += '<div class="menu-player" style="text-align:left;width:100%">';
     
     if (this.game.state.flipped == 0 && this.game.player == this.game.state.big_blind_player) {
-      html += "Big blind:";
+      html += "big blind:";
     }else if (this.game.state.flipped == 0 && this.game.player == this.game.state.small_blind_player) {
-      html += "Small blind:";
+      html += "small blind:";
     }else{
-      html += "Your move:";
+      html += "your move:";
     }
     
     html += `<div style="float:right;" class="saito-balance">${this.sizeNumber(this.game.state.player_credit[this.game.player - 1])} ${this.game.crypto}</div></div>`;
