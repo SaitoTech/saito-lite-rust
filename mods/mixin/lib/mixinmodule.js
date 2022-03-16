@@ -7,9 +7,9 @@
 
    returnAddress()
    returnPrivateKey()
-   async returnBalance(addresses = "")
+   async returnBalance(address = "")
    async sendPayment(amount="", recipient="", unique_hash="")
-   async hasPayment(howMuch, from, to, timestamp)
+   async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
 **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
@@ -189,7 +189,7 @@ MixinModule.prototype.returnPrivateKey = function() {
  * @param {timestamp} to - timestamp after which the transaction was sent
  * @return {Boolean}
  */
-MixinModule.prototype.hasPayment = function(howMuch, from, to, timestamp) {
+MixinModule.prototype.receivePayment = function(amount="", sender="", recipient="", timestamp=0, unique_hash="") {
   return 1;
 //  throw new Error('hasPayment must be implemented by subclass!');
 };

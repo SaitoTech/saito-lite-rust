@@ -362,7 +362,7 @@ console.log("---------------------");
         this.app.network.propagateTransaction(newtx);
         return newtx.transaction.sig;
       }
-      async hasPayment(howMuch, from, to, timestamp) {
+      async receivePayment(howMuch, from, to, timestamp) {
         const from_from = 0;
         const to_to = 0;
         if (to == this.app.wallet.returnPublicKey()) {
@@ -1163,8 +1163,8 @@ console.log("wallet receivePayment");
     // create a function we can loop through to check if the payment has come in....
     //
     const check_payment_function = async () => {
-console.log("wallet -> cryptmod hasPayment");
-      return await cryptomod.hasPayment(amounts[0], senders[0], receivers[0], timestamp - 3); // subtract 3 seconds in case system time is slightly off
+console.log("wallet -> cryptmod receivePayment");
+      return await cryptomod.receivePayment(amounts[0], senders[0], receivers[0], timestamp - 3, unique_tx_hash); // subtract 3 seconds in case system time is slightly off
     };
 
     const poll_check_payment_function = async () => {
