@@ -100,8 +100,8 @@ module.exports = PostView = {
   attachEvents(app, mod, sig = "") {
     try {
       document.querySelector(".post-submit-btn").onclick = (e) => {
-        let comment = document.querySelector(".post-view-textarea").innerHTML;
-
+        let comment = sanitize(document.querySelector(".post-view-textarea").innerHTML).replaceAll("&nbsp;"," ").trim();
+        
         if (comment != "" || this.images.length > 0) {
           let newtx = mod.createCommentTransaction(mod.originalSig, comment, this.images);
           app.network.propagateTransaction(newtx);

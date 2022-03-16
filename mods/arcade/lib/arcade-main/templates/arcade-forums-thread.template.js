@@ -30,7 +30,7 @@ module.exports = ArcadeForumsThreadTemplate = (obj) => {
         <div class="forum-topic-latest-post" id="forum-topic-latest-post-${obj.ft_mod}" style="visibility:hidden">
           <div class="forum-topic-latest-post-image" id="forum-topic-latest-post-image-${obj.ft_mod}"><i class="fas fa-user"></i></div>
           <div class="forum-topic-latest-post-details">
-            <div class="arcade-post-title forum-topic-latest-post-title" id="arcade-post-latest-forum-topic-${obj.ft_mod}">Post title</div>
+            <div class="arcade-post-title forum-topic-latest-post-title" id="forum-topic-latest-post-title-${obj.ft_mod}">Post title</div>
             <div class="forum-topic-latest-post-info" id="forum-topic-latest-post-info-${obj.ft_mod}"><span id="forum-topic-latest-post-user-${obj.ft_mod}">User</span>, <span id="forum-topic-latest-post-date-${obj.ft_mod}">Date</span></div>
           </div>
         </div>
