@@ -69,6 +69,33 @@ console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
     super.activate();
   }
 
+
+
+
+  hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
+    for (let i = 0; i < this.options.transfers_inbound.length; i++) {
+      if (
+        this.options.transfers_inbound[i].amount === amount &&
+        this.options.transfers_inbound[i].timestamp >= timestamp
+      ) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+  hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
+    for (let i = 0; i < this.options.transfers_inbound.length; i++) {
+      if (
+        this.options.transfers_inbound[i].amount === amount &&
+        this.options.transfers_inbound[i].timestamp >= timestamp
+      ) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+
 }
 
 
@@ -169,7 +196,7 @@ MixinModule.prototype.returnAddress = function() {
   if (this.destination === "") {
     return "unknown address";
   }
-  return this.destination;
+  return this.destination + "|" + this.user_id + "|" + "mixin";
 };
 /**
  * Abstract method which should get private key
@@ -190,8 +217,15 @@ MixinModule.prototype.returnPrivateKey = function() {
  * @return {Boolean}
  */
 MixinModule.prototype.receivePayment = function(amount="", sender="", recipient="", timestamp=0, unique_hash="") {
-  return 1;
-//  throw new Error('hasPayment must be implemented by subclass!');
+
+  //
+  // the mixin module might have a record of this already stored locally
+  //
+  if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
+  this.fetchDeposits(this.asset_id);
+
+  return 0;
+
 };
 
 module.exports = MixinModule;

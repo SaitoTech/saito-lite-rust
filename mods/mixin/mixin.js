@@ -78,7 +78,8 @@ class Mixin extends ModTemplate {
       let pc = this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
         this.checkBalance(crypto_module.asset_id, function(res) {});
-        this.fetchAddresses(crypto_module.asset_id, function(res) {});
+//        this.fetchAddresses(crypto_module.asset_id, function(res) {});
+//        this.fetchDeposits(crypto_module.asset_id, function(res) {});
       }
     });
 
@@ -89,13 +90,72 @@ class Mixin extends ModTemplate {
   // MIXIN //
   ///////////
   //
-  // - addWithdrawalAddress
-  // - checkWithdrawalFee
-  // - checkBalance
-  // - createAccount
-  // - createWithdrawalAddress
-  // - fetchAddresses
+  // createWithdrawalAddress(asset_id, withdrawal_address, label, tag, callback)
+  // checkWithdrawalFee(asset_id, callback);
+  // checkBalance(asset_id, callback);
+  // createAccount(callback);
+  // fetchDeposits(asset_id, callback)
+  // fetchAddresses(asset_id, callback)
+  // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address) 
+  // sendInNetworkTransferRequest(asset_id, address_id, amount, trace_id, callback);
+  // sendWithdrawalRequest(asset_id, address_id, address, amount, trace_id, callback)
+  // updateUserPin(new_pin, callback)
   //
+
+ 
+  //
+  // DEPOSITS
+  //
+  // https://developers.mixin.one/docs/api/transfer/snapshots
+  //
+  fetchDeposits(asset_id, callback=null) {
+
+    const appId = this.mixin.user_id;
+    const sessionId = this.mixin.session_id;
+    const privateKey = this.mixin.privatekey;
+
+    const method = "GET";
+    const uri = `/snapshots?limit=100&order=DESC&asset=${asset_id}`;
+
+    try {
+      this.request(appId, sessionId, privateKey, method, uri).then(
+        (res) => {
+console.log("SNAPSHOT HISTORY: ");
+console.log(res.data);
+          let d = res.data;
+          for (let i = 0; i < d.data.length; i++) {
+            /********************************************
+	    "amount":     "-1688168",
+	    "asset": {
+	      "asset_id": "965e5c6e-434c-3fa9-b780-c50f43cd955c",
+	      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
+	      "icon_url": "https://images.mixin.one/0sQY63dDMkWTURkJVjowWY6Le4ICjAFuu3ANVyZA4uI3UdkbuOT5fjJUT82ArNYmZvVcxDXyNjxoOv0TAYbQTNKS=s128",
+	      "name":     "Chui Niu Bi",
+	      "symbol":   "CNB",
+	      "type":     "asset"
+	    },
+	    "created_at": "2018-05-29T09:31:04.202186212Z",
+	    "data":       "",
+	    "snapshot_id":"529934b0-abfd-43ab-9431-1805773000a4",
+	    "source":     "TRANSFER_INITIALIZED",
+	    "type":       "snapshot",      // Options only for user (or App) who has access.
+	    // 4 private fields that only be returend with correct permission
+	    "user_id":    "06aed1e3-bd77-4a59-991a-5bb5ae6fbb09",
+	    "trace_id":   "7c67e8e8-b142-488b-80a3-61d4d29c90bf",
+	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
+	    "data":       "Transfer!"
+            *********************************************/
+          }
+          if (callback) { callback(res.data); }
+        }
+      );
+    } catch (err) {
+      console.log("ERROR: Mixin error sending network request: " + err);
+    }
+
+
+  }
+
   fetchAddresses(asset_id, callback=null) {
 
     const appId = this.mixin.user_id;
@@ -188,7 +248,7 @@ console.log(res.data);
   }
 
 
-  sendInNetworkTransfer(asset_id, address_id, amount, trace_id="") {
+  sendInNetworkTransferRequest(asset_id, address_id, amount, trace_id="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -364,24 +424,11 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     let privatekey = this.mixin.privatekey;
     let old_pin = this.mixin.pin;
 
-console.log("PT: " + this.mixin.pin_token);
-console.log("PTB64: " + this.mixin.pin_token_base64);
-console.log("PRIV: " + privatekey);
-console.log("old pin: " + old_pin);
-console.log("new pin: " + new_pin);
-
     let encrypted_old_pin = "";
     if (old_pin !== "") { 
-      console.log("gen old key 1");
       encrypted_old_pin = this.signEd25519PIN(old_pin, this.mixin.pin_token, session_id, privatekey); 
-      console.log("gen old key 2");
     }
-    console.log("gen new key 1");
     let encrypted_new_pin = this.signEd25519PIN(new_pin, this.mixin.pin_token, session_id, privatekey);
-    console.log("gen new key 2");
-
-console.log("encrypted op: " + encrypted_old_pin);
-console.log("encrypted np: " + encrypted_new_pin);
 
     const method = "POST";
     const uri = '/pin/update';
@@ -391,13 +438,11 @@ console.log("encrypted np: " + encrypted_new_pin);
     };
 
     try {
-console.log("SENDING PIN UPDATE REQUEST");
       this.request(user_id, session_id, privatekey, method, uri, body).then(
         (res) => {
           console.log("RETURNED PIN DATA: " + JSON.stringify(res.data));
 	  mixin_self.mixin.pin = new_pin;
 	  mixin_self.save();
-console.log("SAVED MIXIN DATA WITH NEW PIN: " + new_pin);
 	  if (callback != null) { callback(res.data); }
         }
       );
@@ -459,7 +504,6 @@ console.log("privkey: " + user_private_key.toString('base64'));
       this.request(appId, sessionId, privateKey, method, uri, body).then(
         (res) => {
 
-console.log("FETCHED PIN TOKEN: " + res.data.pin_token);
 	  let d = res.data;
 
 	  mixin_self.mixin.session_id = d.data.session_id;
@@ -495,8 +539,6 @@ console.log("FETCHED PIN TOKEN: " + res.data.pin_token);
 	  // and set our pin
 	  //
 	  let new_pin = (new Date()).getTime().toString().substr(-6);
-console.log("we want to set this pin: " + new_pin);
-console.log("pin token is now: " + res.data.pin_token);
 	  mixin_self.updateUserPin(new_pin, () => {
 console.log("we have updated our pin to: " + new_pin);
 	  });
@@ -508,6 +550,9 @@ console.log("we have updated our pin to: " + new_pin);
       console.log("ERROR: Mixin error sending network request: " + err);
     }
   }
+
+
+
 
 
   /////////////////////////

@@ -723,7 +723,7 @@ class Poker extends GameTemplate {
       if (mv[0] === "round") {
         // Start betting to the left of the big blind on first turn
         let lastToBet = (this.game.state.flipped == 0 && this.game.state.plays_since_last_raise < this.game.players.length)? this.game.state.big_blind_player : this.game.state.button_player;
-        //console.log("LAST TO BET: "+lastToBet + `(Dealer = ${this.game.state.button_player})`);
+        console.log("LAST TO BET: "+lastToBet + `(Dealer = ${this.game.state.button_player})`);
         for (let i = lastToBet; i <= lastToBet + this.game.players.length - 1; i++) {
           let player_to_go = i % this.game.players.length;
           if (player_to_go == 0) {
@@ -731,7 +731,7 @@ class Poker extends GameTemplate {
           }
           this.game.queue.push("turn\t" + player_to_go);
         }
-    
+
         //Set up bets for beginning of round (new deal)
         if (this.game.state.preflop) {
 
@@ -744,9 +744,9 @@ class Poker extends GameTemplate {
               this.game.state.player_credit[bbpi] == this.game.state.big_blind) {
               this.updateLog(this.game.state.player_names[bbpi] + " posts big blind " + this.game.state.big_blind);
             } else {
-              this.updateLog(this.game.state.player_names[bbpi] +
-                  " posts remaining tokens as big blind and is removed from game");
+              this.updateLog(this.game.state.player_names[bbpi] + " posts remaining tokens as big blind and is removed from game");
             }
+
             //Put all the player tokens in the pot and have them pass / remove
             this.game.state.player_pot[bbpi] += this.game.state.player_credit[bbpi];
             this.game.state.pot += this.game.state.player_credit[bbpi];
@@ -780,6 +780,7 @@ class Poker extends GameTemplate {
             this.game.state.pot += this.game.state.small_blind;
             this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
           }
+
           this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.game.state.small_blind}</div>`,this.game.state.small_blind_player);
 
           this.game.queue.push("announce");        
@@ -787,8 +788,10 @@ class Poker extends GameTemplate {
 
           this.displayPlayers(true);
         }   
-        
+
       }
+
+
 
       /* WE programmatically determine here how much the call is*/
       if (mv[0] === "call") {
@@ -1217,6 +1220,7 @@ class Poker extends GameTemplate {
   }
 
   displayPlayers(preserveLog = false) {
+  try {
     /*let player_box = "";
     var prank = "";
     if (!this.game.players.includes(this.app.wallet.returnPublicKey())) {
@@ -1254,6 +1258,9 @@ class Poker extends GameTemplate {
       elem.firstChild.after(newButton);
       this.app.browser.addToolTip(newButton, "Dealer");  
     }
+  } catch (err) {
+    console.log("error displaying player box");
+  }
   }
 
   displayHand() {
@@ -1266,6 +1273,7 @@ class Poker extends GameTemplate {
   }
 
   displayTable() {
+  try {
     if (document.querySelector("#deal")){
       let newHTML = "";
       for (let i = 0; i < 5 || i < this.game.pool[0].hand.length; i++) {
@@ -1283,6 +1291,7 @@ class Poker extends GameTemplate {
 
     // update pot
     document.querySelector(".pot").innerHTML = this.sizeNumber(this.game.state.pot);
+  } catch (err) { console.log("error displaying table");}
   }
 
   endTurn(nextTarget = 0) {
