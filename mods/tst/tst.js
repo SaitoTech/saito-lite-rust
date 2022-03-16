@@ -63,7 +63,12 @@ class TST extends CryptoModule {
    // @return {Array} Array of {hash: {String}} where hash is the transaction_id
    //
    async receivePayment(amount="", sender="", receiver="", timestamp, unique_hash="") {
-     return 1;
+     if (Math.random() > 0.5) {
+       console.log("received payment...");
+       return 1;
+     }
+console.log("not received payment...");
+     return 0;
    }
 
 
