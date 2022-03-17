@@ -58,7 +58,6 @@ class Arcade extends ModTemplate {
         }
         //this.renderSidebar();
         try {
-          console.log("Open chat box: "+this.app.options.auto_open_chat_box);
           let chat_mod = this.app.modules.returnModule("Chat");
           if (chat_mod.groups.length > 0 && this.chat_open == 0 && this.app.options.auto_open_chat_box) {
             this.chat_open = 1;
@@ -769,12 +768,13 @@ class Arcade extends ModTemplate {
       if (txmsg.request == "accept") {
 
         //
-	// notify lite-clients and remove game from list available
+      	// notify lite-clients and remove game from list available
         //
-	this.removeGameFromOpenList(txmsg.game_id);
+      	this.removeGameFromOpenList(txmsg.game_id);
+        
         if (this.app.BROWSER == 0) {
-	  this.notifyPeers(this.app, tx);
-	}
+      	  this.notifyPeers(this.app, tx);
+      	}
 
         //
         // multiplayer games might hit here without options.games
@@ -818,14 +818,8 @@ class Arcade extends ModTemplate {
                       //
                       // remove game (accepted players are equal to number needed)
                       //
-                      transaction.msg = Object.assign(
-                        { players_needed: 0, players: [] },
-                        this.games[i].msg
-                      );
-                      if (
-                        parseInt(transaction.msg.players_needed) >=
-                        transaction.msg.players.length + 1
-                      ) {
+                      transaction.msg = Object.assign({ players_needed: 0, players: [] }, this.games[i].msg);
+                      if (parseInt(transaction.msg.players_needed) >= transaction.msg.players.length + 1) {
                         this.removeGameFromOpenList(txmsg.game_id); //on confirmation
                       }
                     }
@@ -868,8 +862,6 @@ class Arcade extends ModTemplate {
               }
             }
           }
-
-          console.log("GAME NOT FOUND!");
 
           //
           // also possible this is game in our displayed list
@@ -916,7 +908,7 @@ class Arcade extends ModTemplate {
             //
             // only launch game if it is for us -- observer mode?
             //
-            console.info("THIS GAMEIS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
+            console.info("THIS GAME IS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
             console.info("OUR GAMES: ", this.app.options.games);
             // game is over, we don't care
             if (tx.msg.over) {
