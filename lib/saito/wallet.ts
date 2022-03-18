@@ -1,5 +1,5 @@
 import { Saito } from "../../apps/core";
-
+const getUuid = require('uuid-by-string');
 import saito from "./saito";
 
 import * as JSON from "json-bigint";
@@ -1087,9 +1087,14 @@ console.log("wallet sendPayment");
       return;
     }
     // only send if hasn't been sent before
+console.log("does preferred crypto transaction exist: " + this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker));
+console.log("unique hash: " + unique_hash);
+console.log("uuid: " + getUuid(unique_hash));
+
     if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
+console.log("senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress());
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);

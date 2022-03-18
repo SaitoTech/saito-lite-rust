@@ -725,6 +725,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       */
       if (mv[0] === "round") {
         // Start betting to the left of the big blind on first turn
+
         let lastToBet = (this.game.state.flipped == 0 && this.game.state.plays_since_last_raise < this.game.players.length)? this.game.state.big_blind_player : this.game.state.button_player;
         for (let i = lastToBet; i <= lastToBet + this.game.players.length - 1; i++) {
           let player_to_go = i % this.game.players.length;
@@ -760,6 +761,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             this.game.state.pot += this.game.state.big_blind;
             this.game.state.player_credit[bbpi] -= this.game.state.big_blind;
           }
+
+	  // does this solve rounding issues
+	  this.game.state.player_pot[bbpi] = this.game.state.player_pot[bbpi].toFixed(8);
+	  this.game.state.player_credit[bbpi] = this.game.state.player_credit[bbpi].toFixed(8);
+
           this.playerbox.refreshLog(`<div class="plog-update">Big Blind: ${this.game.state.big_blind}</div>`,this.game.state.big_blind_player);
           //
           // Small Blind
@@ -783,7 +789,14 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
           }
 
+console.log("=============================");
+console.log(JSON.stringify(this.game.state));
+
           this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.game.state.small_blind}</div>`,this.game.state.small_blind_player);
+
+	  // does this solve rounding issues
+	  this.game.state.player_pot[sbpi] = this.game.state.player_pot[sbpi].toFixed(8);
+	  this.game.state.player_credit[sbpi] = this.game.state.player_credit[sbpi].toFixed(8);
 
           this.game.queue.push("announce");        
           this.game.state.preflop = false;
@@ -845,11 +858,17 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       }
 
       if (mv[0] === "raise") {
+
         let player = parseInt(mv[1]);
         let raise = parseFloat(mv[2]); //Includes call portion (if any)
 
+console.log("raise is: " + mv[2] + " ----> " + raise);
+
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
+
+console.log("raise portion: " + mv[2] + " ----> " + raise_portion);
+console.log("call portion: " + mv[2] + " ----> " + call_portion);
 
         if (raise_portion <= 0){
           salert("Insufficient raise");
@@ -921,6 +940,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
     if (!poker_self.moves.includes("resolve\tturn")) {
       poker_self.addMove("resolve\tturn");
     }
+
+console.log("required pot: " + this.game.state.required_pot);
+console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
 
     let match_required = this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
 
@@ -994,7 +1016,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
    
       if (choice === "raise") {
         let credit_remaining = poker_self.game.state.player_credit[poker_self.game.player - 1] - match_required;
-            
+
         html = `<div class="menu-player">`;
         if (match_required > 0) {
           html += `Match ${poker_self.sizeNumber(match_required)} and raise: `;
@@ -1006,13 +1028,20 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
         for (let i = 0; i < 5; i++) {
+
+console.log("last raise: " + poker_self.game.state.last_raise);
+
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
-          
+
+console.log("this raise: " + this_raise);
+console.log("match required: " + match_required); 
+console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).toFixed(8));
+
           if (max_raise > this_raise) {
-            html += `<li class="menu_option" id="${(this_raise + match_required)}">raise ${poker_self.sizeNumber(this_raise)}</li>`;
+            html += `<li class="menu_option" id="${(parseFloat(this_raise) + parseFloat(match_required)).toFixed(8)}">raise ${poker_self.sizeNumber(this_raise)}</li>`;
           } else {
             i = 6; //Stop for-loop
-            html += `<li class="menu_option" id="${max_raise + match_required}">
+            html += `<li class="menu_option" id="${(parseFloat(max_raise) + parseFloat(match_required)).toFixed(8)}">
                       raise ${poker_self.sizeNumber(max_raise)} 
                       (${poker_self.game.state.player_names[smallest_stack_player]} all in)</li>`;
           }
@@ -1023,6 +1052,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
         $(".menu_option").off();
         $(".menu_option").on("click", function () {
+
           let raise = $(this).attr("id");
 
           if (raise === "0") {
