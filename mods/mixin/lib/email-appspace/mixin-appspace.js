@@ -19,6 +19,20 @@ module.exports = MixinAppspace = {
       }
     } catch (err) {}
 
+    try {
+      document.querySelector(".activity_button").onclick = (e) => {
+
+alert("loading history...");
+
+        mod.fetchSnapshots("", 20, "DESC", (d) => { 
+	  document.querySelector(".activity_container").innerHTML = "";
+	  for (let i = 0; i < d.data.length; i++) {
+	    document.querySelector(".activity_container").innerHTML += JSON.stringify(d.data[i]);;
+	  }
+        });
+      }
+    } catch (err) {}
+
     document.querySelector(".balances_withdraw").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);

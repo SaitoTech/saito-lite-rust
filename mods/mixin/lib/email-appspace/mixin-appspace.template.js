@@ -54,9 +54,19 @@ module.exports = MixinAppspaceTemplate = (app) => {
 	</div>
       </div>
     </div>
+
+    <div class="activity_container" id="activity_container">
+      <div class="activity_button button" id="activity_button">load account history</div>
+    </div>
+
   </div>
 
   <style>
+.activity_button {
+  margin-top: 20px;
+  max-width: 200px;
+  text-align: center;
+}
 .balances_container {
     box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
     border-radius: 4px;
