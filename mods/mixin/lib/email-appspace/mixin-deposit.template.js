@@ -5,6 +5,7 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
   <div class="email-appspace-deposit-overlay">
     <div class="deposit_title">Deposit ${deposit_ticker}</div>
     <div class="deposit_desc">Only ${deposit_ticker} should be sent to this address. Deposits require ${deposit_confirmations} confirmations. Please do not deposit large amounts while Saito is under development due to risk of wallet compromise.</div>
+    <div id="deposit_qrcode" class="deposit_qrcode"></div>
     <div class="deposit_address">${deposit_address}</div>
   </div>
 
@@ -23,6 +24,11 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
   line-height: 1.6em;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+.deposit_qrcode {
+  clear:both;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 .deposit_address {
   font-size: 1.2em;

@@ -39,13 +39,10 @@ module.exports = MixinAppspaceTemplate = (app) => {
 	    <div class="balances_tablecell" id="balances_tablecell">
 	      ${xmod.balance}
 	    </div>
-	    <div class="balances_tablecell" id="balances_tablecell">
-	      ${xmod.change_usd}
-	    </div>
 	    <div class="balances_tablecell balances_link balances_deposit" data-assetid="${xmod.asset_id}" data-confs="${xmod.confirmations}" data-address="${xmod.returnAddress()}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance} id="balances_tablecell">
 	      DEPOSIT
 	    </div>
-	    <div class="balances_tablecell balances_link balances_withdraw" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" id="balances_tablecell">
+	    <div class="balances_tablecell balances_link balances_withdraw" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" data-sender="${xmod.returnAddress()}" id="balances_tablecell">
 	      WITHDRAW
 	    </div>
 	  </div>

@@ -20,10 +20,12 @@ module.exports = MixinAppspace = {
     } catch (err) {}
 
     document.querySelector(".balances_withdraw").onclick = (e) => {
+
       let overlay = new SaitoOverlay(app);
       let ticker = event.target.getAttribute("data-ticker");
       let asset_id = event.target.getAttribute("data-assetid");
       let balance = event.target.getAttribute("data-balance");
+      let sender = event.target.getAttribute("data-sender");
 
       overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
 
@@ -41,6 +43,9 @@ module.exports = MixinAppspace = {
 	    if (c2) {
 	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
 	      alert("Processing Withdrawal!");
+	      let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), function() {
+                mod.overlay.hide();
+              }, ticker);
       	      overlay.hide();
 	    }
 	  });
@@ -52,13 +57,19 @@ module.exports = MixinAppspace = {
     document.querySelector(".balances_deposit").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);
-      let address = event.target.getAttribute("data-address");
+      let address = event.target.getAttribute("data-address").split("|")[0];
       let confs = event.target.getAttribute("data-confs");
       let ticker = event.target.getAttribute("data-ticker");
 
       overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
-alert("done");
       });
+
+      const QRCode = require('../../../../lib/helpers/qrcode');
+      return new QRCode(
+        document.getElementById("deposit_qrcode"),
+        address
+      );
+
     }
   },
 
