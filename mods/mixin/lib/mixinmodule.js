@@ -23,7 +23,7 @@
 
 **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
-
+const getUuid = require('uuid-by-string');
 
 class MixinModule extends CryptoModule {
 
@@ -83,6 +83,21 @@ console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
 
 
   hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
+
+    let trace_id = getUuid(unique_hash);
+
+console.log("checking to see if we have received payment with unique_hash: " + unique_hash);
+console.log("checking to see if we have received payment with trace_id: " + trace_id);
+console.log("deposits complete: " + JSON.stringify(this.mixin.deposits));
+
+    for (let i = 0; i < this.mixin.deposits.length; i++) {
+      if (
+        this.mixin.deposits[i].trace_id === trace_id
+      ) {
+	  return 1; 
+	}
+    }
+
     for (let i = 0; i < this.options.transfers_inbound.length; i++) {
       if (
         this.options.transfers_inbound[i].amount === amount &&
@@ -92,6 +107,7 @@ console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
       }
     }
     return 0;
+
   }
   hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
     for (let i = 0; i < this.options.transfers_outbound.length; i++) {
@@ -209,9 +225,9 @@ console.log("unique_hash: " + unique_hash);
     if (r[2] === "mixin") {
       let opponent_address_id = r[1];
 console.log("this is a Mixin address so send in-network transfer request to: " + opponent_address_id);
-      this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
+      let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
 console.log("and saving outbound payment");
-      this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+      this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
       return;
     }
   }
@@ -286,7 +302,7 @@ MixinModule.prototype.returnAddress = function() {
   if (this.destination === "") {
     return "unknown address";
   }
-  return this.destination + "|" + this.user_id + "|" + "mixin";
+  return this.destination + "|" + this.mixin.mixin.user_id + "|" + "mixin";
 };
 /**
  * Abstract method which should get private key
@@ -309,10 +325,21 @@ MixinModule.prototype.returnPrivateKey = function() {
 MixinModule.prototype.receivePayment = function(amount="", sender="", recipient="", timestamp=0, unique_hash="") {
 
   //
+  // mixin transfers will be registered with a specific TRACE_ID
+  //
+  // so we can use this TRACE_ID to monitor transactions that have been
+  // made from other accounts.
+  //
+  let trace_id = getUuid(unique_hash);
+console.log("checking for this unique hash: " + unique_hash);
+console.log("checking for this trace ID: " + trace_id);
+
+  //
   // the mixin module might have a record of this already stored locally
   //
   if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
-  this.fetchDeposits(this.asset_id);
+
+  this.mixin.fetchDeposits(this.asset_id, (d) => {});
 
   return 0;
 

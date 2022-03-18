@@ -431,12 +431,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
               if (i != player_left_idx) {
                 //Only losers
                 if (this.game.state.player_pot[i] > 0) {
+		  let ts = new Date().getTime();
+		  this.rollDice();
+		  let uh = this.game.dice;
                   if (this.game.player - 1 == player_left_idx) {
 		    // do not reformat -- adding whitespace screws with API
-                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
+                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
                   } else {
-                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
-                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${new Date().getTime()}\t${this.game.crypto}`);
+                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
                   }
                 }
               }
@@ -665,9 +668,12 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
 		    // do not reformat -- adding whitespace screws with API
-                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${new Date().getTime()}\t${this.game.crypto}`
+		    let ts = new Date().getTime();
+		    this.rollDice();
+		    let uh = this.game.dice;
+                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
                     );
-                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${new Date().getTime()}\t${this.game.crypto}`
+                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
                     );
                   }
                 }
@@ -679,9 +685,12 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+		  let ts = new Date().getTime();
+		  this.rollDice();
+		  let uh = this.game.dice;
 		  // do not reformat -- adding whitespace screws with API
-                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${new Date().getTime()}\t${this.game.crypto}`);
-                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${new Date().getTime()}\t${this.game.crypto}`);
+                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }
               }
             }

@@ -37,6 +37,7 @@ class Mixin extends ModTemplate {
     this.mods		= [];
     this.addresses      = [];
     this.withdrawals    = [];
+    this.deposits       = [];
 
   }
 
@@ -98,8 +99,8 @@ class Mixin extends ModTemplate {
   // fetchDeposits(asset_id, callback)
   // fetchAddresses(asset_id, callback)
   // doesWithdrawalAddressExist(asset_id, address_id_or_withdrawal_address) 
-  // sendInNetworkTransferRequest(asset_id, address_id, amount, trace_id, callback);
-  // sendWithdrawalRequest(asset_id, address_id, address, amount, trace_id, callback)
+  // sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash, callback);
+  // sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash, callback)
   // updateUserPin(new_pin, callback)
   //
 
@@ -146,6 +147,15 @@ console.log(res.data);
 	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
 	    "data":       "Transfer!"
             *********************************************/
+	    let contains_transfer = 0;
+	    for (let z = 0; z < this.deposits.length; z++) {
+	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
+	        contains_transfer = 1;
+	      }
+            }
+            if (contains_transfer === 0) {
+	      this.deposits.push(d.data[i]);
+	    }
           }
           if (callback) { callback(res.data); }
         }
@@ -153,8 +163,6 @@ console.log(res.data);
     } catch (err) {
       console.log("ERROR: Mixin error sending network request: " + err);
     }
-
-
   }
 
 
@@ -304,20 +312,20 @@ console.log(res.data);
   }
 
 
-  sendInNetworkTransferRequest(asset_id, address_id, amount, trace_id="", callback=null) {
+  sendInNetworkTransferRequest(asset_id, address_id, amount, unique_hash="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
     let privateKey = this.mixin.privatekey;
 
     let method = "POST";
-    let uri = '/transactions';
+    let uri = '/transfers';
     let body = {
       asset_id		: asset_id ,
-      address_id	: address_id ,
+      opponent_id	: address_id ,
       amount		: amount ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
-      trace_id		: getUuid(trace_id) ,
+      trace_id		: getUuid(unique_hash) ,
       memo		: "",
     };
 
@@ -337,10 +345,7 @@ console.log(res.data);
     }
   }
 
-  sendWithdrawalRequest(asset_id, address_id, address, amount, trace_id="", callback=null) {
-
-console.log("AAAA 1");
-console.log(getUuid(trace_id));
+  sendWithdrawalRequest(asset_id, address_id, address, amount, unique_hash="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -348,12 +353,11 @@ console.log(getUuid(trace_id));
 
     const method = "POST";
     const uri = '/withdrawals';
-console.log("AAAA 2");
 
     const body = {
       address_id	: address_id ,
       amount		: amount ,
-      trace_id		: getUuid(trace_id) ,
+      trace_id		: getUuid(unique_hash) ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
 console.log("AAAA 3");
@@ -382,8 +386,6 @@ console.log(res.data);
     const sessionId = this.mixin.session_id;
     const privateKey = this.mixin.privatekey;
 
-console.log("checking asset_id: " + asset_id);
-
     const method = "GET";
     const uri = `/assets/${asset_id}/fee`;
 
@@ -393,9 +395,6 @@ console.log("checking asset_id: " + asset_id);
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
 	  let d = res.data.data;
-
-console.log("FEE LEVEL: " +JSON.stringify(res));
-
 	  for (let i = 0; i < this.mods.length; i++) {
 	    if (this.mods[i].asset_id === asset_id) {
 

@@ -1072,7 +1072,7 @@ console.log("emitting set preferred crypto event");
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
    * @param {String} ticker - Ticker of install crypto module
    */
-  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, mycallback=null, ticker) {
+  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, unique_hash="", mycallback=null, ticker) {
 console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
@@ -1087,22 +1087,28 @@ console.log("wallet sendPayment");
       return;
     }
     // only send if hasn't been sent before
-    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
+    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
-          this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+          this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
           try {
-            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, timestamp, ticker);
-console.log("wallet -> cryptomod - sendPayment");
+            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+console.log("unique_hash: " + unique_tx_hash);
+console.log("senders: " + JSON.stringify(senders));
+console.log("receivers: " + JSON.stringify(receivers));
+console.log("amounts: " + JSON.stringify(amounts));
+console.log("timestamp: " + timestamp);
+console.log("ticker: " + ticker);
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
 console.log("wallet -> cryptomod - sendPayment - done");
 	    //
 	    // hash is "" if unsuccessful, trace_id if successful
 	    //
 	    if (hash === "") {
-              this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+              this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
             }
 
 	    if (mycallback) {
@@ -1113,7 +1119,7 @@ console.log("and after the callback");
           } catch (err) {
             // it failed, delete the transaction
             console.log("sendPayment ERROR: payment failed....\n" + err);
-            this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+            this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
             //mycallback({err: err});
             return;
           }
@@ -1141,13 +1147,21 @@ console.log("and after the callback");
     receivers = [],
     amounts = [],
     timestamp,
+    unique_hash = "",
     mycallback,
     ticker,
     tries = 36,
     pollWaitTime = 5000
   ) {
 console.log("wallet receivePayment");
-    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, timestamp, ticker);
+    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+console.log("unique_hash: " + unique_tx_hash);
+console.log("senders: " + JSON.stringify(senders));
+console.log("receivers: " + JSON.stringify(receivers));
+console.log("amounts: " + JSON.stringify(amounts));
+console.log("timestamp: " + timestamp);
+console.log("ticker: " + ticker);
 
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log("receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same");
@@ -1161,9 +1175,10 @@ console.log("wallet receivePayment");
     //
     // if payment already received, return
     //
-    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
+    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
       mycallback();
-      return;
+console.log("our preferred crypto transaction exists!");
+      return 1;
     }
 
     const cryptomod = this.returnCryptoModuleByTicker(ticker);
@@ -1194,7 +1209,7 @@ console.log("wallet -> cryptmod receivePayment");
       if (result) {
         // The transaction was found, we're done.
         console.log("TRANSACTION FOUND");
-        this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+        this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
         mycallback(result);
       } else {
         // The transaction was not found.
@@ -1221,17 +1236,17 @@ console.log("wallet -> cryptmod receivePayment");
     //});
   }
 
-  generatePreferredCryptoTransactionHash(senders = [], receivers = [], amounts, timestamp, ticker) {
+  generatePreferredCryptoTransactionHash(senders = [], receivers = [], amounts, unique_hash, ticker) {
     return this.app.crypto.hash(
       JSON.stringify(senders) +
       JSON.stringify(receivers) +
       JSON.stringify(amounts) +
-      timestamp +
+      unique_hash +
       ticker
     );
   }
-  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
-    let sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, timestamp, ticker);
+  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    let sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     this.wallet.preferred_txs.push({
       sig: sig,
       ts: new Date().getTime(),
@@ -1247,14 +1262,8 @@ console.log("wallet -> cryptmod receivePayment");
     return 1;
   }
 
-  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, timestamp, ticker) {
-    const sig = this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        timestamp +
-        ticker
-    );
+  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         return 1;
@@ -1263,14 +1272,8 @@ console.log("wallet -> cryptmod receivePayment");
     return 0;
   }
 
-  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
-    const sig = this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        timestamp +
-        ticker
-    );
+  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         this.wallet.preferred_txs.splice(i, 1);
