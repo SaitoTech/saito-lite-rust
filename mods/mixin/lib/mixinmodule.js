@@ -11,6 +11,16 @@
    async sendPayment(amount="", recipient="", unique_hash="")
    async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
+
+ TODO:
+
+ we currently SEND the payments but do not record if the payment has been a success
+ so there are failure modes if the effort to send has been unsuccessful. the same
+ trace_id will be sent with each request so we should not have multiple payments 
+ through.
+
+
+
 **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
 
@@ -84,10 +94,10 @@ console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
     return 0;
   }
   hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
-    for (let i = 0; i < this.options.transfers_inbound.length; i++) {
+    for (let i = 0; i < this.options.transfers_outbound.length; i++) {
       if (
-        this.options.transfers_inbound[i].amount === amount &&
-        this.options.transfers_inbound[i].timestamp >= timestamp
+        this.options.transfers_outbound[i].amount === amount &&
+        this.options.transfers_outbound[i].timestamp >= timestamp
       ) {
         return 1;
       }
@@ -183,9 +193,89 @@ MixinModule.prototype.returnBalance = async function() {
  * @return {Number}
  */
 MixinModule.prototype.sendPayment = function(amount="", recipient="", unique_hash="") {
-  return this.app.crypto.hash("payment");
-//  throw new Error('send must be implemented by subclass!');
+
+console.log("arrived in mixin module - sendPayment");
+console.log("amount: " + amount);
+console.log("recipient: " + recipient);
+console.log("unique_hash: " + unique_hash);
+
+  let r = recipient.split("|");
+  let ts = new Date().getTime();
+
+  //
+  // internal MIXIN transfer
+  //
+  if (r.length >= 2) {
+    if (r[2] === "mixin") {
+      let opponent_address_id = r[1];
+console.log("this is a Mixin address so send in-network transfer request to: " + opponent_address_id);
+      this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
+console.log("and saving outbound payment");
+      this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+      return;
+    }
+  }
+
+  //
+  // external withdrawal to network
+  //
+  let destination = this.returnNetworkAddress(recipient);
+  let withdrawal_address_exists = 0;
+  let withdrawal_address_id = "";
+
+console.log("this is an external transfer to external withdrawal address");
+
+  for (let i = 0; i < this.mixin.addresses.length; i++) {
+    if (this.mixin.addresses[i].destination === destination) { 
+      withdrawal_address_exists = 1; 
+      withdrawal_address_id = this.mixin.addresses[i].address_id;
+    }
+  }
+
+  //
+  // existing withdrawal address
+  //
+  if (withdrawal_address_exists === 1) {
+
+console.log("we already have an address for this destination!");
+    this.mixin.sendWithdrawalRequest(this.asset_id, withdrawal_address_id, destination, amount, unique_hash, function(d) {
+console.log("sent withdrawal request and received: " + JSON.stringify(d));
+    });
+console.log("about to save outbound");
+    this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+    return unique_hash;
+
+  //
+  // create withdrawal address and save
+  //
+  } else {
+  
+    let mm_self = this;
+
+console.log("we need to create an address for this destination!");
+console.log("unique hash is : " + unique_hash);
+    this.mixin.createWithdrawalAddress(mm_self.asset_id, destination, "", "", (d) => {
+
+console.log("In the catch function in create Withdrawal Address in mixinmodule.");
+
+      let asset_id = d.data.asset_id;
+      let withdrawal_address_id = d.data.address_id;
+
+console.log("we have created a withdrawal address with " + mm_self.asset_id + " -- " + withdrawal_address_id + " -- " + destination);
+
+      mm_self.mixin.sendWithdrawalRequest(mm_self.asset_id, withdrawal_address_id, destination, amount, unique_hash, (d) => {
+console.log("sent withdrawal request and received: " + JSON.stringify(d));
+      });
+      mm_self.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, unique_hash);
+
+    });
+
+console.log("and returning unique hash");
+    return unique_hash;
+
+  }
 };
+
 
 /**
  * Abstract method which should get pubkey/address

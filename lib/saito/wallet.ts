@@ -1072,7 +1072,7 @@ console.log("emitting set preferred crypto event");
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
    * @param {String} ticker - Ticker of install crypto module
    */
-  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, mycallback, ticker) {
+  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, mycallback=null, ticker) {
 console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
@@ -1097,15 +1097,25 @@ console.log("wallet sendPayment");
             let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, timestamp, ticker);
 console.log("wallet -> cryptomod - sendPayment");
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
-            // execute callback if exists
-            mycallback({ hash: hash });
-            break;
+console.log("wallet -> cryptomod - sendPayment - done");
+	    //
+	    // hash is "" if unsuccessful, trace_id if successful
+	    //
+	    if (hash === "") {
+              this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+            }
+
+	    if (mycallback) {
+              mycallback({ hash: hash });
+	    }
+console.log("and after the callback");
+            return;
           } catch (err) {
             // it failed, delete the transaction
             console.log("sendPayment ERROR: payment failed....\n" + err);
             this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
             //mycallback({err: err});
-            break;
+            return;
           }
         }
       }

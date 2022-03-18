@@ -6,6 +6,7 @@ const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const fetch = require('node-fetch');
 const forge = require('node-forge');
 const { v4: uuidv4 } = require('uuid');
+const getUuid = require('uuid-by-string');
 const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
@@ -78,8 +79,8 @@ class Mixin extends ModTemplate {
       let pc = this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
         this.checkBalance(crypto_module.asset_id, function(res) {});
-//        this.fetchAddresses(crypto_module.asset_id, function(res) {});
-//        this.fetchDeposits(crypto_module.asset_id, function(res) {});
+        this.fetchAddresses(crypto_module.asset_id, function(res) {});
+        this.fetchDeposits(crypto_module.asset_id, function(res) {});
       }
     });
 
@@ -183,7 +184,15 @@ console.log(res.data);
     		  "dust":       "0.0001",
     		  "updated_at": "2018-07-10T03:58:17.5559296Z"
 		*********************************************/
-	    this.addresses.push(d.data[i]);
+	    let contains_address = 0;
+	    for (let z = 0; z < this.addresses.length; z++) {
+	      if (this.addresses[z].destination === d.data[i].destination) {
+		contains_address = 1;
+	      }
+	    }
+	    if (contains_address == 0) {
+	      this.addresses.push(d.data[i]);
+	    }
 	  }
 	  if (callback) { callback(res.data); }
         }
@@ -203,7 +212,7 @@ console.log(res.data);
     return 0;
   }
 
-  createWithdrawalAddress(asset_id, address, label="", tag="", callback=null) {
+  createWithdrawalAddress(asset_id, withdrawal_address, label="", tag="", callback=null) {
 
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
@@ -213,10 +222,10 @@ console.log(res.data);
     const uri = '/addresses';
 
     const body = {
-      asset_id		: aseet_id ,
+      asset_id		: asset_id ,
       label		: `Withdrawal Address` ,
-      destination	: address ,
-      tag		: trace_id ,
+      destination	: withdrawal_address ,
+      tag		: tag ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
 
@@ -261,7 +270,7 @@ console.log(res.data);
       address_id	: address_id ,
       amount		: amount ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
-      trace_id		: trace_id ,
+      trace_id		: getUuid(trace_id) ,
       memo		: "",
     };
 
@@ -283,19 +292,24 @@ console.log(res.data);
 
   sendWithdrawalRequest(asset_id, address_id, address, amount, trace_id="", callback=null) {
 
+console.log("AAAA 1");
+console.log(getUuid(trace_id));
+
     let appId = this.mixin.user_id;
     let sessionId = this.mixin.session_id;
     let privateKey = this.mixin.privatekey;
 
     const method = "POST";
     const uri = '/withdrawals';
+console.log("AAAA 2");
 
     const body = {
       address_id	: address_id ,
       amount		: amount ,
-      trace_id		: trace_id ,
+      trace_id		: getUuid(trace_id) ,
       pin 		: this.signEd25519PIN(this.mixin.pin, this.mixin.pin_token, this.mixin.session_id, this.mixin.privatekey) ,
     };
+console.log("AAAA 3");
 
     try {
       this.request(appId, sessionId, privateKey, method, uri, body).then(
@@ -317,9 +331,9 @@ console.log(res.data);
     //
     // CHECK BALANCE
     //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+    const appId = this.mixin.user_id;
+    const sessionId = this.mixin.session_id;
+    const privateKey = this.mixin.privatekey;
 
 console.log("checking asset_id: " + asset_id);
 
@@ -360,9 +374,9 @@ console.log("FEE LEVEL: " +JSON.stringify(res));
     //
     // CHECK BALANCE
     //
-    const appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    const sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    const privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
+    const appId = this.mixin.user_id;
+    const sessionId = this.mixin.session_id;
+    const privateKey = this.mixin.privatekey;
 
     const method = "GET";
     const uri = `/assets/${asset_id}`;
