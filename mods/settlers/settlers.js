@@ -833,6 +833,8 @@ class Settlers extends GameTemplate {
             let divname = "#" + slot;
             $(divname).html(this.skin.c2.svg);
             $(divname).addClass(`p${player}`);
+            $(divname).removeClass('c1');
+            $(divname).addClass('c2');
             return 1;
           }
         }
@@ -1935,9 +1937,11 @@ class Settlers extends GameTemplate {
 
       if (this.game.state.cities[i].level == 1) {
         $(divname).html(this.skin.c1.svg);
+        $(divname).addClass('c1');
       } else {
         /* == 2*/
         $(divname).html(this.skin.c2.svg);
+        $(divname).addClass('c2');
       }
       $(divname).addClass(classname);
 

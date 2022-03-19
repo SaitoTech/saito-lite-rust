@@ -30,14 +30,13 @@
   display: none;
   width: fit-content;
   height: 460px;
-  background-color: rgba(0,0,0,0.75);
-  border: 5px solid black;
+  background: linear-gradient(145deg, #222, #555);
+  color: #efefef;
+  border: 5px solid #111;
   border-radius: 10px;
-  color: white;
   transform: unset;
   left: 10px;
   top: 60px;
-
 }
 
 .construction-costs{
@@ -148,6 +147,7 @@ body {
 
 .player-info-name {
   font-weight: lighter;
+  font-size: 1.33em;
 }
 
 .game_board_sizer{
@@ -168,18 +168,18 @@ body {
 .diceroll{
   display: none;
   width: min(12vw,120px);
-  margin: 0 auto;
+  margin: 3px;
   /*position: absolute;
   /*top: 0px;
   left: 50%;
   transform: translateX(-5vw);*/
-  border: 2px solid black;
+  border: 2px solid #000;
   border-radius: 5px;
   background-color: #222B;
-  padding: min(0.5vw,5px);
+  padding: 8px 4px;
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-around;
   z-index: 3;
 }
 
@@ -407,7 +407,7 @@ body {
   z-index: 12;
   font-size: 2em;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 50%;
 }
 
 .city > svg, .city > img{
@@ -415,6 +415,14 @@ body {
   height: 100%;
   top:  0px;
   left: 0px;
+}
+
+.c1>img {
+  transform: scale(1.33);
+}
+
+.c2>img {
+  transform: scale(1.85);
 }
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
@@ -533,14 +541,15 @@ body {
 }
 
 .trade_overlay {
-  background-color: whitesmoke;
-  padding: 25px;
+  padding: 0em 2em;
   font-size: 1.25em;
   min-width: 50vw;
-  /*width: 500px;*/
   max-width: 80vw;
   max-height: 70vh;
-  /*overflow-y: scroll;*/
+  background: linear-gradient(145deg, #222, #555);
+  color: #efefef;
+  border: 5px solid #111;
+  border-radius: 10px;
 }
 
 .trade_overlay_title{
@@ -698,7 +707,7 @@ ul.horizontal_list li.iconoption{
   flex-direction: row;
   width: 100%;
   flex-wrap: wrap;
-  margin-bottom: 0.5em;
+  margin: 0.75em 0 0.5em;
 }
 
 .flexline2{
