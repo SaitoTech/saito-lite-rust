@@ -2080,7 +2080,7 @@
       name : "Card" ,
       faction : "french" ,
     }
-    if (this.game.players.length == 2) {
+    if (this.game.players.length != 2) {
       deck['005'] = { 
         img : "cards/HIS-005.svg" , 
         name : "Card" ,
