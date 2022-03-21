@@ -843,7 +843,7 @@ class Pandemic extends GameTemplate {
     return newHand;   
   }
 
-//>>>>>>>
+
   canPlayerDiscoverCure() {
     let cards = this.game.players_info[this.game.player - 1].cards;
     let city = this.game.players_info[this.game.player - 1].city;
@@ -1218,7 +1218,6 @@ class Pandemic extends GameTemplate {
     });
   }
 
-
   directFlight() {
     let pandemic_self = this;
     let city = this.game.players_info[this.game.player - 1].city;
@@ -1488,9 +1487,9 @@ class Pandemic extends GameTemplate {
     ///////////
     // QUEUE //
     ///////////
-      console.log("***** LOOP *****");
-      console.log("QUEUE: " + this.game.queue);
-      console.log("MOVES: " + this.moves);
+    console.log("***** LOOP *****");
+    console.log("QUEUE: " + this.game.queue);
+    console.log("MOVES: " + this.moves);
     if (this.game.queue.length > 0) {
       console.log(JSON.parse(JSON.stringify(this.game.state)));
       pandemic_self.saveGame(pandemic_self.game.id);
@@ -1511,6 +1510,14 @@ class Pandemic extends GameTemplate {
         this.game.over = 1;
         this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
         this.updateStatus("Players win the game!");
+        salert("Players Win! Humanity survives");
+        this.game.queue = [];
+        return 0;
+      }
+      if (mv[0] === "win"){
+        let winningPlayer = mv[1];
+        this.game.over = 1;
+        this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
         salert("Players Win! Humanity survives");
         this.game.queue = [];
         return 0;
@@ -2068,6 +2075,16 @@ class Pandemic extends GameTemplate {
 
   winGame(player) {
     this.addMove(`win\t${player}`);
+    this.game.turn = this.moves;
+    this.sendMessage("game", {});
+    this.moves = [];
+    this.saveGame(this.game.id);
+  }
+
+
+  winGame(player) {
+    this.addMove(`win\t${player}`);
+    this.moves.reverse();
     this.game.turn = this.moves;
     this.sendMessage("game", {});
     this.moves = [];
