@@ -10,6 +10,7 @@ const getUuid = require('uuid-by-string');
 const axios = require('axios');
 const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
+const JSON = require("json-bigint");
 
 class Mixin extends ModTemplate {
 
@@ -68,6 +69,52 @@ class Mixin extends ModTemplate {
 
 
 
+
+  async handlePeerRequest(app, message, peer, mycallback = null) {
+
+    //
+    // we receive requests to create accounts here
+    //
+    if (message.request === "mixin create account") {
+
+      let saito_publickey = message.data.saito_publickey;
+      let mixin_publickey = message.data.mixin_publickey;
+
+      if (app.BROWSER == 0) {
+
+        m = JSON.parse(process.env.MIXIN);
+	if (m.appId) {
+
+          let method = "POST";
+          let uri = '/users';
+          let body = {
+            session_secret: mixin_publickey,
+            full_name: `Saito User ${saito_publickey}`,
+          };
+
+          let appId = m.appId;
+          let sessionId = m.sessionId;
+          let privateKey = m.privateKey;
+
+          try {
+            this.request(appId, sessionId, privateKey, method, uri, body).then(
+              (res) => {
+		let d = res.data;
+		// send response to browser
+		if (mycallback) { mycallback(d); }
+              }
+            );
+          } catch (err) {
+            console.log("ERROR: Mixin error sending network request: " + err);
+          }
+        }
+      }
+    }
+  }
+
+
+
+
   loadCryptos() {
 
     let mixin_self = this;
@@ -118,6 +165,7 @@ class Mixin extends ModTemplate {
 
     const method = "GET";
     const uri = `/snapshots?limit=100&order=DESC&asset=${asset_id}`;
+
 
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
@@ -512,6 +560,51 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
   }
 
 
+  createAccountCallback(res, callback=null) {
+
+    let mixin_self = this;
+
+    let d = res;
+    mixin_self.mixin.session_id = d.data.session_id;
+    mixin_self.mixin.user_id = d.data.user_id;
+    mixin_self.mixin.full_name = d.data.full_name;
+    mixin_self.mixin.pin_token = d.data.pin_token;
+    mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
+
+    console.log("RETURNED DATA: " + JSON.stringify(d.data));
+    mixin_self.save();
+
+    //
+    // we may have activated a crypto to trigger this, in which
+    // case we need to update the balance and then emit an event
+    // to trigger UI re-render, including address
+    //
+    let pc = mixin_self.app.wallet.wallet.preferred_crypto;
+    for (let i = 0; i < mixin_self.mods.length; i++) {
+      if (mixin_self.mods[i].name === pc) {
+        mixin_self.checkBalance(mixin_self.mods[i].asset_id, () => {
+          //
+          // this may already have run elsewhere, we be run
+          // it again because of the potential delay here in
+          // fetching the balance of the module given the need
+          // for mixin account creation.
+          //
+          mixin_self.app.connection.emit('set_preferred_crypto');
+        });
+      }
+    }
+
+    //
+    // and set our pin
+    //
+    let new_pin = (new Date()).getTime().toString().substr(-6);
+    mixin_self.updateUserPin(new_pin, () => {});
+    if (callback != null) { callback(res.data); }
+
+  };
+
+
+
 
   createAccount(callback=null) {
 
@@ -532,10 +625,6 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
     // have the module make the call directly for simplified
     // development.
     //
-    let appId = '9be2f213-ca9d-4573-80ca-3b2711bb2105';
-    let sessionId = 'f072cd2a-7c81-495c-8945-d45b23ee6511';
-    let privateKey = 'dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg';
-
     let user_keypair = forge.pki.ed25519.generateKeyPair();
     let original_user_public_key = Buffer.from(user_keypair.publicKey).toString('base64');
     let original_user_private_key = Buffer.from(user_keypair.privateKey).toString('base64');
@@ -549,65 +638,63 @@ console.log("RETURNED DATA: " + JSON.stringify(d));
       full_name: `Saito User ${this.app.wallet.returnPublicKey()}`,
     };
 
-
     this.mixin.publickey = original_user_public_key;
     this.mixin.privatekey = original_user_private_key;
     this.mixin.user_id          = "";
     this.mixin.session_id       = "";
 
-console.log("USER PUBLIC KEY: " + original_user_public_key.toString('base64'));
-console.log("USER PRIVATE KEY: " + original_user_private_key.toString('base64'));
-console.log("pubkey: " + user_public_key.toString('base64'));
-console.log("privkey: " + user_private_key.toString('base64'));
+    let m = "";
 
-    try {
-      this.request(appId, sessionId, privateKey, method, uri, body).then(
-        (res) => {
+    //
+    // process directly if ENV variable set
+    //
+    if (process.env.MIXIN) { 
 
-	  let d = res.data;
+      m = JSON.parse(process.env.MIXIN);
 
-	  mixin_self.mixin.session_id = d.data.session_id;
-	  mixin_self.mixin.user_id = d.data.user_id;
-	  mixin_self.mixin.full_name = d.data.full_name;
-	  mixin_self.mixin.pin_token = d.data.pin_token;
-	  mixin_self.mixin.pin_token_base64 = d.data.pin_token_base64;
+      let appId = m.appId;
+      let sessionId = m.sessionId;
+      let privateKey = m.privateKey;
 
-          console.log("RETURNED DATA: " + JSON.stringify(d.data));
-	  mixin_self.save();
-
-	  //
-	  // we may have activated a crypto to trigger this, in which
-	  // case we need to update the balance and then emit an event
-	  // to trigger UI re-render, including address
-	  //
-	  let pc = mixin_self.app.wallet.wallet.preferred_crypto;
-	  for (let i = 0; i < mixin_self.mods.length; i++) {
-	    if (mixin_self.mods[i].name === pc) {
-	      mixin_self.checkBalance(mixin_self.mods[i].asset_id, () => {
-		//
-		// this may already have run elsewhere, we be run
-		// it again because of the potential delay here in 
-		// fetching the balance of the module given the need
-		// for mixin account creation.
-		//
-      	 	mixin_self.app.connection.emit('set_preferred_crypto');
-	      });
-	    }
+      //
+      // if you have an application ID, you can create your account directly
+      // using that....
+      //
+      try {
+        this.request(appId, sessionId, privateKey, method, uri, body).then(
+  	  (res) => { 
+	    mixin_self.createAccountCallback(res, callback);
+	    //processRes(res);
 	  }
+        );
+      } catch (err) {
+        console.log("ERROR: Mixin error sending network request: " + err);
+      }
 
-	  //
-	  // and set our pin
-	  //
-	  let new_pin = (new Date()).getTime().toString().substr(-6);
-	  mixin_self.updateUserPin(new_pin, () => {
-console.log("we have updated our pin to: " + new_pin);
-	  });
+    }
 
-	  if (callback != null) { callback(res.data); }
-        }
-      );
-    } catch (err) {
-      console.log("ERROR: Mixin error sending network request: " + err);
+    //
+    // users handle manually
+    //
+    if (!m.appId) {
+   
+
+      m = { appId : "9be2f213-ca9d-4573-80ca-3b2711bb2105", sessionId: "f072cd2a-7c81-495c-8945-d45b23ee6511", privateKey: "dN7CgCxWsqJ8wQpQSaSnrE0eGsToh7fntBuQ5QvVnguOdDbcNZwAMwsF-57MtJPtnlePrNSe7l0VibJBKD62fg"};
+
+      let appId = m.appId;
+      let sessionId = m.sessionId;
+      let privateKey = m.privateKey;
+
+      let data = {
+	saito_publickey	:	mixin_self.app.wallet.returnPublicKey() ,
+	mixin_publickey :	user_public_key 
+      };
+
+      mixin_self.app.network.peers[0].sendRequestWithCallback("mixin create account", data, function(res) {
+console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
+	mixin_self.createAccountCallback(res, callback);
+      });
+
     }
   }
 
