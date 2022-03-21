@@ -30,7 +30,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
      
-           
       // We stay inside the limits of the zoomable area
       tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
       tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
@@ -851,6 +850,27 @@ class Scotland extends GameTemplate {
   }
 
 
+
+  magnifyingGlass(){
+    
+    var zoom_area_size = 250;
+    var zoom_radius = zoom_area_size / 2;
+    
+
+  $('.gameboard').toggleClass("zoom-window");
+
+  if ($('.gameboard').hasClass("zoom-window")){
+    console.log("Turn on zoom");
+    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);  
+    //document.querySelector(".gameboard").addEventListener("mouseout", endHover);
+  }else{
+    console.log("Turn off zoom");
+    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);  
+    //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
+  }
+
+   
+  }
 
   magnifyingGlass(){
   let scotland_self = this;
