@@ -124,7 +124,7 @@ module.exports = ArcadeGameDetails = {
             if (selected_crypto_ticker === preferred_crypto_ticker) {
               let my_address = app.wallet.returnPreferredCrypto().returnAddress();
               let crypto_transfer_manager = new GameCryptoTransferManager(app);
-              crypto_transfer_manager.balance(app, mod, my_address, options.crypto, function () {});
+              crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () {});
               let returnObj = await app.wallet.returnPreferredCryptoBalances(
                 [my_address],
                 null,

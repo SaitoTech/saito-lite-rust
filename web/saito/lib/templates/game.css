@@ -511,14 +511,12 @@ i.menu_icon_icon{
   padding-inline-start: 0px;
 }
 
-
 .status-text-menu ul li {
   margin-left: auto;
   margin-right: auto;
   background-color: whitesmoke;
   padding: 10px;
 }
-
 
 .status-text-menu ul li , .status ul li {
   width: 100%;
@@ -534,7 +532,7 @@ i.menu_icon_icon{
 
 /*Player box version*/
 .status ul .menu_option{
-  line-height: 3em;
+  line-height: 4em;
 }
 .status ul .menu_option:hover{
   background-color: #ccc3;

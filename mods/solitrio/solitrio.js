@@ -195,7 +195,7 @@ class Solitrio extends GameTemplate {
       id : "game-exit",
       class : "game-exit",
       callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
+        game_mod.updateStatusWithOptions("shuffle cards...");
         game_mod.prependMove("exit_game\t"+game_mod.game.player);
         game_mod.endTurn();
       }
@@ -621,7 +621,8 @@ class Solitrio extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.scanBoard(true);
         this.game.state.recycles_remaining--;
-        return 0; //want to pause for animation effect to happen
+alert("done shuffle");
+        return 1;
       }
       
       if (mv[0] === "move"){
@@ -730,7 +731,7 @@ no status atm, but this is to update the hud
       let action = $(this).attr("id");
 
       if (action == "shuffle"){
-        solitrio_self.updateStatusWithOptions("Saving moves to the blockchain...");
+        solitrio_self.updateStatusWithOptions("shuffle cards...");
         solitrio_self.prependMove("shuffle");
         solitrio_self.endTurn();
         return;

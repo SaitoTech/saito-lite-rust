@@ -51,11 +51,14 @@ body {
 }
 
 .logobox {
-  position: relative;
-  margin-top: 50px;
-  font-size: 20px;
-  order: 1;
-  max-width: 200px;
+position: relative;
+    margin-top: 50px;
+    font-size: 20px;
+    order: 1;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
 }
 .logobox div{
   border-radius: 5px;
@@ -67,6 +70,7 @@ body {
 
 .status-header{
   padding: 10px 5px;
+  margin-top: 20px;
 }
 
 .selected .empty:hover{
