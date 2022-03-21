@@ -26,12 +26,10 @@
 <body>
 
     <div class="gameboard" id="gameboard">
-
-      <div class="back_player_card"></div>
-      <div class="player_discard_pile"></div>
-      <div class="back_infection_card"></div>
-      <div class="infection_deck"></div>
-      <div class="infection_discard_pile"></div>
+      <div class="deck back_player_card"></div>
+      <div class="deck player_discard_pile"></div>
+      <div class="deck back_infection_card"></div>
+      <div class="deck infection_discard_pile"></div>
 
       <div class="research_station research_station1"></div>
       <div class="research_station research_station2"></div>
@@ -45,10 +43,10 @@
       <div class="vial vial_black"></div>
       <div class="vial vial_red"></div>
 
-      <div class="player player1"></div>
-      <div class="player player2"></div>
-      <div class="player player3"></div>
-      <div class="player player4"></div>
+      <div id="player1" class="player"></div>
+      <div id="player2" class="player"></div>
+      <div id="player3" class="player"></div>
+      <div id="player4" class="player"></div>
 
       <div class="marker_infection_rate"></div>
       <div class="marker_outbreak"></div>
@@ -100,12 +98,7 @@
       <div class="city" id="beijing"></div>
       <div class="city" id="seoul"></div>
       <div class="city" id="tokyo"></div>
-      <div class="city" id="osaka"></div>
-      <div class="infection_rate" id="infection_rate"></div>
-      <div class="infection_deck" id="infection_deck"></div>
-      <div class="infection_discard" id="infection_discard"></div>
-      <div class="player_deck" id="player_deck"></div>
-      <div class="player_discard" id="player_discard"></div>
+      <div class="city" id="osaka"></div>    
     </div>
 
   <script id="saito" type="text/javascript" src="/saito/saito.js"></script>

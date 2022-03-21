@@ -152,6 +152,36 @@ game-overlay-cardlist-button {
 }
 
 
+.popup-confirm-menu{
+  padding: 10px;
+  font-size: 1em;
+  background-color: #a9a9a9a9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999999;
+}
+
+.popup-confirm-menu div{
+  background-color: whitesmoke;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+  padding: 5px;
+  width: 100%;
+  border-radius: 5px; 
+}
+
+.popup-confirm-menu .action{
+  border: 1px black solid;
+  cursor: pointer;
+}
+.popup-confirm-menu .action:hover{
+  background-color: lightgrey;
+  font-weight: bold;
+}
+
+
 /**************/
 /** GAME MENU **/
 /**************/
@@ -168,7 +198,7 @@ game-overlay-cardlist-button {
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
   border-bottom: 1px solid var(--saito-skyline-grey);
   margin: 1px 1px 3px 3px;
-  z-index: 50;
+  z-index: 500;
 }
 
 .game-menu > ul {
@@ -466,7 +496,8 @@ i.menu_icon_icon{
 /*** Text listed menu options in hud > hud-body > status ***/ 
 .status-text-menu {
   width: min(500px,100%); /*I think 350px looks better*/
-  height: fit-content;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 
@@ -534,7 +565,7 @@ i.menu_icon_icon{
   display: block;
   width: 500px;
   height: 100vh;
-  z-index: 50;
+  z-index: 500;
   overflow-x: hidden;
   overflow-y: auto;
   color: #fff;
@@ -1023,10 +1054,10 @@ i.menu_icon_icon{
   display: flex;
   width: 2000px;
   flex-wrap: wrap;
-  margin: 0 auto;
+  margin: 0;
   overflow: hidden;
   font-size: 15px;
-  list-style-type: none;
+  /*list-style-type: none;*/
   /*
 %  3D Perspective
 %  -webkit-transform: perspective(600px) rotateX(60deg);
@@ -1190,40 +1221,50 @@ i.menu_icon_icon{
   left: 8vh;
 }
 
-
-.bighand>.card:nth-child(5n+1) {
-  transform: rotate(-20deg);
+/*Big hand fits seven cards in a row -- useful for games where you have to discard above seven*/
+.bighand>.card:nth-child(7n+1) {
+  transform: rotate(-30deg);
   left: 0px;
 }
 
-.bighand>.card:nth-child(5n+2) {
-  transform: rotate(-10deg);
+.bighand>.card:nth-child(7n+2) {
+  transform: rotate(-20deg);
   left: 2vh;
 }
 
-.bighand>.card:nth-child(5n+3) {
-  transform: rotate(0deg);
+.bighand>.card:nth-child(7n+3) {
+  transform: rotate(-10deg);
   left: 4vh;
 }
 
-.bighand>.card:nth-child(5n+4) {
-  transform: rotate(10deg);
+.bighand>.card:nth-child(7n+4) {
+  transform: rotate(0deg);
   left: 6vh;
 }
 
-.bighand>.card:nth-child(5n+5) {
-  transform: rotate(20deg);
+.bighand>.card:nth-child(7n+5) {
+  transform: rotate(10deg);
   left: 8vh;
 }
 
-.bighand>.card:nth-child(n+6) {
-  top: 3vh;
+.bighand>.card:nth-child(7n+6) {
+  transform: rotate(20deg);
+  left: 10vh;
 }
-.bighand>.card:nth-child(n+11) {
-  top: 6vh;
+
+.bighand>.card:nth-child(7n+7) {
+  transform: rotate(30deg);
+  left: 12vh;
 }
-.bighand>.card:nth-child(n+16) {
+
+.bighand>.card:nth-child(n+8) {
+  top: 5vh;
+}
+.bighand>.card:nth-child(n+15) {
   top: 9vh;
+}
+.bighand>.card:nth-child(n+22) {
+  top: 13vh;
 }
 
 
@@ -1257,6 +1298,7 @@ input#game_board_sizer {
   right: 40px;
   width: 250px;
   background: #0004;
+  z-index: 45;
 }
 
 
@@ -1298,10 +1340,10 @@ input#game_board_sizer {
   position:absolute;
   left: 50%;
   top: 13vh;
-  height: 55vh;
+  height: auto;
   width: calc(55vh * 0.730);
   transform: translateX(-50%);
-  z-index: -10; /* start behind the board */
+  z-index: -10; /* start behind the board, toggles between -10 and 250 */
   font-size: max(1.5vh,8px);
   color: white;
   pointer-events: none;
@@ -1311,6 +1353,10 @@ input#game_board_sizer {
  position: relative;
  width: 100%;
  height: 100%;
+}
+
+.cardbox-card .cardimg{
+  width: 100%;
 }
 
 .cardbox-exit-background {
@@ -1324,7 +1370,7 @@ input#game_board_sizer {
   border: 3px black solid;
   border-radius: 100px;
   background: #eb2d2d;
-  z-index: 90000;
+  z-index: 260;
   display: none;
 }
 
@@ -1333,10 +1379,11 @@ input#game_board_sizer {
   width: 100%; 
   height: 100%;
   text-align: center;
-  font-size: 2.5em;
+  font-size: 5vh;
   z-index: inherit;
   cursor: pointer;
   display: none;
+  line-height: 4.5vh;
 }
 
 .cardbox-menu {
@@ -1352,7 +1399,7 @@ input#game_board_sizer {
   padding: 0.5em 1em;
   text-decoration: none;
   border-radius: 10px;
-  z-index: 900009;
+  z-index: 260;
   text-align: center;
   display: none;
 }

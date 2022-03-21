@@ -195,8 +195,16 @@ p {
   color: var(--saito-red);
   cursor: pointer;
   font-size: 2em;
-  padding-top: 4px;
-  margin: 0.1em 0 0 0;
+  height: 100%;
+  width: 100%;
+  /*padding-top: 4px;
+  margin: 0.1em 0 0 0;*/
+}
+
+.chat-room-submit-button i{
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
 }
 
 .chat-message-header {
@@ -300,7 +308,7 @@ p {
   border: 1px solid #a5a5a5;
   font-size: 0.8em;
   grid-template-columns: 1fr;
-  grid-template-rows: 3.2em auto 3.0em;
+  grid-template-rows: 3.2em auto 36px;
   grid-template-areas: "chat_header" "chat_main" ".";
   width: 32em;
   height: 38em;
@@ -400,27 +408,28 @@ p {
 
 .chat-box-input {
   width: 100%;
-  height: 3em;
+  height: 100%;
   padding: 0px;
   border-top: 1px solid lightgrey;
   display: grid;
-  grid-template-columns: 28.5em 3em;
+  grid-template-columns: 1fr 36px; /*text input / submit button */
 }
 
 .chat-box-new-message-input {
   width: 100%;
-  /* height: 100%; */
-  height: 22px;
+  height: auto;
   min-height: unset;
   resize: none;
-  margin: auto;
-  padding: 3px;
-  font-size: 1.4em;
+  /*margin: auto;*/
+  padding:  0;
+  margin: 10px 8px;
+  font-size: 15px;
   border: none;
   box-shadow: none;
   outline: none;
   resize: none;
-  padding-left: 8px;
+  overflow-y: hidden;
+  line-height: 15px;
 }
 
 .chat-timestamp {

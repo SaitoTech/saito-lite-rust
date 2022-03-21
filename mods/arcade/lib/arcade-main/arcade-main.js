@@ -261,7 +261,7 @@ module.exports = ArcadeMain = {
           }
         }
 
-        let c = sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
+        let c = await sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
         if (!c) {
           return;
         }
