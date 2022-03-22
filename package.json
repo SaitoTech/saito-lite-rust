@@ -33,6 +33,7 @@
     "body-parser": "^1.19.0",
     "chess.js": "^0.12.0",
     "crypto": "^1.0.1",
+    "curve25519-js": "^0.0.4",
     "dompurify": "^2.3.5",
     "elo-rank": "^1.0.4",
     "exports-loader": "^0.7.0",
@@ -45,6 +46,7 @@
     "html2canvas": "^1.4.1",
     "identicon.js": "^2.3.3",
     "image-resolver": "^0.6.1",
+    "int64-buffer": "^1.0.1",
     "jimp": "^0.9.3",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
@@ -83,6 +85,7 @@
     "unzipper": "^0.10.5",
     "url": "^0.11.0",
     "utf-8-validate": "^5.0.2",
+    "uuid-by-string": "^3.0.6",
     "websocket": "^1.0.34",
     "ws": "^7.5.5"
   },
