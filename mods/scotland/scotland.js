@@ -852,20 +852,27 @@ class Scotland extends GameTemplate {
 
 
   magnifyingGlass(){
-    
-    var zoom_area_size = 250;
-    var zoom_radius = zoom_area_size / 2;
-    
-
+  let scotland_self = this;
   $('.gameboard').toggleClass("zoom-window");
-
+  let glass = document.querySelector(".zoom-container");
   if ($('.gameboard').hasClass("zoom-window")){
     console.log("Turn on zoom");
-    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);  
-    //document.querySelector(".gameboard").addEventListener("mouseout", endHover);
+    let board = document.querySelector(".gameboard");
+    let newBoard = board.cloneNode(true);
+    newBoard.style = "position:relative;";
+    glass.append(newBoard);
+
+    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
+    glass.addEventListener("mousemove", zoomHover);  
+    glass.addEventListener("click",scotland_self.magnifyingGlass);
+    //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
   }else{
     console.log("Turn off zoom");
-    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);  
+    glass.removeChild(glass.firstChild);
+    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
+    glass.removeEventListener("mousemove", zoomHover);
+    glass.classList.add("hidden");  
+    $(".zoom-container").off();
     //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
   }
 
