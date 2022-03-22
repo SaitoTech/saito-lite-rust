@@ -514,7 +514,7 @@ class Scotland extends GameTemplate {
         
         let detectivesCanMove = false;
         for (let j = this.game.state.numDetectives-1; j >= 0 ; j--){
-          if (this.canPlayerMove(j)){
+          if (this.canBobbyMove(j)){
             this.game.queue.push(`play\t${this.game.state.detectives[j]}\t${j}`);  
             detectivesCanMove = true;
           }
@@ -568,6 +568,22 @@ class Scotland extends GameTemplate {
     this.showBoard();
   }
 
+  canBobbyMove(cop){
+    let source_id = this.game.state.player_location[cop];
+    let mylocation = this.game.state.locations[source_id]; //Obj
+
+    if (this.game.state.tickets[cop]["taxi"] > 0 && mylocation.taxi.length > 0){
+      return true;
+    }
+    if (this.game.state.tickets[cop]["bus"] > 0 && mylocation.bus.length > 0){
+      return true;
+    }
+    if (this.game.state.tickets[cop]["underground"] > 0 && mylocation.underground.length > 0){
+      return true;
+    }
+    return false;
+  }
+
   //
   // player is the human this.game.player
   // gamer is the player (may only be 2)
@@ -607,7 +623,7 @@ class Scotland extends GameTemplate {
             <div class='status-icon-menu'>
             <div class="menu_icon" id="taxi"><i class="menu_icon_icon fas fa-taxi"></i><div class="menu-text">Taxi: ${this.game.state.tickets[pawn]["taxi"]}</div></div>
             <div class="menu_icon" id="bus"><i class="menu_icon_icon fas fa-bus"></i><div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div></div>
-            <div class="menu_icon" id="underground"><i class="menu_icon_icon fa-solid fa-train"></i><div class="menu-text">Underground: ${this.game.state.tickets[pawn]["underground"]}</div></div>
+            <div class="menu_icon" id="underground"><i class="menu_icon_icon fas fa-subway"></i><div class="menu-text">Underground: ${this.game.state.tickets[pawn]["underground"]}</div></div>
             </div>`;
 
 
