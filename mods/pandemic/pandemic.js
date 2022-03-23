@@ -64,7 +64,7 @@ class Pandemic extends GameTemplate {
     return null;
   }
 
-  showPlayerCards(player_num) {
+  returnPlayerCardHTML(player_num) {
     let html = "";
     let playerHand = this.game.players_info[player_num - 1].cards;
 
@@ -73,9 +73,7 @@ class Pandemic extends GameTemplate {
       html += card; //this.returnCardImage(playerHand[i], 1);
       //html += `<div class="card" id="${playerHand[i]}">${}</div>`;
     }
-    html = html.replace(/cardimg/g,"card");
-    this.overlay.show(this.app, this, `<div class="cardfan bighand">${html}</div>`);
-    this.attachCardboxEvents(); //Don't do anything on click
+    return html.replace(/cardimg/g,"card");
   }
 
   ////////////////
@@ -222,7 +220,9 @@ class Pandemic extends GameTemplate {
         class: "game-player-cards-" + (i + 1),
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
-          game_mod.showPlayerCards(i + 1);
+          let html = game_mod.returnPlayerCardHTML(i + 1);
+          game_mod.overlay.show(app, game_mod, `<div class="bighand">${html}</div>`);
+          game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
     }
@@ -249,8 +249,8 @@ class Pandemic extends GameTemplate {
     
     this.cardbox.addCardType("showcard","",null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
-    this.attachCardboxEvents(); //Add hover action to restored Log tags and set this.cardbox_callback to dummy function
-
+    this.cardbox.addCardType("handy-help", "", this.cardbox_callback);
+    
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
@@ -259,7 +259,21 @@ class Pandemic extends GameTemplate {
       let role = this.game.players_info[this.game.player-1].role;
       role = role.split(" ")[0].toLowerCase();
       hh.classList.add(role);
+      if (!hh.querySelector(".handy-help")){
+        this.app.browser.addElementToElement(`<i id="action_help" class="hud-controls handy-help fa fa-question-circle" aria-hidden="true"></i>`, hh);
+        this.app.browser.addElementToElement(`<i id="player_role" class="hud-controls handy-help fa fa-id-card" aria-hidden="true"></i>`, hh);
+        this.app.browser.addElementToElement(`<i id="my_hand" class="hud-controls fas fa-hand-paper" aria-hidden="true"></i>`, hh);  
+      }
+      document.getElementById("my_hand").onclick = function(){
+        if (document.getElementById("cardfan") && document.getElementById("cardfan").style.display == "block"){
+          pandemic_self.cardfan.hide();
+        }else{
+          pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
+        }
+      }
     }
+
+    this.attachCardboxEvents(); //Add hover action to restored Log tags and set this.cardbox_callback to dummy function
 
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -456,6 +470,12 @@ class Pandemic extends GameTemplate {
     $(`#station_${rsIndex}`).css("z-index","");
     }
 
+    //Click on my city to remove cubes
+    console.log(`#${city}.city`);
+    $(`#${city}.city`).off();
+
+
+
     /* Determine which actions the player is allowed to do and update HUD controls */
     let move_opacity = 1; //Always possible because if 0 moves left, the turn has already ended
     let treat_opacity = 0.4;
@@ -469,6 +489,9 @@ class Pandemic extends GameTemplate {
 
     if (this.isCityInfected(city) == 1) {
       treat_opacity = 1; 
+      $(`#${city}.city`).on("click",function(){
+          pandemic_self.cureDisease(1); 
+      });      
     }
     if (this.canPlayerBuildResearchStation(city) == 1) {
       build_opacity = 1;
@@ -501,11 +524,11 @@ class Pandemic extends GameTemplate {
 
     let html = `<div class="status-message">${statMsg}</div>
        <div class='status-icon-menu'>
-       <div class="menu_icon" id="move" title="Move to new city"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /></div>
-       <div class="menu_icon" id="treat" style="opacity:${treat_opacity}" title="Treat disease in this city (remove one cube)"><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /></div>
-       <div class="menu_icon" id="build" style="opacity:${build_opacity}" title="Build an operations center in this city"><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /></div>
-       <div class="menu_icon" id="discover_cure" style="opacity:${discover_cure_opacity}" title="Discover cure to a disease"><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /></div>
-       <div class="menu_icon" id="cards" style="opacity:${cards_opacity}" title="Play event card or share knowledge (give another player a card)"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /></div>
+       <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/pandemic/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
+       <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
+       <div class="menu_icon tip" id="build" style="opacity:${build_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/BUILD.png" /><div class="menu-text">Build</div><div class="tiptext">Build an operations center in this city</div></div>
+       <div class="menu_icon tip" id="discover_cure" style="opacity:${discover_cure_opacity}" ><img class="menu_icon_icon" src="/pandemic/img/icons/CURE.png" /><div class="menu-text">Discover</div><div class="tiptext">Discover cure to a disease</div></div>
+       <div class="menu_icon tip" id="cards" style="opacity:${cards_opacity}"><img class="menu_icon_icon" src="/pandemic/img/icons/CARDS.png" /><div class="menu-text">Cards</div><div class="tiptext">Play event card or share knowledge (give another player a card)</div></div>
        </div>`;
 
     $(".menu_icon").off();
@@ -523,11 +546,11 @@ class Pandemic extends GameTemplate {
         case "move":
           html = `<div class="status-message">${statMsg}</div>
             <div class='status-icon-menu'>
-            <div class="menu_icon" id="goback" title="return to previous menu"><i class="menu_icon_icon fas fa-arrow-alt-circle-left"></i><div class="menu-text">Go back</div></div>
-            <div class="menu_icon" id="move" title="ground transportation to an adjacent city"><i class="menu_icon_icon fas fa-car-side"></i><div class="menu-text">Drive/Ferry</div></div>
-            <div class="menu_icon" id="direct" style="opacity:${flight1}" title="Play a card from your hand to go to that city"><i class="menu_icon_icon fas fa-plane-arrival"></i><div class="menu-text">Direct flight</div></div>
-            <div class="menu_icon" id="charter" style="opacity:${flight2}" title="Play the ${city} card to go anywhere in the world"><i class="menu_icon_icon fas fa-plane-departure"></i><div class="menu-text">Charter flight</div></div>
-            <div class="menu_icon" id="shuttle" style="opacity:${flight3}" title="move between research stations"><i class="menu_icon_icon fas fa-plane"></i><div class="menu-text">Shuttle flight</div></div>
+            <div class="menu_icon tip" id="goback" ><i class="menu_icon_icon fas fa-arrow-alt-circle-left"></i><div class="menu-text">Go back</div><div class="tiptext">return to previous menu</div></div>
+            <div class="menu_icon tip" id="move" ><i class="menu_icon_icon fas fa-car-side"></i><div class="menu-text">Drive/Ferry</div><div class="tiptext">ground transportation to an adjacent city</div></div>
+            <div class="menu_icon tip" id="direct" style="opacity:${flight1}" ><i class="menu_icon_icon fas fa-plane-arrival"></i><div class="menu-text">Direct flight</div><div class="tiptext">play a card from your hand to go to that city</div></div>
+            <div class="menu_icon tip" id="charter" style="opacity:${flight2}" ><i class="menu_icon_icon fas fa-plane-departure"></i><div class="menu-text">Charter flight</div><div class="tiptext">play the ${city} card to go anywhere in the world</div></div>
+            <div class="menu_icon tip" id="shuttle" style="opacity:${flight3}" ><i class="menu_icon_icon fas fa-plane"></i><div class="menu-text">Shuttle flight</div><div class="tiptext">move between research stations</div></div>
             </div>`;
 
           $(".menu_icon").off();
@@ -1214,7 +1237,7 @@ class Pandemic extends GameTemplate {
   }
 
 
-  cureDisease() {
+  cureDisease(cube_selection = 3) {
     let pandemic_self = this;
     let city = this.game.players_info[this.game.player - 1].city;
     let cubes_to_cure = 1;
@@ -1239,7 +1262,7 @@ class Pandemic extends GameTemplate {
         cubes_to_cure = Math.min(3,this.game.cities[city].virus[disease]);
       } 
 
-      let cure_capacity = Math.min(this.active_moves,this.game.cities[city].virus[disease]);
+      let cure_capacity = Math.min(this.active_moves,this.game.cities[city].virus[disease], cube_selection);
       if (cure_capacity > cubes_to_cure){
         html = `<ul>`;
         for (let j = 1; j <= cure_capacity; j++){
@@ -1257,7 +1280,7 @@ class Pandemic extends GameTemplate {
             pandemic_self.showBoard();
             pandemic_self.playerMakeMove();            
           });
-      }else{
+      }else{ //One move cube removal
         this.game.cities[city].virus[disease] -= cubes_to_cure;
         this.game.state.active[disease] -= cubes_to_cure;
         this.active_moves--;
@@ -1370,6 +1393,7 @@ class Pandemic extends GameTemplate {
         let winningPlayer = mv[1];
         this.game.over = 1;
         this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
+        this.updateStatus("Players win the game!");
         salert("Players Win! Humanity survives");
         this.game.queue = [];
         return 0;
@@ -1756,6 +1780,7 @@ class Pandemic extends GameTemplate {
   loseGame(notice){
     this.game.over = 1;
     salert("GAME OVER: " + notice);
+    this.updateStatus("Players lose to the virus!");
     this.saveGame(this.game.id);
   }
 
@@ -2844,11 +2869,10 @@ displayDisease() {
       if (this.game.player == i+1){
         title += " (me)";
       }
-
-      player.title = title;
+      //player.title = title;
       player.style.display = "inline-block";
       //player.style.left = this.scale(33*i)+"px";
-      player.innerHTML = `<img src="/pandemic/img/${this.game.players_info[i].pawn}"/>`;
+      player.innerHTML = `<img src="/pandemic/img/${this.game.players_info[i].pawn}"/><div class="tiptext">${title}</div>`;
     }
   }
 
@@ -2909,6 +2933,14 @@ displayDisease() {
   }
 
   returnCardImage(cardname, ctype = this.defaultDeck) {
+    if (cardname === "action_help"){
+      return `<img class="cardimg" src="/pandemic/img/ActionKey.jpg" />`;
+    }
+    if (cardname === "player_role"){
+      let player = this.game.players_info[this.game.player - 1];
+      return `<img class="cardimg" src="/pandemic/img/${player.card}" />`;
+    }
+
     //console.log(cardname,ctype);
     //console.log(this.game.deck)
     let c = this.game.deck[ctype].cards[cardname];
