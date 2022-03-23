@@ -221,7 +221,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class="bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -474,7 +474,6 @@ class Pandemic extends GameTemplate {
     //Turn off click events on my location
     //Will add Click on my city to remove cubes (below)
     $(`#${city}.city`).off();
-
 
     /* Determine which actions the player is allowed to do and update HUD controls */
     let move_opacity = 1; //Always possible because if 0 moves left, the turn has already ended
