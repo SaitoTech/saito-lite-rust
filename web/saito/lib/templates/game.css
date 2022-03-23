@@ -6,6 +6,7 @@
 ::-webkit-scrollbar-corner { background-color: #c9c9c9;}
 ::-webkit-resizer { background-color: #ddd;}
 
+
 body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
@@ -347,23 +348,23 @@ game-overlay-cardlist-button {
   margin: 5px 0;
 }
 
+
 .hud-controls {
   cursor: default;
   color: whitesmoke;
   line-height: 20px;
+  font-size: 20px;
   padding-left:3px;
   padding-right:3px;
 }
 
 
-
 #hud-mode-button{
-  justify-self: flex-start;
   font-size: 20px;
 }
 
 #hud-toggle-button{
-  justify-self: flex-end;
+  order:  1; /*force to end*/
   font-size: 30px;
 }
 
