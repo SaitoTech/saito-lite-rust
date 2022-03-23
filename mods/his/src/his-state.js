@@ -55,6 +55,26 @@
     this.displayBoard();
   }
 
+  doesFactionHaveNavalUnitsOnBoard(faction) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  return 1;
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
+	    return 1;
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
@@ -445,7 +465,7 @@
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
-      neighbours : ["lyon","tyrrhenian","ionian","africa"] ,
+      neighbours : ["lyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
@@ -463,7 +483,7 @@
       top : 2470 ,
       left : 4450 ,
       name : "Aegean Sea" ,
-      neighbours : ["black","africa","ionian"] ,
+      neighbours : ["black","african","ionian"] ,
     }
     seas['ionian'] = {
       top : 2390 ,
@@ -512,6 +532,7 @@
       home: "scotland",
       political: "scotland",
       religion: "catholic",
+      ports: ["irish"],
       neighbours: ["glasgow","edinburgh"],
       language: "english",
       type: "fortress"
@@ -522,6 +543,7 @@
       home: "scotland",
       political: "scotland",
       religion: "catholic",
+      ports: ["irish"],
       neighbours: ["stirling","edinburgh","carlisle"],
       language: "english",
       type: "town"
@@ -532,6 +554,7 @@
       home: "scotland",
       political: "scotland",
       religion: "catholic",
+      ports: ["north"],
       neighbours: ["stirling","carlisle","berwick"],
       language: "english",
       type: "key"
@@ -541,6 +564,7 @@
       left: 1572,
       home: "england",
       political: "england",
+      ports: ["north"],
       neighbours: ["edinburgh","carlisle","york"],
       language: "english",
       religion: "catholic",
@@ -603,6 +627,7 @@
       home: "england",
       political: "england",
       religion: "catholic",
+      ports: ["north"],
       neighbours:["london"],
       language: "english",
       type: "town"
@@ -614,6 +639,7 @@
       political: "england",
       religion: "catholic",
       language: "english",
+      ports: ["irish"],
       neighbours: ["shrewsbury","wales","plymouth","portsmouth","london"],
       type: "key"
     }
@@ -623,6 +649,7 @@
       home: "england",
       political: "england",
       religion: "catholic",
+      ports: ["north"],
       neighbours: ["norwich","lincoln","bristol","portsmouth","shrewsbury"],
       language: "english",
       type: "key"
@@ -633,6 +660,7 @@
       home: "england",
       political: "england",
       religion: "catholic",
+      ports: ["irish"],
       neighbours: ["bristol","portsmouth"],
       language: "english",
       type: "town"
@@ -643,6 +671,7 @@
       home: "england",
       political: "england",
       religion: "catholic",
+      ports: ["channel"],
       neighbours: ["plymouth","bristol","london"],
       language: "english",
       type: "town"
@@ -653,6 +682,7 @@
       home: "england",
       political: "england",
       religion: "catholic",
+      ports:["north"], 
       neighbours: ["boulogne","brussels","antwerp"],
       language: "french",
       type: "key"
@@ -664,6 +694,7 @@
       home: "france",
       political: "france",
       religion: "catholic",
+      ports: ["channel"],
       neighbours: ["calais","rouen","paris","stquentin"],
       language: "french",
       type: "town"
@@ -702,7 +733,8 @@
       left: 1805,
       home: "france",
       political: "france",
-      religion: "catholic",
+      ports: ["channel"],
+      religion: "channelc",
       neighbours: ["boulogne","paris","tours","nantes"],
       language: "french",
       type: "key"
@@ -752,6 +784,7 @@
       home: "france",
       political: "france",
       religion: "catholic",
+      ports: ["biscay"],
       neighbours: ["brest","rouen","tours","bordeaux"],
       language: "french",
       type: "town"
@@ -762,6 +795,7 @@
       home: "france",
       political: "france",
       religion: "catholic",
+      ports: ["channnel","biscay"],
       neighbours: ["nantes"],
       language: "french",
       type: "town"
@@ -772,6 +806,7 @@
       home: "france",
       political: "france",
       religion: "catholic",
+      ports: ["biscay"],
       neighbours: ["navarre", "nantes","tours","limoges"],
       pass: ["navarre"],
       language: "french",
@@ -815,6 +850,7 @@
       home: "france",
       political: "france",
       religion: "catholic",
+      ports: ["lyon"],
       neighbours: ["avignon","nice"],
       language: "french",
       type: "key"
@@ -857,6 +893,7 @@
       home: "",
       political: "hapsburg",
       religion: "catholic",
+      ports: ["north"],
       neighbours:["munster","brunswick","hamburg"],
       language: "german",
       type: "town"
@@ -867,6 +904,7 @@
       home: "",
       political: "hapsburg",
       religion: "catholic",
+      ports: ["north"],
       neighbours: ["bremen","brunswick","lubeck"],
       language: "german",
       type: "town"
@@ -877,6 +915,7 @@
       home: "",
       political: "hapsburg",
       religion: "catholic",
+      ports: ["baltic"],
       neighbours: ["hamburg","magdeburg","brandenburg","stettin"],
       language: "german",
       type: "town"
@@ -887,6 +926,7 @@
       home: "",
       political: "hapsburg",
       religion: "catholic",
+      ports: ["baltic"],
       neighbours: ["lubeck","brandenburg"],
       language: "german",
       type: "town"
@@ -1079,6 +1119,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["biscay","atlantic"],
       neighbours: ["bilbao","valladolid"],
       language: "spanish",
       type: "town"
@@ -1109,6 +1150,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["lyon"],
       neighbours: ["toulouse","avignon","zaragoza","valencia"],
       pass: ["toulouse","avignon"],
       language: "spanish",
@@ -1119,6 +1161,7 @@
       left: 2211,
       home: "hapsburg",
       political: "",
+      ports: ["lyon","barbary"],
       neighbours: ["cartagena","cagliari"],
       language: "other",
       religion: "catholic",
@@ -1140,6 +1183,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["lyon"],
       neighbours: ["cartagena","madrid","barcelona"],
       language: "spanish",
       type: "town"
@@ -1150,6 +1194,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["lyon","barbary"],
       neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
@@ -1170,6 +1215,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["atlantic"],
       neighbours: ["cordoba","gibraltar"],
       language: "spanish",
       type: "key"
@@ -1190,6 +1236,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["atlantic","barbary"],
       neighbours: ["seville","granada"],
       language: "spanish",
       type: "fortress"
@@ -1200,6 +1247,7 @@
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
+      ports: ["barbary"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1210,6 +1258,7 @@
       home: "ottoman independent",
       political: "",
       religion: "catholic",
+      ports: ["barbary"],
       neighbours: [],
       language: "other",
       type: "key"
@@ -1220,6 +1269,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
+      ports: ["barbary","african"],
       neighbours: [],
       language: "other",
       type: "key"
@@ -1230,6 +1280,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports:["tyrrhenian","barbary"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1240,6 +1291,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian"],
       neighbours: ["messina"],
       language: "italian",
       type: "town"
@@ -1250,6 +1302,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian","ionian"],
       neighbours: ["palermo","naples","taranto"],
       language: "italian",
       type: "town"
@@ -1270,6 +1323,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["ionian"],
       neighbours: ["cerignola","naples","messina"],
       language: "italian",
       type: "town"
@@ -1280,6 +1334,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian"],
       neighbours: ["rome","taranto","messina"],
       language: "italian",
       type: "key"
@@ -1290,6 +1345,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["ionian","african"],
       neighbours: [],
       language: "other",
       type: "fortress"
@@ -1331,6 +1387,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["adriatic"],
       neighbours: ["graz","agram","zara","venice"],
       language: "italian",
       type: "town"
@@ -1352,6 +1409,7 @@
       home: "hapsburg ottoman",
       political: "",
       religion: "catholic",
+      ports: ["north"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1362,6 +1420,7 @@
       home: "venice",
       political: "",
       religion: "catholic",
+      ports: ["aegean","african"],
       neighbours: [],
       language: "other",
       type: "fortress"
@@ -1372,6 +1431,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
+      ports: ["aegean","african"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1382,6 +1442,7 @@
       home: "venice",
       political: "",
       religion: "catholic",
+      ports: ["adriatic"],
       neighbours: [],
       language: "other",
       type: "fortress"
@@ -1392,6 +1453,7 @@
       home: "",
       political: "",
       religion: "other",
+      ports:["ionian","aegean"],
       neighbours: ["athens"],
       language: "other",
       type: "town"
@@ -1402,6 +1464,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["aegean"],
       neighbours: ["larissa","lepanto","coron"],
       language: "other",
       type: "key"
@@ -1412,6 +1475,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["ionian"],
       neighbours: ["larissa","athens"],
       language: "other",
       type: "town"
@@ -1443,6 +1507,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["adriatic"],
       neighbours: ["larissa","scutari"],
       pass: ["larissa"],
       language: "other",
@@ -1454,6 +1519,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["adriatic"],
       neighbours: ["nezh","ragusa","durazzo"],
       pass: ["nezh"],
       language: "other",
@@ -1475,6 +1541,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["black","aegean"],
       neighbours: ["edirne","varna"],
       language: "other",
       type: "key"
@@ -1485,6 +1552,7 @@
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["black"],
       neighbours: ["bucharest","edirne","istanbul"],
       language: "other",
       type: "town"
@@ -1643,6 +1711,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["north"],
       neighbours: ["antwerp","munster"],
       language: "other",
       type: "town"
@@ -1653,6 +1722,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
+      ports: ["north"],
       neighbours: ["antwerp","liege","brussels","calais"],
       language: "other",
       type: "key"
@@ -1786,6 +1856,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
+      ports: ["lyon"],
       neighbours: ["genoa","marseille"],
       pass: ["genoa"],
       language: "french",
@@ -1817,6 +1888,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
+      ports: ["lyon","tyrrhenian"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1827,6 +1899,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
+      ports: ["lyon","tyrrhenian"],
       neighbours: ["nice","pavia","turin","modena","siena"],
       pass: ["nice"],
       language: "italian",
@@ -1838,6 +1911,7 @@
       home: "papacy",
       political: "",
       religion: "catholic",
+      ports: ["tyrrhenian"],
       neighbours: ["siena","ancona","cerignola","naples"],
       language: "italian",
       type: "key"
@@ -1848,6 +1922,7 @@
       home: "papacy",
       political: "",
       religion: "catholic",
+      ports: ["adriatic"],
       neighbours: ["ravenna","rome","cerignola"],
       language: "italian",
       type: "town"
@@ -1858,6 +1933,7 @@
       home: "papacy",
       political: "",
       religion: "catholic",
+      ports: ["adriatic"],
       neighbours: ["venice","modena","ancona"],
       language: "italian",
       type: "key"
@@ -1868,6 +1944,7 @@
       home: "venice",
       political: "",
       religion: "catholic",
+      ports:["adriatic"],
       neighbours: ["trent","modena","ravenna","trieste"],
       language: "italian",
       type: "key"
@@ -1889,6 +1966,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
+      ports: ["adriatic"],
       neighbours: ["belgrade","zara","scutari"],
       pass: ["belgrade"],
       language: "italian",
@@ -2002,7 +2080,7 @@
       name : "Card" ,
       faction : "french" ,
     }
-    if (this.game.players.length == 2) {
+    if (this.game.players.length != 2) {
       deck['005'] = { 
         img : "cards/HIS-005.svg" , 
         name : "Card" ,

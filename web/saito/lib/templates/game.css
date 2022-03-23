@@ -511,14 +511,12 @@ i.menu_icon_icon{
   padding-inline-start: 0px;
 }
 
-
 .status-text-menu ul li {
   margin-left: auto;
   margin-right: auto;
   background-color: whitesmoke;
   padding: 10px;
 }
-
 
 .status-text-menu ul li , .status ul li {
   width: 100%;
@@ -534,7 +532,7 @@ i.menu_icon_icon{
 
 /*Player box version*/
 .status ul .menu_option{
-  line-height: 3em;
+  line-height: 4em;
 }
 .status ul .menu_option:hover{
   background-color: #ccc3;
@@ -1294,13 +1292,24 @@ i.menu_icon_icon{
 /*****************/
 /** BOARD SIZER **/
 /*****************/
-input#game_board_sizer {
+#game_board_sizer{
   position: absolute;
   top: 13px;
   right: 40px;
+  z-index: 45;
+  display: flex;
+  flex-direction: row;
+  width: 300px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+#game_board_sizer i{
+  font-size: 24px;
+  text-shadow: 0 0 2px var(--saito-red), 0 0 5px whitesmoke;
+}
+#game_board_sizer input {
   width: 250px;
   background: #0004;
-  z-index: 45;
 }
 
 

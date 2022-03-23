@@ -162,7 +162,7 @@ class Wordblocks extends GameTemplate {
         this.playerbox.refreshLog(html, i);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
 
     try {
@@ -564,6 +564,7 @@ class Wordblocks extends GameTemplate {
       const returnToRack = function(tile){
         let slot = tile.parentElement.id;
         $("#tiles").append(tile);
+        $(tile).removeClass("tempplacement");
         console.log("slot: "+slot);
         deselectTile();
         if (slot != "tiles"){
@@ -573,9 +574,9 @@ class Wordblocks extends GameTemplate {
           checkBoard(); //Helper function to display submission button if deleting this tile gives us a "playable" word  
         }
         
-        if (!(document.querySelector(".slot .tempplacement") || document.querySelector("#tiles .highlighttile"))) {
-          wordblocks_self.addEventsToBoard();
-        }
+        //if (!(document.querySelector(".slot .tempplacement") || document.querySelector("#tiles .highlighttile"))) {
+        wordblocks_self.addEventsToBoard();
+        //}
       }
 
       const checkBoard = function () {
@@ -891,6 +892,8 @@ class Wordblocks extends GameTemplate {
           }
           checkBoard();
         });
+      
+        checkBoard();
       }
 
       //Discard Tiles -- Old Method
@@ -1120,7 +1123,7 @@ class Wordblocks extends GameTemplate {
       if (orientation == "vertical") {
         if (x != 6 && x != 10) {
           salert("First Word must be placed to cross a Star");
-          return 0;
+          return false;
         }
 
         let starting_point = y;
@@ -1132,14 +1135,14 @@ class Wordblocks extends GameTemplate {
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");
-          return 0;
+          return false;
         }
       }
 
       if (orientation == "horizontal") {
         if (y != 6 && y != 10) {
           salert("First Word must be placed to cross a Star");
-          return 0;
+          return false;
         }
 
         let starting_point = x;
@@ -1151,7 +1154,7 @@ class Wordblocks extends GameTemplate {
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");
-          return 0;
+          return false;
         }
       } //this.firstmove = 0;
     } else {
@@ -1178,11 +1181,12 @@ class Wordblocks extends GameTemplate {
 
       if (touchesWord == 0) {
         salert("Word does not cross or touch an existing word.");
-        return 0;
+        return false;
       }
     }
 
     //In all cases, must have the letters in hand or on board to spell word
+    let letters_used = 0;
     for (let i = 0; i < word.length; i++) {
       let boardslot = "";
       let letter = word[i].toUpperCase();
@@ -1191,7 +1195,7 @@ class Wordblocks extends GameTemplate {
         boardslot = y + "_" + (x + i);
         if (x + i > 15) {
           salert("Word must fit on board!");
-          return 0;
+          return false;
         }
       }
 
@@ -1199,18 +1203,18 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
         if (y + i > 15) {
           salert("Word must fit on board!");
-          return 0;
+          return false;
         }
       }
 
       if (this.game.board[boardslot].letter != "_") {
         if (this.game.board[boardslot].letter != letter) {
-          salert("This is an invalid placement!");
-          return 0;
+          salert("Cannot overwrite existing words!");
+          return false;
         }
       } else {
         let letter_found = 0;
-
+        letters_used++;
         for (let k = 0; k < tmphand.length; k++) {
           if (this.game.deck[0].cards[tmphand[k]].name == letter) {
             tmphand.splice(k, 1);
@@ -1221,9 +1225,14 @@ class Wordblocks extends GameTemplate {
 
         if (letter_found == 0) {
           salert("INVALID: letter not in hand: " + letter);
-          return 0;
+          return false;
         }
       }
+    }
+
+    if (!letters_used){
+      salert("Must place at least one new tile on board!");
+      return false;
     }
 
     
@@ -1910,7 +1919,7 @@ class Wordblocks extends GameTemplate {
     }
 
     if (!this.checkWord(thisword)) {
-      salert(word + " is not in the dictionary.");
+      salert(thisword + " is not in the dictionary.");
       return -1;
     }
 
@@ -2128,6 +2137,8 @@ class Wordblocks extends GameTemplate {
             score: score,
           });
           this.updateLog(`Player ${player} played ${expanded} for ${score} points`);
+        }else{
+          score = this.getLastMove(player).score;
         }
 
         //Update Specific Playerbox

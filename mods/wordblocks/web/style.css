@@ -130,8 +130,8 @@ thead,  tfoot{
 }
 
 .wb-main {
-  max-width: 902px;
-  margin: 0 auto;
+ /* max-width: 902px;
+  margin: 0 auto;*/
 }
 
 .gameboard {
@@ -175,7 +175,7 @@ thead,  tfoot{
   width: 200px;
 }
 
-.invalid_word{
+.tile-placement-controls .playable.invalid_word{
   color: #777;
 }
 

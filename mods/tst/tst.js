@@ -5,13 +5,12 @@ class TST extends CryptoModule {
   constructor(app) {
     super(app, 'TST');
     this.name = 'TST';
+    this.ticker = 'TST';
     this.description = 'This module implement CryptoModule functions without moving tokens';
     this.categories = "Cryptocurrency";
     this.information = "This is some important information you may care to read about when enabling the TST crypto module";
     this.warning = "The TST crypto module wishes you to read this warning";
   }
-
-
 
 
 
@@ -37,8 +36,8 @@ class TST extends CryptoModule {
    // @param {String} address in which to check balance
    // @return {Array} Array of {address: {String}, balance: {Int}}
    //
-   async returnBalance(addresses = "") {
-     return "100";
+   async returnBalance(address = "") {
+     return "100.00000000";
    }
 
    //
@@ -50,7 +49,7 @@ class TST extends CryptoModule {
    //        of the transaction that makes this transfer on the external web3
    //        crypto.
    //
-   async sendPayment(amounts="", recipient="") {
+   async sendPayment(amounts="", recipient="", unique_hash="") {
      return this.app.crypto.hash(Math.random().toString());
    }
 
@@ -63,8 +62,13 @@ class TST extends CryptoModule {
    // @param {timestamp} timestamp after which transfer must have been made
    // @return {Array} Array of {hash: {String}} where hash is the transaction_id
    //
-   async hasPayment(amounts=[], senders=[], receivers=[], timestamp) {
-     return [this.app.crypto.hash(Math.random().toString())];
+   async receivePayment(amount="", sender="", receiver="", timestamp, unique_hash="") {
+     if (Math.random() > 0.5) {
+       console.log("received payment...");
+       return 1;
+     }
+console.log("not received payment...");
+     return 0;
    }
 
 

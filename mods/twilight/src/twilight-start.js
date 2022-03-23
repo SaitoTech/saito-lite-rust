@@ -3436,9 +3436,9 @@ if (this.game.player == 0) {
 
 
 
-  playMove() {
+  playMove(){
 
-    this.game.state.headline  = 0;
+    this.game.state.headline = 0;
     this.game.state.headline_hash = "";
     this.game.state.headline_card = "";
     this.game.state.headline_xor = "";
@@ -3446,25 +3446,20 @@ if (this.game.player == 0) {
     this.game.state.headline_opponent_card = "";
     this.game.state.headline_opponent_xor = "";
 
-
     //
     // how many turns left?
-    //
-    let rounds_in_turn = 6;
-    if (this.game.state.round > 3) { rounds_in_turn = 7; }
+    let rounds_in_turn = (this.game.state.round > 3)? 7: 6;
     let moves_remaining = rounds_in_turn - this.game.state.turn_in_round;
 
-
-    //
-    //
     //
     let scoring_cards_available = 0;
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+          scoring_cards_available++;
+        }
       }
     }
-
 
     //
     // player 1 moves
@@ -3476,14 +3471,12 @@ if (this.game.player == 0) {
           this.updateActionRound();
         }
         if (this.game.state.events.missile_envy == 1) {
-
           //
           // if must play scoring card -- moves remaining at 0 in last move
           //
           if (scoring_cards_available > moves_remaining) {
             this.playerTurn("scoringcard");
           } else {
-
             //
             // if cannot sacrifice missile envy to bear trap because red purged
             //
@@ -3511,52 +3504,48 @@ if (this.game.player == 0) {
     // player 2 moves
     //
     if (this.game.state.turn == 1) {
-
       //
       // END OF HISTORY
       //
       if (this.game.state.events.greatsociety == 1) {
-
         this.game.state.events.greatsociety = 0;
-	if (this.game.player == 2) {
-
-	  let scoring_cards = [];
+        if (this.game.player == 2) {
+          let scoring_cards = [];
           for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-	    if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-	      scoring_cards.push(this.game.deck[0].hand[i]);
-	    }
-	  }
+            if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+              scoring_cards.push(this.game.deck[0].hand[i]);
+            }
+          }
 
-	  let user_message = `Great Society is active. US may earn a VP for either skipping its turn or playing a scoring card:`;
-    let html = "<ul>";
-	  if (scoring_cards.length > 0) { 
-	    html += `<li class='card' id='scoring'>play scoring card</li>
-          		 <li class='card' id='scoring_w_card'>play scoring card and draw card</li>`;
-	   }
-	  html += `<li class='card' id='skip'>skip turn</li>
-		        <li class='card' id='skip_w_card'>skip turn and draw card</li>`;
-	  if (this.game.deck[0].hand.length > 0) {
-	    html += `<li class='card' id='select'>select card</li>`;
-	  }
-	  html += '</ul>';
-	  
-	  this.updateStatusWithOptions(user_message, html, false);
+          let user_message = `Great Society is active. US may earn a VP for either skipping its turn or playing a scoring card:`;
+          let html = "<ul>";
+          if (scoring_cards.length > 0) {
+            html += `<li class='card' id='scoring'>play scoring card</li>
+                   <li class='card' id='scoring_w_card'>play scoring card and draw card</li>`;
+          }
+          html += `<li class='card' id='skip'>skip turn</li>
+                <li class='card' id='skip_w_card'>skip turn and draw card</li>`;
+          if (this.game.deck[0].hand.length > 0) {
+            html += `<li class='card' id='select'>select card</li>`;
+          }
+          html += "</ul>";
 
-	  let twilight_self = this;
+          this.updateStatusWithOptions(user_message, html, false);
 
-          twilight_self.attachCardboxEvents(function(action2) {
+          let twilight_self = this;
 
+          twilight_self.attachCardboxEvents(function (action2) {
             if (action2 === "select") {
-	      twilight_self.updateStatus();
-	      twilight_self.playerMove();
-	      return;
+              twilight_self.updateStatus();
+              twilight_self.playerTurn();
+              return;
             }
             if (action2 === "skip" || action2 === "skip_w_card") {
               twilight_self.addMove("resolve\tplay");
-	      if (action2 === "skip_w_card") {
-	        twilight_self.addMove("SAFEDEAL\t1\t2\t1");
-	        twilight_self.addMove("notify\tUS is drawing a bonus card");
-	      }
+              if (action2 === "skip_w_card") {
+                twilight_self.addMove("SAFEDEAL\t1\t2\t1");
+                twilight_self.addMove("notify\tUS is drawing a bonus card");
+              }
               twilight_self.addMove("vp\tus\t1\t0");
               twilight_self.addMove("notify\tUS skips a turn for 1 VP as a Great Society");
               twilight_self.endTurn();
@@ -3565,34 +3554,30 @@ if (this.game.player == 0) {
               twilight_self.addMove("resolve\tplay");
               twilight_self.addMove("vp\tus\t1\t0");
               twilight_self.addMove("notify\tUS plays a scoring card for 1 VP as a Great Society");
-	      if (action2 === "scoring_w_card") {
-	        twilight_self.addMove("SAFEDEAL\t1\t2\t1");
-	        twilight_self.addMove("notify\tUS is drawing a bonus card");
-	      }
+              if (action2 === "scoring_w_card") {
+                twilight_self.addMove("SAFEDEAL\t1\t2\t1");
+                twilight_self.addMove("notify\tUS is drawing a bonus card");
+              }
               twilight_self.playerTurn("greatsociety");
             }
-	  });
+          });
 
-	  return 0;
-	}
+          return 0;
+        }
       }
 
-
       if (this.game.player == 2) {
-
         if (this.game.state.turn_in_round == 0) {
           this.removeCardFromHand(this.game.state.headline_card);
         }
 
         if (this.game.state.events.missile_envy == 2) {
-
           //
           // moves remaining will be 0 last turn
           //
           if (scoring_cards_available > moves_remaining) {
             this.playerTurn("scoringcard");
           } else {
-
             //
             // if cannot sacrifice missile envy to quagmire because red scare
             //
@@ -3601,7 +3586,6 @@ if (this.game.player == 0) {
             } else {
               this.playerTurn("missileenvy");
             }
-
           }
         } else {
           this.playerTurn();
@@ -3613,9 +3597,7 @@ if (this.game.player == 0) {
       return;
     }
 
-
     return 1;
-
   }
 
 

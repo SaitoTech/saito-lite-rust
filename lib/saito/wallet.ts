@@ -1,5 +1,5 @@
 import { Saito } from "../../apps/core";
-
+const getUuid = require('uuid-by-string');
 import saito from "./saito";
 
 import * as JSON from "json-bigint";
@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.057,
+    version: 4.058,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -356,13 +356,13 @@ console.log("---------------------");
       returnPrivateKey() {
         return this.app.wallet.returnPrivateKey();
       }
-      async sendPayment(amount, to_address) {
+      async sendPayment(amount, to_address, unique_hash="") {
         let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         this.app.network.propagateTransaction(newtx);
         return newtx.transaction.sig;
       }
-      async hasPayment(howMuch, from, to, timestamp) {
+      async receivePayment(howMuch, from, to, timestamp) {
         const from_from = 0;
         const to_to = 0;
         if (to == this.app.wallet.returnPublicKey()) {
@@ -959,17 +959,24 @@ console.log("---------------------");
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
+console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
       }
     }
+
+console.log("cryptomod.ticker: " + cryptomod.ticker);
+
     if (ticker == "SAITO") {
       can_we_do_this = 1;
     }
 
     if (can_we_do_this == 1) {
       this.wallet.preferred_crypto = ticker;
+console.log("Activating cryptomod: " + cryptomod.ticker);
+      cryptomod.activate();
       this.saveWallet();
+console.log("emitting set preferred crypto event");
       this.app.connection.emit("set_preferred_crypto", ticker);
     }
 
@@ -1065,35 +1072,61 @@ console.log("---------------------");
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
    * @param {String} ticker - Ticker of install crypto module
    */
-  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, mycallback, ticker) {
+  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, unique_hash="", mycallback=null, ticker) {
+console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log("Lengths of senders, receivers, and amounts must be the same");
       //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
+      return;
     }
     if (senders.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
       console.log("sendPayment ERROR: Only supports one transaction");
       //mycallback({err: "Only supports one transaction"});
+      return;
     }
     // only send if hasn't been sent before
-    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
+console.log("does preferred crypto transaction exist: " + this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker));
+console.log("unique hash: " + unique_hash);
+console.log("uuid: " + getUuid(unique_hash));
+
+    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
+console.log("senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress());
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
-          this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+          this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
           try {
-            const hash = await cryptomod.send(amounts[i], receivers[i]);
-            // execute callback if exists
-            mycallback({ hash: hash });
-            break;
+            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+console.log("unique_hash: " + unique_tx_hash);
+console.log("senders: " + JSON.stringify(senders));
+console.log("receivers: " + JSON.stringify(receivers));
+console.log("amounts: " + JSON.stringify(amounts));
+console.log("timestamp: " + timestamp);
+console.log("ticker: " + ticker);
+            const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
+console.log("wallet -> cryptomod - sendPayment - done");
+	    //
+	    // hash is "" if unsuccessful, trace_id if successful
+	    //
+	    if (hash === "") {
+              this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+            }
+
+	    if (mycallback) {
+              mycallback({ hash: hash });
+	    }
+console.log("and after the callback");
+            return;
           } catch (err) {
             // it failed, delete the transaction
             console.log("sendPayment ERROR: payment failed....\n" + err);
-            this.deletePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+            this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
             //mycallback({err: err});
-            break;
+            return;
           }
         }
       }
@@ -1119,44 +1152,38 @@ console.log("---------------------");
     receivers = [],
     amounts = [],
     timestamp,
+    unique_hash = "",
     mycallback,
     ticker,
     tries = 36,
     pollWaitTime = 5000
   ) {
-    // original design of this interface was to use async/await by returning a promise.
-    // Instead there was an insistence on using mycallback. The consumer of this interface does not use
-    // async/await or .then(...) so this is being abandoned(i.e. i'm removing the promise) but leaving it
-    // here in case someone wants to refactor this or wonders why this interface is this way.
-    //return new Promise(async(resolve, reject) => {
+console.log("wallet receivePayment");
+    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+console.log("unique_hash: " + unique_tx_hash);
+console.log("senders: " + JSON.stringify(senders));
+console.log("receivers: " + JSON.stringify(receivers));
+console.log("amounts: " + JSON.stringify(amounts));
+console.log("timestamp: " + timestamp);
+console.log("ticker: " + ticker);
 
     if (senders.length != receivers.length || senders.length != amounts.length) {
-      // There is no way to handle errors with the interface of receivePayment as it's been designed.
-      // We will swallow this error and log it to the console and return.
-      // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
-      // some hope of figuring out why the game isn't progressing.
-      console.log(
-        "receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same"
-      );
+      console.log("receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same");
       return;
-      // mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
     }
     if (senders.length !== 1) {
-      // There is no way to handle errors with the interface of receivePayment as it's been designed.
-      // We will swallow this error and log it to the console and return.
-      // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
-      // some hope of figuring out why the game isn't progressing.
       console.log("receivePayment ERROR. Only supports one transaction");
       return;
-      //mycallback({err: "Only supports one transaction"});
     }
 
     //
     // if payment already received, return
     //
-    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, timestamp, ticker)) {
+    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
       mycallback();
-      return;
+console.log("our preferred crypto transaction exists!");
+      return 1;
     }
 
     const cryptomod = this.returnCryptoModuleByTicker(ticker);
@@ -1166,7 +1193,8 @@ console.log("---------------------");
     // create a function we can loop through to check if the payment has come in....
     //
     const check_payment_function = async () => {
-      return await cryptomod.hasPayment(amounts[0], senders[0], receivers[0], timestamp - 3); // subtract 3 seconds in case system time is slightly off
+console.log("wallet -> cryptmod receivePayment");
+      return await cryptomod.receivePayment(amounts[0], senders[0], receivers[0], timestamp - 3, unique_tx_hash); // subtract 3 seconds in case system time is slightly off
     };
 
     const poll_check_payment_function = async () => {
@@ -1175,12 +1203,6 @@ console.log("---------------------");
       try {
         result = await check_payment_function();
       } catch (err) {
-        // if check_payment_function throws an error, we want to bail out,
-        // there's no point trying another 100 times.
-        // There is no way to handle errors with the interface of receivePayment as it's been designed.
-        // We will swallow this error and log it to the console and return.
-        // Do not delete this console.log, at least maybe the engineer who is maintaining this needs
-        // some hope of figuring out why the game isn't progressing.
         console.log("receivePayment ERROR." + err);
         return;
         //mycallback({err: err});
@@ -1192,7 +1214,7 @@ console.log("---------------------");
       if (result) {
         // The transaction was found, we're done.
         console.log("TRANSACTION FOUND");
-        this.savePreferredCryptoTransaction(senders, receivers, amounts, timestamp, ticker);
+        this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
         mycallback(result);
       } else {
         // The transaction was not found.
@@ -1219,21 +1241,22 @@ console.log("---------------------");
     //});
   }
 
-  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
-    const sig = this.app.crypto.hash(
+  generatePreferredCryptoTransactionHash(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    return this.app.crypto.hash(
       JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        timestamp +
-        ticker
+      JSON.stringify(receivers) +
+      JSON.stringify(amounts) +
+      unique_hash +
+      ticker
     );
+  }
+  savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    let sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     this.wallet.preferred_txs.push({
       sig: sig,
       ts: new Date().getTime(),
     });
-
     for (let i = this.wallet.preferred_txs.length - 1; i >= 0; i--) {
-      // delete references after ~30 hours
       if (this.wallet.preferred_txs[i].ts < new Date().getTime() - 100000000) {
         this.wallet.preferred_txs.splice(i, 1);
       }
@@ -1244,14 +1267,8 @@ console.log("---------------------");
     return 1;
   }
 
-  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, timestamp, ticker) {
-    const sig = this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        timestamp +
-        ticker
-    );
+  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         return 1;
@@ -1260,14 +1277,8 @@ console.log("---------------------");
     return 0;
   }
 
-  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, timestamp, ticker) {
-    const sig = this.app.crypto.hash(
-      JSON.stringify(senders) +
-        JSON.stringify(receivers) +
-        JSON.stringify(amounts) +
-        timestamp +
-        ticker
-    );
+  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
+    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         this.wallet.preferred_txs.splice(i, 1);

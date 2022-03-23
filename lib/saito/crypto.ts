@@ -1,6 +1,6 @@
 import crypto from "crypto-browserify";
 import node_cryptojs from "node-cryptojs-aes";
-import { randomBytes } from "crypto";
+import { generateKeyPairSync, randomBytes } from "crypto";
 import * as secp256k1 from "secp256k1";
 import * as Base58 from "base-58";
 import stringify from "fastest-stable-stringify";

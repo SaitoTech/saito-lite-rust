@@ -212,25 +212,9 @@ body {
   width: 90px;
   height: 102px;
   z-index: 29;
+  display: none;
 }
-.research_station1 {
- display: none;
-}
-.research_station2 {
- display: none;
-}
-.research_station3 {
- display: none;
-}
-.research_station4 {
- display: none;
-}
-.research_station5 {
- display: none;
-}
-.research_station6 {
- display: none;
-}
+
 .marker_infection_rate {
   position: absolute;
   background-image: url("/pandemic/img/Marker%20Infection%20Rate.png");
