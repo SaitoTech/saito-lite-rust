@@ -221,7 +221,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class="bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -472,10 +472,8 @@ class Pandemic extends GameTemplate {
     $(`#station_${rsIndex}`).css("z-index","");
     }
 
-    //Turn off click events on my location
-    //Will add Click on my city to remove cubes (below)
+    //Click on my city to remove cubes
     $(`#${city}.city`).off();
-
 
 
     /* Determine which actions the player is allowed to do and update HUD controls */
@@ -1518,6 +1516,7 @@ class Pandemic extends GameTemplate {
         let winningPlayer = mv[1];
         this.game.over = 1;
         this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
+        this.updateStatus("Players win the game!");
         salert("Players Win! Humanity survives");
         this.game.queue = [];
         return 0;
@@ -2069,15 +2068,6 @@ class Pandemic extends GameTemplate {
     this.showBoard();
     salert("GAME OVER: " + notice);
     this.updateStatus("Players lose to the virus!");
-    this.saveGame(this.game.id);
-  }
-
-
-  winGame(player) {
-    this.addMove(`win\t${player}`);
-    this.game.turn = this.moves;
-    this.sendMessage("game", {});
-    this.moves = [];
     this.saveGame(this.game.id);
   }
 
