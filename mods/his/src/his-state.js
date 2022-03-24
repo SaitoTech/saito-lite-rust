@@ -2062,51 +2062,79 @@
     /// HOME CARDS
     deck['001'] = { 
       img : "cards/HIS-001.svg" , 
-      name : "Card" ,
+      name : "Janissaries" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "ottoman" ,
+      
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
-      name : "Card" ,
+      name : "Holy Roman Emperor" ,
+      ops : 5 ,
+      turn : 1, 
+      type : "normal" ,
       faction : "hapsburg" ,
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
-      name : "Card" ,
+      name : "Six Wives of Henry VIII" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "england" ,
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
-      name : "Card" ,
+      name : "Patron of the Arts" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "french" ,
     }
-    if (this.game.players.length != 2) {
+    if (this.game.players.length == 2) {
       deck['005'] = { 
         img : "cards/HIS-005.svg" , 
-        name : "Card" ,
+        name : "Papal Bull" ,
+        ops : 4 ,
+        turn : 1 ,
+        type : "normal" ,
         faction : "papacy" ,
       }
     } else {
       deck['005'] = { 
         img : "cards/HIS-005-2P.svg" , 
-        name : "Card" ,
+        name : "Papal Bull" ,
+        ops : 4 ,
+        turn : 1 ,
+        type : "normal" , 
         faction : "papacy" ,
       }
     }
     deck['006'] = { 
       img : "cards/HIS-006.svg" , 
-      name : "Card" ,
+      name : "Leipzig Debate" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" , 
       faction : "papacy" ,
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
-      name : "Card" ,
+      name : "Here I Stand" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "protestant" ,
     }
     // 95 Theses
     deck['008'] = { 
       img : "cards/HIS-008.svg" , 
-      name : "Card" ,
+      name : "Luther's 95 Theses" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "mandatory" ,
       onEvent : function(game_mod, player) {
 
 	// protestant gets 2 roll bonus at start
@@ -2176,511 +2204,892 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     }
     deck['009'] = { 
       img : "cards/HIS-009.svg" , 
-      name : "Card" ,
+      name : "Barbary Pirates" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
     }
     deck['010'] = { 
       img : "cards/HIS-010.svg" , 
-      name : "Card" ,
+      name : "Clement VII" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
-      name : "Card" ,
+      name : "Defender of the Faith" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
     }
     deck['012'] = { 
       img : "cards/HIS-012.svg" , 
-      name : "Card" ,
+      name : "Master of Italy" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
     }
     deck['013'] = { 
       img : "cards/HIS-013.svg" , 
-      name : "Card" ,
+      name : "Schmalkaldic League" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
-      name : "Card" ,
+      name : "Paul III" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
-      name : "Card" ,
+      name : "Society of Jesus" ,
+      ops : 2 ,
+      turn : 5 ,
+      type : "mandatory" ,
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
-      name : "Card" ,
+      name : "mandatory" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
-      name : "Card" ,
+      name : "Council of Trent" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
-      name : "Card" ,
+      name : "Dragu" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['019'] = { 
       img : "cards/HIS-019.svg" , 
-      name : "Card" ,
+      name : "Edward VI" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
-      name : "Card" ,
+      name :"Henry II" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
-      name : "Card" ,
+      name : "Mary I" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
-      name : "Card" ,
+      name : "Julius III" ,
+      ops : 2 ,
+      turn : 7 ,
+      type : "mandatory" ,
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
-      name : "Card" ,
+      name : "Elizabeth I" ,
+      ops : 2 ,
+      turn : 0 ,
+      type : "mandatory" ,
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 
-      name : "Card" ,
+      name : "Arquebusiers" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
-      name : "Card" ,
+      name : "Field Artillery" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Bribed" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Grow Restless" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
-      name : "Card" ,
+      name : "Siege Mining" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
-      name : "Card" ,
+      name : "Surprise Attack" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
-      name : "Card" ,
+      name : "Tercios" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
-      name : "Card" ,
+      name : "Foul Weather" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
-      name : "Card" ,
+      name : "Gout" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
-      name : "Card" ,
+      name : "Landsknechts" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['034'] = { 
       img : "cards/HIS-034.svg" , 
-      name : "Card" ,
+      name : "Professional Rowers" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['035'] = { 
       img : "cards/HIS-035.svg" , 
-      name : "Card" ,
+      name : "Siege Artillery" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['036'] = { 
       img : "cards/HIS-036.svg" , 
-      name : "Card" ,
+      name : "Swiss Mercenaries" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['037'] = { 
       img : "cards/HIS-037.svg" , 
-      name : "Card" ,
+      name : "The Wartburg" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
     }
     deck['038'] = { 
       img : "cards/HIS-038.svg" , 
-      name : "Card" ,
+      name : "Halley's Comet" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "response" ,
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
-      name : "Card" ,
+      name : "Ausburg Confession" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
-      name : "Card" ,
+      name : "MachiaveIIi: The Prince" ,
+      ops : 3 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
-      name : "Card" ,
+      name : "Marburg Colloquy" ,
+      ops : 5 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['042'] = { 
       img : "cards/HIS-042.svg" , 
-      name : "Card" ,
+      name : "Roxelana" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['043'] = { 
       img : "cards/HIS-043.svg" , 
-      name : "Card" ,
+      name : "Zwingli Dons Armor" ,
+      ops : 3 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['044'] = { 
       img : "cards/HIS-044.svg" , 
-      name : "Card" ,
+      name : "Affair of the Placards" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['045'] = { 
       img : "cards/HIS-045.svg" , 
-      name : "Card" ,
+      name : "Clavin Expelled" ,
+      ops : 1 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
-      name : "Card" ,
+      name : "Calvin's Insitutes" ,
+      ops : 5 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
-      name : "Card" ,
+      name : "Copernicus" ,
+      ops : 6 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['048'] = { 
       img : "cards/HIS-048.svg" , 
-      name : "Card" ,
+      name : "Galleons" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['049'] = { 
       img : "cards/HIS-049.svg" , 
-      name : "Card" ,
+      name : "Huguenot Raiders" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['050'] = { 
       img : "cards/HIS-050.svg" , 
-      name : "Card" ,
+      name : "Mercator's Map" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['051'] = { 
       img : "cards/HIS-051.svg" , 
-      name : "Card" ,
+      name : "Michael Servetus" ,
+      ops : 4 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['052'] = { 
       img : "cards/HIS-052.svg" , 
-      name : "Card" ,
+      name : "Michelangelo" ,
+      ops : 4 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['053'] = { 
       img : "cards/HIS-053.svg" , 
-      name : "Card" ,
+      name : "Plantations" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['054'] = { 
       img : "cards/HIS-054.svg" , 
-      name : "Card" ,
+      name : "Potosi Silver Mines " ,
+      ops : 3 ,
+      turn : 4 ,
+      type : "normal" ,
     }
     deck['055'] = { 
       img : "cards/HIS-055.svg" , 
-      name : "Card" ,
+      name : "Jesuit Education" ,
+      ops : 3 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
-      name : "Card" ,
+      name : "Ppal Inquistion" ,
+      ops : 5 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['057'] = { 
       img : "cards/HIS-057.svg" , 
-      name : "Card" ,
+      name : "Philip of Hesse's Bigamy" ,
+      ops : 2 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
-      name : "Card" ,
+      name : "Spanish Inquisition" ,
+      ops : 5 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['059'] = { 
       img : "cards/HIS-059.svg" , 
-      name : "Card" ,
+      name : "Lady Jane Grey" ,
+      ops : 3 ,
+      turn : 6 ,
+      type : "normal" ,
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
-      name : "Card" ,
+      name : "Maurice of Saxony" ,
+      ops : 4 ,
+      turn : 6 ,
+      type : "normal" ,
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
-      name : "Card" ,
+      name : "Mary Defies Council" ,
+      ops : 1 ,
+      turn : 7 ,
+      type : "normal" ,
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
       name : "Card" ,
+      ops : 2 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['063'] = { 
       img : "cards/HIS-063.svg" , 
-      name : "Card" ,
+      name : "Dissolution of the Monasteries" ,
+      ops : 4 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['064'] = { 
       img : "cards/HIS-064.svg" , 
-      name : "Card" ,
+      name : "Pilgrimage of Grace" ,
+      ops : 3 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
-      name : "Card" ,
+      name : "A Mighty Fortress" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
-      name : "Card" ,
+      name : "Akinji Raiders" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
-      name : "Card" ,
+      name : "Anabaptists" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
-      name : "Card" ,
+      name : "Andrea Doria" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['069'] = { 
       img : "cards/HIS-069.svg" , 
-      name : "Card" ,
+      name : "Auld Alliance" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['070'] = { 
       img : "cards/HIS-070.svg" , 
-      name : "Card" ,
+      name : "Charles Bourbon" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['071'] = { 
       img : "cards/HIS-071.svg" , 
-      name : "Card" ,
+      name : "City State Rebels" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
-      name : "Card" ,
+      name : "Cloth Price Fluctuate" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['073'] = { 
       img : "cards/HIS-073.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Marriage" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['074'] = { 
       img : "cards/HIS-074.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Overture" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['075'] = { 
       img : "cards/HIS-075.svg" , 
-      name : "Card" ,
+      name : "Erasmus" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['076'] = { 
       img : "cards/HIS-076.svg" , 
-      name : "Card" ,
+      name : "Foreign Recruits" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
       name : "Card" ,
+      ops : Fountain of Youth ,
+      turn : 2 ,
+      type : "normal" ,
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
-      name : "Card" ,
+      name : "Frederick the Wise" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['079'] = { 
       img : "cards/HIS-079.svg" , 
-      name : "Card" ,
+      name : "Fuggers" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['080'] = { 
       img : "cards/HIS-080.svg" , 
-      name : "Card" ,
+      name : "Gabelle Revolt" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['081'] = { 
       img : "cards/HIS-081.svg" , 
-      name : "Card" ,
+      name : "Indulgence Vendor" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
-      name : "Card" ,
+      name : "Janissaries Rebel" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['083'] = { 
       img : "cards/HIS-083.svg" , 
-      name : "Card" ,
+      name : "John Zapolya" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['084'] = { 
       img : "cards/HIS-084.svg" , 
-      name : "Card" ,
+      name : "Julia Gonzaga" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
-      name : "Card" ,
+      name : "Katherina Bora" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['086'] = { 
       img : "cards/HIS-086.svg" , 
-      name : "Card" ,
+      name : "Knights of St.John" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['087'] = { 
       img : "cards/HIS-087.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Demand Pay" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['088'] = { 
       img : "cards/HIS-088.svg" , 
-      name : "Card" ,
+      name : "Peasants' War" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['089'] = { 
       img : "cards/HIS-089.svg" , 
-      name : "Card" ,
+      name : "Pirate Haven" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
-      name : "Card" ,
+      name : "Printing Press" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['091'] = { 
       img : "cards/HIS-091.svg" , 
-      name : "Card" ,
+      name : "Ransom" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
-      name : "Card" ,
+      name : "Revolt in Egypt" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
-      name : "Card" ,
+      name : "Revolt in Ireland" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['094'] = { 
       img : "cards/HIS-094.svg" , 
-      name : "Card" ,
+      name : "Revolt of the Communeros" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
-      name : "Card" ,
+      name : "Sack of Rome" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['096'] = { 
       img : "cards/HIS-096.svg" , 
-      name : "Card" ,
+      name : "Sale of Moluccas" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['097'] = { 
       img : "cards/HIS-097.svg" , 
-      name : "Card" ,
+      name : "Scots Raid" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
     }
     deck['098'] = { 
       img : "cards/HIS-098.svg" , 
-      name : "Card" ,
+      name : "Search for Cibola" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['099'] = { 
       img : "cards/HIS-099.svg" , 
-      name : "Card" ,
+      name : "Sebastian Cabot" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['100'] = { 
       img : "cards/HIS-100.svg" , 
-      name : "Card" ,
+      name : "Shipbuilding" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['101'] = { 
       img : "cards/HIS-101.svg" , 
-      name : "Card" ,
+      name : "Smallpox" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['102'] = { 
       img : "cards/HIS-102.svg" , 
-      name : "Card" ,
+      name : "Spring Preparations" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['103'] = { 
       img : "cards/HIS-103.svg" , 
-      name : "Card" ,
+      name : "Threat to Power" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['104'] = { 
       img : "cards/HIS-104.svg" , 
-      name : "Card" ,
+      name : "Trace Italienne" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['105'] = { 
       img : "cards/HIS-105.svg" , 
-      name : "Card" ,
+      name : "Treachery!" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['106'] = { 
       img : "cards/HIS-106.svg" , 
-      name : "Card" ,
+      name : "Unpaid Mercenaries" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
     }
     deck['107'] = { 
       img : "cards/HIS-107.svg" , 
-      name : "Card" ,
+      name : "Unsanitary Camp" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['108'] = { 
       img : "cards/HIS-108.svg" , 
-      name : "Card" ,
+      name : "Venetian Alliance" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['109'] = { 
       img : "cards/HIS-109.svg" , 
-      name : "Card" ,
+      name : "Venetian Informant" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
-      name : "Card" ,
+      name : "War in Persia" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['111'] = { 
       img : "cards/HIS-111.svg" , 
-      name : "Card" ,
+      name : "Colonial Governor/Native Uprising" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['112'] = { 
       img : "cards/HIS-112.svg" , 
-      name : "Card" ,
+      name : "Thomas More" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
-      name : "Card" ,
+      name : "Imperial Coronation" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
     }
     deck['114'] = { 
       img : "cards/HIS-114.svg" , 
-      name : "Card" ,
+      name : "La Forets's Embassy in Istanbul" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
     }
     deck['115'] = { 
       img : "cards/HIS-115.svg" , 
-      name : "Card" ,
+      name : "Thomos Cromwell" ,
+      ops : 3 ,
+      turn : 4 ,
+      type : "response" ,
     }
     deck['116'] = { 
       img : "cards/HIS-116.svg" , 
-      name : "Card" ,
+      name : "Rough Wooing" ,
+      ops : 3 ,
+      turn : 5 ,
+      type : "normal" ,
     }
     deck['201'] = { 
       img : "cards/HIS-201.svg" , 
-      name : "Card" ,
+      name : "Andrea Doria" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['202'] = { 
       img : "cards/HIS-202.svg" , 
-      name : "Card" ,
+      name : "Frech Constable Invades" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['203'] = { 
       img : "cards/HIS-203.svg" , 
-      name : "Card" ,
+      name : "Corsair Raid" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['204'] = { 
       img : "cards/HIS-204.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Marriage" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Pressure" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['206'] = { 
       img : "cards/HIS-206.svg" , 
-      name : "Card" ,
+      name : "Frech Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['207'] = { 
       img : "cards/HIS-207.svg" , 
-      name : "Card" ,
+      name : "Henry Petitions for Divorce" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['208'] = { 
       img : "cards/HIS-208.svg" , 
-      name : "Card" ,
+      name : "Knights of St.John" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
-      name : "Card" ,
+      name : "Plague" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['210'] = { 
       img : "cards/HIS-210.svg" , 
-      name : "Card" ,
+      name : "Shipbuilding" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['211'] = { 
       img : "cards/HIS-211.svg" , 
-      name : "Card" ,
+      name : "Spanish Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['212'] = { 
       img : "cards/HIS-212.svg" , 
-      name : "Card" ,
+      name : "Venetian Alliance" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
     }
     deck['213'] = { 
       img : "cards/HIS-213.svg" , 
-      name : "Card" ,
+      name : "Austrian Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['214'] = { 
       img : "cards/HIS-214.svg" , 
-      name : "Card" ,
+      name : "Imperial Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['215'] = { 
       img : "cards/HIS-215.svg" , 
-      name : "Card" ,
+      name : "Machiavelli" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['216'] = { 
       img : "cards/HIS-216.svg" , 
-      name : "Card" ,
+      name : "Ottoman Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['217'] = { 
       img : "cards/HIS-217.svg" , 
-      name : "Card" ,
+      name : "Secret Protestant Circle" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['218'] = { 
       img : "cards/HIS-218.svg" , 
-      name : "Card" ,
+      name : "Siege of Vienna" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
     deck['219'] = { 
       img : "cards/HIS-219.svg" , 
-      name : "Card" ,
+      name : "Spanish Inquisition" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
     }
 
     for (let key in deck) {
