@@ -31,6 +31,8 @@ data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
 
+/mods/cforum
+/mods/cforum/*
 
 bundler
 bundler/*
