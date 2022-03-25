@@ -221,7 +221,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class="bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -465,7 +465,6 @@ class Pandemic extends GameTemplate {
             pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${rsCity}\t1`);
             pandemic_self.endTurn();
           });
-
       });
 
     $(`#station_${rsIndex}`).off();
@@ -840,7 +839,6 @@ class Pandemic extends GameTemplate {
     console.log(JSON.stringify(cards),JSON.stringify(newHand));
     return newHand;   
   }
-
 
   canPlayerDiscoverCure() {
     let cards = this.game.players_info[this.game.player - 1].cards;
@@ -1415,6 +1413,46 @@ class Pandemic extends GameTemplate {
   }
 
 
+  acknowledgeInfection(city, mycallback) {
+    let pandemic_self = this;
+    let virus = this.game.deck[0].cards[city].virus;
+    let msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
+    let html = `<ul><li class="textchoice" id="confirmit">I understand...</li></ul>`;
+
+    this.defaultDeck = 0;
+    this.card_height_ratio = 0.709;
+    this.cardbox.show(city);
+    
+    try {
+      this.updateStatusWithOptions(msg, html);
+      document.getElementById("confirmit").onclick = async (e) => {
+        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
+        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
+        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
+        document.getElementById("game-cardbox").style.transition = "transform 2s";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
+        console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
+        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%) translateX(${dp.width + dp.right-parseInt(cb.left)}px) translateY(${dp.top-parseInt(cb.top)}px)`;
+        setTimeout(()=>{
+          pandemic_self.defaultDeck = 1;
+          pandemic_self.card_height_ratio = 1.41;
+          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
+          document.getElementById("game-cardbox").style.transition = "";
+          document.getElementById("game-cardbox").style.transform = "";
+          document.getElementById("game-cardbox").style.transformOrigin = "";
+          pandemic_self.cardbox.hide();
+          mycallback();
+        }, 1500);
+      };
+    } catch (err) {
+      console.error("Error with ACKWNOLEDGE notice!: " + err);
+    }
+
+    return 0;
+  }
+
+
   acknowledgeInfectionCard(city, actionType, mycallback) {
     let pandemic_self = this;
     let virus = this.game.deck[0].cards[city].virus;
@@ -1502,15 +1540,6 @@ class Pandemic extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.queue.push("turn\t1\tnew");
         this.game.state.welcome = 0;
-      }
-      if (mv[0] === "win"){
-        let winningPlayer = mv[1];
-        this.game.over = 1;
-        this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
-        this.updateStatus("Players win the game!");
-        salert("Players Win! Humanity survives");
-        this.game.queue = [];
-        return 0;
       }
       if (mv[0] === "win"){
         let winningPlayer = mv[1];
@@ -2074,7 +2103,6 @@ class Pandemic extends GameTemplate {
 
   winGame(player) {
     this.addMove(`win\t${player}`);
-    this.moves.reverse();
     this.game.turn = this.moves;
     this.sendMessage("game", {});
     this.moves = [];
