@@ -271,7 +271,7 @@ class Pandemic extends GameTemplate {
           pandemic_self.cardfan.render(app, pandemic_self, pandemic_self.returnPlayerCardHTML(pandemic_self.game.player));  
           document.getElementById("cardfan").classList.add("bighand");
           pandemic_self.cardfan.attachEvents(app, pandemic_self);
-          pandemic_self.attachCardboxEvents();
+          pandemic_self.attachCardboxEvents(pandemic_self.playFromCardFan);
         }
       }
     }
@@ -318,6 +318,18 @@ class Pandemic extends GameTemplate {
       });
     }
   }
+
+  playFromCardFan(c){
+      if (c.includes("event")){
+        if (this.game.player === this.game.state.current_player){
+          this.playEvent(c);
+        }else{
+          this.addMove(`interrupt\t${this.game.player}\t${this.game.state.current_player}\t${c}`);
+          this.endTurn();  
+        }
+      }
+  }
+
 
   removeEvents() {
     try {
@@ -661,6 +673,16 @@ class Pandemic extends GameTemplate {
     return 0;
   }
 
+  findResearcher(city){
+   //Who has the card matching the city
+    for (let i = 0; i < this.game.players_info.length; i++){
+      if (this.game.players_info[i].city === city && this.game.players_info[i].type === 6){
+        return i+1;
+      }
+    }
+    return 0; 
+  }
+
 //TODO: Add Researcher -- much more complicated !!!!
   shareKnowledge() {
     let pandemic_self = this;
@@ -669,10 +691,22 @@ class Pandemic extends GameTemplate {
 
     //Assume I have the card
     let cardOwner = this.findCardOwner(city);
-    if (cardOwner == 0){
-      console.error("No one has the card!");
+    let researcher = this.findResearcher(city);
+    if (cardOwner == 0 && researcher == 0){
+      console.error("We cannot share knowledge!");
       return;
     }
+
+//I am a researcher and I have city card
+//I am a researcher and no one has city card
+//I am a researcher and someone else has city card
+
+//Friend is researcher and I have city card
+//Friend is researcher and no city card
+//Friend is research and has city card
+
+//No research and I have city card
+//no researcher and friend has city card
 
     //Give Me the Card
     if (cardOwner != this.game.player) {
@@ -718,7 +752,7 @@ class Pandemic extends GameTemplate {
     let player = this.game.players_info[this.game.player - 1];
     let city = player.city;
     let has_city_card = false;
-
+    let is_there_a_researcher = false;
     players_in_city = 0;
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].city == city) {
@@ -726,12 +760,15 @@ class Pandemic extends GameTemplate {
           if (this.game.players_info[i].cards[k] == city) {
              has_city_card = true;
           }
+          if (this.game.players_info[i].type === 6){
+            is_there_a_researcher = true;
+          }
         }  
         players_in_city++;
       }
     }
 
-    if (players_in_city >= 2 && has_city_card){
+    if (players_in_city >= 2 && (has_city_card || is_there_a_researcher)){
       return true;
     }
    
@@ -740,14 +777,17 @@ class Pandemic extends GameTemplate {
 
 
   sortHand(cards){
-    let order = ["blue", "yellow", "black", "red"];
+    let order = ["blue", "yellow", "black", "red", ""];
     let newHand = [];
+    console.log(JSON.parse(JSON.stringify(this.game.deck[1].cards)));
     for (let c of order){
       for (let i = 0; i < cards.length; i++) {
-        if (this.game.deck[0].cards[cards[i]] != undefined) {
-          if (this.game.deck[0].cards[cards[i]].virus === c){
+        if (this.game.deck[1].cards[cards[i]] != undefined) {
+          if (this.game.deck[1].cards[cards[i]].virus === c){
             newHand.push(cards[i]);
           }
+        }else{
+          console.log("HEY!" + cards[i]);
         }
       }
     }
@@ -772,8 +812,8 @@ class Pandemic extends GameTemplate {
     }
 
     for (let i = 0; i < cards.length; i++) {
-      if (this.game.deck[0].cards[cards[i]] != undefined) {
-        cardColors[this.game.deck[0].cards[cards[i]].virus]++;
+      if (this.game.deck[1].cards[cards[i]] != undefined) {
+        cardColors[this.game.deck[1].cards[cards[i]].virus]++;
       }
     }
     for (let color in cardColors){
@@ -985,8 +1025,8 @@ class Pandemic extends GameTemplate {
     }
 
     for (let i = 0; i < cards.length; i++) {
-      if (this.game.deck[0].cards[cards[i]] != undefined) {
-        cardColors[this.game.deck[0].cards[cards[i]].virus]++;
+      if (this.game.deck[1].cards[cards[i]] != undefined) {
+        cardColors[this.game.deck[1].cards[cards[i]].virus]++;
       }
     }
     
@@ -1008,8 +1048,8 @@ class Pandemic extends GameTemplate {
       let cards =  pandemic_self.game.players_info[pandemic_self.game.player - 1].cards;
 
       for (let i = 0, k = 0; k < research_limit && i < cards.length; i++) {
-        if (pandemic_self.game.deck[0].cards[cards[i]] != undefined) {
-          if (pandemic_self.game.deck[0].cards[cards[i]].virus == c) {
+        if (pandemic_self.game.deck[1].cards[cards[i]] != undefined) {
+          if (pandemic_self.game.deck[1].cards[cards[i]].virus == c) {
             pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${cards[i]}`);
             k++;
           }
@@ -1329,39 +1369,60 @@ class Pandemic extends GameTemplate {
     return this.game.state.cures[virus] && this.game.state.active[virus] === 0;
   }
 
-///<<<<<<<<
-  acknowledgeInfection(city, mycallback) {
+
+  acknowledgeInfectionCard(city, actionType, mycallback) {
     let pandemic_self = this;
     let virus = this.game.deck[0].cards[city].virus;
-    let msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
-    let html = `<ul><li class="textchoice" id="confirmit">I understand...</li></ul>`;
+    let msg;
+    this.outbreaks = [];
+    switch (actionType){
+      case 1: 
+        this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`); 
+        msg = `Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`;
+        break;
+      case 2: this.updateLog(`Eradicated disease prevents infection in ${this.game.cities[city].name}`); 
+        msg = `Eradicated disease prevents infection in ${this.game.cities[city].name}`;
+        break;
+      default:
+        this.addDiseaseCube(city, virus);
+        msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
+    } 
+    
+    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
 
     this.defaultDeck = 0;
     this.card_height_ratio = 0.709;
     this.cardbox.show(city);
-    
+    document.getElementById("game-cardbox").style.pointerEvents = "unset";
+    document.getElementById("game-cardbox").classList.add("confirmit");
     try {
       this.updateStatusWithOptions(msg, html);
-      document.getElementById("confirmit").onclick = async (e) => {
+      $(".confirmit").on("click", async (e) => {
         let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
         let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
         let sizedif = Math.round(100*dp.width / parseInt(cb.width));
-        document.getElementById("game-cardbox").style.transition = "transform 2s";
-        document.getElementById("game-cardbox").style.transformOrigin= "left top";
-        console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
-        console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
-        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%) translateX(${dp.width + dp.right-parseInt(cb.left)}px) translateY(${dp.top-parseInt(cb.top)}px)`;
+        document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
+        //document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        document.getElementById("game-cardbox").classList.remove("confirmit");
+        //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
+        //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
+        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%)`;
+        document.getElementById("game-cardbox").style.top = `${dp.top}`;
+        document.getElementById("game-cardbox").style.left = `${dp.left}`;
+        
         setTimeout(()=>{
           pandemic_self.defaultDeck = 1;
           pandemic_self.card_height_ratio = 1.41;
           //document.getElementById("game-cardbox").classList.remove("move-to-discard");
           document.getElementById("game-cardbox").style.transition = "";
           document.getElementById("game-cardbox").style.transform = "";
-          document.getElementById("game-cardbox").style.transformOrigin = "";
+          document.getElementById("game-cardbox").style.top = "";
+          document.getElementById("game-cardbox").style.left = "";  
+          //document.getElementById("game-cardbox").style.transformOrigin = "";
           pandemic_self.cardbox.hide();
           mycallback();
-        }, 1500);
-      };
+        }, 1200);
+      });
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
@@ -1379,9 +1440,10 @@ class Pandemic extends GameTemplate {
     ///////////
     // QUEUE //
     ///////////
-    if (this.game.queue.length > 0) {
       console.log("***** LOOP *****");
       console.log("QUEUE: " + this.game.queue);
+      console.log("MOVES: " + this.moves);
+    if (this.game.queue.length > 0) {
       console.log(JSON.parse(JSON.stringify(this.game.state)));
       pandemic_self.saveGame(pandemic_self.game.id);
       pandemic_self.showBoard();
@@ -1467,6 +1529,7 @@ class Pandemic extends GameTemplate {
             this.game.queue.splice(qe, 1);
             this.game.queue.push(`${mv[0]}\t${mv[1]}\told`);
             this.game.state.active_moves = this.game.players_info[player-1].moves; //not saved 
+            this.game.state.current_player = player;
             this.game.state.one_quiet_night = 0;
          }
           $(`.player`).removeClass("active_player");
@@ -1489,12 +1552,7 @@ class Pandemic extends GameTemplate {
               (${this.game.players_info[player - 1].role})`,
               this.game.players_info[this.game.player - 1].cards
             );
-            this.attachCardboxEvents(function(c){
-              if (c.includes("event")){
-                pandemic_self.addMove(`interrupt\t${pandemic_self.game.player}\t${player}\t${c}`);
-                pandemic_self.endTurn();
-              }
-            });
+            this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
         }
         return 0;
@@ -1524,7 +1582,7 @@ class Pandemic extends GameTemplate {
         let player = parseInt(mv[1]) - 1;
         let cards = parseInt(mv[2]);
 
-        if (this.game.player === player+1){
+        if (this.game.player === player+1 && this.browser_active){
           this.cardfan.hide();
         }
 
@@ -1570,12 +1628,21 @@ class Pandemic extends GameTemplate {
         let virus = this.game.deck[0].cards[city].virus;
         this.updateLog(`Epidemic in ${this.game.cities[city].name}`);
         if (this.isEradicated(virus)){
+          this.displayModal("Epidemic Averted",`${virus} virus already eradicated`);
           this.updateLog(`No new infections because ${virus} already eradicated!`);
         }else{
           //If already has virus, add just enough to trigger an outbreak, otherwise 3 cubes
-          for (let i = Math.max(0,this.game.cities[city].virus[virus]-1); i < 3; i ++){
+          //>>>>>
+          let current = this.game.cities[city].virus[virus];
+          if (current == 0){
+            this.addDiseaseCube(city, virus, 3);  
+          }else{
+            this.addDiseaseCube(city, virus, 3-current);
+            this.addDiseaseCube(city, virus);
+          }
+          /*for (let i = Math.max(0,this.game.cities[city].virus[virus]-1); i < 3; i ++){
             this.addDiseaseCube(city, virus);  
-          }          
+          } */         
         }
 
         //
@@ -1623,23 +1690,17 @@ class Pandemic extends GameTemplate {
           this.updateLog(`INFECTION STAGE: ${infection_cards} cards to draw`);
 
           for (let i = 0; i < infection_cards; i++) {
-            this.outbreaks = [];
-
             let city = this.drawInfectionCard();
             let virus = this.game.deck[0].cards[city].virus;
-
-            if (!this.game.state.cures[virus] || this.game.state.active[virus] > 0) { 
-              
+            let outcome = 0;
+            if (this.game.state.cures[virus] && this.game.state.active[virus] == 0) { 
+              outcome = 2;
+            }else{
               if (this.quarantine && (this.quarantine === city || this.game.cities[city].neighbours.includes(this.quarantine))){
-                this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`);
-              }else{
-                this.updateLog(this.game.cities[city].name + " gains 1 disease cube");
-                this.prependMove(`infectcity\t${city}`);
-                this.addDiseaseCube(city, virus);
+                outcome = 1;
               }
-            } else {
-              this.updateLog(`Eradicated disease prevents infection in ${this.game.cities[city].name}`);
             }
+            this.prependMove(`infectcity\t${city}\t${outcome}`); 
           }
          console.log(JSON.parse(JSON.stringify(this.moves)));
          for (let m of this.moves){
@@ -1647,7 +1708,7 @@ class Pandemic extends GameTemplate {
          } 
          this.moves = [];
         }else{
-          this.updateLog(`Quiet Night -- Skipping Infection Stage`);
+          this.displayModal("One Quiet Night","skipping draw of infection cards");
           this.game.state.one_quiet_night = 0;
         }
 
@@ -1702,8 +1763,17 @@ class Pandemic extends GameTemplate {
       if (mv[0] === "infectcity"){
         pandemic_self.game.halted = 1;
 
-        pandemic_self.acknowledgeInfection(mv[1], function () {
+        pandemic_self.acknowledgeInfectionCard(mv[1], parseInt(mv[2]), function () {
+          console.log("Acknowledgeing...");
+          console.log(JSON.stringify(pandemic_self.game.queue));
+          console.log(JSON.stringify(pandemic_self.moves));
           pandemic_self.game.queue.splice(pandemic_self.game.queue.length - 1, 1);
+          pandemic_self.game.queue = pandemic_self.game.queue.concat(pandemic_self.moves);
+          pandemic_self.moves = [];
+          console.log("continuing...");
+          console.log(JSON.stringify(pandemic_self.game.queue));
+          console.log(JSON.stringify(pandemic_self.moves));
+
           pandemic_self.game.halted = 0;
           let cont = pandemic_self.runQueue();
           if (cont == 0) {
@@ -1729,6 +1799,7 @@ class Pandemic extends GameTemplate {
         this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) found the cure for ${virus} disease`);
 
         if (this.game.state.active[virus] === 0){
+          this.displayModal("Virus Eradicated", `${virus} removed from game`);
           this.updateLog(`${virus} is eradicated!!!`);
         }
         if (this.game.state.cures.yellow && this.game.state.cures.red &&
@@ -1741,7 +1812,6 @@ class Pandemic extends GameTemplate {
       if (mv[0] === "onequietnight") {
         let player = parseInt(mv[1]);
         pandemic_self.updateLog("One Quiet Night: skipping the next infection phase.");
-        pandemic_self.displayModal("One Quiet Night","skipping the next infection phase");
         this.game.state.one_quiet_night = 1; //Set a flag to ignore the infection phase, messaging there
         this.game.queue.splice(qe, 1);
       }
@@ -1890,6 +1960,7 @@ class Pandemic extends GameTemplate {
 
         this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) removes ${numCubes} ${virus} cube${(numCubes>1?'s':"")} from ${this.game.cities[city].name}`);
         if (!this.game.state.active[virus] && this.game.state.cures[virus]){
+          this.displayModal("Virus Eradicated", `${virus} removed from game`);
           this.updateLog(`${virus} is eradicated!!!`);
         }
       }
@@ -1909,6 +1980,8 @@ class Pandemic extends GameTemplate {
 
   loseGame(notice){
     this.game.over = 1;
+    this.game.queue = [];
+    this.showBoard();
     salert("GAME OVER: " + notice);
     this.updateStatus("Players lose to the virus!");
     this.saveGame(this.game.id);
@@ -1928,7 +2001,6 @@ class Pandemic extends GameTemplate {
   triggerOutbreak(city, virus) {
     this.outbreaks.push(city); //To prevent infinite loops
     this.game.state.outbreaks++;
-    this.updateLog("Outbreak in " + this.game.cities[city].name);
     let msg = `Outbreak! Virus spreads from ${this.game.cities[city].name} to ...`;
     
     if (this.game.state.outbreaks >= 8){
@@ -1943,18 +2015,24 @@ class Pandemic extends GameTemplate {
       }
     }
     msg = msg.substr(0, msg.length-2);
-    this.prependMove(`ACKNOWLEDGE\t${msg}`);
+    this.updateLog(msg);
+    this.prependMove(`ACKNOWLEDGE\t${msg}`); //move
+    console.log(JSON.stringify(this.outbreaks));
   }
 
-  addDiseaseCube(city, virus) {
+  addDiseaseCube(city, virus, num = 1) {
+    if (num === 0){return;}
+
     if (this.quarantine && (this.quarantine === city || this.game.cities[city].neighbours.includes(this.quarantine))){
       this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`);
     }else{
       if (this.game.cities[city].virus[virus] == 3) {
+        this.updateLog("Additional disease cubes trigger an outbreak in "+ this.game.cities[city].name );
         this.triggerOutbreak(city, virus);
       }else{
-        this.game.cities[city].virus[virus]++;
-        this.game.state.active[virus]++;
+        this.updateLog(this.game.cities[city].name + ` gains ${num} disease cube${(num>1)?"s":""}`);
+        this.game.cities[city].virus[virus]+=num;
+        this.game.state.active[virus]+=num;
         if (this.game.state.active[virus] > 24) {
           this.updateLog(`The ${virus} virus proliferates without check infecting more people than can even be counted. You have failed at containing the global pandemic.`);
           this.loseGame(`${virus.toUpperCase()} virus beyond control`);
@@ -2000,6 +2078,7 @@ class Pandemic extends GameTemplate {
     state.outbreaks = 0;
     state.infection_rate = 0;
     state.active_moves = 0;
+    state.current_player = 0;
     // events
     state.one_quiet_night = 0;
 
@@ -2032,7 +2111,7 @@ class Pandemic extends GameTemplate {
     console.log(this.game.options);
 
     //Remove specified roles
-    let defaultroles = ["generalist", "scientist", "medic", "operationsexpert","quarantinespecialist"];
+    let defaultroles = ["generalist", "scientist", "medic", "operationsexpert","quarantinespecialist"/*, "researcher"*/];
     let roles = [];
     for (i = 0; i < defaultroles.length; i++){
       if (this.game.options[defaultroles[i]] == 1){
@@ -2092,6 +2171,13 @@ class Pandemic extends GameTemplate {
         players[i].desc =
           "The Quarantine Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
         players[i].type = 5; 
+      }
+      if (role === "researcher"){
+        players[i].role = "Researcher";
+        players[i].pawn = "Pawn%20Researcher.png";
+        players[i].card = "Role%20-%20Researcher.jpg";
+        players[i].desc = "The Researcher may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
+        players[i].type = 6;
       }
     }
     return players;
@@ -3093,6 +3179,9 @@ displayDisease() {
     let player = this.game.players_info[plyr - 1];
     let cards = player.cards;
 
+    if (this.game.player == plyr){
+      this.cardfan.hide();
+    }
     //this.game.state.player_topcard = card;
     this.game.deck[1].discards.push(card);
 
@@ -3103,9 +3192,7 @@ displayDisease() {
       }
     }
 
-    if (this.game.player == plyr){
-      this.cardfan.hide();
-    }
+    
   }
 
   returnGameRulesHTML() {
