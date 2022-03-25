@@ -221,7 +221,7 @@ class Pandemic extends GameTemplate {
         callback: function (app, game_mod) {
           game_mod.menu.hideSubMenus();
           let html = game_mod.returnPlayerCardHTML(i + 1);
-          game_mod.overlay.show(app, game_mod, `<div class="bighand">${html}</div>`);
+          game_mod.overlay.show(app, game_mod, `<div class=" bighand">${html}</div>`);
           game_mod.attachCardboxEvents(); //Don't do anything on click
         },
       });
@@ -1412,6 +1412,46 @@ class Pandemic extends GameTemplate {
     return this.game.state.cures[virus] && this.game.state.active[virus] === 0;
   }
 
+///<<<<<<<<
+  acknowledgeInfection(city, mycallback) {
+    let pandemic_self = this;
+    let virus = this.game.deck[0].cards[city].virus;
+    let msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
+    let html = `<ul><li class="textchoice" id="confirmit">I understand...</li></ul>`;
+
+    this.defaultDeck = 0;
+    this.card_height_ratio = 0.709;
+    this.cardbox.show(city);
+    
+    try {
+      this.updateStatusWithOptions(msg, html);
+      document.getElementById("confirmit").onclick = async (e) => {
+        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
+        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
+        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
+        document.getElementById("game-cardbox").style.transition = "transform 2s";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
+        console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
+        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%) translateX(${dp.width + dp.right-parseInt(cb.left)}px) translateY(${dp.top-parseInt(cb.top)}px)`;
+        setTimeout(()=>{
+          pandemic_self.defaultDeck = 1;
+          pandemic_self.card_height_ratio = 1.41;
+          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
+          document.getElementById("game-cardbox").style.transition = "";
+          document.getElementById("game-cardbox").style.transform = "";
+          document.getElementById("game-cardbox").style.transformOrigin = "";
+          pandemic_self.cardbox.hide();
+          mycallback();
+        }, 1500);
+      };
+    } catch (err) {
+      console.error("Error with ACKWNOLEDGE notice!: " + err);
+    }
+
+    return 0;
+  }
+
 
   acknowledgeInfectionCard(city, actionType, mycallback) {
     let pandemic_self = this;
@@ -1802,6 +1842,11 @@ class Pandemic extends GameTemplate {
             }else{
               if (this.quarantine && (this.quarantine === city || this.game.cities[city].neighbours.includes(this.quarantine))){
                 outcome = 1;
+                this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`);
+              }else{
+                this.updateLog(this.game.cities[city].name + " gains 1 disease cube");
+                this.prependMove(`infectcity\t${city}`);
+                this.addDiseaseCube(city, virus);
               }
             }
             this.prependMove(`infectcity\t${city}\t${outcome}`); 

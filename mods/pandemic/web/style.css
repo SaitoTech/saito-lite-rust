@@ -60,6 +60,14 @@
   color: hsl(0,0%,20%);
 }
 
+/* have to override default tip without fucking up hud sizing */
+.tip.menu_icon{
+  width: 100px; 
+}
+
+.fa-border{
+  padding: 0.26em 0.14em;
+}
 
 /* have to override default tip without fucking up hud sizing */
 .tip.menu_icon{
