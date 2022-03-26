@@ -471,7 +471,8 @@ class Pandemic extends GameTemplate {
     $(`#station_${rsIndex}`).css("z-index","");
     }
 
-    //Click on my city to remove cubes
+    //Turn off click events on my location
+    //Will add Click on my city to remove cubes (below)
     $(`#${city}.city`).off();
 
 
@@ -667,6 +668,7 @@ class Pandemic extends GameTemplate {
     }
     return 0; 
   }
+
 
   shareKnowledge() {
     let pandemic_self = this;
@@ -1444,7 +1446,7 @@ class Pandemic extends GameTemplate {
         let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
         let sizedif = Math.round(100*dp.width / parseInt(cb.width));
         document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        //document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
         document.getElementById("game-cardbox").classList.remove("confirmit");
         //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
         //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
@@ -1460,7 +1462,7 @@ class Pandemic extends GameTemplate {
           document.getElementById("game-cardbox").style.transform = "";
           document.getElementById("game-cardbox").style.top = "";
           document.getElementById("game-cardbox").style.left = "";  
-          //document.getElementById("game-cardbox").style.transformOrigin = "";
+          document.getElementById("game-cardbox").style.transformOrigin = "";
           pandemic_self.cardbox.hide();
           mycallback();
         }, 1200);
