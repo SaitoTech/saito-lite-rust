@@ -465,6 +465,7 @@ class Pandemic extends GameTemplate {
             pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${rsCity}\t1`);
             pandemic_self.endTurn();
           });
+
       });
 
     $(`#station_${rsIndex}`).off();
@@ -668,6 +669,7 @@ class Pandemic extends GameTemplate {
     return 0; 
   }
 
+
   shareKnowledge() {
     let pandemic_self = this;
     let player = this.game.players_info[this.game.player-1];
@@ -780,7 +782,6 @@ class Pandemic extends GameTemplate {
         });
 
       }else{
-        //Friend is researcher and no city card
         //Friend is research and has city card
         pandemic_self.addMove(`begcard\t${pandemic_self.game.player}\t${researcher}\t${city}`); //Remove from their hand
         pandemic_self.endTurn();
@@ -1444,7 +1445,7 @@ class Pandemic extends GameTemplate {
         let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
         let sizedif = Math.round(100*dp.width / parseInt(cb.width));
         document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        //document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
         document.getElementById("game-cardbox").classList.remove("confirmit");
         //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
         //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
@@ -1460,7 +1461,7 @@ class Pandemic extends GameTemplate {
           document.getElementById("game-cardbox").style.transform = "";
           document.getElementById("game-cardbox").style.top = "";
           document.getElementById("game-cardbox").style.left = "";  
-          //document.getElementById("game-cardbox").style.transformOrigin = "";
+          document.getElementById("game-cardbox").style.transformOrigin = "";
           pandemic_self.cardbox.hide();
           mycallback();
         }, 1200);
