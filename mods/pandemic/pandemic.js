@@ -340,6 +340,37 @@ class Pandemic extends GameTemplate {
     } catch (err) {}
   }
 
+  confirmMove(prompt, e, callback){
+      let html = `
+        <div class="popup-confirm-menu">
+          <div class="popup-prompt">${prompt}</div>
+          <div class="action" id="confirm">yes</div>
+          <div class="action" id="cancel">cancel</div>
+        </div>`;
+
+        let left = e.clientX + 50;
+        let top = e.clientY + 20;
+        if (left + 150 > window.innerWidth){
+          left -= 200;
+        }
+        $(".popup-confirm-menu").remove();
+        $("body").append(html);
+        $(".popup-confirm-menu").css({
+              position: "absolute",
+              top: top,
+              left: left,
+            });
+
+        $(".action").off();
+        $(".action").on("click", function () {
+          let confirmation = $(this).attr("id");
+          $(".action").off();
+          $(".popup-confirm-menu").remove();
+          if (confirmation === "confirm"){
+            callback();
+          } 
+        });
+  }
 
   playerMakeMove() {
     if (this.browser_active == 0) {
@@ -383,45 +414,28 @@ class Pandemic extends GameTemplate {
     });
     //Create as menu on the game board to input word from a tile in horizontal or vertical direction
     $(".city").on("mouseup", function (e) {
-      if (Math.abs(xpos - e.clientX) > 4) {
-        return;
-      }
-      if (Math.abs(ypos - e.clientY) > 4) {
+      if (Math.abs(xpos - e.clientX) > 4 || Math.abs(ypos - e.clientY) > 4) {
         return;
       }
       let selection = $(this).attr("id");
-      console.log("Click on : "+selection);
       let hops = pandemic_self.returnHopsToCityFromCity(selection, city);
+      console.log("Click on city: "+selection+", hops: "+hops);
       if (hops <= pandemic_self.game.state.active_moves) {
-        let html = `
-        <div class="popup-confirm-menu">
-          <div class="popup-prompt">Move to ${pandemic_self.game.cities[selection].name} (${hops} move${hops>1?"s":""})?</div>
-          <div class="action" id="confirm">yes</div>
-          <div class="action" id="cancel">cancel</div>
-        </div>`;
-
-        let left = $(this).offset().left + 50;
-        let top = $(this).offset().top + 20;
-        if (left + 150 > window.innerWidth){
-          left -= 200;
-        }
-        $(".popup-confirm-menu").remove();
-        $("body").append(html);
-        $(".popup-confirm-menu").css({
-              position: "absolute",
-              top: top,
-              left: left,
-            });
-
-        $(".action").off();
-        $(".action").on("click", function () {
-          let confirmation = $(this).attr("id");
-          $(".action").off();
-          $(".popup-confirm-menu").remove();
-          if (confirmation === "confirm"){
-            pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${selection}\t${hops}`);
-            pandemic_self.endTurn();    
-          } 
+        pandemic_self.confirmMove(`Move to ${pandemic_self.game.cities[selection].name} (${hops} move${hops>1?"s":""})?`, e, ()=>{
+          pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${selection}\t${hops}`);
+          pandemic_self.endTurn();    
+        });
+      }else if (player.cards.includes(selection)){
+        pandemic_self.confirmMove(`Discard ${pandemic_self.game.cities[selection].name} card to fly there directly?`, e, ()=>{
+          pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${selection}`);
+          pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${selection}\t1`);
+          pandemic_self.endTurn();    
+        });
+      }else if (player.cards.includes(city)){
+        pandemic_self.confirmMove(`Discard ${pandemic_self.game.cities[city].name} card to charter a flight to ${pandemic_self.game.cities[selection].name}?`, e, ()=>{
+          pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${city}`);
+          pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${selection}\t1`);
+          pandemic_self.endTurn();    
         });
       }
     });
@@ -441,42 +455,16 @@ class Pandemic extends GameTemplate {
         });
       //Create as menu on the game board to input word from a tile in horizontal or vertical direction
       $(".research_station").on("mouseup", function (e) {
-        if (Math.abs(xpos - e.clientX) > 4) {
-          return;
-        }
-        if (Math.abs(ypos - e.clientY) > 4) {
+        if (Math.abs(xpos - e.clientX) > 4 || Math.abs(ypos - e.clientY) > 4) {
           return;
         }
         let selection = parseInt($(this).attr("id").split("_")[1])-1;
+        console.log("Click on research station: "+selection);
         let rsCity = pandemic_self.game.state.research_stations[selection];
-        let html = `
-        <div class="popup-confirm-menu">
-          <div class="popup-prompt">Take a shuttle flight to ${pandemic_self.game.cities[rsCity].name} (1 move)?</div>
-          <div class="action" id="confirm">yes</div>
-          <div class="action" id="cancel">cancel</div>
-        </div>`;
-
-        let left = $(this).offset().left + 50;
-        let top = $(this).offset().top + 20;
-        
-        $(".popup-confirm-menu").remove();
-        $("body").append(html);
-        $(".popup-confirm-menu").css({
-              position: "absolute",
-              top: top,
-              left: left,
-            });
-
-        $(".action").off();
-        $(".action").on("click", function () {
-          let confirmation = $(this).attr("id");
-          $(".action").off();
-          $(".popup-confirm-menu").remove();
-          if (confirmation === "confirm"){
+        pandemic_self.confirmMove(`Take a shuttle flight to ${pandemic_self.game.cities[rsCity].name} (1 move)?`, e, ()=>{
             pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${rsCity}\t1`);
             pandemic_self.endTurn();
-          } 
-        });
+          });
 
       });
 
@@ -484,8 +472,8 @@ class Pandemic extends GameTemplate {
     $(`#station_${rsIndex}`).css("z-index","");
     }
 
-    //Click on my city to remove cubes
-    console.log(`#${city}.city`);
+    //Turn off click events on my location
+    //Will add Click on my city to remove cubes (below)
     $(`#${city}.city`).off();
 
 
@@ -683,7 +671,7 @@ class Pandemic extends GameTemplate {
     return 0; 
   }
 
-//TODO: Add Researcher -- much more complicated !!!!
+
   shareKnowledge() {
     let pandemic_self = this;
     let player = this.game.players_info[this.game.player-1];
@@ -697,52 +685,112 @@ class Pandemic extends GameTemplate {
       return;
     }
 
-//I am a researcher and I have city card
-//I am a researcher and no one has city card
-//I am a researcher and someone else has city card
 
-//Friend is researcher and I have city card
-//Friend is researcher and no city card
-//Friend is research and has city card
-
-//No research and I have city card
-//no researcher and friend has city card
-
-    //Give Me the Card
-    if (cardOwner != this.game.player) {
-      //CardOwner needs to approve this...!!!!
-      this.addMove(`takecard\t${this.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
-      this.endTurn();
-      
-    }else { //I give the card
+    let offerCard = function(card){
       //Pick who to offer the card to, even if only one person
-      let numChoices = 0;
-      let choice = -1;
-      let html = "<ul>";
-      for (let i = 0; i < this.game.players_info.length; i++) {
-        if (this.game.players_info[i].city == city && i != this.game.player - 1) {
-          html += `<li class="nocard" id="${(i + 1)}">Player ${(i + 1)} (${this.game.players_info[i].role})</li>`;
-          numChoices ++;
-          choice = i + 1;
+        let numChoices = 0;
+        let choice = -1;
+        let html = "<ul>";
+        for (let i = 0; i < pandemic_self.game.players_info.length; i++) {
+          if (pandemic_self.game.players_info[i].city == city && i != pandemic_self.game.player - 1) {
+            html += `<li class="nocard" id="${(i + 1)}">Player ${(i + 1)} (${pandemic_self.game.players_info[i].role})</li>`;
+            numChoices ++;
+            choice = i + 1;
+          }
         }
-      }
-      html += "</ul>";
+        html += "</ul>";
 
-      if (numChoices > 1){
-        this.updateStatusWithOptions(`Give card to whom?`, html,true);
-        $(".nocard").off();
-        $(".nocard").on("click", function () {
-          let id = $(this).attr("id");
-          pandemic_self.addMove(`givecard\t${pandemic_self.game.player}\t${id}\t${city}`);
+        if (numChoices > 1){
+          this.updateStatusWithOptions(`Give card to whom?`, html,true);
+          $(".nocard").off();
+          $(".nocard").on("click", function () {
+            let id = $(this).attr("id");
+            pandemic_self.addMove(`givecard\t${pandemic_self.game.player}\t${id}\t${card}`);
+            pandemic_self.endTurn();
+          });  
+        }else{
+          pandemic_self.addMove(`givecard\t${pandemic_self.game.player}\t${choice}\t${card}`);
           pandemic_self.endTurn();
-        });  
-      }else{
-        pandemic_self.addMove(`givecard\t${pandemic_self.game.player}\t${choice}\t${city}`);
-        pandemic_self.endTurn();
-      }
-      
+        }
     }
 
+  //No research and I have city card
+  //no researcher and friend has city card
+    if (researcher == 0){
+      //Give Me the Card
+      if (cardOwner != this.game.player) {
+        //CardOwner needs to approve this...!!!!
+        this.addMove(`takecard\t${this.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
+        this.endTurn();
+        
+      }else { //I give the card
+        offerCard(city);
+        
+      }
+    }else {
+    let researcherCards = pandemic_self.game.players_info[researcher - 1].cards.filter(c => !c.includes("event"));
+    if (this.game.player === researcher){
+      //I am a researcher and someone else has city card
+      if (cardOwner > 0 && cardOwner != this.game.player){
+        //Step 1, give or take
+        let html = `<ul>
+                      <li id="take" class="menu_option">Take ${city} card</li>
+                      <li id="give" class="menu_option">Pick a card to give</li>
+                    </ul>`;
+        this.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
+        $(".menu_option").off();
+        $(".menu_option").on("click",function(){
+          let choice = $(this).attr("id");
+          if (choice === "take"){
+            pandemic_self.addMove(`takecard\t${pandemic_self.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
+            pandemic_self.endTurn();
+
+          }else{
+            //Pick a card to share
+            pandemic_self.updateStatusAndListCards("Share knowledge of which city:", researcherCards, true);
+            pandemic_self.attachCardboxEvents(function (c) {
+              offerCard(c);
+            });    
+          }
+        });
+      }else{
+        //I am a researcher and I have city card
+        //I am a researcher and no one has city card
+        //Pick a card to share
+        this.updateStatusAndListCards("Share knowledge of which city:", researcherCards, true);
+        this.attachCardboxEvents(function (c) {
+          offerCard(c);
+        });
+
+      }
+    }else{ 
+      //Friend is researcher and I have city card
+      if (cardOwner == this.game.player){
+        //Step 1, give or take
+        let html = `<ul>
+                      <li id="give" class="menu_option">Give ${city} card</li>
+                      <li id="take" class="menu_option">Ask Researcher for a card</li>
+                    </ul>`;
+        this.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
+        $(".menu_option").off();
+        $(".menu_option").on("click",function(){
+          let choice = $(this).attr("id");
+          if (choice === "take"){
+            pandemic_self.addMove(`begcard\t${pandemic_self.game.player}\t${researcher}\t${city}`); //Remove from their hand
+            pandemic_self.endTurn();
+          }else{
+            offerCard(city);
+          }
+        });
+
+      }else{
+        //Friend is researcher and no city card
+        //Friend is research and has city card
+        pandemic_self.addMove(`begcard\t${pandemic_self.game.player}\t${researcher}\t${city}`); //Remove from their hand
+        pandemic_self.endTurn();
+      }
+    }
+   }
   }
 
   /*
@@ -864,7 +912,7 @@ class Pandemic extends GameTemplate {
 
           pandemic_self.updateStatusWithOptions("Move to which city:", html,false);
 
-          $(".city, .nocard").off();
+          $(".player, .city, .nocard").off();
           $(".city, .nocard").on("click", function () {
             let city_destination = $(this).attr("id");
             console.log("City to airlift to: "+city_destination);
@@ -1402,7 +1450,7 @@ class Pandemic extends GameTemplate {
         let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
         let sizedif = Math.round(100*dp.width / parseInt(cb.width));
         document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        //document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
         document.getElementById("game-cardbox").classList.remove("confirmit");
         //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
         //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
@@ -1418,7 +1466,7 @@ class Pandemic extends GameTemplate {
           document.getElementById("game-cardbox").style.transform = "";
           document.getElementById("game-cardbox").style.top = "";
           document.getElementById("game-cardbox").style.left = "";  
-          //document.getElementById("game-cardbox").style.transformOrigin = "";
+          document.getElementById("game-cardbox").style.transformOrigin = "";
           pandemic_self.cardbox.hide();
           mycallback();
         }, 1200);
@@ -1693,7 +1741,7 @@ class Pandemic extends GameTemplate {
             let city = this.drawInfectionCard();
             let virus = this.game.deck[0].cards[city].virus;
             let outcome = 0;
-            if (this.game.state.cures[virus] && this.game.state.active[virus] == 0) { 
+            if (this.isEradicated(virus)) { 
               outcome = 2;
             }else{
               if (this.quarantine && (this.quarantine === city || this.game.cities[city].neighbours.includes(this.quarantine))){
@@ -1797,7 +1845,9 @@ class Pandemic extends GameTemplate {
         this.game.state.cures[virus] = true;
 
         this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) found the cure for ${virus} disease`);
-
+        if (this.game.player !== player){
+          this.displayModal("Cure Discovered!", `Player ${player} found the cure to ${virus}`);
+        }
         if (this.game.state.active[virus] === 0){
           this.displayModal("Virus Eradicated", `${virus} removed from game`);
           this.updateLog(`${virus} is eradicated!!!`);
@@ -1826,8 +1876,33 @@ class Pandemic extends GameTemplate {
         this.updateLog(`Player ${player} (${this.game.players_info[player - 1].role}) built a research station in ${this.game.cities[city].name}.`);
       }
       
+      if (mv[0] === "begcard"){
+        let player = parseInt(mv[1]);
+        let researcher = parseInt(mv[2]);
+
+        if (this.game.player === researcher){
+          let cards = this.game.players_info[researcher - 1].cards.filter(c => !c.includes("event")); 
+          this.updateStatusAndListCards(`Player ${player} wants you to share knowledge with them:`, cards, true);
+          this.attachCardboxEvents(function(c){
+            pandemic_self.addMove(`shareknowledge\t${researcher}\t${player}\t${c}`);
+            pandemic_self.endTurn();
+          });
+          document.getElementById("back_button").onclick = function(){
+            pandemic_self.addMove(`nosharing\t${researcher}\t${player}\t`);
+            pandemic_self.endTurn();
+          };
+        }else{
+          if (player === this.game.player){
+            this.updateStatusAndListCards(`Player ${researcher} is deciding about sharing knowledge with you`);
+          }else{
+            this.updateStatusAndListCards(`Player ${researcher} is deciding about sharing knowledge with Player ${player}`);  
+          }
+        }
+        return 0;
+      }
+
       if (mv[0] === "givecard") {
-        let player = parseInt(mv[1])  
+        let player = parseInt(mv[1]); 
         let recipient = parseInt(mv[2]);
         let card = mv[3];
         
@@ -1897,7 +1972,7 @@ class Pandemic extends GameTemplate {
         let player = mv[2];
         let card = mv[3];
         this.game.queue.splice(qe-1, 2);   //resolve takecard or givecard     
-
+        this.updateStatus("Sharing Knowledge: Teamwork for the win!");
         this.removeCardFromHand(sender,card);
         this.game.players_info[player-1].cards.push(card);
         this.game.players_info[player-1].cards = this.sortHand(this.game.players_info[player-1].cards);
@@ -1906,6 +1981,9 @@ class Pandemic extends GameTemplate {
         }
         this.game.state.active_moves--;
         this.updateLog(`Player ${sender} (${this.game.players_info[sender - 1].role}) shared the ${this.game.cities[card].name} card with Player ${player} (${this.game.players_info[player - 1].role})`);
+        if (this.game.players_info[player-1].cards.length > this.maxHandSize) {
+          this.game.queue.push(`discardhand\t${player}`);
+        }
         return 1;
       }
 
@@ -1914,8 +1992,8 @@ class Pandemic extends GameTemplate {
         let offerer = mv[2];
         let card = mv[3]
         this.game.queue.splice(qe-1, 2);   //resolve takecard or givecard
-        let city = (card) ? this.game.cities[card].name : "";
-        this.updateLog(`Player ${refuser} declined to share knowledge (${city}) with ${offerer}`);
+        let city = (card) ? `(${this.game.cities[card].name}) ` : "";
+        this.updateLog(`Player ${refuser} declined to share knowledge ${city}with ${offerer}`);
         return 1;
       }
 
@@ -2016,7 +2094,7 @@ class Pandemic extends GameTemplate {
     }
     msg = msg.substr(0, msg.length-2);
     this.updateLog(msg);
-    this.prependMove(`ACKNOWLEDGE\t${msg}`); //move
+    this.addMove(`ACKNOWLEDGE\t${msg}`); //move
     console.log(JSON.stringify(this.outbreaks));
   }
 
@@ -2111,7 +2189,7 @@ class Pandemic extends GameTemplate {
     console.log(this.game.options);
 
     //Remove specified roles
-    let defaultroles = ["generalist", "scientist", "medic", "operationsexpert","quarantinespecialist"/*, "researcher"*/];
+    let defaultroles = ["generalist", "scientist", "medic", "operationsexpert","quarantinespecialist", "researcher"];
     let roles = [];
     for (i = 0; i < defaultroles.length; i++){
       if (this.game.options[defaultroles[i]] == 1){
@@ -3030,8 +3108,8 @@ displayDisease() {
     }
     for (let v in this.game.state.active){
       if (this.game.state.active[v] !== cubeCounts[v]){
-        console.log("-----");
-        console.log("Mismatch in active virus and cubes -- "+v);
+        console.log("--Mismatch in active virus and cubes---"+v+"--");
+        console.log(`${cubeCounts[v]} cubes on board, ${this.game.state.active[v]} in game logic`);
       }
     }
   }
@@ -3192,7 +3270,12 @@ displayDisease() {
       }
     }
 
-    
+  }
+
+
+  updateStatusAndListCards(message, cards = [], include_back_button = false) {
+    this.cardfan.hide();
+    super.updateStatusAndListCards(message, cards, include_back_button);
   }
 
   returnGameRulesHTML() {
@@ -3251,6 +3334,7 @@ displayDisease() {
               <li><input type="checkbox" name="medic" selected/>Medic</li>
               <li><input type="checkbox" name="operationsexpert" selected/>Operations Expert</li>
               <li><input type="checkbox" name="quarantinespecialist" selected/>Quarantine Specialist</li>
+              <li><input type="checkbox" name="researcher" selected/>Researcher</li>
             </ul><p>Player roles will be selected at random from the checked boxes. If there are more players than selected roles, player roles will be assigned at random from any available option</p>`;
     html += `
      
