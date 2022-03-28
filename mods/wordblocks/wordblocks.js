@@ -22,7 +22,7 @@ class Wordblocks extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
     this.type = "Wordgame";
-  
+
     this.boardWidth = 1000;
     this.tileHeight = 163;
     this.tileWidth = 148;
@@ -1198,15 +1198,15 @@ class Wordblocks extends GameTemplate {
         console.log(allBoardSlots)
         
         allBoardSlots.forEach((neighbor) => {
-              neighbor.forEach((plane) => {
-                console.log(plane)
-                if(this.game.board[plane].fresh == 0){
+              neighbor.forEach((slot) => {
+                console.log(slot)
+                if(this.game.board[slot].fresh == 0){
                   
-                    touchesWord.push({touchesWord:true, plane, letter: this.game.board[plane] })
+                    touchesWord.push({touchesWord:true, slot, letter: this.game.board[slot] })
                 }
               })
         })
-        console.log(touchesWord)
+     
       }
 
       if(orientation == "vertical"){
