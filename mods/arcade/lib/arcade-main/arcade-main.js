@@ -200,6 +200,11 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
                 arcade_main_self.continueGame(app, mod, game_sig);
                 return;
               }
+
+              if (game_cmd === "invite"){
+                arcade_main_self.privatizeGame(app, mod, game_sig);
+                return;
+              }
             };
           });
       } catch (err) {
@@ -535,11 +540,22 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     this.removeGameFromList(sig);
   },
 
+
+  privatizeGame(app, mod, game_sig){
+    let inviteLink = window.location.href;
+    if (inviteLink.includes("?")){
+      inviteLink = inviteLink.replace("#", "&jid="+game_sig);
+    }else{
+      inviteLink = inviteLink.replace("#", "?jid="+game_sig);
+    }
+    salert(inviteLink);
+  },
+
+
   deleteGame(app, mod, game_id) {
     salert(`Delete game id: ${game_id}`);
 
     if (app.options.games) {
-      let { games } = app.options;
       for (let i = 0; i < app.options.games.length; i++) {
         if (app.options.games[i].id == game_id) {
           let resigned_game = app.options.games[i];

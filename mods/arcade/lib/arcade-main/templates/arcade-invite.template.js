@@ -26,9 +26,9 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   if (app.options) {
     if (app.options.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-	if (app.options.games[i].initializing == 1) {
-	  game_initialized = 0;
-	}
+      	if (app.options.games[i].initializing == 1) {
+      	  game_initialized = 0;
+      	}
       }
     }
   }
@@ -72,6 +72,8 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
      if (invite.isMine) {
        if (game_initialized == 1) { 
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">CONTINUE</button>`;
+       }else{
+        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="invite" class="button invite-tile-button">INVITE</button>`;
        }
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {

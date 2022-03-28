@@ -6,7 +6,7 @@ const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
 const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const getMockGames = require("./mockinvites.js");
+//const getMockGames = require("./mockinvites.js");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
@@ -155,11 +155,7 @@ class Arcade extends ModTemplate {
     if (this.app.options.games != null) {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
-        if (
-          game.over == 1 ||
-          (game.players_set == 1 && !game.players.includes(app.wallet.returnPublicKey()))
-        ) {
-        } else {
+        if (game.over != 1 && (game.players_set != 1 || game.players.includes(app.wallet.returnPublicKey()))) {
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
       }
@@ -215,6 +211,7 @@ class Arcade extends ModTemplate {
         if (res.rows) {
           this.addGamesToOpenList(
             res.rows.map((row) => {
+              console.log(JSON.parse(JSON.stringify(row)));
               return new saito.default.transaction(JSON.parse(row.tx));
             })
           );
@@ -304,16 +301,17 @@ class Arcade extends ModTemplate {
   // purge any bad games from options file
   //
   purgeBadGames(app) {
-    if (app.options) {
-      if (app.options.games) {
-        for (let i = app.options.games.length - 1; i >= 0; i--) {
-          if (app.options.games[i].module === "" && app.options.games[i].id.length < 25) {
-            app.options.games.splice(i, 1);
-          }
+    
+    if (app.options?.games) {
+      for (let i = app.options.games.length - 1; i >= 0; i--) {
+        if (app.options.games[i].module === "" && app.options.games[i].id.length < 25) {
+          app.options.games.splice(i, 1);
         }
       }
     }
+  
   }
+
   notifyPeers(app, tx) {
     // lite-clients can skip
     if (app.BROWSER == 1) { return; } 
@@ -450,10 +448,10 @@ class Arcade extends ModTemplate {
         }
 
         //
-	     // notify lite-clients and remove game from list available
-      //
-      this.notifyPeers(app, tx);
-	     this.removeGameFromOpenList(txmsg.sig);
+  	    // notify lite-clients and remove game from list available
+        //
+        this.notifyPeers(app, tx);
+  	    this.removeGameFromOpenList(txmsg.sig);
 
 
         //
@@ -781,7 +779,7 @@ class Arcade extends ModTemplate {
       	// notify lite-clients and remove game from list available
         //
       	this.removeGameFromOpenList(txmsg.game_id);
-        
+
         if (this.app.BROWSER == 0) {
       	  this.notifyPeers(this.app, tx);
       	}
@@ -1075,7 +1073,6 @@ class Arcade extends ModTemplate {
 
   async receiveOpenRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-
     //
     // add to games table
     //
@@ -1785,6 +1782,7 @@ class Arcade extends ModTemplate {
 
   // just receive the sig of the game to remove
   removeGameFromOpenList(game_sig) {
+    console.log("Removing "+game_sig);
     this.games = this.games.filter((game) => {
       if (game.transaction) {
         return game.transaction.sig != game_sig;
@@ -1919,6 +1917,7 @@ class Arcade extends ModTemplate {
   addGamesToOpenList(txs) {
     let for_us = false;
     txs.forEach((tx, i) => {
+      console.log(JSON.parse(JSON.stringify(tx)));
       let valid_game = this.validateGame(tx);
       if (valid_game) {
         let this_game_is_for_us = this.isForUs(tx);

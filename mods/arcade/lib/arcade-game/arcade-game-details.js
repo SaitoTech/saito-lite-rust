@@ -183,7 +183,7 @@ module.exports = ArcadeGameDetails = {
           mod.overlay.hide();
           document.getElementById("background-shim").destroy();
 
-          console.log("PRE CREATING OPEN TX");
+          //console.log("PRE CREATING OPEN TX");
 
           let newtx = mod.createOpenTransaction(gamedata);
 
@@ -204,7 +204,7 @@ module.exports = ArcadeGameDetails = {
             relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
           }
 
-          mod.app.network.propagateTransaction(newtx);
+          app.network.propagateTransaction(newtx);
           mod.renderArcadeMain(app, mod);
         }
       } catch (err) {
