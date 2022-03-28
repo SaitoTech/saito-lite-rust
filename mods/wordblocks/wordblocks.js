@@ -1170,6 +1170,7 @@ class Wordblocks extends GameTemplate {
         xEnd = Math.min(15, x + 1);
         yEnd = Math.min(15, y + word.length + 1);
       }
+      //// old code
       // for (let i = xStart; i <= xEnd; i++)
       //   for (let j = yStart; j <= yEnd; j++) {
       //     let boardslot = j + "_" + i;
