@@ -28,6 +28,9 @@ webpack({
       archiver: "archiver"
     },
     {
+      "stun": "stun"
+    },
+    {
       child_process: "child_process"
     },
     {
