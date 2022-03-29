@@ -155,6 +155,13 @@
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
 
+    state.augsburg_electoral_bonus = 0;
+    state.mainz_electoral_bonus = 0;
+    state.trier_electoral_bonus = 0;
+    state.cologne_electoral_bonus = 0;
+    state.wittenberg_electoral_bonus = 0;
+    state.brandenburg_electoral_bonus = 0;
+
     return state;
 
   }
@@ -2055,6 +2062,21 @@
   }
 
 
+  returnNewCardsForTurn(turn = 1) {
+
+    let deck = this.returnDeck();
+    let new_deck = {};
+
+    for (let key in deck) {
+      if (deck[key].turn === turn) {
+	new_deck[key] = deck[key];
+      }
+    }
+
+    return new_deck;
+
+  }
+
   returnDeck() {
 
     var deck = {};
@@ -2681,7 +2703,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
       name : "Card" ,
-      ops : Fountain of Youth ,
+      ops : "Fountain of Youth" ,
       turn : 2 ,
       type : "normal" ,
     }
