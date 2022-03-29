@@ -308,6 +308,3 @@ if [ "$1" == "recompile" ]; then
   post_compile
 
 fi
-
-
-
