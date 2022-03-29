@@ -22,7 +22,7 @@ class Wordblocks extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
     this.type = "Wordgame";
-  
+
     this.boardWidth = 1000;
     this.tileHeight = 163;
     this.tileWidth = 148;
@@ -1159,7 +1159,7 @@ class Wordblocks extends GameTemplate {
       } //this.firstmove = 0;
     } else {
       //Check to make sure newly played word touches another word
-      let touchesWord = 0;
+      // let touchesWord = 0;
       let xStart = Math.max(1, x - 1);
       let yStart = Math.max(1, y - 1);
       let xEnd, yEnd;
@@ -1170,16 +1170,72 @@ class Wordblocks extends GameTemplate {
         xEnd = Math.min(15, x + 1);
         yEnd = Math.min(15, y + word.length + 1);
       }
-      for (let i = xStart; i <= xEnd; i++)
-        for (let j = yStart; j <= yEnd; j++) {
-          let boardslot = j + "_" + i;
-          if (this.game.board[boardslot].fresh == 0) {
-            touchesWord = 1;
-            break;
-          }
-        }
+      //// old code
+      // for (let i = xStart; i <= xEnd; i++)
+      //   for (let j = yStart; j <= yEnd; j++) {
+      //     let boardslot = j + "_" + i;
+      //     console.log(boardslot)
+      //     if (this.game.board[boardslot].fresh == 0) {
+      //       touchesWord = 1;
+      //       break;
+      //     }
+      //     console.log(touchesWord)
+      //   }
 
-      if (touchesWord == 0) {
+      const touchesWord = []
+      if(orientation == "horizontal"){
+        yStart = parseInt(yStart) + 1;
+        xStart = parseInt(xStart) + 1;
+        let allBoardSlots = []
+        for (let i = xStart; i < xEnd-1; i++){
+              let left = `${yStart}_${i-1}`;
+              let top = `${yStart-1}_${i}`;
+              let right = `${yStart}_${i+1}`;
+             let  bottom = `${yStart + 1}_${i}`;
+              let neighbors = [left, top, right, bottom]
+              allBoardSlots.push(neighbors)
+        }
+        console.log(allBoardSlots)
+        
+        allBoardSlots.forEach((neighbor) => {
+              neighbor.forEach((slot) => {
+                console.log(slot)
+                if(this.game.board[slot].fresh == 0){
+                  
+                    touchesWord.push({touchesWord:true, slot, letter: this.game.board[slot] })
+                }
+              })
+        })
+     
+      }
+
+      if(orientation == "vertical"){
+        yStart = parseInt(yStart) + 1;
+        xStart = parseInt(xStart) + 1;
+        let allBoardSlots = []
+        for (let i = yStart; i < yEnd-1; i++){
+              let left = `${i}_${xStart - 1}`;
+              let top = `${i-1}_${xStart}`;
+              let right = `${i}_${xStart+ 1}`;
+             let  bottom = `${i + 1}_${xStart}`;
+              let neighbors = [left, top, right, bottom]
+              allBoardSlots.push(neighbors)
+        }
+        console.log(allBoardSlots)
+        
+        allBoardSlots.forEach((neighbor) => {
+              neighbor.forEach((plane) => {
+                console.log(plane)
+                if(this.game.board[plane].fresh == 0){
+                  
+                    touchesWord.push({touchesWord:true, plane, letter: this.game.board[plane] })
+                }
+              })
+        })
+        console.log(touchesWord)
+      }
+
+      if (!touchesWord.find(item => item.touchesWord == true)) {
         salert("Word does not cross or touch an existing word.");
         return false;
       }
