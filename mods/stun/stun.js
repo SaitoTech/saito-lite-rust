@@ -84,12 +84,14 @@ class Stun extends ModTemplate {
           this.handleSendStunTransaction()
         }
 
-        
+
 
         handleSendStunTransaction(){
           let newStunTx = this.app.wallet.createUnsignedTransaction();
 
           newStunTx.msg.module = "stun";
+          newStunTx.msg.IP = this.IP_ADDRESS;
+          newStunTx.msg.PORT = this.PORT
     
           const signedStunTx =  this.app.wallet.signTransaction(newStunTx);
          
