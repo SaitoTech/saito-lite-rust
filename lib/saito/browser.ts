@@ -210,36 +210,7 @@ class Browser {
 
   }
 
-  getIP = () => {
-    if(!this.IP_ADDRESS && this.app.BROWSER == 1){
-      const handleGetIPs = () =>  {
-        const pc = new RTCPeerConnection({ iceServers: [ {urls: 'stun:stun.l.google.com:19302'} ] });
-        pc.createDataChannel('');
-        pc.createOffer().then(offer => pc.setLocalDescription(offer))
-        pc.onicecandidate = (ice) => {
-            if (!ice || !ice.candidate || !ice.candidate.candidate) {
-              console.log("closed.");
-              pc.close();   
-              return;
-            }
-            let split = ice.candidate.candidate.split(" ");
-            if (split[7] === "host") {
-              // console.log(`Local IP : ${split[4]}`);
-              // this.IP_ADDRESS = split[4]
-              // console.log(split)
-            } else {
-              console.log(`External IP : ${split[4]}`);
-              console.log(`PORT: ${split[5]}`)
-              this.IP_ADDRESS = split[4]
-              this.PORT = split[5];
-         
 
-             }
-        };
-      }
-    handleGetIPs();
-    }
-  }
 
   returnURLParameter(name) {
     try {

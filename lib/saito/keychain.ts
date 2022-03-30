@@ -18,6 +18,7 @@ class Keychain {
   public bsh: any;
   public lc: any;
 
+  
   constructor(app: Saito) {
     this.app = app;
     this.keys = [];

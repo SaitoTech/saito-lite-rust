@@ -1,0 +1,22 @@
+{
+    "server": {
+        "name": "me",
+        "host": "localhost",
+        "port": 12101,
+        "protocol": "http",
+        "endpoint": {
+            "host": "localhost",
+            "port": 12101,
+            "protocol": "http"
+        }
+    },
+    "wallet": {
+        "bundleBlocks": 1,
+        "balance": 0,
+        "pending": [],
+        "inputs": [],
+        "spends": [],
+        "privatekey": "1f7a6290eb3f9ab29818fc2c61bde060bdec14c277d9ddef6e55e3fbf4e3e612",
+        "publickey": "zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK"
+    }
+}
