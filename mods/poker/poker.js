@@ -382,10 +382,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      this.displayTable(); //to update pot
+//      this.displayTable(); //to update pot
 
       console.log("QUEUE: " + JSON.stringify(this.game.queue));
-      this.outputState();
+//      this.outputState();
 
       if (mv[0] == "notify") {
         this.updateLog(mv[1]);
