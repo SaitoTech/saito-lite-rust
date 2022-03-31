@@ -66,6 +66,7 @@ position: relative;
 
 .logobox img {
   width: 100%;
+  margin-bottom: 15px;
 }
 
 .status-header{
