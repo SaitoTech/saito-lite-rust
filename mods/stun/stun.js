@@ -4,45 +4,54 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 
 
 class Stun extends ModTemplate {
+
         IP_ADDRESS = ""
         PORT = ""
 
-       constructor(app){
-                super(app)
-                this.appname = "Stun",
-                this.name = "Stun",
-                this.description="Session Traversal Utilitiesf for NAT (STUN)"
-                this.categories = "Utility Networking"
+       constructor(app) {
+         super(app);
+         this.appname = "Stun";
+         this.name = "Stun";
+         this.description="Session Traversal Utilitiesf for NAT (STUN)";
+         this.categories = "Utility Networking";
+
+	 this.stun = {};
+	 this.stun.ip_address = "";
+	 this.stun.port = "";
+
+
        }
 
        initialize(app){
-           super.initialize(app)
-           this.getIP()
-           console.log('stun')
+
+         super.initialize(app);
+
+	 //
+	 // always stun on init
+	 //
+	 let stun = this.fetchStunInformation();
+
+         console.log('STUN: ' + JSON.stringify(stun));
+
+	 //
+	 // do we need to broadcast a message and update our keychain?
+	 //
+	 if (1) {
+           this.handleSendStunTransaction();
+	   this.saveStun(stun);
+	 }
+
        }
 
-      //  initializeHTML(app) {
 
-      //   super.initializeHTML(app);
-    
-    
-    
-      // }
+       fetchStunInformation() {
 
+	let stun = {};
 
-       getIP = () => {
-        if(!this.IP_ADDRESS && this.app.BROWSER == 1){
-       
-        this.handleGetIPs();
-        }
-      }
-
-       handleGetIPs = () =>  {
-        try {
-          const pc = new RTCPeerConnection({ iceServers: [ {urls: 'stun:stun.l.google.com:19302'} ] });
-          pc.createDataChannel('');
-          pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(e => console.log(`${e} An error occured on offer creation`))
-          pc.onicecandidate = (ice) => {
+        const pc = new RTCPeerConnection({ iceServers: [ {urls: 'stun:stun.l.google.com:19302'} ] });
+        pc.createDataChannel('');
+        pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(e => console.log(`${e} An error occured on offer creation`))
+        pc.onicecandidate = (ice) => {
               if (!ice || !ice.candidate || !ice.candidate.candidate) {
                 console.log("ice canditate check closed.");
                 pc.close();   
@@ -51,57 +60,49 @@ class Stun extends ModTemplate {
               let split = ice.candidate.candidate.split(" ");
               if (split[7] === "host") {
                 // console.log(`Local IP : ${split[4]}`);
-                // this.IP_ADDRESS = split[4]
-                // console.log(split)
+                // stun.ip_address = split[4];
+                // console.log(split);
               } else {
                 console.log(`External IP : ${split[4]}`);
-                console.log(`PORT: ${split[5]}`)
-                this.IP_ADDRESS = split[4]
-                this.PORT = split[5];
-
-                this.handleSaveToKeyChain()
-  
-               }
+                console.log(`PORT: ${split[5]}`);
+                stun.ip_address = split[4];
+                stun.port = split[5];
+                this.handleSaveToKeyChain();
+             }
           };
+
         } catch (error) {
-            console.log("An error occured with stun",error)
+          console.log("An error occured with stun",error)
         }
+
+	return stun; 
+       
+      }
+
+
+      saveStun() {
+
+	//
+	// keychain is already initialized by the time that we are initializing modules
+	// BUT we may or may not have our own key stored, so we can't just write to the 0
+	// ENTRY.
+	//
+        this.app.keys.keys[0].data.stun = stun;
+        this.app.keys.saveKeys();
+      }
+
+
+      handleSendStunTransaction() {
+
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        newtx.msg.module = "Stun";
+        newtx.msg.stun = this.stun;
+        newtx = this.app.wallet.signTransaction(newtx);
+        this.app.network.propagateTransaction(newtx);
         
-        }
+      }
 
-    
-
-      handleSaveToKeyChain = ()=> {
-        if (this.app.options.keys.length == 0) {
-          this.app.keys.initialize();
-        }
-          
-          this.app.keys.keys[0].data = {
-            PORT: this.PORT,
-            IP_ADDRESS: this.IP_ADDRESS
-          }
-          this.app.keys.saveKeys()
-          this.handleSendStunTransaction()
-        }
-
-
-
-        handleSendStunTransaction(){
-          let newStunTx = this.app.wallet.createUnsignedTransaction();
-
-          newStunTx.msg.module = "stun";
-          newStunTx.msg.IP = this.IP_ADDRESS;
-          newStunTx.msg.PORT = this.PORT
-    
-          const signedStunTx =  this.app.wallet.signTransaction(newStunTx);
-         
-          this.app.network.propagateTransaction(signedStunTx);
-
-        
-        
-        }
-
-      
 }
 
-module.exports = Stun
+module.exports = Stun;
+
