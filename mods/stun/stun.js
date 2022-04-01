@@ -17,14 +17,17 @@ class Stun extends ModTemplate {
 	 this.stun.port = "";
        }
 
-       initialize(app){
+      async initialize(app){
 
          super.initialize(app);
 
 	 //
 	 // always stun on init
 	 //
-	 let stun = this.fetchStunInformation();
+	 let stun =   await this.fetchStunInformation;
+   this.stun = stun
+
+   console.log(this.stun)
 
 	 //
 	 // my key
@@ -32,12 +35,18 @@ class Stun extends ModTemplate {
 	 let do_we_broadcast_and_update = 1;
 	 let publickey = this.app.wallet.returnPublicKey();
 	 let key = null;
+   console.log(this.app.keys.keys)
 	 for (let i = 0; i < this.app.keys.keys.length; i++) {
 	   let tk = this.app.keys.keys[i];
 	   if (tk.publickey === publickey) {
+
 	     key = tk;
-	     if (key.stun) {
-	       if (JSON.stringify(key.stun) === JSON.stringify(stun)) {
+       if(key && !key.data.stun){
+        this.app.keys.keys[i].data.stun = stun;
+        this.app.keys.saveKeys();
+       }
+	     if (key && key.data.stun) {
+	       if (JSON.stringify(key.data.stun) === JSON.stringify(stun)) {
 		 do_we_broadcast_and_update = 0;
 	       } else {
 		 this.app.keys.keys[i].data.stun = stun;
@@ -48,9 +57,9 @@ class Stun extends ModTemplate {
 	 }
          console.log('STUN: ' + JSON.stringify(stun));
 
-	 //
-	 // or add key if missing
-	 //
+	 
+	//  or add key if missing
+	 
 	 if (key == null) {
 	   do_we_broadcast_and_update = 1;
 	   this.app.keys.addKey(this.app.wallet.returnPublicKey());
@@ -72,11 +81,9 @@ class Stun extends ModTemplate {
        }
 
 
-       fetchStunInformation() {
-
-	let stun = {};
-
-	try {
+        fetchStunInformation = new Promise((resolve, reject) => {
+        let stun = {};
+        try {
 
           const pc = new RTCPeerConnection({ iceServers: [ {urls: 'stun:stun.l.google.com:19302'} ] });
           pc.createDataChannel('');
@@ -97,6 +104,7 @@ class Stun extends ModTemplate {
               console.log(`PORT: ${split[5]}`);
               stun.ip_address = split[4];
               stun.port = split[5];
+              resolve(stun);
             }
           };
 
@@ -104,20 +112,31 @@ class Stun extends ModTemplate {
           console.log("An error occured with stun",error)
         }
 
-	return stun; 
-       
-      }
+	      
+       }) 
+
+
+      
 
 
       broadcastAddress() {
 
+        console.log('broadcasting address')
         let newtx = this.app.wallet.createUnsignedTransaction();
         newtx.msg.module = "Stun";
         newtx.msg.stun = this.stun;
         newtx = this.app.wallet.signTransaction(newtx);
-        this.app.network.propagateTransaction(newtx);
-        
+        console.log(this.app.network)
+
+        // does not work without the settimeout, it seems the blockchain isn't initialized by the time this function is run , so propagation doesn't register
+        setTimeout(()=> {
+          this.app.network.propagateTransaction(newtx);
+        }, 2000)
+
+ 
       }
+
+      
 
 }
 
