@@ -9,35 +9,30 @@ const GameTemplate = require("../../lib/templates/gametemplate");
     }    
 
     const zoomHover = function(e) {
-      let zoom_area = 150;
-      let zoom_radius = zoom_area/2;
       let gbheight = Math.round(document.getElementById("gameboard").getBoundingClientRect().height);
       let gbwidth = Math.round(document.getElementById("gameboard").getBoundingClientRect().width);
       let gbtop = Math.round(document.getElementById("gameboard").getBoundingClientRect().top);
       let gbleft = Math.round(document.getElementById("gameboard").getBoundingClientRect().left);
       // Show original picture    
-      const lookingGlass = $(".zoom-container img");
-      const glassFrame = lookingGlass.parent();
+      
+      const glassFrame = $(".zoom-container");
+      const lookingGlass = glassFrame.children(":first");
       glassFrame.removeClass('hidden');
-      // Thumbnail
+      // Ratios
+      var ratioX = lookingGlass.width() / gbwidth ;
+      var ratioY = lookingGlass.height() / gbheight;
+      
+      let zoom_area = 400 / ratioX;
+      let zoom_radius = zoom_area/2;
+      
+
       var offset = $(".gameboard").offset();
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
      
-      let html = `<div>Mouse at: ${Math.round(e.clientX)}, ${Math.round(e.clientY)}
-                  <div>Alt Mouse: ${Math.round(e.pageX)}, ${Math.round(e.pageY)}
-                  <div>BOARD OFFSET: ${Math.round(offset.left)}, ${Math.round(offset.top)}
-                  <div>Alt board coord: ${Math.round(gbleft)}, ${Math.round(gbtop)}
-                  <div>Position with border radius: x: ${Math.round(tX)}, y: ${Math.round(tY)}
-                  <div>Width: ${$(".gameboard").width()}, Height: ${$(".gameboard").height()}
-                  <div>Visible board size: ${gbwidth}, ${gbheight}`;
-      
       // We stay inside the limits of the zoomable area
       tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
       tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
-      // Ratios
-      var ratioX = (lookingGlass.width() - 300 )/ (gbwidth - zoom_area );
-      var ratioY = (lookingGlass.height() - 300 )/ (gbheight - zoom_area );
       // Margin to be set in the original    
       var moX = -Math.floor( ( tX  - zoom_radius ) * ratioX ) ;
       var moY = -Math.floor( ( tY  - zoom_radius ) * ratioY ) ;
@@ -46,19 +41,15 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       lookingGlass.css( 'marginTop', moY );
 
     //Center magnifying glass
-    /*glassFrame.css({
-              top: e.clientY - zoom_radius,
-              left: e.clientX - zoom_radius,
+    glassFrame.css({
+              top: e.clientY - zoom_radius*ratioY,
+              left: e.clientX - zoom_radius*ratioX,
               bottom: "unset",
               right: "unset",
             });
-    */
-    // Log values
-    html += `<div>Adjusted: x: ${Math.round(tX)}, y: ${Math.round(tY)}
-             <div>Ratio X: ${ratioX.toFixed(3)}, Ratio Y: ${ratioY.toFixed(3)}
-              <div> Margin left: ${Math.round(moX)}, Margin top: ${Math.round(moY)}`;
-    $(".myhelper").html(html);
   }
+
+
 
 
 //////////////////
@@ -86,6 +77,7 @@ class Scotland extends GameTemplate {
     this.maxPlayers = 6; 
 
     this.hud.mode = 0;
+    this.sizer.maxZoom = 100;
   }
 
 
@@ -826,6 +818,7 @@ class Scotland extends GameTemplate {
         $(divname).addClass("highlightpawn");
       }
     }
+
   }
 
   returnPawn(pawn_id) {
@@ -858,22 +851,28 @@ class Scotland extends GameTemplate {
   }
 
 
-
   magnifyingGlass(){
-    
-    var zoom_area_size = 250;
-    var zoom_radius = zoom_area_size / 2;
-    
-
+  let scotland_self = this;
   $('.gameboard').toggleClass("zoom-window");
-
+  let glass = document.querySelector(".zoom-container");
   if ($('.gameboard').hasClass("zoom-window")){
     console.log("Turn on zoom");
-    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);  
-    //document.querySelector(".gameboard").addEventListener("mouseout", endHover);
+    let board = document.querySelector(".gameboard");
+    let newBoard = board.cloneNode(true);
+    newBoard.style = "position:relative;";
+    glass.append(newBoard);
+
+    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
+    glass.addEventListener("mousemove", zoomHover);  
+    glass.addEventListener("click",scotland_self.magnifyingGlass);
+    //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
   }else{
     console.log("Turn off zoom");
-    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);  
+    glass.removeChild(glass.firstChild);
+    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
+    glass.removeEventListener("mousemove", zoomHover);
+    glass.classList.add("hidden");  
+    $(".zoom-container").off();
     //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
   }
 
