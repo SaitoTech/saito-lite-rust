@@ -30,7 +30,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
      
-
       // We stay inside the limits of the zoomable area
       tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
       tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
@@ -819,6 +818,7 @@ class Scotland extends GameTemplate {
         $(divname).addClass("highlightpawn");
       }
     }
+
   }
 
   returnPawn(pawn_id) {
@@ -849,7 +849,6 @@ class Scotland extends GameTemplate {
     hh.classList.add(`pawn${pawn_id}`);
 
   }
-
 
 
   magnifyingGlass(){

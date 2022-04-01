@@ -465,7 +465,6 @@ class Pandemic extends GameTemplate {
             pandemic_self.addMove(`move\t${pandemic_self.game.player}\t${rsCity}\t1`);
             pandemic_self.endTurn();
           });
-
       });
 
     $(`#station_${rsIndex}`).off();
@@ -782,6 +781,7 @@ class Pandemic extends GameTemplate {
         });
 
       }else{
+        //Friend is researcher and no city card
         //Friend is research and has city card
         pandemic_self.addMove(`begcard\t${pandemic_self.game.player}\t${researcher}\t${city}`); //Remove from their hand
         pandemic_self.endTurn();
@@ -1474,128 +1474,6 @@ class Pandemic extends GameTemplate {
   }
 
 
-  acknowledgeInfectionCard(city, actionType, mycallback) {
-    let pandemic_self = this;
-    let virus = this.game.deck[0].cards[city].virus;
-    let msg;
-    this.outbreaks = [];
-    switch (actionType){
-      case 1: 
-        this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`); 
-        msg = `Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`;
-        break;
-      case 2: this.updateLog(`Eradicated disease prevents infection in ${this.game.cities[city].name}`); 
-        msg = `Eradicated disease prevents infection in ${this.game.cities[city].name}`;
-        break;
-      default:
-        this.addDiseaseCube(city, virus);
-        msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
-    } 
-    
-    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
-
-    this.defaultDeck = 0;
-    this.card_height_ratio = 0.709;
-    this.cardbox.show(city);
-    document.getElementById("game-cardbox").style.pointerEvents = "unset";
-    document.getElementById("game-cardbox").classList.add("confirmit");
-    try {
-      this.updateStatusWithOptions(msg, html);
-      $(".confirmit").on("click", async (e) => {
-        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
-        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
-        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
-        document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        document.getElementById("game-cardbox").style.transformOrigin= "left top";
-        document.getElementById("game-cardbox").classList.remove("confirmit");
-        //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
-        //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
-        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%)`;
-        document.getElementById("game-cardbox").style.top = `${dp.top}`;
-        document.getElementById("game-cardbox").style.left = `${dp.left}`;
-        
-        setTimeout(()=>{
-          pandemic_self.defaultDeck = 1;
-          pandemic_self.card_height_ratio = 1.41;
-          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
-          document.getElementById("game-cardbox").style.transition = "";
-          document.getElementById("game-cardbox").style.transform = "";
-          document.getElementById("game-cardbox").style.top = "";
-          document.getElementById("game-cardbox").style.left = "";  
-          document.getElementById("game-cardbox").style.transformOrigin = "";
-          pandemic_self.cardbox.hide();
-          mycallback();
-        }, 1200);
-      });
-    } catch (err) {
-      console.error("Error with ACKWNOLEDGE notice!: " + err);
-    }
-
-    return 0;
-  }
-
-
-  acknowledgeInfectionCard(city, actionType, mycallback) {
-    let pandemic_self = this;
-    let virus = this.game.deck[0].cards[city].virus;
-    let msg;
-    this.outbreaks = [];
-    switch (actionType){
-      case 1: 
-        this.updateLog(`Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`); 
-        msg = `Quarantine Specialist blocks new infection in ${this.game.cities[city].name}`;
-        break;
-      case 2: this.updateLog(`Eradicated disease prevents infection in ${this.game.cities[city].name}`); 
-        msg = `Eradicated disease prevents infection in ${this.game.cities[city].name}`;
-        break;
-      default:
-        this.addDiseaseCube(city, virus);
-        msg = `Infection: 1 ${virus} added to ${this.game.cities[city].name}`
-    } 
-    
-    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
-
-    this.defaultDeck = 0;
-    this.card_height_ratio = 0.709;
-    this.cardbox.show(city);
-    document.getElementById("game-cardbox").style.pointerEvents = "unset";
-    document.getElementById("game-cardbox").classList.add("confirmit");
-    try {
-      this.updateStatusWithOptions(msg, html);
-      $(".confirmit").on("click", async (e) => {
-        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
-        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
-        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
-        document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        document.getElementById("game-cardbox").style.transformOrigin= "left top";
-        document.getElementById("game-cardbox").classList.remove("confirmit");
-        //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
-        //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
-        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%)`;
-        document.getElementById("game-cardbox").style.top = `${dp.top}`;
-        document.getElementById("game-cardbox").style.left = `${dp.left}`;
-        
-        setTimeout(()=>{
-          pandemic_self.defaultDeck = 1;
-          pandemic_self.card_height_ratio = 1.41;
-          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
-          document.getElementById("game-cardbox").style.transition = "";
-          document.getElementById("game-cardbox").style.transform = "";
-          document.getElementById("game-cardbox").style.top = "";
-          document.getElementById("game-cardbox").style.left = "";  
-          document.getElementById("game-cardbox").style.transformOrigin = "";
-          pandemic_self.cardbox.hide();
-          mycallback();
-        }, 1200);
-      });
-    } catch (err) {
-      console.error("Error with ACKWNOLEDGE notice!: " + err);
-    }
-
-    return 0;
-  }
-
-
   //
   // Core Game Logic
   //
@@ -1720,6 +1598,7 @@ class Pandemic extends GameTemplate {
             this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
         }
+        this.game.queue.splice(qe,1);
         return 0;
       }
       if (mv[0] === "interrupt"){
