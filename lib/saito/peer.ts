@@ -15,6 +15,7 @@ class Peer {
     version: "",
     protocol: "http",
     synctype: "full", // full : full blocks
+    services: [],
     // lite : lite blocks
     endpoint: {
       host: "localhost",
@@ -165,6 +166,11 @@ class Peer {
     }
     if (message === "GSTCHAIN") {
       this.app.networkApi.send(this.socket, "GSTCHAIN", data);
+      return;
+    }
+    // json list of services running on server
+    if (message === "SERVICES") {
+      this.app.networkApi.send(this.socket, "SERVICES", data);
       return;
     }
     if (message === "PINGPING") {
