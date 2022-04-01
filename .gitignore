@@ -31,7 +31,6 @@ data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
 
-
 bundler
 bundler/*
 built

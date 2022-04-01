@@ -19,7 +19,7 @@ class Poker extends GameTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 6;
-
+    this.decimal_precision = 0; /*Default, since default is 15/30 blinds*/
     this.settlement = [];
     this.updateHTML = "";
 
@@ -161,6 +161,12 @@ class Poker extends GameTemplate {
     }
 
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
+    let minimumBetString = this.game.state.small_blind.toString();
+    if  (minimumBetString.includes(".")){
+      let num = minimumBetString.split(".");
+      this.decimal_precision = num[1].length;
+    }
+    console.log("@@DECIMAL: "+this.decimal_precision);
 
     if (this.browser_active) {
       console.log("INITIALIZE GAME");
@@ -376,10 +382,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-      this.displayTable(); //to update pot
+//      this.displayTable(); //to update pot
 
       console.log("QUEUE: " + JSON.stringify(this.game.queue));
-      this.outputState();
+//      this.outputState();
 
       if (mv[0] == "notify") {
         this.updateLog(mv[1]);
@@ -387,7 +393,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       }
 
       if (mv[0] === "winner") {
-        let winner = parseInt(mv[1]) - 1;
+        this.game.queue = [];
+        let winner = parseInt(mv[1]); //Notably not keyed to game.player, but by the index
         this.updateStatus("Game Over: " + this.game.state.player_names[winner] + " wins!");
         this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
         this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
@@ -422,8 +429,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         if (active_players === 1) {
           let winnings = this.game.state.pot - this.game.state.player_pot[player_left_idx];
           this.updateLog(`${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} (${winnings} net)`);
+          console.log(`${this.game.state.player_credit[player_left_idx]} + ${this.game.state.pot} = `);
           this.game.state.player_credit[player_left_idx] += this.game.state.pot;
-
+          console.log(this.game.state.player_credit[player_left_idx]);
           //
           // everyone settles with winner if needed
           //
@@ -432,11 +440,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
               if (i != player_left_idx) {
                 //Only losers
                 if (this.game.state.player_pot[i] > 0) {
-		  let ts = new Date().getTime();
-		  this.rollDice();
-		  let uh = this.game.dice;
+                  let ts = new Date().getTime();
+                  this.rollDice();
+                  let uh = this.game.dice;
                   if (this.game.player - 1 == player_left_idx) {
-		    // do not reformat -- adding whitespace screws with API
+              // do not reformat -- adding whitespace screws with API
                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
                   } else {
                      this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
@@ -531,10 +539,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
               this.updateStatus("Waiting for " + this.game.state.player_names[player_to_go - 1]);  
             }
           }
-          
-          shd_continue = 0;
+          return 0;   
         }
-        return 0;
+       shd_continue = 0;
       }
 
 
@@ -668,10 +675,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-		    // do not reformat -- adding whitespace screws with API
-		    let ts = new Date().getTime();
-		    this.rollDice();
-		    let uh = this.game.dice;
+        // do not reformat -- adding whitespace screws with API
+        let ts = new Date().getTime();
+        this.rollDice();
+        let uh = this.game.dice;
                     this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
                     );
                     this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
@@ -686,10 +693,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-		  let ts = new Date().getTime();
-		  this.rollDice();
-		  let uh = this.game.dice;
-		  // do not reformat -- adding whitespace screws with API
+      let ts = new Date().getTime();
+      this.rollDice();
+      let uh = this.game.dice;
+      // do not reformat -- adding whitespace screws with API
                   this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
                   this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }
@@ -763,10 +770,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             this.game.state.player_credit[bbpi] -= this.game.state.big_blind;
           }
 
-	  // does this solve rounding issues
-	  this.game.state.player_pot[bbpi] = this.game.state.player_pot[bbpi].toFixed(8);
-	  this.game.state.player_credit[bbpi] = this.game.state.player_credit[bbpi].toFixed(8);
-
           this.playerbox.refreshLog(`<div class="plog-update">Big Blind: ${this.game.state.big_blind}</div>`,this.game.state.big_blind_player);
           //
           // Small Blind
@@ -790,14 +793,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
           }
 
-console.log("=============================");
-console.log(JSON.stringify(this.game.state));
+          console.log("=============================");
+          console.log(JSON.stringify(this.game.state));
 
           this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.game.state.small_blind}</div>`,this.game.state.small_blind_player);
-
-	  // does this solve rounding issues
-	  this.game.state.player_pot[sbpi] = this.game.state.player_pot[sbpi].toFixed(8);
-	  this.game.state.player_credit[sbpi] = this.game.state.player_credit[sbpi].toFixed(8);
 
           this.game.queue.push("announce");        
           this.game.state.preflop = false;
@@ -1065,17 +1064,19 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
         });
       }else{
         /* choice = fold, check or call, so just directly insert in Move*/
+        console.log("Player chocie: "+choice);
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         poker_self.endTurn();
       }
     });
   }
 
+  /* To simplify display*/
   sizeNumber(x) {
     if (x >= 100) {
       return Math.floor(x);
     } else {
-      return x.toString().substring(0, 6);
+      return parseFloat(x.toFixed(this.decimal_precision));
     }
   }
 
@@ -1118,7 +1119,7 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     }
   
     state.blinds_idx = 0;
-    state.blinds_array = [
+    /*state.blinds_array = [
       { big: 0.001, small: 0.0005 },
       { big: 0.002, small: 0.001 },
       { big: 0.004, small: 0.002 },
@@ -1140,7 +1141,7 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
       { big: 250, small: 125 },
       { big: 500, small: 250 },
       { big: 1000, small: 500 },
-    ];
+    ];*/
 
     state.tournament_blinds_per_level = 12;
     state.tournament_blinds_per_level_max = 12;
@@ -2483,10 +2484,10 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
       if (
         this.app.modules.mods[i].ticker != "" &&
         this.app.modules.mods[i].ticker != undefined &&
-	!listed.includes(this.app.modules.mods[i].ticker)
+  !listed.includes(this.app.modules.mods[i].ticker)
       ) {
         options_html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
-	listed.push(this.app.modules.mods[i].ticker);
+  listed.push(this.app.modules.mods[i].ticker);
       }
     }
 
