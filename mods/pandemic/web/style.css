@@ -78,9 +78,10 @@
   padding: 0.26em 0.14em;
 }
 
-.menu-text{
-  margin: 7px auto;
-  font-size: 16px;
+.status-icon-menu i.menu_icon_icon:hover{
+  transform: unset;
+  background-color: whitesmoke;
+  color: black;
 }
 
 .tip .tiptext{

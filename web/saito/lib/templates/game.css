@@ -451,6 +451,12 @@ ul li a {
   justify-content: space-evenly;
 }
 
+.status-icon-menu .menu-text{
+  font-size: 18px;
+  margin: 0.5em auto;
+}
+
+
 .menu_icon{
   /*margin: 5px;*/
   width: 100px;
@@ -467,9 +473,12 @@ ul li a {
 /*When using a font awesome icon*/
 i.menu_icon_icon{
   box-sizing: content-box;
+  background-color: black;
   /*font-size: 75px;*/
   /*margin-bottom: 5px;*/
 }
+
+
 
 .menu_icon{
   font-size: 50px;
