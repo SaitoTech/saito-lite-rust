@@ -103,6 +103,13 @@ class Peer {
     return false;
   }
 
+  hasService(service) {
+    for (let i = 0; i < this.peer.services.length; i++) {
+      if (this.peer.services[i].service === service) { return 1; }
+    }
+    return 0;
+  }
+
   //
   // keepAlive
   //

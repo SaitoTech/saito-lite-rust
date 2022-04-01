@@ -473,6 +473,11 @@ class Chat extends ModTemplate {
         if (app.network.peers.length > 0) {
 
             let recipient = app.network.peers[0].peer.publickey;
+	    for (let i = 0; i < app.network.peers.length; i++) {
+	      if (app.network.peers[i].hasService("relay")) {
+		recipient = app.network.peers[0].peer.publickey;
+	      }
+	    }
             let relay_mod = app.modules.returnModule('Relay');
 
             tx = this.app.wallet.signAndEncryptTransaction(tx);
