@@ -37,6 +37,15 @@ class Chat extends ModTemplate {
     }
 
 
+
+    returnServices() {
+      let services = [];
+      // servers with chat installed are running community chat groups
+      if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
+      return services;
+    }
+
+
     receiveEvent(type, data) {
 
         if (type === "encrypt-key-exchange-confirm") {
@@ -474,8 +483,9 @@ class Chat extends ModTemplate {
 
             let recipient = app.network.peers[0].peer.publickey;
 	    for (let i = 0; i < app.network.peers.length; i++) {
-	      if (app.network.peers[i].hasService("relay")) {
+	      if (app.network.peers[i].hasService("chat")) {
 		recipient = app.network.peers[0].peer.publickey;
+		i = app.network.peers.length+1;
 	      }
 	    }
             let relay_mod = app.modules.returnModule('Relay');
