@@ -1445,21 +1445,30 @@ i.menu_icon_icon{
   height: 250px;
   background: linear-gradient(
     234.75deg,
-    #2d5bff 39.7%,
-    #8740f7 59.55%,
-    #ea23ee 81.13%
+    hsla(227, 100%, 59%, 0.656) 39.7%,
+    #8640f7d0 59.55%,
+    #eb23eec3 81.13%
   );
   margin-bottom: 40px;
-  margin-left: 33.33%;
+  /* margin-left: 33.33%; */
   margin-top: 10px;
   border-style: solid;
   border-color: #2a3679;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12), 0px 8px 40px rgba(0, 0, 0, 0.05);
   border-radius: 40px;
   letter-spacing: 0.01em;
+  cursor: pointer;
+ 
+  animation: appear .4s;
 }
 
 .card1:hover {
+  border-color: aqua;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.isActive {
   border-color: aqua;
   border-width: 2px;
   border-style: solid;
@@ -1488,6 +1497,7 @@ i.menu_icon_icon{
   margin-top: -10px;
   border-radius: 10px;
   float: left;
+  transition: .3s;
 }
 
 .card1 .player {
@@ -1504,6 +1514,13 @@ i.menu_icon_icon{
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.25),
     -10px -10px 20px rgba(255, 255, 255, 0.11);
   border-radius: 100px;
+
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  cursor: pointer;
+  background-color: purple;
 }
 .card1 .player:hover {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -1523,14 +1540,33 @@ i.menu_icon_icon{
   perspective: 1000px;
   cursor: pointer;
   background-color: purple;
+
 }
 .card1 img:hover {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  /* animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; */
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
   cursor: pointer;
+  transform: scale(1.1);
+  
 }
+
+
+
+
+@keyframes appear {
+    from {
+      opacity: 0;
+      transform: scale(70%);
+    }
+
+    to {
+      opacity: 100%;
+      transform: scale(100%);
+    }
+}
+
 
 @keyframes shake {
   10%,
@@ -1573,6 +1609,13 @@ i.menu_icon_icon{
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.25),
     -10px -10px 20px rgba(255, 255, 255, 0.11);
   border-radius: 100px;
+
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  cursor: pointer;
+  background-color: purple;
 }
 .card1 .text   {
   margin-left: 10px;
@@ -1585,13 +1628,39 @@ i.menu_icon_icon{
   color: #fff;
 }
 
-@media screen and (max-width: 453px) {
+@media screen and (max-width: 3070px) {
   .card1 {
-    margin: 10px;
-    margin-bottom: 20px;
-    margin-right: 20px;
-    padding-right: 20px;
+     width: 350px;
+     height: 200px;
   }
+
+  .card1 p {
+    font-size: 15px;
+  }
+  .card1 img {
+    width: 90px;
+  height: 130px;
+  }
+
+  .card1 .player {
+    width: 75px;
+    height: 28px;
+    margin-left: 10px;
+    margin-top: 15px;
+  }
+
+  .card1 .score {
+    width: 200px;
+  height: 45px;
+  margin-left: 15px;
+  margin-top: 16px;
+  }
+}
+@media screen and (max-width: 453px) {
+  /* .card1 {
+     width: 200px;
+     height: 100px;
+  } */
 }
 
 @media screen and (min-width: 453px) {
@@ -1601,6 +1670,8 @@ i.menu_icon_icon{
   }
 }
 
+
+/******   PLAYER BOX REVAMPED UI ******/
 
 
 
@@ -1688,4 +1759,6 @@ i.menu_icon_icon{
 .chat-list {
   display: none;
 }
+
+
 

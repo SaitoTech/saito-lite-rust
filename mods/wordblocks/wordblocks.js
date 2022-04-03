@@ -166,7 +166,7 @@ class Wordblocks extends GameTemplate {
   // )}</span>`
 
         let lastMove = this.getLastMove(i);
-        let html = `<div class="score" ><h2 class="text">${lastMove.word}</h2> <h2 class="value">${lastMove.score}</h2></div>` ;
+        let html = `<div id="lastmove_${i}" class="score" ><h2 class="text">${lastMove.word}:</h2> <h2 class="value">${lastMove.score}</h2></div>` ;
         this.playerbox.refreshLog(html, i);
         console.log("last word ", lastMove.word)
     // old `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`
@@ -2209,7 +2209,7 @@ class Wordblocks extends GameTemplate {
 
         //Update Specific Playerbox
         console.log(expanded)
-        let html = `<div class="score" id="lastmove_${player}><h2 class="text">${expanded}:</h2> <h2 class="value">${score}</h2></div>`;
+        let html = `<div id="lastmove_${i}" class="score"><h2 class="text">${expanded}:</h2> <h2 class="value">${score}</h2></div>`;
         this.playerbox.refreshLog(html, player);
         
 
@@ -2234,9 +2234,9 @@ class Wordblocks extends GameTemplate {
             "Player " + wordblocks_self.returnNextPlayer(player) + "'s turn"
           );
         }
-        $(".player-box").removeClass("active");
+        $(".card1").removeClass("isActive");
         this.playerbox.addClass(
-          "active",
+          "isActive",
           wordblocks_self.returnNextPlayer(player)
         );
         this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -2269,9 +2269,9 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        let html =  `<div class="score" id="lastmove_${player}><h2 class="text">Discarded:[${discardedTiles
+        let html =  `<div id="lastmove_${i}" class="score"><h2 class="text">Discarded:[${discardedTiles
           .split("")
-          .join()}] </h2> <h2 class="value">0</h2></div>`;
+          .join()}] </h2></div>`;
         this.playerbox.refreshLog(html, player);
        
 
@@ -2295,9 +2295,9 @@ class Wordblocks extends GameTemplate {
             "Player " + wordblocks_self.returnNextPlayer(player) + "'s turn"
           );
         }
-        $("player-box").removeClass("active");
+        $("card1").removeClass("isActive");
         this.playerbox.addClass(
-          "active",
+          "isActive",
           wordblocks_self.returnNextPlayer(player)
         );
         this.game.queue.splice(this.game.queue.length - 1, 1);
