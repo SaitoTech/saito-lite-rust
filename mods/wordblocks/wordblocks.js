@@ -512,7 +512,7 @@ class Wordblocks extends GameTemplate {
             );
           }
         });
-      }
+      } 
     }
   }
 
