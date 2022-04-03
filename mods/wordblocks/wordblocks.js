@@ -151,15 +151,25 @@ class Wordblocks extends GameTemplate {
       for (let i = 1; i <= this.game.players.length; i++) {
         this.playerbox.refreshName(i);
         this.playerbox.refreshInfo(
-          `<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${this.getPlayerScore(
+          `<h3 style="display: inline; margin-left: 35.8px; color: white">
+            Player ${i} :
+          </h3>
+          <div class="player" id="score_${i}"><h2 class="valueP">${this.getPlayerScore(
             i
-          )}</span>`,
+          )}</h2></div>`
+         ,
           i
         );
+  // old 
+  // `<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${this.getPlayerScore(
+  //   i
+  // )}</span>`
 
         let lastMove = this.getLastMove(i);
-        let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
+        let html = `<div class="score" ><h2 class="text">${lastMove.word}</h2> <h2 class="value">${lastMove.score}</h2></div>` ;
         this.playerbox.refreshLog(html, i);
+        console.log("last word ", lastMove.word)
+    // old `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`
       }
     } catch (err) {
       console.error(err);
@@ -2198,8 +2208,10 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
+        console.log(expanded)
+        let html = `<div class="score" id="lastmove_${player}><h2 class="text">${expanded}:</h2> <h2 class="value">${score}</h2></div>`;
         this.playerbox.refreshLog(html, player);
+        
 
         if (wordblocks_self.game.over == 1) {
           return;
@@ -2257,10 +2269,11 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        let html = `<div class="lastmove" id="lastmove_${player}"><span>Discarded:</span><span class="discardedtiles">[${discardedTiles
+        let html =  `<div class="score" id="lastmove_${player}><h2 class="text">Discarded:[${discardedTiles
           .split("")
-          .join()}]</span><span class="wordscore">0</span></div>`;
+          .join()}] </h2> <h2 class="value">0</h2></div>`;
         this.playerbox.refreshLog(html, player);
+       
 
         //Code to keep the discard and redraws in the game log history
         wordblocks_self.last_played_word[player - 1] = {
@@ -2325,12 +2338,23 @@ class Wordblocks extends GameTemplate {
 
     this.game.score[player - 1] = this.game.score[player - 1] + score;
     this.playerbox.refreshInfo(
-      `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${
-        this.game.score[player - 1]
-      }</span>`,
+      `<h3 style="display: inline; margin-left: 35.8px; color: white">
+      Player ${player} :
+    </h3>
+    <div class="player" id="score_${player}"><h2 class="valueP">${
+      this.game.score[player - 1]
+    }</h2></div>`
+     ,
       player
     );
   }
+
+
+
+// old
+// `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${
+//   this.game.score[player - 1]
+// }</span>`
 
   endTurn() {
     this.updateStatusWithTiles("Waiting for information from peers....");
