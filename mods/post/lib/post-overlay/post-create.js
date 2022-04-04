@@ -55,7 +55,7 @@ module.exports = PostCreate = {
     document.querySelector('.post-submit-btn').onclick = async (e) => {
 
       if (this.new_post.images.length > 0) {
-	      salert("It may take up to a minute to update large images. Please be patient!");
+	      alert("It may take up to a minute to update large images. Please be patient!");
       }
       // ===== USER INPUT =====
       this.new_post.title = sanitize(document.querySelector('.post-create-title').value);
@@ -65,12 +65,7 @@ module.exports = PostCreate = {
       //this.new_post.link = document.querySelector('.post-create-link-input').value;
       this.new_post.forum = document.querySelector('.post-create-forum').value;
 
-      console.log("NEW POST: "+this.new_post.comment);
-
-      if (this.new_post.title === "" && this.new_post.content === "") {
-        salert("Cannot submit untitled/empty post!");
-        return;
-      }
+      //console.log("NEW POST: "+this.new_post.comment);
 
       if (!this.new_post.title) {
         let title = "";
@@ -84,6 +79,14 @@ module.exports = PostCreate = {
       	if (title.length > 40) { title = title.substr(0, 40) + "..."; 	}
         this.new_post.title = title;
       }
+
+      if (this.new_post.title == ""){
+        salert("Cannot submit untitled/empty post!");
+        return; 
+      }
+
+      document.querySelector('.post-submit-btn').style.display = "none";
+      document.querySelector('#post-loader-spinner').style.display = "block";
 
       let newtx = mod.createPostTransaction(this.new_post.title, this.new_post.comment, this.new_post.link, this.new_post.forum, this.new_post.images);
       app.network.propagateTransaction(newtx);

@@ -215,6 +215,34 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
     	    this.game.queue.push("DECKXOR\t1\t"+(i));
 	  }
 
+
+	  
+	  //
+	  // handle discarded cards
+	  //
+/***
+	  let discards = {};
+	  for (let i in this.game.deck[0].discards) {
+      	    discards[i] = this.game.deck[0].cards[i];
+      	    delete this.game.deck[0].cards[i];
+    	  }
+    	  this.game.deck[0].discards = {};
+
+
+	  //
+	  // new cards this turn
+	  //
+	  let new_cards = this.returnNewCardsThisTurn(this.game.state.round);
+
+	  let reshuffle_cards = {};
+	  for (let key in discards) { reshuffle_cards[key] = discards[key]; }
+	  for (let key in new_cards) { reshuffle_cards[key] = new_cards[key]; }
+***/
+console.log("----------------------------");
+console.log("---SHUFFLING IN DISCARDS ---");
+console.log("----------------------------");
+
+
 	  let deck_to_deal = this.returnDeck()
 	  delete deck_to_deal['001'];
 	  delete deck_to_deal['002'];
@@ -234,6 +262,7 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
         }
 
         if (mv[0] === "restore_home_cards_to_deck") {
+
 	  let d = this.returnDeck();
 	  this.game.deck[0].cards['001'] = d['001'];
 	  this.game.deck[0].cards['002'] = d['002'];

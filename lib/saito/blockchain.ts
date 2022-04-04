@@ -154,6 +154,15 @@ class Blockchain {
       return;
     }
 
+//
+// IS GB INDEXED?
+//
+if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
+  console.log("=== IS GENESIS BLOCK INDEXED ===");
+  console.log(this.isBlockIndexed(this.app.blockchain.blockchain.genesis_block_hash));
+}
+
+
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
@@ -161,6 +170,7 @@ class Blockchain {
       if (!parent_block_hash) {
         console.log("hash is empty for parent: ", block.returnHash());
       } else {
+        console.log("parent block hash is not indexed...");
         await this.app.network.fetchBlock(parent_block_hash);
       }
     }
@@ -385,6 +395,15 @@ class Blockchain {
     if (!block.isType("Header")) {
       await this.app.storage.saveBlock(block);
     }
+
+    //
+    // set genesis block hash if block #1
+    //
+    if (this.app.blockchain.blockchain.genesis_block_hash === "") {
+console.log("setting our genesis block hash to first hash received!");
+      this.app.blockchain.blockchain.genesis_block_hash = block.returnHash();
+    }
+
 
     //
     // pre-load for next block
