@@ -1,9 +1,12 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-
+// let GamePlayerbox = require("../../lib/saito/ui/game-playerbox-alternate/game-playerbox");
 class Wordblocks extends GameTemplate {
 
   constructor(app) {
+   
     super(app);
+
+    // this.playerbox = new GamePlayerbox(app)
 
     this.name = "Wordblocks";
     this.gamename = "Wordblocks";
@@ -2269,7 +2272,7 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        let html =  `<div id="lastmove_${i}" class="score"><h2 class="text">Discarded:[${discardedTiles
+        let html =  `<div id="lastmove_${player}" class="score"><h2 class="text">Discarded:[${discardedTiles
           .split("")
           .join()}] </h2></div>`;
         this.playerbox.refreshLog(html, player);
