@@ -466,6 +466,7 @@ class Pandemic extends GameTemplate {
         });
       //Create as menu on the game board to input word from a tile in horizontal or vertical direction
       $(".research_station").on("mouseup", function (e) {
+
         if (Math.abs(xpos - e.clientX) > 4 || Math.abs(ypos - e.clientY) > 4) {
           return;
         }
@@ -1634,6 +1635,7 @@ class Pandemic extends GameTemplate {
             this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
         }
+        this.game.queue.splice(qe,1);
         return 0;
       }
       if (mv[0] === "interrupt"){

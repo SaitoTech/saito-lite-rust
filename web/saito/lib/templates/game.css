@@ -499,6 +499,15 @@ i.menu_icon_icon{
   /*margin-bottom: 5px;*/
 }
 
+.menu_icon{
+  font-size: 50px;
+}
+.smaller-icon.menu_icon{
+  font-size: 30px;
+}
+.smaller-icon i.menu_icon_icon{
+ /* font-size: 40px;*/
+}
 
 
 .menu_icon{

@@ -13,8 +13,7 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       let gbwidth = Math.round(document.getElementById("gameboard").getBoundingClientRect().width);
       let gbtop = Math.round(document.getElementById("gameboard").getBoundingClientRect().top);
       let gbleft = Math.round(document.getElementById("gameboard").getBoundingClientRect().left);
-      // Show original picture    
-      
+      // Show original picture          
       const glassFrame = $(".zoom-container");
       const lookingGlass = glassFrame.children(":first");
       glassFrame.removeClass('hidden');
@@ -25,7 +24,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       let zoom_area = 400 / ratioX;
       let zoom_radius = zoom_area/2;
       
-
       var offset = $(".gameboard").offset();
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
@@ -48,7 +46,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
               right: "unset",
             });
   }
-
 
 
 
@@ -849,7 +846,6 @@ class Scotland extends GameTemplate {
     hh.classList.add(`pawn${pawn_id}`);
 
   }
-
 
   magnifyingGlass(){
   let scotland_self = this;
