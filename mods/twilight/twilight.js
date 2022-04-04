@@ -2337,7 +2337,7 @@ try {
             if (this.game.player == 2) {
               this.game.deck[0].hand = ["che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
             } else {
-              this.game.deck[0].hand = ["quagmire", "unintervention", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
+              this.game.deck[0].hand = ["quagmire", "aldrichames", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
             }
           }
 
@@ -2438,6 +2438,11 @@ try {
 	  if (this.game.player != 0) {
 	    this.displayChinaCard();
 	  }
+
+	  //
+	  // reset / disable aldrich
+	  //
+	  this.game.state.events.aldrich = 0;
 
 
           //
@@ -9735,28 +9740,27 @@ this.startClock();
         this.addMove("resolve\taldrichames");
 
         if (this.game.deck[0].hand.length < 1) {
-
           this.addMove("notify\tUS has no cards to reveal");
           this.endTurn();
-
         }
 
         let cards_to_reveal = this.game.deck[0].hand.length;
+	let revealed = "";
+
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] === "china" || this.game.deck[0].hand[i] == this.game.state.headline_opponent_card || this.game.deck[0].hand[i] == this.game.state.headline_card) { cards_to_reveal--; }
           else {
+            if (revealed != "") { revealed += ", "; }
+            revealed += this.game.deck[0].hand[i];
             this.addMove(this.game.deck[0].hand[i]);
           }
         }
         if (cards_to_reveal =="") {
-
           this.addMove("notify\tUS has no cards to reveal");
           this.endTurn();
-
-        }else{
-
-          //this.addMove("notify\tUS holds: "+cards_to_reveal);
+        } else {
           this.addMove("aldrich\tus\t"+cards_to_reveal);
+          this.addMove("notify\tUS holds: "+revealed);
           this.endTurn();
         }
 
