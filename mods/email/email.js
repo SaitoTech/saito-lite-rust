@@ -192,11 +192,9 @@ class Email extends ModTemplate {
   }
 
   onConfirmation(blk, tx, conf, app) {
-console.log("running in the email module!");
     let txmsg = tx.returnMessage();
     let email_mod = app.modules.returnModule("Email");
     if (conf == 0) {
-console.log("adding tx...");
       email_mod.addTransaction(tx);
     }
   }
@@ -204,9 +202,7 @@ console.log("adding tx...");
 
     let publickey = this.app.wallet.returnPublicKey();
     if (tx.transaction.to[0].add == publickey) {
-console.log("SST");
       this.app.storage.saveTransaction(tx);
-console.log("AE");
       this.addEmail(tx);
     }
     if (tx.transaction.from[0].add == publickey) {
