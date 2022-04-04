@@ -817,7 +817,6 @@ class Scotland extends GameTemplate {
       }
     }
   }
-  }
 
   returnPawn(pawn_id) {
     if (pawn_id === this.game.state.numDetectives){
