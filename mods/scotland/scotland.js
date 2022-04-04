@@ -13,8 +13,7 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       let gbwidth = Math.round(document.getElementById("gameboard").getBoundingClientRect().width);
       let gbtop = Math.round(document.getElementById("gameboard").getBoundingClientRect().top);
       let gbleft = Math.round(document.getElementById("gameboard").getBoundingClientRect().left);
-      // Show original picture    
-      
+      // Show original picture          
       const glassFrame = $(".zoom-container");
       const lookingGlass = glassFrame.children(":first");
       glassFrame.removeClass('hidden');
@@ -25,11 +24,11 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       let zoom_area = 400 / ratioX;
       let zoom_radius = zoom_area/2;
       
-
       var offset = $(".gameboard").offset();
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
      
+
       // We stay inside the limits of the zoomable area
       tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
       tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
@@ -48,7 +47,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
               right: "unset",
             });
   }
-
 
 
 
@@ -818,7 +816,6 @@ class Scotland extends GameTemplate {
         $(divname).addClass("highlightpawn");
       }
     }
-
   }
 
   returnPawn(pawn_id) {
@@ -850,33 +847,30 @@ class Scotland extends GameTemplate {
 
   }
 
-
   magnifyingGlass(){
-  let scotland_self = this;
-  $('.gameboard').toggleClass("zoom-window");
-  let glass = document.querySelector(".zoom-container");
-  if ($('.gameboard').hasClass("zoom-window")){
-    console.log("Turn on zoom");
-    let board = document.querySelector(".gameboard");
-    let newBoard = board.cloneNode(true);
-    newBoard.style = "position:relative;";
-    glass.append(newBoard);
+    let scotland_self = this;
+    $('.gameboard').toggleClass("zoom-window");
+    let glass = document.querySelector(".zoom-container");
+    if ($('.gameboard').hasClass("zoom-window")){
+      console.log("Turn on zoom");
+      let board = document.querySelector(".gameboard");
+      let newBoard = board.cloneNode(true);
+      newBoard.style = "position:relative;";
+      glass.append(newBoard);
 
-    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
-    glass.addEventListener("mousemove", zoomHover);  
-    glass.addEventListener("click",scotland_self.magnifyingGlass);
-    //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
-  }else{
-    console.log("Turn off zoom");
-    glass.removeChild(glass.firstChild);
-    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
-    glass.removeEventListener("mousemove", zoomHover);
-    glass.classList.add("hidden");  
-    $(".zoom-container").off();
-    //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
-  }
-
-   
+      document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
+      glass.addEventListener("mousemove", zoomHover);  
+      glass.addEventListener("click",scotland_self.magnifyingGlass);
+      //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
+    } else {
+      console.log("Turn off zoom");
+      glass.removeChild(glass.firstChild);
+      document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
+      glass.removeEventListener("mousemove", zoomHover);
+      glass.classList.add("hidden");  
+      $(".zoom-container").off();
+      //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
+    }
   }
 
   ////////////////////

@@ -195,6 +195,8 @@ class Storage {
 
   async returnBlockFilenameByHash(block_hash, mycallback) {}
 
+  returnTokenSupplySlipsFromDisk(): any { return []; }
+
   returnBlockFilenameByHashPromise(block_hash) {}
 
   async queryDatabase(sql, params, database) {}

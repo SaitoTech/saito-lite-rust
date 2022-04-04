@@ -399,7 +399,6 @@ class Pandemic extends GameTemplate {
       this.showBoard();
     }
 
-   
     if (this.game.state.active_moves <= 0) {
       this.prependMove(`endturn\t${this.game.player}`);
       this.endTurn();
@@ -455,6 +454,7 @@ class Pandemic extends GameTemplate {
         });
       //Create as menu on the game board to input word from a tile in horizontal or vertical direction
       $(".research_station").on("mouseup", function (e) {
+
         if (Math.abs(xpos - e.clientX) > 4 || Math.abs(ypos - e.clientY) > 4) {
           return;
         }
@@ -1510,6 +1510,14 @@ class Pandemic extends GameTemplate {
         this.game.queue = [];
         return 0;
       }
+      if (mv[0] === "win"){
+        let winningPlayer = mv[1];
+        this.game.over = 1;
+        this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
+        salert("Players Win! Humanity survives");
+        this.game.queue = [];
+        return 0;
+      }
       if (mv[0] === "forecast") {
         let cards_to_update = parseInt(mv[1]);
         for (let i = 0; i < cards_to_update; i++) {
@@ -2050,8 +2058,6 @@ class Pandemic extends GameTemplate {
 
 
 
-
-
   loseGame(notice){
     this.game.over = 1;
     this.game.queue = [];
@@ -2064,6 +2070,16 @@ class Pandemic extends GameTemplate {
 
   winGame(player) {
     this.addMove(`win\t${player}`);
+    this.game.turn = this.moves;
+    this.sendMessage("game", {});
+    this.moves = [];
+    this.saveGame(this.game.id);
+  }
+
+
+  winGame(player) {
+    this.addMove(`win\t${player}`);
+    this.moves.reverse();
     this.game.turn = this.moves;
     this.sendMessage("game", {});
     this.moves = [];
