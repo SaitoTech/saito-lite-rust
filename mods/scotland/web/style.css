@@ -89,11 +89,11 @@
   position: absolute;
   right: 0;
   top: 0;
-  width: 300px;
-  height: 300px;
-  border: 2px solid black;
-  /*border-radius: 100%;*/
-  pointer-events: none;
+  width: 400px;
+  height: 400px;
+  border: 3px solid black;
+  border-radius: 100%;
   overflow: hidden;
   /*transform: translate(-125px,-125px);*/
 }
+
