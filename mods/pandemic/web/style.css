@@ -224,6 +224,29 @@
 }
 
 
+.game-scoreboard .cube{
+  position: static;
+  height: 30px;
+  font-size: 24px;
+}
+
+.virus-count+img.cube{
+  margin-left: 10px;
+}
+
+.virus-count{
+  margin: 0 2px;
+}
+
+.safe{
+  color: darkgreen;
+}
+.caution{
+  color: darkorange; 
+}
+.danger{
+  color: darkred;
+}
 
 .card {
   cursor: pointer;
