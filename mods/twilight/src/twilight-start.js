@@ -2337,7 +2337,7 @@ try {
             if (this.game.player == 2) {
               this.game.deck[0].hand = ["che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
             } else {
-              this.game.deck[0].hand = ["quagmire", "unintervention", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
+              this.game.deck[0].hand = ["quagmire", "aldrichames", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
             }
           }
 
@@ -2438,6 +2438,11 @@ try {
 	  if (this.game.player != 0) {
 	    this.displayChinaCard();
 	  }
+
+	  //
+	  // reset / disable aldrich
+	  //
+	  this.game.state.events.aldrich = 0;
 
 
           //
