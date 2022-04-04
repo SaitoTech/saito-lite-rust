@@ -85,10 +85,20 @@ class Stun extends ModTemplate {
   
       if (conf == 0) {
         if (txmsg.module === "Stun") {
+          // check if key exists in key chain
+          let key_index = app.keys.keys.findIndex((key)=> key.publickey === tx.transaction.from[0].add );
+          console.log(key_index, "key index");
+          // save key if it doesn't exist
+          if(key_index === -1){
+              app.keys.addKey(tx.transaction.from[0].add);
+              app.keys.saveKeys();
+          }
           for (let i = 0; i < app.keys.keys.length; i++) {
         
             if (tx.transaction.from[0].add === app.keys.keys[i].publickey) {
                 if(app.keys.keys[i].data.stun != tx.msg.stun){
+                  console.log(app.keys.keys[i].publickey);
+                  console.log("key length ", app.keys.keys.length);
                     console.log("stun changed, saving changes..", tx.msg.stun);
                    app.keys.keys[i].data.stun = tx.msg.stun;
                    app.keys.saveKeys();
@@ -99,6 +109,10 @@ class Stun extends ModTemplate {
           }
         }
       }
+
+      
+
+
      
   }
        
