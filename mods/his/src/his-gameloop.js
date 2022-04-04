@@ -198,7 +198,7 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
         if (mv[0] === "card_draw_phase") {
 
 	  //
-	  // generate new deck
+	  // deal cards and add home card
 	  //
 	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
 	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
@@ -208,6 +208,14 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 	    }
 	  }
+
+	  //
+	  // DECKRESTORE copies backed-up back into deck
+	  //
+          this.game.queue.push("SHUFFLE\t1");
+          this.game.queue.push("DECKRESTORE\t1");
+
+
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
@@ -216,11 +224,15 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 	  }
 
 
+	  //
+	  // new cards this turn
+	  //
+	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
+
 	  
 	  //
-	  // handle discarded cards
+	  // re-add discards
 	  //
-/***
 	  let discards = {};
 	  for (let i in this.game.deck[0].discards) {
       	    discards[i] = this.game.deck[0].cards[i];
@@ -228,16 +240,12 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
     	  }
     	  this.game.deck[0].discards = {};
 
-
 	  //
-	  // new cards this turn
+	  // our deck for re-shuffling
 	  //
-	  let new_cards = this.returnNewCardsThisTurn(this.game.state.round);
-
 	  let reshuffle_cards = {};
 	  for (let key in discards) { reshuffle_cards[key] = discards[key]; }
 	  for (let key in new_cards) { reshuffle_cards[key] = new_cards[key]; }
-***/
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
@@ -254,7 +262,11 @@ console.log("----------------------------");
 	  delete deck_to_deal['008'];
 
     	  this.game.queue.push("restore_home_cards_to_deck");
-    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(deck_to_deal));
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
+
+
+	  // backup any existing DECK #1
+          this.game.queue.push("DECKBACKUP\t1");
 
 	  this.game.queue.splice(qe, 1);
           return 1;

@@ -2062,7 +2062,7 @@
   }
 
 
-  returnNewCardsForTurn(turn = 1) {
+  returnNewCardsForThisTurn(turn = 1) {
 
     let deck = this.returnDeck();
     let new_deck = {};
