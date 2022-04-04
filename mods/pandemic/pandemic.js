@@ -81,7 +81,6 @@ class Pandemic extends GameTemplate {
   initializeGame(game_id) {
  
     this.loadGame(game_id);
-    this.restoreLog(); //from gameTemplate
 
     //
     // new state if needed
@@ -237,10 +236,10 @@ class Pandemic extends GameTemplate {
     });
 
     this.menu.addChatMenu(app, this);
-    
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.restoreLog(); //from gameTemplate
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
@@ -1329,11 +1328,11 @@ class Pandemic extends GameTemplate {
       let cure_capacity = Math.min(this.game.state.active_moves,this.game.cities[city].virus[disease], cube_selection);
       if (cure_capacity > cubes_to_cure){
         html = `<div class='status-icon-menu smaller-icon'>
-                <div class="menu_icon" id="1"><i class="menu_icon_icon fas fa-fw fa-2x fa-cube"></i><div class="menu-text">One cube</div></div>
-                <div class="menu_icon" id="2"><i class="menu_icon_icon fas fa-fw fa-cube"></i><i class="menu_icon_icon fas fa-fw fa-cube"></i><div class="menu-text">Two cubes</div></div>
+                <div class="menu_icon" id="1"><i class="menu_icon_icon fas fa-fw fa-2x fa-cube fa-border"></i><div class="menu-text">One cube</div></div>
+                <div class="menu_icon" id="2"><span class="fake-border"><i class="menu_icon_icon fas fa-fw fa-cube"></i><i class="menu_icon_icon fas fa-fw fa-cube"></i></span><div class="menu-text">Two cubes</div></div>
                 `;
         if (cure_capacity == 3){
-          html += `<div class="menu_icon" id="3"><i class="menu_icon_icon fas fa-fw fa-2x fa-cubes"></i><div class="menu-text">Three cubes</div></div>`;
+          html += `<div class="menu_icon" id="3"><i class="menu_icon_icon fas fa-fw fa-2x fa-cubes fa-border"></i><div class="menu-text">Three cubes</div></div>`;
         }
         html +="</div>";
         this.updateStatusWithOptions(`Remove how many cubes? [${this.game.state.active_moves}]`,html,true);
@@ -1441,6 +1440,8 @@ class Pandemic extends GameTemplate {
     try {
       this.updateStatusWithOptions(msg, html);
       $(".confirmit").on("click", async (e) => {
+        $(".confirmit").off();
+        $(".textchoice.confirmit").addClass("confirmed");
         let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
         let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
         let sizedif = Math.round(100*dp.width / parseInt(cb.width));
@@ -1538,7 +1539,7 @@ class Pandemic extends GameTemplate {
       }
 
       if (mv[0] === "discardhand"){
-        let player = parseInt(mv[1]);
+        let player = parseInt(mv[1]);//1, 2, 3...
 
         //Loop until we satisfy this
         if (this.game.players_info[player-1].cards.length <= this.maxHandSize) {
@@ -1549,7 +1550,7 @@ class Pandemic extends GameTemplate {
         if (player  === this.game.player){
           this.playerDiscardCards();  
         }else{
-          this.updateStatusAndListCards(`Player ${player+1} (${this.game.players_info[player].role}) has to discard some cards`,this.game.players_info[this.game.player - 1].cards);
+          this.updateStatusAndListCards(`Player ${player} (${this.game.players_info[player-1].role}) has to discard some cards`,this.game.players_info[this.game.player - 1].cards);
         }
         return 0;
       }
@@ -1906,7 +1907,7 @@ class Pandemic extends GameTemplate {
                       <li class="menu_option" id="yes">accept player card</li>
                       <li class="menu_option" id="no">refuse card</li>
                       </ul>`;
-          this.updateStatusWithOptions(`Player ${player} wants to share knowledge (${card}) with you, okay?`,html);
+          this.updateStatusWithOptions(`Player ${player} wants to share knowledge <span class="showcard" id="${card}">(${this.game.cities[card].name})</span> with you, okay?`,html);
           $(".menu_option").off();
           $(".menu_option").on("click",function(){
              let choice = $(this).attr("id");
@@ -1939,7 +1940,7 @@ class Pandemic extends GameTemplate {
                       <li class="menu_option" id="yes">give player card</li>
                       <li class="menu_option" id="no">keep card</li>
                       </ul>`;
-          this.updateStatusWithOptions(`Will you share knowledge (${card}) with Player ${player}?`,html);
+          this.updateStatusWithOptions(`Will you share knowledge <span class="showcard" id="${card}">(${this.game.cities[card].name})</span> with Player ${player}?`,html);
           $(".menu_option").off();
           $(".menu_option").on("click",function(){
              let choice = $(this).attr("id");
@@ -2388,7 +2389,7 @@ class Pandemic extends GameTemplate {
     cities["essen"] = {
       top: 360,
       left: 1220,
-      neighbours: ["stpetersburg", "london", "milan"],
+      neighbours: ["stpetersburg", "london", "milan", "paris"],
       name: "Essen",
     };
     cities["paris"] = {
@@ -3103,6 +3104,7 @@ displayDisease() {
     }
     for (let v in this.game.state.active){
       if (this.game.state.active[v] !== cubeCounts[v]){
+        salert("--Mismatch in active virus and cubes---"+v+"--");
         console.log("--Mismatch in active virus and cubes---"+v+"--");
         console.log(`${cubeCounts[v]} cubes on board, ${this.game.state.active[v]} in game logic`);
       }

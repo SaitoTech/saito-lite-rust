@@ -473,7 +473,7 @@ ul li a {
 /*When using a font awesome icon*/
 i.menu_icon_icon{
   box-sizing: content-box;
-  background-color: black;
+  background-color: rgba(10,10,10,0.75);
   /*font-size: 75px;*/
   /*margin-bottom: 5px;*/
 }
@@ -483,7 +483,7 @@ i.menu_icon_icon{
 .menu_icon{
   font-size: 50px;
 }
-.smaller-icon.menu_icon{
+.smaller-icon .menu_icon{
   font-size: 30px;
 }
 .smaller-icon i.menu_icon_icon{
