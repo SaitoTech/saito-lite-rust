@@ -154,12 +154,12 @@ class Wordblocks extends GameTemplate {
       for (let i = 1; i <= this.game.players.length; i++) {
         this.playerbox.refreshName(i);
         this.playerbox.refreshInfo(
-          `<h3 style="display: inline; margin-left: 35.8px; color: white">
+          `<div class="score"><h3 class="text" style="display: inline; color: white">
             Player ${i} :
           </h3>
-          <div class="player" id="score_${i}"><h2 class="valueP">${this.getPlayerScore(
+          <h2 class="value" id="score_${i}">${this.getPlayerScore(
             i
-          )}</h2></div>`
+          )}</h2> </div>`
          ,
           i
         );
@@ -2341,12 +2341,12 @@ class Wordblocks extends GameTemplate {
 
     this.game.score[player - 1] = this.game.score[player - 1] + score;
     this.playerbox.refreshInfo(
-      `<h3 style="display: inline; margin-left: 35.8px; color: white">
+      `<div class="score"><h3 class="text" style="display: inline; color: white">
       Player ${player} :
     </h3>
-    <div class="player" id="score_${player}"><h2 class="valueP">${
+    <h2 class="value" id="score_${player}">${
       this.game.score[player - 1]
-    }</h2></div>`
+    }</h2> </div>`
      ,
       player
     );
