@@ -278,6 +278,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
+    this.renderSidebar(); //To re-attach events
     
   }
 
