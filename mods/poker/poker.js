@@ -38,6 +38,7 @@ class Poker extends GameTemplate {
       return obj;
     }
 
+    /*Deprecated ? */
     if (type == "arcade-create-game") {
       return {
         slug: this.slug,
@@ -2442,36 +2443,21 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     let options_html = `
       <h1 class="overlay-title">Poker Options</h1>
           <div class="overlay-input">
-            <label for="stake">Initial Stake:</label>
-            <select name="stake">
-              <option value="0.1">0.1</option>
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="20">20</option>
+            <label for="stake">Mode:</label>
+            <select name="blinds">
+              <option value="static">static blinds</option>
+              <option value="increase">increasing blinds</option>
+            </select>
+          </div>
+          <div id="blind_mode">Small blind is one chip, big blind is two chips</div>
+          <div class="overlay-input">
+            <label for="big_blind">Num chips:</label>
+            <select name="big_blind">
               <option value="50">50</option>
               <option value="100">100</option>
-              <option value="500">500</option>
-              <option value="1000" selected="selected">1000</option>
-              <option value="5000" >5000</option>
-              <option value="10000">10000</option>
             </select>
           </div>
-          <div class="overlay-input">
-            <label for="big_blind">Starting Blinds:</label>
-            <select name="big_blind">
-              <option value="0.001">0.001</option>
-              <option value="0.008">0.008</option>
-              <option value="0.03">0.03</option>
-              <option value="0.12">0.12</option>
-              <option value="0.25">0.25</option>
-              <option value="1">1</option>
-              <option value="8">8</option>
-              <option value="30" selected>30</option>
-              <option value="120">120</option>
-              <option value="250">250</option>
-              <option value="500">500</option>
-            </select>
-          </div>
+          <div id="chip_value">The game is just for fun</div>
           <div class="overlay-input">
             <label for="crypto">Crypto:</label>
             <select name="crypto">
@@ -2495,10 +2481,19 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
             </select>
           </div>
           <div class="overlay-input">
-            <label for="stake">Mode:</label>
-            <select name="blinds">
-              <option value="static">static blinds</option>
-              <option value="increase">increasing blinds</option>
+            <label for="stake">Initial Stake:</label>
+            
+            <select name="stake">
+              <option value="0.1">0.1</option>
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="500">500</option>
+              <option value="1000" selected="selected">1000</option>
+              <option value="5000" >5000</option>
+              <option value="10000">10000</option>
             </select>
           </div>
           <div class="overlay-input">
@@ -2516,6 +2511,9 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     return options_html;
   }
 
+  /*
+    Only use the following options when creating the game invite TX
+   */
   returnFormattedGameOptions(options) {
     let new_options = {};
     for (var index in options) {
@@ -2532,7 +2530,49 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
         new_options[index] = options[index];
       }
     }
+
+    console.log("formatting game options","================");
+    console.log(JSON.parse(JSON.stringify(options)));
+    console.log(JSON.parse(JSON.stringify(new_options)));
+    
     return new_options;
+  }
+
+  returnShortGameOptionsArray(options) {
+    let sgoa = super.returnShortGameOptionsArray(options);
+    let ngoa = {};
+
+    
+    for (let i in sgoa) {
+      if (sgoa[i] != "") {
+        let okey = i;
+        let oval = options[i];
+
+        let output_me = 1;
+        if (i == "big_blind") {
+          okey = "blinds";
+        }
+        if (i == "blinds") {
+          if (oval == "increase") {
+            okey = "mode";
+            oval = "tournament";
+          } else {
+            output_me = 0;
+          }
+        }
+
+        if (output_me == 1) {
+          ngoa[okey] = oval;
+        }
+      }
+    }
+
+    console.log("filtering options per shortgameArray","===================");
+    console.log(JSON.parse(JSON.stringify(options)));
+    console.log(sgoa);
+    console.log(ngoa);
+
+    return ngoa;
   }
 
   updateStatus(str, hide_info = 0) {
@@ -2577,36 +2617,7 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     return 1;
   }
 
-  returnShortGameOptionsArray(options) {
-    let sgoa = super.returnShortGameOptionsArray(options);
-    let ngoa = [];
-
-    for (let i in sgoa) {
-      if (sgoa[i] != "") {
-        let okey = i;
-        let oval = options[i];
-
-        let output_me = 1;
-        if (i == "big_blind") {
-          okey = "blinds";
-        }
-        if (i == "blinds") {
-          if (oval == "increase") {
-            okey = "mode";
-            oval = "tournament";
-          } else {
-            output_me = 0;
-          }
-        }
-
-        if (output_me == 1) {
-          ngoa[okey] = oval;
-        }
-      }
-    }
-
-    return ngoa;
-  }
+ 
 }
 
 module.exports = Poker;
