@@ -204,6 +204,11 @@ module.exports = ArcadeMain = {
                 arcade_main_self.privatizeGame(app, mod, game_sig);
                 return;
               }
+              if (game_cmd === "publicize"){
+                arcade_main_self.publicizeGame(app, mod, game_sig);
+                return; 
+              }
+
             };
           });
       } catch (err) {
@@ -235,6 +240,7 @@ module.exports = ArcadeMain = {
 
     if (!accepted_game) {
       console.log("ERR: game not found");
+      salert("Game no longer available");
       return;
     }
 
@@ -539,15 +545,44 @@ module.exports = ArcadeMain = {
     this.removeGameFromList(sig);
   },
 
-
+//&&&&&&&&&&&&&&&&
   privatizeGame(app, mod, game_sig){
+    console.log(JSON.parse(JSON.stringify(mod.games)));
+
+    //Create invite link from the game_sig 
     let inviteLink = window.location.href;
+    let gameInviteCode = game_sig;
+    if (!inviteLink.includes("#")){
+      inviteLink += "#";
+    }
     if (inviteLink.includes("?")){
-      inviteLink = inviteLink.replace("#", "&jid="+game_sig);
+      inviteLink = inviteLink.replace("#", "&jid="+gameInviteCode);
     }else{
-      inviteLink = inviteLink.replace("#", "?jid="+game_sig);
+      inviteLink = inviteLink.replace("#", "?jid="+gameInviteCode);
     }
     salert(inviteLink);
+    console.log(inviteLink);
+
+    //Update status of the game invitation
+    Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
+      let game_cmd = button.getAttribute("data-cmd");
+      if (game_cmd == "invite"){
+        button.setAttribute("data-cmd","publicize");
+        button.textContent = "PUBLICIZE";
+      }
+    });
+  },
+
+  publicizeGame(app, mod, game_sig){
+    //Update status of the game invitation
+    Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
+      let game_cmd = button.getAttribute("data-cmd");
+      if (game_cmd == "publicize"){
+        button.setAttribute("data-cmd","invite");
+        button.textContent = "INVITE";
+      }
+    });
+
   },
 
 
