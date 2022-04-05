@@ -84,6 +84,7 @@ class HereIStand extends GameTemplate {
       name		: 	"English",
       nickname		: 	"English",
       img		:	"england.png",
+      capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
       returnCardsDealt  :	function(game_mod) {
@@ -120,6 +121,7 @@ class HereIStand extends GameTemplate {
       key		: 	"france",
       name		: 	"French",
       nickname		: 	"French",
+      capitals          :       ["paris"],
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsDealt  :       function(game_mod) {
@@ -157,6 +159,7 @@ class HereIStand extends GameTemplate {
       key		: 	"hapsburg",
       name		: 	"Hapsburg",
       nickname		: 	"Hapsburg",
+      capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -195,6 +198,7 @@ class HereIStand extends GameTemplate {
       key		: 	"ottoman",
       name		: 	"Ottoman Empire",
       nickname		: 	"Ottoman",
+      capitals          :       ["istanbul"],
       img		:	"ottoman.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -231,6 +235,7 @@ class HereIStand extends GameTemplate {
       key		: 	"papacy",
       name		: 	"Papacy",
       nickname		: 	"Papacy",
+      capitals          :       ["rome"],
       img		:	"papacy.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -262,6 +267,7 @@ class HereIStand extends GameTemplate {
       key		: 	"protestant",
       name		: 	"Protestant",
       nickname		: 	"Protestant",
+      capitals		:	[] ,
       img		:	"protestant.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -4337,6 +4343,24 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+        if (mv[0] === "ops") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let opsnum = parseInt(mv[3]);
+
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player === p) {
+	    this.playerPlayOps(card, faction, opsnum);
+	  }
+	  
+	  return 0;
+
+	}
+
         if (mv[0] === "move") {
 
 	  let faction = mv[1];
@@ -4413,10 +4437,36 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
         }
         if (mv[0] === "new_world_phase") {
+
+	  //
+	  // no new world phase in 2P games
+	  //
+	  if (this.game.players.length > 2) {
+
+console.log("NEW WORLD PHASE!");
+	    // resolve voyages of exploration
+
+	    // resolve voyages of conquest
+
+	  }
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
         if (mv[0] === "winter_phase") {
+
+	  console.log("Winter Phase!");
+
+	  // Remove loaned naval squadron markers
+	  // Remove the Renegade Leader if in play
+	  // Return naval units to the nearest port
+	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  // Remove major power alliance markers
+	  // Add 1 regular to each friendly-controlled capital
+	  // Remove all piracy markers
+	  // Flip all debaters to their uncommitted (white) side, and
+	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -4432,9 +4482,35 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
         }
         if (mv[0] === "spring_deployment_phase") {
+
 	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.players === 2) {
+	    // only papacy moves units
+	    this.game.queue.push("spring_deployment\tpapacy");
+	  } else {
+	    // all players can move units
+	    let io = this.returnImpulseOrder();
+	    for (let i = io.length-1; i >= 0; i--) {
+	      if (this.isFactionInPlay(io[i])) {
+		this.game.queue.push("spring_deployment\t"+io[i]);
+	      }
+	    }
+	  }
+
           return 1;
         }
+        if (mv[0] === "spring_deployment") {
+
+	  //
+	  // move 1 formation from capital to controlled territory
+	  //
+	  console.log("SPRING DEPLOYMENT -- unimplemented");
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
         if (mv[0] === "diplomacy_phase") {
 
 console.log("just in diplomacy phase!");
@@ -4938,6 +5014,24 @@ console.log("x is: " + x);
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
+  isFactionInPlay(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+      }
+    }
+    return 0;
+  }
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -5220,26 +5314,36 @@ console.log("x is: " + x);
 
   playerPlayCard(card, player, faction) {
 
-    let html = `<ul>`;
-    html    += `<li class="card" id="ops">play for ops</li>`;
-    html    += `<li class="card" id="event">play for event</li>`;
-    html    += `</ul>`;
+    //
+    // mandatory event cards effect first, then 2 OPS
+    //
+    if (this.deck[card].type === "mandatory") {
+      // event before ops
+      this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.playerPlayEvent(card, faction);
+    } else {
 
-    this.updateStatusWithOptions('Playing card:', html, true);
-    this.bindBackButtonFunction(() => {
-      this.playerTurn(faction);
-    });
-    this.attachCardboxEvents(function(user_choice) {
-      if (user_choice === "ops") {
-        this.playerPlayOps(card, faction);
+      let html = `<ul>`;
+      html    += `<li class="card" id="ops">play for ops</li>`;
+      html    += `<li class="card" id="event">play for event</li>`;
+      html    += `</ul>`;
+
+      this.updateStatusWithOptions('Playing card:', html, true);
+      this.bindBackButtonFunction(() => {
+       this.playerTurn(faction);
+      });
+      this.attachCardboxEvents(function(user_choice) {
+        if (user_choice === "ops") {
+          this.playerPlayOps(card, faction);
+          return;
+        }
+        if (user_choice === "event") {
+          this.playerPlayEvent(card, faction);
+          return;
+        }
         return;
-      }
-      if (user_choice === "event") {
-        this.playerPlayEvent(card, faction);
-        return;
-      }
-      return;
-    });
+      });
+    }
 
   }
 
@@ -5252,7 +5356,6 @@ console.log("x is: " + x);
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-console.log(menu[i].name);
       if (menu[i].check(this, this.game.player, faction)) {
         for (let z = 0; z < menu[i].factions.length; z++) {
           if (menu[i].factions[z] === faction) {
@@ -5883,6 +5986,8 @@ return;
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.key == null)	        { obj.key = name; }
+    if (obj.ruler == null)		{ obj.ruler = ""; }
+    if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {

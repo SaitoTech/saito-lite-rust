@@ -2157,6 +2157,7 @@
       ops : 0 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeck : function(his_self, player) { return 1; } ,
       onEvent : function(game_mod, player) {
 
 	// protestant gets 2 roll bonus at start

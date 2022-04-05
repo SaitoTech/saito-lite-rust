@@ -149,6 +149,24 @@
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
+  isFactionInPlay(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+      }
+    }
+    return 0;
+  }
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -431,26 +449,36 @@
 
   playerPlayCard(card, player, faction) {
 
-    let html = `<ul>`;
-    html    += `<li class="card" id="ops">play for ops</li>`;
-    html    += `<li class="card" id="event">play for event</li>`;
-    html    += `</ul>`;
+    //
+    // mandatory event cards effect first, then 2 OPS
+    //
+    if (this.deck[card].type === "mandatory") {
+      // event before ops
+      this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.playerPlayEvent(card, faction);
+    } else {
 
-    this.updateStatusWithOptions('Playing card:', html, true);
-    this.bindBackButtonFunction(() => {
-      this.playerTurn(faction);
-    });
-    this.attachCardboxEvents(function(user_choice) {
-      if (user_choice === "ops") {
-        this.playerPlayOps(card, faction);
+      let html = `<ul>`;
+      html    += `<li class="card" id="ops">play for ops</li>`;
+      html    += `<li class="card" id="event">play for event</li>`;
+      html    += `</ul>`;
+
+      this.updateStatusWithOptions('Playing card:', html, true);
+      this.bindBackButtonFunction(() => {
+       this.playerTurn(faction);
+      });
+      this.attachCardboxEvents(function(user_choice) {
+        if (user_choice === "ops") {
+          this.playerPlayOps(card, faction);
+          return;
+        }
+        if (user_choice === "event") {
+          this.playerPlayEvent(card, faction);
+          return;
+        }
         return;
-      }
-      if (user_choice === "event") {
-        this.playerPlayEvent(card, faction);
-        return;
-      }
-      return;
-    });
+      });
+    }
 
   }
 
@@ -463,7 +491,6 @@
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-console.log(menu[i].name);
       if (menu[i].check(this, this.game.player, faction)) {
         for (let z = 0; z < menu[i].factions.length; z++) {
           if (menu[i].factions[z] === faction) {

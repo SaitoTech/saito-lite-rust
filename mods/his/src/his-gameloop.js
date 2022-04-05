@@ -89,6 +89,24 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+        if (mv[0] === "ops") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let opsnum = parseInt(mv[3]);
+
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player === p) {
+	    this.playerPlayOps(card, faction, opsnum);
+	  }
+	  
+	  return 0;
+
+	}
+
         if (mv[0] === "move") {
 
 	  let faction = mv[1];
@@ -165,10 +183,36 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
         }
         if (mv[0] === "new_world_phase") {
+
+	  //
+	  // no new world phase in 2P games
+	  //
+	  if (this.game.players.length > 2) {
+
+console.log("NEW WORLD PHASE!");
+	    // resolve voyages of exploration
+
+	    // resolve voyages of conquest
+
+	  }
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
         if (mv[0] === "winter_phase") {
+
+	  console.log("Winter Phase!");
+
+	  // Remove loaned naval squadron markers
+	  // Remove the Renegade Leader if in play
+	  // Return naval units to the nearest port
+	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  // Remove major power alliance markers
+	  // Add 1 regular to each friendly-controlled capital
+	  // Remove all piracy markers
+	  // Flip all debaters to their uncommitted (white) side, and
+	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -184,9 +228,35 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
         }
         if (mv[0] === "spring_deployment_phase") {
+
 	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.players === 2) {
+	    // only papacy moves units
+	    this.game.queue.push("spring_deployment\tpapacy");
+	  } else {
+	    // all players can move units
+	    let io = this.returnImpulseOrder();
+	    for (let i = io.length-1; i >= 0; i--) {
+	      if (this.isFactionInPlay(io[i])) {
+		this.game.queue.push("spring_deployment\t"+io[i]);
+	      }
+	    }
+	  }
+
           return 1;
         }
+        if (mv[0] === "spring_deployment") {
+
+	  //
+	  // move 1 formation from capital to controlled territory
+	  //
+	  console.log("SPRING DEPLOYMENT -- unimplemented");
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
         if (mv[0] === "diplomacy_phase") {
 
 console.log("just in diplomacy phase!");

@@ -47,13 +47,14 @@
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
     }
+
+
     //
-    // synchronous -- must return 1
+    // functions for convenience
     //
-    if (obj.postProduction == null) {
-      obj.postProduction = function(imperium_self, player, sector) { return 1; }
-    }
-  
+    if (obj.removeFromDeck == null) { obj.removeFromDeck = function(his_self, player) { return 0; } }
+
+
     return obj;
 
   }
