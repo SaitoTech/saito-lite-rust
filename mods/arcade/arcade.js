@@ -76,6 +76,7 @@ class Arcade extends ModTemplate {
       let msg = urlParams.get("msg");
       this.observeGame(msg, 0);
     }
+    
   }
 
   renderArcadeMain() {
@@ -211,6 +212,7 @@ class Arcade extends ModTemplate {
         if (res.rows) {
           this.addGamesToOpenList(
             res.rows.map((row) => {
+              console.log("onPeerHandshakeComplete -> peerDatabaseRequest -> addGamesToOpenList");
               console.log(JSON.parse(JSON.stringify(row)));
               return new saito.default.transaction(JSON.parse(row.tx));
             })
@@ -1927,6 +1929,13 @@ class Arcade extends ModTemplate {
         for_us = for_us || this_game_is_for_us;
       }
     });
+
+    if (this.app.browser.returnURLParameter("jid")){
+      console.log("attempting to join game...");
+      let gameId = this.app.browser.returnURLParameter("jid");
+      ArcadeMain.joinGame(this.app, this, gameId);
+    }
+
     //let removed_game = this.removeOldGames();
     //if (for_us || removed_game){
     if (for_us) {
