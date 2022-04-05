@@ -28,7 +28,6 @@ const GameTemplate = require("../../lib/templates/gametemplate");
       var tX = e.clientX - offset.left;
       var tY = e.clientY - offset.top;
      
-
       // We stay inside the limits of the zoomable area
       tX = Math.max( zoom_radius, Math.min( gbwidth - zoom_radius, tX ) );
       tY = Math.max( zoom_radius, Math.min( gbheight - zoom_radius, tY ) );
@@ -69,7 +68,7 @@ class Scotland extends GameTemplate {
     // the size of the original pieces
     //
     this.boardWidth = 5135; //by 3829
-
+    this.card_height_ratio = 1.2;
     
     this.minPlayers = 2;
     this.maxPlayers = 6; 
@@ -611,9 +610,9 @@ class Scotland extends GameTemplate {
     let html = "";
     html = `<div class="status-message">${sHeader}</div>
             <div class='status-icon-menu'>
-            <div class="menu_icon" id="taxi"><i class="menu_icon_icon fas fa-taxi"></i><div class="menu-text">Taxi: ${this.game.state.tickets[pawn]["taxi"]}</div></div>
-            <div class="menu_icon" id="bus"><i class="menu_icon_icon fas fa-bus"></i><div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div></div>
-            <div class="menu_icon" id="underground"><i class="menu_icon_icon fas fa-subway"></i><div class="menu-text">Underground: ${this.game.state.tickets[pawn]["underground"]}</div></div>
+            <div class="menu_icon" id="taxi"><i class="menu_icon_icon fas fa-taxi fa-border"></i><div class="menu-text">Taxi: ${this.game.state.tickets[pawn]["taxi"]}</div></div>
+            <div class="menu_icon" id="bus"><i class="menu_icon_icon fas fa-bus fa-border"></i><div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div></div>
+            <div class="menu_icon" id="underground"><i class="menu_icon_icon fas fa-subway fa-border"></i><div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div></div>
             </div>`;
 
 
@@ -816,6 +815,7 @@ class Scotland extends GameTemplate {
         $(divname).addClass("highlightpawn");
       }
     }
+
   }
 
   returnPawn(pawn_id) {
@@ -848,29 +848,31 @@ class Scotland extends GameTemplate {
   }
 
   magnifyingGlass(){
-    let scotland_self = this;
-    $('.gameboard').toggleClass("zoom-window");
-    let glass = document.querySelector(".zoom-container");
-    if ($('.gameboard').hasClass("zoom-window")){
-      console.log("Turn on zoom");
-      let board = document.querySelector(".gameboard");
-      let newBoard = board.cloneNode(true);
-      newBoard.style = "position:relative;";
-      glass.append(newBoard);
+  let scotland_self = this;
+  $('.gameboard').toggleClass("zoom-window");
+  let glass = document.querySelector(".zoom-container");
+  if ($('.gameboard').hasClass("zoom-window")){
+    console.log("Turn on zoom");
+    let board = document.querySelector(".gameboard");
+    let newBoard = board.cloneNode(true);
+    newBoard.style = "position:relative;";
+    glass.append(newBoard);
 
-      document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
-      glass.addEventListener("mousemove", zoomHover);  
-      glass.addEventListener("click",scotland_self.magnifyingGlass);
-      //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
-    } else {
-      console.log("Turn off zoom");
-      glass.removeChild(glass.firstChild);
-      document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
-      glass.removeEventListener("mousemove", zoomHover);
-      glass.classList.add("hidden");  
-      $(".zoom-container").off();
-      //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
-    }
+    document.querySelector(".gameboard").addEventListener("mousemove", zoomHover);
+    glass.addEventListener("mousemove", zoomHover);  
+    glass.addEventListener("click",scotland_self.magnifyingGlass);
+    //document.querySelector(".gameboard").addEventListener("mouseout", scotland_self.magnifyingGlass);
+  }else{
+    console.log("Turn off zoom");
+    glass.removeChild(glass.firstChild);
+    document.querySelector(".gameboard").removeEventListener("mousemove", zoomHover);
+    glass.removeEventListener("mousemove", zoomHover);
+    glass.classList.add("hidden");  
+    $(".zoom-container").off();
+    //document.querySelector(".gameboard").removeEventListener("mouseout", endHover);  
+  }
+
+   
   }
 
   ////////////////////

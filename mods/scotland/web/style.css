@@ -16,6 +16,10 @@
   margin: 0;
 }
 
+.hud {
+  background-color: #444A;
+}
+
 .status{
   min-width: 300px;
   min-height: 50px;
@@ -95,4 +99,8 @@
   border-radius: 100%;
   overflow: hidden;
   /*transform: translate(-125px,-125px);*/
+}
+
+.status-icon-menu{
+  width: 100%;
 }

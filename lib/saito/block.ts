@@ -1406,6 +1406,7 @@ class Block {
       this.returnHash() === this.app.blockchain.blockchain.genesis_block_hash ||
       this.app.blockchain.blockchain.genesis_block_hash === ""
     ) {
+      console.log("DEBUG SERVER CRASH: saved genesis_block_hash is: " + this.app.blockchain.blockchain.genesis_block_hash);
       console.log(`approving ${this.returnHash()} as genesis block`);
       return true;
     }
