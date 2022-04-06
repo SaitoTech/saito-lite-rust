@@ -223,6 +223,41 @@
     }
 
     //
+    // position pregnancy chart
+    //
+    let pregnancies = this.returnPregnancyChart();
+    for (let key in spaces) {
+      if (spaces.hasOwnProperty(key)) {
+	try {
+          let idname = "pregnancy"+key;
+	  let obj = document.getElementById(idname);
+	  obj.style.top = pregnancies[key].top + "px";
+	  obj.style.left = pregnancies[key].left + "px";
+        } catch (err) {
+	}
+      }
+    }
+
+
+
+    //
+    // position warchart
+    //
+    let spaces = this.returnWarChart();
+    for (let key in spaces) {
+      if (spaces.hasOwnProperty(key)) {
+	try {
+	  let obj = document.getElementById(key);
+	  obj.style.top = spaces[key].top + "px";
+	  obj.style.left = spaces[key].left + "px";
+        } catch (err) {
+	}
+      }
+    }
+
+
+
+    //
     // position electorate display
     //
     let elec = this.returnElectorateDisplay();
