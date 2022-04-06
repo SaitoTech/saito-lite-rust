@@ -167,6 +167,43 @@
   }
 
 
+  returnPregnancyChart() {
+
+    let chart = {};
+
+    chart['1'] = {
+      top : 1307,
+      left : 4075,
+    }
+
+    chart['2'] = {
+      top : 1220,
+      left : 4075,
+    }
+
+    chart['3'] = {
+      top : 1135,
+      left : 4075,
+    }
+
+    chart['4'] = {
+      top : 1051,
+      left : 4075,
+    }
+
+    chart['5'] = {
+      top : 963,
+      left : 4075,
+    }
+
+    chart['1'] = {
+      top : 850,
+      left : 4075,
+    }
+
+    return chart;
+
+  }
   returnColonies() {
 
     let colonies = {};
@@ -2089,7 +2126,7 @@
       turn : 1 ,
       type : "normal" ,
       faction : "ottoman" ,
-      
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
@@ -2098,6 +2135,7 @@
       turn : 1, 
       type : "normal" ,
       faction : "hapsburg" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
@@ -2106,6 +2144,7 @@
       turn : 1 ,
       type : "normal" ,
       faction : "england" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
@@ -2114,6 +2153,7 @@
       turn : 1 ,
       type : "normal" ,
       faction : "french" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     if (this.game.players.length == 2) {
       deck['005'] = { 
@@ -2123,6 +2163,7 @@
         turn : 1 ,
         type : "normal" ,
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     } else {
       deck['005'] = { 
@@ -2132,6 +2173,7 @@
         turn : 1 ,
         type : "normal" , 
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     }
     deck['006'] = { 
@@ -2141,6 +2183,7 @@
       turn : 1 ,
       type : "normal" , 
       faction : "papacy" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
@@ -2149,6 +2192,7 @@
       turn : 1 ,
       type : "normal" ,
       faction : "protestant" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     // 95 Theses
     deck['008'] = { 
@@ -2231,6 +2275,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['010'] = { 
       img : "cards/HIS-010.svg" , 
@@ -2238,6 +2283,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -2245,6 +2291,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['012'] = { 
       img : "cards/HIS-012.svg" , 
@@ -2252,6 +2299,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['013'] = { 
       img : "cards/HIS-013.svg" , 
@@ -2259,6 +2307,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
@@ -2266,6 +2315,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
@@ -2273,6 +2323,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 5 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
@@ -2280,6 +2331,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
@@ -2287,6 +2339,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
@@ -2294,6 +2347,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['019'] = { 
       img : "cards/HIS-019.svg" , 
@@ -2301,6 +2355,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
@@ -2308,6 +2363,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
@@ -2315,6 +2371,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
@@ -2322,6 +2379,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 7 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
@@ -2329,6 +2387,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 
@@ -2336,6 +2395,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
@@ -2343,6 +2403,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
@@ -2350,6 +2411,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
@@ -2357,6 +2419,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
@@ -2364,6 +2427,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
@@ -2371,6 +2435,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
@@ -2378,6 +2443,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
@@ -2385,6 +2451,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
@@ -2392,6 +2459,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
@@ -2399,6 +2467,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['034'] = { 
       img : "cards/HIS-034.svg" , 
@@ -2406,6 +2475,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['035'] = { 
       img : "cards/HIS-035.svg" , 
@@ -2413,6 +2483,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['036'] = { 
       img : "cards/HIS-036.svg" , 
@@ -2420,6 +2491,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['037'] = { 
       img : "cards/HIS-037.svg" , 
@@ -2427,6 +2499,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['038'] = { 
       img : "cards/HIS-038.svg" , 
@@ -2434,6 +2507,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
@@ -2441,6 +2515,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
@@ -2448,6 +2523,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
@@ -2455,6 +2531,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['042'] = { 
       img : "cards/HIS-042.svg" , 
@@ -2462,6 +2539,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['043'] = { 
       img : "cards/HIS-043.svg" , 
@@ -2469,6 +2547,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['044'] = { 
       img : "cards/HIS-044.svg" , 
@@ -2476,6 +2555,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['045'] = { 
       img : "cards/HIS-045.svg" , 
@@ -2483,6 +2563,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
@@ -2490,6 +2571,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
@@ -2497,6 +2579,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 6 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['048'] = { 
       img : "cards/HIS-048.svg" , 
@@ -2504,6 +2587,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['049'] = { 
       img : "cards/HIS-049.svg" , 
@@ -2511,6 +2595,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['050'] = { 
       img : "cards/HIS-050.svg" , 
@@ -2518,6 +2603,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['051'] = { 
       img : "cards/HIS-051.svg" , 
@@ -2525,6 +2611,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['052'] = { 
       img : "cards/HIS-052.svg" , 
@@ -2532,6 +2619,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['053'] = { 
       img : "cards/HIS-053.svg" , 
@@ -2539,6 +2627,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['054'] = { 
       img : "cards/HIS-054.svg" , 
@@ -2546,6 +2635,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['055'] = { 
       img : "cards/HIS-055.svg" , 
@@ -2553,6 +2643,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
@@ -2560,6 +2651,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['057'] = { 
       img : "cards/HIS-057.svg" , 
@@ -2567,6 +2659,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
@@ -2574,6 +2667,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['059'] = { 
       img : "cards/HIS-059.svg" , 
@@ -2581,6 +2675,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 6 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
@@ -2588,6 +2683,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 6 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
@@ -2595,6 +2691,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 7 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
@@ -2602,6 +2699,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['063'] = { 
       img : "cards/HIS-063.svg" , 
@@ -2609,6 +2707,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['064'] = { 
       img : "cards/HIS-064.svg" , 
@@ -2616,6 +2715,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
@@ -2623,6 +2723,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
@@ -2630,6 +2731,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
@@ -2637,6 +2739,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
@@ -2644,6 +2747,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['069'] = { 
       img : "cards/HIS-069.svg" , 
@@ -2651,6 +2755,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['070'] = { 
       img : "cards/HIS-070.svg" , 
@@ -2658,6 +2763,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['071'] = { 
       img : "cards/HIS-071.svg" , 
@@ -2665,6 +2771,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
@@ -2672,6 +2779,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['073'] = { 
       img : "cards/HIS-073.svg" , 
@@ -2679,6 +2787,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['074'] = { 
       img : "cards/HIS-074.svg" , 
@@ -2686,6 +2795,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['075'] = { 
       img : "cards/HIS-075.svg" , 
@@ -2693,6 +2803,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['076'] = { 
       img : "cards/HIS-076.svg" , 
@@ -2700,6 +2811,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
@@ -2707,6 +2819,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : "Fountain of Youth" ,
       turn : 2 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
@@ -2714,6 +2827,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['079'] = { 
       img : "cards/HIS-079.svg" , 
@@ -2721,6 +2835,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['080'] = { 
       img : "cards/HIS-080.svg" , 
@@ -2728,6 +2843,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['081'] = { 
       img : "cards/HIS-081.svg" , 
@@ -2735,6 +2851,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
@@ -2742,6 +2859,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['083'] = { 
       img : "cards/HIS-083.svg" , 
@@ -2749,6 +2867,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['084'] = { 
       img : "cards/HIS-084.svg" , 
@@ -2756,6 +2875,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
@@ -2763,6 +2883,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['086'] = { 
       img : "cards/HIS-086.svg" , 
@@ -2770,6 +2891,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['087'] = { 
       img : "cards/HIS-087.svg" , 
@@ -2777,6 +2899,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['088'] = { 
       img : "cards/HIS-088.svg" , 
@@ -2784,6 +2907,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['089'] = { 
       img : "cards/HIS-089.svg" , 
@@ -2791,6 +2915,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
@@ -2798,6 +2923,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['091'] = { 
       img : "cards/HIS-091.svg" , 
@@ -2805,6 +2931,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
@@ -2812,6 +2939,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
@@ -2819,6 +2947,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['094'] = { 
       img : "cards/HIS-094.svg" , 
@@ -2826,6 +2955,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
@@ -2833,6 +2963,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['096'] = { 
       img : "cards/HIS-096.svg" , 
@@ -2840,6 +2971,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['097'] = { 
       img : "cards/HIS-097.svg" , 
@@ -2847,6 +2979,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['098'] = { 
       img : "cards/HIS-098.svg" , 
@@ -2854,6 +2987,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['099'] = { 
       img : "cards/HIS-099.svg" , 
@@ -2861,6 +2995,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['100'] = { 
       img : "cards/HIS-100.svg" , 
@@ -2868,6 +3003,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['101'] = { 
       img : "cards/HIS-101.svg" , 
@@ -2875,6 +3011,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['102'] = { 
       img : "cards/HIS-102.svg" , 
@@ -2882,6 +3019,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['103'] = { 
       img : "cards/HIS-103.svg" , 
@@ -2889,6 +3027,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['104'] = { 
       img : "cards/HIS-104.svg" , 
@@ -2896,6 +3035,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['105'] = { 
       img : "cards/HIS-105.svg" , 
@@ -2903,6 +3043,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['106'] = { 
       img : "cards/HIS-106.svg" , 
@@ -2910,6 +3051,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['107'] = { 
       img : "cards/HIS-107.svg" , 
@@ -2917,6 +3059,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['108'] = { 
       img : "cards/HIS-108.svg" , 
@@ -2924,6 +3067,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['109'] = { 
       img : "cards/HIS-109.svg" , 
@@ -2931,6 +3075,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
@@ -2938,6 +3083,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['111'] = { 
       img : "cards/HIS-111.svg" , 
@@ -2945,6 +3091,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['112'] = { 
       img : "cards/HIS-112.svg" , 
@@ -2952,6 +3099,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
@@ -2959,6 +3107,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['114'] = { 
       img : "cards/HIS-114.svg" , 
@@ -2966,6 +3115,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['115'] = { 
       img : "cards/HIS-115.svg" , 
@@ -2973,6 +3123,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 4 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['116'] = { 
       img : "cards/HIS-116.svg" , 
@@ -2980,6 +3131,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['201'] = { 
       img : "cards/HIS-201.svg" , 
@@ -2987,6 +3139,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['202'] = { 
       img : "cards/HIS-202.svg" , 
@@ -2994,6 +3147,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['203'] = { 
       img : "cards/HIS-203.svg" , 
@@ -3001,6 +3155,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['204'] = { 
       img : "cards/HIS-204.svg" , 
@@ -3008,6 +3163,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['205'] = { 
       img : "cards/HIS-205.svg" , 
@@ -3015,6 +3171,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['206'] = { 
       img : "cards/HIS-206.svg" , 
@@ -3022,6 +3179,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['207'] = { 
       img : "cards/HIS-207.svg" , 
@@ -3029,6 +3187,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['208'] = { 
       img : "cards/HIS-208.svg" , 
@@ -3036,6 +3195,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['209'] = { 
       img : "cards/HIS-209.svg" , 
@@ -3043,6 +3203,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['210'] = { 
       img : "cards/HIS-210.svg" , 
@@ -3050,6 +3211,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['211'] = { 
       img : "cards/HIS-211.svg" , 
@@ -3057,6 +3219,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['212'] = { 
       img : "cards/HIS-212.svg" , 
@@ -3064,6 +3227,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['213'] = { 
       img : "cards/HIS-213.svg" , 
@@ -3071,6 +3235,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['214'] = { 
       img : "cards/HIS-214.svg" , 
@@ -3078,6 +3243,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['215'] = { 
       img : "cards/HIS-215.svg" , 
@@ -3085,6 +3251,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['216'] = { 
       img : "cards/HIS-216.svg" , 
@@ -3092,6 +3259,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['217'] = { 
       img : "cards/HIS-217.svg" , 
@@ -3099,6 +3267,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['218'] = { 
       img : "cards/HIS-218.svg" , 
@@ -3106,6 +3275,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['219'] = { 
       img : "cards/HIS-219.svg" , 
@@ -3113,6 +3283,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 0 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
 
     for (let key in deck) {
@@ -3294,5 +3465,4 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     return diplomacy;
 
   }
-
 
