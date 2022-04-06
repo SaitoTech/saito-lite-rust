@@ -204,6 +204,7 @@
     return chart;
 
   }
+
   returnColonies() {
 
     let colonies = {};
@@ -3295,7 +3296,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
   }
 
 
-  returnDiplomacyTableInfo() {
+  returnDiplomacyTable() {
 
     let diplomacy 		= {};
     diplomacy["ottoman"] 	= {};
@@ -3341,6 +3342,11 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	205 ,
         left	:	4851 ,
     }
+
+    diplomacy["hapsburg"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4128 ,
+    }
     diplomacy["hapsburg"]["england"] = {
         top 	:	297 ,
         left	:	4220 ,
@@ -3373,6 +3379,16 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	297 ,
         left	:	4851 ,
     }
+
+
+    diplomacy["england"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4222 ,
+    }
+    diplomacy["england"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4220 ,
+    }
     diplomacy["england"]["france"] = {
         top 	:	386 ,
         left	:	4310 ,
@@ -3401,11 +3417,24 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	386 ,
         left	:	4851 ,
     }
+
+    diplomacy["france"]["ottoman"] = {
+        top 	:       205 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["england"] = {
+        top 	:	386 ,
+        left	:	4310 ,
+    }
     diplomacy["france"]["papacy"] = {
         top     :       478 ,
         left    :       4400 ,    
     }
-    diplomacy["france"]["protestancts"] = {
+    diplomacy["france"]["protestant"] = {
         top     :       478 ,
         left    :       4490 ,    
     }
@@ -3424,6 +3453,24 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     diplomacy["france"]["venice"] = {
         top     :       478 ,
         left    :       4851 ,    
+    }
+
+
+    diplomacy["papacy"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["england"] = {
+        top 	:	386 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["france"] = {
+        top     :       478 ,
+        left    :       4400 ,    
     }
     diplomacy["papacy"]["protestant"] = {
         top     :       568 ,
@@ -3444,6 +3491,27 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     diplomacy["papacy"]["venice"] = {
         top     :       568 ,
         left    :       4851 ,    
+    }
+
+    diplomacy["protestant"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["england"] = {
+        top 	:	386 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["france"] = {
+        top     :       478 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["papacy"] = {
+        top     :       568 ,
+        left    :       4490 ,    
     }
     diplomacy["protestant"]["genoa"] = {
         top     :       658 ,

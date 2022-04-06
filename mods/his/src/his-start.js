@@ -226,8 +226,8 @@
     // position pregnancy chart
     //
     let pregnancies = this.returnPregnancyChart();
-    for (let key in spaces) {
-      if (spaces.hasOwnProperty(key)) {
+    for (let key in pregnancies) {
+      if (pregnancies.hasOwnProperty(key)) {
 	try {
           let idname = "pregnancy"+key;
 	  let obj = document.getElementById(idname);
@@ -241,15 +241,18 @@
 
 
     //
-    // position warchart
+    // position diplomacy chart
     //
-    let spaces = this.returnWarChart();
-    for (let key in spaces) {
-      if (spaces.hasOwnProperty(key)) {
+    let d = this.returnDiplomacyTable();
+    for (let key in d) {
+      if (d.hasOwnProperty(key)) {
 	try {
-	  let obj = document.getElementById(key);
-	  obj.style.top = spaces[key].top + "px";
-	  obj.style.left = spaces[key].left + "px";
+          for (let key2 in d[key]) {
+	    divname = key + "_" + key2;
+	    let obj = document.getElementById(divname);
+	    obj.style.top = d[key][key2].top + "px";
+	    obj.style.left = d[key][key2].left + "px";
+	  }
         } catch (err) {
 	}
       }
