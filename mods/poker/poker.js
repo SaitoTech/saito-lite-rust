@@ -102,9 +102,7 @@ class Poker extends GameTemplate {
         game_mod.log.toggleLog();
       },
     });
-    //TODO - Add the function
-
-    /*this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-game", {
       text: "Stats",
       id: "game-stats",
       class: "game-stats",
@@ -112,7 +110,7 @@ class Poker extends GameTemplate {
         game_mod.menu.hideSubMenus();
         game_mod.handleStatsMenu();
       },
-    });*/
+    });
     this.menu.addSubMenuOption("game-game", {
       text: "Exit",
       id: "game-exit",
@@ -158,16 +156,14 @@ class Poker extends GameTemplate {
     // initialize game state
     if (this.game.deck.length == 0) {
       this.game.state = this.returnState(this.game.players.length);
+      this.game.stats = this.returnStats();
       this.startRound(); //Does some DOM stuff
     }
 
+    //Parse game options
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
-    let minimumBetString = this.game.state.small_blind.toString();
-    if  (minimumBetString.includes(".")){
-      let num = minimumBetString.split(".");
-      this.decimal_precision = num[1].length;
-    }
-    console.log("@@DECIMAL: "+this.decimal_precision);
+    this.game.chipValue = (this.game.options.chip) ? parseFloat(this.game.options.chip) : 0;
+    this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
 
     if (this.browser_active) {
       console.log("INITIALIZE GAME");
@@ -204,13 +200,11 @@ console.log("--------- SNR ---------");
     }
 
     //Adjust blind levels if necessary
-    if (this.game.state.tournament_blinds_level_up > 0) {
-      this.game.state.tournament_blinds_per_level--;
-      if (this.game.state.tournament_blinds_per_level < 0) {
-        this.updateLog(`Blinds increased to: ${game.state.big_blind}/${game.state.small_blind}`);
-        this.game.state.tournament_blinds_per_level =
-          this.game.state.tournament_blinds_per_level_max;
-      }
+    if (this.game.tournamentBlinds && this.game.state.round % 5 == 0) { //TODO: parameterize num_rounds between increases
+      this.game.state.small_blind++;
+      this.game.state.big_blind = 2 * this.game.state.big_blind;
+      this.updateLog(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);
+      salert(`Blinds increased to: ${this.game.state.big_blind}/${this.game.state.small_blind}`);  
     }
 
     this.game.state.flipped = 0;
@@ -222,6 +216,7 @@ console.log("--------- SNR ---------");
     for (let i = 0; i < this.game.players.length; i++) {
       this.game.state.passed[i] = 0;
       this.game.state.player_pot[i] = 0;
+      this.game.stats[this.game.players[i]].handsPlayed++;
     }
 
     //Check for end of game -- everyone except 1 player has zero credit...
@@ -383,7 +378,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-//      this.displayTable(); //to update pot
+      this.displayTable(); //to update pot
 
       console.log("QUEUE: " + JSON.stringify(this.game.queue));
 //      this.outputState();
@@ -400,7 +395,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
         this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
         this.game.winner = this.game.players[winner];
-        this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+        this.game.over = 1;
+        //this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
         return 0;
       }
 
@@ -427,12 +423,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             player_left_idx = i;
           }
         }
+
+        /*PLAYER WINS HAND HERE*/
         if (active_players === 1) {
           let winnings = this.game.state.pot - this.game.state.player_pot[player_left_idx];
           this.updateLog(`${this.game.state.player_names[player_left_idx]} wins ${this.game.state.pot} (${winnings} net)`);
           console.log(`${this.game.state.player_credit[player_left_idx]} + ${this.game.state.pot} = `);
           this.game.state.player_credit[player_left_idx] += this.game.state.pot;
           console.log(this.game.state.player_credit[player_left_idx]);
+          this.game.stats[this.game.players[player_left_idx]].handsWon++;
           //
           // everyone settles with winner if needed
           //
@@ -593,7 +592,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
         //
         // we have all of the hands, and can pick a winner
-        //
+        ///*PLAYER WINS HAND HERE*/
         if (this.game.state.player_cards_reported == this.game.state.player_cards_required) {
           let deck = null;
           var updateHTML = "";
@@ -632,10 +631,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             }
           }
 
-          // split winnings among winners
+          // split winnings among winners ***TO DO: examine possibility of fractional chips
           let pot_size = Math.floor(this.game.state.pot / winners.length);
           let winnerStr = "";
           for (let i = 0; i < winners.length; i++) {
+            console.log("WINNER:"+winners[i]);
             winnerStr += this.game.state.player_names[winners[i]] + ", ";
             //Award in game winnings
             this.game.state.player_credit[winners[i]] += pot_size;
@@ -830,7 +830,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
         this.game.queue.splice(qe, 1);
 
-        this.playerbox.refreshInfo(`<div class="player-info-chips" id="player-info-chips-${player}">${this.sizeNumber(this.game.state.player_credit[player - 1])} ${(this.game.crypto)?this.game.crypto:"CHIPS"}</div>`, player);
+        this.refreshPlayerStack(player);
+        
         if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);}
         this.updateLog(this.game.state.player_names[player - 1] + " calls");
 
@@ -841,11 +842,12 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         let player = parseInt(mv[1]);
 
         if (this.game.player !== player) {
-          this.playerbox.refreshGraphic("", player);
+          this.refreshPlayerStack(player);
           this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
         }
         this.updateLog(this.game.state.player_names[player - 1] + " folds");
 
+        this.game.stats[this.game.players[player-1]].handsFolded++;
         this.game.state.passed[player - 1] = 1;
         this.game.queue.splice(qe, 1);
       }
@@ -861,15 +863,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       if (mv[0] === "raise") {
 
         let player = parseInt(mv[1]);
-        let raise = parseFloat(mv[2]); //Includes call portion (if any)
+        let raise = parseInt(mv[2]); //Includes call portion (if any)
 
-console.log("raise is: " + mv[2] + " ----> " + raise);
+console.log("raise is: " + raise);
 
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
 
-console.log("raise portion: " + mv[2] + " ----> " + raise_portion);
-console.log("call portion: " + mv[2] + " ----> " + call_portion);
+console.log("raise portion: "  + raise_portion);
+console.log("call portion: "  + call_portion);
 
         if (raise_portion <= 0){
           salert("Insufficient raise");
@@ -901,12 +903,12 @@ console.log("call portion: " + mv[2] + " ----> " + call_portion);
 
         let chips;
         if (this.game.state.player_credit[player -1] === 0){
-          chips = "All in!";
           this.game.state.all_in = true;
+          this.playerbox.refreshInfo(`<div class="player-info-chips">All in!</div>`, player);
         }else{
-          chips = `${this.sizeNumber(this.game.state.player_credit[player - 1])} ${(this.game.crypto)?this.game.crypto:"CHIPS"}`;
+          this.refreshPlayerStack(player);
         }
-        this.playerbox.refreshInfo(`<div class="player-info-chips" id="player-info-chips-${player}">${chips}</div>`, player);
+        
         return 1;
       }
 
@@ -921,6 +923,7 @@ console.log("call portion: " + mv[2] + " ----> " + call_portion);
     return 1;
   }
 
+  
   outputState(){
     console.log("######################");
     console.log(JSON.parse(JSON.stringify(this.game.state)));
@@ -960,7 +963,7 @@ console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
     let can_raise = !this.game.state.all_in; //(this.game.state.player_credit[this.game.player - 1] > match_required /*+ this.game.state.last_raise*/);
 
     //cannot raise more than everyone can call.
-    let smallest_stack = poker_self.game.options.stake * poker_self.game.players.length; //Start with total amount of money in the game
+    let smallest_stack = poker_self.game.options.num_chips * poker_self.game.players.length; //Start with total amount of money in the game
     let smallest_stack_player = 0;
 
     poker_self.game.state.player_credit.forEach((stack, index) => {
@@ -994,13 +997,13 @@ console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
       html += "your move:";
     }
     
-    html += `<div style="float:right;" class="saito-balance">${this.sizeNumber(this.game.state.player_credit[this.game.player - 1])} ${this.game.crypto}</div></div>`;
+    html += `<div style="float:right;" class="saito-balance">${this.game.state.player_credit[this.game.player - 1]}</div></div>`;
     html += "<ul>";
 
     html += '<li class="menu_option" id="fold">fold</li>';
     
     if (match_required > 0) {
-      html += `<li class="menu_option" id="call">call (${this.sizeNumber(match_required)})</li>`;
+      html += `<li class="menu_option" id="call">call (${match_required})</li>`;
     } else { // we don't NEED to match
       html += '<li class="menu_option" id="check">check</li>';
     }
@@ -1020,7 +1023,7 @@ console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
 
         html = `<div class="menu-player">`;
         if (match_required > 0) {
-          html += `Match ${poker_self.sizeNumber(match_required)} and raise: `;
+          html += `Match ${match_required} and raise: `;
         } else {
           html += "Please select an option below: ";
         }
@@ -1036,14 +1039,14 @@ console.log("last raise: " + poker_self.game.state.last_raise);
 
 console.log("this raise: " + this_raise);
 console.log("match required: " + match_required); 
-console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).toFixed(8));
+console.log("id is: " + (this_raise + match_required));
 
           if (max_raise > this_raise) {
-            html += `<li class="menu_option" id="${(parseFloat(this_raise) + parseFloat(match_required)).toFixed(8)}">raise ${poker_self.sizeNumber(this_raise)}</li>`;
+            html += `<li class="menu_option" id="${this_raise + match_required}">raise ${this_raise}</li>`;
           } else {
             i = 6; //Stop for-loop
-            html += `<li class="menu_option" id="${(parseFloat(max_raise) + parseFloat(match_required)).toFixed(8)}">
-                      raise ${poker_self.sizeNumber(max_raise)} 
+            html += `<li class="menu_option" id="${max_raise + match_required}">
+                      raise ${max_raise} 
                       (${poker_self.game.state.player_names[smallest_stack_player]} all in)</li>`;
           }
         }
@@ -1072,27 +1075,11 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     });
   }
 
-  /* To simplify display*/
+  /* To fix float operations*/
   sizeNumber(x) {
-    if (x >= 100) {
-      return Math.floor(x);
-    } else {
-      return parseFloat(x.toFixed(this.decimal_precision));
-    }
+    return parseFloat(x.toFixed(8));
   }
 
-  displayBoard() {
-    if (this.browser_active == 0) {
-      return;
-    }
-    try {
-      this.displayPlayers();
-      this.displayHand();
-      this.displayTable();
-    } catch (err) {
-      console.error("err: " + err);
-    }
-  }
 
   returnState(num_of_players) {
     let state = {};
@@ -1119,40 +1106,6 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
       state.small_blind_player = 1;
     }
   
-    state.blinds_idx = 0;
-    /*state.blinds_array = [
-      { big: 0.001, small: 0.0005 },
-      { big: 0.002, small: 0.001 },
-      { big: 0.004, small: 0.002 },
-      { big: 0.008, small: 0.004 },
-      { big: 0.015, small: 0.008 },
-      { big: 0.03, small: 0.015 },
-      { big: 0.06, small: 0.03 },
-      { big: 0.12, small: 0.06 },
-      { big: 0.25, small: 0.12 },
-      { big: 0.5, small: 0.25 },
-      { big: 1, small: 0.5 },
-      { big: 2, small: 1 },
-      { big: 4, small: 2 },
-      { big: 8, small: 4 },
-      { big: 15, small: 8 },
-      { big: 30, small: 15 },
-      { big: 60, small: 30 },
-      { big: 120, small: 60 },
-      { big: 250, small: 125 },
-      { big: 500, small: 250 },
-      { big: 1000, small: 500 },
-    ];*/
-
-    state.tournament_blinds_per_level = 12;
-    state.tournament_blinds_per_level_max = 12;
-
-    if (this.game.options.blinds === "increase") {
-      state.tournament_blinds_level_up = 1;
-    } else {
-      state.tournament_blinds_level_up = 0;
-    }
-
     //Player Arrays
     state.player_names = [];
     state.player_pot = [];
@@ -1163,23 +1116,14 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
       state.passed[i] = 0;
       state.player_pot[i] = 0;
       //Initial stake
-      state.player_credit[i] = (this.game.options.stake)? parseFloat(this.game.options.stake) : 100;
+      state.player_credit[i] = this.game.options.num_chips;
       
       //Assign names
-      state.player_names[i] = this.app.keys.returnIdentifierByPublicKey(this.game.players[i], 1);
-      if (state.player_names[i].indexOf("@") > 0) {
-        state.player_names[i] = state.player_names[i].substring(
-          0,
-          state.player_names[i].indexOf("@")
-        );
-      }
-      if (state.player_names[i] === this.game.players[i]) {
-        state.player_names[i] = this.game.players[i].substring(0, 10) + "...";
-      }
+      state.player_names[i] = this.getShortNames(this.game.players[i]);
     }
 
-    state.big_blind = parseFloat(this.game.options.big_blind);
-    state.small_blind = state.big_blind / 2;
+    state.big_blind = 2;
+    state.small_blind = 1;
     state.last_raise = state.big_blind;
     state.required_pot = state.big_blind;
     state.all_in = false;
@@ -1188,12 +1132,25 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     return state;
   }
 
+  getShortNames(publicKey){
+    let name = this.app.keys.returnUsername(publicKey);
+      if (name.indexOf("@") > 0) {
+        name = name.substring(0, name.indexOf("@"));
+      }
+      if (name === publicKey) {
+        name = publicKey.substring(0, 10) + "...";
+      } 
+    return name;
+  }
+
   returnCardFromDeck(idx) {
     let deck = this.returnDeck();
     let card = deck[idx];
 
     return card.name.substring(0, card.name.indexOf("."));
   }
+
+  /* TO-DO rectify poker decks across games!*/
 
   returnDeck() {
     var deck = {};
@@ -1254,6 +1211,25 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     return deck;
   }
 
+/****************
+ * 
+ ***** GUI *****
+ * 
+ ***************/
+
+  displayBoard() {
+    if (this.browser_active == 0) {
+      return;
+    }
+    try {
+      this.displayPlayers();
+      this.displayHand();
+      this.displayTable();
+    } catch (err) {
+      console.error("err: " + err);
+    }
+  }
+
   displayPlayers(preserveLog = false) {
   try {
     /*let player_box = "";
@@ -1266,18 +1242,21 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
 
     for (let i = 1; i <= this.game.players.length; i++) {
       this.playerbox.refreshName(i);
-      this.playerbox.refreshInfo(`<div class="player-info-chips" id="player-info-chips-${i}">${this.sizeNumber(this.game.state.player_credit[i - 1])} ${(this.game.crypto)?this.game.crypto:"CHIPS"}</div>`, i);
+      this.refreshPlayerStack(i);
 
-      //Show backs of cards
-      let newhtml = `
-        <div class="other-player-hand hand tinyhand">
-          <img class="card" src="${this.card_img_dir}/red_back.png">
-          <img class="card" src="${this.card_img_dir}/red_back.png">
-        </div>
-      `;
+      
       if (i != this.game.player && !this.game.state.passed[i-1]) {
-        this.playerbox.refreshGraphic(newhtml, i);
+        //Show backs of cards
+        let newhtml = `
+          <div class="other-player-hand hand tinyhand">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+          </div>
+        `;
+        //Need to put tinyhand and chip-stack both in graphic
+        this.playerbox.appendGraphic(newhtml, i);
       }
+
       if (!preserveLog){
         this.playerbox.refreshLog("",i);
       }
@@ -1308,26 +1287,110 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
   }
 
   displayTable() {
-  try {
-    if (document.querySelector("#deal")){
-      let newHTML = "";
-      for (let i = 0; i < 5 || i < this.game.pool[0].hand.length; i++) {
-        let card = {};
+    try {
+      if (document.querySelector("#deal")){
+        let newHTML = "";
+        for (let i = 0; i < 5 || i < this.game.pool[0].hand.length; i++) {
+          let card = {};
 
-        if (i < this.game.pool[0].hand.length) {
-          card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
-        } else {
-          card.name = "red_back.png";
+          if (i < this.game.pool[0].hand.length) {
+            card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
+          } else {
+            card.name = "red_back.png";
+          }
+          newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
         }
-        newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
+        document.querySelector("#deal").innerHTML = newHTML;
       }
-      document.querySelector("#deal").innerHTML = newHTML;
+      // update pot
+      let html = "";
+      for (let i = 0; i < this.game.state.player_pot.length; i++){
+        html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+      }
+      html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
+      if (this.game.crypto){
+        html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
+      }
+      html += "</div>";
+      document.querySelector(".pot").innerHTML = sanitize(html);
+
+    } catch (err) { console.log("error displaying table");}
+  }
+
+  refreshPlayerStack(player){
+    //Update numerical stack
+    let html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    if (this.game.crypto){
+      html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
+    }
+    
+    //Draw literal stack
+    html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
+    html = html.substring(0,html.length - 6); //remove final </div> tag
+    let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    if (this.game.crypto){
+      bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
     }
 
-    // update pot
-    document.querySelector(".pot").innerHTML = this.sizeNumber(this.game.state.pot);
-  } catch (err) { console.log("error displaying table");}
+    this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
   }
+  
+  returnPlayerStackHTML(player,numChips){
+    let html = `<div class="chip_stack pstack${player} tip">`;
+
+    let numBigChips = Math.floor(numChips/10);
+    let numSmallChips = numChips - numBigChips*10;
+
+    if (numSmallChips == 0 && numBigChips > 0){
+      numSmallChips += 10;
+      numBigChips --;
+    }
+    console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
+    for (let i = 0; i < numBigChips; i++){
+      html += this.returnChipHTML(false, player, i*8);
+    }
+    for (let i = numBigChips; i < numBigChips+numSmallChips; i++){
+      html += this.returnChipHTML(true, player, i*8);
+    }
+    
+   html += "</div>";
+   return html;
+  }
+
+
+  returnChipHTML(single = true, player = 1, offset = 0){
+    if (single){
+     return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
+            <path d="
+                M 2 13
+                A 41 10 0 0 0 98 13
+                A 41 10 0 0 0 2 13
+                L 2 21
+                A 41 10 0 0 0 98 21
+                L 98 13
+              " 
+              stroke-width="1">
+            </svg>`;
+    }else{
+      return `<svg class="poker_chip" style="bottom:${offset}px; " viewbox="0 0 100 35">
+              <path d="
+                M 2 13
+                L 2 21
+                A 41 10 0 0 0 98 21
+                L 98 13
+                A 41 10 0 0 0 2 13
+              "
+              stroke-width="1" stroke="black" fill="url(#stripes${player})"/>
+              <path d="
+                M 2 13
+                A 41 10 0 0 0 98 13
+                A 41 10 0 0 0 2 13
+              " 
+              stroke-width="1" stroke="black" />
+            </svg>`;
+    }
+  }
+
 
   endTurn(nextTarget = 0) {
     this.updateStatus("Waiting for information from peers....");
@@ -2443,24 +2506,24 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     let options_html = `
       <h1 class="overlay-title">Poker Options</h1>
           <div class="overlay-input">
-            <label for="stake">Mode:</label>
-            <select name="blinds">
+            <label for="blind_mode">Mode:</label>
+            <select id="blind_mode" name="blind_mode">
               <option value="static">static blinds</option>
               <option value="increase">increasing blinds</option>
             </select>
           </div>
-          <div id="blind_mode">Small blind is one chip, big blind is two chips</div>
+          <div class="options_notice" id="blind_explainer">Small blind is one chip, big blind is two chips throughout the game</div>
           <div class="overlay-input">
-            <label for="big_blind">Num chips:</label>
-            <select name="big_blind">
-              <option value="50">50</option>
-              <option value="100">100</option>
+            <label for="num_chips">Num chips:</label>
+            <select id="num_chips" name="num_chips">
+              <option value="40">40</option>
+              <option value="100" selected>100</option>
+              <option value="250">250</option>
             </select>
           </div>
-          <div id="chip_value">The game is just for fun</div>
           <div class="overlay-input">
             <label for="crypto">Crypto:</label>
-            <select name="crypto">
+            <select id="crypto" name="crypto">
               <option value="" selected>None</option>
               <option value="SAITO">SAITO</option>
     `;
@@ -2480,22 +2543,23 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
     options_html += `
             </select>
           </div>
-          <div class="overlay-input">
-            <label for="stake">Initial Stake:</label>
+          <div id="chip_wrapper" class="overlay-input" style="display:none;">
+            <label for="chip">Chip Value:</label>
             
-            <select name="stake">
-              <option value="0.1">0.1</option>
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-              <option value="500">500</option>
-              <option value="1000" selected="selected">1000</option>
-              <option value="5000" >5000</option>
-              <option value="10000">10000</option>
-            </select>
+            <input type="number" id="chip" list="suggestedChipValues" name="chip" min="0" value="0" step="0.001">
           </div>
+          <datalist id="suggestedChipValues">
+            <option value="0.01">
+            <option value="0.1">
+            <option value="1">
+            <option value="5">
+            <option value="20">
+            <option value="50">
+            <option value="100">
+          </datalist>
+   
+          <div class="options_notice" id="stakesMsg">The game is just for fun</div>
+   
           <div class="overlay-input">
             <label for="observer_mode">Observer Mode:</label>
             <select name="observer">
@@ -2503,12 +2567,61 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
               <option value="disable">disable</option>
             </select>
           </div>
-
+          <input type="hidden" id="stake" name="stake" value="0">
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
     `;
 
     return options_html;
+  }
+
+  attachAdvancedOptionsEventListeners(){
+    let blindModeInput = document.getElementById("blind_mode");
+    let numChips = document.getElementById("num_chips");
+    let blindDisplay = document.getElementById("blind_explainer");
+    let crypto = document.getElementById("crypto");
+    let chipValue = document.getElementById("chip");
+    let chipInput = document.getElementById("chip_wrapper");
+    let chipDisplay = document.getElementById("stakesMsg");
+    let stake = document.getElementById("stake");
+
+    const updateChips = function(){
+      if(crypto && chipDisplay && numChips && chipValue && chipInput && stake){
+        if (crypto.value == ""){
+          chipDisplay.textContent = "The game is just for fun";
+          chipInput.style.display = "none";
+          chipValue.value = "0";
+          stake.value = "0";
+        }else{
+          let nChips = numChips.value;
+          let chipAmt = chipValue.value;
+          let jsMath = parseFloat((chipAmt*nChips).toFixed(3));
+          chipDisplay.textContent = `You need ${jsMath} ${crypto.value} to play the game`;
+          chipInput.style.display = "block";
+          stake.value = jsMath; 
+        }
+      }
+      };
+
+    if (blindModeInput && blindDisplay){
+      blindModeInput.onchange = function(){
+        if (blindModeInput.value == "static"){
+          blindDisplay.textContent = "Small blind is one chip, big blind is two chips throughout the game";
+        }else{
+          blindDisplay.textContent = "Small blind starts at one chip, and increments by 1 every 5 rounds";
+        }
+      }
+    }
+
+    if (crypto){
+      crypto.onchange = updateChips;
+    }
+    if (chipValue){
+      chipValue.onchange = updateChips;
+    }
+    if (numChips){
+      numChips.onchange = updateChips;
+    }
   }
 
   /*
@@ -2517,16 +2630,16 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
   returnFormattedGameOptions(options) {
     let new_options = {};
     for (var index in options) {
-      if (index == "stake") {
-        new_options[index] = options[index];
-      }
       if (index == "crypto") {
         new_options[index] = options[index];
       }
-      if (index == "blinds") {
+      if (index == "chip") {
         new_options[index] = options[index];
       }
-      if (index == "big_blind") {
+      if (index == "num_chips") {
+        new_options[index] = options[index];
+      }
+      if (index == "blind_mode") {
         new_options[index] = options[index];
       }
     }
@@ -2541,24 +2654,30 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
   returnShortGameOptionsArray(options) {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};
-
-    
+  
     for (let i in sgoa) {
       if (sgoa[i] != "") {
         let okey = i;
         let oval = options[i];
 
         let output_me = 1;
-        if (i == "big_blind") {
-          okey = "blinds";
+        if (i == "chip") {
+          if (oval !== "0"){
+            okey = "small blind";  
+          }else{
+            output_me = 0;
+          }
         }
-        if (i == "blinds") {
+        if (i == "blind_mode") {
           if (oval == "increase") {
             okey = "mode";
             oval = "tournament";
           } else {
             output_me = 0;
           }
+        }
+        if (i == "num_chips"){
+          okey = "chips";
         }
 
         if (output_me == 1) {
@@ -2598,24 +2717,45 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
 
   }
 
+  returnStats(){
+    let stats = {};
+    for (let i = 0; i < this.game.players.length; i++){
+      stats[this.game.players[i]] = {};
+      stats[this.game.players[i]].handsPlayed = 0;
+      stats[this.game.players[i]].handsWon = 0;
+      stats[this.game.players[i]].handsFolded = 0;
+    }
+    return stats;
+  }
+
+
   handleStatsMenu() {
-    let poker_self = this;
+    console.log(JSON.parse(JSON.stringify(this.game.stats)));
+    
+    let stats = ["handsPlayed", "handsWon","handsFolded"];
     let html = `
       <div class="game-overlay-menu" id="game-overlay-menu">
-        <div>Game Statistics:</div>
-        <div class="statistics-info">
-        We're adding statistics, tracking and other information to help improve player games. If you're comfortable with JAVASCRIPT / HTML / CSS and want to help, please reach out.
-        </div>
-      </div>
-    `;
+        <h1>Game Statistics:</h1>
+        <table><thead><tr><th></th>
+       `; 
+    for (let p in this.game.stats){
+      html += `<th>${this.getShortNames(p)}</th>`;
+    }
+    html += `</tr></thead><tbody>`;
+    for (let s of stats){
+      html += `<tr><th>${s}</th>`;
+      for (let p in this.game.stats){
+        html += `<td>${this.game.stats[p][s]}</td>`;
+      }
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
 
-    poker_self.overlay.show(poker_self.app, poker_self, html);
+    html+=`</div>`;
+
+    this.overlay.show(this.app, this, html);
   }
 
-  increaseBlinds() {
-    this.game.state.blinds_idx++;
-    return 1;
-  }
 
  
 }

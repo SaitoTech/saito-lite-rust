@@ -707,7 +707,12 @@ class Keychain {
         return name[0].substr(0, 12) + "...";
       }
     }
-    return name;
+    if (name){
+      return name;  
+    }else{
+      return publickey;
+    }
+    
   }
 
   returnWatchedPublicKeys() {
