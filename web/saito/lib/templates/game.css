@@ -485,13 +485,16 @@ i.menu_icon_icon{
   justify-content: flex-start;
 }
 
+
 /* If dragging, need to anchor to left side of hud */
+/***
 .user_dragged .hud-body .status{
   align-items: flex-start;
 }
 .user_dragged .hud-header{
   margin-left: 0;
 }
+***/
 
 /*** Text listed menu options in hud > hud-body > status ***/ 
 .status-text-menu {
