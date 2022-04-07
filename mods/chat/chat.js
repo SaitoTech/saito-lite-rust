@@ -248,8 +248,14 @@ class Chat extends ModTemplate {
 		    //
 		    if (this.added_identifiers_post_load == 0) {
 console.log("ADD IDENTIFIERS POST LOAD: chat.js");
-		      this.app.browser.addIdentifiersToDom();
-		      this.added_identifiers_post_load = 1;
+		      try {
+			setTimeout(()=>{
+		          this.app.browser.addIdentifiersToDom();
+		          this.added_identifiers_post_load = 1;
+			}, 1200);
+		      } catch (err) {
+			console.log("error adding identifiers post-chat");
+		      }
 		    }
 
                   }
