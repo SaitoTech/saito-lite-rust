@@ -5,7 +5,6 @@
   "main": "start.js",
   "scripts": {
     "dev": "ts-node-dev --max_old_space_size=8144 start.ts",
-
     "cli": "ts-node cli.ts",
     "start": "NODE_ENV=prod node --max_old_space_size=8144 built/start.js",
     "init": " ./compile init",
