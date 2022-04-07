@@ -17,7 +17,7 @@
         var ops_to_place = 4;
         twilight_self.addMove("resolve\tcolonial");
 
-        this.updateStatus("<div class='status-message' id='status-message'>US place four influence in Africa or Asia (1 per country)</div>");
+        this.updateStatus("<div class='status-message' id='status-message'>US place four influence in Africa or Southeast Asia (1 per country)</div>");
 
         for (var i in this.countries) {
 
