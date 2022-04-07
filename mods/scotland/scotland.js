@@ -620,7 +620,7 @@ class Scotland extends GameTemplate {
               </div>
             </div>
             <div class="menu_icon" id="bus">
-             <div style="background-color= #73aec6;">
+             <div style="background-color: #73aec6;">
               <i class="menu_icon_icon fas fa-bus fa-border"></i>
              </div>
               <div class="menu-text">
@@ -628,7 +628,7 @@ class Scotland extends GameTemplate {
               </div>
             </div>
             <div class="menu_icon" id="underground">
-              <div style="background-color= #da7844;">
+              <div style="background-color: #da7844;">
                <i class="menu_icon_icon fas fa-subway fa-border"></i>
               </div>
               <div class="menu-text">
