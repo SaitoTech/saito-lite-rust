@@ -84,6 +84,15 @@ class Arcade extends ModTemplate {
       if (this.viewing_arcade_initialization_page == 0) {
         ArcadeMain.render(this.app, this);
         ArcadeMain.attachEvents(this.app, this);
+        
+        if (this.viewing_game_homepage){
+          /*
+            The game page has browser/mobile dual funcationality attached to buttons in the sidebar and in the main
+            Buttons have same names and funcitonal attached through arcadegamesidebar
+            but since arcademain tends to get repeatedly rendered we need to keep reattaching events
+          */
+          ArcadeGameSidebar.attachEvents(this.app, this);    
+        }
       }      
     }
   }
@@ -279,7 +288,6 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
-    this.renderSidebar(); //To re-attach events
     
   }
 
