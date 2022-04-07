@@ -34,6 +34,9 @@ class Chat extends ModTemplate {
 
         this.icon_fa = "far fa-comments";
         this.inTransitImageMsgSig = null;
+
+	this.added_identifiers_post_load = 0;
+
     }
 
 
@@ -239,6 +242,16 @@ class Chat extends ModTemplate {
                       })
                     }
             	    this.sendEvent('chat-render-request', {});
+
+		    //
+		    // check identifiers
+		    //
+		    if (this.added_identifiers_post_load == 0) {
+console.log("ADD IDENTIFIERS POST LOAD: chat.js");
+		      this.app.browser.addIdentifiersToDom();
+		      this.added_identifiers_post_load = 1;
+		    }
+
                   }
                 }
               },
