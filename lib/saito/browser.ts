@@ -20,6 +20,8 @@ class Browser {
     this.urlParams = {};
     this.active_module = "";
     this.host = "";
+    this.port = "";
+    this.protocol = "";
 
     //
     // tells us the browser window is visible, as opposed to
@@ -115,12 +117,13 @@ class Browser {
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
+      this.host = myurl.host;
+      this.port = myurl.port;
+      this.protocol = myurl.protocol;
       const myurlpath = myurl.pathname.split("/");
-      let host = myurlpath[0];
       let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : "";
       if (active_module == "") { active_module = "website"; }
       this.active_module = active_module;
-      this.host = host;
 
       //
       // query strings
