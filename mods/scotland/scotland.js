@@ -608,10 +608,9 @@ class Scotland extends GameTemplate {
     }
 
     let html = "";
-    html = `<div class="status-message">
-              ${sHeader}
-            </div>
+    html = `<div class="status-message">${sHeader}</div>
           <div class='status-icon-menu'>
+
             <div class="menu_icon" id="taxi">
               <i class="menu_icon_icon fas fa-taxi fa-border">
               </i>
@@ -619,22 +618,17 @@ class Scotland extends GameTemplate {
                Taxi: ${this.game.state.tickets[pawn]["taxi"]}
               </div>
             </div>
+
             <div class="menu_icon" id="bus">
-             <div style="background-color: #73aec6;">
-              <i class="menu_icon_icon fas fa-bus fa-border"></i>
-             </div>
-              <div class="menu-text">
-                Bus: ${this.game.state.tickets[pawn]["bus"]}
-              </div>
+              <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #73aec6;"></i>
+              <div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div>
             </div>
+
             <div class="menu_icon" id="underground">
-              <div style="background-color: #da7844;">
-               <i class="menu_icon_icon fas fa-subway fa-border"></i>
-              </div>
-              <div class="menu-text">
-                U.: ${this.game.state.tickets[pawn]["underground"]}
-             </div>
-           </div>
+               <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #da7844;"></i>
+               <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
+            </div>
+
          </div>`;
 
 
