@@ -229,6 +229,8 @@ console.log("--------- SNR ---------");
         } 
      }
 
+     this.displayPlayers(); //to update chips before game_over
+
     //Catch that only one player is standing at the start of the new round
     if (alive_players == 1) {
       this.game.queue = [];
@@ -395,8 +397,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
         this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
         this.game.winner = this.game.players[winner];
-        this.game.over = 1;
-        //this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+        if (this.game.player == this.game.winner){
+          this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+        }
         return 0;
       }
 
@@ -636,6 +639,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
           let winnerStr = "";
           for (let i = 0; i < winners.length; i++) {
             console.log("WINNER:"+winners[i]);
+            this.game.stats[this.game.players[winners[i]]].handsWon++;
             winnerStr += this.game.state.player_names[winners[i]] + ", ";
             //Award in game winnings
             this.game.state.player_credit[winners[i]] += pot_size;
@@ -835,7 +839,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);}
         this.updateLog(this.game.state.player_names[player - 1] + " calls");
 
-
       }
 
       if (mv[0] === "fold") {
@@ -901,14 +904,8 @@ console.log("call portion: "  + call_portion);
         }
         this.game.queue.splice(qe, 1);
 
-        let chips;
-        if (this.game.state.player_credit[player -1] === 0){
-          this.game.state.all_in = true;
-          this.playerbox.refreshInfo(`<div class="player-info-chips">All in!</div>`, player);
-        }else{
-          this.refreshPlayerStack(player);
-        }
-        
+        this.refreshPlayerStack(player);
+
         return 1;
       }
 
@@ -947,6 +944,7 @@ console.log("call portion: "  + call_portion);
 
 console.log("required pot: " + this.game.state.required_pot);
 console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
+console.log("all in: "+this.game.state.all_in);
 
     let match_required = this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
 
@@ -1031,14 +1029,14 @@ console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
         html += `</div><ul><li class="menu_option" id="0">cancel raise</li>`;
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
-        for (let i = 0; i < 5; i++) {
-
 console.log("last raise: " + poker_self.game.state.last_raise);
+console.log("match required: " + match_required); 
+
+        for (let i = 0; i < 5; i++) {
 
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
 
 console.log("this raise: " + this_raise);
-console.log("match required: " + match_required); 
 console.log("id is: " + (this_raise + match_required));
 
           if (max_raise > this_raise) {
@@ -1047,7 +1045,7 @@ console.log("id is: " + (this_raise + match_required));
             i = 6; //Stop for-loop
             html += `<li class="menu_option" id="${max_raise + match_required}">
                       raise ${max_raise} 
-                      (${poker_self.game.state.player_names[smallest_stack_player]} all in)</li>`;
+                      (all in for ${poker_self.game.state.player_names[smallest_stack_player]})</li>`;
           }
         }
 
@@ -1062,6 +1060,7 @@ console.log("id is: " + (this_raise + match_required));
           if (raise === "0") {
             poker_self.playerTurn();
           } else {
+            console.log("Player chocie: "+raise);
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();
           }
@@ -1319,10 +1318,18 @@ console.log("id is: " + (this_raise + match_required));
 
   refreshPlayerStack(player){
     //Update numerical stack
-    let html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    let html = "";
+    if (this.game.state.player_credit[player - 1] === 0){
+        this.game.state.all_in = true;
+        html = `<div class="player-info-chips">All in!</div>`;
+    }else{
+        html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    }
     if (this.game.crypto){
       html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
     }
+
+    this.playerbox.refreshInfo(html, player);
     
     //Draw literal stack
     html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
@@ -1345,7 +1352,7 @@ console.log("id is: " + (this_raise + match_required));
       numSmallChips += 10;
       numBigChips --;
     }
-    console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
+    //console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
     for (let i = 0; i < numBigChips; i++){
       html += this.returnChipHTML(false, player, i*8);
     }
@@ -2734,7 +2741,7 @@ console.log("id is: " + (this_raise + match_required));
     
     let stats = ["handsPlayed", "handsWon","handsFolded"];
     let html = `
-      <div class="game-overlay-menu" id="game-overlay-menu">
+      <div class="rules-overlay" id="game-stats-overlay">
         <h1>Game Statistics:</h1>
         <table><thead><tr><th></th>
        `; 

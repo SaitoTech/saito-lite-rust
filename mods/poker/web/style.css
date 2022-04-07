@@ -88,7 +88,7 @@ body {
 .deal {
   margin: 0 auto;
   position: absolute;
-  top: 40vh;
+  top: 45vh;
   left: 50vw;
   transform: translateX(-50%);
   width: unset;
@@ -99,7 +99,7 @@ body {
 
 .pot {
   position: absolute;
-  top: 32vh;
+  top: 37vh;
   left: 50vw;
   transform: translateX(-50%);
   font-size: 5vh;
