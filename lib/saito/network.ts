@@ -140,8 +140,8 @@ class Network {
 
     //
     // notify peer(s) of services
-    //
-    this.propagateServices(peer);
+    // - results in issues
+    //this.propagateServices(peer);
 
   }
 
@@ -197,7 +197,10 @@ class Network {
     // do it here. this adds the message emission events to the socket
     //
     this.app.handshake.initiateHandshake(socket);
-    this.propagateServices(peer);
+    //
+    // results in websocket not ready issues/
+    //
+    //this.propagateServices(peer);
 
     return peer;
   }
