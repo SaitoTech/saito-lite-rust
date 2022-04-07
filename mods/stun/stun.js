@@ -1,8 +1,10 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const StunUI = require('./lib/stun-ui');
+const Slip = require('../..//lib/saito/slip.ts');
 
 
+console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
 
@@ -38,25 +40,34 @@ class Stun extends ModTemplate {
     if (conf == 0) {
       if (txmsg.module === "Stun") {
         // check if key exists in key chain
-        let key_index = app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
+        let key_index = stun_self.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
         console.log(key_index, "key index");
+
         // save key if it doesn't exist
         if (key_index === -1) {
-          app.keys.addKey(tx.transaction.from[0].add);
-          app.keys.saveKeys();
+          stun_self.app.keys.addKey(tx.transaction.from[0].add);
+          stun_self.app.keys.saveKeys();
         }
         for (let i = 0; i < app.keys.keys.length; i++) {
 
-          if (tx.transaction.from[0].add === app.keys.keys[i].publickey) {
-            if (app.keys.keys[i].data.stun != tx.msg.stun) {
+          if (tx.transaction.from[0].add === stun_self.app.keys.keys[i].publickey) {
+              console.log(JSON.stringify(stun_self.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
+            if (JSON.stringify(stun_self.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
               stun_self.stun = tx.msg.stun;
-              console.log(app.keys.keys[i].publickey);
-              console.log("key length ", app.keys.keys.length);
-              console.log('keys ', app.keys.keys);
+              const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
+              let address = preferred_crypto.returnAddress();
+              console.log(stun_self.app.keys.keys[i].publickey, address);
+              console.log("key length ", stun_self.app.keys.keys.length);
+              console.log("public key ", address);
               console.log("stun changed, saving changes..", tx.msg.stun);
-              app.keys.keys[i].data.stun = tx.msg.stun;
+              stun_self.app.keys.keys[i].data.stun = tx.msg.stun;
 
-              app.keys.saveKeys();
+              stun_self.app.keys.saveKeys();
+          
+
+
+     
+          
              
 
             }
@@ -67,23 +78,35 @@ class Stun extends ModTemplate {
 
 
        
-
+        app.connection.emit("stun-update",app, stun_self);
       
       
 
 
       }
     }
-    console.log("Keys 2", app.keys.keys);
-    app.connection.emit("stun-update",app);
+  
 
+  }
+
+
+  async updateKey(publicKey) {
+        
+    console.log('updating key');
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg.module = "Stun";
+
+    newtx = this.app.wallet.signTransaction(newtx);
+    console.log(this.app.network);
+
+    // does not work without the settimeout, it seems the blockchain isn't initialized by the time this function is run , so propagation doesn't register
+    this.app.network.propagateTransaction(newtx);
 
   }
 
 
 
-
-  async generateStun() {
+  async generateStun(publicKey) {
     let stun = await this.fetchStunInformation();
     if (!stun) {
       console.log("no stun");
@@ -97,13 +120,15 @@ class Stun extends ModTemplate {
     // my key
     //
     let do_we_broadcast_and_update = 1;
-    let publickey = this.app.wallet.returnPublicKey();
+    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
+    let publickey = preferred_crypto.returnAddress();
+  
     let key = null;
     console.log(this.app.keys.keys);
     for (let i = 0; i < this.app.keys.keys.length; i++) {
       let tk = this.app.keys.keys[i];
       if (tk.publickey === publickey) {
-
+           console.log('public keys', tk.publickey, publickey);
         key = tk;
         if (key && !key.data.stun) {
           this.app.keys.keys[i].data.stun = stun;
@@ -119,16 +144,16 @@ class Stun extends ModTemplate {
         }
       }
     }
-    console.log('STUN: ' + JSON.stringify(stun));
+
 
 
     //  or add key if missing
 
     if (key == null) {
       do_we_broadcast_and_update = 1;
-      this.app.keys.addKey(this.app.wallet.returnPublicKey());
+      this.app.keys.addKey(publickey);
       for (let i = 0; i < this.app.keys.keys.length; i++) {
-        if (this.app.keys.keys[i].publickey === this.app.wallet.returnPublicKey()) {
+        if (this.app.keys.keys[i].publickey === publickey) {
           this.app.keys.keys[i].data.stun = stun;
           this.app.keys.saveKeys();
         }
@@ -139,7 +164,7 @@ class Stun extends ModTemplate {
     // do we need to broadcast a message and update our keychain?
     console.log(do_we_broadcast_and_update, "broadcast");
     if (do_we_broadcast_and_update) {
-      this.broadcastAddress(stun);
+      this.broadcastAddress( publicKey);
     }
 
   }
@@ -224,10 +249,16 @@ class Stun extends ModTemplate {
 
 
 
-  broadcastAddress() {
+  broadcastAddress(publicKey) {
 
     console.log('broadcasting address');
     let newtx = this.app.wallet.createUnsignedTransaction();
+   
+    
+ 
+      newtx.transaction.to.push(new saito.default.slip(publicKey));
+    
+
     newtx.msg.module = "Stun";
     newtx.msg.stun = this.stun;
     newtx = this.app.wallet.signTransaction(newtx);

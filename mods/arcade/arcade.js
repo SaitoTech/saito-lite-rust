@@ -1307,7 +1307,7 @@ class Arcade extends ModTemplate {
     tx.transaction.to.push(new saito.default.slip(gametx.transaction.from[0].add, 0.0));
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg.ts = "";
-    tx.msg.module = txmsg.game;
+    tx.msg.module = txmsg.game; 
     tx.msg.request = "join";
     tx.msg.game_id = gametx.transaction.sig;
     tx.msg.players_needed = parseInt(txmsg.players_needed);
