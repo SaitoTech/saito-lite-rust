@@ -139,8 +139,10 @@ class Network {
     peer.keepAlive();
 
     //
-    // initiate the handshake (verifying peers)
+    // notify peer(s) of services
     //
+    this.propagateServices(peer);
+
   }
 
   //
@@ -193,17 +195,13 @@ class Network {
     // - this is normally done in initializeWebSocket, but it is not
     // done for remote-sockets created int he server, so we manually
     // do it here. this adds the message emission events to the socket
+    //
     this.app.handshake.initiateHandshake(socket);
-
-    //
-    // remote peers can do this here, as the connection is already open
-    //
-    // note - disabling as remote peer is push
-    //
-    //this.app.network.requestBlockchain(peer);
+    this.propagateServices(peer);
 
     return peer;
   }
+
 
   /**
    * @param {string} block_hash
@@ -250,6 +248,7 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
+
     console.debug("network.initializeWebSocket: " + remote_socket + " / " + browser);
 
     //
@@ -581,6 +580,19 @@ class Network {
         break;
       }
 
+      case "SERVICES": {
+
+        const buffer = Buffer.from(message.message_data, "utf8");
+
+	try {
+          peer.peer.services = JSON.parse(buffer.toString("utf8"));
+	} catch (err) {
+	  console.log("ERROR parsing peer services list or setting services in peer");
+	}
+
+        break;
+      }
+
       case "GSTCHAIN": {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
@@ -717,17 +729,6 @@ class Network {
         this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
       }
-
-      case "SNDCHAIN":
-        // NOT YET IMPLEMENTED -- send chain
-        break;
-
-      //await peer.sendResponse(message.message_id, Buffer.from("OK", "utf-8"));
-      //let send_blockchain_message = SendBlockchainMessage.deserialize(message.message_data, this.app);
-      //for (let data of send_blockchain_message.blocks_data) {
-      //    await network.fetchBlock(data.block_hash.toString("hex"));
-      //}
-      //break;
 
       //
       // this delivers the block as BlockType.Header
@@ -924,6 +925,36 @@ class Network {
       }
     }
   }
+
+
+  //
+  // propagate services
+  //
+  propagateServices(peer=null) {
+
+    let my_services = [];
+    for (let i = 0; i < this.app.modules.mods.length; i++) {
+      let modservices = this.app.modules.mods[i].returnServices();
+      if (modservices.length > 0) {
+        for (let k = 0; k < modservices.length; k++) {
+          my_services.push(modservices[k]);
+        }
+      }
+    }
+
+    if (peer == null) {
+      for (let i = 0; i < this.peers.length; i++) {
+        if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
+          this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), this.peers[i]);
+        }
+      }
+    } else {
+      this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), peer);
+    }
+  }
+
+
+
 
   //
   // propagate transaction
