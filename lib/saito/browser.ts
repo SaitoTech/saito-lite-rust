@@ -18,6 +18,8 @@ class Browser {
     this.browser_active = 0;
     this.drag_callback = null;
     this.urlParams = {};
+    this.active_module = "";
+    this.host = "";
 
     //
     // tells us the browser window is visible, as opposed to
@@ -114,10 +116,11 @@ class Browser {
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
       const myurlpath = myurl.pathname.split("/");
+      let host = myurlpath[0];
       let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : "";
-      if (active_module == "") {
-        active_module = "website";
-      }
+      if (active_module == "") { active_module = "website"; }
+      this.active_module = active_module;
+      this.host = host;
 
       //
       // query strings
