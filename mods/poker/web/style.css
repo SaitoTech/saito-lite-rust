@@ -46,10 +46,17 @@ body {
 /* display chips */
 .chip_stack{
   position: relative;
-  top: 90%;
-  left: 115%;
+  top: 100%;
+  left: 100%;
 }
 
+.poker-seat-1 .chip_stack{
+  top: 85%;
+}
+
+.poker-seat-5 .chip_stack{
+  left: 115%;
+}
 .chip_stack .poker_chip{
   position: absolute;
   width: 100px;

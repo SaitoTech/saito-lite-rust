@@ -229,7 +229,10 @@ console.log("--------- SNR ---------");
         } 
      }
 
-     this.displayPlayers(); //to update chips before game_over
+    if (this.browser_active){
+      this.displayPlayers(true); //to update chips before game_over
+    }
+     
 
     //Catch that only one player is standing at the start of the new round
     if (alive_players == 1) {
@@ -245,7 +248,9 @@ console.log("--------- SNR ---------");
     //
     let removal = false;
 
-    if (this.game.state.player_credit.length > 2) {
+    if (alive_players < this.game.state.player_credit.length) {
+      console.log("Need to remove a player");
+      console.log(JSON.parse(JSON.stringify(this.game.players)));
       for (let i = 0; i < this.game.state.player_credit.length; i++) {
         if (this.game.state.player_credit[i] <= 0) {
           this.updateLog(`Player ${i+1} has been removed from the game.`);
@@ -278,14 +283,16 @@ console.log("--------- SNR ---------");
       
       //Update DOM -- re-render the playerboxes
       try{
-        //this.playerbox.remove();
         let boxes = document.querySelectorAll(".player-box");
         for (let box of boxes){
           box.remove();
         }
         this.playerbox.render(this.app,this);
-      } catch(err) {
+        this.playerbox.addClassAll("poker-seat-", true);
+        this.playerbox.addStatus(); //enable update Status to display in playerbox
 
+      } catch(err) {
+        console.log("ERROR reRendering Playerboxes",err);
       }
 
       //Fix dealer and blinds Dealer -> Small -> Big
@@ -327,7 +334,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
   startRound(){
 
     console.log("START ROUND");
-    this.displayBoard();
+    
+    this.displayBoard();  
+    
     this.updateLog("Round: " + this.game.state.round);
     this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
 
@@ -464,9 +473,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
           return 1;
         }
+        this.game.state.plays_since_last_raise++;
         console.log("PLAYS SINCE LAST RAISE: "+this.game.state.plays_since_last_raise);
+        
         // Is this the end of betting?
-        if (this.game.state.plays_since_last_raise >= this.game.players.length) {
+        if (this.game.state.plays_since_last_raise > this.game.players.length) {
           //Is this the end of the hand?
           if (this.game.state.flipped == 5) {
             console.log("GO TO SHOWDOWN");
@@ -518,8 +529,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             return 1;
           }
         }
-
-        this.game.state.plays_since_last_raise++;
       
         if (this.game.state.passed[player_to_go - 1] == 1) {
           console.log("THIS PLAYER ALREADY PASSED");
@@ -530,9 +539,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
           return 1;
         } else {
           console.log("GET ACTION");
-          $(".player-box.active").removeClass("active");
-          this.playerbox.addClass("active", player_to_go);
-
+          if (this.browser_active){
+            $(".player-box.active").removeClass("active");
+            this.playerbox.addClass("active", player_to_go);  
+          }
+          
           if (player_to_go == this.game.player) {
             this.playerTurn();
           } else {
@@ -680,11 +691,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-        // do not reformat -- adding whitespace screws with API
-        let ts = new Date().getTime();
-        this.rollDice();
-        let uh = this.game.dice;
-                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
+                      // do not reformat -- adding whitespace screws with API
+                      let ts = new Date().getTime();
+                      this.rollDice();
+                      let uh = this.game.dice;
+                      this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
                     );
                     this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
                     );
@@ -698,10 +709,10 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-      let ts = new Date().getTime();
-      this.rollDice();
-      let uh = this.game.dice;
-      // do not reformat -- adding whitespace screws with API
+                  let ts = new Date().getTime();
+                  this.rollDice();
+                  let uh = this.game.dice;
+                  // do not reformat -- adding whitespace screws with API
                   this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
                   this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }
@@ -806,7 +817,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
           this.game.queue.push("announce");        
           this.game.state.preflop = false;
 
-          this.displayPlayers(true);
+          this.displayPlayers(true); //To refresh the stacks of the small and big blind player
         }   
 
       }
@@ -834,7 +845,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
         this.game.queue.splice(qe, 1);
 
-        this.refreshPlayerStack(player);
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
         
         if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);}
         this.updateLog(this.game.state.player_names[player - 1] + " calls");
@@ -844,8 +855,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       if (mv[0] === "fold") {
         let player = parseInt(mv[1]);
 
-        if (this.game.player !== player) {
-          this.refreshPlayerStack(player);
+        if (this.game.player !== player && this.browser_active) {
+          this.refreshPlayerStack(player, false); //Here we want to hide cards
           this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
         }
         this.updateLog(this.game.state.player_names[player - 1] + " folds");
@@ -859,7 +870,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         this.updateLog(this.game.state.player_names[player - 1] + " checks.");
-        if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">checks</div>`, player);}
+        if (this.game.player !== player && this.browser_active) {
+          this.playerbox.refreshLog(`<div class="plog-update">checks</div>`, player);
+        }
         return 1;
       }
 
@@ -867,22 +880,19 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
         let player = parseInt(mv[1]);
         let raise = parseInt(mv[2]); //Includes call portion (if any)
-
-console.log("raise is: " + raise);
-
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
 
-console.log("raise portion: "  + raise_portion);
-console.log("call portion: "  + call_portion);
-
+        console.log("raise is: " + raise);
+        console.log("raise portion: "  + raise_portion);
+        console.log("call portion: "  + call_portion);
+  
         if (raise_portion <= 0){
           salert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise",mv);
           this.outputState();
         }
         
-        //We have this.players.length - 1 turns to raise the bet or end the round
         this.game.state.plays_since_last_raise = 1;
 
         this.game.state.player_credit[player - 1] -= raise;
@@ -894,17 +904,17 @@ console.log("call portion: "  + call_portion);
         if (call_portion > 0) {  
           if (raise_portion > 0) {
             this.updateLog(`${this.game.state.player_names[player - 1]} raises ${raise_portion} to ${this.game.state.player_pot[player - 1]}`);
-            if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise_portion}</div>`, player);}
+            if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise_portion}</div>`, player);}
           } else {
             this.updateLog(`${this.game.state.player_names[player - 1]} calls ${call_portion}`);
           }
         } else {
           this.updateLog(`${this.game.state.player_names[player - 1]} raises ${raise_portion} to ${this.game.state.player_pot[player - 1]}`);
-          if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise}</div>`, player);}
+          if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise}</div>`, player);}
         }
         this.game.queue.splice(qe, 1);
 
-        this.refreshPlayerStack(player);
+        this.refreshPlayerStack(player, true); //Here we don't want to hide cards
 
         return 1;
       }
@@ -1217,11 +1227,11 @@ console.log("id is: " + (this_raise + match_required));
  ***************/
 
   displayBoard() {
-    if (this.browser_active == 0) {
+    if (!this.browser_active) {
       return;
     }
     try {
-      this.displayPlayers();
+      this.displayPlayers(); //Clear player log
       this.displayHand();
       this.displayTable();
     } catch (err) {
@@ -1230,6 +1240,9 @@ console.log("id is: " + (this_raise + match_required));
   }
 
   displayPlayers(preserveLog = false) {
+    if (!this.browser_active){
+      return;
+    }
   try {
     /*let player_box = "";
     var prank = "";
@@ -1241,20 +1254,7 @@ console.log("id is: " + (this_raise + match_required));
 
     for (let i = 1; i <= this.game.players.length; i++) {
       this.playerbox.refreshName(i);
-      this.refreshPlayerStack(i);
-
-      
-      if (i != this.game.player && !this.game.state.passed[i-1]) {
-        //Show backs of cards
-        let newhtml = `
-          <div class="other-player-hand hand tinyhand">
-            <img class="card" src="${this.card_img_dir}/red_back.png">
-            <img class="card" src="${this.card_img_dir}/red_back.png">
-          </div>
-        `;
-        //Need to put tinyhand and chip-stack both in graphic
-        this.playerbox.appendGraphic(newhtml, i);
-      }
+      this.refreshPlayerStack(i, true);
 
       if (!preserveLog){
         this.playerbox.refreshLog("",i);
@@ -1286,6 +1286,9 @@ console.log("id is: " + (this_raise + match_required));
   }
 
   displayTable() {
+    if (!this.browser_active){
+      return;
+    }
     try {
       if (document.querySelector("#deal")){
         let newHTML = "";
@@ -1316,7 +1319,10 @@ console.log("id is: " + (this_raise + match_required));
     } catch (err) { console.log("error displaying table");}
   }
 
-  refreshPlayerStack(player){
+  refreshPlayerStack(player, includeCards = true){
+    if (!this.browser_active){
+      return;
+    }
     //Update numerical stack
     let html = "";
     if (this.game.state.player_credit[player - 1] === 0){
@@ -1328,7 +1334,6 @@ console.log("id is: " + (this_raise + match_required));
     if (this.game.crypto){
       html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
     }
-
     this.playerbox.refreshInfo(html, player);
     
     //Draw literal stack
@@ -1340,6 +1345,22 @@ console.log("id is: " + (this_raise + match_required));
     }
 
     this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
+
+    //Append cards
+    if (includeCards){
+      if (player != this.game.player && !this.game.state.passed[player-1]) {
+        //Show backs of cards
+        let newhtml = `
+          <div class="other-player-hand hand tinyhand">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+          </div>
+        `;
+        //Need to put tinyhand and chip-stack both in graphic
+        this.playerbox.appendGraphic(newhtml, player);
+      }
+    }
+    
   }
   
   returnPlayerStackHTML(player,numChips){
@@ -1352,7 +1373,7 @@ console.log("id is: " + (this_raise + match_required));
       numSmallChips += 10;
       numBigChips --;
     }
-    //console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
+    console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
     for (let i = 0; i < numBigChips; i++){
       html += this.returnChipHTML(false, player, i*8);
     }
@@ -2443,6 +2464,12 @@ console.log("id is: " + (this_raise + match_required));
   /*Helper functions for display and options*/
 
   cardToHuman(card) {
+    if (!this.game.deck[0].cards[card]){
+      console.log("Deck error: " + card);
+      console.log(JSON.parse(JSON.stringify(this.game.deck[0].hand)));
+      console.log(JSON.parse(JSON.stringify(this.game.deck[0].cards)));
+      return "";
+    }
     let h = this.game.deck[0].cards[card].name;
     h = h.replace(".png", "");
     h = h.replace("13", "K");
