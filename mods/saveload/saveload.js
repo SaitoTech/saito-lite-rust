@@ -46,37 +46,30 @@ class Saveload extends ModTemplate {
 
   initialize(app) {
 
-console.log("browser active module: " + this.app.browser.active_module);
-console.log("browser hpst: " + this.app.browser.host);
-
-
-    if (this.app.browser.active_module === "loadgame") {
+    if (this.app.browser.active_module === "load") {
       let game_id = this.app.browser.returnURLParameter("game_id");
-      let c = confirm("Are you sure you wish to load this game? Clicking YES will redirect you into the game.");
-      if (c) {
 
-	let game_obj = this.app.options.saves[game_id];
+      if (game_id != "") {
 
-alert("ID: " + game_obj.id);
-alert("QUEUE: " + game_obj.queue);
+        let c = confirm("Are you sure you wish to load this game? Clicking YES will redirect you into the game.");
+        if (c) {
 
-	for (let i = 0; i < this.app.options.games.length; i++) {
-	  if (this.app.options.games[i].id == game_id) {
-console.log("FOUND GAME ID");
-	    game_obj.ts = new Date().getTime();
-	    this.app.options.games[i] = game_obj;
-console.log("SETTING AT: " + i);
-	    this.app.storage.saveOptions();
-	    for (let z = 0; z < this.app.modules.mods.length; z++) {
-	      if (this.app.modules.mods[z].name === game_obj.module) {
-		let game_slug = this.app.modules.mods[z].returnSlug();
-alert("about to move!");
-		window.location = "/"+game_slug;
+  	  let game_obj = this.app.options.saves[game_id];
+
+	  for (let i = 0; i < this.app.options.games.length; i++) {
+	    if (this.app.options.games[i].id == game_id) {
+	      game_obj.ts = new Date().getTime();
+	      this.app.options.games[i] = game_obj;
+	      this.app.storage.saveOptions();
+	      for (let z = 0; z < this.app.modules.mods.length; z++) {
+	        if (this.app.modules.mods[z].name === game_obj.module) {
+	  	  let game_slug = this.app.modules.mods[z].returnSlug();
+		  window.location = "/"+game_slug;
+	        }
 	      }
 	    }
 	  }
 	}
-console.log(game_json);
       }
     }
 
