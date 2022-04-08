@@ -8,6 +8,8 @@ import path from "path";
 import sqlite from "sqlite";
 import { Saito } from "../../../apps/core";
 import Block from "../block";
+import Slip , { SlipType } from "../slip";
+
 
 class StorageCore extends Storage {
   public data_dir: any;
@@ -307,6 +309,87 @@ class StorageCore extends Storage {
       return;
     }
   }
+
+
+
+  //
+  // token issuance functions below
+  //
+  returnTokenSupplySlipsFromDisk(): any {
+
+    let v: any = [];
+    let tokens_issued = 0;
+    let filename;
+    let contents;
+    let slips;
+    let s;
+
+    filename = this.data_dir + "/issuance/issuance";
+    contents = fs.readFileSync(filename);
+    contents = contents.toString();
+    slips = contents.split("\n");
+    for (let i = 0; i < slips.length; i++) {
+      if (slips[i] !== "") {
+        s = this.convertIssuanceIntoSlip(slips[i]);
+	if (s != null) { v.push(s); }
+      }
+    }
+
+    filename = this.data_dir + "/issuance/default";
+    contents = fs.readFileSync(filename);
+    contents = contents.toString();
+    slips = contents.split("\n");
+    for (let i = 0; i < slips.length; i++) {
+      if (slips[i] !== "") {
+        s = this.convertIssuanceIntoSlip(slips[i]);
+	if (s != null) { v.push(s); }
+      }
+    }
+
+    filename = this.data_dir + "/issuance/earlybirds";
+    contents = fs.readFileSync(filename);
+    contents = contents.toString();
+    slips = contents.split("\n");
+    for (let i = 0; i < slips.length; i++) {
+      if (slips[i] !== "") {
+        s = this.convertIssuanceIntoSlip(slips[i]);
+	if (s != null) { v.push(s); }
+      }
+    }
+
+    return v;
+  }
+
+
+  convertIssuanceIntoSlip(line = "") { 
+
+    let entries = line.split("\t");
+
+console.log(JSON.stringify(entries));
+
+    let amount = BigInt(entries[0]);
+    let publickey = entries[1];
+    let type = entries[2];
+
+    let slip = new Slip(
+      publickey , 
+      amount 
+    );
+
+    if (type === "VipOutput") {
+      slip.type = SlipType.VipOutput;
+    }
+    if (type === "StakerDeposit") {
+      slip.type = SlipType.StakerDeposit;
+    }
+    if (type === "Normal") {
+      slip.type = SlipType.Normal;
+    }
+
+    return slip;
+  }
+
+
 
   // overwrite to stop the server from attempting to reset options live
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

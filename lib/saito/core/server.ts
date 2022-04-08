@@ -339,81 +339,106 @@ class Server {
     });
 
     app.get("/block/:hash", async (req, res) => {
-      const hash = req.params.hash;
-      console.debug("fetching block : " + hash);
-      if (!hash) {
-        console.warn("hash not provided");
-        return res.sendStatus(400); // Bad request
-      }
 
-      const block = await this.app.blockchain.loadBlockAsync(hash);
-      if (!block) {
-        console.warn("block not found for : " + hash);
-        return res.sendStatus(404); // Not Found
-      }
-      let buffer = block.serialize();
-      let bufferString = Buffer.from(buffer).toString("base64");
+      try {
 
-      res.status(200);
-      res.end(bufferString);
+        const hash = req.params.hash;
+        console.debug("server giving out block : " + hash);
+        if (!hash) {
+          console.warn("hash not provided");
+          return res.sendStatus(400); // Bad request
+        }
+
+        const block = await this.app.blockchain.loadBlockAsync(hash);
+        if (!block) {
+          console.warn("block not found for : " + hash);
+          return res.sendStatus(404); // Not Found
+        }
+        let buffer = block.serialize();
+        let bufferString = Buffer.from(buffer).toString("base64");
+
+        res.status(200);
+        res.end(bufferString);
+
+      } catch (err) {
+
+	console.log("ERROR: server cannot feed out block");
+
+      }
     });
 
     app.get("/json-block/:hash", async (req, res) => {
-      const hash = req.params.hash;
-      console.debug("fetching block : " + hash);
 
-      if (!hash) {
-        console.warn("hash not provided");
-        return res.sendStatus(400); // Bad request
-      }
+      try {
 
-      const block = await this.app.blockchain.loadBlockAsync(hash);
-      if (!block) {
-        console.warn("block not found for : " + hash);
-        return res.sendStatus(404); // Not Found
-      }
+        const hash = req.params.hash;
+        console.debug("server giving out block : " + hash);
 
-      let block_to_return = { block: {}, transactions: {} };
-      if (block?.block) {
+        if (!hash) {
+          console.warn("hash not provided");
+          return res.sendStatus(400); // Bad request
+        }
+
+        const block = await this.app.blockchain.loadBlockAsync(hash);
+        if (!block) {
+          console.warn("block not found for : " + hash);
+          return res.sendStatus(404); // Not Found
+        }
+
+        let block_to_return = { block: {}, transactions: {} };
+        if (block?.block) {
+          block_to_return.block = JSON.parse(JSON.stringify(block.block));
+        }
+        if (block?.transactions) {
+          block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+        }
+
+        let buffer = JSON.stringify(block_to_return).toString("utf-8");
+        buffer = Buffer.from(buffer, "utf-8");
+
+        res.status(200);
+        res.end(buffer);
+ 
+        } catch (err) {
+	  console.log("ERROR: server cannot feed out block");
+	}
+
+    });
+
+    app.get("/json-block/:hash", async (req, res) => {
+
+      try {
+
+        const hash = req.params.hash;
+        console.debug("server giving out block : " + hash);
+
+        if (!hash) {
+          console.warn("hash not provided");
+          return res.sendStatus(400); // Bad request
+        }
+
+        const block = await this.app.blockchain.loadBlockAsync(hash);
+        if (!block) {
+          console.warn("block not found for : " + hash);
+          return res.sendStatus(404); // Not Found
+        }
+
+        let block_to_return = { block: null, transactions: null };
+
         block_to_return.block = JSON.parse(JSON.stringify(block.block));
-      }
-      if (block?.transactions) {
         block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
+
+        let buffer = JSON.stringify(block_to_return).toString("utf-8");
+        console.log("buffer is created!");
+        buffer = Buffer.from(buffer, "utf-8");
+
+        res.status(200);
+        res.end(buffer);
+
+      } catch (err) {
+        console.log("ERROR: server cannot feed out block ");
       }
 
-      let buffer = JSON.stringify(block_to_return).toString("utf-8");
-      buffer = Buffer.from(buffer, "utf-8");
-
-      res.status(200);
-      res.end(buffer);
-    });
-
-    app.get("/json-block/:hash", async (req, res) => {
-      const hash = req.params.hash;
-      console.debug("fetching block : " + hash);
-
-      if (!hash) {
-        console.warn("hash not provided");
-        return res.sendStatus(400); // Bad request
-      }
-
-      const block = await this.app.blockchain.loadBlockAsync(hash);
-      if (!block) {
-        console.warn("block not found for : " + hash);
-        return res.sendStatus(404); // Not Found
-      }
-
-      let block_to_return = { block: null, transactions: null };
-
-      block_to_return.block = JSON.parse(JSON.stringify(block.block));
-      block_to_return.transactions = JSON.parse(JSON.stringify(block.transactions));
-
-      let buffer = JSON.stringify(block_to_return).toString("utf-8");
-      console.log("buffer is created!");
-      buffer = Buffer.from(buffer, "utf-8");
-
-      res.status(200);
-      res.end(buffer);
     });
 
     /////////
