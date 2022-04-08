@@ -55,19 +55,22 @@ console.log("browser hpst: " + this.app.browser.host);
       let c = confirm("Are you sure you wish to load this game? Clicking YES will redirect you into the game.");
       if (c) {
 
-alert("loading!");
+	let game_obj = this.app.options.saves[game_id];
 
-	let game_json = this.app.options.saves[game_id];
-	let game_obj = JSON.parse(game_json);
+alert("ID: " + game_obj.id);
+alert("QUEUE: " + game_obj.queue);
 
 	for (let i = 0; i < this.app.options.games.length; i++) {
 	  if (this.app.options.games[i].id == game_id) {
-	    this.app.options.games[i] == game_obj;
-	    this.app.options.games[i].ts = new Date().getTime();
+console.log("FOUND GAME ID");
+	    game_obj.ts = new Date().getTime();
+	    this.app.options.games[i] = game_obj;
+console.log("SETTING AT: " + i);
 	    this.app.storage.saveOptions();
 	    for (let z = 0; z < this.app.modules.mods.length; z++) {
 	      if (this.app.modules.mods[z].name === game_obj.module) {
 		let game_slug = this.app.modules.mods[z].returnSlug();
+alert("about to move!");
 		window.location = "/"+game_slug;
 	      }
 	    }
