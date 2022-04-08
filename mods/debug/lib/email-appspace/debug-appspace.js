@@ -7,6 +7,7 @@ module.exports = DebugAppspace = {
       document.querySelector(".email-appspace").innerHTML = sanitize(DebugAppspaceTemplate());
 try {
       var tree = jsonTree.create(app.options, document.getElementById("email-appspace-debug"));
+      console.log(tree)
 } catch (err) {
   console.log("error creating jsonTree: " + jsonTree);
 }

@@ -26,7 +26,7 @@ module.exports = ArcadePosts = {
         this.addPost(app, mod, mod.posts[i]);
       }
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   },
 
@@ -93,6 +93,7 @@ module.exports = ArcadePosts = {
     if (ptitle.length > 80) { ptitle = ptitle.substring(0, 80) + "..."; }
 
     try {
+ 
       document.querySelector(`#forum-topic-latest-post-title-${topic}`).innerHTML = sanitize(ptitle);
       document.querySelector(`#forum-topic-latest-post-user-${topic}`).innerHTML = sanitize(fuser);
       document.querySelector(`#forum-topic-latest-post-date-${topic}`).innerHTML = sanitize(fdate);
@@ -116,7 +117,7 @@ module.exports = ArcadePosts = {
 
       
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
 
   }

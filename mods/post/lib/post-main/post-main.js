@@ -110,7 +110,7 @@ module.exports = PostMain = {
         document.querySelector(`#forum-topic-posts-text-${topic}`).innerHTML = "posts";
       }
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
 
   }
