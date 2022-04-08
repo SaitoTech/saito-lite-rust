@@ -690,6 +690,7 @@ class Block {
   }
 
   async generate(previous_block_hash, mempool = null) {
+
     //
     // fetch consensus values from preceding block
     //
@@ -727,6 +728,7 @@ class Block {
     this.block.timestamp = current_timestamp;
     this.block.difficulty = previous_block_difficulty;
 
+
     //
     // swap in transactions
     //
@@ -736,6 +738,24 @@ class Block {
     //
     this.transactions = mempool.mempool.transactions;
     mempool.mempool.transactions = [];
+
+
+    //
+    // first block gets issuance
+    //
+    if (this.block.id === 1) {
+      let tokens_issued = BigInt(0);
+      let slips = this.app.storage.returnTokenSupplySlipsFromDisk();
+      let newtx = this.app.wallet.createUnsignedTransaction();
+      newtx.transaction.type = TransactionType.Issuance;
+      for (let i = 0; i < slips.length; i++) {
+        tokens_issued += BigInt(slips[i].amt);
+	newtx.transaction.to.push(slips[i]);
+      }
+      newtx = this.app.wallet.signTransaction(newtx);
+      this.transactions.push(newtx);
+    }
+
 
     //
     // swap in golden ticket
