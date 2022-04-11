@@ -2115,6 +2115,187 @@
 
   }
 
+  returnNewDiplomaticCardsForThisTurn(turn = 1) {
+
+    let deck = this.returnDiplomaticDeck();
+    let new_deck = {};
+
+    for (let key in deck) {
+      if (deck[key].turn === turn) {
+        new_deck[key] = deck[key];
+      }
+    }
+
+    return new_deck;
+
+  }
+
+
+  returnDiplomaticDeck() {
+
+    let deck = {};
+
+    deck['201'] = { 
+      img : "cards/HIS-201.svg" , 
+      name : "Andrea Doria" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['202'] = { 
+      img : "cards/HIS-202.svg" , 
+      name : "Frech Constable Invades" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['203'] = { 
+      img : "cards/HIS-203.svg" , 
+      name : "Corsair Raid" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['204'] = { 
+      img : "cards/HIS-204.svg" , 
+      name : "Diplomatic Marriage" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['205'] = { 
+      img : "cards/HIS-205.svg" , 
+      name : "Diplomatic Pressure" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['206'] = { 
+      img : "cards/HIS-206.svg" , 
+      name : "Frech Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['207'] = { 
+      img : "cards/HIS-207.svg" , 
+      name : "Henry Petitions for Divorce" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['208'] = { 
+      img : "cards/HIS-208.svg" , 
+      name : "Knights of St.John" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['209'] = { 
+      img : "cards/HIS-209.svg" , 
+      name : "Plague" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['210'] = { 
+      img : "cards/HIS-210.svg" , 
+      name : "Shipbuilding" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['211'] = { 
+      img : "cards/HIS-211.svg" , 
+      name : "Spanish Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['212'] = { 
+      img : "cards/HIS-212.svg" , 
+      name : "Venetian Alliance" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['213'] = { 
+      img : "cards/HIS-213.svg" , 
+      name : "Austrian Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['214'] = { 
+      img : "cards/HIS-214.svg" , 
+      name : "Imperial Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['215'] = { 
+      img : "cards/HIS-215.svg" , 
+      name : "Machiavelli" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['216'] = { 
+      img : "cards/HIS-216.svg" , 
+      name : "Ottoman Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['217'] = { 
+      img : "cards/HIS-217.svg" , 
+      name : "Secret Protestant Circle" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['218'] = { 
+      img : "cards/HIS-218.svg" , 
+      name : "Siege of Vienna" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['219'] = { 
+      img : "cards/HIS-219.svg" , 
+      name : "Spanish Inquisition" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+
+    for (let key in deck) {
+      deck[key] = this.addEvents(deck[key]);
+    }
+
+    return deck;
+
+  }
+
   returnDeck() {
 
     var deck = {};
@@ -3131,158 +3312,6 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       name : "Rough Wooing" ,
       ops : 3 ,
       turn : 5 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['201'] = { 
-      img : "cards/HIS-201.svg" , 
-      name : "Andrea Doria" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['202'] = { 
-      img : "cards/HIS-202.svg" , 
-      name : "Frech Constable Invades" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['203'] = { 
-      img : "cards/HIS-203.svg" , 
-      name : "Corsair Raid" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['204'] = { 
-      img : "cards/HIS-204.svg" , 
-      name : "Diplomatic Marriage" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['205'] = { 
-      img : "cards/HIS-205.svg" , 
-      name : "Diplomatic Pressure" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['206'] = { 
-      img : "cards/HIS-206.svg" , 
-      name : "Frech Invasion" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['207'] = { 
-      img : "cards/HIS-207.svg" , 
-      name : "Henry Petitions for Divorce" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['208'] = { 
-      img : "cards/HIS-208.svg" , 
-      name : "Knights of St.John" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['209'] = { 
-      img : "cards/HIS-209.svg" , 
-      name : "Plague" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['210'] = { 
-      img : "cards/HIS-210.svg" , 
-      name : "Shipbuilding" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['211'] = { 
-      img : "cards/HIS-211.svg" , 
-      name : "Spanish Invasion" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['212'] = { 
-      img : "cards/HIS-212.svg" , 
-      name : "Venetian Alliance" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['213'] = { 
-      img : "cards/HIS-213.svg" , 
-      name : "Austrian Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['214'] = { 
-      img : "cards/HIS-214.svg" , 
-      name : "Imperial Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['215'] = { 
-      img : "cards/HIS-215.svg" , 
-      name : "Machiavelli" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['216'] = { 
-      img : "cards/HIS-216.svg" , 
-      name : "Ottoman Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['217'] = { 
-      img : "cards/HIS-217.svg" , 
-      name : "Secret Protestant Circle" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['218'] = { 
-      img : "cards/HIS-218.svg" , 
-      name : "Siege of Vienna" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-    }
-    deck['219'] = { 
-      img : "cards/HIS-219.svg" , 
-      name : "Spanish Inquisition" ,
-      ops : 0 ,
-      turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }

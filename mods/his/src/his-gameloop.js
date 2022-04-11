@@ -196,6 +196,10 @@ console.log("NEW WORLD PHASE!");
 
 	  }
 
+	  //
+	  // phase otherwise removed entirely for 2P
+	  //
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -259,12 +263,36 @@ console.log("NEW WORLD PHASE!");
 	}
         if (mv[0] === "diplomacy_phase") {
 
+	  //
+	  // 2-player game? Diplomacy Deck
+	  //
+	  if (this.game.players.length == 2) {
+	    for (let i = this.game.players_info.length-1; i >= 0; i--) {
+	      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+    	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t1");
+	      }
+	    }
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+	    for (let i = this.game.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKENCRYPT\t1\t"+(i));
+	    }
+	    for (let i = this.game.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKXOR\t1\t"+(i));
+	    }
+	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
+    	    this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+	  }
+
 console.log("just in diplomacy phase!");
 console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  this.game.queue.splice(qe, 1);
           return 1;
+
         }
+
         if (mv[0] === "card_draw_phase") {
 
 	  //
