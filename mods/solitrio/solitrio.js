@@ -61,6 +61,9 @@ class Solitrio extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+    console.log("SET WITH GAMEID: " + game_id);
+
     this.updateStatus("loading game...");
 
     //  
@@ -76,7 +79,9 @@ class Solitrio extends GameTemplate {
 console.log("GAME ID: " + game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
+console.log("this is our dice????: " + this.game.dice);
+    if (this.game.dice == "") { 
+this.initializeDice(); this.initializeSinglePlayerGame(); }
 
     if (!this.game.state) {
 

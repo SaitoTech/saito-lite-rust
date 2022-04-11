@@ -11,6 +11,10 @@ class Browser {
   public active_tab: any;
   public files: any;
   public returnIdentifier: any;
+  public active_module: any;
+  public host: any;
+  public port: any;
+  public protocol: any;
 
   constructor(app) {
     this.app = app || {};
@@ -209,7 +213,11 @@ class Browser {
         siteMessage("Websocket Connection Lost");
       });
     }
+
+
   }
+
+
 
   returnURLParameter(name) {
     try {
