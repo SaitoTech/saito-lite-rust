@@ -74,7 +74,7 @@ class Solitrio extends GameTemplate {
     this.loadGame(this.game.id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
+    if (this.game.dice == "") { this.initializeDice(); this.initializeSinglePlayerGame(); }
 
     if (!this.game.state) {
 
