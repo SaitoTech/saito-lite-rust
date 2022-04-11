@@ -153,79 +153,93 @@ hr {
 
 
 /*  Stun UI CSS */
-.stun-ui-container {
-  padding: 2rem;
-}
-.stun-ui-container .heading {
-  font-size: 1.9rem;
-}
-.stun-ui-container .my-heading {
-  font-size: 1.5rem;
-  margin-top: 3rem;
-  color: rgb(247, 31, 61);
+.stun-container {
+  padding: 1.5rem;
+  font-size: 1.2rem;
+  transition: all 0.3s;
 }
 
-.stun-information-container {
-  margin-top: 1.4rem;
-}
-.stun-information-container.peer {
-  border-bottom: 1px solid black;
-  padding: 1rem 0;
-}
-.stun-information-container .stun-info {
+.stun-container__bar {
   display: flex;
-  width: 40rem;
-  /* background-color: red; */
-  margin-bottom: 0.8rem;
+  /* justify-content: center; */
+}
+.stun-container__bar button {
+  color: #f71f3d;
+  border: 1px solid #f71f3d;
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background-color: white;
+  transition: all 0.3s;
 }
 
-.stun-info {
-  position: relative;
-}
-
-.stun-info .stun-info-name {
-  font-weight: bold;
-  font-size: 1rem;
-}
-.stun-info .stun-info-data {
-  margin-left: auto;
-  width: 10rem;
-  color: rgb(247, 0, 255);
-}
-.stun-info .stun-info-data.offer {
-  width: 20rem;
-  height: 10rem;
-  border: 1px solid black;
-  color: black;
-  border-radius: 12px;
-  height: 15rem;
-  padding: 0.5rem;
-  font-size: .8rem;
-  overflow-y: scroll;
-}
-
-.stun-info .generate {
-  position: absolute;
-  right: 0;
-  bottom: -.2rem;
-  background-color: rgb(247, 31, 61);
+.stun-container__bar button:hover {
+  background-color: #f71f3d;
   color: white;
-  border: none;
-  border-radius: 0 0 12px 0;
-  padding: 0.5rem 0.9rem;
-  cursor: pointer;
+}
+button.button-active {
+  background-color: #f71f3d;
+  color: white;
 }
 
-.stun-information-peer-container {
-  margin-top: 2rem;
-  height: 30rem;
-  padding: 2rem;
-  overflow-y: scroll;
+.stun-information {
+  margin-top: 6rem;
+}
+
+.stun-information .name {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.stun-information .data {
+  font-size: 1.2rem;
+  color: rgba(0, 0, 0, 0.541);
+}
+
+.stun-information .data.offer {
   border: 1px solid black;
-  border-radius: 12px;
+
+  border-radius: 8px;
+  height: 10rem;
+  overflow-y: scroll;
 }
 
+.stun-information .generate-offer {
+  position: absolute;
+  bottom: 0rem;
+  right: 0.8rem;
+  transition: all 0.4s;
+}
 
+/*  listners container */
+
+.listeners-container .input-container {
+  margin-bottom: 3rem;
+}
+.listeners-container > label {
+  font-weight: bold;
+}
+.listeners-container .input-container > textarea {
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.listeners-container .input-container > button {
+  right: 0;
+}
+
+.appear {
+  animation: appear 0.3s;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 
 
