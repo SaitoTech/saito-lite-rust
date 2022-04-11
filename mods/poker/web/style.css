@@ -20,6 +20,12 @@ body {
   overflow: hidden;
 }
 
+.player-box-graphic{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: -10;
+}
 
 /* Since Poker only has two cards in a hand, can adjust the angles*/
 .cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
@@ -37,6 +43,49 @@ body {
   position: relative;
 }
 
+/* display chips */
+.chip_stack{
+  position: relative;
+  top: 100%;
+  left: 100%;
+}
+
+.poker-seat-1 .chip_stack{
+  top: 85%;
+}
+
+.poker-seat-5 .chip_stack{
+  left: 115%;
+}
+.chip_stack .poker_chip{
+  position: absolute;
+  width: 100px;
+  stroke: black;
+}
+
+.pstack1 .poker_chip, #stripes1{
+  fill: red;
+}
+.pstack2 .poker_chip, #stripes2{
+  fill: blue;
+}
+.pstack3 .poker_chip, #stripes3{
+  fill: yellow;
+}
+.pstack4 .poker_chip, #stripes4{
+  fill: white;
+}
+.pstack5 .poker_chip, #stripes5{
+  fill: green;
+}
+.pstack6 .poker_chip, #stripes6{
+  fill: purple;
+}
+
+.poker-seat-2 .chip_stack, .poker-seat-3 .chip_stack{
+  left: unset;
+  right: 15%;
+}
 
 .deal .card {
   width: max(11vw,100px);
@@ -46,7 +95,7 @@ body {
 .deal {
   margin: 0 auto;
   position: absolute;
-  top: 40vh;
+  top: 45vh;
   left: 50vw;
   transform: translateX(-50%);
   width: unset;
@@ -57,16 +106,24 @@ body {
 
 .pot {
   position: absolute;
-  top: 32vh;
+  top: 37vh;
   left: 50vw;
   transform: translateX(-50%);
-  background-color: #4448;
+  font-size: 5vh;
+  height: 7vh;
+  display: flex;
+  flex-direction: row;
+  /*background-color: #4448;
   padding: 1vh 1.5em;
   text-align: center;
-  height: 7vh;
-  font-size: 5vh;
   font-weight: bold;
-  color: #efefef;
+  color: #efefef;*/
+}
+
+.pot .chip_stack{
+  top:  unset;
+  left: unset;
+  width: 100px;
 }
 
 
@@ -119,10 +176,12 @@ body {
   width: unset;
 }
 .tiptext{
-  min-width: unset;
+  font-size: 20px;
+  min-width: 100px;
+  text-align: center;
   width: unset;
   border: none;
-  line-height: 1em;
+  /*line-height: 1em;*/
   padding: 0.5em;
   background-color: #fefefeee;
 }

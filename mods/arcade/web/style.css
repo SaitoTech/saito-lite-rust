@@ -46,6 +46,12 @@ body {
 .game-overlay select {
   text-transform: capitalize;
 }
+.game-overlay .options_notice{
+  margin-bottom: 1.2rem;
+  color: var(--saito-white);
+  font-style: italic;
+  text-align: center;
+}
 
 #arcade-posts-insert-add-contact {
   margin-right: 15px;
