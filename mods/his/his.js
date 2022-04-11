@@ -418,7 +418,49 @@ class HereIStand extends GameTemplate {
       battle_rating	:	2,
       command_value	:	0,
     });
- 
+
+    this.importUnit('maurice-of-saxony', {
+      type		:	"maurice-of-saxony" ,
+      name		: 	"Maurice of Saxony",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Maurice_Protestant.svg",
+      battle_rating	:	1,
+      command_value	:	6,
+    });
+
+
+
+    this.importUnit('zwingli', {
+      type		:	"zwingli" ,
+      name		: 	"Ulrich Zwingli",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"ZwingliDebater.svg",
+    });
+
+    this.importUnit('cranmer', {
+      type		:	"cranmer" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"CranmerDebater.svg",
+    });
+
+    this.importUnit('calvin', {
+      type		:	"calvin" ,
+      name		: 	"John Calvin",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CalvinDebater.svg",
+    });
+
+
+
+
+
+
+
 
 
     let first_time_running = 0;
@@ -1095,6 +1137,8 @@ console.log("adding stuff!");
     state.cologne_electoral_bonus = 0;
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
+
+    state.debaters = [];
 
     return state;
 
@@ -4825,6 +4869,16 @@ console.log("NEW WORLD PHASE!");
         if (mv[0] === "diplomacy_phase") {
 
 	  //
+	  // 2-player game? both players play a diplomacy card
+	  // AFTER they have been dealt on every turn after T1
+	  //
+	  if (this.game.state.round > 1) {
+    	    this.game.queue.push("play_diplomacy_card\tpapacy");
+    	    this.game.queue.push("play_diplomacy_card\tprotestant");
+	  }
+
+
+	  //
 	  // 2-player game? Diplomacy Deck
 	  //
 	  if (this.game.players.length == 2) {
@@ -4927,6 +4981,47 @@ console.log("----------------------------");
 	  // backup any existing DECK #1
           this.game.queue.push("DECKBACKUP\t1");
 
+
+	  //
+	  // "The Protestant army leader Maurice of Saxony is placed 
+	  // on the map at the start of Turn 6. Maurice is the only 
+	  // army leader that doesn’t either start the game on the map
+	  // or enter via a Mandatory Event. Place Maurice in any 
+	  // electorate under Protestant political control."
+	  //
+//
+// is not debater
+//
+//	  if (this.game.round == 6) {
+//    	    this.game.queue.push("place_protestant_debater\tmaurice_of_saxony\tselect");
+//	  }
+	  if (this.game.round == 2) {
+    	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
+	  }
+	  if (this.game.round == 4) {
+    	    this.game.queue.push("place_protestant_debater\tcalvin\tgeneva");
+	  }
+
+	  //
+	  // dynamic - turn after Henry VIII maries Anne Boleyn
+	  //
+	  if (this.game.round == 6) {
+    	    this.game.queue.push("place_protestant_debater\tcranmer\tlondon");
+	  }
+
+	  //
+	  // "Naval leaders eliminated from play are also brought back 
+	  // during the Card Draw Phase. Place them in a friendly port 
+	  // if possible. If no friendly port exists, they remain on 
+	  // the Turn Track for another turn. Naval units eliminated in 
+	  // a previous turn are also returned to each power’s pool of 
+	  // units available to be constructed at this time."
+	  //
+    	  this.game.queue.push("restore\tnaval_leaders");
+
+	  
+
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -5001,6 +5096,26 @@ console.log("----------------------------");
           return 0;
         }
 
+
+	if (mv[0] === "place_protestant_debater") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let name = mv[3];
+	  let location = mv[4];
+
+	  this.updateLog(unitname + " enters at " + location);
+	  this.addDebater("protestant", location, name);
+	  if (this.game.spaces[space].religion != "protestant") {
+	    this.game.spaces[space].religion = "protestant";
+	    this.updateLog(location + " converts to Protestant Religion");
+	  }
+	  this.displaySpace(location);
+
+	  return 1;
+
+	}
+
 	if (mv[0] === "convert") {
 
 	  this.game.queue.splice(qe, 1);
@@ -5035,6 +5150,23 @@ console.log("----------------------------");
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "play_diplomacy_card") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerPlayDiplomacyCard(faction);
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "hand_to_fhand") {
 

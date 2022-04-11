@@ -46,6 +46,7 @@ console.log("MOVE: " + mv[0]);
 	  // start the game with the Protestant Reformation
 	  //
 //	  if (this.game.state.round == 1) {
+//	    this.game.queue.push("diet_of_worms");
 //	    this.updateLog("Luther's 95 Theses!");
 //	    this.game.queue.push("event\t1\t008");
 //	  }
@@ -178,6 +179,21 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
 	}
 
+        if (mv[0] === "diet_of_worms") {
+
+/*
+3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
+4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
+5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
+6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
+*/
+this.updateLog("All players pick simultaneous card");
+
+	  this.game.queue.splice(qe, 1);
+          return 1;
+        }
+
+
         if (mv[0] === "victory_determination_phase") {
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -262,6 +278,16 @@ console.log("NEW WORLD PHASE!");
 
 	}
         if (mv[0] === "diplomacy_phase") {
+
+	  //
+	  // 2-player game? both players play a diplomacy card
+	  // AFTER they have been dealt on every turn after T1
+	  //
+	  if (this.game.state.round > 1) {
+    	    this.game.queue.push("play_diplomacy_card\tpapacy");
+    	    this.game.queue.push("play_diplomacy_card\tprotestant");
+	  }
+
 
 	  //
 	  // 2-player game? Diplomacy Deck
@@ -366,6 +392,47 @@ console.log("----------------------------");
 	  // backup any existing DECK #1
           this.game.queue.push("DECKBACKUP\t1");
 
+
+	  //
+	  // "The Protestant army leader Maurice of Saxony is placed 
+	  // on the map at the start of Turn 6. Maurice is the only 
+	  // army leader that doesn’t either start the game on the map
+	  // or enter via a Mandatory Event. Place Maurice in any 
+	  // electorate under Protestant political control."
+	  //
+//
+// is not debater
+//
+//	  if (this.game.round == 6) {
+//    	    this.game.queue.push("place_protestant_debater\tmaurice_of_saxony\tselect");
+//	  }
+	  if (this.game.round == 2) {
+    	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
+	  }
+	  if (this.game.round == 4) {
+    	    this.game.queue.push("place_protestant_debater\tcalvin\tgeneva");
+	  }
+
+	  //
+	  // dynamic - turn after Henry VIII maries Anne Boleyn
+	  //
+	  if (this.game.round == 6) {
+    	    this.game.queue.push("place_protestant_debater\tcranmer\tlondon");
+	  }
+
+	  //
+	  // "Naval leaders eliminated from play are also brought back 
+	  // during the Card Draw Phase. Place them in a friendly port 
+	  // if possible. If no friendly port exists, they remain on 
+	  // the Turn Track for another turn. Naval units eliminated in 
+	  // a previous turn are also returned to each power’s pool of 
+	  // units available to be constructed at this time."
+	  //
+    	  this.game.queue.push("restore\tnaval_leaders");
+
+	  
+
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -440,6 +507,26 @@ console.log("----------------------------");
           return 0;
         }
 
+
+	if (mv[0] === "place_protestant_debater") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let name = mv[3];
+	  let location = mv[4];
+
+	  this.updateLog(unitname + " enters at " + location);
+	  this.addDebater("protestant", location, name);
+	  if (this.game.spaces[space].religion != "protestant") {
+	    this.game.spaces[space].religion = "protestant";
+	    this.updateLog(location + " converts to Protestant Religion");
+	  }
+	  this.displaySpace(location);
+
+	  return 1;
+
+	}
+
 	if (mv[0] === "convert") {
 
 	  this.game.queue.splice(qe, 1);
@@ -474,6 +561,23 @@ console.log("----------------------------");
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "play_diplomacy_card") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerPlayDiplomacyCard(faction);
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "hand_to_fhand") {
 

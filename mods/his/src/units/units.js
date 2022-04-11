@@ -133,5 +133,47 @@
       battle_rating	:	2,
       command_value	:	0,
     });
- 
+
+    this.importUnit('maurice-of-saxony', {
+      type		:	"maurice-of-saxony" ,
+      name		: 	"Maurice of Saxony",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Maurice_Protestant.svg",
+      battle_rating	:	1,
+      command_value	:	6,
+    });
+
+
+
+    this.importUnit('zwingli', {
+      type		:	"zwingli" ,
+      name		: 	"Ulrich Zwingli",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"ZwingliDebater.svg",
+    });
+
+    this.importUnit('cranmer', {
+      type		:	"cranmer" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"CranmerDebater.svg",
+    });
+
+    this.importUnit('calvin', {
+      type		:	"calvin" ,
+      name		: 	"John Calvin",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CalvinDebater.svg",
+    });
+
+
+
+
+
+
+
 

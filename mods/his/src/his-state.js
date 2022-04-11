@@ -162,6 +162,8 @@
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
 
+    state.debaters = [];
+
     return state;
 
   }
