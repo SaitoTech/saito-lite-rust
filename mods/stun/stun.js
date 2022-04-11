@@ -138,7 +138,7 @@ class Stun extends ModTemplate {
 
     const preferred_crypto = this.app.wallet.returnPreferredCrypto();
     let publickey = preferred_crypto.returnAddress();
-    console.log(publickey)
+    console.log(publickey);
     let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
     if (index === -1) {
@@ -336,7 +336,7 @@ class Stun extends ModTemplate {
 
 
     // add listeners to existing listeners
-    this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners]
+    this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
     this.app.keys.saveKeys();
 
 

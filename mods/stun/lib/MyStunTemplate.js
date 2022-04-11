@@ -10,11 +10,11 @@ module.exports = (app, mod) => {
   const keyss = app.keys.keys;
   console.log("key ", keyss);
   let stun = "";
-  let html = ``;
+
   for (let i = 0; i < app.keys.keys.length; i++) {
     let tk = app.keys.keys[i];
     if (tk.publickey === publicKey) {
-      console.log("public key ", tk.publickey, publicKey)
+      console.log("public key ", tk.publickey, publicKey);
       stun = app.keys.keys[i].data.stun;
 
     }
@@ -22,16 +22,16 @@ module.exports = (app, mod) => {
 
   const canConnectTo = () => {
     const key_index = app.keys.keys.findIndex(tk => tk.publickey === publicKey)
-    let connected = []
-    let html = ""
+
+    let html = "";
     for (let i = 0; i < app.keys.keys.length; i++) {
       if (app.keys.keys[key_index]?.data?.stun?.listeners?.includes(app.keys.keys[i].publickey) && app.keys.keys[i].data?.stun?.listeners?.includes(app.keys.keys[key_index].publickey)) {
-        // connected.push(app.keys.keys[i].publickey);
-        html += `<option  data-id="${app.keys.keys[i].publickey}" value="1">${app.keys.keys[i].publickey}</option>`
+
+        html += `<option  data-id="${app.keys.keys[i].publickey}" value="1">${app.keys.keys[i].publickey}</option>`;
       }
     }
 
-    return html
+    return html;
 
 
   }

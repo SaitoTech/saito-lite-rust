@@ -1,24 +1,24 @@
 module.exports = (app, mod) => {
 
-         console.log(app, mod);
+  console.log(app, mod);
 
-     const preferred_crypto = app.wallet.returnPreferredCrypto();
-     let publicKey = preferred_crypto.returnAddress();
-     const keyss = app.keys.keys;
-     console.log("key ", keyss);
-     let stun = "";
-     let html = ``;
-     for (let i = 0; i < app.keys.keys.length; i++) {
-          let tk = app.keys.keys[i];
-          if (tk.publickey === publicKey) {
-            console.log("public key ", tk.publickey, publicKey)
-               stun = app.keys.keys[i].data.stun;
+  const preferred_crypto = app.wallet.returnPreferredCrypto();
+  let publicKey = preferred_crypto.returnAddress();
+  const keyss = app.keys.keys;
+  console.log("key ", keyss);
+  let stun = "";
+  let html = ``;
+  for (let i = 0; i < app.keys.keys.length; i++) {
+    let tk = app.keys.keys[i];
+    if (tk.publickey === publicKey) {
+      console.log("public key ", tk.publickey, publicKey);
+      stun = app.keys.keys[i].data.stun;
 
-          } else {
-            
-                
+    } else {
 
-             html += `<div class="card">
+
+
+      html += `<div class="card">
              <div class="card-header" id="headingOne">
                <h5 class="mb-0">
                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -47,13 +47,13 @@ module.exports = (app, mod) => {
                </div>
              </div>
            </div>`
-          }
-     }
+    }
+  }
 
-     console.log("html ", html);
+  console.log("html ", html);
 
 
 
-    return `  <div class="appear peer-container accordion" id="accordionExample">
+  return `  <div class="appear peer-container accordion" id="accordionExample">
         ${html}  </div>`;
 }

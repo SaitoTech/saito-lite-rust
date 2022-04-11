@@ -41,7 +41,7 @@ const StunUI = {
             });
 
             app.connection.on('listeners-update', (app) => {
-                  console.log('listeners update')
+                  console.log('listeners update');
                   StunUI.render(app, mod);
 
             });
@@ -60,7 +60,7 @@ const StunUI = {
                         console.log('my key', answer, my_key);
 
                         StunUI.peer_connection.setRemoteDescription(answer).then(e => {
-                              console.log('answer has been set')
+                              console.log('answer has been set');
                               StunUI.peer_connection.ondatachannel = e => {
                                     StunUI.peer_connection.dc = e.channel;
                                     StunUI.peer_connection.dc.onmessage = e => {
