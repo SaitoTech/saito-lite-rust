@@ -1635,7 +1635,6 @@ class Pandemic extends GameTemplate {
             this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
         }
-        this.game.queue.splice(qe,1);
         return 0;
       }
       if (mv[0] === "interrupt"){
