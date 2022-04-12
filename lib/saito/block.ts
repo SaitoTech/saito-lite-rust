@@ -3,7 +3,7 @@ import Slip, { SlipType } from "./slip";
 import Transaction, { HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType } from "./transaction";
 import { Saito } from "../../apps/core";
 
-const BLOCK_HEADER_SIZE = 213;
+const BLOCK_HEADER_SIZE = 229;
 
 export enum BlockType {
   Ghost = 0,
@@ -25,6 +25,8 @@ class Block {
     treasury: BigInt(0),
     staking_treasury: BigInt(0),
     signature: "",
+    avg_income: BigInt(0),
+    avg_variance: BigInt(0),
   };
   public lc: number;
   public force: any;
@@ -56,7 +58,6 @@ class Block {
   public fee_transaction_idx: number;
   public golden_ticket_idx: number;
   public issuance_transaction_idx: number;
-  public get_id: any;
   public txs_hmap: any;
   public txs_hmap_generated: boolean;
   public has_examined_block: boolean;
@@ -149,6 +150,11 @@ class Block {
     this.block.difficulty = parseInt(
       this.app.binary.u64FromBytes(buffer.slice(205, 213)).toString()
     );
+
+    this.block.avg_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(213, 221)));
+    this.block.avg_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(221, 229)));
+
+
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
 
     //
@@ -292,6 +298,7 @@ class Block {
   }
 
   async generateConsensusValues() {
+
     //
     // this is also set in blockchain.js
     //
@@ -303,7 +310,6 @@ class Block {
     const cv: any = {};
 
     cv.total_fees = BigInt(0);
-
     cv.ft_num = 0;
     cv.gt_num = 0;
     cv.it_num = 0;
@@ -320,6 +326,8 @@ class Block {
     cv.rebroadcasts = [];
     cv.block_payouts = [];
     cv.fee_transaction = null;
+    cv.avg_income = BigInt(0);
+    cv.avg_variance = BigInt(0);
 
     //
     // total fees and indices
@@ -353,10 +361,14 @@ class Block {
     }
 
     //
-    // difficulty
+    // difficulty and fee averages
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
     if (previous_block) {
+
+      //
+      // difficulty depends on previous block
+      //
       const difficulty = previous_block.returnDifficulty();
 
       if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
@@ -368,11 +380,34 @@ class Block {
       } else {
         cv.expected_difficulty = difficulty;
       }
+
+      //
+      // average income and variance depends on previous block too
+      //
+      cv.avg_income = previous_block.block.avg_income;
+      cv.avg_variance = previous_block.block.avg_variance;
+
+      if (previous_block.block.avg_income > cv.total_fees) {
+	let adjustment = (previous_block.block.avg_income - cv.total_fees) / this.app.blockchain.blockchain.genesis_period;
+        if (adjustment > 0) { cv.avg_income -= adjustment; }
+      }
+      if (previous_block.block.avg_income > cv.total_fees) {
+	let adjustment = (previous_block.block.avg_income + cv.total_fees) / this.app.blockchain.blockchain.genesis_period;
+        if (adjustment > 0) { cv.avg_income += adjustment; }
+      }
+
     } else {
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
       //
+
+      //
+      // set average income and variance so non-failure on first block
+      // doesn't result in failure calculating avg_income and avg_variance
+      //
+      cv.avg_income = this.block.avg_income;
+      cv.avg_variance = this.block.avg_variance;
     }
 
     //
@@ -460,11 +495,23 @@ class Block {
       const miner_publickey = gt.creator;
 
       //
+      // limit previous block payout to avg income
+      //
+      let previous_block_payout = previous_block.returnFeesTotal();
+      if (
+	previous_block_payout > (previous_block.block.avg_income * 1.25) &&
+	previous_block_payout > 50
+      ) {
+	previous_block_payout = previous_block.block.avg_income * 1.24;
+      }
+
+
+      //
       // miner payout is fees from previous block, no staking treasury
       //
       if (previous_block) {
-        const miner_payment = previous_block.returnFeesTotal() / BigInt(2);
-        const router_payment = previous_block.returnFeesTotal() / BigInt(2);
+        const miner_payment = previous_block_payout / BigInt(2);
+        const router_payment = previous_block_payout / BigInt(2);
 
         //
         // calculate miner and router payments
@@ -544,8 +591,20 @@ class Block {
                 // be withheld for the staker treasury, which is what previous_staker_
                 // payment is measuring.
                 //
-                const sp = staking_block.returnFeesTotal() / BigInt(2);
-                const rp = staking_block.returnFeesTotal() - sp;
+
+	        //
+	        // limit previous block payout to avg income
+	        //
+	        let previous_staking_block_payout = staking_block.returnFeesTotal();
+	        if (
+	  	  previous_staking_block_payout > (staking_block.block.avg_income * 1.25) &&
+		  previous_staking_block_payout > 50
+      	        ) {
+	  	  previous_staking_block_payout = staking_block.block.avg_income * 1.24;
+      		}
+
+                const sp = previous_staking_block_payout / BigInt(2);
+                const rp = previous_staking_block_payout - sp;
 
                 const block_payout = {
                   miner: "",
@@ -690,6 +749,7 @@ class Block {
   }
 
   async generate(previous_block_hash, mempool = null) {
+
     //
     // fetch consensus values from preceding block
     //
@@ -727,6 +787,7 @@ class Block {
     this.block.timestamp = current_timestamp;
     this.block.difficulty = previous_block_difficulty;
 
+
     //
     // swap in transactions
     //
@@ -736,6 +797,24 @@ class Block {
     //
     this.transactions = mempool.mempool.transactions;
     mempool.mempool.transactions = [];
+
+
+    //
+    // first block gets issuance
+    //
+    if (this.block.id === 1) {
+      let tokens_issued = BigInt(0);
+      let slips = this.app.storage.returnTokenSupplySlipsFromDisk();
+      let newtx = this.app.wallet.createUnsignedTransaction();
+      newtx.transaction.type = TransactionType.Issuance;
+      for (let i = 0; i < slips.length; i++) {
+        tokens_issued += BigInt(slips[i].amt);
+	newtx.transaction.to.push(slips[i]);
+      }
+      newtx = this.app.wallet.signTransaction(newtx);
+      this.transactions.push(newtx);
+    }
+
 
     //
     // swap in golden ticket
@@ -766,6 +845,13 @@ class Block {
     // contextual values
     //
     const cv = await this.generateConsensusValues();
+
+    //
+    // average income and income variance
+    //
+    this.block.avg_income = cv.avg_income;
+    this.block.avg_variance = cv.avg_variance;
+
 
     //
     // ATR transactions - TODO, make more efficient?
@@ -1309,6 +1395,9 @@ class Block {
     const burnfee = this.app.binary.u64AsBytes(this.block.burnfee.toString());
     const difficulty = this.app.binary.u64AsBytes(this.block.difficulty);
 
+    const avg_income = this.app.binary.u64AsBytes(this.block.avg_income.toString());
+    const avg_variance = this.app.binary.u64AsBytes(this.block.avg_variance.toString());
+
     const block_header_data = new Uint8Array([
       ...transactions_length,
       ...id,
@@ -1321,6 +1410,8 @@ class Block {
       ...staking_treasury,
       ...burnfee,
       ...difficulty,
+      ...avg_income,
+      ...avg_variance,
     ]);
 
     if (block_type === BlockType.Header) {
@@ -1362,6 +1453,8 @@ class Block {
       this.app.binary.u64AsBytes(this.block.staking_treasury.toString()),
       this.app.binary.u64AsBytes(this.block.burnfee.toString()),
       this.app.binary.u64AsBytes(this.block.difficulty),
+      this.app.binary.u64AsBytes(this.block.avg_income),
+      this.app.binary.u64AsBytes(this.block.avg_variance),
     ]);
   }
 
@@ -1425,9 +1518,23 @@ class Block {
     const cv = await this.generateConsensusValues();
 
     //
+    // average income and average income variance
+    //
+    if (cv.avg_income !== this.block.avg_income) {
+      console.log("ERROR 712923: block is mis-reporting its average income");
+      return false;
+    }
+    if (cv.avg_variance !== this.block.avg_variance) {
+      console.log("ERROR 712923: block is mis-reporting its average variance");
+      return false;
+    }
+
+
+
+    //
     // only block #1 can have an issuance transaction
     //
-    if (cv.it_num > 0 && this.get_id() > 1) {
+    if (cv.it_num > 0 && this.returnId() > 1) {
       console.log("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
