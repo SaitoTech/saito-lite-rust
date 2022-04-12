@@ -764,7 +764,7 @@ button.add-games {
   background-color: #0009;
   width: 60vw;
   max-height: 50vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 .game-wizard-post-description {
   font-size: 0.9em;
@@ -1118,6 +1118,26 @@ select {
 .account-info saito-select {
   background-color: #fff;
 }
+
+.dynamic_button{
+  overflow: hidden;
+}
+
+.dynamic_button.saito-select{
+  border-bottom: unset;
+  height: 60px;
+  width: unset;
+}
+
+.dynamic_button_options{
+  width: 88%;
+}
+
+.dynamic_button.showAll{
+  overflow: visible;
+}
+
+
 /* Arrow */
 .saito-select::after {
   content: "\25BC";
@@ -1132,6 +1152,15 @@ select {
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
 }
+.dynamic_button.saito-select::after{
+  box-sizing: border-box;
+  border: 1px solid var(--saito-red);
+  background-color: #324;
+  border-radius: 0 5px 5px 0;
+  height: 60px;
+  line-height: 60px;
+}
+
 /* Transition */
 .saito-select:hover::after {
   color: var(--saito-red);
@@ -1591,6 +1620,9 @@ span.rewards-row-name {
 }
 
 
+.private-invite{
+  display: none;
+}
 
 
 /*

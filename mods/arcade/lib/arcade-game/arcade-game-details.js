@@ -99,6 +99,11 @@ module.exports = ArcadeGameDetails = {
       window.location = "/arcade/?game=" + gamemod.returnSlug();
     });
 
+
+    document.querySelector(".dynamic_button").addEventListener("click",(e)=>{
+      e.currentTarget.classList.toggle("showAll");
+    });
+
     //Query game instructions
     //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
     //   let options = getOptions();
@@ -109,10 +114,20 @@ module.exports = ArcadeGameDetails = {
     //
     // create game
     //
-    document.getElementById("game-invite-btn").addEventListener("click", async (e) => {
+    Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
+      gameButton.addEventListener("click", async (e) => {
+      e.stopPropagation();
       try {
         let options = getOptions();
-        app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
+        let isPrivateGame = e.currentTarget.getAttribute("data-type");
+        if (isPrivateGame == "private"){
+          app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.gamename);
+        }else if (isPrivateGame == "single"){
+          app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.gamename);  
+        }else{
+          app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.gamename);  
+        }
+        
         //
         // if crypto and stake selected, make sure creator has it
         //
@@ -170,6 +185,7 @@ module.exports = ArcadeGameDetails = {
           options: gamemod.returnFormattedGameOptions(options),
           options_html: gamemod.returnGameRowOptionsHTML(options),
           players_needed: players_needed,
+          invitation_type: "public",
         };
         if (players_needed === 0) {
           console.error("Create Game Error");
@@ -184,8 +200,11 @@ module.exports = ArcadeGameDetails = {
           document.getElementById("background-shim").destroy();
 
           //console.log("PRE CREATING OPEN TX");
+          if (isPrivateGame == "private"){
+            gamedata.invitation_type = "private";
+          }
 
-          let newtx = mod.createOpenTransaction(gamedata);
+          let newtx = mod.createOpenTransaction(gamedata);  
 
           let arcade_mod = app.modules.returnModule("Arcade");
           if (arcade_mod) {
@@ -206,12 +225,30 @@ module.exports = ArcadeGameDetails = {
 
           app.network.propagateTransaction(newtx);
           mod.renderArcadeMain(app, mod);
+
+          if (isPrivateGame == "private"){
+            console.log(newtx);
+            //Create invite link from the game_sig 
+            let inviteLink = window.location.href;
+            let gameInviteCode = newtx.transaction.sig;
+            if (!inviteLink.includes("#")){
+              inviteLink += "#";
+            }
+            if (inviteLink.includes("?")){
+              inviteLink = inviteLink.replace("#", "&jid="+gameInviteCode);
+            }else{
+              inviteLink = inviteLink.replace("#", "?jid="+gameInviteCode);
+            }
+            salert(inviteLink);
+            console.log(inviteLink);
+          }
         }
       } catch (err) {
         alert("error: " + err);
       }
 
       return false;
+    });
     });
   },
 };
