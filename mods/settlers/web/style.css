@@ -886,6 +886,32 @@ ul.horizontal_list li.iconoption{
   width: 50px;
 }
 
+.flash {
+
+  padding: 1rem;
+  animation-name: flash;
+  animation-duration: .8s;
+  animation-iteration-count: 2;
+  animation-fill-mode: backwards;
+}
+
+.flash > * {
+ 
+}
+
+@keyframes flash {
+  0% {
+    /* opacity: .2; */
+    background-color: white;
+    color: black !important;
+  }
+  100% {
+    opacity: 1;
+   color: white;
+  }
+  
+}
+
 
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)

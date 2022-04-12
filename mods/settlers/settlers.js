@@ -535,6 +535,10 @@ class Settlers extends GameTemplate {
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
+      {
+        console.log("move ", mv[0]);
+      }
+
       //console.log("QUEUE: " + this.game.queue);
       //console.log(JSON.parse(JSON.stringify(this.game.state)));
 
@@ -542,20 +546,6 @@ class Settlers extends GameTemplate {
 
       // flash player 
 
-      // {
-      //   let player = mv[1];
-
-      //   const playerEl = document.querySelector(`#player-box-${player}`);
-
-
-      //   console.log("player element", playerEl);
-
-      //   playerEl.style.backgroundColor = "red";
-      //   playerEl.style.color= "black";
-      //   playerEl.style.height = "500rem";
-
-
-      // }
 
       if (mv[0] == "init") {
         //this.game.queue.splice(qe, 1);   // no splice, we want to bounce off this
@@ -739,6 +729,7 @@ class Settlers extends GameTemplate {
 
       // Build a road, let player pick where to build a road
       if (mv[0] == "player_build_road") {
+
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         this.stopTrading();
@@ -767,7 +758,20 @@ class Settlers extends GameTemplate {
       // Build a town
       // Let player make selection, other players wait
       if (mv[0] == "player_build_city") {
+      
         let player = parseInt(mv[1]);
+        {
+          console.log("move:", mv[0]);
+
+          const playerEl = document.querySelector(`#player-box-${this.playerbox.playerBox(player)}`);
+
+          if (playerEl) {
+            playerEl.classList.add('flash');
+            setTimeout(() => {
+              playerEl.classList.remove('flash');
+            }, 3000);
+          }
+        }
         this.game.queue.splice(qe, 1);
         this.stopTrading();
         if (this.game.player == player) {
@@ -801,6 +805,7 @@ class Settlers extends GameTemplate {
 
       //Allow other players to update board status
       if (mv[0] == "build_city") {
+
         let player = parseInt(mv[1]);
         let slot = mv[2];
 
@@ -1225,6 +1230,20 @@ class Settlers extends GameTemplate {
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
+
+        {
+           console.log("move:", mv[0]);
+
+          const playerEl = document.querySelector(`#player-box-${this.playerbox.playerBox(player)}`);
+
+          if (playerEl) {
+            playerEl.classList.add('flash');
+            setTimeout(() => {
+              playerEl.classList.remove('flash');
+            }, 3000);
+          }
+        }
+
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll", player);
 
@@ -1507,6 +1526,7 @@ class Settlers extends GameTemplate {
 
       //End Player's Turn
       if (mv[0] == "end_turn") {
+
         //Must be calculated here because player_actions and play can cycle multiple times per turn
         this.game.state.canPlayCard = this.game.deck[0].hand.length > 0;
         this.stopTrading();
@@ -2108,6 +2128,8 @@ class Settlers extends GameTemplate {
       }
 
       this.playerbox.refreshInfo(newhtml, i);
+
+      console.log('pnum', i);
       $(".player-box-info").disableSelection();
     }
     //Insert tool into name
@@ -2441,6 +2463,9 @@ class Settlers extends GameTemplate {
   Main function to let player carry out their turn...
   */
   playerPlayMove() {
+
+
+
     let settlers_self = this;
     let html = "";
 
