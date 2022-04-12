@@ -240,7 +240,8 @@ module.exports = ArcadeMain = {
 
     if (!accepted_game) {
       console.log("ERR: game not found");
-      salert("Game no longer available");
+      await sconfirm("Game no longer available");
+      window.location = "/arcade";
       return;
     }
 
@@ -401,48 +402,48 @@ module.exports = ArcadeMain = {
         },
 
         (res) => {
-          if (res.rows == undefined) {
-            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
-            return;
-          }
+          if (res.rows) {
+            if (res.rows.length > 0) {
+              if (
+                res.rows[0].game_still_open == 1 ||
+                (res.rows[0].game_still_open == 0 && players_needed > 2)
+              ) {
+                //
+                // data re: game in form of tx
+                //
+                let { transaction } = accepted_game;
+                let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
 
-          if (res.rows.length > 0) {
-            if (
-              res.rows[0].game_still_open == 1 ||
-              (res.rows[0].game_still_open == 0 && players_needed > 2)
-            ) {
-              //
-              // data re: game in form of tx
-              //
-              let { transaction } = accepted_game;
-              let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
+                let newtx = mod.createAcceptTransaction(accepted_game);
+                mod.app.network.propagateTransaction(newtx);
 
-              let newtx = mod.createAcceptTransaction(accepted_game);
-              mod.app.network.propagateTransaction(newtx);
+                let my_publickey = app.wallet.returnPublicKey();
+                let { players } = accepted_game.returnMessage();
+                let peers = [];
+                for (let i = 0; i < app.network.peers.length; i++) {
+                  peers.push(app.network.peers[i].returnPublicKey());
+                }
 
-              let my_publickey = app.wallet.returnPublicKey();
-              let { players } = accepted_game.returnMessage();
-              let peers = [];
-              for (let i = 0; i < app.network.peers.length; i++) {
-                peers.push(app.network.peers[i].returnPublicKey());
+                //
+                // try fast accept
+                //
+                let relay_mod = app.modules.returnModule("Relay");
+                if (relay_mod != null) {
+                  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+                  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+                }
+
+                return;
+              } else {
+                salert("Sorry, this game has been accepted already!");
               }
-
-              //
-              // try fast accept
-              //
-              let relay_mod = app.modules.returnModule("Relay");
-              if (relay_mod != null) {
-                relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-                relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-              }
-
-              return;
             } else {
-              salert("Sorry, this game has been accepted already!");
+              salert("Sorry, this game has already been accepted!");
             }
-          } else {
-            salert("Sorry, this game has already been accepted!");
+          }else{
+            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
           }
+        mod.renderArcadeMain(); //Reset to default view (undo game loader)
         }
       );
     }
