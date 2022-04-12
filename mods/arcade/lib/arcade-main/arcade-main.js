@@ -402,7 +402,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           return msg;
         },
 
-        (res) => {
+        async (res) => {
           if (res.rows) {
             if (res.rows.length > 0) {
               if (
@@ -436,15 +436,21 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
 
                 return;
               } else {
-                salert("Sorry, this game has been accepted already!");
+                await sconfirm("Sorry, this game has been accepted already!");
               }
             } else {
-              salert("Sorry, this game has already been accepted!");
+              await sconfirm("Sorry, this game has already been accepted!");
             }
           }else{
             console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
           }
-        mod.renderArcadeMain(); //Reset to default view (undo game loader)
+          mod.viewing_arcade_initialization_page = 0;
+          if (app.browser.returnURLParameter("jid")) {
+            window.location = "/arcade";  //redirect and reconnect to pull the list of open games    
+          }else{
+            mod.renderArcadeMain(); //Reset to default view (undo game loader)  
+          }
+          
         }
       );
     }
