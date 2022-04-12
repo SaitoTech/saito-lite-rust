@@ -4642,8 +4642,11 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
-	    this.game.queue.push("diet_of_worms");
+//	  this.game.queue.push("diplomacy_phase");
+//
+// The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
+//
+//	  this.game.queue.push("diet_of_worms");
 	  this.game.queue.push("card_draw_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -4786,29 +4789,22 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
         if (mv[0] === "diet_of_worms") {
 
-/*
-3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
-4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
-5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
-6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
-*/
-this.updateLog("All players pick simultaneous card");
-
 	  let game_self = this;
 
-          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].hand);
+          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
           this.attachCardboxEvents(function(card) {
-            alert("You picked card: " + card);
-  
+
+            game_self.updateStatus("You picked: " + game_self.deck[card].name); 
+ 
             let hash1 = game_self.app.crypto.hash(card);    // my card
             let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
             let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
 
-            let card_sig = game_self.app.crypto.signMessage(simultaneous_pick_card, game_self.app.wallet.returnPrivateKey());
+            let card_sig = game_self.app.crypto.signMessage(card, game_self.app.wallet.returnPrivateKey());
             let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());
             let hash3_sig = game_self.app.crypto.signMessage(hash3, game_self.app.wallet.returnPrivateKey());
 
-            game_self.game.spick_card = simultaneous_pick_card;
+            game_self.game.spick_card = card;
             game_self.game.spick_hash = hash2;
 
             game_self.addMove("resolve_diet_of_worms");
@@ -4823,8 +4819,64 @@ this.updateLog("All players pick simultaneous card");
 
 	if (mv[0] === "resolve_diet_of_worms") {
 
-alert("CARDS: " + JSON.stringify(game_self.game.state.sp));
 	  this.game.queue.splice(qe, 1);
+
+	  let protestant = this.returnPlayerOfFaction("protestant");
+	  let papacy = this.returnPlayerOfFaction("papacy");
+
+	  let protestant_card = this.game.deck[this.game.state.sp[protestant-1]];
+	  let papacy_card = this.game.deck[this.game.state.sp[papacy-1]];
+
+/*
+3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
+4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
+5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
+6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
+*/
+
+	  let protestant_rolls = protestant_card.ops + 4;
+	  let protestant_hits = 0;
+
+	  for (let i = 0; i < protestant_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x);
+	    if (x >= 5) { protestant_hits++; }
+	  }
+
+
+	  let papacy_rolls = papacy_card.ops;
+	  let papacy_hits = 0;
+
+	  for (let i = 0; i < papacy_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Papacy rolls: " + x);
+	    if (x >= 5) { papacy_hits++; }
+	  }
+
+	  //
+	  // do the hapsburgs get rolls in the 2P game?
+	  //
+	  //for (let i = 0; i < papacy_rolls; i++) {
+	  //  let x = this.rollDice(6);
+	  //  this.updateLog("Hapsburg rolls: " + x);
+	  //  if (x >= 5) { papacy_hits++; }
+	  //}
+
+
+	  if (protestant_hits > papacy_hits) {
+	    for (let i = papacy_hits; i < protestant_hits; i++) {
+	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
+	    }
+	  } else {
+	    if (protestant_hits < papacy_hits) {
+	      for (let i = protestant_hits; i < papacy_hits; i++) {
+	        this.game.queue.push("select_for_catholic_conversion\tcatholic\tgerman");
+	      }
+	    } else {
+	      this.updateLog("Diet of Worms ends in tie.");
+	    }
+	  }
+
           return 1;
 
 	}
@@ -4903,10 +4955,18 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "spring_deployment") {
 
-	  //
-	  // move 1 formation from capital to controlled territory
-	  //
-	  console.log("SPRING DEPLOYMENT -- unimplemented");
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+console.log("faction: " + faction + " player " + player);
+
+	  if (this.game.player == player) {
+	    this.playerPlaySpringDeployment(faction, player);
+	  } else {
+	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
+	  }
+
+	  return 0;
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -4945,9 +5005,6 @@ console.log("NEW WORLD PHASE!");
     	    this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
             this.game.queue.push("DECKBACKUP\t1");
 	  }
-
-console.log("just in diplomacy phase!");
-console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -5159,6 +5216,84 @@ console.log("----------------------------");
 	  return 1;
 
 	}
+
+	if (mv[0] === "select_for_catholic_conversion") {
+
+	  let faction = mv[1];
+	  let religion = mv[2];
+	  let zone = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerSelectSpaceWithFilter(
+              "Select Town to Convert Protestant",
+
+              //
+              // catholic spaces adjacent to protestant
+              //
+              function(space) {
+                if (
+                  space.religion === "protestant" &&
+                  game_mod.isSpaceAdjacentToReligion(space, "catholic")
+                ) {
+                  return 1;
+                }
+                return 0;
+              },
+
+              function(spacekey) {
+                game_mod.addMove("convert\t"+spacekey+"\tcatholic");
+                game_mod.endTurn();
+              },
+
+              null
+
+            );
+          }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
+
+	if (mv[0] === "select_for_protestant_conversion") {
+
+	  let faction = mv[1];
+	  let religion = mv[2];
+	  let zone = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerSelectSpaceWithFilter(
+              "Select Town to Convert Protestant",
+
+              //
+              // catholic spaces adjacent to protestant
+              //
+              function(space) {
+                if (
+                  space.religion === "catholic" &&
+                  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+                ) {
+                  return 1;
+                }
+                return 0;
+              },
+
+              function(spacekey) {
+                game_mod.addMove("convert\t"+spacekey+"\tprotestant");
+                game_mod.endTurn();
+              },
+
+              null
+
+            );
+          }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
 
 	if (mv[0] === "convert") {
 
@@ -5543,6 +5678,7 @@ console.log("x is: " + x);
     return 0;
   }
 
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -5923,6 +6059,56 @@ return;
   }
 
 
+  playerPlaySpringDeployment(faction, player) {
+
+    let capitals = this.factions[faction].capitals;
+    let viable_capitals = [];
+    let can_deploy = 0;
+
+    for (let i = 0; i < capitals.length; i++) {
+      let c = capitals[i];
+      if (this.game.spaces[c].units[faction].length > 0) {
+        can_deploy = 1;
+        viable_capitals.push(capitals[i]);
+      }
+    }
+
+    if (can_deploy == 0) {
+      this.updateStatus("Spring Deployment not possible");
+      this.endTurn();
+    } else {
+
+      let msg = "Do you wish to Spring Deploy from: ";
+     
+      let opt = "";
+      for (let i = 0; i < viable_capitals.lengths; i++) {
+	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      }
+      opt += `<li class="textchoice" id="pass">skip</li>`;
+
+      this.updateStatusWithOptions(msg, opt);
+      $(".textchoice").off();
+      $(".textchoice").onclick = (e) => {
+
+        let id = $(this).attr('id');
+        $(".textchoice").off();
+
+	if (id === "pass") {
+	  this.updateStatus("passing...");
+	  this.endTurn();
+	  return;
+        }
+
+	//
+	//
+	//
+	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+	this.endTurn();
+
+      };
+    }
+
+  }
 
 
 

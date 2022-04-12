@@ -167,6 +167,7 @@
     return 0;
   }
 
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -547,6 +548,56 @@ return;
   }
 
 
+  playerPlaySpringDeployment(faction, player) {
+
+    let capitals = this.factions[faction].capitals;
+    let viable_capitals = [];
+    let can_deploy = 0;
+
+    for (let i = 0; i < capitals.length; i++) {
+      let c = capitals[i];
+      if (this.game.spaces[c].units[faction].length > 0) {
+        can_deploy = 1;
+        viable_capitals.push(capitals[i]);
+      }
+    }
+
+    if (can_deploy == 0) {
+      this.updateStatus("Spring Deployment not possible");
+      this.endTurn();
+    } else {
+
+      let msg = "Do you wish to Spring Deploy from: ";
+     
+      let opt = "";
+      for (let i = 0; i < viable_capitals.lengths; i++) {
+	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      }
+      opt += `<li class="textchoice" id="pass">skip</li>`;
+
+      this.updateStatusWithOptions(msg, opt);
+      $(".textchoice").off();
+      $(".textchoice").onclick = (e) => {
+
+        let id = $(this).attr('id');
+        $(".textchoice").off();
+
+	if (id === "pass") {
+	  this.updateStatus("passing...");
+	  this.endTurn();
+	  return;
+        }
+
+	//
+	//
+	//
+	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+	this.endTurn();
+
+      };
+    }
+
+  }
 
 
 
