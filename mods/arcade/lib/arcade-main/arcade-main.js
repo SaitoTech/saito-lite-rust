@@ -329,7 +329,7 @@ module.exports = ArcadeMain = {
       if (relay_mod != null && accepted_game.initialize_game_offchain_if_possible == 1) {
         relay_mod.sendRelayMessage(accepted_game.players, 'game relay gamemove', newtx);
       }
-******/
+      ******/
 
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
@@ -563,6 +563,17 @@ module.exports = ArcadeMain = {
     salert(inviteLink);
     console.log(inviteLink);
 
+    let accepted_game = null;
+    mod.games.forEach((g) => {
+      if (g.transaction.sig === game_sig) {
+        accepted_game = g;
+      }
+    });
+    if (accepted_game){
+      let newtx = mod.createChangeTransaction(accepted_game);
+      app.network.propagateTransaction(newtx);        
+    }
+
     //Update status of the game invitation
     Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
       let game_cmd = button.getAttribute("data-cmd");
@@ -583,6 +594,16 @@ module.exports = ArcadeMain = {
       }
     });
 
+    let accepted_game = null;
+    mod.games.forEach((g) => {
+      if (g.transaction.sig === game_sig) {
+        accepted_game = g;
+      }
+    });
+    if (accepted_game){
+      let newtx = mod.createChangeTransaction(accepted_game);
+      app.network.propagateTransaction(newtx);        
+    }
   },
 
 
