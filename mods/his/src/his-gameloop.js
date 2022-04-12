@@ -38,6 +38,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("diplomacy_phase");
+	    this.game.queue.push("diet_of_worms");
 	  this.game.queue.push("card_draw_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -46,7 +47,6 @@ console.log("MOVE: " + mv[0]);
 	  // start the game with the Protestant Reformation
 	  //
 //	  if (this.game.state.round == 1) {
-//	    this.game.queue.push("diet_of_worms");
 //	    this.updateLog("Luther's 95 Theses!");
 //	    this.game.queue.push("event\t1\t008");
 //	  }
@@ -189,10 +189,40 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 */
 this.updateLog("All players pick simultaneous card");
 
+	  let game_self = this;
+
+          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].hand);
+          this.attachCardboxEvents(function(card) {
+            alert("You picked card: " + card);
+  
+            let hash1 = game_self.app.crypto.hash(card);    // my card
+            let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
+            let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
+
+            let card_sig = game_self.app.crypto.signMessage(simultaneous_pick_card, game_self.app.wallet.returnPrivateKey());
+            let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());
+            let hash3_sig = game_self.app.crypto.signMessage(hash3, game_self.app.wallet.returnPrivateKey());
+
+            game_self.game.spick_card = simultaneous_pick_card;
+            game_self.game.spick_hash = hash2;
+
+            game_self.addMove("resolve_diet_of_worms");
+            game_self.addMove("SIMULTANEOUS_PICK\t"+game_self.game.player+"\t"+hash3+"\t"+hash3_sig);
+            game_self.endTurn();
+
+          });
+
 	  this.game.queue.splice(qe, 1);
-          return 1;
+          return 0;
         }
 
+	if (mv[0] === "resolve_diet_of_worms") {
+
+alert("CARDS: " + JSON.stringify(game_self.game.state.sp));
+	  this.game.queue.splice(qe, 1);
+          return 1;
+
+	}
 
         if (mv[0] === "victory_determination_phase") {
 	  this.game.queue.splice(qe, 1);
@@ -428,11 +458,9 @@ console.log("----------------------------");
 	  // a previous turn are also returned to each power’s pool of 
 	  // units available to be constructed at this time."
 	  //
-    	  this.game.queue.push("restore\tnaval_leaders");
+    	  //this.game.queue.push("restore\tnaval_leaders");
 
-	  
-
-
+	 
 	  this.game.queue.splice(qe, 1);
           return 1;
 
