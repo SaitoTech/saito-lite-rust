@@ -542,6 +542,7 @@ class Settlers extends GameTemplate {
       if (mv[0] == "init") {
         //this.game.queue.splice(qe, 1);   // no splice, we want to bounce off this
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
+        $(".diceroll").css("display","flex");
         for (let i = this.game.players.length; i > 0; i--) {
           //count backwards so it goes P1, P2, P3,
           this.game.queue.push(`play\t${i}`);
@@ -1211,6 +1212,12 @@ class Settlers extends GameTemplate {
 
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll",player);
+        this.playerbox.addClass('flash');
+        setTimeout(() => {
+              $(".flash").removeClass("flash");
+            }, 3000);
+      
+
 
         if (this.game.player == player) {
           /*
