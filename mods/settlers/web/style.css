@@ -177,7 +177,7 @@ body {
   border-radius: 5px;
   background-color: #222B;
   padding: min(0.5vw,5px);
-  display: flex;
+  display: none; /*flex;*/
   flex-direction: row;
   justify-content: space-evenly;
   z-index: 3;
@@ -433,6 +433,7 @@ body {
 
 .player-box.me{
   border-top: 10px solid;
+  border-right: 10px solid;
 }
 .player-box.notme{
   border-left: 10px solid;
@@ -884,6 +885,25 @@ ul.horizontal_list li.iconoption{
 
 .stats-table .icon{
   width: 50px;
+}
+
+
+.flash {
+  animation-name: flash;
+  animation-duration: .8s;
+  animation-iteration-count: 2;
+  animation-fill-mode: backwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: .8;
+    background-color: white;
+    color: black !important;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 
