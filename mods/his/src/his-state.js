@@ -2645,6 +2645,30 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "move") {
+          return { event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player) {
+        if (menu == "move") {
+	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
+	    if (this.game.deck[0].fhand[i].includes('032')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player) {
+        if (menu == "move") {
+alert("WE PLAYED GOUT");
+          his_self.endTurn();
+          his_self.updateLog("looks like someone got gout");
+        }
+        return 0;
+      },
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 

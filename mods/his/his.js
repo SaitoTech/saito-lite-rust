@@ -402,7 +402,7 @@ class HereIStand extends GameTemplate {
       type		:	"luther" ,
       name		: 	"Martin Luther",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"LutherDebater.svg",
       committed		: 	0,
     });
@@ -411,7 +411,7 @@ class HereIStand extends GameTemplate {
       type		:	"zwingli" ,
       name		: 	"Ulrich Zwingli",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"ZwingliDebater.svg",
       committed		: 	0,
     });
@@ -420,7 +420,7 @@ class HereIStand extends GameTemplate {
       type		:	"cranmer" ,
       name		: 	"Thomas Cranmer",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"CranmerDebater.svg",
       committed		: 	0,
     });
@@ -3638,6 +3638,30 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "move") {
+          return { event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player) {
+        if (menu == "move") {
+	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
+	    if (this.game.deck[0].fhand[i].includes('032')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player) {
+        if (menu == "move") {
+alert("WE PLAYED GOUT");
+          his_self.endTurn();
+          his_self.updateLog("looks like someone got gout");
+        }
+        return 0;
+      },
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
@@ -4900,6 +4924,73 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
           return 1;
 
 	}
+
+	if (mv[0] === "counter_or_acknowledge") {
+
+	  let msg = mv[1];
+	  let stage = mv[2];
+
+	  //
+	  // this is run when players have the opportunity to counter
+	  // or intercede in a move made by another player. we cannot
+	  // automatically handle without leaking information about 
+	  // game state, so we let players determine themselves how to
+	  // handle. if they are able to, they can respond. if not they
+	  // click acknowledge and the msg counts as notification of an
+	  // important game development.
+	  //
+	  let his_self = this;
+
+	  let html = '';
+
+	  let menu_index = [];
+	  let menu_triggers = [];
+	  let attach_menu_events = 0;
+
+    	  html += '<li class="option" id="ok">acknowledge</li>';
+
+          let z = this.returnEventObjects();
+          if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+            let x = z[i].menuOption(this, stage, this.game.player);
+            html += x.html;
+	    menu_index.push(i);
+	    menu_triggers.push(x.event);
+	    attach_menu_events = 1;
+	  }
+
+	  this.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+          $('.option').on('click', function () {
+
+            let action2 = $(this).attr("id");
+
+            //
+            // events in play
+            //
+            if (attach_menu_events == 1) {
+              for (let i = 0; i < menu_triggers.length; i++) {
+                if (action2 == menu_triggers[i]) {
+                  $(this).remove();
+                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player);
+                  return;
+                }
+              }
+            }
+
+            if (action2 == "ok") {
+              his_self.endTurn();
+              imperium_self.endTurn();
+              return;
+            }
+
+          });
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+
 
         if (mv[0] === "victory_determination_phase") {
 	  this.game.queue.splice(qe, 1);

@@ -278,6 +278,73 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
 	}
 
+	if (mv[0] === "counter_or_acknowledge") {
+
+	  let msg = mv[1];
+	  let stage = mv[2];
+
+	  //
+	  // this is run when players have the opportunity to counter
+	  // or intercede in a move made by another player. we cannot
+	  // automatically handle without leaking information about 
+	  // game state, so we let players determine themselves how to
+	  // handle. if they are able to, they can respond. if not they
+	  // click acknowledge and the msg counts as notification of an
+	  // important game development.
+	  //
+	  let his_self = this;
+
+	  let html = '';
+
+	  let menu_index = [];
+	  let menu_triggers = [];
+	  let attach_menu_events = 0;
+
+    	  html += '<li class="option" id="ok">acknowledge</li>';
+
+          let z = this.returnEventObjects();
+          if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+            let x = z[i].menuOption(this, stage, this.game.player);
+            html += x.html;
+	    menu_index.push(i);
+	    menu_triggers.push(x.event);
+	    attach_menu_events = 1;
+	  }
+
+	  this.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+          $('.option').on('click', function () {
+
+            let action2 = $(this).attr("id");
+
+            //
+            // events in play
+            //
+            if (attach_menu_events == 1) {
+              for (let i = 0; i < menu_triggers.length; i++) {
+                if (action2 == menu_triggers[i]) {
+                  $(this).remove();
+                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player);
+                  return;
+                }
+              }
+            }
+
+            if (action2 == "ok") {
+              his_self.endTurn();
+              imperium_self.endTurn();
+              return;
+            }
+
+          });
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+
+
         if (mv[0] === "victory_determination_phase") {
 	  this.game.queue.splice(qe, 1);
           return 1;
