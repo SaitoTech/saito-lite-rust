@@ -37,22 +37,24 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
 //
-//	  this.game.queue.push("diet_of_worms");
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-//	  if (this.game.state.round == 1) {
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
-//	  }
+	  if (this.game.state.round == 1) {
+  	    this.game.queue.push("diet_of_worms");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	  }
+
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
+
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");

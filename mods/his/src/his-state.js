@@ -502,7 +502,7 @@
       name : "Baltic Sea" ,
       neighbours : ["north"] ,
     }
-    seas['lyon'] = {
+    seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
@@ -512,13 +512,13 @@
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
-      neighbours : ["lyon","tyrrhenian","ionian","african"] ,
+      neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      neighbours : ["barbary","lyon"] ,
+      neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
@@ -1197,7 +1197,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["toulouse","avignon","zaragoza","valencia"],
       pass: ["toulouse","avignon"],
       language: "spanish",
@@ -1208,7 +1208,7 @@
       left: 2211,
       home: "hapsburg",
       political: "",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
       language: "other",
       religion: "catholic",
@@ -1230,7 +1230,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["cartagena","madrid","barcelona"],
       language: "spanish",
       type: "town"
@@ -1241,7 +1241,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
@@ -1903,7 +1903,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["genoa","marseille"],
       pass: ["genoa"],
       language: "french",
@@ -1935,7 +1935,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1946,7 +1946,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: ["nice","pavia","turin","modena","siena"],
       pass: ["nice"],
       language: "italian",
@@ -2402,6 +2402,7 @@
         game_mod.convertSpace("protestant", "wittenberg");
         game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.addUnit("protestant", "wittenberg", "regular");
+        game_mod.addDebater("protestant", "wittenberg", "luther");
         game_mod.displaySpace("wittenberg");
 
 	return 1;

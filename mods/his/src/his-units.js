@@ -12,6 +12,7 @@
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;

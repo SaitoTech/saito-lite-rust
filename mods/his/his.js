@@ -284,40 +284,6 @@ class HereIStand extends GameTemplate {
 
 
 
-    this.importUnit('regular', {
-      type		:	"regular" ,
-      name		: 	"Regular",
-    });
- 
-    this.importUnit('mercenary', {
-      type		:	"mercenary" ,
-      name		: 	"Mercenary",
-    });
- 
-    this.importUnit('cavalry', {
-      type		:	"cavalry" ,
-      name		: 	"Cavalry",
-    });
- 
-    this.importUnit('squadron', {
-      type		:	"squadron" ,
-      name		: 	"Squadron" ,
-      land_or_sea	:	"sea" ,
-    });
-
-    this.importUnit('corsair', {
-      type		:	"corsair" ,
-      name		: 	"Corsair" ,
-      land_or_sea	:	"sea" ,
-    });
-
-    this.importUnit('debater', {
-      type		:	"debater" ,
-      name		: 	"Debater",
-      debater		:	true,
-    });
- 
-
     this.importUnit('suleiman', {
       type		:	"suleiman" ,
       name		: 	"Suleiman",
@@ -431,12 +397,23 @@ class HereIStand extends GameTemplate {
 
 
 
+
+    this.importUnit('luther', {
+      type		:	"luther" ,
+      name		: 	"Martin Luther",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"LutherDebater.svg",
+      committed		: 	0,
+    });
+
     this.importUnit('zwingli', {
       type		:	"zwingli" ,
       name		: 	"Ulrich Zwingli",
       personage		:	true,
       army_leader	:	true,
       img		:	"ZwingliDebater.svg",
+      committed		: 	0,
     });
 
     this.importUnit('cranmer', {
@@ -445,6 +422,7 @@ class HereIStand extends GameTemplate {
       personage		:	true,
       army_leader	:	true,
       img		:	"CranmerDebater.svg",
+      committed		: 	0,
     });
 
     this.importUnit('calvin', {
@@ -453,11 +431,50 @@ class HereIStand extends GameTemplate {
       personage		:	true,
       debater		:	true,
       img		:	"CalvinDebater.svg",
+      committed		: 	0,
     });
 
 
 
 
+
+
+
+
+
+    this.importUnit('regular', {
+      type		:	"regular" ,
+      name		: 	"Regular",
+    });
+ 
+    this.importUnit('mercenary', {
+      type		:	"mercenary" ,
+      name		: 	"Mercenary",
+    });
+ 
+    this.importUnit('cavalry', {
+      type		:	"cavalry" ,
+      name		: 	"Cavalry",
+    });
+ 
+    this.importUnit('squadron', {
+      type		:	"squadron" ,
+      name		: 	"Squadron" ,
+      land_or_sea	:	"sea" ,
+    });
+
+    this.importUnit('corsair', {
+      type		:	"corsair" ,
+      name		: 	"Corsair" ,
+      land_or_sea	:	"sea" ,
+    });
+
+    this.importUnit('debater', {
+      type		:	"debater" ,
+      name		: 	"Debater",
+      debater		:	true,
+    });
+ 
 
 
 
@@ -1478,7 +1495,7 @@ console.log("adding stuff!");
       name : "Baltic Sea" ,
       neighbours : ["north"] ,
     }
-    seas['lyon'] = {
+    seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
@@ -1488,13 +1505,13 @@ console.log("adding stuff!");
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
-      neighbours : ["lyon","tyrrhenian","ionian","african"] ,
+      neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      neighbours : ["barbary","lyon"] ,
+      neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
@@ -2173,7 +2190,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["toulouse","avignon","zaragoza","valencia"],
       pass: ["toulouse","avignon"],
       language: "spanish",
@@ -2184,7 +2201,7 @@ console.log("adding stuff!");
       left: 2211,
       home: "hapsburg",
       political: "",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
       language: "other",
       religion: "catholic",
@@ -2206,7 +2223,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["cartagena","madrid","barcelona"],
       language: "spanish",
       type: "town"
@@ -2217,7 +2234,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
@@ -2879,7 +2896,7 @@ console.log("adding stuff!");
       home: "independent",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["genoa","marseille"],
       pass: ["genoa"],
       language: "french",
@@ -2911,7 +2928,7 @@ console.log("adding stuff!");
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -2922,7 +2939,7 @@ console.log("adding stuff!");
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: ["nice","pavia","turin","modena","siena"],
       pass: ["nice"],
       language: "italian",
@@ -3378,6 +3395,7 @@ console.log("adding stuff!");
         game_mod.convertSpace("protestant", "wittenberg");
         game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.addUnit("protestant", "wittenberg", "regular");
+        game_mod.addDebater("protestant", "wittenberg", "luther");
         game_mod.displaySpace("wittenberg");
 
 	return 1;
@@ -4642,22 +4660,24 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("diplomacy_phase");
+	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
 //
-//	  this.game.queue.push("diet_of_worms");
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-//	  if (this.game.state.round == 1) {
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
-//	  }
+	  if (this.game.state.round == 1) {
+  	    this.game.queue.push("diet_of_worms");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	  }
+
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
+
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");
@@ -4927,8 +4947,15 @@ console.log("NEW WORLD PHASE!");
 
 	  this.game.queue.splice(qe, 1);
 
+	  if (this.game.players == 2) {
+	    // reverse order as last added goes first
+	    this.game.queue.push("play\tprotestant");
+	    this.game.queue.push("play\tpapacy");
+	    return 1;
+	  }
+
 	  let io = this.returnImpulseOrder();
-	  // added in reverse order as last added goes first
+	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }
@@ -6742,6 +6769,7 @@ console.log("faction: " + faction);
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;
