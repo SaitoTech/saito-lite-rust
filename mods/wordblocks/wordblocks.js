@@ -1,12 +1,9 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
-let GamePlayerbox = require("../../lib/saito/ui/game-playerbox-alternate/game-playerbox");
+
 class Wordblocks extends GameTemplate {
 
   constructor(app) {
-   
     super(app);
-
-    this.playerbox = new GamePlayerbox(app)
 
     this.name = "Wordblocks";
     this.gamename = "Wordblocks";
@@ -154,25 +151,15 @@ class Wordblocks extends GameTemplate {
       for (let i = 1; i <= this.game.players.length; i++) {
         this.playerbox.refreshName(i);
         this.playerbox.refreshInfo(
-          `<div class="score"><h3 class="text" style="display: inline; color: white">
-            Player ${i} :
-          </h3>
-          <h2 class="value" id="score_${i}">${this.getPlayerScore(
+          `<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${this.getPlayerScore(
             i
-          )}</h2> </div>`
-         ,
+          )}</span>`,
           i
         );
-  // old 
-  // `<span>Player ${i}:</span> <span class="playerscore" id="score_${i}">${this.getPlayerScore(
-  //   i
-  // )}</span>`
 
         let lastMove = this.getLastMove(i);
-        let html = `<div id="lastmove_${i}" class="score" ><h2 class="text">${lastMove.word}:</h2> <h2 class="value">${lastMove.score}</h2></div>` ;
+        let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
         this.playerbox.refreshLog(html, i);
-        console.log("last word ", lastMove.word)
-    // old `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`
       }
     } catch (err) {
       console.error(err);
@@ -515,7 +502,7 @@ class Wordblocks extends GameTemplate {
             );
           }
         });
-      } 
+      }
     }
   }
 
@@ -2211,10 +2198,8 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        console.log(expanded)
-        let html = `<div id="lastmove_${player}" class="score"><h2 class="text">${expanded}:</h2> <h2 class="value">${score}</h2></div>`;
+        let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
         this.playerbox.refreshLog(html, player);
-        
 
         if (wordblocks_self.game.over == 1) {
           return;
@@ -2237,9 +2222,9 @@ class Wordblocks extends GameTemplate {
             "Player " + wordblocks_self.returnNextPlayer(player) + "'s turn"
           );
         }
-        $(".card1").removeClass("isActive");
+        $(".player-box").removeClass("active");
         this.playerbox.addClass(
-          "isActive",
+          "active",
           wordblocks_self.returnNextPlayer(player)
         );
         this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -2272,11 +2257,10 @@ class Wordblocks extends GameTemplate {
         }
 
         //Update Specific Playerbox
-        let html =  `<div id="lastmove_${player}" class="score"><h2 class="text">Discarded:[${discardedTiles
+        let html = `<div class="lastmove" id="lastmove_${player}"><span>Discarded:</span><span class="discardedtiles">[${discardedTiles
           .split("")
-          .join()}] </h2></div>`;
+          .join()}]</span><span class="wordscore">0</span></div>`;
         this.playerbox.refreshLog(html, player);
-       
 
         //Code to keep the discard and redraws in the game log history
         wordblocks_self.last_played_word[player - 1] = {
@@ -2298,9 +2282,9 @@ class Wordblocks extends GameTemplate {
             "Player " + wordblocks_self.returnNextPlayer(player) + "'s turn"
           );
         }
-        $("card1").removeClass("isActive");
+        $("player-box").removeClass("active");
         this.playerbox.addClass(
-          "isActive",
+          "active",
           wordblocks_self.returnNextPlayer(player)
         );
         this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -2341,23 +2325,12 @@ class Wordblocks extends GameTemplate {
 
     this.game.score[player - 1] = this.game.score[player - 1] + score;
     this.playerbox.refreshInfo(
-      `<div class="score"><h3 class="text" style="display: inline; color: white">
-      Player ${player} :
-    </h3>
-    <h2 class="value" id="score_${player}">${
-      this.game.score[player - 1]
-    }</h2> </div>`
-     ,
+      `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${
+        this.game.score[player - 1]
+      }</span>`,
       player
     );
   }
-
-
-
-// old
-// `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${
-//   this.game.score[player - 1]
-// }</span>`
 
   endTurn() {
     this.updateStatusWithTiles("Waiting for information from peers....");

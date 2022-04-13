@@ -6,9 +6,6 @@
 ::-webkit-scrollbar-corner { background-color: #c9c9c9;}
 ::-webkit-resizer { background-color: #ddd;}
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Play&display=swap');
-
 
 body {
   font-family: arial, helvetica, sans-serif;
@@ -1482,9 +1479,6 @@ i.menu_icon_icon{
 
 
 
-
-
-
 /*********************************/
 /*** SCREEN SIZE MODIFICATIONS ***/
 /*********************************/
@@ -1568,6 +1562,4 @@ i.menu_icon_icon{
 .chat-list {
   display: none;
 }
-
-
 
