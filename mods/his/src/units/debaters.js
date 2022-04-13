@@ -4,7 +4,7 @@
       type		:	"luther" ,
       name		: 	"Martin Luther",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"LutherDebater.svg",
       committed		: 	0,
     });
@@ -13,7 +13,7 @@
       type		:	"zwingli" ,
       name		: 	"Ulrich Zwingli",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"ZwingliDebater.svg",
       committed		: 	0,
     });
@@ -22,7 +22,7 @@
       type		:	"cranmer" ,
       name		: 	"Thomas Cranmer",
       personage		:	true,
-      army_leader	:	true,
+      debater		:	true,
       img		:	"CranmerDebater.svg",
       committed		: 	0,
     });
