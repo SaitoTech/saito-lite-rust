@@ -166,7 +166,6 @@ body {
 
 /* Dice */
 .diceroll{
-  display: none;
   width: min(12vw,120px);
   margin: 0 auto;
   /*position: absolute;
@@ -177,7 +176,7 @@ body {
   border-radius: 5px;
   background-color: #222B;
   padding: min(0.5vw,5px);
-  display: none; /*flex;*/
+  display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   z-index: 3;
@@ -891,7 +890,7 @@ ul.horizontal_list li.iconoption{
 .flash {
   animation-name: flash;
   animation-duration: .8s;
-  animation-iteration-count: 2;
+  animation-iteration-count: 3;
   animation-fill-mode: backwards;
 }
 
