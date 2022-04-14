@@ -11,6 +11,7 @@ const ArcadeObserveTemplate = require("./templates/arcade-observe.template");
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
+const InviteOverlay = require('../arcade-game/invite-overlay');
 
 //let tabNames = ["arcade", "observables", "tournaments"];
 let tabNames = [];
@@ -22,7 +23,7 @@ module.exports = ArcadeMain = {
       return;
     }
 
-   
+
     // put active games first
     let whereTo = 0;
     for (let i = 0; i < mod.games.length; i++) {
@@ -106,7 +107,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           );
         }
       });
-      
+
       /*mod.observer.forEach((observe, i) => {
         app.browser.addElementToElement(
           ArcadeObserveTemplate(app,mod,observe,i,app.crypto.stringToBase64(JSON.stringify(observe))),
@@ -130,16 +131,16 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
         let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
         let cdiv = document.getElementById("saito-carousel");
-        if (cdiv){
+        if (cdiv) {
           cdiv.innerHTML = `<div class="big">${gamemod.gamename}</div>`;
           cdiv.style.backgroundImage = `url('/${gamemod.returnSlug()}/img/arcade.jpg')`;
-          cdiv.style.backgroundSize = "cover";  
+          cdiv.style.backgroundSize = "cover";
         }
       }
     }
 
     try {
-    
+
       // fetch any usernames needed
       app.browser.addIdentifiersToDom();
 
@@ -178,9 +179,9 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
             el.onclick = function (e) {
               let game_sig = e.currentTarget.getAttribute("data-sig");
               let game_cmd = e.currentTarget.getAttribute("data-cmd");
-              
+
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
-              
+
               if (game_cmd === "delete") {
                 arcade_main_self.deleteGame(app, mod, game_sig);
                 return;
@@ -201,13 +202,13 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
                 return;
               }
 
-              if (game_cmd === "invite"){
+              if (game_cmd === "invite") {
                 arcade_main_self.privatizeGame(app, mod, game_sig);
                 return;
               }
-              if (game_cmd === "publicize"){
+              if (game_cmd === "publicize") {
                 arcade_main_self.publicizeGame(app, mod, game_sig);
-                return; 
+                return;
               }
 
             };
@@ -226,7 +227,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     } else {
       ArcadeForums.attachEvents(app, mod);
     }
-  
+
 
 
   },
@@ -291,24 +292,24 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
             mod,
             my_address,
             game_options.crypto,
-            function () {}
+            function () { }
           );
 
           let current_balance = await cryptoMod.returnBalance();
 
           crypto_transfer_manager.hideOverlay();
 
-	  try {
+          try {
             if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
               return;
             }
-	  } catch (err) {
+          } catch (err) {
             if (parseFloat(current_balance) < parseFloat(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
               return;
-	    }
-	  }
+            }
+          }
         }
       }
     } catch (err) {
@@ -441,16 +442,16 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
             } else {
               await sconfirm("Sorry, this game has already been accepted!");
             }
-          }else{
+          } else {
             console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
           }
           mod.viewing_arcade_initialization_page = 0;
           if (app.browser.returnURLParameter("jid")) {
             window.location = "/arcade";  //redirect and reconnect to pull the list of open games    
-          }else{
+          } else {
             mod.renderArcadeMain(); //Reset to default view (undo game loader)  
           }
-          
+
         }
       );
     }
@@ -553,22 +554,26 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     this.removeGameFromList(sig);
   },
 
-//&&&&&&&&&&&&&&&&
-  privatizeGame(app, mod, game_sig){
+  //&&&&&&&&&&&&&&&&
+  privatizeGame(app, mod, game_sig) {
     console.log(JSON.parse(JSON.stringify(mod.games)));
 
     //Create invite link from the game_sig 
     let inviteLink = window.location.href;
     let gameInviteCode = game_sig;
-    if (!inviteLink.includes("#")){
+    if (!inviteLink.includes("#")) {
       inviteLink += "#";
     }
-    if (inviteLink.includes("?")){
-      inviteLink = inviteLink.replace("#", "&jid="+gameInviteCode);
-    }else{
-      inviteLink = inviteLink.replace("#", "?jid="+gameInviteCode);
+    if (inviteLink.includes("?")) {
+      inviteLink = inviteLink.replace("#", "&jid=" + gameInviteCode);
+    } else {
+      inviteLink = inviteLink.replace("#", "?jid=" + gameInviteCode);
     }
-    salert(inviteLink);
+    const inviteOverlay = new InviteOverlay(app, mod);
+    inviteOverlay.render(app, mod);
+    inviteOverlay.attachEvents(app, mod);
+    inviteOverlay.show(inviteLink);
+
     console.log(inviteLink);
 
     let accepted_game = null;
@@ -577,27 +582,27 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
         accepted_game = g;
       }
     });
-    if (accepted_game){
+    if (accepted_game) {
       let newtx = mod.createChangeTransaction(accepted_game);
-      app.network.propagateTransaction(newtx);        
+      app.network.propagateTransaction(newtx);
     }
 
     //Update status of the game invitation
     Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
       let game_cmd = button.getAttribute("data-cmd");
-      if (game_cmd == "invite"){
-        button.setAttribute("data-cmd","publicize");
+      if (game_cmd == "invite") {
+        button.setAttribute("data-cmd", "publicize");
         button.textContent = "PUBLICIZE";
       }
     });
   },
 
-  publicizeGame(app, mod, game_sig){
+  publicizeGame(app, mod, game_sig) {
     //Update status of the game invitation
     Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
       let game_cmd = button.getAttribute("data-cmd");
-      if (game_cmd == "publicize"){
-        button.setAttribute("data-cmd","invite");
+      if (game_cmd == "publicize") {
+        button.setAttribute("data-cmd", "invite");
         button.textContent = "INVITE";
       }
     });
@@ -608,9 +613,9 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
         accepted_game = g;
       }
     });
-    if (accepted_game){
+    if (accepted_game) {
       let newtx = mod.createChangeTransaction(accepted_game);
-      app.network.propagateTransaction(newtx);        
+      app.network.propagateTransaction(newtx);
     }
   },
 
