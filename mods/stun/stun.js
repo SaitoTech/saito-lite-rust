@@ -90,6 +90,8 @@ class Stun extends ModTemplate {
         const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
         let address = preferred_crypto.returnAddress();
 
+
+
         if (!tx.msg.peer_info) return;
         if (address === tx.msg.peer_info.peer_b) {
           stun_self.app.connection.emit('answer_received', tx.msg.peer_info.peer_a, tx.msg.peer_info.peer_b, tx.msg.peer_info.answer);
@@ -138,7 +140,7 @@ class Stun extends ModTemplate {
 
     const preferred_crypto = this.app.wallet.returnPreferredCrypto();
     let publickey = preferred_crypto.returnAddress();
-    console.log(publickey);
+    console.log("public key ", publicKey, this.app.wallet.returnPublicKey())
     let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
     if (index === -1) {

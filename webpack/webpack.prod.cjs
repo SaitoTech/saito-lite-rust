@@ -27,9 +27,7 @@ webpack({
     {
       archiver: "archiver"
     },
-    {
-      "stun": "stun"
-    },
+
     {
       child_process: "child_process"
     },
@@ -87,7 +85,7 @@ webpack({
       "buffer": require.resolve("buffer"),
       "crypto": require.resolve("crypto-browserify"),
       "crypto-browserify": require.resolve("crypto-browserify"),
-      "stun": require.resolve("stun")
+
     }
   },
   module: {
