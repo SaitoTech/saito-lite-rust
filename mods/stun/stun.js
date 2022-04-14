@@ -61,8 +61,7 @@ class Stun extends ModTemplate {
           if (tx.transaction.from[0].add === stun_self.app.keys.keys[i].publickey) {
             console.log(JSON.stringify(stun_self.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
             if (JSON.stringify(stun_self.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
-              const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
-              let address = preferred_crypto.returnAddress();
+              let address = app.wallet.returnPublicKey();
               console.log("stun changed, saving changes..", tx.msg.stun);
               stun_self.app.keys.keys[i].data.stun = { ...tx.msg.stun };
 
@@ -87,8 +86,8 @@ class Stun extends ModTemplate {
 
     if (conf == 0) {
       if (txmsg.module === "Stun") {
-        const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
-        let address = preferred_crypto.returnAddress();
+
+        let address = app.wallet.returnPublicKey();
 
 
 
@@ -138,8 +137,7 @@ class Stun extends ModTemplate {
     //
     let do_we_broadcast_and_update = 1;
 
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
+    let publickey = this.app.wallet.returnPublicKey();
     console.log("public key ", publicKey, this.app.wallet.returnPublicKey())
     let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
@@ -263,8 +261,7 @@ class Stun extends ModTemplate {
 
 
   broadcastAddress(stun) {
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
+    let publickey = this.app.wallet.returnPublicKey();
     let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
     let listeners = this.app.keys.keys[key_index].data.stun.listeners;
 
@@ -286,7 +283,7 @@ class Stun extends ModTemplate {
     newtx = this.app.wallet.signTransaction(newtx);
     console.log(this.app.network);
 
-    // does not work without the settimeout, it seems the blockchain isn't initialized by the time this function is run , so propagation doesn't register
+
     this.app.network.propagateTransaction(newtx);
 
 
@@ -312,8 +309,7 @@ class Stun extends ModTemplate {
   addListeners(listeners) {
     if (listeners.length === 0) return console.log("No listeners to add");
 
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
+    let publickey = this.app.wallet.returnPublicKey();
     let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
     // save key if it doesnt exist
