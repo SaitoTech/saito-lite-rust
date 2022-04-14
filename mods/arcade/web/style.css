@@ -109,7 +109,7 @@ body {
 }
 .arcade-games-wrapper {
   background-color: black;
-} 
+}
 
 .arcade-navigator-bars-menu {
   height: 100%;
@@ -179,27 +179,27 @@ body {
   background: var(--saito-jester);
 }
 
-#arcade-mobile-helper{
+#arcade-mobile-helper {
   display: none;
 }
 
-.arcade-game-mobile-header{
+.arcade-game-mobile-header {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.arcade-game-mobile-header .arcade-game-mobile-return-to-arcade{
+.arcade-game-mobile-header .arcade-game-mobile-return-to-arcade {
   position: absolute;
   left: 5%;
   font-size: 32px;
 }
 
-.arcade-apps.mobile-helper{
+.arcade-apps.mobile-helper {
   display: flex;
 }
 
-.mobile-helper li{
+.mobile-helper li {
   text-align: center;
   height: 45px;
   line-height: 45px;
@@ -319,8 +319,7 @@ body {
   height: 7em;
   overflow: hidden;
   position: relative;
-  text-shadow: 1px 0 2px black, 0 1px 2px black, -1px 0 2px black,
-    0 -1px 2px black;
+  text-shadow: 1px 0 2px black, 0 1px 2px black, -1px 0 2px black, 0 -1px 2px black;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
@@ -376,7 +375,7 @@ body {
   margin-right: 0.4em;
   font-size: 1em;
   overflow: auto;
-  background-color: #0005;  
+  background-color: #0005;
 }
 
 .invite-description {
@@ -425,7 +424,7 @@ body {
   align-self: end;
 }
 
-.arcade-tile .gameButtons{
+.arcade-tile .gameButtons {
   display: flex;
   flex-direction: column;
 }
@@ -587,7 +586,6 @@ body {
   opacity: 0.7;
 }
 
-
 /* controls */
 button,
 .button,
@@ -652,17 +650,17 @@ button.add-games {
   margin: unset;
 }
 /*Game Specific Header, want slightly larger text and fit return icon*/
-.arcade-game-sidebar-header{
+.arcade-game-sidebar-header {
   text-align: left;
   background: var(--saito-jester);
   padding-left: 15px;
   padding-right: 15px;
   border: 1px solid var(--saito-red);
   border-bottom: 0px;
-  margin: unset; 
-  display:flex; 
-  align-items:center;
-  justify-content: space-between
+  margin: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .arcade-game-sidebar-return-to-arcade {
   font-size: 1.6em;
@@ -695,7 +693,6 @@ button.add-games {
   border: 1px solid var(--saito-red);
   background: #1e1e1f50;
 }
-
 
 .arcade-gamelist {
   width: 100%;
@@ -809,7 +806,6 @@ button.add-games {
   font-size: 0.8em;
   font-style: italic;
   font-weight: normal;
- 
 }
 
 .game-wizard-image {
@@ -830,7 +826,7 @@ button.add-games {
   justify-content: space-evenly;
 }
 
-.game-wizard-players-no-select{
+.game-wizard-players-no-select {
   width: 20em;
   height: 3em;
   line-height: 3;
@@ -854,7 +850,7 @@ button.add-games {
   flex-direction: column;
   justify-content: space-around;
 }
-.game-wizard-other-btns{
+.game-wizard-other-btns {
   display: none;
   /* display: flex; */
   flex-direction: row;
@@ -1119,24 +1115,23 @@ select {
   background-color: #fff;
 }
 
-.dynamic_button{
+.dynamic_button {
   overflow: hidden;
 }
 
-.dynamic_button.saito-select{
+.dynamic_button.saito-select {
   border-bottom: unset;
   height: 60px;
   width: unset;
 }
 
-.dynamic_button_options{
+.dynamic_button_options {
   width: 88%;
 }
 
-.dynamic_button.showAll{
+.dynamic_button.showAll {
   overflow: visible;
 }
-
 
 /* Arrow */
 .saito-select::after {
@@ -1152,7 +1147,7 @@ select {
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
 }
-.dynamic_button.saito-select::after{
+.dynamic_button.saito-select::after {
   box-sizing: border-box;
   border: 1px solid var(--saito-red);
   background-color: #324;
@@ -1399,6 +1394,93 @@ span.rewards-row-name {
   text-transform: uppercase;
 }
 
+.invite-overlay-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1200;
+}
+.invite-overlay {
+  background-color: rgba(0, 0, 0, 0.704);
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+}
+.invite-overlay .invite-link {
+  width: 20rem;
+
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgb(102, 51, 153);
+  color: white;
+  padding-bottom: 2rem;
+
+  overflow: scroll;
+}
+
+.invite-link-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.invite-link-actions i {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.invite-link-actions i:hover {
+  transform: scale(1.05);
+  position: relative;
+}
+
+.invite-link > p {
+  margin-top: 2rem;
+  inline-size: 18rem;
+  overflow-wrap: break-word;
+  line-height: 1.3rem;
+}
+
+.invite-link button {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  /* color: rgb(14, 6, 22); */
+  /* border: 1px solid rgb(14, 6, 22); */
+  border-radius: 8px;
+  cursor: pointer;
+}
+.invite-link > p:hover::before {
+  /* transform: scale(1.05);
+  top: -2rem;
+  position: absolute;
+  cursor: pointer;
+  content: "Copy Link";
+  display: block;
+  width: 1rem;
+  height: 1rem; */
+}
+
+.invite-link .social-links {
+  margin-left: auto;
+  display: flex;
+
+  /* justify-content: space-between; */
+  /* width: 50%; */
+}
+
+.social-links img {
+  width: 25px;
+  cursor: pointer;
+}
+.social-links img:not(last-child) {
+  margin-right: 1rem;
+}
 
 /* *
   Mid - size
@@ -1456,10 +1538,9 @@ span.rewards-row-name {
   }
 
   /* Top sitting controls */
-  #arcade-mobile-helper{
+  #arcade-mobile-helper {
     display: block;
   }
-
 
   /* Pop out side bar*/
   .arcade-sidebar {
@@ -1504,7 +1585,7 @@ span.rewards-row-name {
 
   /* Completely hide side bar */
   .arcade-sidebar {
-    display:none;
+    display: none;
   }
 }
 @media only screen and (max-width: 600px) {
@@ -1515,14 +1596,13 @@ span.rewards-row-name {
     grid-template-rows: 1.3em auto 1fr;
   }
 
-
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 15em;
     font-size: 0.8em;
   }
 
-  .arcade-tile .gameButtons{
+  .arcade-tile .gameButtons {
     flex-direction: row;
   }
 
@@ -1619,17 +1699,16 @@ span.rewards-row-name {
   list-style: none;
 }
 
-
-.private-invite{
+.private-invite {
   display: none;
 }
-
 
 /*
   OVERWRITE DEFAULT FORUM POST DISPLAY 
 */
 
-.forum-topic-link, .forum-topic-link:hover {
+.forum-topic-link,
+.forum-topic-link:hover {
   text-decoration: none;
   color: whitesmoke;
 }
@@ -1637,8 +1716,3 @@ span.rewards-row-name {
 .forum-post-header {
   color: whitesmoke;
 }
-
-
-
-
-
