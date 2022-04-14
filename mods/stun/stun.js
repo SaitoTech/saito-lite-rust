@@ -232,6 +232,13 @@ class Stun extends ModTemplate {
             let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
             // console.log('peer_connection ', peer_connection)
             stun.pc = peer_connection;
+            // navigator.mediaDevices.getUserMedia({ vide: true, audio: true }).then(localStream => {
+            //   console.log('got local stream');
+            //   localStream.getTracks().forEach(track => {
+            //     stun.pc.addTrack(track, localStream);
+            //   });
+            //   console.log(pc);
+            // }).catch(err => console.log("User denied connection"));
             this.app.connection.emit('peer_connection', pc)
             resolve(stun);
             return;

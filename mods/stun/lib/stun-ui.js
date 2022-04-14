@@ -49,7 +49,8 @@ const StunUI = {
             app.connection.on('peer_connection', (pc) => {
                   console.log("pc created");
                   StunUI.peer_connection = pc;
-                  console.log(pc);
+
+
             })
 
             app.connection.on('answer_received', (peer_a, peer_b, answer) => {
@@ -73,6 +74,28 @@ const StunUI = {
 
                               }
                         });
+
+                        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(localStream => {
+                              const localVideoSteam = document.querySelector('#localStream');
+                              localVideoSteam.srcObject = localStream;
+                              console.log("got local stream ", localVideoSteam)
+                              localStream.getTracks().forEach(track => {
+                                    console.log(track)
+                                    StunUI.peer_connection.addTrack(track, localStream);
+                              });
+
+                        }).catch(err => console.log("User denied connection"));
+
+                        StunUI.peer_connection.ontrack = (event) => {
+
+                              const [remoteStream] = event.streams;
+                              const remoteVideoSteam = document.querySelector('#remoteStream');
+                              console.log('got remote stream ', event.streams);
+
+                              remoteVideoSteam.srcObject = remoteStream;
+                        }
+
+
 
 
                         console.log(StunUI.peer_connection);
@@ -111,9 +134,9 @@ const StunUI = {
             });
 
             // connect with peer
-            $(".stun-container").on('click', '#connectWith', function (e) {
-                  console.log('connecting with');
-            })
+            // $(".stun-container").on('click', '#connectWith', function (e) {
+            //       console.log('connecting with');
+            // })
 
             // add listeners to stun module
             $('.stun-container').on('click', '#add-to-listeners-btn', function (e) {
@@ -162,6 +185,39 @@ const StunUI = {
 
 
                   }).catch(e => console.log(`${e} An error occured on remote description set`));
+
+                  navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(localStream => {
+
+                        const localVideoSteam = document.querySelector('#localStream');
+                        console.log("got local stream ", localVideoSteam)
+
+                        localVideoSteam.srcObject = localStream;
+                        localStream.getTracks().forEach(track => {
+                              StunUI.peer_connection.addTrack(track, localStream);
+                              console.log(track)
+                        });
+
+                  }).catch(err => console.log("User denied connection"));
+
+
+                  // add remote track;
+                  StunUI.peer_connection.ontrack = (event) => {
+                        const remoteStream = new MediaStream();
+
+                        event.streams[0].getTracks().forEach(track => {
+                              remoteStream.addTrack(track);
+                        });
+                        const remoteVideoSteam = document.querySelector('#remoteStream');
+                        console.log('got remote stream ', remoteStream);
+
+                        remoteVideoSteam.srcObject = remoteStream;
+                  }
+
+                  console.log(StunUI.peer_connection);
+
+
+
+
 
             })
 
