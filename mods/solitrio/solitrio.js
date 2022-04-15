@@ -61,20 +61,27 @@ class Solitrio extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+    console.log("SET WITH GAMEID: " + game_id);
+
     this.updateStatus("loading game...");
-    //console.log("Load Game 1: "+game_id);
-    this.loadGame(game_id);
 
     //  
     // workaround to save issues
+    // - saving solitrio games results in the same game being
+    // loaded every time the module inits, as we fetch from the 
+    // same game_id / most-recent game_id.
     //
-    //console.log("Save Game 1");
-    this.saveGame();
-    //console.log("Load Game 2: "+this.game.id);
-    this.loadGame(this.game.id);
+//    this.loadGame(game_id);
+//    this.saveGame();
+//    this.loadGame(this.game.id);
+
+console.log("GAME ID: " + game_id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
+console.log("this is our dice????: " + this.game.dice);
+    if (this.game.dice == "") { 
+this.initializeDice(); this.initializeSinglePlayerGame(); }
 
     if (!this.game.state) {
 

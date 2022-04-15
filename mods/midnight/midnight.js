@@ -38,6 +38,11 @@ class Midnight extends GameTemplate {
 
       if (!this.browser_active) { return; }
 
+      // init single player if needed
+      if (this.game.players.length == 0) {
+        this.initializeSinglePlayerGame();
+      }
+
       // Override the game template initializeHTML function
       super.initializeHTML(app);
 

@@ -8,7 +8,12 @@
   grid-gap: 0px;
 }*/
 
-
+/** adjust to account for transparency on shown cards ***/
+.cardbox-menu {
+  width: 65%;
+  left: 48%;
+  padding: 0.5em;
+}
 
 .noncard {
   color: black;

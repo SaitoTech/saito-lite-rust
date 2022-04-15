@@ -84,6 +84,7 @@ class HereIStand extends GameTemplate {
       name		: 	"English",
       nickname		: 	"English",
       img		:	"england.png",
+      capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
       returnCardsDealt  :	function(game_mod) {
@@ -120,6 +121,7 @@ class HereIStand extends GameTemplate {
       key		: 	"france",
       name		: 	"French",
       nickname		: 	"French",
+      capitals          :       ["paris"],
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsDealt  :       function(game_mod) {
@@ -157,6 +159,7 @@ class HereIStand extends GameTemplate {
       key		: 	"hapsburg",
       name		: 	"Hapsburg",
       nickname		: 	"Hapsburg",
+      capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -195,6 +198,7 @@ class HereIStand extends GameTemplate {
       key		: 	"ottoman",
       name		: 	"Ottoman Empire",
       nickname		: 	"Ottoman",
+      capitals          :       ["istanbul"],
       img		:	"ottoman.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -231,6 +235,7 @@ class HereIStand extends GameTemplate {
       key		: 	"papacy",
       name		: 	"Papacy",
       nickname		: 	"Papacy",
+      capitals          :       ["rome"],
       img		:	"papacy.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -262,6 +267,7 @@ class HereIStand extends GameTemplate {
       key		: 	"protestant",
       name		: 	"Protestant",
       nickname		: 	"Protestant",
+      capitals		:	[] ,
       img		:	"protestant.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
@@ -277,38 +283,6 @@ class HereIStand extends GameTemplate {
  
 
 
-
-    this.importUnit('regular', {
-      type		:	"regular" ,
-      name		: 	"Regular",
-    });
- 
-    this.importUnit('mercenary', {
-      type		:	"mercenary" ,
-      name		: 	"Mercenary",
-    });
- 
-    this.importUnit('cavalry', {
-      type		:	"cavalry" ,
-      name		: 	"Cavalry",
-    });
- 
-    this.importUnit('squadron', {
-      type		:	"squadron" ,
-      name		: 	"Squadron" ,
-    });
-
-    this.importUnit('corsair', {
-      type		:	"corsair" ,
-      name		: 	"Corsair" ,
-    });
-
-    this.importUnit('debater', {
-      type		:	"debater" ,
-      name		: 	"Debater",
-      debater		:	true,
-    });
- 
 
     this.importUnit('suleiman', {
       type		:	"suleiman" ,
@@ -410,7 +384,318 @@ class HereIStand extends GameTemplate {
       battle_rating	:	2,
       command_value	:	0,
     });
+
+    this.importUnit('maurice-of-saxony', {
+      type		:	"maurice-of-saxony" ,
+      name		: 	"Maurice of Saxony",
+      personage		:	true,
+      army_leader	:	true,
+      img		:	"Maurice_Protestant.svg",
+      battle_rating	:	1,
+      command_value	:	6,
+    });
+
+
+
+    this.importUnit('luther', {
+      type		:	"luther" ,
+      name		: 	"Martin Luther",
+      personage		:	true,
+      debater		:	true,
+      img		:	"LutherDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('zwingli', {
+      type		:	"zwingli" ,
+      name		: 	"Ulrich Zwingli",
+      personage		:	true,
+      debater		:	true,
+      img		:	"ZwingliDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cranmer', {
+      type		:	"cranmer" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CranmerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('calvin', {
+      type		:	"calvin" ,
+      name		: 	"John Calvin",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CalvinDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('aleander', {
+      type		:	"aleander" ,
+      name		: 	"Hieronymus Aleander",
+      personage		:	true,
+      debater		:	true,
+      img		:       "AleanderDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('bucer', {
+      type		:	"bucer" ,
+      name		: 	"Martin Bucer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"BucerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('bullinger', {
+      type		:	"bullinger" ,
+      name		: 	"Heinrich Bullinger",
+      personage		:	true,
+      debater		:	true,
+      img		:	"BullingerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cajetan', {
+      type		:	"cajetan" ,
+      name		: 	"Thomas Cajetan",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CajetanDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('campeggio', {
+      type		:	"campeggio" ,
+      name		: 	"Lorenzo Campeggio",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CampeggioDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('canisius', {
+      type		:	"canisius" ,
+      name		: 	"Peter Canisius",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CanisiusDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('carafa', {
+      type		:	"carafa" ,
+      name		: 	"Carlo Carafa",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CarafaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('carlstadt', {
+      type		:	"carlstadt" ,
+      name		: 	"Andreas Carlstadt",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CarlstadtDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('contarini', {
+      type		:	"contarini" ,
+      name		: 	"Gasparo Contarini",
+      personage		:	true,
+      debater		:	true,
+      img		:	"ContariniDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cop', {
+      type		:	"cop" ,
+      name		: 	"Nicolas Cop",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CopDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('coverdale', {
+      type		:	"coverdale" ,
+      name		: 	"Myles Coverdale",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CoverdaleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cranmer', {
+      type		:	"cranmer" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CranmerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('faber', {
+      type		:	"faber" ,
+      name		: 	"Peter Faber",
+      personage		:	true,
+      debater		:	true,
+      img		:	"FaberDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('farel', {
+      type		:	"farel" ,
+      name		: 	"William Farel",
+      personage		:	true,
+      debater		:	true,
+      img		:	"FarelDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('gardiner', {
+      type		:	"gardiner" ,
+      name		: 	"Stephen Gardiner",
+      personage		:	true,
+      debater		:	true,
+      img		:	"GardinerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('knox', {
+      type		:	"knox" ,
+      name		: 	"John Knox",
+      personage		:	true,
+      debater		:	true,
+      img		:	"KnoxDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('latimer', {
+      type		:	"latimer" ,
+      name		: 	"Hugh Latimer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"LatimerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('loyola', {
+      type		:	"loyola" ,
+      name		: 	"Ignatius Loyola",
+      personage		:	true,
+      debater		:	true,
+      img		:	"LoyolaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('melanchthon', {
+      type		:	"melanchthon" ,
+      name		: 	"Philip Melanchthon",
+      personage		:	true,
+      debater		:	true,
+      img		:	"MelanchthonDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('oekolampadius', {
+      type		:	"oekolampadius" ,
+      name		: 	"Johannes Oekolampadius",
+      personage		:	true,
+      debater		:	true,
+      img		:	"OekolampadiusDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('olivetan', {
+      type		:	"olivetan" ,
+      name		: 	"Pierre Robert Olivetan",
+      personage		:	true,
+      debater		:	true,
+      img		:	"OlivetanDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('pole', {
+      type		:	"pole" ,
+      name		: 	"Reginald Pole",
+      personage		:	true,
+      debater		:	true,
+      img		:	"PoleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('tetzel', {
+      type		:	"tetzel" ,
+      name		: 	"Johann Tetzel ",
+      personage		:	true,
+      debater		:	true,
+      img		:	"TetzelDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('tyndalex', {
+      type		:	"tyndale" ,
+      name		: 	"William Tyndale",
+      personage		:	true,
+      debater		:	true,
+      img		:	"TyndaleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('wishart', {
+      type		:	"wishart" ,
+      name		: 	"George Wishart",
+      personage		:	true,
+      debater		:	true,
+      img		:	"WishartDebater.svg",
+      committed		: 	0,
+    });
+
+
+
+    this.importUnit('regular', {
+      type		:	"regular" ,
+      name		: 	"Regular",
+    });
  
+    this.importUnit('mercenary', {
+      type		:	"mercenary" ,
+      name		: 	"Mercenary",
+    });
+ 
+    this.importUnit('cavalry', {
+      type		:	"cavalry" ,
+      name		: 	"Cavalry",
+    });
+ 
+    this.importUnit('squadron', {
+      type		:	"squadron" ,
+      name		: 	"Squadron" ,
+      land_or_sea	:	"sea" ,
+    });
+
+    this.importUnit('corsair', {
+      type		:	"corsair" ,
+      name		: 	"Corsair" ,
+      land_or_sea	:	"sea" ,
+    });
+
+    this.importUnit('debater', {
+      type		:	"debater" ,
+      name		: 	"Debater",
+      debater		:	true,
+    });
+ 
+
+
+
 
 
     let first_time_running = 0;
@@ -561,7 +846,7 @@ console.log("adding stuff!");
 	
 	// INDEPENDENT
         this.addRegular("independent", "rhodes", 1);
-        this.addNavalSquadron("independent", "metz", 1);
+        this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
       }
@@ -810,6 +1095,45 @@ console.log("adding stuff!");
     }
 
     //
+    // position pregnancy chart
+    //
+    let pregnancies = this.returnPregnancyChart();
+    for (let key in pregnancies) {
+      if (pregnancies.hasOwnProperty(key)) {
+	try {
+          let idname = "pregnancy"+key;
+	  let obj = document.getElementById(idname);
+	  obj.style.top = pregnancies[key].top + "px";
+	  obj.style.left = pregnancies[key].left + "px";
+        } catch (err) {
+	}
+      }
+    }
+
+
+
+    //
+    // position diplomacy chart
+    //
+    let d = this.returnDiplomacyTable();
+    for (let key in d) {
+      if (d.hasOwnProperty(key)) {
+	try {
+          for (let key2 in d[key]) {
+	    divname = key + "_" + key2;
+	    let obj = document.getElementById(divname);
+	    obj.style.top = d[key][key2].top + "px";
+	    obj.style.left = d[key][key2].left + "px";
+	  }
+        } catch (err) {
+	}
+      }
+    }
+    this.game.diplomacy = d;
+
+
+
+    //
     // position electorate display
     //
     let elec = this.returnElectorateDisplay();
@@ -886,6 +1210,32 @@ console.log("adding stuff!");
 
 
 
+
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
 
   addUnit(faction, space, type) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
@@ -1050,10 +1400,50 @@ console.log("adding stuff!");
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
 
+    state.debaters = [];
+
     return state;
 
   }
 
+
+  returnPregnancyChart() {
+
+    let chart = {};
+
+    chart['1'] = {
+      top : 1307,
+      left : 4075,
+    }
+
+    chart['2'] = {
+      top : 1220,
+      left : 4075,
+    }
+
+    chart['3'] = {
+      top : 1135,
+      left : 4075,
+    }
+
+    chart['4'] = {
+      top : 1051,
+      left : 4075,
+    }
+
+    chart['5'] = {
+      top : 963,
+      left : 4075,
+    }
+
+    chart['1'] = {
+      top : 850,
+      left : 4075,
+    }
+
+    return chart;
+
+  }
 
   returnColonies() {
 
@@ -1184,18 +1574,6 @@ console.log("adding stuff!");
 
     return conquest;
 
-  }
-
-  returnPregnancyChart() {
-
-    let track = {};
-
-    track['1'] = {
-      top : 2912,
-      left : 2138
-    }
-
-    return;
   }
 
   returnVictoryPointTrack() {
@@ -1362,7 +1740,7 @@ console.log("adding stuff!");
       name : "Baltic Sea" ,
       neighbours : ["north"] ,
     }
-    seas['lyon'] = {
+    seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
@@ -1372,13 +1750,13 @@ console.log("adding stuff!");
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
-      neighbours : ["lyon","tyrrhenian","ionian","african"] ,
+      neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      neighbours : ["barbary","lyon"] ,
+      neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
@@ -2057,7 +2435,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["toulouse","avignon","zaragoza","valencia"],
       pass: ["toulouse","avignon"],
       language: "spanish",
@@ -2068,7 +2446,7 @@ console.log("adding stuff!");
       left: 2211,
       home: "hapsburg",
       political: "",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
       language: "other",
       religion: "catholic",
@@ -2090,7 +2468,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["cartagena","madrid","barcelona"],
       language: "spanish",
       type: "town"
@@ -2101,7 +2479,7 @@ console.log("adding stuff!");
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
@@ -2763,7 +3141,7 @@ console.log("adding stuff!");
       home: "independent",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["genoa","marseille"],
       pass: ["genoa"],
       language: "french",
@@ -2795,7 +3173,7 @@ console.log("adding stuff!");
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -2806,7 +3184,7 @@ console.log("adding stuff!");
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: ["nice","pavia","turin","modena","siena"],
       pass: ["nice"],
       language: "italian",
@@ -2962,7 +3340,7 @@ console.log("adding stuff!");
   }
 
 
-  returnNewCardsForTurn(turn = 1) {
+  returnNewCardsForThisTurn(turn = 1) {
 
     let deck = this.returnDeck();
     let new_deck = {};
@@ -2974,6 +3352,187 @@ console.log("adding stuff!");
     }
 
     return new_deck;
+
+  }
+
+  returnNewDiplomaticCardsForThisTurn(turn = 1) {
+
+    let deck = this.returnDiplomaticDeck();
+    let new_deck = {};
+
+    for (let key in deck) {
+      if (deck[key].turn === turn) {
+        new_deck[key] = deck[key];
+      }
+    }
+
+    return new_deck;
+
+  }
+
+
+  returnDiplomaticDeck() {
+
+    let deck = {};
+
+    deck['201'] = { 
+      img : "cards/HIS-201.svg" , 
+      name : "Andrea Doria" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['202'] = { 
+      img : "cards/HIS-202.svg" , 
+      name : "Frech Constable Invades" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['203'] = { 
+      img : "cards/HIS-203.svg" , 
+      name : "Corsair Raid" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['204'] = { 
+      img : "cards/HIS-204.svg" , 
+      name : "Diplomatic Marriage" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['205'] = { 
+      img : "cards/HIS-205.svg" , 
+      name : "Diplomatic Pressure" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['206'] = { 
+      img : "cards/HIS-206.svg" , 
+      name : "Frech Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['207'] = { 
+      img : "cards/HIS-207.svg" , 
+      name : "Henry Petitions for Divorce" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['208'] = { 
+      img : "cards/HIS-208.svg" , 
+      name : "Knights of St.John" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['209'] = { 
+      img : "cards/HIS-209.svg" , 
+      name : "Plague" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['210'] = { 
+      img : "cards/HIS-210.svg" , 
+      name : "Shipbuilding" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['211'] = { 
+      img : "cards/HIS-211.svg" , 
+      name : "Spanish Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['212'] = { 
+      img : "cards/HIS-212.svg" , 
+      name : "Venetian Alliance" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['213'] = { 
+      img : "cards/HIS-213.svg" , 
+      name : "Austrian Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['214'] = { 
+      img : "cards/HIS-214.svg" , 
+      name : "Imperial Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['215'] = { 
+      img : "cards/HIS-215.svg" , 
+      name : "Machiavelli" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['216'] = { 
+      img : "cards/HIS-216.svg" , 
+      name : "Ottoman Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['217'] = { 
+      img : "cards/HIS-217.svg" , 
+      name : "Secret Protestant Circle" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['218'] = { 
+      img : "cards/HIS-218.svg" , 
+      name : "Siege of Vienna" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['219'] = { 
+      img : "cards/HIS-219.svg" , 
+      name : "Spanish Inquisition" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+
+    for (let key in deck) {
+      deck[key] = this.addEvents(deck[key]);
+    }
+
+    return deck;
 
   }
 
@@ -2989,7 +3548,7 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "normal" ,
       faction : "ottoman" ,
-      
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
@@ -2998,6 +3557,7 @@ console.log("adding stuff!");
       turn : 1, 
       type : "normal" ,
       faction : "hapsburg" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
@@ -3006,6 +3566,7 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "normal" ,
       faction : "england" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
@@ -3014,6 +3575,7 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "normal" ,
       faction : "french" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     if (this.game.players.length == 2) {
       deck['005'] = { 
@@ -3023,6 +3585,7 @@ console.log("adding stuff!");
         turn : 1 ,
         type : "normal" ,
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     } else {
       deck['005'] = { 
@@ -3032,6 +3595,7 @@ console.log("adding stuff!");
         turn : 1 ,
         type : "normal" , 
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     }
     deck['006'] = { 
@@ -3041,6 +3605,7 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "normal" , 
       faction : "papacy" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
@@ -3049,6 +3614,7 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "normal" ,
       faction : "protestant" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     // 95 Theses
     deck['008'] = { 
@@ -3057,6 +3623,7 @@ console.log("adding stuff!");
       ops : 0 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeck : function(his_self, player) { return 1; } ,
       onEvent : function(game_mod, player) {
 
 	// protestant gets 2 roll bonus at start
@@ -3073,6 +3640,7 @@ console.log("adding stuff!");
         game_mod.convertSpace("protestant", "wittenberg");
         game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.addUnit("protestant", "wittenberg", "regular");
+        game_mod.addDebater("protestant", "wittenberg", "luther");
         game_mod.displaySpace("wittenberg");
 
 	return 1;
@@ -3130,6 +3698,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['010'] = { 
       img : "cards/HIS-010.svg" , 
@@ -3137,6 +3706,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -3144,6 +3714,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['012'] = { 
       img : "cards/HIS-012.svg" , 
@@ -3151,6 +3722,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['013'] = { 
       img : "cards/HIS-013.svg" , 
@@ -3158,6 +3730,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
@@ -3165,6 +3738,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
@@ -3172,6 +3746,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 5 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
@@ -3179,6 +3754,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
@@ -3186,6 +3762,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
@@ -3193,6 +3770,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['019'] = { 
       img : "cards/HIS-019.svg" , 
@@ -3200,6 +3778,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
@@ -3207,6 +3786,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
@@ -3214,6 +3794,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 6 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
@@ -3221,6 +3802,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 7 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
@@ -3228,6 +3810,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 
@@ -3235,6 +3818,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
@@ -3242,6 +3826,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
@@ -3249,6 +3834,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
@@ -3256,6 +3842,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
@@ -3263,6 +3850,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
@@ -3270,6 +3858,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
@@ -3277,6 +3866,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
@@ -3284,6 +3874,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
@@ -3291,6 +3882,31 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "move") {
+          return { event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player) {
+        if (menu == "move") {
+	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
+	    if (this.game.deck[0].fhand[i].includes('032')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player) {
+        if (menu == "move") {
+alert("WE PLAYED GOUT");
+          his_self.endTurn();
+          his_self.updateLog("looks like someone got gout");
+        }
+        return 0;
+      },
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
@@ -3298,6 +3914,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['034'] = { 
       img : "cards/HIS-034.svg" , 
@@ -3305,6 +3922,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['035'] = { 
       img : "cards/HIS-035.svg" , 
@@ -3312,6 +3930,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['036'] = { 
       img : "cards/HIS-036.svg" , 
@@ -3319,6 +3938,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['037'] = { 
       img : "cards/HIS-037.svg" , 
@@ -3326,6 +3946,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['038'] = { 
       img : "cards/HIS-038.svg" , 
@@ -3333,6 +3954,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
@@ -3340,6 +3962,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
@@ -3347,6 +3970,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
@@ -3354,6 +3978,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['042'] = { 
       img : "cards/HIS-042.svg" , 
@@ -3361,6 +3986,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['043'] = { 
       img : "cards/HIS-043.svg" , 
@@ -3368,6 +3994,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['044'] = { 
       img : "cards/HIS-044.svg" , 
@@ -3375,6 +4002,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['045'] = { 
       img : "cards/HIS-045.svg" , 
@@ -3382,6 +4010,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
@@ -3389,6 +4018,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
@@ -3396,6 +4026,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 6 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['048'] = { 
       img : "cards/HIS-048.svg" , 
@@ -3403,6 +4034,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['049'] = { 
       img : "cards/HIS-049.svg" , 
@@ -3410,6 +4042,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['050'] = { 
       img : "cards/HIS-050.svg" , 
@@ -3417,6 +4050,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['051'] = { 
       img : "cards/HIS-051.svg" , 
@@ -3424,6 +4058,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['052'] = { 
       img : "cards/HIS-052.svg" , 
@@ -3431,6 +4066,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['053'] = { 
       img : "cards/HIS-053.svg" , 
@@ -3438,6 +4074,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['054'] = { 
       img : "cards/HIS-054.svg" , 
@@ -3445,6 +4082,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 4 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['055'] = { 
       img : "cards/HIS-055.svg" , 
@@ -3452,6 +4090,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
@@ -3459,6 +4098,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['057'] = { 
       img : "cards/HIS-057.svg" , 
@@ -3466,6 +4106,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
@@ -3473,6 +4114,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 5 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['059'] = { 
       img : "cards/HIS-059.svg" , 
@@ -3480,6 +4122,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 6 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
@@ -3487,6 +4130,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 6 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
@@ -3494,6 +4138,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 7 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
@@ -3501,6 +4146,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['063'] = { 
       img : "cards/HIS-063.svg" , 
@@ -3508,6 +4154,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['064'] = { 
       img : "cards/HIS-064.svg" , 
@@ -3515,6 +4162,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 0 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
@@ -3522,6 +4170,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
@@ -3529,6 +4178,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
@@ -3536,6 +4186,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
@@ -3543,6 +4194,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['069'] = { 
       img : "cards/HIS-069.svg" , 
@@ -3550,6 +4202,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['070'] = { 
       img : "cards/HIS-070.svg" , 
@@ -3557,6 +4210,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['071'] = { 
       img : "cards/HIS-071.svg" , 
@@ -3564,6 +4218,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
@@ -3571,6 +4226,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['073'] = { 
       img : "cards/HIS-073.svg" , 
@@ -3578,6 +4234,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['074'] = { 
       img : "cards/HIS-074.svg" , 
@@ -3585,6 +4242,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['075'] = { 
       img : "cards/HIS-075.svg" , 
@@ -3592,6 +4250,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['076'] = { 
       img : "cards/HIS-076.svg" , 
@@ -3599,6 +4258,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
@@ -3606,6 +4266,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : "Fountain of Youth" ,
       turn : 2 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
@@ -3613,6 +4274,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['079'] = { 
       img : "cards/HIS-079.svg" , 
@@ -3620,6 +4282,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['080'] = { 
       img : "cards/HIS-080.svg" , 
@@ -3627,6 +4290,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['081'] = { 
       img : "cards/HIS-081.svg" , 
@@ -3634,6 +4298,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
@@ -3641,6 +4306,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['083'] = { 
       img : "cards/HIS-083.svg" , 
@@ -3648,6 +4314,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['084'] = { 
       img : "cards/HIS-084.svg" , 
@@ -3655,6 +4322,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
@@ -3662,6 +4330,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['086'] = { 
       img : "cards/HIS-086.svg" , 
@@ -3669,6 +4338,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['087'] = { 
       img : "cards/HIS-087.svg" , 
@@ -3676,6 +4346,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['088'] = { 
       img : "cards/HIS-088.svg" , 
@@ -3683,6 +4354,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['089'] = { 
       img : "cards/HIS-089.svg" , 
@@ -3690,6 +4362,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
@@ -3697,6 +4370,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['091'] = { 
       img : "cards/HIS-091.svg" , 
@@ -3704,6 +4378,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
@@ -3711,6 +4386,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
@@ -3718,6 +4394,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['094'] = { 
       img : "cards/HIS-094.svg" , 
@@ -3725,6 +4402,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
@@ -3732,6 +4410,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['096'] = { 
       img : "cards/HIS-096.svg" , 
@@ -3739,6 +4418,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['097'] = { 
       img : "cards/HIS-097.svg" , 
@@ -3746,6 +4426,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['098'] = { 
       img : "cards/HIS-098.svg" , 
@@ -3753,6 +4434,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['099'] = { 
       img : "cards/HIS-099.svg" , 
@@ -3760,6 +4442,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['100'] = { 
       img : "cards/HIS-100.svg" , 
@@ -3767,6 +4450,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['101'] = { 
       img : "cards/HIS-101.svg" , 
@@ -3774,6 +4458,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['102'] = { 
       img : "cards/HIS-102.svg" , 
@@ -3781,6 +4466,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['103'] = { 
       img : "cards/HIS-103.svg" , 
@@ -3788,6 +4474,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['104'] = { 
       img : "cards/HIS-104.svg" , 
@@ -3795,6 +4482,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['105'] = { 
       img : "cards/HIS-105.svg" , 
@@ -3802,6 +4490,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 5 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['106'] = { 
       img : "cards/HIS-106.svg" , 
@@ -3809,6 +4498,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 3 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['107'] = { 
       img : "cards/HIS-107.svg" , 
@@ -3816,6 +4506,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['108'] = { 
       img : "cards/HIS-108.svg" , 
@@ -3823,6 +4514,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['109'] = { 
       img : "cards/HIS-109.svg" , 
@@ -3830,6 +4522,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 1 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
@@ -3837,6 +4530,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 4 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['111'] = { 
       img : "cards/HIS-111.svg" , 
@@ -3844,6 +4538,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['112'] = { 
       img : "cards/HIS-112.svg" , 
@@ -3851,6 +4546,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
@@ -3858,6 +4554,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['114'] = { 
       img : "cards/HIS-114.svg" , 
@@ -3865,6 +4562,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 2 ,
       turn : 3 ,
       type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['115'] = { 
       img : "cards/HIS-115.svg" , 
@@ -3872,6 +4570,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 4 ,
       type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['116'] = { 
       img : "cards/HIS-116.svg" , 
@@ -3879,139 +4578,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
       ops : 3 ,
       turn : 5 ,
       type : "normal" ,
-    }
-    deck['201'] = { 
-      img : "cards/HIS-201.svg" , 
-      name : "Andrea Doria" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['202'] = { 
-      img : "cards/HIS-202.svg" , 
-      name : "Frech Constable Invades" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['203'] = { 
-      img : "cards/HIS-203.svg" , 
-      name : "Corsair Raid" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['204'] = { 
-      img : "cards/HIS-204.svg" , 
-      name : "Diplomatic Marriage" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['205'] = { 
-      img : "cards/HIS-205.svg" , 
-      name : "Diplomatic Pressure" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['206'] = { 
-      img : "cards/HIS-206.svg" , 
-      name : "Frech Invasion" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['207'] = { 
-      img : "cards/HIS-207.svg" , 
-      name : "Henry Petitions for Divorce" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['208'] = { 
-      img : "cards/HIS-208.svg" , 
-      name : "Knights of St.John" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['209'] = { 
-      img : "cards/HIS-209.svg" , 
-      name : "Plague" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['210'] = { 
-      img : "cards/HIS-210.svg" , 
-      name : "Shipbuilding" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['211'] = { 
-      img : "cards/HIS-211.svg" , 
-      name : "Spanish Invasion" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['212'] = { 
-      img : "cards/HIS-212.svg" , 
-      name : "Venetian Alliance" ,
-      ops : 0 ,
-      turn : 1 ,
-      type : "normal" ,
-    }
-    deck['213'] = { 
-      img : "cards/HIS-213.svg" , 
-      name : "Austrian Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['214'] = { 
-      img : "cards/HIS-214.svg" , 
-      name : "Imperial Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['215'] = { 
-      img : "cards/HIS-215.svg" , 
-      name : "Machiavelli" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['216'] = { 
-      img : "cards/HIS-216.svg" , 
-      name : "Ottoman Invasion" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['217'] = { 
-      img : "cards/HIS-217.svg" , 
-      name : "Secret Protestant Circle" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['218'] = { 
-      img : "cards/HIS-218.svg" , 
-      name : "Siege of Vienna" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
-    }
-    deck['219'] = { 
-      img : "cards/HIS-219.svg" , 
-      name : "Spanish Inquisition" ,
-      ops : 0 ,
-      turn : 0 ,
-      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
 
     for (let key in deck) {
@@ -4023,7 +4590,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
   }
 
 
-  returnDiplomacyTableInfo() {
+  returnDiplomacyTable() {
 
     let diplomacy 		= {};
     diplomacy["ottoman"] 	= {};
@@ -4069,6 +4636,11 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	205 ,
         left	:	4851 ,
     }
+
+    diplomacy["hapsburg"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4128 ,
+    }
     diplomacy["hapsburg"]["england"] = {
         top 	:	297 ,
         left	:	4220 ,
@@ -4101,6 +4673,16 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	297 ,
         left	:	4851 ,
     }
+
+
+    diplomacy["england"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4222 ,
+    }
+    diplomacy["england"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4220 ,
+    }
     diplomacy["england"]["france"] = {
         top 	:	386 ,
         left	:	4310 ,
@@ -4129,11 +4711,24 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top 	:	386 ,
         left	:	4851 ,
     }
+
+    diplomacy["france"]["ottoman"] = {
+        top 	:       205 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["england"] = {
+        top 	:	386 ,
+        left	:	4310 ,
+    }
     diplomacy["france"]["papacy"] = {
         top     :       478 ,
         left    :       4400 ,    
     }
-    diplomacy["france"]["protestancts"] = {
+    diplomacy["france"]["protestant"] = {
         top     :       478 ,
         left    :       4490 ,    
     }
@@ -4152,6 +4747,24 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     diplomacy["france"]["venice"] = {
         top     :       478 ,
         left    :       4851 ,    
+    }
+
+
+    diplomacy["papacy"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["england"] = {
+        top 	:	386 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["france"] = {
+        top     :       478 ,
+        left    :       4400 ,    
     }
     diplomacy["papacy"]["protestant"] = {
         top     :       568 ,
@@ -4173,6 +4786,27 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
         top     :       568 ,
         left    :       4851 ,    
     }
+
+    diplomacy["protestant"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["england"] = {
+        top 	:	386 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["france"] = {
+        top     :       478 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["papacy"] = {
+        top     :       568 ,
+        left    :       4490 ,    
+    }
     diplomacy["protestant"]["genoa"] = {
         top     :       658 ,
         left    :       4580 ,    
@@ -4193,7 +4827,6 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     return diplomacy;
 
   }
-
 
 
 
@@ -4244,13 +4877,23 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
     }
+
+
     //
-    // synchronous -- must return 1
+    // functions for convenience
     //
-    if (obj.postProduction == null) {
-      obj.postProduction = function(imperium_self, player, sector) { return 1; }
+    if (obj.removeFromDeck == null) { obj.removeFromDeck = function(his_self, player) { return 0; } }
+
+    if (obj.menuOptionTriggers == null) {
+      obj.menuOptionTriggers = function(his_self, stage, player) { return 0; }
     }
-  
+    if (obj.menuOption == null) {
+      obj.menuOption = function(his_self, stage, player) { return 0; }
+    }
+    if (obj.menuOptionActivated == null) {
+      obj.menuOptionActivated = function(his_self, stage, player) { return 0; }
+    }
+
     return obj;
 
   }
@@ -4294,19 +4937,25 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("diplomacy_phase");
+//
+// The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
+//
 	  this.game.queue.push("card_draw_phase");
-	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
 //	  if (this.game.state.round == 1) {
+//  	    this.game.queue.push("diet_of_worms");
 //	    this.updateLog("Luther's 95 Theses!");
 //	    this.game.queue.push("event\t1\t008");
 //	  }
+
+	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
+
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");
@@ -4347,33 +4996,300 @@ console.log("MOVE: " + mv[0]);
 	  return 1;
 	}
 
+        if (mv[0] === "ops") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let card = mv[2];
+	  let opsnum = parseInt(mv[3]);
+
+	  let p = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player === p) {
+	    this.playerPlayOps(card, faction, opsnum);
+	  }
+	  
+	  return 0;
+
+	}
+
         if (mv[0] === "move") {
 
-	  let player = mv[1];
-	  let movetype = mv[1];
-	  let source = mv[1];
-	  let destination = mv[1];
-	  let unitidx = mv[1];
+	  let faction = mv[1];
+	  let movetype = mv[2];
+	  let source = mv[3];
+	  let destination = mv[4];
+	  let unitidx = parseInt(mv[5]);
 
-          this.spaces[destination].units[player-1].push(this.spaces[source].units[player-1][unitidx].splice(unitidx, 1));
-	  this.updateLog("Player "+player+" moves unit from " + source + " to " + destination);
+console.log("dest: " + destination);
+console.log("fact: " + faction);
+console.log("unitidx: " + unitidx);
 
-	  this.displaySpace(source);
-	  this.displaySpace(destination);
+	  if (source === "sea") {
+
+	    //
+	    // source = land, destination = sea
+	    //
+	    if (this.game.spaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.spaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displaySpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = sea
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.navalspaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displayNavalSpace(destination);
+	    }
+
+	    //
+	    // source = sea, destination = land
+	    //
+	    if (this.game.navalspaces[source] && this.game.navalspaces[destination]) {
+	      let unit_to_move = this.game.navalspaces[source].units[faction][unitidx];
+              this.game.spaces[destination].units[faction].push(unit_to_move);
+              this.game.navalspaces[source].units[faction].splice(unitidx, 1);
+	      this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+	      this.displayNavalSpace(source);
+	      this.displaySpace(destination);
+	    }
+
+	  }
+
+	  if (source === "land") {
+
+	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
+            this.game.spaces[destination].units[faction].push(unit_to_move);
+            this.game.spaces[source].units[faction].splice(unitidx, 1);
+	    this.updateLog("Player "+faction+" moves unit from " + source + " to " + destination);
+
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
+	  }
+console.log("source: " + JSON.stringify(this.game.spaces[source]));
+console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
+
 
 	  this.game.queue.splice(qe, 1);
           return 1;
 	}
+
+        if (mv[0] === "diet_of_worms") {
+
+	  let game_self = this;
+
+          this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+          this.attachCardboxEvents(function(card) {
+
+            game_self.updateStatus("You picked: " + game_self.deck[card].name); 
+ 
+            let hash1 = game_self.app.crypto.hash(card);    // my card
+            let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
+            let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
+
+            let card_sig = game_self.app.crypto.signMessage(card, game_self.app.wallet.returnPrivateKey());
+            let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());
+            let hash3_sig = game_self.app.crypto.signMessage(hash3, game_self.app.wallet.returnPrivateKey());
+
+            game_self.game.spick_card = card;
+            game_self.game.spick_hash = hash2;
+
+            game_self.addMove("resolve_diet_of_worms");
+            game_self.addMove("SIMULTANEOUS_PICK\t"+game_self.game.player+"\t"+hash3+"\t"+hash3_sig);
+            game_self.endTurn();
+
+          });
+
+	  this.game.queue.splice(qe, 1);
+          return 0;
+        }
+
+	if (mv[0] === "resolve_diet_of_worms") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let protestant = this.returnPlayerOfFaction("protestant");
+	  let papacy = this.returnPlayerOfFaction("papacy");
+
+	  let protestant_card = this.game.deck[this.game.state.sp[protestant-1]];
+	  let papacy_card = this.game.deck[this.game.state.sp[papacy-1]];
+
+/*
+3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
+4. roll papal and Hapsburg dice: The Papal player rolls a num- ber of dice equal to the CP value of his card. The Hapsburg player does the same. Each roll of a “5” or a “6” is considered to be a hit. These two powers combine their hits into a Catholic total.
+5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
+6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
+*/
+
+	  let protestant_rolls = protestant_card.ops + 4;
+	  let protestant_hits = 0;
+
+	  for (let i = 0; i < protestant_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x);
+	    if (x >= 5) { protestant_hits++; }
+	  }
+
+
+	  let papacy_rolls = papacy_card.ops;
+	  let papacy_hits = 0;
+
+	  for (let i = 0; i < papacy_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Papacy rolls: " + x);
+	    if (x >= 5) { papacy_hits++; }
+	  }
+
+	  //
+	  // do the hapsburgs get rolls in the 2P game?
+	  //
+	  //for (let i = 0; i < papacy_rolls; i++) {
+	  //  let x = this.rollDice(6);
+	  //  this.updateLog("Hapsburg rolls: " + x);
+	  //  if (x >= 5) { papacy_hits++; }
+	  //}
+
+
+	  if (protestant_hits > papacy_hits) {
+	    for (let i = papacy_hits; i < protestant_hits; i++) {
+	      this.game.queue.push("select_for_protestant_conversion\tprotestant\tgerman");
+	    }
+	  } else {
+	    if (protestant_hits < papacy_hits) {
+	      for (let i = protestant_hits; i < papacy_hits; i++) {
+	        this.game.queue.push("select_for_catholic_conversion\tcatholic\tgerman");
+	      }
+	    } else {
+	      this.updateLog("Diet of Worms ends in tie.");
+	    }
+	  }
+
+          return 1;
+
+	}
+
+	if (mv[0] === "counter_or_acknowledge") {
+
+	  let msg = mv[1];
+	  let stage = mv[2];
+
+	  //
+	  // this is run when players have the opportunity to counter
+	  // or intercede in a move made by another player. we cannot
+	  // automatically handle without leaking information about 
+	  // game state, so we let players determine themselves how to
+	  // handle. if they are able to, they can respond. if not they
+	  // click acknowledge and the msg counts as notification of an
+	  // important game development.
+	  //
+	  let his_self = this;
+
+	  let html = '';
+
+	  let menu_index = [];
+	  let menu_triggers = [];
+	  let attach_menu_events = 0;
+
+    	  html += '<li class="option" id="ok">acknowledge</li>';
+
+          let z = this.returnEventObjects();
+          if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+            let x = z[i].menuOption(this, stage, this.game.player);
+            html += x.html;
+	    menu_index.push(i);
+	    menu_triggers.push(x.event);
+	    attach_menu_events = 1;
+	  }
+
+	  this.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+          $('.option').on('click', function () {
+
+            let action2 = $(this).attr("id");
+
+	    //
+	    // this ensures we clear regardless of choice
+	    //
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
+
+            //
+            // events in play
+            //
+            if (attach_menu_events == 1) {
+              for (let i = 0; i < menu_triggers.length; i++) {
+                if (action2 == menu_triggers[i]) {
+                  $(this).remove();
+                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player);
+                  return;
+                }
+              }
+            }
+
+            if (action2 == "ok") {
+              his_self.endTurn();
+              his_self.endTurn();
+              return;
+            }
+
+          });
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+	}
+
 
         if (mv[0] === "victory_determination_phase") {
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
         if (mv[0] === "new_world_phase") {
+
+	  //
+	  // no new world phase in 2P games
+	  //
+	  if (this.game.players.length > 2) {
+
+console.log("NEW WORLD PHASE!");
+	    // resolve voyages of exploration
+
+	    // resolve voyages of conquest
+
+	  }
+
+	  //
+	  // phase otherwise removed entirely for 2P
+	  //
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
         if (mv[0] === "winter_phase") {
+
+	  console.log("Winter Phase!");
+
+	  // Remove loaned naval squadron markers
+	  // Remove the Renegade Leader if in play
+	  // Return naval units to the nearest port
+	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
+	  // Remove major power alliance markers
+	  // Add 1 regular to each friendly-controlled capital
+	  // Remove all piracy markers
+	  // Flip all debaters to their uncommitted (white) side, and
+	  // ResolvespecificMandatoryEventsiftheyhavenotoccurred by their “due date”.
+
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -4381,29 +5297,101 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.queue.splice(qe, 1);
 
+	  if (this.game.players == 2) {
+	    // reverse order as last added goes first
+	    this.game.queue.push("play\tprotestant");
+	    this.game.queue.push("play\tpapacy");
+	    return 1;
+	  }
+
 	  let io = this.returnImpulseOrder();
-	  // added in reverse order as last added goes first
+	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }
           return 1;
         }
         if (mv[0] === "spring_deployment_phase") {
+
 	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.players === 2) {
+	    // only papacy moves units
+	    this.game.queue.push("spring_deployment\tpapacy");
+	  } else {
+	    // all players can move units
+	    let io = this.returnImpulseOrder();
+	    for (let i = io.length-1; i >= 0; i--) {
+	      if (this.isFactionInPlay(io[i])) {
+		this.game.queue.push("spring_deployment\t"+io[i]);
+	      }
+	    }
+	  }
+
           return 1;
         }
+        if (mv[0] === "spring_deployment") {
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+console.log("faction: " + faction + " player " + player);
+
+	  if (this.game.player == player) {
+	    this.playerPlaySpringDeployment(faction, player);
+	  } else {
+	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
+	  }
+
+	  return 0;
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
         if (mv[0] === "diplomacy_phase") {
 
-console.log("just in diplomacy phase!");
-console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
+	  //
+	  // 2-player game? both players play a diplomacy card
+	  // AFTER they have been dealt on every turn after T1
+	  //
+	  if (this.game.state.round > 1) {
+    	    this.game.queue.push("play_diplomacy_card\tpapacy");
+    	    this.game.queue.push("play_diplomacy_card\tprotestant");
+	  }
+
+
+	  //
+	  // 2-player game? Diplomacy Deck
+	  //
+	  if (this.game.players.length == 2) {
+	    for (let i = this.game.players_info.length-1; i >= 0; i--) {
+	      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+    	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t1");
+	      }
+	    }
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+	    for (let i = this.game.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKENCRYPT\t1\t"+(i));
+	    }
+	    for (let i = this.game.players_info.length; i > 0; i--) {
+    	      this.game.queue.push("DECKXOR\t1\t"+(i));
+	    }
+	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
+    	    this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+	  }
 
 	  this.game.queue.splice(qe, 1);
           return 1;
+
         }
+
         if (mv[0] === "card_draw_phase") {
 
 	  //
-	  // generate new deck
+	  // deal cards and add home card
 	  //
 	  for (let i = this.game.players_info.length-1; i >= 0; i--) {
 	    for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
@@ -4413,6 +5401,14 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
     	      this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 	    }
 	  }
+
+	  //
+	  // DECKRESTORE copies backed-up back into deck
+	  //
+          this.game.queue.push("SHUFFLE\t1");
+          this.game.queue.push("DECKRESTORE\t1");
+
+
 	  for (let i = this.game.players_info.length; i > 0; i--) {
     	    this.game.queue.push("DECKENCRYPT\t1\t"+(i));
 	  }
@@ -4421,11 +5417,15 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
 	  }
 
 
+	  //
+	  // new cards this turn
+	  //
+	  let new_cards = this.returnNewCardsForThisTurn(this.game.state.round);
+
 	  
 	  //
-	  // handle discarded cards
+	  // re-add discards
 	  //
-/***
 	  let discards = {};
 	  for (let i in this.game.deck[0].discards) {
       	    discards[i] = this.game.deck[0].cards[i];
@@ -4433,16 +5433,12 @@ console.log("cards in hand: " + JSON.stringify(this.game.deck[0].fhand));
     	  }
     	  this.game.deck[0].discards = {};
 
-
 	  //
-	  // new cards this turn
+	  // our deck for re-shuffling
 	  //
-	  let new_cards = this.returnNewCardsThisTurn(this.game.state.round);
-
 	  let reshuffle_cards = {};
 	  for (let key in discards) { reshuffle_cards[key] = discards[key]; }
 	  for (let key in new_cards) { reshuffle_cards[key] = new_cards[key]; }
-***/
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
@@ -4459,8 +5455,51 @@ console.log("----------------------------");
 	  delete deck_to_deal['008'];
 
     	  this.game.queue.push("restore_home_cards_to_deck");
-    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(deck_to_deal));
+    	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
 
+
+	  // backup any existing DECK #1
+          this.game.queue.push("DECKBACKUP\t1");
+
+
+	  //
+	  // "The Protestant army leader Maurice of Saxony is placed 
+	  // on the map at the start of Turn 6. Maurice is the only 
+	  // army leader that doesn’t either start the game on the map
+	  // or enter via a Mandatory Event. Place Maurice in any 
+	  // electorate under Protestant political control."
+	  //
+//
+// is not debater
+//
+//	  if (this.game.round == 6) {
+//    	    this.game.queue.push("place_protestant_debater\tmaurice_of_saxony\tselect");
+//	  }
+	  if (this.game.round == 2) {
+    	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
+	  }
+	  if (this.game.round == 4) {
+    	    this.game.queue.push("place_protestant_debater\tcalvin\tgeneva");
+	  }
+
+	  //
+	  // dynamic - turn after Henry VIII maries Anne Boleyn
+	  //
+	  if (this.game.round == 6) {
+    	    this.game.queue.push("place_protestant_debater\tcranmer\tlondon");
+	  }
+
+	  //
+	  // "Naval leaders eliminated from play are also brought back 
+	  // during the Card Draw Phase. Place them in a friendly port 
+	  // if possible. If no friendly port exists, they remain on 
+	  // the Turn Track for another turn. Naval units eliminated in 
+	  // a previous turn are also returned to each power’s pool of 
+	  // units available to be constructed at this time."
+	  //
+    	  //this.game.queue.push("restore\tnaval_leaders");
+
+	 
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -4505,8 +5544,9 @@ console.log("----------------------------");
 	if (mv[0] === "continue") {
 
 	  let player = mv[1];
-	  let card = mv[2];
-	  let ops = mv[3];
+	  let faction = mv[2];
+	  let card = mv[3];
+	  let ops = mv[4];
 
 	  if (this.game.player == player) {
             this.playerPlayOps(card, ops);
@@ -4516,7 +5556,7 @@ console.log("----------------------------");
 	  let player_turn = -1;
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
-	    if (this.game.players_info.factions.includes(faction)) {
+	    if (this.game.players_info[i].factions.includes(faction)) {
 	      player_turn = i+1;
 	    }
 	  }
@@ -4532,6 +5572,104 @@ console.log("----------------------------");
 	  }
 
           return 0;
+        }
+
+
+	if (mv[0] === "place_protestant_debater") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let name = mv[3];
+	  let location = mv[4];
+
+	  this.updateLog(unitname + " enters at " + location);
+	  this.addDebater("protestant", location, name);
+	  if (this.game.spaces[space].religion != "protestant") {
+	    this.game.spaces[space].religion = "protestant";
+	    this.updateLog(location + " converts to Protestant Religion");
+	  }
+	  this.displaySpace(location);
+
+	  return 1;
+
+	}
+
+	if (mv[0] === "select_for_catholic_conversion") {
+
+	  let faction = mv[1];
+	  let religion = mv[2];
+	  let zone = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerSelectSpaceWithFilter(
+              "Select Town to Convert Protestant",
+
+              //
+              // catholic spaces adjacent to protestant
+              //
+              function(space) {
+                if (
+                  space.religion === "protestant" &&
+                  game_mod.isSpaceAdjacentToReligion(space, "catholic")
+                ) {
+                  return 1;
+                }
+                return 0;
+              },
+
+              function(spacekey) {
+                game_mod.addMove("convert\t"+spacekey+"\tcatholic");
+                game_mod.endTurn();
+              },
+
+              null
+
+            );
+          }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
+        }
+
+	if (mv[0] === "select_for_protestant_conversion") {
+
+	  let faction = mv[1];
+	  let religion = mv[2];
+	  let zone = mv[3];
+
+	  let player = this.returnPlayerOfFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerSelectSpaceWithFilter(
+              "Select Town to Convert Protestant",
+
+              //
+              // catholic spaces adjacent to protestant
+              //
+              function(space) {
+                if (
+                  space.religion === "catholic" &&
+                  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+                ) {
+                  return 1;
+                }
+                return 0;
+              },
+
+              function(spacekey) {
+                game_mod.addMove("convert\t"+spacekey+"\tprotestant");
+                game_mod.endTurn();
+              },
+
+              null
+
+            );
+          }
+
+	  this.game.queue.splice(qe, 1);
+	  return 0;
+
         }
 
 	if (mv[0] === "convert") {
@@ -4568,6 +5706,23 @@ console.log("----------------------------");
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "play_diplomacy_card") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let player = this.returnPlayerOfFaction(faction);
+
+	  if (this.game.player == player) {
+	    this.playerPlayDiplomacyCard(faction);
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "hand_to_fhand") {
 
@@ -4633,11 +5788,11 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // neighbours
 	  //
-	  for (let i = 0; i < this.spaces[space].neighbours.length; i++) {
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "catholic") {
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
 	      c_neighbours++;
 	    }
-	    if (this.spaces[ this.spaces[space].neighbours[i] ].religion === "protestant") {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
 	      p_neighbours++;
 	    }  
 	  }
@@ -4645,7 +5800,7 @@ console.log(this.game.deck[deckidx]);
 	  //
 	  // language zone
 	  //
-	  if (this.spaces[space].language !== "german") {
+	  if (this.game.spaces[space].language !== "german") {
 	    ties_resolve = "catholic";
  	  }
 
@@ -4882,6 +6037,25 @@ console.log("x is: " + x);
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
+  isFactionInPlay(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+      }
+    }
+    return 0;
+  }
+
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -5053,7 +6227,7 @@ console.log("x is: " + x);
 
 
 
-  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
 
@@ -5063,6 +6237,62 @@ console.log("x is: " + x);
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+  playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.game.navalspaces) {
+      if (filter_func(this.game.navalspaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
       }
     }
     if (cancel_func != null) {
@@ -5108,26 +6338,36 @@ console.log("x is: " + x);
 
   playerPlayCard(card, player, faction) {
 
-    let html = `<ul>`;
-    html    += `<li class="card" id="ops">play for ops</li>`;
-    html    += `<li class="card" id="event">play for event</li>`;
-    html    += `</ul>`;
+    //
+    // mandatory event cards effect first, then 2 OPS
+    //
+    if (this.deck[card].type === "mandatory") {
+      // event before ops
+      this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.playerPlayEvent(card, faction);
+    } else {
 
-    this.updateStatusWithOptions('Playing card:', html, true);
-    this.bindBackButtonFunction(() => {
-      this.playerTurn(faction);
-    });
-    this.attachCardboxEvents(function(user_choice) {
-      if (user_choice === "ops") {
-        this.playerPlayOps(card, faction);
+      let html = `<ul>`;
+      html    += `<li class="card" id="ops">play for ops</li>`;
+      html    += `<li class="card" id="event">play for event</li>`;
+      html    += `</ul>`;
+
+      this.updateStatusWithOptions('Playing card:', html, true);
+      this.bindBackButtonFunction(() => {
+       this.playerTurn(faction);
+      });
+      this.attachCardboxEvents(function(user_choice) {
+        if (user_choice === "ops") {
+          this.playerPlayOps(card, faction);
+          return;
+        }
+        if (user_choice === "event") {
+          this.playerPlayEvent(card, faction);
+          return;
+        }
         return;
-      }
-      if (user_choice === "event") {
-        this.playerPlayEvent(card, faction);
-        return;
-      }
-      return;
-    });
+      });
+    }
 
   }
 
@@ -5140,7 +6380,6 @@ console.log("x is: " + x);
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-console.log(menu[i].name);
       if (menu[i].check(this, this.game.player, faction)) {
         for (let z = 0; z < menu[i].factions.length; z++) {
           if (menu[i].factions[z] === faction) {
@@ -5155,7 +6394,7 @@ console.log(menu[i].name);
     html    += `<li class="card" id="end_turn">end turn</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
     this.attachCardboxEvents(async (user_choice) => {      
 
       if (user_choice === "end_turn") {
@@ -5171,9 +6410,9 @@ console.log(menu[i].name);
       }
 
       if (ops > 0) {
-	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
+	this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
       }
-      menu[user_choice].fnct(this, this.game.player);
+      menu[user_choice].fnct(this, this.game.player, faction);
       return;
 
     });
@@ -5197,6 +6436,56 @@ return;
   }
 
 
+  playerPlaySpringDeployment(faction, player) {
+
+    let capitals = this.factions[faction].capitals;
+    let viable_capitals = [];
+    let can_deploy = 0;
+
+    for (let i = 0; i < capitals.length; i++) {
+      let c = capitals[i];
+      if (this.game.spaces[c].units[faction].length > 0) {
+        can_deploy = 1;
+        viable_capitals.push(capitals[i]);
+      }
+    }
+
+    if (can_deploy == 0) {
+      this.updateStatus("Spring Deployment not possible");
+      this.endTurn();
+    } else {
+
+      let msg = "Do you wish to Spring Deploy from: ";
+     
+      let opt = "";
+      for (let i = 0; i < viable_capitals.lengths; i++) {
+	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      }
+      opt += `<li class="textchoice" id="pass">skip</li>`;
+
+      this.updateStatusWithOptions(msg, opt);
+      $(".textchoice").off();
+      $(".textchoice").onclick = (e) => {
+
+        let id = $(this).attr('id');
+        $(".textchoice").off();
+
+	if (id === "pass") {
+	  this.updateStatus("passing...");
+	  this.endTurn();
+	  return;
+        }
+
+	//
+	//
+	//
+	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+	this.endTurn();
+
+      };
+    }
+
+  }
 
 
 
@@ -5207,12 +6496,12 @@ return;
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
+    let cancel_func = null;
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Town from Which to Move Units:",
 
-      // TODO - select only cities where I can move units
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && faction === z) {
@@ -5232,7 +6521,14 @@ return;
             "Select Destination for these Units",
 
       	    function(space) {
-	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	      if (space.neighbours.includes(spacekey)) {
+	        if (!space.pass) { 
+		  return 1; 
+		} else {
+ 		  if (!space.pass.includes(spacekey)) {
+		    return 1;
+		  }
+		}
 	  	return 1;
               }
 	      return 0;
@@ -5241,16 +6537,20 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
-	      this.endTurn();
+	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+	      his_self.endTurn();
 
 	    },
 
 	    cancel_func,
+
+	    true 
 
 	  );
 	}
@@ -5259,10 +6559,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -5276,7 +6578,7 @@ return;
             let id = $(this).attr("id");
 
 	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
+	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
 
@@ -5297,6 +6599,8 @@ return;
       },
 
       cancel_func,
+
+      true,
 
     );
 
@@ -5343,10 +6647,10 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
 	      this.endTurn();
 
@@ -5361,10 +6665,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -5406,11 +6712,137 @@ return;
 
 
   canPlayerNavalMove(his_self, player, faction) {
-    return 1;
+    if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
+    return 0;
   }
   async playerNavalMove(his_self, player, faction) {
-console.log("4");
-return;
+
+    let units_to_move = [];
+    let cancel_func = null;
+
+    his_self.playerSelectNavalSpaceWithFilter(
+
+      "Select Naval Space from Which to Move Units:",
+
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length && faction === z) {
+	    for (let i = 0; i < space.units[z].length; i++) {
+	      if (space.units[z][i].land_or_sea == "sea" || space.units[z][i].land_or_sea == "both") {
+	        return 1;
+              }
+            }
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectNavalSpaceWithFilter(
+
+            "Select Naval Destination for these Units",
+
+      	    function(space) {
+	      //
+	      // trying to find out if space is destination for spacekey
+	      //
+	      if (his_self.game.spaces[spacekey]) {
+	        if (space.ports) {
+		  if (space.ports.includes(spacekey)) {
+	  	    return 1; 
+	          } 
+		}
+		return 0;
+	      }
+
+	      if (his_self.game.navalspaces[spacekey]) {
+	        if (space.neighbours.includes(spacekey)) {
+		  return 1;
+		}
+	        if (space.ports.includes(spacekey)) {
+		  return 1;
+		}
+		return 0;
+	      }		
+
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      ////units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+	      }
+	      his_self.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	    true 
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+      true,
+
+    );
+
+  }
+  canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
@@ -5630,6 +7062,8 @@ return;
     if (obj.name == null)               { obj.name = "Unknown Faction"; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.key == null)	        { obj.key = name; }
+    if (obj.ruler == null)		{ obj.ruler = ""; }
+    if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
@@ -5681,11 +7115,13 @@ console.log("faction: " + faction);
     if (obj.name == null)               { obj.name = "Unit"; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
+    if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
+    if (obj.committed == null)          { obj.committed = 0; }
 
     //obj = this.addEvents(obj);
     this.units[name] = obj;
@@ -5730,9 +7166,9 @@ console.log("faction: " + faction);
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
     let controlled_keys = 0;
     
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
 	}
       }
@@ -5870,6 +7306,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   }
 
   displaySpaceDetailedView(name) {
+    // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
     this.overlay.show(this.app, this, html);
   }
@@ -5880,7 +7317,6 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
-console.log("done this tile");
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
 console.log("about to add electoral bonus");
       if (this.returnElectoralBonus(key)) {
@@ -6476,8 +7912,9 @@ console.log("about to add electoral bonus");
   displaySpace(key) {
 
     let obj = document.getElementById(key);
-    let space = this.spaces[key];
+    let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
+
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
@@ -6501,9 +7938,20 @@ console.log("about to add electoral bonus");
     if (space.type === "key") { show_tile = 1; }
 
     //
+    // and force if has units
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	show_tile = 1; 
+      }
+    }
+
+
+    //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
+
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;

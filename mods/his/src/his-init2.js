@@ -147,7 +147,7 @@ console.log("adding stuff!");
 	
 	// INDEPENDENT
         this.addRegular("independent", "rhodes", 1);
-        this.addNavalSquadron("independent", "metz", 1);
+        this.addRegular("independent", "metz", 1);
         this.addRegular("independent", "florence", 1);
 	
       }

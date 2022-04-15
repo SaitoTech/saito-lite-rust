@@ -4,6 +4,7 @@
       key		: 	"france",
       name		: 	"French",
       nickname		: 	"French",
+      capitals          :       ["paris"],
       img		:	"france.png",
       cards_bonus	:	1,
       returnCardsDealt  :       function(game_mod) {

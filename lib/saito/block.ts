@@ -58,7 +58,6 @@ class Block {
   public fee_transaction_idx: number;
   public golden_ticket_idx: number;
   public issuance_transaction_idx: number;
-  public get_id: any;
   public txs_hmap: any;
   public txs_hmap_generated: boolean;
   public has_examined_block: boolean;
@@ -1535,7 +1534,7 @@ class Block {
     //
     // only block #1 can have an issuance transaction
     //
-    if (cv.it_num > 0 && this.get_id() > 1) {
+    if (cv.it_num > 0 && this.returnId() > 1) {
       console.log("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
