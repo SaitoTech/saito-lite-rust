@@ -13,8 +13,8 @@ class Settlers extends GameTemplate {
     this.app = app;
 
     this.name = "Settlers";
-    this.gamename = "Settlers of Saito";
-    this.description = `Island colonization and settlement game. Collect resources and build your way to dominance.`;
+    this.gamename = "Settlers of Saitoa";
+    this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Arcade Entertainment";
     this.type = "Strategy Boardgame";
     this.status = "Beta";
@@ -120,6 +120,21 @@ class Settlers extends GameTemplate {
 
     return html;
   }
+
+  returnWelcomeOverlay(){
+    let html = `<div class="rules-overlay trade_overlay">
+                <h1>Welcome to the Island of Saitoa</h1>
+                <h2>Initial Placement Phase</h2>
+                <p>Every one gets to start by placing two ${this.skin.c1.name}s anywhere on the board, each with an attached ${this.skin.r.name}. ${this.skin.c1.name}s go on the corners of the hexagon tiles, while ${this.skin.r.name}s go on the edges. When the dice roll the number of that tile, adjacent ${this.skin.c1.name}s produce that resource.</p>
+                <p>In order to be fair, the players take turns making their initial placement first in last out, i.e. the first player to place their first ${this.skin.c1.name} is the last player to place their second ${this.skin.c1.name}. You begin the game with the resources adjacent to your second ${this.skin.c1.name}.</p>
+                <h2>Good Luck!</h2>
+                <p>For more detailed instructions of the game, see "RULES" under the game menu. For detailed instructions on trading, refer to the "HELP" item under the trade menu.</p>
+                <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
+                </div>
+  `;
+    return html;
+  }
+
 
   /*
   Make Overlay of game introduction/Rules
@@ -506,6 +521,7 @@ class Settlers extends GameTemplate {
     state.ports = [];
     state.lastroll = [];
     state.placedCity = "hello world"; //a slight hack for game iniitalization
+    state.welcome = 0;
     for (let i = 0; i < this.game.players.length; i++) {
       state.players.push({});
       state.players[i].resources = [];
@@ -548,15 +564,17 @@ class Settlers extends GameTemplate {
       /* Game Setup */
 
       if (mv[0] == "init") {
-        this.game.queue.splice(qe, 1);   // no splice, we want to bounce off this
+        this.game.queue.splice(qe, 1);   
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
-        $(".diceroll").css("display");
+        this.game.state.lastroll = [0,0];
+        this.displayDice();
+        $(".diceroll").css("display","");
         this.game.queue.push("round");
         this.displayModal("Now we begin game play");
         return 1;
       }
 
-      if (mv[0] == "round"){
+      if (mv[0] == "round"){ // no splice, we want to bounce off this
         for (let i = this.game.players.length; i > 0; i--) {
           //count backwards so it goes P1, P2, P3,
           this.game.queue.push(`play\t${i}`);
@@ -767,6 +785,16 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         this.stopTrading();
+
+        //For the beginning of the game only...
+        if (this.game.state.welcome == 0 && this.browser_active) {
+            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            document.querySelector(".close_welcome_overlay").onclick = (e) => {
+              this.overlay.hide();
+            };
+          this.game.state.welcome = 1;
+        }
+
         if (this.game.player == player) {
           this.playerBuildCity(mv[1]);
         } else {
