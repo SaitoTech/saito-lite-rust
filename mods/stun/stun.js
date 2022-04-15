@@ -258,9 +258,14 @@ class Stun extends ModTemplate {
 
               this.app.connection.emit('peer_connection', pc)
               resolve(stun);
-              return;
+              // return;
             }
-            pc.addIceCandidate(ice.candidate);
+
+            if (ice.candidate && pc.remoteDescription) {
+              console.log('ice candidatate', ice.candidate, ice)
+              pc.addIceCandidate(ice.candidate);
+            }
+
             let split = ice.candidate.candidate.split(" ");
             if (split[7] === "host") {
               // console.log(`Local IP : ${split[4]}`);
