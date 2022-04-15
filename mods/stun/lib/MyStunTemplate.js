@@ -1,6 +1,6 @@
 
 
-
+const StunUI = require("./stun-ui");
 module.exports = (app, mod) => {
 
   console.log(app, mod);
@@ -38,9 +38,11 @@ module.exports = (app, mod) => {
 
 
   return `<card class="appear my-stun-container">
-  <video id="localStream" width="100%" height="100%" autoplay></video>
+  <p> Video </p>
+  <div class="stun-video-container" style="display: flex"><video  class="stun-video" id="localStream" width="100%" height="100%" autoplay></video>
 
-  <video id="remoteStream" width="100%" height="100%" autoplay></video>
+  <video class="stun-video"  id="remoteStream" width="100%" height="100%" autoplay></video> </div>
+  
 
     <div class="row mb-4">
       <div class="col-sm-4"><p class="name">IP Address:</p></div>

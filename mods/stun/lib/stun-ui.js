@@ -24,6 +24,12 @@ const StunUI = {
             const Tab = this.mapTabToTemplate[this.selectedTab];
             if (!document.querySelector('.stun-container')) document.querySelector('.email-appspace').innerHTML = sanitize(StunUITemplate(app, mod));
             document.querySelector(".stun-information").innerHTML = sanitize(Tab(app, mod));
+            if (StunUI.localStream) {
+                  document.querySelector('#localStream').srcObject = Stun.localStream;
+            }
+            if (StunUI.remoteStream) {
+                  document.querySelector('#localStream').srcObject = Stun.remoteStream;
+            }
 
       },
 
@@ -36,7 +42,12 @@ const StunUI = {
 
             app.connection.on('stun-update', (app) => {
                   console.log('stun update', app);
+                  let localStream, remoteStream;
+                  // localStream = document.querySelector('#localStream');
+                  // remoteStream = document.querySelector('#remoteStream');
                   StunUI.render(app, mod);
+                  // document.querySelector('#localStream') = localStream;
+                  // document.querySelector('#remoteStream') = remoteStream;
                   // StunUI.attachEvents(app, mod);
             });
 
@@ -50,7 +61,8 @@ const StunUI = {
                   console.log("pc created");
                   StunUI.peer_connection = pc;
                   console.log('ice candidate received', StunUI.peer_connection)
-
+                  StunUI.remoteStream = pc.REMOTE_STREAM;
+                  StunUI.localStream = pc.LOCAL_STREAM;
             })
 
             app.connection.on('answer_received', (peer_a, peer_b, answer) => {
@@ -184,6 +196,7 @@ const StunUI = {
                               });
 
                               localVideoStream.srcObject = localStream;
+                              StunUI.localStream = localStream
 
 
                               const remoteStream = new MediaStream()
@@ -196,6 +209,7 @@ const StunUI = {
                                     });
 
                                     remoteVideoSteam.srcObject = remoteStream;
+                                    StunUI.remoteStream = remoteStream
                               });
                               const offer = await pc.createOffer();
                               pc.setLocalDescription(offer);

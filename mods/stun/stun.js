@@ -222,10 +222,11 @@ class Stun extends ModTemplate {
           const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           localStream.getTracks().forEach(track => {
             pc.addTrack(track, localStream);
+
           });
           localVideoSteam.srcObject = localStream;
 
-
+          pc.LOCAL_STREAM = localStream;
           const remoteStream = new MediaStream()
           pc.addEventListener('track', (event) => {
 
@@ -235,6 +236,7 @@ class Stun extends ModTemplate {
               remoteStream.addTrack(track);
             });
 
+            pc.REMOTE_STREAM = remoteStream
 
             remoteVideoSteam.srcObject = remoteStream;
           });
