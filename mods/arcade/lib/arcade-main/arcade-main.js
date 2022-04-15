@@ -99,6 +99,7 @@ module.exports = ArcadeMain = {
     if (document.querySelector(".arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
+console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
             ArcadeInviteTemplate(app, mod, invite, i),
             document.querySelector(".arcade-hero")
