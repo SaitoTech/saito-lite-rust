@@ -58,7 +58,6 @@ module.exports = ArcadeGameDetails = {
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
         //Requery advancedOptions on the click so it can dynamically update based on # of players
         mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
-        gamemod.attachAdvancedOptionsEventListeners();
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {
           if (document.getElementById("game-wizard-advanced-return-btn")) {
@@ -85,7 +84,6 @@ module.exports = ArcadeGameDetails = {
 
   /**
    * Define function to create a game invite from clicking on create new game button
-   * @param mod - reference to Arcade.js
    */
   attachEvents(app, mod) {
     document.querySelector(".background-shim").onclick = (e) => {
@@ -170,7 +168,7 @@ module.exports = ArcadeGameDetails = {
           name: gamemod.name,
           slug: gamemod.returnSlug(),
           options: gamemod.returnFormattedGameOptions(options),
-          //options_html: gamemod.returnGameRowOptionsHTML(options), /*Deprecated ? */
+          options_html: gamemod.returnGameRowOptionsHTML(options),
           players_needed: players_needed,
         };
         if (players_needed === 0) {
@@ -188,8 +186,11 @@ module.exports = ArcadeGameDetails = {
           console.log("PRE CREATING OPEN TX");
 
           let newtx = mod.createOpenTransaction(gamedata);
-        
-          mod.addGameToOpenList(newtx);
+
+          let arcade_mod = app.modules.returnModule("Arcade");
+          if (arcade_mod) {
+            arcade_mod.addGameToOpenList(newtx);
+          }
 
           //
           // and relay open if exists
