@@ -37,7 +37,6 @@ class Blockchain {
   public res_spend: any;
   public res_unspend: any;
   public res_delete: any;
-  public debugging: boolean;
 
   constructor(app: Saito) {
     this.app = app;
@@ -70,8 +69,6 @@ class Blockchain {
     //
     this.run_callbacks = 1;
     this.callback_limit = 2; // 2 blocks
-    
-    this.debugging = true;
   }
 
   addGhostToBlockchain(
@@ -100,9 +97,7 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block.hash)) {
-      if (this.debugging){
-        console.error("ERROR 581023: block exists in blockchain index");  
-      }
+      console.error("ERROR 581023: block exists in blockchain index");
       this.indexing_active = false;
       return;
     }
@@ -137,10 +132,9 @@ class Blockchain {
     //
     block.generateHashes();
 
-    if (this.debugging){
-      console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
+    console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
     //console.debug(this);
-    }
+
     //
     // start by extracting some variables that we will use
     // repeatedly in the course of adding this block to the
@@ -155,9 +149,7 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block_hash)) {
-      if (this.debugging){
-        console.error("ERROR 581023: block exists in blockchain index");
-      }
+      console.error("ERROR 581023: block exists in blockchain index");
       this.indexing_active = false;
       return;
     }
@@ -166,21 +158,19 @@ class Blockchain {
 // IS GB INDEXED?
 //
 if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
-  if (this.debugging){
-    console.log("=== IS GENESIS BLOCK INDEXED ===");
-    console.log(this.isBlockIndexed(this.app.blockchain.blockchain.genesis_block_hash));
-  }
+  console.log("=== IS GENESIS BLOCK INDEXED ===");
+  console.log(this.isBlockIndexed(this.app.blockchain.blockchain.genesis_block_hash));
 }
 
 
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
-      if (this.debugging){ console.log("fetching unknown block: " + parent_block_hash); }
+      console.log("fetching unknown block: " + parent_block_hash);
       if (!parent_block_hash) {
-        if (this.debugging){ console.log("hash is empty for parent: ", block.returnHash()); }
+        console.log("hash is empty for parent: ", block.returnHash());
       } else {
-        if (this.debugging){ console.log("parent block hash is not indexed..."); }
+        console.log("parent block hash is not indexed...");
         await this.app.network.fetchBlock(parent_block_hash);
       }
     }
@@ -303,7 +293,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
           //
           // NOTE - requires testing
           //
-          if (this.debugging){ console.log("potential edge case requires handling: blocks received out-of-order");}
+          console.log("potential edge case requires handling: blocks received out-of-order");
 
           let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
@@ -410,7 +400,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
     // set genesis block hash if block #1
     //
     if (this.app.blockchain.blockchain.genesis_block_hash === "") {
-      if (this.debugging){ console.log("setting our genesis block hash to first hash received!"); }
+console.log("setting our genesis block hash to first hash received!");
       this.app.blockchain.blockchain.genesis_block_hash = block.returnHash();
     }
 
@@ -517,7 +507,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
   }
 
   async addBlockFailure(block) {
-    if (this.debugging){ console.log("FAILURE: " + block.returnHash());}
+    console.log("FAILURE: " + block.returnHash());
     //
     // clean up mempool
     //
@@ -529,7 +519,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
   //
   async deleteBlocks(delete_block_id: number) {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
-    if (this.debugging){console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);}
+    console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
         if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
@@ -540,7 +530,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
   }
 
   async downgradeBlockchainData() {
-    if (this.debugging){ console.debug("blockchain.downgradeBlockchainData");}
+    console.debug("blockchain.downgradeBlockchainData");
     //
     // downgrade blocks still on the chain
     //
@@ -628,13 +618,13 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
 
   // deletes a single block
   async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
-    if (this.debugging){ console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);}
+    console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
     let block = await this.loadBlockAsync(deletedBlockHash);
     if (!block) {
-      if (this.debugging){ console.trace("deleting non-existing block : " + deletedBlockHash); }
+      console.trace("deleting non-existing block : " + deletedBlockHash);
     }
 
     let blockFilename = this.app.storage.generateBlockFilename(block);
@@ -821,10 +811,10 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
       if (this.blocks[block_hash] && this.blocks[block_hash].block_type === BlockType.Full) {
         return this.blocks[block_hash];
       }
-      if (this.debugging){ console.debug(`loading block from disk : ${block_hash}`);}
+      console.debug(`loading block from disk : ${block_hash}`);
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
-        if (this.debugging){ console.warn(`block is not found in disk : ${block_hash}`);}
+        console.warn(`block is not found in disk : ${block_hash}`);
         return null;
       }
       block.block_type = BlockType.Full;
@@ -1101,11 +1091,9 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
-      if (this.debugging){ 
-        console.log(
-          "not enough golden tickets: " + golden_tickets_found + " --- " + search_depth_idx
-        );
-      }
+      console.log(
+        "not enough golden tickets: " + golden_tickets_found + " --- " + search_depth_idx
+      );
       //
       // TODO - browsers might want to implement this check somehow
       //
@@ -1128,7 +1116,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
       );
 
     if (!does_chain_meet_golden_ticket_requirements) {
-      if (this.debugging){ console.log("not enough golden tickets!");}
+      console.log("not enough golden tickets!");
       return false;
     }
 
@@ -1138,7 +1126,7 @@ if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
       if (new_chain.length > 0) {
         return await this.unwindChain(new_chain, old_chain, 0, true);
       } else {
-        if (this.debugging){ console.log("lengths are inappropriate");}
+        console.log("lengths are inappropriate");
         return false;
       }
     }
