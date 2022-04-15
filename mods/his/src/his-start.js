@@ -223,6 +223,45 @@
     }
 
     //
+    // position pregnancy chart
+    //
+    let pregnancies = this.returnPregnancyChart();
+    for (let key in pregnancies) {
+      if (pregnancies.hasOwnProperty(key)) {
+	try {
+          let idname = "pregnancy"+key;
+	  let obj = document.getElementById(idname);
+	  obj.style.top = pregnancies[key].top + "px";
+	  obj.style.left = pregnancies[key].left + "px";
+        } catch (err) {
+	}
+      }
+    }
+
+
+
+    //
+    // position diplomacy chart
+    //
+    let d = this.returnDiplomacyTable();
+    for (let key in d) {
+      if (d.hasOwnProperty(key)) {
+	try {
+          for (let key2 in d[key]) {
+	    divname = key + "_" + key2;
+	    let obj = document.getElementById(divname);
+	    obj.style.top = d[key][key2].top + "px";
+	    obj.style.left = d[key][key2].left + "px";
+	  }
+        } catch (err) {
+	}
+      }
+    }
+    this.game.diplomacy = d;
+
+
+
+    //
     // position electorate display
     //
     let elec = this.returnElectorateDisplay();

@@ -4,6 +4,7 @@
       key		: 	"ottoman",
       name		: 	"Ottoman Empire",
       nickname		: 	"Ottoman",
+      capitals          :       ["istanbul"],
       img		:	"ottoman.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {

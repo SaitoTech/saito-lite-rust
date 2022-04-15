@@ -149,6 +149,25 @@
     this.game.state.tmp_catholic_counter_reformation_bonus = 0;
   }
 
+  isFactionInPlay(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return 1; }
+      }
+    }
+    return 0;
+  }
+
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
+	if (this.game.players_info[i].factions[z] === faction) { return (i+1); }
+      }
+    }
+    return 0;
+  }
+
+
   returnPlayerFactions(player) {
     return this.game.players_info[player-1].factions;
   }
@@ -320,7 +339,7 @@
 
 
 
-  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
 
@@ -330,6 +349,62 @@
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
         html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    if (cancel_func != null) {
+      html += '<li class="textchoice" id="cancel">cancel</li>';
+    }
+    html += '</ul>';
+
+    this.updateStatus(html);
+
+    $('.textchoice').off();
+    $('.textchoice').on('click', function () {
+      let action = $(this).attr("id");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(action);
+
+    });
+
+  }
+
+  playerSelectNavalSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+
+    let html = '<div class="message">' + msg + '</div>';
+
+    html += '<ul>';
+    for (let key in this.game.navalspaces) {
+      if (filter_func(this.game.navalspaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) {
+        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+	if (board_clickable) {
+	  document.getElementById(key).onclick = (e) => {
+	    $('.textchoice').off();
+	    mycallback(key);
+	  }
+	}
       }
     }
     if (cancel_func != null) {
@@ -375,26 +450,36 @@
 
   playerPlayCard(card, player, faction) {
 
-    let html = `<ul>`;
-    html    += `<li class="card" id="ops">play for ops</li>`;
-    html    += `<li class="card" id="event">play for event</li>`;
-    html    += `</ul>`;
+    //
+    // mandatory event cards effect first, then 2 OPS
+    //
+    if (this.deck[card].type === "mandatory") {
+      // event before ops
+      this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
+      this.playerPlayEvent(card, faction);
+    } else {
 
-    this.updateStatusWithOptions('Playing card:', html, true);
-    this.bindBackButtonFunction(() => {
-      this.playerTurn(faction);
-    });
-    this.attachCardboxEvents(function(user_choice) {
-      if (user_choice === "ops") {
-        this.playerPlayOps(card, faction);
+      let html = `<ul>`;
+      html    += `<li class="card" id="ops">play for ops</li>`;
+      html    += `<li class="card" id="event">play for event</li>`;
+      html    += `</ul>`;
+
+      this.updateStatusWithOptions('Playing card:', html, true);
+      this.bindBackButtonFunction(() => {
+       this.playerTurn(faction);
+      });
+      this.attachCardboxEvents(function(user_choice) {
+        if (user_choice === "ops") {
+          this.playerPlayOps(card, faction);
+          return;
+        }
+        if (user_choice === "event") {
+          this.playerPlayEvent(card, faction);
+          return;
+        }
         return;
-      }
-      if (user_choice === "event") {
-        this.playerPlayEvent(card, faction);
-        return;
-      }
-      return;
-    });
+      });
+    }
 
   }
 
@@ -407,7 +492,6 @@
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
-console.log(menu[i].name);
       if (menu[i].check(this, this.game.player, faction)) {
         for (let z = 0; z < menu[i].factions.length; z++) {
           if (menu[i].factions[z] === faction) {
@@ -422,7 +506,7 @@ console.log(menu[i].name);
     html    += `<li class="card" id="end_turn">end turn</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${ops} ops remaining:`, html, false);
+    this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
     this.attachCardboxEvents(async (user_choice) => {      
 
       if (user_choice === "end_turn") {
@@ -438,9 +522,9 @@ console.log(menu[i].name);
       }
 
       if (ops > 0) {
-	this.addMove("continue\t"+this.game.player+"\t"+card+"\t"+ops);
+	this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
       }
-      menu[user_choice].fnct(this, this.game.player);
+      menu[user_choice].fnct(this, this.game.player, faction);
       return;
 
     });
@@ -464,6 +548,56 @@ return;
   }
 
 
+  playerPlaySpringDeployment(faction, player) {
+
+    let capitals = this.factions[faction].capitals;
+    let viable_capitals = [];
+    let can_deploy = 0;
+
+    for (let i = 0; i < capitals.length; i++) {
+      let c = capitals[i];
+      if (this.game.spaces[c].units[faction].length > 0) {
+        can_deploy = 1;
+        viable_capitals.push(capitals[i]);
+      }
+    }
+
+    if (can_deploy == 0) {
+      this.updateStatus("Spring Deployment not possible");
+      this.endTurn();
+    } else {
+
+      let msg = "Do you wish to Spring Deploy from: ";
+     
+      let opt = "";
+      for (let i = 0; i < viable_capitals.lengths; i++) {
+	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      }
+      opt += `<li class="textchoice" id="pass">skip</li>`;
+
+      this.updateStatusWithOptions(msg, opt);
+      $(".textchoice").off();
+      $(".textchoice").onclick = (e) => {
+
+        let id = $(this).attr('id');
+        $(".textchoice").off();
+
+	if (id === "pass") {
+	  this.updateStatus("passing...");
+	  this.endTurn();
+	  return;
+        }
+
+	//
+	//
+	//
+	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+	this.endTurn();
+
+      };
+    }
+
+  }
 
 
 
@@ -474,12 +608,12 @@ return;
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
+    let cancel_func = null;
 
     his_self.playerSelectSpaceWithFilter(
 
       "Select Town from Which to Move Units:",
 
-      // TODO - select only cities where I can move units
       function(space) {
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && faction === z) {
@@ -499,7 +633,14 @@ return;
             "Select Destination for these Units",
 
       	    function(space) {
-	      if (space.neighbours.includes(spacekey) && !space.pass.includes(spacekey)) {
+	      if (space.neighbours.includes(spacekey)) {
+	        if (!space.pass) { 
+		  return 1; 
+		} else {
+ 		  if (!space.pass.includes(spacekey)) {
+		    return 1;
+		  }
+		}
 	  	return 1;
               }
 	      return 0;
@@ -508,16 +649,20 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
-	      this.endTurn();
+	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+	      his_self.endTurn();
 
 	    },
 
 	    cancel_func,
+
+	    true 
 
 	  );
 	}
@@ -526,10 +671,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -543,7 +690,7 @@ return;
             let id = $(this).attr("id");
 
 	    if (id === "end") {
-	      selectDestinationInterface(his_self, units_to_move);    
+	      selectDestinationInterface(his_self, units_to_move);
 	      return;
 	    }
 
@@ -564,6 +711,8 @@ return;
       },
 
       cancel_func,
+
+      true,
 
     );
 
@@ -610,10 +759,10 @@ return;
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      units_to_move.reverse();
+	      ////units_to_move.reverse();
 
 	      for (let i = 0; i < units_to_move.length; i++) {
-		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[0]);
+		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
 	      this.endTurn();
 
@@ -628,10 +777,12 @@ return;
 
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
-	    if (units_to_move.includes(parseInt(i))) {
-	      html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
-	    } else {
-	      html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
 	    }
 	  }
 	  html += `<li class="textchoice" id="end">finish</li>`;
@@ -673,11 +824,137 @@ return;
 
 
   canPlayerNavalMove(his_self, player, faction) {
-    return 1;
+    if (his_self.doesFactionHaveNavalUnitsOnBoard(faction)) { return 1; }
+    return 0;
   }
   async playerNavalMove(his_self, player, faction) {
-console.log("4");
-return;
+
+    let units_to_move = [];
+    let cancel_func = null;
+
+    his_self.playerSelectNavalSpaceWithFilter(
+
+      "Select Naval Space from Which to Move Units:",
+
+      function(space) {
+	for (let z in space.units) {
+	  if (space.units[z].length && faction === z) {
+	    for (let i = 0; i < space.units[z].length; i++) {
+	      if (space.units[z][i].land_or_sea == "sea" || space.units[z][i].land_or_sea == "both") {
+	        return 1;
+              }
+            }
+          }
+	}
+	return 0;
+      },
+
+      function(spacekey) {
+
+        let space = his_self.spaces[spacekey];
+
+	let selectDestinationInterface = function(his_self, units_to_move) {  
+    	  his_self.playerSelectNavalSpaceWithFilter(
+
+            "Select Naval Destination for these Units",
+
+      	    function(space) {
+	      //
+	      // trying to find out if space is destination for spacekey
+	      //
+	      if (his_self.game.spaces[spacekey]) {
+	        if (space.ports) {
+		  if (space.ports.includes(spacekey)) {
+	  	    return 1; 
+	          } 
+		}
+		return 0;
+	      }
+
+	      if (his_self.game.navalspaces[spacekey]) {
+	        if (space.neighbours.includes(spacekey)) {
+		  return 1;
+		}
+	        if (space.ports.includes(spacekey)) {
+		  return 1;
+		}
+		return 0;
+	      }		
+
+	      return 0;
+            },
+
+      	    function(destination_spacekey) {
+	
+	      units_to_move.sort();
+	      ////units_to_move.reverse();
+
+	      for (let i = 0; i < units_to_move.length; i++) {
+		his_self.addMove("move\t"+faction+"\tsea\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+	      }
+	      his_self.endTurn();
+
+	    },
+
+	    cancel_func,
+
+	    true 
+
+	  );
+	}
+
+	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
+
+	  let html = "<ul>";
+	  for (let i = 0; i < space.units[faction].length; i++) {
+	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
+	      if (units_to_move.includes(parseInt(i))) {
+	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	      } else {
+	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	      }
+	    }
+	  }
+	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += "</ul>";
+
+	  his_self.updateStatus(html);
+
+          $('.textchoice').off();
+          $('.textchoice').on('click', function () {
+
+            let id = $(this).attr("id");
+
+	    if (id === "end") {
+	      selectDestinationInterface(his_self, units_to_move);
+	      return;
+	    }
+
+	    if (units_to_move.includes(id)) {
+	      let idx = units_to_move.indexOf(id);
+	      if (idx > -1) {
+  		units_to_move.splice(idx, 1);
+	      }
+	    } else {
+	      units_to_move.push(parseInt(id));
+	    }
+
+	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	  });
+	}
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
+	
+      },
+
+      cancel_func,
+
+      true,
+
+    );
+
+  }
+  canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
   }
 
   canPlayerBuyMercenary(his_self, player, faction) {
