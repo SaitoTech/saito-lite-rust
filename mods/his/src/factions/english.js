@@ -5,6 +5,7 @@
       name		: 	"English",
       nickname		: 	"English",
       img		:	"england.png",
+      capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
       returnCardsDealt  :	function(game_mod) {

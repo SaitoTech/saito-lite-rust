@@ -4,6 +4,7 @@
       key		: 	"hapsburg",
       name		: 	"Hapsburg",
       nickname		: 	"Hapsburg",
+      capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {

@@ -4,6 +4,7 @@
       key		: 	"protestant",
       name		: 	"Protestant",
       nickname		: 	"Protestant",
+      capitals		:	[] ,
       img		:	"protestant.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {

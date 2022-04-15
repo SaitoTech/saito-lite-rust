@@ -963,6 +963,7 @@ class Network {
   // propagate transaction
   //
   propagateTransaction(tx: Transaction) {
+
     if (tx === null) {
       return;
     }
@@ -1016,6 +1017,7 @@ class Network {
         if (peer.socket && peer.socket.readyState === peer.socket.OPEN) {
           // 1 = WebSocket Open
           this.sendRequest("SNDTRANS", tmptx.serialize(this.app), peer);
+          
         } else {
           if (!peer.socket) {
             if (this.debugging) { console.error("socket not found"); }
