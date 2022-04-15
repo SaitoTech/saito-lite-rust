@@ -169,9 +169,9 @@ const StunUI = {
                   const createPeerConnection = async () => {
                         const pc = new RTCPeerConnection({
                               iceServers: [
-                                    {
-                                          urls: "stun:openrelay.metered.ca:80",
-                                    },
+                                    // {
+                                    //       urls: "stun:openrelay.metered.ca:80",
+                                    // },
                                     {
                                           urls: "turn:openrelay.metered.ca:80",
                                           username: "openrelayproject",
@@ -193,6 +193,7 @@ const StunUI = {
                               pc.onicecandidate = (ice) => {
                                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                                           console.log('ice candidate check closed');
+                                          return;
                                     };
                                     console.log("ice candidate ", ice.candidate)
 

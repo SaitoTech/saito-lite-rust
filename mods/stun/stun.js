@@ -223,9 +223,9 @@ class Stun extends ModTemplate {
         try {
           const pc = new RTCPeerConnection({
             iceServers: [
-              {
-                urls: "stun:openrelay.metered.ca:80",
-              },
+              // {
+              //   urls: "stun:openrelay.metered.ca:80",
+              // },
               {
                 urls: "turn:openrelay.metered.ca:80",
                 username: "openrelayproject",
@@ -243,6 +243,37 @@ class Stun extends ModTemplate {
               },
             ],
           });
+
+          pc.onicecandidate = (ice) => {
+            if (!ice || !ice.candidate || !ice.candidate.candidate) {
+              // console.log("ice canditate check closed.");
+              // pc.close();
+
+              stun.offer_sdp = pc.localDescription;
+
+              // let new_obj = $.extend(new_obj, pc);
+              // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
+              // console.log('peer_connection ', peer_connection)
+              stun.pc = ""
+
+              this.app.connection.emit('peer_connection', pc)
+              resolve(stun);
+              return;
+            }
+            pc.addIceCandidate(ice.candidate);
+            let split = ice.candidate.candidate.split(" ");
+            if (split[7] === "host") {
+              // console.log(`Local IP : ${split[4]}`);
+              // stun.ip_address = split[4];
+              // console.log(split);
+            } else {
+              // console.log(`External IP : ${split[4]}`);
+              // console.log(`PORT: ${split[5]}`);
+              stun.ip_address = split[4];
+              stun.port = split[5];
+              // resolve(stun);
+            }
+          };
           const localVideoSteam = document.querySelector('#localStream');
           const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           localStream.getTracks().forEach(track => {
@@ -271,35 +302,7 @@ class Stun extends ModTemplate {
 
 
 
-          pc.onicecandidate = (ice) => {
-            if (!ice || !ice.candidate || !ice.candidate.candidate) {
-              // console.log("ice canditate check closed.");
-              // pc.close();
 
-              stun.offer_sdp = pc.localDescription;
-
-              // let new_obj = $.extend(new_obj, pc);
-              // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-              // console.log('peer_connection ', peer_connection)
-              stun.pc = ""
-
-              this.app.connection.emit('peer_connection', pc)
-              resolve(stun);
-              return;
-            }
-            let split = ice.candidate.candidate.split(" ");
-            if (split[7] === "host") {
-              // console.log(`Local IP : ${split[4]}`);
-              // stun.ip_address = split[4];
-              // console.log(split);
-            } else {
-              // console.log(`External IP : ${split[4]}`);
-              // console.log(`PORT: ${split[5]}`);
-              stun.ip_address = split[4];
-              stun.port = split[5];
-              // resolve(stun);
-            }
-          };
 
 
         } catch (error) {
