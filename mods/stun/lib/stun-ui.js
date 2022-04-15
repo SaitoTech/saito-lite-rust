@@ -49,7 +49,7 @@ const StunUI = {
             app.connection.on('peer_connection', (pc) => {
                   console.log("pc created");
                   StunUI.peer_connection = pc;
-
+                  console.log('ice candidate received', StunUI.peer_connection)
 
             })
 
@@ -59,6 +59,16 @@ const StunUI = {
                   let my_key = preferred_crypto.returnAddress();
                   if (peer_b === my_key) {
                         console.log('my key', answer, my_key);
+
+                        const data_channel = StunUI.peer_connection.createDataChannel('channel');
+                        StunUI.peer_connection.dc = data_channel;
+                        StunUI.peer_connection.dc.onmessage = (e) => {
+
+                              console.log('new message from client : ', e.data);
+                              StunUI.displayMessage(peer_b, e.data);
+                        };
+                        StunUI.peer_connection.dc.open = (e) => console.log("connection opened");
+
 
                         StunUI.peer_connection.setRemoteDescription(answer).then(e => {
                               console.log('answer has been set');
@@ -74,28 +84,6 @@ const StunUI = {
 
                               }
                         });
-
-                        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(localStream => {
-                              const localVideoSteam = document.querySelector('#localStream');
-                              localVideoSteam.srcObject = localStream;
-                              console.log("got local stream ", localVideoSteam)
-                              localStream.getTracks().forEach(track => {
-                                    console.log(track)
-                                    StunUI.peer_connection.addTrack(track, localStream);
-                              });
-
-                        }).catch(err => console.log("User denied connection"));
-
-                        StunUI.peer_connection.ontrack = (event) => {
-
-                              const [remoteStream] = event.streams;
-                              const remoteVideoSteam = document.querySelector('#remoteStream');
-                              console.log('got remote stream ', event.streams);
-
-                              remoteVideoSteam.srcObject = remoteStream;
-                        }
-
-
 
 
                         console.log(StunUI.peer_connection);
@@ -164,59 +152,81 @@ const StunUI = {
                   const peer_stun = app.keys.keys[peer_key_index].data.stun;
                   console.log("results : ", my_index, peer_key_index, my_stun, peer_stun);
 
+                  // create new RTC connection 
 
-                  const data_channel = StunUI.peer_connection.createDataChannel('channel');
-                  StunUI.peer_connection.dc = data_channel;
-                  StunUI.peer_connection.dc.onmessage = (e) => {
+                  const createPeerConnection = async () => {
+                        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                        try {
+                              pc.onicecandidate = (ice) => {
+                                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                                          console.log('ice candidate check closed');
+                                    };
+                                    console.log("ice candidate ", ice.candidate)
 
-                        console.log('new message from client : ', e.data);
-                        StunUI.displayMessage(peer_key, e.data);
-                  };
-                  StunUI.peer_connection.dc.open = (e) => console.log("connection opened");
+                                    pc.addIceCandidate(ice.candidate);
+                              }
 
-                  StunUI.peer_connection.setRemoteDescription(peer_stun.offer_sdp).then(res => {
-                        console.log('peer a remote description  is set');
-                        StunUI.peer_connection.createAnswer().then(a => StunUI.peer_connection.setLocalDescription(a)).then(a => {
-                              console.log("peer a answer  is created");
-                              console.log(StunUI.peer_connection);
+                              // add data channels 
+                              const data_channel = pc.createDataChannel('channel');
+                              pc.dc = data_channel;
+                              pc.dc.onmessage = (e) => {
+
+                                    console.log('new message from client : ', e.data);
+                                    StunUI.displayMessage(peer_key, e.data);
+                              };
+                              pc.dc.open = (e) => console.log("connection opened");
+                              // add tracks
+                              const localVideoStream = document.querySelector('#localStream');
+                              const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                              localStream.getTracks().forEach(track => {
+                                    pc.addTrack(track, localStream);
+                                    console.log('got local stream for answerer');
+                              });
+
+                              localVideoStream.srcObject = localStream;
+
+
+                              const remoteStream = new MediaStream()
+                              pc.addEventListener('track', (event) => {
+
+                                    const remoteVideoSteam = document.querySelector('#remoteStream');
+                                    console.log('got remote stream ', event.streams);
+                                    event.streams[0].getTracks().forEach(track => {
+                                          remoteStream.addTrack(track);
+                                    });
+
+                                    remoteVideoSteam.srcObject = remoteStream;
+                              });
+                              const offer = await pc.createOffer();
+                              pc.setLocalDescription(offer);
+
+
+
+                              await pc.setRemoteDescription(peer_stun.offer_sdp);
+                              console.log('peer a remote description  is set');
+
+
+                              const answer = await pc.createAnswer();
+
+                              console.log("answer ", answer);
+
+
+                              pc.setLocalDescription(answer);
+                              StunUI.peer_connection = pc;
+
+
                               let stun_mod = app.modules.returnModule("Stun");
-                              stun_mod.broadcastAnswer(my_key, peer_key, StunUI.peer_connection.localDescription);
-                        }).catch(e => console.log(`${e} An error occured on local description set`));
+                              stun_mod.broadcastAnswer(my_key, peer_key, answer);
 
 
-                  }).catch(e => console.log(`${e} An error occured on remote description set`));
 
-                  navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(localStream => {
+                        } catch (error) {
+                              console.log("error", error);
+                        }
 
-                        const localVideoSteam = document.querySelector('#localStream');
-                        console.log("got local stream ", localVideoSteam)
-
-                        localVideoSteam.srcObject = localStream;
-                        localStream.getTracks().forEach(track => {
-                              StunUI.peer_connection.addTrack(track, localStream);
-                              console.log(track)
-                        });
-
-                  }).catch(err => console.log("User denied connection"));
-
-
-                  // add remote track;
-                  StunUI.peer_connection.ontrack = (event) => {
-                        const remoteStream = new MediaStream();
-
-                        event.streams[0].getTracks().forEach(track => {
-                              remoteStream.addTrack(track);
-                        });
-                        const remoteVideoSteam = document.querySelector('#remoteStream');
-                        console.log('got remote stream ', remoteStream);
-
-                        remoteVideoSteam.srcObject = remoteStream;
                   }
 
-                  console.log(StunUI.peer_connection);
-
-
-
+                  createPeerConnection();
 
 
             })

@@ -203,6 +203,8 @@ class Stun extends ModTemplate {
 
   fetchStunInformation() {
 
+
+
     return new Promise((resolve, reject) => {
       let stun = {
         ip_address: "",
@@ -212,54 +214,74 @@ class Stun extends ModTemplate {
         listeners: []
 
       };
-      try {
+      const createPeerConnection = async () => {
 
-        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        pc.createDataChannel('');
-        pc.createOffer().then(offer => {
+        try {
+          const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+          const localVideoSteam = document.querySelector('#localStream');
+          const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          localStream.getTracks().forEach(track => {
+            pc.addTrack(track, localStream);
+          });
+          localVideoSteam.srcObject = localStream;
+
+
+          const remoteStream = new MediaStream()
+          pc.addEventListener('track', (event) => {
+
+            const remoteVideoSteam = document.querySelector('#remoteStream');
+            console.log('got remote stream ', event.streams);
+            event.streams[0].getTracks().forEach(track => {
+              remoteStream.addTrack(track);
+            });
+
+
+            remoteVideoSteam.srcObject = remoteStream;
+          });
+          console.log('got local stream');
+          const offer = await pc.createOffer();
           pc.setLocalDescription(offer);
-          //  console.log("offer ", offer);
 
-        }).catch(e => console.log(`${e} An error occured on offer creation`));
-        pc.onicecandidate = (ice) => {
-          if (!ice || !ice.candidate || !ice.candidate.candidate) {
-            // console.log("ice canditate check closed.");
-            // pc.close();
 
-            stun.offer_sdp = pc.localDescription;
 
-            let new_obj = $.extend(new_obj, pc);
-            let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-            // console.log('peer_connection ', peer_connection)
-            stun.pc = peer_connection;
-            // navigator.mediaDevices.getUserMedia({ vide: true, audio: true }).then(localStream => {
-            //   console.log('got local stream');
-            //   localStream.getTracks().forEach(track => {
-            //     stun.pc.addTrack(track, localStream);
-            //   });
-            //   console.log(pc);
-            // }).catch(err => console.log("User denied connection"));
-            this.app.connection.emit('peer_connection', pc)
-            resolve(stun);
-            return;
-          }
-          let split = ice.candidate.candidate.split(" ");
-          if (split[7] === "host") {
-            // console.log(`Local IP : ${split[4]}`);
-            // stun.ip_address = split[4];
-            // console.log(split);
-          } else {
-            // console.log(`External IP : ${split[4]}`);
-            // console.log(`PORT: ${split[5]}`);
-            stun.ip_address = split[4];
-            stun.port = split[5];
-            // resolve(stun);
-          }
-        };
+          pc.onicecandidate = (ice) => {
+            if (!ice || !ice.candidate || !ice.candidate.candidate) {
+              // console.log("ice canditate check closed.");
+              // pc.close();
 
-      } catch (error) {
-        console.log("An error occured with stun", error);
+              stun.offer_sdp = pc.localDescription;
+
+              // let new_obj = $.extend(new_obj, pc);
+              // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
+              // console.log('peer_connection ', peer_connection)
+              stun.pc = ""
+
+              this.app.connection.emit('peer_connection', pc)
+              resolve(stun);
+              return;
+            }
+            let split = ice.candidate.candidate.split(" ");
+            if (split[7] === "host") {
+              // console.log(`Local IP : ${split[4]}`);
+              // stun.ip_address = split[4];
+              // console.log(split);
+            } else {
+              // console.log(`External IP : ${split[4]}`);
+              // console.log(`PORT: ${split[5]}`);
+              stun.ip_address = split[4];
+              stun.port = split[5];
+              // resolve(stun);
+            }
+          };
+
+
+        } catch (error) {
+          console.log(error);
+        }
+
       }
+      return createPeerConnection();
+
     });
   }
 

@@ -38,8 +38,10 @@ module.exports = (app, mod) => {
 
 
   return `<card class="appear my-stun-container">
-    <video style=" background-color:rgba(0,0,0, .3); position: fixed; top: 0; right: 0; width: 33%; height: 33%;" id="remoteStream"> </video>
-    <video style=" background-color:rgba(0,0,0, .3); position: fixed; top: 0; left: 0; width: 33%; height: 33%;" id="localStream"> </video>
+  <video id="localStream" width="100%" height="100%" autoplay></video>
+
+  <video id="remoteStream" width="100%" height="100%" autoplay></video>
+
     <div class="row mb-4">
       <div class="col-sm-4"><p class="name">IP Address:</p></div>
       <div class="col-sm-8"><p class="data">${stun?.ip_address || ""}</p></div>
