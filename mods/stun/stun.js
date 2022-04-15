@@ -7,6 +7,7 @@ var serialize = require('serialize-javascript');
 
 
 
+
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
@@ -28,7 +29,10 @@ class Stun extends ModTemplate {
     this.stun.port = "";
     this.stun.offer_sdp = "";
     this.stun.listeners = [];
-    this.stun.pc = ""
+    this.stun.pc = "";
+
+
+
 
 
   }
@@ -217,7 +221,28 @@ class Stun extends ModTemplate {
       const createPeerConnection = async () => {
 
         try {
-          const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+          const pc = new RTCPeerConnection({
+            iceServers: [
+              {
+                urls: "stun:openrelay.metered.ca:80",
+              },
+              {
+                urls: "turn:openrelay.metered.ca:80",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+              },
+              {
+                urls: "turn:openrelay.metered.ca:443",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+              },
+              {
+                urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+              },
+            ],
+          });
           const localVideoSteam = document.querySelector('#localStream');
           const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           localStream.getTracks().forEach(track => {

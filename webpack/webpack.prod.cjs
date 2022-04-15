@@ -47,10 +47,14 @@ webpack({
       unzipper: "unzipper"
     },
     {
-      webpack: "webpack"
+      webpack: "webpack",
+
+    },
+    {
+      "node-turn": "node-turn"
     },
     // /^(image-resolver|\$)$/i,
-    /\.txt/,
+    /\.txt /,
     /\.png$/,
     /\.jpg$/,
     /\.html$/,

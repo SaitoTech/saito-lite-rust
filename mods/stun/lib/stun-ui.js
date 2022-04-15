@@ -167,7 +167,28 @@ const StunUI = {
                   // create new RTC connection 
 
                   const createPeerConnection = async () => {
-                        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                        const pc = new RTCPeerConnection({
+                              iceServers: [
+                                    {
+                                          urls: "stun:openrelay.metered.ca:80",
+                                    },
+                                    {
+                                          urls: "turn:openrelay.metered.ca:80",
+                                          username: "openrelayproject",
+                                          credential: "openrelayproject",
+                                    },
+                                    {
+                                          urls: "turn:openrelay.metered.ca:443",
+                                          username: "openrelayproject",
+                                          credential: "openrelayproject",
+                                    },
+                                    {
+                                          urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                                          username: "openrelayproject",
+                                          credential: "openrelayproject",
+                                    },
+                              ],
+                        });
                         try {
                               pc.onicecandidate = (ice) => {
                                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
