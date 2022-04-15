@@ -257,6 +257,7 @@
 	}
       }
     }
+    this.game.diplomacy = d;
 
 
 

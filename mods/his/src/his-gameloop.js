@@ -36,8 +36,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
 //
@@ -47,11 +47,11 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-	  if (this.game.state.round == 1) {
-  	    this.game.queue.push("diet_of_worms");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
-	  }
+//	  if (this.game.state.round == 1) {
+//  	    this.game.queue.push("diet_of_worms");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+//	  }
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -318,6 +318,11 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
             let action2 = $(this).attr("id");
 
+	    //
+	    // this ensures we clear regardless of choice
+	    //
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
+
             //
             // events in play
             //
@@ -333,7 +338,7 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
             if (action2 == "ok") {
               his_self.endTurn();
-              imperium_self.endTurn();
+              his_self.endTurn();
               return;
             }
 

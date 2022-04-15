@@ -397,7 +397,6 @@ class HereIStand extends GameTemplate {
 
 
 
-
     this.importUnit('luther', {
       type		:	"luther" ,
       name		: 	"Martin Luther",
@@ -434,11 +433,230 @@ class HereIStand extends GameTemplate {
       committed		: 	0,
     });
 
+    this.importUnit('aleander', {
+      type		:	"aleander" ,
+      name		: 	"Hieronymus Aleander",
+      personage		:	true,
+      debater		:	true,
+      img		:       "AleanderDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importUnit('bucer', {
+      type		:	"bucer" ,
+      name		: 	"Martin Bucer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"BucerDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importUnit('bullinger', {
+      type		:	"bullinger" ,
+      name		: 	"Heinrich Bullinger",
+      personage		:	true,
+      debater		:	true,
+      img		:	"BullingerDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importUnit('cajetan', {
+      type		:	"cajetan" ,
+      name		: 	"Thomas Cajetan",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CajetanDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importUnit('campeggio', {
+      type		:	"campeggio" ,
+      name		: 	"Lorenzo Campeggio",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CampeggioDebater.svg",
+      committed		: 	0,
+    });
 
+    this.importUnit('canisius', {
+      type		:	"canisius" ,
+      name		: 	"Peter Canisius",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CanisiusDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('carafa', {
+      type		:	"carafa" ,
+      name		: 	"Carlo Carafa",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CarafaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('carlstadt', {
+      type		:	"carlstadt" ,
+      name		: 	"Andreas Carlstadt",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CarlstadtDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('contarini', {
+      type		:	"contarini" ,
+      name		: 	"Gasparo Contarini",
+      personage		:	true,
+      debater		:	true,
+      img		:	"ContariniDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cop', {
+      type		:	"cop" ,
+      name		: 	"Nicolas Cop",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CopDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('coverdale', {
+      type		:	"coverdale" ,
+      name		: 	"Myles Coverdale",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CoverdaleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('cranmer', {
+      type		:	"cranmer" ,
+      name		: 	"Thomas Cranmer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"CranmerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('faber', {
+      type		:	"faber" ,
+      name		: 	"Peter Faber",
+      personage		:	true,
+      debater		:	true,
+      img		:	"FaberDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('farel', {
+      type		:	"farel" ,
+      name		: 	"William Farel",
+      personage		:	true,
+      debater		:	true,
+      img		:	"FarelDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('gardiner', {
+      type		:	"gardiner" ,
+      name		: 	"Stephen Gardiner",
+      personage		:	true,
+      debater		:	true,
+      img		:	"GardinerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('knox', {
+      type		:	"knox" ,
+      name		: 	"John Knox",
+      personage		:	true,
+      debater		:	true,
+      img		:	"KnoxDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('latimer', {
+      type		:	"latimer" ,
+      name		: 	"Hugh Latimer",
+      personage		:	true,
+      debater		:	true,
+      img		:	"LatimerDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('loyola', {
+      type		:	"loyola" ,
+      name		: 	"Ignatius Loyola",
+      personage		:	true,
+      debater		:	true,
+      img		:	"LoyolaDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('melanchthon', {
+      type		:	"melanchthon" ,
+      name		: 	"Philip Melanchthon",
+      personage		:	true,
+      debater		:	true,
+      img		:	"MelanchthonDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('oekolampadius', {
+      type		:	"oekolampadius" ,
+      name		: 	"Johannes Oekolampadius",
+      personage		:	true,
+      debater		:	true,
+      img		:	"OekolampadiusDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('olivetan', {
+      type		:	"olivetan" ,
+      name		: 	"Pierre Robert Olivetan",
+      personage		:	true,
+      debater		:	true,
+      img		:	"OlivetanDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('pole', {
+      type		:	"pole" ,
+      name		: 	"Reginald Pole",
+      personage		:	true,
+      debater		:	true,
+      img		:	"PoleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('tetzel', {
+      type		:	"tetzel" ,
+      name		: 	"Johann Tetzel ",
+      personage		:	true,
+      debater		:	true,
+      img		:	"TetzelDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('tyndalex', {
+      type		:	"tyndale" ,
+      name		: 	"William Tyndale",
+      personage		:	true,
+      debater		:	true,
+      img		:	"TyndaleDebater.svg",
+      committed		: 	0,
+    });
+
+    this.importUnit('wishart', {
+      type		:	"wishart" ,
+      name		: 	"George Wishart",
+      personage		:	true,
+      debater		:	true,
+      img		:	"WishartDebater.svg",
+      committed		: 	0,
+    });
 
 
 
@@ -911,6 +1129,7 @@ console.log("adding stuff!");
 	}
       }
     }
+    this.game.diplomacy = d;
 
 
 
@@ -991,6 +1210,32 @@ console.log("adding stuff!");
 
 
 
+
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
 
   addUnit(faction, space, type) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
@@ -4639,6 +4884,15 @@ alert("WE PLAYED GOUT");
     //
     if (obj.removeFromDeck == null) { obj.removeFromDeck = function(his_self, player) { return 0; } }
 
+    if (obj.menuOptionTriggers == null) {
+      obj.menuOptionTriggers = function(his_self, stage, player) { return 0; }
+    }
+    if (obj.menuOption == null) {
+      obj.menuOption = function(his_self, stage, player) { return 0; }
+    }
+    if (obj.menuOptionActivated == null) {
+      obj.menuOptionActivated = function(his_self, stage, player) { return 0; }
+    }
 
     return obj;
 
@@ -4683,8 +4937,8 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
 //
@@ -4694,11 +4948,11 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-	  if (this.game.state.round == 1) {
-  	    this.game.queue.push("diet_of_worms");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
-	  }
+//	  if (this.game.state.round == 1) {
+//  	    this.game.queue.push("diet_of_worms");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+//	  }
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -4965,6 +5219,11 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
             let action2 = $(this).attr("id");
 
+	    //
+	    // this ensures we clear regardless of choice
+	    //
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
+
             //
             // events in play
             //
@@ -4980,7 +5239,7 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
             if (action2 == "ok") {
               his_self.endTurn();
-              imperium_self.endTurn();
+              his_self.endTurn();
               return;
             }
 
@@ -6283,6 +6542,8 @@ return;
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
+	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
 	      his_self.endTurn();
 
 	    },

@@ -1,4 +1,30 @@
 
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
+
   addUnit(faction, space, type) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));

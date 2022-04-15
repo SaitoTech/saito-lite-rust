@@ -1,5 +1,4 @@
 
-
     this.importUnit('luther', {
       type		:	"luther" ,
       name		: 	"Martin Luther",
@@ -35,6 +34,7 @@
       img		:	"CalvinDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('aleander', {
       type		:	"aleander" ,
       name		: 	"Hieronymus Aleander",
@@ -43,6 +43,7 @@
       img		:       "AleanderDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('bucer', {
       type		:	"bucer" ,
       name		: 	"Martin Bucer",
@@ -51,6 +52,7 @@
       img		:	"BucerDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('bullinger', {
       type		:	"bullinger" ,
       name		: 	"Heinrich Bullinger",
@@ -59,6 +61,7 @@
       img		:	"BullingerDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('cajetan', {
       type		:	"cajetan" ,
       name		: 	"Thomas Cajetan",
@@ -67,6 +70,7 @@
       img		:	"CajetanDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('campeggio', {
       type		:	"campeggio" ,
       name		: 	"Lorenzo Campeggio",
@@ -75,6 +79,7 @@
       img		:	"CampeggioDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('canisius', {
       type		:	"canisius" ,
       name		: 	"Peter Canisius",
@@ -83,6 +88,7 @@
       img		:	"CanisiusDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('carafa', {
       type		:	"carafa" ,
       name		: 	"Carlo Carafa",
@@ -91,6 +97,7 @@
       img		:	"CarafaDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('carlstadt', {
       type		:	"carlstadt" ,
       name		: 	"Andreas Carlstadt",
@@ -99,6 +106,7 @@
       img		:	"CarlstadtDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('contarini', {
       type		:	"contarini" ,
       name		: 	"Gasparo Contarini",
@@ -107,6 +115,7 @@
       img		:	"ContariniDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('cop', {
       type		:	"cop" ,
       name		: 	"Nicolas Cop",
@@ -115,6 +124,7 @@
       img		:	"CopDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('coverdale', {
       type		:	"coverdale" ,
       name		: 	"Myles Coverdale",
@@ -123,6 +133,7 @@
       img		:	"CoverdaleDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('cranmer', {
       type		:	"cranmer" ,
       name		: 	"Thomas Cranmer",
@@ -131,6 +142,7 @@
       img		:	"CranmerDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('faber', {
       type		:	"faber" ,
       name		: 	"Peter Faber",
@@ -139,6 +151,7 @@
       img		:	"FaberDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('farel', {
       type		:	"farel" ,
       name		: 	"William Farel",
@@ -147,6 +160,7 @@
       img		:	"FarelDebater.svg",
       committed		: 	0,
     });
+
     this.importUnit('gardiner', {
       type		:	"gardiner" ,
       name		: 	"Stephen Gardiner",
@@ -245,11 +259,5 @@
       img		:	"WishartDebater.svg",
       committed		: 	0,
     });
-
-
-
-
-
-
 
 

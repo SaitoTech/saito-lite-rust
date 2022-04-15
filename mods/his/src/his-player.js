@@ -654,6 +654,8 @@ return;
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
+	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
 	      his_self.endTurn();
 
 	    },
