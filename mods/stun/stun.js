@@ -8,6 +8,7 @@ var serialize = require('serialize-javascript');
 
 
 
+
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
@@ -30,6 +31,7 @@ class Stun extends ModTemplate {
     this.stun.offer_sdp = "";
     this.stun.listeners = [];
     this.stun.pc = "";
+    this.stun.iceCandidates = []
 
 
 
@@ -97,7 +99,7 @@ class Stun extends ModTemplate {
 
         if (!tx.msg.peer_info) return;
         if (address === tx.msg.peer_info.peer_b) {
-          stun_self.app.connection.emit('answer_received', tx.msg.peer_info.peer_a, tx.msg.peer_info.peer_b, tx.msg.peer_info.answer);
+          stun_self.app.connection.emit('answer_received', tx.msg.peer_info.peer_a, tx.msg.peer_info.peer_b, tx.msg.peer_info.reply);
         } else {
           console.log('tx peer key not equal');
         }
@@ -215,8 +217,8 @@ class Stun extends ModTemplate {
         port: "",
         offer_sdp: "",
         pc: "",
-        listeners: []
-
+        listeners: [],
+        iceCandidates: []
       };
       const createPeerConnection = async () => {
 
@@ -246,7 +248,7 @@ class Stun extends ModTemplate {
 
           pc.onicecandidate = (ice) => {
             if (!ice || !ice.candidate || !ice.candidate.candidate) {
-              // console.log("ice canditate check closed.");
+
               // pc.close();
 
               stun.offer_sdp = pc.localDescription;
@@ -257,12 +259,13 @@ class Stun extends ModTemplate {
               stun.pc = ""
 
               this.app.connection.emit('peer_connection', pc)
+              console.log("ice candidates", JSON.stringify(stun.iceCandidates));
               resolve(stun);
-              // return;
+              return;
             }
 
             if (ice.candidate && pc.remoteDescription) {
-              console.log('ice candidatate', ice.candidate, ice)
+              console.log('ice candidate', ice.candidate, ice)
               pc.addIceCandidate(ice.candidate);
             }
 
@@ -276,6 +279,7 @@ class Stun extends ModTemplate {
               // console.log(`PORT: ${split[5]}`);
               stun.ip_address = split[4];
               stun.port = split[5];
+              stun.iceCandidates.push(ice.candidate);
               // resolve(stun);
             }
           };
@@ -301,9 +305,19 @@ class Stun extends ModTemplate {
 
             remoteVideoSteam.srcObject = remoteStream;
           });
-          console.log('got local stream');
+
           const offer = await pc.createOffer();
           pc.setLocalDescription(offer);
+
+          // stun.offer_sdp = offer;
+
+          // // let new_obj = $.extend(new_obj, pc);
+          // // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
+          // // console.log('peer_connection ', peer_connection)
+          // stun.pc = ""
+
+          // this.app.connection.emit('peer_connection', pc)
+          // resolve(stun);
 
 
 
@@ -354,7 +368,7 @@ class Stun extends ModTemplate {
 
   }
 
-  broadcastAnswer(my_key, peer_key, answer) {
+  broadcastAnswer(my_key, peer_key, reply) {
     let newtx = this.app.wallet.createUnsignedTransaction();
     console.log('broadcasting answer  to ', peer_key);
     newtx.transaction.to.push(new saito.default.slip(peer_key));
@@ -363,7 +377,7 @@ class Stun extends ModTemplate {
     newtx.msg.peer_info = {
       peer_a: my_key,
       peer_b: peer_key,
-      answer
+      reply: reply
     };
     newtx = this.app.wallet.signTransaction(newtx);
     console.log(this.app.network);

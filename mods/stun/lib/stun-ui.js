@@ -65,12 +65,12 @@ const StunUI = {
                   StunUI.localStream = pc.LOCAL_STREAM;
             })
 
-            app.connection.on('answer_received', (peer_a, peer_b, answer) => {
+            app.connection.on('answer_received', (peer_a, peer_b, reply) => {
 
                   const preferred_crypto = app.wallet.returnPreferredCrypto();
                   let my_key = preferred_crypto.returnAddress();
                   if (peer_b === my_key) {
-                        console.log('my key', answer, my_key);
+                        console.log('my key', reply, my_key);
 
                         const data_channel = StunUI.peer_connection.createDataChannel('channel');
                         StunUI.peer_connection.dc = data_channel;
@@ -82,7 +82,7 @@ const StunUI = {
                         StunUI.peer_connection.dc.open = (e) => console.log("connection opened");
 
 
-                        StunUI.peer_connection.setRemoteDescription(answer).then(e => {
+                        StunUI.peer_connection.setRemoteDescription(reply.answer).then(e => {
                               console.log('answer has been set');
                               StunUI.peer_connection.ondatachannel = e => {
                                     StunUI.peer_connection.dc = e.channel;
@@ -95,7 +95,17 @@ const StunUI = {
                                     StunUI.displayMessage(peer_a, "Connected");
 
                               }
+                              if (reply.iceCandidates.length > 0) {
+                                    console.log("Adding answer candidates")
+                                    for (let i = 0; i < reply.iceCandidates.length; i++) {
+                                          StunUI.peer_connection.addIceCandidate(reply.iceCandidates[i]);
+                                    }
+                              }
+
+
                         });
+
+
 
 
                         console.log(StunUI.peer_connection);
@@ -167,6 +177,10 @@ const StunUI = {
                   // create new RTC connection 
 
                   const createPeerConnection = async () => {
+                        let reply = {
+                              answer: "",
+                              iceCandidates: []
+                        }
                         const pc = new RTCPeerConnection({
                               iceServers: [
                                     // {
@@ -190,14 +204,24 @@ const StunUI = {
                               ],
                         });
                         try {
+
                               pc.onicecandidate = (ice) => {
                                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                                           console.log('ice candidate check closed');
-                                          return;
-                                    };
-                                    console.log("ice candidate ", ice.candidate)
 
-                                    pc.addIceCandidate(ice.candidate);
+                                          let stun_mod = app.modules.returnModule("Stun");
+                                          stun_mod.broadcastAnswer(my_key, peer_key, reply);
+                                          return
+
+                                    };
+
+
+                                    reply.iceCandidates.push(ice.candidate);
+                                    // console.log("Ice candidate", ice);
+
+
+
+
                               }
 
                               // add data channels 
@@ -233,26 +257,34 @@ const StunUI = {
                                     remoteVideoSteam.srcObject = remoteStream;
                                     StunUI.remoteStream = remoteStream
                               });
-                              const offer = await pc.createOffer();
-                              pc.setLocalDescription(offer);
+                              // const offer = await pc.createOffer();
+                              // pc.setLocalDescription(offer);
 
 
 
                               await pc.setRemoteDescription(peer_stun.offer_sdp);
+
+                              const peerIceCandidates = peer_stun.iceCandidates;
+                              console.log('peer ice candidates', peerIceCandidates);
+                              if (peerIceCandidates.length > 0) {
+                                    console.log('adding offer candidates')
+                                    for (let i = 0; i < peerIceCandidates.length; i++) {
+                                          pc.addIceCandidate(peerIceCandidates[i]);
+                                    }
+                              }
+
+
                               console.log('peer a remote description  is set');
 
 
-                              const answer = await pc.createAnswer();
+                              reply.answer = await pc.createAnswer();
 
-                              console.log("answer ", answer);
+                              console.log("answer ", reply.answer);
 
 
-                              pc.setLocalDescription(answer);
+                              pc.setLocalDescription(reply.answer);
                               StunUI.peer_connection = pc;
 
-
-                              let stun_mod = app.modules.returnModule("Stun");
-                              stun_mod.broadcastAnswer(my_key, peer_key, answer);
 
 
 
