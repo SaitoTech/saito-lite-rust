@@ -273,6 +273,7 @@ class Settlers extends GameTemplate {
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         if (game_mod.game.state.canTrade && game_mod.game.player ===  game_mod.game.state.playerTurn) {
+            game_mod.tradeWindowOpen = true;
             game_mod.showTradeOverlay();
         }else{
           salert("You cannot trade right now");
@@ -1313,6 +1314,7 @@ class Settlers extends GameTemplate {
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll",player);
 
+
         if (this.game.player == player) {
 
           /*
@@ -2139,6 +2141,7 @@ class Settlers extends GameTemplate {
       }
       if (cards){
         this.cardfan.render(this.app, this, cards);
+
         if (usingDev){
           this.cardfan.addClass("staggered-hand");
           this.cardfan.removeClass("bighand");
