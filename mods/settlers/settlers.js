@@ -13,8 +13,8 @@ class Settlers extends GameTemplate {
     this.app = app;
 
     this.name = "Settlers";
-    this.gamename = "Settlers of Saito";
-    this.description = `Island colonization and settlement game. Collect resources and build your way to dominance.`;
+    this.gamename = "Settlers of Saitoa";
+    this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
     this.categories = "Games Arcade Entertainment";
     this.type = "Strategy Boardgame";
     this.status = "Beta";
@@ -26,6 +26,7 @@ class Settlers extends GameTemplate {
     this.minPlayers = 2;
     this.maxPlayers = 4;
 
+    this.tradeWindowOpen = false;
   }
   //
   // requestInterface(type) {
@@ -120,6 +121,21 @@ class Settlers extends GameTemplate {
     return html;
   }
 
+  returnWelcomeOverlay(){
+    let html = `<div class="rules-overlay trade_overlay">
+                <h1>Welcome to the Island of Saitoa</h1>
+                <h2>Initial Placement Phase</h2>
+                <p>Every one gets to start by placing two ${this.skin.c1.name}s anywhere on the board, each with an attached ${this.skin.r.name}. ${this.skin.c1.name}s go on the corners of the hexagon tiles, while ${this.skin.r.name}s go on the edges. When the dice roll the number of that tile, adjacent ${this.skin.c1.name}s produce that resource.</p>
+                <p>In order to be fair, the players take turns making their initial placement first in last out, i.e. the first player to place their first ${this.skin.c1.name} is the last player to place their second ${this.skin.c1.name}. You begin the game with the resources adjacent to your second ${this.skin.c1.name}.</p>
+                <h2>Good Luck!</h2>
+                <p>For more detailed instructions of the game, see "RULES" under the game menu. For detailed instructions on trading, refer to the "HELP" item under the trade menu.</p>
+                <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
+                </div>
+  `;
+    return html;
+  }
+
+
   /*
   Make Overlay of game introduction/Rules
   */
@@ -173,6 +189,11 @@ class Settlers extends GameTemplate {
     if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
+    if (this.game.state.lastroll.length == 0){
+      $(".diceroll").css("display", "none");
+    }else{
+      this.displayDice();  
+    }
 
     this.app.modules.respondTo("chat-manager").forEach((mod) => {
       mod.respondTo("chat-manager").render(app, this);
@@ -251,6 +272,7 @@ class Settlers extends GameTemplate {
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
         if (game_mod.game.state.canTrade && game_mod.game.player ===  game_mod.game.state.playerTurn) {
+            game_mod.tradeWindowOpen = true;
             game_mod.showTradeOverlay();
         }else{
           salert("You cannot trade right now");
@@ -341,7 +363,7 @@ class Settlers extends GameTemplate {
       this.addPortsToGameboard();
 
       this.displayBoard();
-      this.displayDice();
+   
     } catch (err) {
       console.log("Intialize HTML: "+err);
     }
@@ -497,7 +519,9 @@ class Settlers extends GameTemplate {
     state.players = [];
     state.playerTurn = 0;
     state.ports = [];
-    state.lastroll = [1, 1];
+    state.lastroll = [];
+    state.placedCity = "hello world"; //a slight hack for game iniitalization
+    state.welcome = 0;
     for (let i = 0; i < this.game.players.length; i++) {
       state.players.push({});
       state.players[i].resources = [];
@@ -540,8 +564,17 @@ class Settlers extends GameTemplate {
       /* Game Setup */
 
       if (mv[0] == "init") {
-        //this.game.queue.splice(qe, 1);   // no splice, we want to bounce off this
+        this.game.queue.splice(qe, 1);   
         this.game.state.placedCity = null; //We are in game play mode, not initial set up
+        this.game.state.lastroll = [0,0];
+        this.displayDice();
+        $(".diceroll").css("display","");
+        this.game.queue.push("round");
+        this.displayModal("Now we begin game play");
+        return 1;
+      }
+
+      if (mv[0] == "round"){ // no splice, we want to bounce off this
         for (let i = this.game.players.length; i > 0; i--) {
           //count backwards so it goes P1, P2, P3,
           this.game.queue.push(`play\t${i}`);
@@ -752,6 +785,16 @@ class Settlers extends GameTemplate {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
         this.stopTrading();
+
+        //For the beginning of the game only...
+        if (this.game.state.welcome == 0 && this.browser_active) {
+            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+            document.querySelector(".close_welcome_overlay").onclick = (e) => {
+              this.overlay.hide();
+            };
+          this.game.state.welcome = 1;
+        }
+
         if (this.game.player == player) {
           this.playerBuildCity(mv[1]);
         } else {
@@ -772,9 +815,11 @@ class Settlers extends GameTemplate {
         let logMsg = `Player ${player} starts with `;
         for (let hextile of this.hexgrid.hexesFromVertex(city)) {
           let bounty = this.game.state.hexes[hextile].resource;
-          logMsg += bounty + ", ";
-          this.game.state.players[player - 1].resources.push(bounty);
-          this.game.stats.production[bounty][player-1]++; //Initial starting stats
+          if (bounty !== this.skin.nullResource()){ //DESERT ATTACK
+            logMsg += bounty + ", ";
+            this.game.state.players[player - 1].resources.push(bounty);
+            this.game.stats.production[bounty][player-1]++; //Initial starting stats  
+          }
         }
         logMsg = logMsg.substring(0, logMsg.length - 2) + ".";
         this.updateLog(logMsg);
@@ -1212,7 +1257,9 @@ class Settlers extends GameTemplate {
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll",player);
 
+
         if (this.game.player == player) {
+
           /*
           We put a lag in passing the length of the hand to the state.devcards
           so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
@@ -1231,6 +1278,13 @@ class Settlers extends GameTemplate {
           html += `</div>`;
 
           this.updateStatus(html);
+
+          //Flash to be like "hey it's your move"
+          this.playerbox.addClass('flash');
+          setTimeout(() => {
+              $(".flash").removeClass("flash");
+            }, 3000);
+
 
           //roll the dice by clicking on the dice
           if (document.querySelector("#diceroll")) {
@@ -2026,10 +2080,11 @@ class Settlers extends GameTemplate {
                     </div>`;
         }
       }
-
-      this.cardfan.render(this.app, this, cards);
-      this.cardfan.addClass("bighand");
-      this.cardfan.attachEvents(this.app, this);
+      if (cards){
+        this.cardfan.render(this.app, this, cards);
+        this.cardfan.addClass("bighand");
+        this.cardfan.attachEvents(this.app, this);  
+      }
     } catch (err) {
       //console.log(err);
     }
@@ -2126,9 +2181,6 @@ class Settlers extends GameTemplate {
   */
 
   playerBuildCity() {
-    this.updateStatus(
-      `<div class="tbd">You may build a ${this.skin.c1.name}...</div>`
-    );
 
     let settlers_self = this;
     let existing_cities = 0;
@@ -2137,13 +2189,19 @@ class Settlers extends GameTemplate {
         existing_cities++;
       }
     }
-
+    $(".flash").removeClass("flash");
     /*
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
+      this.playerbox.addClass("flash");
+      if (existing_cities == 1){
+        this.updateStatus(`<div class="tbd">Your turn: Place your second ${this.skin.c1.name}...</div>`);
+      }else{
+        this.updateStatus(`<div class="tbd">Your turn: Place your first ${this.skin.c1.name}...</div>`);
+      }
+    
       let xpos, ypos;
-
       $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
@@ -2211,7 +2269,7 @@ class Settlers extends GameTemplate {
       
     } else {
       /* During game, must build roads to open up board for new settlements*/
-
+      this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);
       let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
       for (let i = 0; i < building_options.length; i++) {
         /*
@@ -2344,11 +2402,12 @@ class Settlers extends GameTemplate {
   playerBuildRoad() {
     let settlers_self = this;
 
-    this.updateStatus(
-      `<div class="tbd">You may build a ${this.skin.r.name}...</div>`
-    );
-
+    
     if (this.game.state.placedCity) {
+      this.updateStatus(
+        `<div class="tbd">Now place a ${this.skin.r.name}...</div>`
+      );
+
       /*Initial placing of settlements and roads, road must connect to settlement just placed
         Use a "new" class tag to restrict scope
         This is literally just a fix for the second road in the initial placement
@@ -2375,6 +2434,10 @@ class Settlers extends GameTemplate {
         settlers_self.endTurn();
       });
     } else {
+      this.updateStatus(
+      `<div class="tbd">You may build a ${this.skin.r.name}...</div>`
+      );
+
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
       
@@ -3079,7 +3142,11 @@ class Settlers extends GameTemplate {
   */
   stopTrading() {
     this.game.state.canTrade = false; //Once you spend resources, you can no longer trade
-    this.overlay.hide();
+    if (this.tradeWindowOpen){
+      this.displayModal("Trading closed until next player's turn");
+      this.overlay.hide();  
+    }
+    
     let nodes = document.querySelectorAll(".pbtrade");
     for (let i = 0; i < nodes.length; i++) {
       nodes[i].remove();
