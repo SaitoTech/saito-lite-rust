@@ -17,6 +17,7 @@
   padding: 0.5em 1em;
   box-sizing: content-box;
   white-space: nowrap;
+  pointer-events: none;
   z-index: 300;
 }
 
@@ -484,7 +485,7 @@ body {
   background-color: black;
   color: darkgray;
   border-color: black;
-  box-shadow: 0 0 40px 50px rgba(0,0,0,0.75);
+  box-shadow: 0 0 25px 45px rgba(0,0,0,0.75);
 }
 
 .city.p1 {
@@ -872,7 +873,7 @@ ul.horizontal_list li.iconoption{
   font-size: 1.25em;
   width: 100%;
   text-align: center;
-  margin: 2em 0;
+  margin: 1em 0;
 }
 
 .stats-table caption{
@@ -889,14 +890,17 @@ ul.horizontal_list li.iconoption{
   text-align: left;
 }
 
-.stats-table .icon{
+.stats-table .icon, .stats-table .token{
   width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
-
 
 .flash {
   animation-name: flash;
-  animation-duration: .8s;
+  animation-duration: 1.3s;
   animation-iteration-count: 3;
   animation-fill-mode: backwards;
 }
