@@ -9,6 +9,7 @@ var serialize = require('serialize-javascript');
 
 
 
+
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
@@ -31,9 +32,8 @@ class Stun extends ModTemplate {
     this.stun.offer_sdp = "";
     this.stun.listeners = [];
     this.stun.pc = "";
-    this.stun.iceCandidates = []
-
-
+    this.stun.iceCandidates = [];
+    this.stun.counter = 0;
 
 
 
@@ -97,12 +97,82 @@ class Stun extends ModTemplate {
 
 
 
-        if (!tx.msg.peer_info) return;
-        if (address === tx.msg.peer_info.peer_b) {
-          stun_self.app.connection.emit('answer_received', tx.msg.peer_info.peer_a, tx.msg.peer_info.peer_b, tx.msg.peer_info.reply);
-        } else {
-          console.log('tx peer key not equal');
+        if (tx.msg.answer) {
+          if (address === tx.msg.answer.peer_b) {
+            stun_self.app.connection.emit('answer_received', tx.msg.answer.peer_a, tx.msg.answer.peer_b, tx.msg.answer.reply);
+          } else {
+            console.log('tx peer key not equal');
+          }
         }
+
+
+      }
+    }
+    if (conf == 0) {
+      if (txmsg.module === "Stun") {
+
+        let address = app.wallet.returnPublicKey();
+
+
+
+        if (tx.msg.offer) {
+          console.log("offer received");
+          if (address === tx.msg.offer.peer_b) {
+            stun_self.app.connection.emit('offer_received', tx.msg.offer.peer_a, tx.msg.offer.peer_b, tx.msg.offer.offer);
+          } else {
+            console.log('tx peer key not equal');
+          }
+        }
+
+
+      }
+    }
+
+    // if (conf == 0) {
+    //   if (txmsg.module === "Stun") {
+
+    //     let address = app.wallet.returnPublicKey();
+
+
+
+    //     if (tx.msg.offer_icecandidates) {
+    //       console.log("ice candidates received");
+
+    //       if (address === tx.msg.offer_peer_info.peer_b) {
+    //         stun_self.app.connection.emit('icecandidates_received', tx.msg.offer_peer_info.peer_a, tx.msg.offer_peer_info.peer_b, tx.msg.offer_peer_info.offer);
+    //       } else {
+    //         console.log('tx peer key not equal');
+    //       }
+    //     }
+
+
+    //   }
+    // }
+
+    if (conf == 0) {
+      if (txmsg.module === "Stun") {
+
+        let public_key = app.wallet.returnPublicKey();
+
+
+
+        if (tx.msg.broadcast_details) {
+
+          const listeners = tx.msg.broadcast_details.listeners;
+          const from = tx.msg.broadcast_details.from;
+          if (public_key === from) return;
+
+          console.log("listeners: ", listeners, "from: ", from);
+          const index = stun_self.app.keys.keys.findIndex(key => key.publickey === public_key);
+          if (index !== -1) {
+            stun_self.app.keys.keys[index].data.stun.listeners.push(from);
+            stun_self.app.keys.saveKeys();
+
+            app.connection.emit('listeners-update', stun_self.app, stun_self.app.keys.keys[index].data.stun.listeners);
+            console.log("keys updated, added: ", from, " updated listeners: ", stun_self.app.keys.keys[index].data.stun.listeners);
+          }
+        }
+
 
 
       }
@@ -128,51 +198,51 @@ class Stun extends ModTemplate {
 
 
 
-  async generateStun(publicKey) {
+  // async generateStun(publicKey) {
 
 
 
-    let stun = await this.fetchStunInformation();
-    if (!stun) {
-      console.log("no stun");
-      return;
-    }
+  //   let stun = await this.fetchStunInformation();
+  //   if (!stun) {
+  //     console.log("no stun");
+  //     return;
+  //   }
 
-    //
-    // my key
-    //
-    let do_we_broadcast_and_update = 1;
+  //   //
+  //   // my key
+  //   //
+  //   let do_we_broadcast_and_update = 1;
 
-    let publickey = this.app.wallet.returnPublicKey();
-    console.log("public key ", publicKey, this.app.wallet.returnPublicKey())
-    let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+  //   let publickey = this.app.wallet.returnPublicKey();
+  //   console.log("public key ", publicKey, this.app.wallet.returnPublicKey())
+  //   let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
-    if (index === -1) {
-      this.app.keys.addKey(publickey);
-      let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-      this.app.keys.keys[new_index].data.stun = stun;
-      this.app.keys.saveKeys();
-    }
+  //   if (index === -1) {
+  //     this.app.keys.addKey(publickey);
+  //     let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+  //     this.app.keys.keys[new_index].data.stun = stun;
+  //     this.app.keys.saveKeys();
+  //   }
 
-    let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-    const key = this.app.keys.keys[new_index];
+  //   let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+  //   const key = this.app.keys.keys[new_index];
 
-    // don't broadcast if is equal
-    if (JSON.stringify(key.data.stun) === JSON.stringify(stun)) {
-      do_we_broadcast_and_update = 1;
-    }
-    this.app.keys.keys[new_index].data.stun = { ...stun, listeners: this.app.keys.keys[new_index].data.stun.listeners };
-    this.app.keys.saveKeys();
+  //   // don't broadcast if is equal
+  //   if (JSON.stringify(key.data.stun) === JSON.stringify(stun)) {
+  //     do_we_broadcast_and_update = 1;
+  //   }
+  //   this.app.keys.keys[new_index].data.stun = { ...stun, listeners: this.app.keys.keys[new_index].data.stun.listeners };
+  //   this.app.keys.saveKeys();
 
 
 
-    // do we need to broadcast a message and update our keychain?
-    console.log(do_we_broadcast_and_update, "broadcast");
-    if (do_we_broadcast_and_update) {
-      this.broadcastAddress(this.app.keys.keys[new_index].data.stun);
-    }
+  //   // do we need to broadcast a message and update our keychain?
+  //   console.log(do_we_broadcast_and_update, "broadcast");
+  //   if (do_we_broadcast_and_update) {
+  //     this.broadcastAddress(this.app.keys.keys[new_index].data.stun);
+  //   }
 
-  }
+  // }
 
 
   respondTo(type) {
@@ -203,136 +273,159 @@ class Stun extends ModTemplate {
 
   async initialize(app) {
 
+    let publickey = this.app.wallet.returnPublicKey();
+    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+
+    // save key if it doesnt exist
+    if (key_index === -1) {
+      this.app.keys.addKey(publickey);
+      this.app.keys.saveKeys();
+    }
+    if (!this.app.keys.keys[key_index].data.stun) {
+      this.app.keys.keys[key_index].data.stun = this.stun;
+      this.app.keys.saveKeys();
+
+    }
   }
 
 
 
-  fetchStunInformation() {
+  // fetchStunInformation() {
+
+
+  //   this.stun.counter += 1;
+  //   console.log("Stun count", this.stun.counter);
+  //   console.log("keys ", this.app.keys.keys);
+
+
+  //   return new Promise((resolve, reject) => {
+  //     let stun = {
+  //       ip_address: "",
+  //       port: "",
+  //       offer_sdp: "",
+  //       pc: "",
+  //       listeners: [],
+  //       iceCandidates: []
+  //     };
+  //     const createPeerConnection = async () => {
+
+  //       try {
+  //         const pc = new RTCPeerConnection({
+  //           iceServers: [
+  //             {
+  //               urls: "stun:openrelay.metered.ca:80",
+  //             },
+  //             {
+  //               urls: "turn:openrelay.metered.ca:80",
+  //               username: "openrelayproject",
+  //               credential: "openrelayproject",
+  //             },
+  //             {
+  //               urls: "turn:openrelay.metered.ca:443",
+  //               username: "openrelayproject",
+  //               credential: "openrelayproject",
+  //             },
+  //             {
+  //               urls: "turn:openrelay.metered.ca:443?transport=tcp",
+  //               username: "openrelayproject",
+  //               credential: "openrelayproject",
+  //             },
+  //           ],
+  //         });
+
+  //         pc.onicecandidate = (ice) => {
+  //           if (!ice || !ice.candidate || !ice.candidate.candidate) {
+
+  //             // pc.close();
+
+  //             stun.offer_sdp = pc.localDescription;
+
+  //             // let new_obj = $.extend(new_obj, pc);
+  //             // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
+  //             // console.log('peer_connection ', peer_connection)
+  //             stun.pc = ""
+
+  //             this.app.connection.emit('peer_connection', pc)
+  //             console.log("ice candidates", JSON.stringify(stun.iceCandidates));
+  //             resolve(stun);
+  //             return;
+  //           }
+
+  //           if (ice.candidate && pc.remoteDescription) {
+  //             console.log('ice candidate', ice.candidate, ice)
+  //             pc.addIceCandidate(ice.candidate);
+  //           }
+
+  //           let split = ice.candidate.candidate.split(" ");
+  //           if (split[7] === "host") {
+  //             // console.log(`Local IP : ${split[4]}`);
+  //             // stun.ip_address = split[4];
+  //             // console.log(split);
+  //           } else {
+  //             // console.log(`External IP : ${split[4]}`);
+  //             // console.log(`PORT: ${split[5]}`);
+  //             stun.ip_address = split[4];
+  //             stun.port = split[5];
+  //             stun.iceCandidates.push(ice.candidate);
+  //             // resolve(stun);
+  //           }
+  //         };
+  //         const localVideoSteam = document.querySelector('#localStream');
+  //         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  //         localStream.getTracks().forEach(track => {
+  //           pc.addTrack(track, localStream);
+
+  //         });
+  //         if (localVideoSteam) {
+  //           localVideoSteam.srcObject = localStream;
+  //         }
+
+
+  //         pc.LOCAL_STREAM = localStream;
+  //         const remoteStream = new MediaStream()
+  //         pc.addEventListener('track', (event) => {
+
+  //           const remoteVideoSteam = document.querySelector('#remoteStream');
+  //           console.log('got remote stream ', event.streams);
+  //           event.streams[0].getTracks().forEach(track => {
+  //             remoteStream.addTrack(track);
+  //           });
+
+  //           pc.REMOTE_STREAM = remoteStream
+
+  //           if (remoteVideoSteam) {
+  //             remoteVideoSteam.srcObject = remoteStream;
+  //           }
+
+  //         });
+
+  //         const offer = await pc.createOffer();
+  //         pc.setLocalDescription(offer);
+
+  //         // stun.offer_sdp = offer;
+
+  //         // // let new_obj = $.extend(new_obj, pc);
+  //         // // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
+  //         // // console.log('peer_connection ', peer_connection)
+  //         // stun.pc = ""
+
+  //         // this.app.connection.emit('peer_connection', pc)
+  //         // resolve(stun);
 
 
 
-    return new Promise((resolve, reject) => {
-      let stun = {
-        ip_address: "",
-        port: "",
-        offer_sdp: "",
-        pc: "",
-        listeners: [],
-        iceCandidates: []
-      };
-      const createPeerConnection = async () => {
-
-        try {
-          const pc = new RTCPeerConnection({
-            iceServers: [
-              // {
-              //   urls: "stun:openrelay.metered.ca:80",
-              // },
-              {
-                urls: "turn:openrelay.metered.ca:80",
-                username: "openrelayproject",
-                credential: "openrelayproject",
-              },
-              {
-                urls: "turn:openrelay.metered.ca:443",
-                username: "openrelayproject",
-                credential: "openrelayproject",
-              },
-              {
-                urls: "turn:openrelay.metered.ca:443?transport=tcp",
-                username: "openrelayproject",
-                credential: "openrelayproject",
-              },
-            ],
-          });
-
-          pc.onicecandidate = (ice) => {
-            if (!ice || !ice.candidate || !ice.candidate.candidate) {
-
-              // pc.close();
-
-              stun.offer_sdp = pc.localDescription;
-
-              // let new_obj = $.extend(new_obj, pc);
-              // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-              // console.log('peer_connection ', peer_connection)
-              stun.pc = ""
-
-              this.app.connection.emit('peer_connection', pc)
-              console.log("ice candidates", JSON.stringify(stun.iceCandidates));
-              resolve(stun);
-              return;
-            }
-
-            if (ice.candidate && pc.remoteDescription) {
-              console.log('ice candidate', ice.candidate, ice)
-              pc.addIceCandidate(ice.candidate);
-            }
-
-            let split = ice.candidate.candidate.split(" ");
-            if (split[7] === "host") {
-              // console.log(`Local IP : ${split[4]}`);
-              // stun.ip_address = split[4];
-              // console.log(split);
-            } else {
-              // console.log(`External IP : ${split[4]}`);
-              // console.log(`PORT: ${split[5]}`);
-              stun.ip_address = split[4];
-              stun.port = split[5];
-              stun.iceCandidates.push(ice.candidate);
-              // resolve(stun);
-            }
-          };
-          const localVideoSteam = document.querySelector('#localStream');
-          const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-          localStream.getTracks().forEach(track => {
-            pc.addTrack(track, localStream);
-
-          });
-          localVideoSteam.srcObject = localStream;
-
-          pc.LOCAL_STREAM = localStream;
-          const remoteStream = new MediaStream()
-          pc.addEventListener('track', (event) => {
-
-            const remoteVideoSteam = document.querySelector('#remoteStream');
-            console.log('got remote stream ', event.streams);
-            event.streams[0].getTracks().forEach(track => {
-              remoteStream.addTrack(track);
-            });
-
-            pc.REMOTE_STREAM = remoteStream
-
-            remoteVideoSteam.srcObject = remoteStream;
-          });
-
-          const offer = await pc.createOffer();
-          pc.setLocalDescription(offer);
-
-          // stun.offer_sdp = offer;
-
-          // // let new_obj = $.extend(new_obj, pc);
-          // // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-          // // console.log('peer_connection ', peer_connection)
-          // stun.pc = ""
-
-          // this.app.connection.emit('peer_connection', pc)
-          // resolve(stun);
 
 
 
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
 
+  //     }
+  //     return createPeerConnection();
 
-
-        } catch (error) {
-          console.log(error);
-        }
-
-      }
-      return createPeerConnection();
-
-    });
-  }
+  //   });
+  // }
 
 
 
@@ -368,13 +461,34 @@ class Stun extends ModTemplate {
 
   }
 
+  broadcastOffer(my_key, peer_key, offer) {
+
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    console.log('broadcasting offer  to ', peer_key);
+    newtx.transaction.to.push(new saito.default.slip(peer_key));
+    console.log("offer ", offer);
+    newtx.msg.module = "Stun";
+    newtx.msg.offer = {
+      peer_a: my_key,
+      peer_b: peer_key,
+      offer
+    }
+    console.log('new tx', newtx);
+    newtx = this.app.wallet.signTransaction(newtx);
+    console.log(this.app.network);
+    this.app.network.propagateTransaction(newtx);
+
+  }
+
+
+
   broadcastAnswer(my_key, peer_key, reply) {
     let newtx = this.app.wallet.createUnsignedTransaction();
     console.log('broadcasting answer  to ', peer_key);
     newtx.transaction.to.push(new saito.default.slip(peer_key));
 
     newtx.msg.module = "Stun";
-    newtx.msg.peer_info = {
+    newtx.msg.answer = {
       peer_a: my_key,
       peer_b: peer_key,
       reply: reply
@@ -410,6 +524,7 @@ class Stun extends ModTemplate {
     // filter out already existing keys
     validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
 
+    this.broadcastKeyToListeners(validated_listeners);
 
     // add listeners to existing listeners
     this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
@@ -418,7 +533,29 @@ class Stun extends ModTemplate {
 
 
 
-    this.app.connection.emit('listeners-update', this.app, this);
+    this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
+  }
+
+
+  broadcastKeyToListeners(listeners) {
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    let from = this.app.wallet.returnPublicKey();
+    console.log('Adding contacts :', listeners, " to ", from);
+
+    for (let i = 0; i < listeners.length; i++) {
+      newtx.transaction.to.push(new saito.default.slip(listeners[i]));
+    }
+
+
+
+    newtx.msg.module = "Stun";
+    newtx.msg.broadcast_details = {
+      listeners,
+      from
+    };
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    this.app.network.propagateTransaction(newtx);
   }
 
 

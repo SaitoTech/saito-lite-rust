@@ -5,32 +5,47 @@ module.exports = (app, mod) => {
 
   console.log(app, mod);
 
-  const preferred_crypto = app.wallet.returnPreferredCrypto();
-  let publicKey = preferred_crypto.returnAddress();
+
+  let publicKey = app.wallet.returnPublicKey();
   const keyss = app.keys.keys;
   console.log("key ", keyss);
   let stun = "";
+  // for (let i = 0; i < app.keys.keys.length; i++) {
+  //   let tk = app.keys.keys[i];
+  //   if (tk.publickey === publicKey) {
+  //     console.log("public key ", tk.publickey, publicKey);
+  //     stun = app.keys.keys[i].data.stun;
 
-  for (let i = 0; i < app.keys.keys.length; i++) {
-    let tk = app.keys.keys[i];
-    if (tk.publickey === publicKey) {
-      console.log("public key ", tk.publickey, publicKey);
-      stun = app.keys.keys[i].data.stun;
+  //   }
+  // }
 
-    }
-  }
+  // const canConnectTo = () => {
+  //   const key_index = app.keys.keys.findIndex(tk => tk.publickey === publicKey)
 
+  //   let html = "";
+  //   for (let i = 0; i < app.keys.keys.length; i++) {
+  //     if (app.keys.keys[key_index]?.data?.stun?.listeners?.includes(app.keys.keys[i].publickey) && app.keys.keys[i].data?.stun?.listeners?.includes(app.keys.keys[key_index].publickey)) {
+
+  //       html += `<option  data-id="${app.keys.keys[i].publickey}" value="1">${app.keys.keys[i].publickey}</option>`;
+  //     }
+  //   }
+
+  //   return html;
+
+
+  // }
   const canConnectTo = () => {
     const key_index = app.keys.keys.findIndex(tk => tk.publickey === publicKey)
 
     let html = "";
-    for (let i = 0; i < app.keys.keys.length; i++) {
-      if (app.keys.keys[key_index]?.data?.stun?.listeners?.includes(app.keys.keys[i].publickey) && app.keys.keys[i].data?.stun?.listeners?.includes(app.keys.keys[key_index].publickey)) {
+    for (let i = 0; i < app.keys.keys[key_index].data.stun.listeners.length; i++) {
 
-        html += `<option  data-id="${app.keys.keys[i].publickey}" value="1">${app.keys.keys[i].publickey}</option>`;
-      }
+
+      html += `<option  data-id="${app.keys.keys[key_index].data.stun.listeners[i]}"> ${app.keys.keys[key_index].data.stun.listeners[i]}</option>`;
+
     }
 
+    console.log("html ", html);
     return html;
 
 
@@ -38,31 +53,13 @@ module.exports = (app, mod) => {
 
 
   return `<card class="appear my-stun-container">
-  <p> Video </p>
+  <p style="font-weight: bold"> Video </p>
   <div class="stun-video-container" style="display: flex"><video  class="stun-video" id="localStream" width="100%" height="100%" autoplay></video>
 
   <video class="stun-video"  id="remoteStream" width="100%" height="100%" autoplay></video> </div>
   
 
-    <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">IP Address:</p></div>
-      <div class="col-sm-8"><p class="data">${stun?.ip_address || ""}</p></div>
-    </div>
-    <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">PORT:</p></div>
-      <div class="col-sm-8"><p class="data">${stun?.port || ""}</p></div>
-    </div>
-    <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">SDP Offer:</p></div>
-      <div style="position: relative" class="col-sm-8">
-        <p class="data offer p-2">
-          ${JSON.stringify(stun?.offer_sdp) || ""}
-        </p>
-        <button class="generate-offer btn btn-danger">
-          Generate Offer
-        </button>
-      </div>
-    </div>
+   
     <div class="row mb-4">
       <div class="col-sm-4"><p class="name">Connect With</p></div>
       <div class="col-sm-8">
@@ -76,12 +73,14 @@ module.exports = (app, mod) => {
         </div>
       </div>
     </div>
+
     <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">Status</p></div>
-      <div  id="connection-status" class="col-sm-8">
-        <p style="color: red" class="data">Not connected to any pair</p>
-      </div>
-    </div>
+<div class="col-sm-4"><p class="name">Status</p></div>
+<div  id="connection-status" class="col-sm-8">
+  <p style="color: red" class="data">Not connected to any pair</p>
+</div>
+</div>
+  
     <div class="row mb-4">
       <div class="col-sm-4"><p class="name">Send Message to peer</p></div>
       <div class="col-sm-8">
@@ -109,3 +108,32 @@ module.exports = (app, mod) => {
     </div>
     </card>`;
 }
+
+
+
+{/* <div class="row mb-4">
+<div class="col-sm-4"><p class="name">IP Address:</p></div>
+<div class="col-sm-8"><p class="data">${stun?.ip_address || ""}</p></div>
+</div>
+<div class="row mb-4">
+<div class="col-sm-4"><p class="name">PORT:</p></div>
+<div class="col-sm-8"><p class="data">${stun?.port || ""}</p></div>
+</div>
+<div class="row mb-4">
+<div class="col-sm-4"><p class="name">SDP Offer:</p></div>
+<div style="position: relative" class="col-sm-8">
+  <p class="data offer p-2">
+    ${JSON.stringify(stun?.offer_sdp) || ""}
+  </p>
+  <button class="generate-offer btn btn-danger">
+    Generate Offer
+  </button>
+</div>
+</div> */}
+
+{/* <div class="row mb-4">
+<div class="col-sm-4"><p class="name">Status</p></div>
+<div  id="connection-status" class="col-sm-8">
+  <p style="color: red" class="data">Not connected to any pair</p>
+</div>
+</div> */}
