@@ -17,6 +17,7 @@
   padding: 0.5em 1em;
   box-sizing: content-box;
   white-space: nowrap;
+  pointer-events: none;
   z-index: 300;
 }
 
@@ -164,35 +165,7 @@ body {
   box-shadow: unset;
 }
 
-/* Dice */
-.diceroll{
-  display: none;
-  width: min(12vw,120px);
-  margin: 0 auto;
-  /*position: absolute;
-  /*top: 0px;
-  left: 50%;
-  transform: translateX(-5vw);*/
-  border: 2px solid black;
-  border-radius: 5px;
-  background-color: #222B;
-  padding: min(0.5vw,5px);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  z-index: 3;
-}
 
-.die{
-  width: min(4vw,40px);
-}
-.hud-body {
-  overflow: unset;
-}
-
-.textchoice {
-  
-}
 
 .status-message ul li:hover, .status ul li:hover, .cardselector:hover{
   color: black;
@@ -433,6 +406,7 @@ body {
 
 .player-box.me{
   border-top: 10px solid;
+  border-right: 10px solid;
 }
 .player-box.notme{
   border-left: 10px solid;
@@ -511,7 +485,7 @@ body {
   background-color: black;
   color: darkgray;
   border-color: black;
-  box-shadow: 0 0 40px 50px rgba(0,0,0,0.75);
+  box-shadow: 0 0 25px 45px rgba(0,0,0,0.75);
 }
 
 .city.p1 {
@@ -541,6 +515,10 @@ body {
   max-width: 80vw;
   max-height: 70vh;
   /*overflow-y: scroll;*/
+}
+
+.rules-overlay{
+  overflow-y: scroll;
 }
 
 .trade_overlay_title{
@@ -675,7 +653,7 @@ ul.horizontal_list li.iconoption{
 .me > .player-box-graphic{
   position: absolute;
   /*left: calc(150px + 8vw);*/
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);
 }
@@ -683,12 +661,42 @@ ul.horizontal_list li.iconoption{
 .notme > .player-box-graphic{
   position: absolute;
   top: 50%;
-  right: calc(100% + 10px);
+  right: calc(100% + 12px);
   transform: translateY(-50%);
   /*position: relative;
   z-index: -1;
   top: 5vh;
   left: 1vw;*/
+}
+
+
+/* Dice */
+.diceroll{
+  width: min(12vw,110px);
+  margin: 0 auto;
+  /*position: absolute;
+  /*top: 0px;
+  left: 50%;
+  transform: translateX(-5vw);*/
+  border: 2px solid black;
+  border-radius: 5px;
+  background-color: #222B;
+  padding: min(0.5vw,5px) 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  z-index: 3;
+}
+
+.die{
+  width: min(4vw,40px);
+}
+
+.notme .diceroll{
+  width: 50px;
+  height: min(12vw, 110px);
+  padding: 0 min(0.5vw,5px);
+  flex-direction: column;
 }
 
 .flexline{
@@ -865,7 +873,7 @@ ul.horizontal_list li.iconoption{
   font-size: 1.25em;
   width: 100%;
   text-align: center;
-  margin: 2em 0;
+  margin: 1em 0;
 }
 
 .stats-table caption{
@@ -882,8 +890,49 @@ ul.horizontal_list li.iconoption{
   text-align: left;
 }
 
-.stats-table .icon{
+.stats-table .icon, .stats-table .token{
   width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.flash {
+  animation-name: flash;
+  animation-duration: 1.3s;
+  animation-iteration-count: 3;
+  animation-fill-mode: backwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: .8;
+    background-color: white;
+    color: black !important;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+.flash {
+  animation-name: flash;
+  animation-duration: .8s;
+  animation-iteration-count: 3;
+  animation-fill-mode: backwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: .8;
+    background-color: white;
+    color: black !important;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 
@@ -903,13 +952,20 @@ ul.horizontal_list li.iconoption{
   }
  
   .notme > .player-box-graphic{
-    top: unset;
     right: unset;
     position: absolute;
-    bottom: calc(100% + 5px);
+    top: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%);
 }   
+
+  .notme .diceroll{
+    width: min(12vw, 110px);
+    height: 50px;
+    padding: min(0.5vw,5px) 0 ;
+    flex-direction: row;
+}
+
 }
 
 /*Still need better layout for small screens*/

@@ -1322,6 +1322,18 @@ i.menu_icon_icon{
   top: 13vh;
 }
 
+.staggered-hand>.card:nth-child(2){
+  top: 4vh;
+}
+.staggered-hand>.card:nth-child(3){
+  top: 8vh; 
+}
+.staggered-hand>.card:nth-child(4){
+  top: 12vh;
+}
+.staggered-hand>.card:nth-child(5){
+  top: 16vh;
+}
 
 /** MOBILE STYLING FOR CARDFAN**/
 @media screen and (orientation: landscape) and (max-height: 600px) {

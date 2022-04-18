@@ -5,14 +5,9 @@ const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 
 
-
-
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
-
-
-
 
 
   constructor(app) {
@@ -30,18 +25,14 @@ class Stun extends ModTemplate {
     this.stun.listeners = [];
     this.stun.pc = ""
 
-
   }
 
 
-
-
-
   onConfirmation(blk, tx, conf, app) {
+
     console.log("testing ...");
     let stun_self = app.modules.returnModule("Stun");
     let txmsg = tx.returnMessage();
-
 
     if (conf == 0) {
       if (txmsg.module === "Stun" && tx.msg.stun) {
@@ -338,9 +329,6 @@ class Stun extends ModTemplate {
     // add listeners to existing listeners
     this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
     this.app.keys.saveKeys();
-
-
-
 
     this.app.connection.emit('listeners-update', this.app, this);
   }
