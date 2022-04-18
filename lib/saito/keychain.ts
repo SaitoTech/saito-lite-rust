@@ -309,7 +309,7 @@ class Keychain {
     this.app.storage.saveOptions();
   }
 
-  saveGrouos() {
+  saveGroups() {
     this.app.options.groups = this.groups;
     this.app.storage.saveOptions();
   }
