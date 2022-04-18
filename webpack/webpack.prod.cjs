@@ -139,17 +139,17 @@ webpack({
       // wasm files should not be processed but just be emitted and we want
       // to have their public URL.
       {
-        test: /quirc\.wasm$/,
+        test: /\.wasm$/,
         type: "javascript/auto",
         loader: "file-loader",
         options: {
           publicPath: "dist/"
         }
       },
-      {
-        test: /\.wasm$/,
-        type: "asset/inline",
-      },
+      // {
+      //   test: /\.wasm$/,
+      //   type: "asset/inline",
+      // },
       {
         test: /\.zip$/,
         exclude: [
@@ -184,7 +184,7 @@ webpack({
   ],
   experiments: {
     asyncWebAssembly: true,
-    syncWebAssembly: true
+    // syncWebAssembly: true
   },
   mode: "production",
   devtool: devtool

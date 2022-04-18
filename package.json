@@ -88,7 +88,7 @@
     "uuid-by-string": "^3.0.6",
     "websocket": "^1.0.34",
     "ws": "^7.5.5",
-    "saito-js": "file: ../saito-js/"
+    "saito-wasm": "file: ../saito-workspace/saito-wasm/pkg"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
