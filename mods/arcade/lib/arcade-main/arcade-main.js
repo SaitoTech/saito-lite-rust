@@ -22,7 +22,7 @@ module.exports = ArcadeMain = {
       return;
     }
 
-   
+
     // put active games first
     let whereTo = 0;
     for (let i = 0; i < mod.games.length; i++) {
@@ -106,7 +106,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           );
         }
       });
-      
+
       /*mod.observer.forEach((observe, i) => {
         app.browser.addElementToElement(
           ArcadeObserveTemplate(app,mod,observe,i,app.crypto.stringToBase64(JSON.stringify(observe))),
@@ -130,16 +130,16 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
         let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
         let cdiv = document.getElementById("saito-carousel");
-        if (cdiv){
+        if (cdiv) {
           cdiv.innerHTML = `<div class="big">${gamemod.gamename}</div>`;
           cdiv.style.backgroundImage = `url('/${gamemod.returnSlug()}/img/arcade.jpg')`;
-          cdiv.style.backgroundSize = "cover";  
+          cdiv.style.backgroundSize = "cover";
         }
       }
     }
 
     try {
-    
+
       // fetch any usernames needed
       app.browser.addIdentifiersToDom();
 
@@ -178,9 +178,9 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
             el.onclick = function (e) {
               let game_sig = e.currentTarget.getAttribute("data-sig");
               let game_cmd = e.currentTarget.getAttribute("data-cmd");
-              
+
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
-              
+
               if (game_cmd === "delete") {
                 arcade_main_self.deleteGame(app, mod, game_sig);
                 return;
@@ -200,6 +200,16 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
                 arcade_main_self.continueGame(app, mod, game_sig);
                 return;
               }
+
+              if (game_cmd === "invite") {
+                arcade_main_self.privatizeGame(app, mod, game_sig);
+                return;
+              }
+              if (game_cmd === "publicize") {
+                arcade_main_self.publicizeGame(app, mod, game_sig);
+                return;
+              }
+
             };
           });
       } catch (err) {
@@ -208,6 +218,20 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     });
 
 
+    mod.games.forEach((invite, i) => {
+      try {
+        document.querySelectorAll(`#invite-${invite.transaction.sig} .link_icon`)
+          .forEach((el, i) => {
+            el.onclick = function (e) {
+              let game_sig = e.currentTarget.nextElementSibling.getAttribute("data-sig");
+              mod.showShareLink(game_sig);
+            };
+          });
+        }catch(err){
+          console.error(err);
+        }
+    });
+    
 
 
     //Attach events for arcade-sub
@@ -216,7 +240,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     } else {
       ArcadeForums.attachEvents(app, mod);
     }
-  
+
 
 
   },
@@ -231,6 +255,8 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
 
     if (!accepted_game) {
       console.log("ERR: game not found");
+      await sconfirm("Game no longer available");
+      window.location = "/arcade";
       return;
     }
 
@@ -279,24 +305,24 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
             mod,
             my_address,
             game_options.crypto,
-            function () {}
+            function () { }
           );
 
           let current_balance = await cryptoMod.returnBalance();
 
           crypto_transfer_manager.hideOverlay();
 
-	  try {
+          try {
             if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
               return;
             }
-	  } catch (err) {
+          } catch (err) {
             if (parseFloat(current_balance) < parseFloat(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
               return;
-	    }
-	  }
+            }
+          }
         }
       }
     } catch (err) {
@@ -319,7 +345,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       if (relay_mod != null && accepted_game.initialize_game_offchain_if_possible == 1) {
         relay_mod.sendRelayMessage(accepted_game.players, 'game relay gamemove', newtx);
       }
-******/
+      ******/
 
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
@@ -390,49 +416,55 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           return msg;
         },
 
-        (res) => {
-          if (res.rows == undefined) {
-            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
-            return;
-          }
+        async (res) => {
+          if (res.rows) {
+            if (res.rows.length > 0) {
+              if (
+                res.rows[0].game_still_open == 1 ||
+                (res.rows[0].game_still_open == 0 && players_needed > 2)
+              ) {
+                //
+                // data re: game in form of tx
+                //
+                let { transaction } = accepted_game;
+                let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
 
-          if (res.rows.length > 0) {
-            if (
-              res.rows[0].game_still_open == 1 ||
-              (res.rows[0].game_still_open == 0 && players_needed > 2)
-            ) {
-              //
-              // data re: game in form of tx
-              //
-              let { transaction } = accepted_game;
-              let game_tx = Object.assign({ msg: { players_array: null } }, transaction);
+                let newtx = mod.createAcceptTransaction(accepted_game);
+                mod.app.network.propagateTransaction(newtx);
 
-              let newtx = mod.createAcceptTransaction(accepted_game);
-              mod.app.network.propagateTransaction(newtx);
+                let my_publickey = app.wallet.returnPublicKey();
+                let { players } = accepted_game.returnMessage();
+                let peers = [];
+                for (let i = 0; i < app.network.peers.length; i++) {
+                  peers.push(app.network.peers[i].returnPublicKey());
+                }
 
-              let my_publickey = app.wallet.returnPublicKey();
-              let { players } = accepted_game.returnMessage();
-              let peers = [];
-              for (let i = 0; i < app.network.peers.length; i++) {
-                peers.push(app.network.peers[i].returnPublicKey());
+                //
+                // try fast accept
+                //
+                let relay_mod = app.modules.returnModule("Relay");
+                if (relay_mod != null) {
+                  relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+                  relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+                }
+
+                return;
+              } else {
+                await sconfirm("Sorry, this game has been accepted already!");
               }
-
-              //
-              // try fast accept
-              //
-              let relay_mod = app.modules.returnModule("Relay");
-              if (relay_mod != null) {
-                relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-                relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-              }
-
-              return;
             } else {
-              salert("Sorry, this game has been accepted already!");
+              await sconfirm("Sorry, this game has already been accepted!");
             }
           } else {
-            salert("Sorry, this game has already been accepted!");
+            console.log("ERROR 458103: cannot fetch information on whether game already accepted!");
           }
+          mod.viewing_arcade_initialization_page = 0;
+          if (app.browser.returnURLParameter("jid")) {
+            window.location = "/arcade";  //redirect and reconnect to pull the list of open games    
+          } else {
+            mod.renderArcadeMain(); //Reset to default view (undo game loader)  
+          }
+
         }
       );
     }
@@ -535,11 +567,68 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     this.removeGameFromList(sig);
   },
 
+  //&&&&&&&&&&&&&&&&
+  privatizeGame(app, mod, game_sig) {
+    console.log(JSON.parse(JSON.stringify(mod.games)));
+
+    mod.showShareLink(game_sig);
+
+    let accepted_game = null;
+    mod.games.forEach((g) => {
+      if (g.transaction.sig === game_sig) {
+        accepted_game = g;
+      }
+    });
+    if (accepted_game) {
+      let newtx = mod.createChangeTransaction(accepted_game);
+      app.network.propagateTransaction(newtx);
+    }
+
+    //Update status of the game invitation
+    Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
+      let game_cmd = button.getAttribute("data-cmd");
+      if (game_cmd == "invite") {
+        button.setAttribute("data-cmd", "publicize");
+        button.textContent = "PUBLICIZE";
+        let linkButton = button.parentNode.querySelector(".link_icon");
+        if (linkButton){
+          linkButton.classList.add("private");
+        }
+      }
+    });
+  },
+
+  publicizeGame(app, mod, game_sig) {
+    //Update status of the game invitation
+    Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
+      let game_cmd = button.getAttribute("data-cmd");
+      if (game_cmd == "publicize") {
+        button.setAttribute("data-cmd", "invite");
+        button.textContent = "INVITE";
+        let linkButton = button.parentNode.querySelector(".link_icon");
+        if (linkButton){
+          linkButton.classList.remove("private");
+        }
+      }
+    });
+
+    let accepted_game = null;
+    mod.games.forEach((g) => {
+      if (g.transaction.sig === game_sig) {
+        accepted_game = g;
+      }
+    });
+    if (accepted_game) {
+      let newtx = mod.createChangeTransaction(accepted_game);
+      app.network.propagateTransaction(newtx);
+    }
+  },
+
+
   deleteGame(app, mod, game_id) {
     salert(`Delete game id: ${game_id}`);
 
     if (app.options.games) {
-      let { games } = app.options;
       for (let i = 0; i < app.options.games.length; i++) {
         if (app.options.games[i].id == game_id) {
           let resigned_game = app.options.games[i];

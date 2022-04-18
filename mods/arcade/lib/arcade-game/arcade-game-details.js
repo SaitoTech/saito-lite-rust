@@ -13,11 +13,11 @@ const getOptions = () => {
       if (element.checked) {
         options[element.name] = 1;
       }
-    }else if(element.type == "radio"){
+    } else if (element.type == "radio") {
       if (element.checked) {
         options[element.name] = element.value;
       }
-    }else {
+    } else {
       options[element.name] = element.value;
     }
   });
@@ -65,7 +65,7 @@ module.exports = ArcadeGameDetails = {
               mod.meta_overlay.hide();
             };
           }
-        } catch (err) {}
+        } catch (err) { }
       };
 
       //
@@ -99,6 +99,11 @@ module.exports = ArcadeGameDetails = {
       window.location = "/arcade/?game=" + gamemod.returnSlug();
     });
 
+
+    document.querySelector(".dynamic_button").addEventListener("click", (e) => {
+      e.currentTarget.classList.toggle("showAll");
+    });
+
     //Query game instructions
     //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
     //   let options = getOptions();
@@ -109,109 +114,130 @@ module.exports = ArcadeGameDetails = {
     //
     // create game
     //
-    document.getElementById("game-invite-btn").addEventListener("click", async (e) => {
-      try {
-        let options = getOptions();
-        app.browser.logMatomoEvent("Arcade", "ArcadeCreateNewInvite", options.gamename);
-        //
-        // if crypto and stake selected, make sure creator has it
-        //
-        if (options.crypto != "") {
-          if (options.stake > 0) {
-            let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(
-              options.crypto
-            ).ticker;
-            let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
-            if (selected_crypto_ticker === preferred_crypto_ticker) {
-              let my_address = app.wallet.returnPreferredCrypto().returnAddress();
-              let crypto_transfer_manager = new GameCryptoTransferManager(app);
-              crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () {});
-              let returnObj = await app.wallet.returnPreferredCryptoBalances(
-                [my_address],
-                null,
-                options.crypto
-              );
+    Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
+      gameButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        try {
+          let options = getOptions();
+          let isPrivateGame = e.currentTarget.getAttribute("data-type");
+          if (isPrivateGame == "private") {
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.gamename);
+          } else if (isPrivateGame == "single") {
+            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.gamename);
+          } else {
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.gamename);
+          }
 
-              let adequate_balance = 0;
-              for (let i = 0; i < returnObj.length; i++) {
-                if (returnObj[i].address == my_address) {
-                  if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
-                    adequate_balance = 1;
+          //
+          // if crypto and stake selected, make sure creator has it
+          //
+          if (options.crypto != "") {
+            if (options.stake > 0) {
+              let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(
+                options.crypto
+              ).ticker;
+              let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
+              if (selected_crypto_ticker === preferred_crypto_ticker) {
+                let my_address = app.wallet.returnPreferredCrypto().returnAddress();
+                let crypto_transfer_manager = new GameCryptoTransferManager(app);
+                crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () { });
+                let returnObj = await app.wallet.returnPreferredCryptoBalances(
+                  [my_address],
+                  null,
+                  options.crypto
+                );
+
+                let adequate_balance = 0;
+                for (let i = 0; i < returnObj.length; i++) {
+                  if (returnObj[i].address == my_address) {
+                    if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
+                      adequate_balance = 1;
+                    }
                   }
                 }
-              }
-              crypto_transfer_manager.hideOverlay();
+                crypto_transfer_manager.hideOverlay();
 
-              if (adequate_balance == 0) {
-                salert("You don't have enough " + options.crypto + " to create this game!");
+                if (adequate_balance == 0) {
+                  salert("You don't have enough " + options.crypto + " to create this game!");
+                  return;
+                }
+              } else {
+                salert(
+                  `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
+                );
                 return;
               }
-            } else {
-              salert(
-                `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
-              );
-              return;
             }
           }
-        }
 
-        let gamemod = app.modules.returnModule(options.gamename);
-        let players_needed = 0;
-        if (document.querySelector(".game-wizard-players-select")) {
-          players_needed = document.querySelector(".game-wizard-players-select").value;
-        } else {
-          players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
-        }
-
-        let gamedata = {
-          ts: new Date().getTime(),
-          name: gamemod.name,
-          slug: gamemod.returnSlug(),
-          options: gamemod.returnFormattedGameOptions(options),
-          options_html: gamemod.returnGameRowOptionsHTML(options),
-          players_needed: players_needed,
-        };
-        if (players_needed === 0) {
-          console.error("Create Game Error");
-          console.log(gamedata);
-          return;
-        }
-        if (players_needed == 1) {
-          mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
-          return;
-        } else {
-          mod.overlay.hide();
-          document.getElementById("background-shim").destroy();
-
-          console.log("PRE CREATING OPEN TX");
-
-          let newtx = mod.createOpenTransaction(gamedata);
-
-          let arcade_mod = app.modules.returnModule("Arcade");
-          if (arcade_mod) {
-            arcade_mod.addGameToOpenList(newtx);
+          let gamemod = app.modules.returnModule(options.gamename);
+          let players_needed = 0;
+          if (document.querySelector(".game-wizard-players-select")) {
+            players_needed = document.querySelector(".game-wizard-players-select").value;
+          } else {
+            players_needed = document.querySelector(".game-wizard-players-no-select").dataset.player;
           }
 
-          //
-          // and relay open if exists
-          //
-          let peers = [];
-          for (let i = 0; i < app.network.peers.length; i++) {
-            peers.push(app.network.peers[i].returnPublicKey());
+          let gamedata = {
+            ts: new Date().getTime(),
+            name: gamemod.name,
+            slug: gamemod.returnSlug(),
+            options: gamemod.returnFormattedGameOptions(options),
+            options_html: gamemod.returnGameRowOptionsHTML(options),
+            players_needed: players_needed,
+            invitation_type: "public",
+          };
+          if (players_needed === 0) {
+            console.error("Create Game Error");
+            console.log(gamedata);
+            return;
           }
-          let relay_mod = app.modules.returnModule("Relay");
-          if (relay_mod != null) {
-            relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-          }
+          if (players_needed == 1) {
+            mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
+            return;
+          } else {
+            mod.overlay.hide();
+            document.getElementById("background-shim").destroy();
 
-          mod.app.network.propagateTransaction(newtx);
-          mod.renderArcadeMain(app, mod);
+            //console.log("PRE CREATING OPEN TX");
+            if (isPrivateGame == "private") {
+              gamedata.invitation_type = "private";
+            }
+
+            let newtx = mod.createOpenTransaction(gamedata);
+
+            let arcade_mod = app.modules.returnModule("Arcade");
+            if (arcade_mod) {
+              arcade_mod.addGameToOpenList(newtx);
+            }
+
+            //
+            // and relay open if exists
+            //
+            let peers = [];
+            for (let i = 0; i < app.network.peers.length; i++) {
+              peers.push(app.network.peers[i].returnPublicKey());
+            }
+            let relay_mod = app.modules.returnModule("Relay");
+            if (relay_mod != null) {
+              relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+            }
+
+            app.network.propagateTransaction(newtx);
+            mod.renderArcadeMain(app, mod);
+
+            if (isPrivateGame == "private") {
+              console.log(newtx);
+              //Create invite link from the game_sig 
+              mod.showShareLink(newtx.transaction.sig);
+            }
+          }
+        } catch (err) {
+          alert("error: " + err);
         }
-      } catch (err) {
-        alert("error: " + err);
-      }
 
-      return false;
+        return false;
+      });
     });
   },
 };
