@@ -8,6 +8,7 @@ const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 //const getMockGames = require("./mockinvites.js");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
+const ArcadeLink = require("./lib/arcade-main/arcade-link");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 
@@ -2598,6 +2599,41 @@ class Arcade extends ModTemplate {
     if (this.app.options) {
       this.app.options.games = [];
     }
+  }
+
+  showShareLink(game_sig){
+    let data = {};
+
+    //Add more information about the game
+    try{
+      let accepted_game = null;
+      this.games.forEach((g) => {
+        if (g.transaction.sig === game_sig) {
+          accepted_game = g;
+        }
+      });
+      if (accepted_game){
+        data.game = accepted_game.msg.game;
+      }
+    }catch(err){}
+
+    //Create invite link from the game_sig 
+    let inviteLink = window.location.href;
+    if (!inviteLink.includes("#")) {
+      inviteLink += "#";
+    }
+    if (inviteLink.includes("?")) {
+      inviteLink = inviteLink.replace("#", "&jid=" + game_sig);
+    } else {
+      inviteLink = inviteLink.replace("#", "?jid=" + game_sig);
+    }
+      
+    data.invite_link = inviteLink;
+    
+    console.log(inviteLink);
+
+    ArcadeLink.render(this.app, this, data);
+    ArcadeLink.attachEvents(this.app, this);
   }
 }
 

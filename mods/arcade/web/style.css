@@ -435,6 +435,19 @@ body {
   border-radius: 5px;
   flex-grow: 1;
   margin-right: 5px;
+  min-width: 120px;
+}
+
+.button_with_icon{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;
+}
+.button_with_icon i{
+  font-size: 2em;
+  margin-right: 0 10px;
 }
 
 .invite-tile-wrapper .tiptext {
@@ -1394,36 +1407,19 @@ span.rewards-row-name {
   text-transform: uppercase;
 }
 
-.invite-overlay-container {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1200;
-}
-.invite-overlay {
-  background-color: rgba(0, 0, 0, 0.704);
-  width: 100%;
-  height: 100%;
-  display: flex;
+.invite-link {
+  max-width: 90vw;
+  min-width: 25vw;
+  width: fit-content;
 
-  justify-content: center;
-  align-items: center;
-}
-.invite-overlay .invite-link {
-  width: 20rem;
-
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-radius: 8px;
   background-color: rgb(102, 51, 153);
   color: white;
-  padding-bottom: 2rem;
-
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .invite-link-actions {
@@ -1482,6 +1478,16 @@ span.rewards-row-name {
   margin-right: 1rem;
 }
 
+.social-links a{
+  color: var(--saito-white);
+}
+
+i.link_icon{
+  display: none;
+}
+i.link_icon.private{
+  display: block;
+}
 /* *
   Mid - size
  * */

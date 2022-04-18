@@ -1,7 +1,6 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
 const AdvancedOverlay = require("./advanced-overlay"); // game-overlay
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
-const InviteOverlay = require("./invite-overlay");
 
 /**
  * Convert the text (html) options (returned by the game module) in to an object data structure
@@ -230,22 +229,7 @@ module.exports = ArcadeGameDetails = {
             if (isPrivateGame == "private") {
               console.log(newtx);
               //Create invite link from the game_sig 
-              let inviteLink = window.location.href;
-              let gameInviteCode = newtx.transaction.sig;
-              if (!inviteLink.includes("#")) {
-                inviteLink += "#";
-              }
-              if (inviteLink.includes("?")) {
-                inviteLink = inviteLink.replace("#", "&jid=" + gameInviteCode);
-              } else {
-                inviteLink = inviteLink.replace("#", "?jid=" + gameInviteCode);
-              }
-              const inviteOverlay = new InviteOverlay(app, gamemod);
-              inviteOverlay.render(app, gamemod);
-              inviteOverlay.attachEvents(app, gamemod);
-              inviteOverlay.show(inviteLink);
-              // salert(inviteLink);
-              console.log(inviteLink);
+              mod.showShareLink(newtx.transaction.sig);
             }
           }
         } catch (err) {

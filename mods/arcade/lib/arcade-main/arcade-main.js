@@ -11,7 +11,6 @@ const ArcadeObserveTemplate = require("./templates/arcade-observe.template");
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
-const InviteOverlay = require('../arcade-game/invite-overlay');
 
 //let tabNames = ["arcade", "observables", "tournaments"];
 let tabNames = [];
@@ -219,6 +218,20 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     });
 
 
+    mod.games.forEach((invite, i) => {
+      try {
+        document.querySelectorAll(`#invite-${invite.transaction.sig} .link_icon`)
+          .forEach((el, i) => {
+            el.onclick = function (e) {
+              let game_sig = e.currentTarget.nextElementSibling.getAttribute("data-sig");
+              mod.showShareLink(game_sig);
+            };
+          });
+        }catch(err){
+          console.error(err);
+        }
+    });
+    
 
 
     //Attach events for arcade-sub
@@ -558,23 +571,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
   privatizeGame(app, mod, game_sig) {
     console.log(JSON.parse(JSON.stringify(mod.games)));
 
-    //Create invite link from the game_sig 
-    let inviteLink = window.location.href;
-    let gameInviteCode = game_sig;
-    if (!inviteLink.includes("#")) {
-      inviteLink += "#";
-    }
-    if (inviteLink.includes("?")) {
-      inviteLink = inviteLink.replace("#", "&jid=" + gameInviteCode);
-    } else {
-      inviteLink = inviteLink.replace("#", "?jid=" + gameInviteCode);
-    }
-    const inviteOverlay = new InviteOverlay(app, mod);
-    inviteOverlay.render(app, mod);
-    inviteOverlay.attachEvents(app, mod);
-    inviteOverlay.show(inviteLink);
-
-    console.log(inviteLink);
+    mod.showShareLink(game_sig);
 
     let accepted_game = null;
     mod.games.forEach((g) => {
@@ -593,6 +590,10 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       if (game_cmd == "invite") {
         button.setAttribute("data-cmd", "publicize");
         button.textContent = "PUBLICIZE";
+        let linkButton = button.parentNode.querySelector(".link_icon");
+        if (linkButton){
+          linkButton.classList.add("private");
+        }
       }
     });
   },
@@ -604,6 +605,10 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       if (game_cmd == "publicize") {
         button.setAttribute("data-cmd", "invite");
         button.textContent = "INVITE";
+        let linkButton = button.parentNode.querySelector(".link_icon");
+        if (linkButton){
+          linkButton.classList.remove("private");
+        }
       }
     });
 
