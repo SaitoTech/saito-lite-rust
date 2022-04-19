@@ -1499,7 +1499,7 @@ i.menu_icon_icon{
 }
 
 .flash {
-  animation: flash 1s infinite ease-in-out;
+  animation: flash 1s infinite cubic-bezier(0.4, 0, 1, 1);
 }
 
 
