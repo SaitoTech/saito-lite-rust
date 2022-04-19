@@ -488,6 +488,22 @@ class Arcade extends ModTemplate {
     // in which case we need to import game details including
     // options, etc.
     //
+    
+    //
+    // remove games from open games list
+    //
+    for (let i = 0; i < this.games.length; i++) {
+      let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
+      if (transaction.sig === tx.msg.game_id) {
+        if (transaction.options) {
+          if (transaction.options.players_needed <= transaction.players.length + 1) {
+            this.games.splice(i, 1);
+            this.renderArcadeMain(this.app, this);
+          }
+        }
+      }
+    }
+
 
     if (txmsg.players.includes(app.wallet.returnPublicKey())) {
 
@@ -1056,34 +1072,21 @@ class Arcade extends ModTemplate {
     let new_status = txmsg.request.split("_")[1];
     console.log("RECEIVING CHANGE REQUEST to "+new_status);
     
-    let sql2 = `UPDATE games SET status = '${new_status}' WHERE game_id = '${txmsg.game_id}'`;
-    this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
-
-    if (tx.isFrom(this.app.wallet.returnPublicKey())){
-      console.log("I sent the message");
-    }else{
-      console.log("I need to update my browser");
-      if (new_status == "private"){
-        this.removeGameFromOpenList(txmsg.game_id);
-      }else{
-        this.addGameToOpenList(newtx); //maybe the right transaction
-      }  
-    }
   
-    /*let sql1 = `SELECT * FROM games WHERE game_id = "${txmsg.game_id}"`;
+    let sql1 = `SELECT * FROM games WHERE game_id = "${txmsg.game_id}"`;
     let orig_status = "";
-    let newtx;
+    
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql1, async (res) => {
       if (res.rows && res.rows.length > 0) {
         console.log(res.rows[0]);
         let orig_status = res.rows[0].status;
         let newtx = new saito.default.transaction(JSON.parse(res.rows[0].tx));
-        let new_status = (orig_status && orig_status == "open") ? "private" : "open";
+        //let new_status = (orig_status && orig_status == "open") ? "private" : "open";
 
         console.log(`Changing status from ${orig_status} to ${new_status}`);
         let sql2 = `UPDATE games SET status = '${new_status}' WHERE game_id = '${txmsg.game_id}'`;
         this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
-        this.checkGameDatabase();
+        //this.checkGameDatabase();
 
         if (tx.isFrom(this.app.wallet.returnPublicKey())){
           console.log("I sent the message");
@@ -1096,9 +1099,7 @@ class Arcade extends ModTemplate {
           }  
         }
       }
-    });*/
-
-    
+    });
   }
 
   createOpenTransaction(gamedata, recipient = "") {
@@ -1724,11 +1725,7 @@ class Arcade extends ModTemplate {
     }
     for (let i = 0; i < this.games.length; i++) {
       let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
-      console.log("Validate game");
-      console.log("Transaction Object: "+transaction.sig);
-      console.log("Queried tx: "+  tx.transaction.sig);
-      console.log(JSON.parse(JSON.stringify(this.game[i].transaction)));
-      console.log(JSON.parse(JSON.stringify(transaction)));
+      
       if (tx.transaction.sig == transaction.sig) {
         return false;
       }
