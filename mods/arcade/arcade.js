@@ -250,7 +250,7 @@ class Arcade extends ModTemplate {
       }
     );
 
-    this.checkGameDatabase();
+    //this.checkGameDatabase();
 
     //
     // load observer games (active) -- ASC
@@ -563,7 +563,7 @@ class Arcade extends ModTemplate {
           txmsg.request == "accept" ||
           txmsg.request == "close" ||
           txmsg.request == "private" ||
-          txmsg.request == "change"
+          txmsg.request.includes("change")
         ) {
           if (this.doesGameExistLocally(tx.transaction.sig)) {
             console.log("SERVER NOTIFY PEERS");
@@ -586,7 +586,7 @@ class Arcade extends ModTemplate {
           console.log("onConfirmation: private invite received");
           this.receiveOpenRequest(blk, tx, conf, app);
         }
-        if (txmsg.module == "Arcade" && txmsg.request == "change") {
+        if (txmsg.module == "Arcade" && txmsg.request.includes("change")) {
           console.log("onConfirmation: change event type");
           this.receiveChangeRequest(blk, tx, conf, app);
         }
@@ -695,7 +695,7 @@ class Arcade extends ModTemplate {
           }
         }
       }
-      if (txmsg.module == "Arcade" && txmsg.request == "change") {
+      if (txmsg.module == "Arcade" && txmsg.request.includes("change")) {
         console.log("handlePeerRequest: change request received");
         this.receiveChangeRequest(blk, tx, conf, app);
         // only servers notify lite-clients
@@ -1053,9 +1053,24 @@ class Arcade extends ModTemplate {
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
     console.log(txmsg);
-    console.log("RECEIVING CHANGE REQUEST");
+    let new_status = txmsg.request.split("_")[1];
+    console.log("RECEIVING CHANGE REQUEST to "+new_status);
     
-    let sql1 = `SELECT * FROM games WHERE game_id = "${txmsg.game_id}"`;
+    let sql2 = `UPDATE games SET status = '${new_status}' WHERE game_id = '${txmsg.game_id}'`;
+    this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
+
+    if (tx.isFrom(this.app.wallet.returnPublicKey())){
+      console.log("I sent the message");
+    }else{
+      console.log("I need to update my browser");
+      if (new_status == "private"){
+        this.removeGameFromOpenList(txmsg.game_id);
+      }else{
+        this.addGameToOpenList(newtx); //maybe the right transaction
+      }  
+    }
+  
+    /*let sql1 = `SELECT * FROM games WHERE game_id = "${txmsg.game_id}"`;
     let orig_status = "";
     let newtx;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql1, async (res) => {
@@ -1068,13 +1083,6 @@ class Arcade extends ModTemplate {
         console.log(`Changing status from ${orig_status} to ${new_status}`);
         let sql2 = `UPDATE games SET status = '${new_status}' WHERE game_id = '${txmsg.game_id}'`;
         this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
-        /*let params = { $status: new_status, $game_id: txmsg.game_id };
-        console.log(sql2,params);
-        try{
-          await app.storage.executeDatabase(sql2, params, "arcade");  
-        }catch(err){
-          console.log("ERROR: "+err);
-        }*/
         this.checkGameDatabase();
 
         if (tx.isFrom(this.app.wallet.returnPublicKey())){
@@ -1088,7 +1096,7 @@ class Arcade extends ModTemplate {
           }  
         }
       }
-    });
+    });*/
 
     
   }
@@ -1129,15 +1137,16 @@ class Arcade extends ModTemplate {
     return tx;
   }
 
-  createChangeTransaction(gametx) {
+  createChangeTransaction(gametx, direction) {
+    console.log("Transaction to change");
     console.log(gametx);
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg = gametx.returnMessage();
-    tx.msg.request = "change";
+    tx.msg.request = "change_"+direction;
     tx.msg.game_id = gametx.transaction.sig;
     tx = this.app.wallet.signTransaction(tx);
-    console.log("CHANGE TX:",tx);
+    console.log(`CHANGE TX to ${direction}:`,tx);
     return tx;
   }
 
@@ -1715,6 +1724,11 @@ class Arcade extends ModTemplate {
     }
     for (let i = 0; i < this.games.length; i++) {
       let transaction = Object.assign({ sig: "" }, this.games[i].transaction);
+      console.log("Validate game");
+      console.log("Transaction Object: "+transaction.sig);
+      console.log("Queried tx: "+  tx.transaction.sig);
+      console.log(JSON.parse(JSON.stringify(this.game[i].transaction)));
+      console.log(JSON.parse(JSON.stringify(transaction)));
       if (tx.transaction.sig == transaction.sig) {
         return false;
       }

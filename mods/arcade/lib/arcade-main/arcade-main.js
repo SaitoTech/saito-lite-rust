@@ -99,7 +99,7 @@ module.exports = ArcadeMain = {
     if (document.querySelector(".arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
-console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
+          //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
             ArcadeInviteTemplate(app, mod, invite, i),
             document.querySelector(".arcade-hero")
@@ -581,7 +581,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       }
     });
     if (accepted_game) {
-      let newtx = mod.createChangeTransaction(accepted_game);
+      let newtx = mod.createChangeTransaction(accepted_game, "private");
       app.network.propagateTransaction(newtx);
     }
 
@@ -607,7 +607,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       }
     });
     if (accepted_game) {
-      let newtx = mod.createChangeTransaction(accepted_game);
+      let newtx = mod.createChangeTransaction(accepted_game, "open");
       app.network.propagateTransaction(newtx);
     }
   
