@@ -1,5 +1,6 @@
 module.exports = GameLoadedTemplate = (game_id = -1) => {
 
+  /*Deprecated*/
   if (game_id === -1) {
     return ` 
       <div class="arcade-initialize-game-container">
