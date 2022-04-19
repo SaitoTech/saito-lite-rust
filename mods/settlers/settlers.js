@@ -2268,7 +2268,9 @@ class Settlers extends GameTemplate {
       }
     
       let xpos, ypos;
-      $(".city.empty").addClass("chover");
+      let className = "rhover"; //"chover";
+
+      $(".city.empty").addClass(className);
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
         
@@ -2314,7 +2316,7 @@ class Settlers extends GameTemplate {
               $(".action").off();
               $(".popup-confirm-menu").remove();
               if (confirmation === "confirm"){
-                $(".city.empty").removeClass("chover");
+                $(".city.empty").removeClass(className);
                 $(".city.empty").off();
                   settlers_self.game.state.placedCity = slot;
                   settlers_self.buildCity(settlers_self.game.player, slot);

@@ -244,7 +244,7 @@ body {
   border-color: whitesmoke;
 }
 
-.city.empty.rhover{
+.city.empty.rhover, .road.rhover{
   background-color: rgba(255,255,128,0.95);
   border: 3px dotted purple;
 }
