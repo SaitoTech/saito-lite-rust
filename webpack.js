@@ -3,6 +3,8 @@ const webpack = require("webpack");
 
 let [entry_path, output_path, output_filename] = process.argv.slice(2);
 
+
+
 console.log(entry_path);
 console.log(output_path);
 console.log(output_filename);
@@ -20,12 +22,20 @@ webpack({
     minimize: true,
   },
   target: "web",
+  devServer: {
+    static: `./${output_path}`,
+   hot: true,
+  },
+
   // node: {
   //     fs: "empty",
   // },
   externals: [
     {
       archiver: "archiver"
+    },
+    {
+      "stun": "stun"
     },
     {
       child_process: "child_process"

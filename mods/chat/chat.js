@@ -34,6 +34,18 @@ class Chat extends ModTemplate {
 
         this.icon_fa = "far fa-comments";
         this.inTransitImageMsgSig = null;
+
+	this.added_identifiers_post_load = 0;
+
+    }
+
+
+
+    returnServices() {
+      let services = [];
+      // servers with chat installed are running community chat groups
+      if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
+      return services;
     }
 
 
@@ -230,6 +242,22 @@ class Chat extends ModTemplate {
                       })
                     }
             	    this.sendEvent('chat-render-request', {});
+
+		    //
+		    // check identifiers
+		    //
+		    if (this.added_identifiers_post_load == 0) {
+console.log("ADD IDENTIFIERS POST LOAD: chat.js");
+		      try {
+			setTimeout(()=>{
+		          this.app.browser.addIdentifiersToDom();
+		          this.added_identifiers_post_load = 1;
+			}, 1200);
+		      } catch (err) {
+			console.log("error adding identifiers post-chat");
+		      }
+		    }
+
                   }
                 }
               },
@@ -473,6 +501,12 @@ class Chat extends ModTemplate {
         if (app.network.peers.length > 0) {
 
             let recipient = app.network.peers[0].peer.publickey;
+	    for (let i = 0; i < app.network.peers.length; i++) {
+	      if (app.network.peers[i].hasService("chat")) {
+		recipient = app.network.peers[0].peer.publickey;
+		i = app.network.peers.length+1;
+	      }
+	    }
             let relay_mod = app.modules.returnModule('Relay');
 
             tx = this.app.wallet.signAndEncryptTransaction(tx);

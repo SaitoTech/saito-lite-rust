@@ -15,6 +15,7 @@ class Peer {
     version: "",
     protocol: "http",
     synctype: "full", // full : full blocks
+    services: [],
     // lite : lite blocks
     endpoint: {
       host: "localhost",
@@ -102,6 +103,13 @@ class Peer {
     return false;
   }
 
+  hasService(service) {
+    for (let i = 0; i < this.peer.services.length; i++) {
+      if (this.peer.services[i].service === service) { return 1; }
+    }
+    return 0;
+  }
+
   //
   // keepAlive
   //
@@ -165,6 +173,11 @@ class Peer {
     }
     if (message === "GSTCHAIN") {
       this.app.networkApi.send(this.socket, "GSTCHAIN", data);
+      return;
+    }
+    // json list of services running on server
+    if (message === "SERVICES") {
+      this.app.networkApi.send(this.socket, "SERVICES", data);
       return;
     }
     if (message === "PINGPING") {

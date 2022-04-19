@@ -51,9 +51,9 @@ class Blackjack extends GameTemplate {
 
   initializeHTML(app) {
     if (!this.browser_active) { return; }
-
+   
     super.initializeHTML(app);
-
+   
     this.app.modules.respondTo("chat-manager").forEach(mod => {
       mod.respondTo('chat-manager').render(app, this);
       mod.respondTo('chat-manager').attachEvents(app, this);
@@ -112,6 +112,7 @@ class Blackjack extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
+
     this.menu.addChatMenu(app, this);
 
     this.menu.render(app, this);
@@ -120,14 +121,12 @@ class Blackjack extends GameTemplate {
     this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
-
     this.playerbox.render(app, this);
     this.playerbox.attachEvents(app, this); //empty function
     this.playerbox.addClassAll("poker-seat-",true);
     this.playerbox.addGraphicClass("hand");   
     this.playerbox.addGraphicClass("tinyhand");   
     this.playerbox.addStatus(); //enable update Status to display in playerbox
-    
     
   }
 
@@ -273,6 +272,7 @@ class Blackjack extends GameTemplate {
         for (let i = 0; i < this.game.state.player.length; i++){
           if (this.game.state.player[i].credit<=0){
               removal = true;
+              console.log(`*** Removing Player ${i+1}`);
               this.game.state.player.splice(i,1);  //Remove player from game state
               this.removePlayer(this.game.players[i]); //Remove player in gamemodule
               i--;
@@ -281,12 +281,8 @@ class Blackjack extends GameTemplate {
     }
 
     if (removal){
-      //Update player number (because it ties into the index) of game.state.player
-      for (let i = 0; i < this.game.players.length; i++) {
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()) {
-          this.game.player = (i + 1);
-        }
-      }
+
+      this.game.player = 1 + this.game.players.indexOf(this.app.wallet.returnPublicKey());
       //Update DOM -- re-render the playerboxes
       try{
         //this.playerbox.remove();
@@ -296,7 +292,7 @@ class Blackjack extends GameTemplate {
         }
         this.playerbox.render(this.app,this);
       }catch(err){
-
+        console.error(err);
       }
     }
     

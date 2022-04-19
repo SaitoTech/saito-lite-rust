@@ -4,6 +4,7 @@
       key		: 	"papacy",
       name		: 	"Papacy",
       nickname		: 	"Papacy",
+      capitals          :       ["rome"],
       img		:	"papacy.png",
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {

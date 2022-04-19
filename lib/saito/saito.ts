@@ -48,6 +48,7 @@ import transaction0 from "./transaction";
 
 import wallet0 from "./wallet";
 
+
 export default class SaitoCommon {
   static binary = binary0;
   static block = block0;
@@ -74,4 +75,5 @@ export default class SaitoCommon {
   static slip = slip0;
   static transaction = transaction0;
   static wallet = wallet0;
+  
 }

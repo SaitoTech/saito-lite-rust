@@ -58,7 +58,6 @@ class Arcade extends ModTemplate {
         }
         //this.renderSidebar();
         try {
-          console.log("Open chat box: "+this.app.options.auto_open_chat_box);
           let chat_mod = this.app.modules.returnModule("Chat");
           if (chat_mod.groups.length > 0 && this.chat_open == 0 && this.app.options.auto_open_chat_box) {
             this.chat_open = 1;
@@ -84,6 +83,15 @@ class Arcade extends ModTemplate {
       if (this.viewing_arcade_initialization_page == 0) {
         ArcadeMain.render(this.app, this);
         ArcadeMain.attachEvents(this.app, this);
+        
+        if (this.viewing_game_homepage){
+          /*
+            The game page has browser/mobile dual funcationality attached to buttons in the sidebar and in the main
+            Buttons have same names and funcitonal attached through arcadegamesidebar
+            but since arcademain tends to get repeatedly rendered we need to keep reattaching events
+          */
+          ArcadeGameSidebar.attachEvents(this.app, this);    
+        }
       }      
     }
   }
@@ -279,6 +287,7 @@ class Arcade extends ModTemplate {
 
     this.renderSidebar();
     this.renderArcadeMain();
+    this.renderSidebar(); //To re-attach events
     
   }
 
@@ -769,12 +778,13 @@ class Arcade extends ModTemplate {
       if (txmsg.request == "accept") {
 
         //
-	// notify lite-clients and remove game from list available
+      	// notify lite-clients and remove game from list available
         //
-	this.removeGameFromOpenList(txmsg.game_id);
+      	this.removeGameFromOpenList(txmsg.game_id);
+        
         if (this.app.BROWSER == 0) {
-	  this.notifyPeers(this.app, tx);
-	}
+      	  this.notifyPeers(this.app, tx);
+      	}
 
         //
         // multiplayer games might hit here without options.games
@@ -818,14 +828,8 @@ class Arcade extends ModTemplate {
                       //
                       // remove game (accepted players are equal to number needed)
                       //
-                      transaction.msg = Object.assign(
-                        { players_needed: 0, players: [] },
-                        this.games[i].msg
-                      );
-                      if (
-                        parseInt(transaction.msg.players_needed) >=
-                        transaction.msg.players.length + 1
-                      ) {
+                      transaction.msg = Object.assign({ players_needed: 0, players: [] }, this.games[i].msg);
+                      if (parseInt(transaction.msg.players_needed) >= transaction.msg.players.length + 1) {
                         this.removeGameFromOpenList(txmsg.game_id); //on confirmation
                       }
                     }
@@ -868,8 +872,6 @@ class Arcade extends ModTemplate {
               }
             }
           }
-
-          console.log("GAME NOT FOUND!");
 
           //
           // also possible this is game in our displayed list
@@ -916,7 +918,7 @@ class Arcade extends ModTemplate {
             //
             // only launch game if it is for us -- observer mode?
             //
-            console.info("THIS GAMEIS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
+            console.info("THIS GAME IS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
             console.info("OUR GAMES: ", this.app.options.games);
             // game is over, we don't care
             if (tx.msg.over) {
@@ -1307,7 +1309,7 @@ class Arcade extends ModTemplate {
     tx.transaction.to.push(new saito.default.slip(gametx.transaction.from[0].add, 0.0));
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg.ts = "";
-    tx.msg.module = txmsg.game;
+    tx.msg.module = txmsg.game; 
     tx.msg.request = "join";
     tx.msg.game_id = gametx.transaction.sig;
     tx.msg.players_needed = parseInt(txmsg.players_needed);

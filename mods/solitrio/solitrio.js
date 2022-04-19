@@ -13,6 +13,7 @@ class Solitrio extends GameTemplate {
 
     this.name            = "Solitrio";
     this.gamename        = "Solitrio";
+    this.slug            = "solitrio";
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
     this.categories      = "Arcade Games Entertainment";
 
@@ -24,6 +25,27 @@ class Solitrio extends GameTemplate {
     this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
     this.categories  = "Cardgame Game Solitaire";
     
+  }
+
+
+  //
+  // manually announce arcade banner support
+  //
+  respondTo(type) {
+
+    if (super.respondTo(type) != null) {
+      return super.respondTo(type);
+    }
+
+    if (type == "arcade-carousel") {
+      let obj = {};
+      obj.background = "/solitrio/img/arcade/arcade-banner-background.jpg";
+      obj.title = "Solitrio";
+      return obj;
+    }
+
+    return null;
+
   }
 
 
@@ -61,23 +83,25 @@ class Solitrio extends GameTemplate {
 
 
   initializeGame(game_id) {
+
+    console.log("SET WITH GAMEID: " + game_id);
+
     this.updateStatus("loading game...");
-    //console.log("Load Game 1: "+game_id);
-    this.loadGame(game_id);
 
     //  
     // workaround to save issues
+    // - saving solitrio games results in the same game being
+    // loaded every time the module inits, as we fetch from the 
+    // same game_id / most-recent game_id.
     //
-    //console.log("Save Game 1");
+    this.loadGame(game_id);
     this.saveGame();
-    //console.log("Load Game 2: "+this.game.id);
     this.loadGame(this.game.id);
 
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
+    if (this.game.dice == "") { this.initializeDice(); this.initializeSinglePlayerGame(); }
 
     if (!this.game.state) {
-
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
@@ -621,7 +645,6 @@ class Solitrio extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.scanBoard(true);
         this.game.state.recycles_remaining--;
-alert("done shuffle");
         return 1;
       }
       

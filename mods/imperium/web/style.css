@@ -1479,6 +1479,9 @@ body {
   min-height: 367px;
 }
 
+.status-message{
+  background-color: unset;
+}
 
 .hud-header {
   min-height: 40px;
