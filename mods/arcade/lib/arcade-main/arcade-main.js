@@ -581,8 +581,18 @@ module.exports = ArcadeMain = {
       }
     });
     if (accepted_game) {
+      console.log("Game in my open list");
       let newtx = mod.createChangeTransaction(accepted_game, "private");
       app.network.propagateTransaction(newtx);
+    
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        let peers = [];
+        for (let i = 0; i < app.network.peers.length; i++) {
+          peers.push(app.network.peers[i].returnPublicKey());
+        }
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
     }
 
     //Update status of the game invitation
@@ -606,9 +616,22 @@ module.exports = ArcadeMain = {
         accepted_game = g;
       }
     });
+ 
+
     if (accepted_game) {
+      console.log("Game in my open list");
       let newtx = mod.createChangeTransaction(accepted_game, "open");
       app.network.propagateTransaction(newtx);
+
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        let peers = [];
+        for (let i = 0; i < app.network.peers.length; i++) {
+          peers.push(app.network.peers[i].returnPublicKey());
+        }
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
+ 
     }
   
     //Update status of the game invitation
