@@ -19,7 +19,6 @@ import NetworkAPI from "../../lib/saito/networkapi";
 import Network from "../../lib/saito/network";
 import Staking from "../../lib/saito/staking";
 
-
 import hash_loader from "./hash-loader";
 import Handshake from "../../lib/saito/handshake";
 
@@ -51,7 +50,6 @@ class Saito {
   handshake: Handshake;
   hash: (data: string) => string;
   server: Server;
-
 
   constructor(config = {}) {
     this.BROWSER = 1;
@@ -88,8 +86,6 @@ class Saito {
     this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
     this.staking = new Staking(this);
     this.handshake = new Handshake(this);
-   
-  
   }
 
   async init() {

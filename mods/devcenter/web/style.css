@@ -1,6 +1,5 @@
 /** Email **/
 
-
 .welcome-right-sidebar {
   float: right;
   width: 25vw;
@@ -17,7 +16,7 @@
   text-decoration: none;
 }
 .welcome-text {
- font-size: 0.9em;
+  font-size: 0.9em;
 }
 h3 {
   margin: 0px;
@@ -57,7 +56,8 @@ hr {
   grid-template-areas: "email-sidebar email-main";
 }
 
-.email-apps-item, .email-navigator-item {
+.email-apps-item,
+.email-navigator-item {
   background-color: white;
   list-style: none;
   font-weight: normal;
@@ -132,7 +132,7 @@ hr {
   transition: all 0.25s ease-in-out;
 }
 
-.learn>div {
+.learn > div {
   margin: 0 0 1em 1em;
 }
 
@@ -150,13 +150,33 @@ hr {
   text-decoration: none;
 }
 
-
-
 /*  Stun UI CSS */
 .stun-container {
   padding: 1.5rem;
   font-size: 1.2rem;
   transition: all 0.3s;
+}
+
+.stun-video-container {
+  display: flex;
+  margin-bottom: 4rem;
+}
+
+.stun-video {
+  border-radius: 8px;
+  border: 1px solid black;
+  width: 80%;
+}
+.stun-video::after {
+  content: "Local Stream";
+  display: block;
+  top: 0;
+  left: 1rem;
+  color: black;
+}
+
+.stun-video:not(last-child) {
+  margin-right: 1rem;
 }
 
 .stun-container__bar {
@@ -241,12 +261,7 @@ button.button-active {
   }
 }
 
-
-
-
-
 @media only screen and (max-width: 900px) {
-
   input[type="checkbox"] {
     margin: 0 0.65em;
   }
@@ -288,4 +303,3 @@ button.button-active {
     margin: 0.5em 16.6% 1em;
   }
 }
-

@@ -71,6 +71,7 @@ class Keychain {
     if (this.app.options.keys.length == 0) {
       this.addKey(this.app.wallet.returnPublicKey(), "", true);
     }
+    console.log("options ", this.app.options);
   }
 
   addKey(publickey = "", identifier = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
