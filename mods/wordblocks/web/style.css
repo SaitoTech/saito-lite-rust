@@ -666,6 +666,13 @@ Resize board on smaller screens
   border-style: solid;
 }
 
+.shake {
+  animation: shake 0.82s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.flash {
+  animation: flash 1s infinite ease-in-out;
+}
 
 .card1 p {
   font-family: 'Poppins', Times, serif;
@@ -765,6 +772,15 @@ Resize board on smaller screens
 }
 
 
+@keyframes flash {
+  from {
+    opacity: 0;
+
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 
 @keyframes appear {
