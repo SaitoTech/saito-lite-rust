@@ -253,6 +253,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
       }
     });
 
+    //If following a link and it fails
     if (!accepted_game) {
       console.log("ERR: game not found");
       await sconfirm("Game no longer available");
@@ -335,6 +336,7 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
     //
     let players_needed = parseInt(accepted_game.msg.players_needed);
     let players_available = accepted_game.msg.players.length;
+   
     if (players_needed > players_available + 1) {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
@@ -375,10 +377,9 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
               "Accepted Game! It may take a minute for your browser to update -- please be patient!"
             );
 
-            GameLoader.render(app, data);
-            GameLoader.attachEvents(app, data);
+            GameLoader.render(app, mod);
+            GameLoader.attachEvents(app, mod);
 
-            return;
           } else {
             //
             // game exists, so "continue" not "join"
@@ -394,8 +395,8 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
               }
             }
             //window.location = "/" + existing_game.slug;
-            return;
           }
+          return;
         }
       }
 
@@ -493,8 +494,8 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           "Accepted Game! It may take a minute for your browser to update -- please be patient!"
         );
 
-        GameLoader.render(app, data);
-        GameLoader.attachEvents(app, data);
+        GameLoader.render(app, mod);
+        GameLoader.attachEvents(app, mod);
 
         return;
       } else {
@@ -599,6 +600,17 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
   },
 
   publicizeGame(app, mod, game_sig) {
+    let accepted_game = null;
+    mod.games.forEach((g) => {
+      if (g.transaction.sig === game_sig) {
+        accepted_game = g;
+      }
+    });
+    if (accepted_game) {
+      let newtx = mod.createChangeTransaction(accepted_game);
+      app.network.propagateTransaction(newtx);
+    }
+  
     //Update status of the game invitation
     Array.from(document.querySelectorAll(`#invite-${game_sig} .invite-tile-button`)).forEach(button => {
       let game_cmd = button.getAttribute("data-cmd");
@@ -611,17 +623,6 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
         }
       }
     });
-
-    let accepted_game = null;
-    mod.games.forEach((g) => {
-      if (g.transaction.sig === game_sig) {
-        accepted_game = g;
-      }
-    });
-    if (accepted_game) {
-      let newtx = mod.createChangeTransaction(accepted_game);
-      app.network.propagateTransaction(newtx);
-    }
   },
 
 
