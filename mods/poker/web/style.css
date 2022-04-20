@@ -64,22 +64,22 @@ body {
 }
 
 .pstack1 .poker_chip, #stripes1{
-  fill: red;
+  fill: #ff1205;
 }
 .pstack2 .poker_chip, #stripes2{
-  fill: blue;
+  fill: #ff05f2;
 }
 .pstack3 .poker_chip, #stripes3{
-  fill: yellow;
+  fill: #05ff12;
 }
 .pstack4 .poker_chip, #stripes4{
-  fill: white;
+  fill: #05f2ff;
 }
 .pstack5 .poker_chip, #stripes5{
-  fill: green;
+  fill: #1205ff;
 }
 .pstack6 .poker_chip, #stripes6{
-  fill: purple;
+  fill: #f2ff05;
 }
 
 .poker-seat-2 .chip_stack, .poker-seat-3 .chip_stack{
@@ -198,6 +198,11 @@ body {
     top: 30vh;
     font-size: 2.4em;
   }
+
+  .chip_stack .poker_chip{
+    width: 50px;
+  }
+
  
 }
 
@@ -219,6 +224,11 @@ body {
   .deal .card {
     width: 100% /*of grid slot*/
   }
+
+  .chip_stack .poker_chip{
+    width: 50px;
+  }
+
 
 }
 
