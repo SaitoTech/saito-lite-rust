@@ -841,8 +841,8 @@ ul.horizontal_list li.iconoption{
   max-width: 300px;
   min-width: 250px;
   left: 10px;
-  top: 56px;
-  bottom: unset;
+  top: unset;
+  bottom: 1px;
 }
 
 /*Stats overlay table*/
@@ -960,5 +960,20 @@ ul.horizontal_list li.iconoption{
 }
 
 }
+
+/* reposition playerbox for me on large screens top-left */
+@media screen and (orientation: landscape) and (min-width: 1000px) {
+  .player-box.me{
+    max-height: unset;
+    max-width: 300px;
+    min-width: 250px;
+    left: 10px;
+    top: 56px;
+    bottom: unset;
+  }
+}
+
+
+
 
 /*Still need better layout for small screens*/

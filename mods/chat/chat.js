@@ -247,7 +247,6 @@ class Chat extends ModTemplate {
 		    // check identifiers
 		    //
 		    if (this.added_identifiers_post_load == 0) {
-console.log("ADD IDENTIFIERS POST LOAD: chat.js");
 		      try {
 			setTimeout(()=>{
 		          this.app.browser.addIdentifiersToDom();
@@ -785,6 +784,7 @@ console.log("ADD IDENTIFIERS POST LOAD: chat.js");
     // UI Functions //
     //////////////////
     openChatBox(group_id = null) {
+
         if (this.renderMode != "email" && this.renderMode != "none") {
             return;
         }
@@ -878,6 +878,7 @@ console.log("ADD IDENTIFIERS POST LOAD: chat.js");
 
 
     returnCommunityChat() {
+console.log("WHAT ARE THE NAMES OF OUR GROUPS: " + JSON.stringify(this.groups));
         for (let i = 0; i < this.groups.length; i++) {
             if (this.app.options.peers.length > 0) {
                 if (this.groups[i].name === "Community Chat") {
