@@ -185,7 +185,7 @@ module.exports = ArcadeGameDetails = {
             name: gamemod.name,
             slug: gamemod.returnSlug(),
             options: gamemod.returnFormattedGameOptions(options),
-            options_html: gamemod.returnGameRowOptionsHTML(options),
+            /*options_html: gamemod.returnGameRowOptionsHTML(options),*/
             players_needed: players_needed,
             invitation_type: "public",
           };
