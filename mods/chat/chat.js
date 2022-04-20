@@ -543,6 +543,8 @@ class Chat extends ModTemplate {
             members.push(this.app.wallet.returnPublicKey());
         }
 
+console.log("MEMBERS ZERO: " + members[0]);
+
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
             return;
