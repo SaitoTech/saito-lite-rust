@@ -572,8 +572,6 @@ module.exports = ArcadeMain = {
   privatizeGame(app, mod, game_sig) {
     console.log(JSON.parse(JSON.stringify(mod.games)));
 
-    mod.showShareLink(game_sig);
-
     let accepted_game = null;
     mod.games.forEach((g) => {
       if (g.transaction.sig === game_sig) {
@@ -600,11 +598,11 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "invite") {
         button.setAttribute("data-cmd", "publicize");
-        button.textContent = "PUBLICIZE";
-        let linkButton = button.parentNode.querySelector(".link_icon");
+        button.textContent = "OPEN";
+        /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.add("private");
-        }
+        }*/
       }
     });
   },
@@ -639,11 +637,11 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "publicize") {
         button.setAttribute("data-cmd", "invite");
-        button.textContent = "INVITE";
-        let linkButton = button.parentNode.querySelector(".link_icon");
+        button.textContent = "HIDE";
+        /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.remove("private");
-        }
+        }*/
       }
     });
   },

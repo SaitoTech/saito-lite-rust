@@ -1088,15 +1088,31 @@ class Arcade extends ModTemplate {
         this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
         //this.checkGameDatabase();
 
+        for (let i = 0; i < this.games.length; i++){
+          if (this.games[i].transaction){
+            if (this.games[i].transaction.sig == newtx.game_id){
+              if (this.games[i].msg){
+                this.games[i].msg.request = new_status;  
+              }
+            }  
+          }
+        }
+
         if (tx.isFrom(this.app.wallet.returnPublicKey())){
           console.log("I sent the message");
         }else{
-          console.log("I need to update my browser");
-          if (new_status == "private"){
-            this.removeGameFromOpenList(txmsg.game_id);
+          
+
+          if (this.isMyGame(tx,app)){
+            this.renderArcadeMain(this.app, this);
           }else{
-            this.addGameToOpenList(newtx); //maybe the right transaction
-          }  
+            console.log("I need to update my browser");
+            if (new_status == "private"){ 
+              this.removeGameFromOpenList(txmsg.game_id);
+            }else{
+              this.addGameToOpenList(newtx); //maybe the right transaction
+            }  
+          } 
         }
       }
     });
