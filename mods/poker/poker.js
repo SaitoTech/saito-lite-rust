@@ -1305,7 +1305,7 @@ console.log("id is: " + (this_raise + match_required));
         document.querySelector("#deal").innerHTML = newHTML;
       }
       // update pot
-      let html = "";
+      let html = `<div class="pot-counter">${this.game.state.pot}</div>`;
       for (let i = 0; i < this.game.state.player_pot.length; i++){
         html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
       }
