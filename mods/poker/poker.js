@@ -181,7 +181,6 @@ class Poker extends GameTemplate {
 
     this.game.state.round++;
     this.game.state.preflop = true;
-    this.game.state.all_in = false;
     
     //Shift dealer, small blind, and big blind
     this.game.state.big_blind_player--;
@@ -231,6 +230,7 @@ class Poker extends GameTemplate {
     if (this.browser_active){
       this.displayPlayers(true); //to update chips before game_over
     }
+    this.game.state.all_in = false; //we are stupidly testing for all_in on the display players
      
 
     //Catch that only one player is standing at the start of the new round
@@ -534,7 +534,14 @@ class Poker extends GameTemplate {
           //
           this.game.queue.splice(qe, 1);
           return 1;
-        } else {
+        } else if (this.game.state.player_credit[player_to_go - 1] == 0){
+          console.log("THIS PLAYER IS ALL IN " + player_to_go);
+          //
+          // we auto-clear without need for player to broadcast
+          //
+          this.game.queue.splice(qe, 1);
+          return 1;
+        }else{
           console.log("GET ACTION " + player_to_go);
           if (this.browser_active){
             $(".player-box.active").removeClass("active");
@@ -685,14 +692,12 @@ class Poker extends GameTemplate {
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
-                      // do not reformat -- adding whitespace screws with API
-                      let ts = new Date().getTime();
-                      this.rollDice();
-                      let uh = this.game.dice;
-                      this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
-                    );
-                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`
-                    );
+                    // do not reformat -- adding whitespace screws with API
+                    let ts = new Date().getTime();
+                    this.rollDice();
+                    let uh = this.game.dice;
+                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
                   }
                 }
               }
@@ -841,7 +846,14 @@ class Poker extends GameTemplate {
         this.refreshPlayerStack(player, true); //Here we don't want to hide cards
         
         if (this.game.player !== player) {this.playerbox.refreshLog(`<div class="plog-update">calls</div>`, player);}
-        this.updateLog(this.game.state.player_names[player - 1] + " calls");
+
+        if (this.game.state.player_credit[player-1] === 0){
+          this.game.state.all_in = true;
+          this.updateLog(this.game.state.player_names[player - 1] + " goes all in to call");
+        }else{
+          this.updateLog(this.game.state.player_names[player - 1] + " calls");
+        }
+        
 
       }
 
@@ -898,16 +910,20 @@ class Poker extends GameTemplate {
         this.game.state.pot += raise;
         this.game.state.last_raise = raise_portion;
         this.game.state.required_pot += raise_portion;
-      
+        let raise_message = `raises ${raise_portion} `;
+        if (this.game.state.player_credit[player -1 ] === 0){
+          this.game.state.all_in = 1;
+          raise_message = `goes all in `;
+        }      
         if (call_portion > 0) {  
           if (raise_portion > 0) {
-            this.updateLog(`${this.game.state.player_names[player - 1]} raises ${raise_portion} to ${this.game.state.player_pot[player - 1]}`);
+            this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.game.state.player_pot[player - 1]}`);
             if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise_portion}</div>`, player);}
           } else {
             this.updateLog(`${this.game.state.player_names[player - 1]} calls ${call_portion}`);
           }
         } else {
-          this.updateLog(`${this.game.state.player_names[player - 1]} raises ${raise_portion} to ${this.game.state.player_pot[player - 1]}`);
+          this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}to ${this.game.state.player_pot[player - 1]}`);
           if (this.game.player !== player && this.browser_active) {this.playerbox.refreshLog(`<div class="plog-update">raises ${raise}</div>`, player);}
         }
         this.game.queue.splice(qe, 1);
@@ -1325,8 +1341,7 @@ class Poker extends GameTemplate {
     }
     //Update numerical stack
     let html = "";
-    if (this.game.state.player_credit[player - 1] === 0){
-        this.game.state.all_in = true;
+    if (this.game.state.player_credit[player - 1] === 0 && this.game.state.all_in){
         html = `<div class="player-info-chips">All in!</div>`;
     }else{
         html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
