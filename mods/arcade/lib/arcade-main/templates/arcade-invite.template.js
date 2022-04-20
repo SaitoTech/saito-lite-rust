@@ -101,7 +101,9 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
 }
 
 
-
+/* 
+  This could use some improvement since some games have a lot of options...
+*/
 let makeDescription = (app, invite) => {
 
   let html = '';
@@ -111,10 +113,7 @@ let makeDescription = (app, invite) => {
     if (gameModule) {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
-        let output_me = 1;
-        if (output_me == 1) {
-          html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
-        }
+        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
       }
     }
   } 

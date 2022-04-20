@@ -58,6 +58,7 @@ module.exports = ArcadeGameDetails = {
       document.querySelector(".game-wizard-options-toggle").onclick = (e) => {
         //Requery advancedOptions on the click so it can dynamically update based on # of players
         mod.meta_overlay.show(app, gamemod, gamemod.returnGameOptionsHTML());
+        gamemod.attachAdvancedOptionsEventListeners();
         document.querySelector(".game-wizard-advanced-options-overlay").style.display = "block";
         try {
           if (document.getElementById("game-wizard-advanced-return-btn")) {
@@ -84,6 +85,7 @@ module.exports = ArcadeGameDetails = {
 
   /**
    * Define function to create a game invite from clicking on create new game button
+   * @param mod - reference to Arcade.js
    */
   attachEvents(app, mod) {
     document.querySelector(".background-shim").onclick = (e) => {
@@ -205,12 +207,8 @@ module.exports = ArcadeGameDetails = {
             }
 
             let newtx = mod.createOpenTransaction(gamedata);
-
-            let arcade_mod = app.modules.returnModule("Arcade");
-            if (arcade_mod) {
-              arcade_mod.addGameToOpenList(newtx);
-            }
-
+            app.network.propagateTransaction(newtx);
+  
             //
             // and relay open if exists
             //
@@ -222,8 +220,9 @@ module.exports = ArcadeGameDetails = {
             if (relay_mod != null) {
               relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
             }
+        
+            mod.addGameToOpenList(newtx);
 
-            app.network.propagateTransaction(newtx);
             mod.renderArcadeMain(app, mod);
 
             if (isPrivateGame == "private") {

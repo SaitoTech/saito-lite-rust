@@ -20,6 +20,12 @@ body {
   overflow: hidden;
 }
 
+.player-box-graphic{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: -10;
+}
 
 /* Since Poker only has two cards in a hand, can adjust the angles*/
 .cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
@@ -89,7 +95,7 @@ body {
 .deal {
   margin: 0 auto;
   position: absolute;
-  top: 40vh;
+  top: 45vh;
   left: 50vw;
   transform: translateX(-50%);
   width: unset;
@@ -100,7 +106,7 @@ body {
 
 .pot {
   position: absolute;
-  top: 32vh;
+  top: 37vh;
   left: 50vw;
   transform: translateX(-50%);
   font-size: 5vh;
@@ -114,8 +120,6 @@ body {
   background-color: #4448;
   padding: 1vh 0.5em;
   text-align: center;
-  height: 7vh;
-  font-size: 5vh;
   font-weight: bold;
   color: #efefef;
 }
@@ -125,7 +129,6 @@ body {
   left: unset;
   width: 100px;
 }
-
 
 .player-info-chips {
   text-align: center;
@@ -176,10 +179,12 @@ body {
   width: unset;
 }
 .tiptext{
-  min-width: unset;
+  font-size: 20px;
+  min-width: 100px;
+  text-align: center;
   width: unset;
   border: none;
-  line-height: 1em;
+  /*line-height: 1em;*/
   padding: 0.5em;
   background-color: #fefefeee;
 }

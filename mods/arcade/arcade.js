@@ -1577,6 +1577,10 @@ class Arcade extends ModTemplate {
     }
   }
 
+  /**
+   * given a game from app.options.games creates the transaction wrapper
+   * so that addGameToOpenList works (i.e. inserts into [arcade.]games list and re-renders ArcadeMain so that game displays)
+   */
   createGameTXFromOptionsGame(game) {
     let game_tx = new saito.default.transaction();
 
@@ -1612,7 +1616,7 @@ class Arcade extends ModTemplate {
       last_block: game.last_block,
     };
     if (game.status === "Opponent Resigned") {
-      msg.options_html = "Opponent Resigned";
+      msg.options_html = "Opponent Resigned"; //Never displayed anyhwere, deprecated?
     }
 
     game_tx.transaction.sig = game.id;
