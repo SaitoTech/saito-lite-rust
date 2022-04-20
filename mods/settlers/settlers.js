@@ -1325,7 +1325,7 @@ class Settlers extends GameTemplate {
             this.game.deck[0].hand.length;
 
           //Messaging to User
-          let html = `<div class="tbd"><div class="player-notice">Your turn:</div>`;
+          let html = `<div class="tbd"><div class="player-notice">YOUR TURN:</div>`;
           html += `<ul>`;
           html += `<li class="option" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
@@ -2262,9 +2262,9 @@ class Settlers extends GameTemplate {
     if (existing_cities < 2) {
       this.playerbox.addClass("flash");
       if (existing_cities == 1){
-        this.updateStatus(`<div class="tbd">Your turn: Place your second ${this.skin.c1.name}...</div>`);
+        this.updateStatus(`<div class="tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
       }else{
-        this.updateStatus(`<div class="tbd">Your turn: Place your first ${this.skin.c1.name}...</div>`);
+        this.updateStatus(`<div class="tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
       }
     
       let xpos, ypos;
@@ -2471,7 +2471,7 @@ class Settlers extends GameTemplate {
     
     if (this.game.state.placedCity) {
       this.updateStatus(
-        `<div class="tbd">Now place a ${this.skin.r.name}...</div>`
+        `<div class="tbd">YOUR TURN: place ${this.skin.r.name}...</div>`
       );
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
