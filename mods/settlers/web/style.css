@@ -389,6 +389,7 @@ body {
   height: 100%;
   top:  0px;
   left: 0px;
+  padding: 5px;
 }
 
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
