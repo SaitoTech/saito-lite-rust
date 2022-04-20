@@ -1,4 +1,13 @@
 
+
+:root{
+  --p1-color: /*#e44;*/ #fb2215;
+  --p2-color: /*#049;*/ #15eefb;
+  --p3-color: /*#094;*/ #7bfb15;
+  --p4-color: /*#D63;*/ #9515fb;
+}
+
+
 .tip{
   width: unset;
 }
