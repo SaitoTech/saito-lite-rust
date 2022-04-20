@@ -166,8 +166,7 @@ class Poker extends GameTemplate {
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
 
     if (this.browser_active) {
-      console.log("INITIALIZE GAME");
-      console.log("CRYPTO: " + this.game.crypto);
+      console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
       this.displayBoard();
     }
   }
@@ -178,7 +177,7 @@ class Poker extends GameTemplate {
   */
   startNextRound() {
 
-console.log("--------- SNR ---------");
+    console.log("--------- SNR ---------");
 
     this.game.state.round++;
     this.game.state.preflop = true;
@@ -272,7 +271,7 @@ console.log("--------- SNR ---------");
       }
     }
     if (removal){
-      this.cardfan.hide();
+      this.cardfan.hide(); //hide everyone's cards at first
       //Reassign id's
       this.game.player = 0;
       for (let i = 0; i < this.game.players.length; i++) {
@@ -318,16 +317,14 @@ console.log("--------- SNR ---------");
     any players got removed, there will be some issues....
     */
     if (this.game.crypto) {
-console.log("PROCESSING THE SETTLEMENT NOW!");
-console.log(JSON.stringify(this.settlement));
+      console.log("PROCESSING THE SETTLEMENT NOW!");
+      console.log(JSON.stringify(this.settlement));
       for (let i = 0; i < this.settlement.length; i++) {
         this.game.queue.push(this.settlement[i]);
       }
+      console.log("new queue: " + JSON.stringify(this.game.queue));    
     }
     this.settlement = [];
-
-console.log("new queue: " + JSON.stringify(this.game.queue));
-
   }
 
 
@@ -392,7 +389,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       this.displayTable(); //to update pot
 
       console.log("QUEUE: " + JSON.stringify(this.game.queue));
-//      this.outputState();
+      //this.outputState();
 
       if (mv[0] == "notify") {
         this.updateLog(mv[1]);
@@ -531,14 +528,14 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         }
       
         if (this.game.state.passed[player_to_go - 1] == 1) {
-          console.log("THIS PLAYER ALREADY PASSED");
+          console.log("THIS PLAYER ALREADY PASSED " + player_to_go);
           //
           // we auto-clear without need for player to broadcast
           //
           this.game.queue.splice(qe, 1);
           return 1;
         } else {
-          console.log("GET ACTION");
+          console.log("GET ACTION " + player_to_go);
           if (this.browser_active){
             $(".player-box.active").removeClass("active");
             this.playerbox.addClass("active", player_to_go);  
@@ -649,13 +646,13 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
           let pot_size = Math.floor(this.game.state.pot / winners.length);
           let winnerStr = "";
           for (let i = 0; i < winners.length; i++) {
-            console.log("WINNER:"+winners[i]);
             this.game.stats[this.game.players[winners[i]]].handsWon++;
             winnerStr += this.game.state.player_names[winners[i]] + ", ";
             //Award in game winnings
             this.game.state.player_credit[winners[i]] += pot_size;
           }
           winnerStr = this.prettifyList(winnerStr); //works with one player
+          console.log(winners.length+ " WINNERS: ",winners);
 
           // update logs and splash!
           let winner_html = "<h2>" + winnerStr;
@@ -676,9 +673,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
           this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`);
           
-
-          console.log("WINNERS LENGTH: " + winners.length,winners);
-
           if (winners.length > 1) {
             this.updateLog(`${winnerStr} split the pot for ${pot_size} each`);
 
@@ -809,8 +803,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
             this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
           }
 
-          console.log("=============================");
-          console.log(JSON.stringify(this.game.state));
+          this.outputState();
 
           this.playerbox.refreshLog(`<div class="plog-update">Small Blind: ${this.game.state.small_blind}</div>`,this.game.state.small_blind_player);
 
@@ -855,10 +848,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       if (mv[0] === "fold") {
         let player = parseInt(mv[1]);
 
-        if (this.game.player !== player && this.browser_active) {
-          this.refreshPlayerStack(player, false); //Here we want to hide cards
-          this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
+        if (this.browser_active){
+          if (this.game.player !== player) {
+            this.refreshPlayerStack(player, false); //Here we want to hide cards
+            this.playerbox.refreshLog(`<div class="plog-update">folds</div>`, player);
+          }else{
+            this.displayHand();
+          } 
         }
+        
         this.updateLog(this.game.state.player_names[player - 1] + " folds");
 
         this.game.stats[this.game.players[player-1]].handsFolded++;
@@ -883,9 +881,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         let call_portion = this.game.state.required_pot - this.game.state.player_pot[player - 1];
         let raise_portion = raise - call_portion;
 
-        console.log("raise is: " + raise);
+        /*console.log("raise is: " + raise);
         console.log("raise portion: "  + raise_portion);
-        console.log("call portion: "  + call_portion);
+        console.log("call portion: "  + call_portion);*/
   
         if (raise_portion <= 0){
           salert("Insufficient raise");
@@ -926,6 +924,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
         console.log("NOT CONTINUING");
         return 0;
       }
+    }else{
+      console.log("QUEUE EMPTY!");
     }
     return 1;
   }
@@ -952,9 +952,9 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
       poker_self.addMove("resolve\tturn");
     }
 
-console.log("required pot: " + this.game.state.required_pot);
-console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
-console.log("all in: "+this.game.state.all_in);
+    console.log("required pot: " + this.game.state.required_pot);
+    console.log("player pot: " + this.game.state.player_pot[this.game.player-1]);
+    console.log("all in: "+this.game.state.all_in);
 
     let match_required = this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
 
@@ -987,7 +987,7 @@ console.log("all in: "+this.game.state.all_in);
     //console.log(match_required,this.game.state.last_raise,smallest_stack);
 
     if (!can_call) {
-      console.log("Auto fold... this should never arise");
+      console.error("Auto fold... this should never arise");
       this.outputState();
       this.updateStatus("You can only fold...");
       this.addMove("fold\t" + poker_self.game.player);
@@ -1039,15 +1039,15 @@ console.log("all in: "+this.game.state.all_in);
         html += `</div><ul><li class="menu_option" id="0">cancel raise</li>`;
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
-console.log("last raise: " + poker_self.game.state.last_raise);
-console.log("match required: " + match_required); 
+        console.log("last raise: " + poker_self.game.state.last_raise);
+        console.log("match required: " + match_required); 
 
         for (let i = 0; i < 5; i++) {
 
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
 
-console.log("this raise: " + this_raise);
-console.log("id is: " + (this_raise + match_required));
+          console.log("this raise: " + this_raise);
+          console.log("id is: " + (this_raise + match_required));
 
           if (max_raise > this_raise) {
             html += `<li class="menu_option" id="${this_raise + match_required}">raise ${this_raise}</li>`;
@@ -1272,7 +1272,7 @@ console.log("id is: " + (this_raise + match_required));
       this.app.browser.addToolTip(newButton, "Dealer");  
     }
   } catch (err) {
-    console.log("error displaying player box");
+    console.log("error displaying player box",err);
   }
   }
 
@@ -1316,7 +1316,7 @@ console.log("id is: " + (this_raise + match_required));
       html += "</div>";
       document.querySelector(".pot").innerHTML = sanitize(html);
 
-    } catch (err) { console.log("error displaying table");}
+    } catch (err) { console.log("error displaying table",err);}
   }
 
   refreshPlayerStack(player, includeCards = true){
@@ -1346,7 +1346,7 @@ console.log("id is: " + (this_raise + match_required));
 
     this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
 
-    //Append cards
+    //Append cards in graphics box for other players
     if (includeCards){
       if (player != this.game.player && !this.game.state.passed[player-1]) {
         //Show backs of cards
@@ -1373,7 +1373,7 @@ console.log("id is: " + (this_raise + match_required));
       numSmallChips += 10;
       numBigChips --;
     }
-    console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
+    //console.log(`${numChips} represented as ${numBigChips} large chips and ${numSmallChips} small chips`);
     for (let i = 0; i < numBigChips; i++){
       html += this.returnChipHTML(false, player, i*8);
     }
@@ -2464,10 +2464,10 @@ console.log("id is: " + (this_raise + match_required));
   /*Helper functions for display and options*/
 
   cardToHuman(card) {
+    console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
     if (!this.game.deck[0].cards[card]){
       console.log("Deck error: " + card);
-      console.log(JSON.parse(JSON.stringify(this.game.deck[0].hand)));
-      console.log(JSON.parse(JSON.stringify(this.game.deck[0].cards)));
+      
       return "";
     }
     let h = this.game.deck[0].cards[card].name;
@@ -2677,11 +2677,7 @@ console.log("id is: " + (this_raise + match_required));
         new_options[index] = options[index];
       }
     }
-
-    console.log("formatting game options","================");
-    console.log(JSON.parse(JSON.stringify(options)));
-    console.log(JSON.parse(JSON.stringify(new_options)));
-    
+ 
     return new_options;
   }
 
@@ -2720,11 +2716,6 @@ console.log("id is: " + (this_raise + match_required));
       }
     }
 
-    console.log("filtering options per shortgameArray","===================");
-    console.log(JSON.parse(JSON.stringify(options)));
-    console.log(sgoa);
-    console.log(ngoa);
-
     return ngoa;
   }
 
@@ -2746,7 +2737,7 @@ console.log("id is: " + (this_raise + match_required));
         }
       
       } catch (err) { 
-        console.error("ERR: " + err);
+        console.log("ERR: " + err);
       }
 
   }
