@@ -103,13 +103,27 @@ body {
   top: 32vh;
   left: 50vw;
   transform: translateX(-50%);
+  font-size: 5vh;
+  height: 7vh;
+  display: flex;
+  flex-direction: row;
+  
+}
+
+.pot-counter{
   background-color: #4448;
-  padding: 1vh 1.5em;
+  padding: 1vh 0.5em;
   text-align: center;
   height: 7vh;
   font-size: 5vh;
   font-weight: bold;
   color: #efefef;
+}
+
+.pot .chip_stack{
+  top:  unset;
+  left: unset;
+  width: 100px;
 }
 
 
