@@ -1318,7 +1318,62 @@ console.log("id is: " + (parseFloat(this_raise) + parseFloat(match_required)).to
         } else {
           card.name = "red_back.png";
         }
-        newHTML += `<img class="card" src="${this.card_img_dir}/${card.name}">`;
+        document.querySelector("#deal").innerHTML = newHTML;
+      }
+      // update pot
+      let html = `<div class="pot-counter">${this.game.state.pot}</div>`;
+      for (let i = 0; i < this.game.state.player_pot.length; i++){
+        html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+      }
+      html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
+      if (this.game.crypto){
+        html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
+      }
+      html += "</div>";
+      document.querySelector(".pot").innerHTML = sanitize(html);
+
+    } catch (err) { console.log("error displaying table");}
+  }
+
+  refreshPlayerStack(player, includeCards = true){
+    if (!this.browser_active){
+      return;
+    }
+    //Update numerical stack
+    let html = "";
+    if (this.game.state.player_credit[player - 1] === 0){
+        this.game.state.all_in = true;
+        html = `<div class="player-info-chips">All in!</div>`;
+    }else{
+        html = `<div class="player-info-chips">${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    }
+    if (this.game.crypto){
+      html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
+    }
+    this.playerbox.refreshInfo(html, player);
+    
+    //Draw literal stack
+    html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
+    html = html.substring(0,html.length - 6); //remove final </div> tag
+    let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+    if (this.game.crypto){
+      bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
+    }
+
+    this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
+
+    //Append cards
+    if (includeCards){
+      if (player != this.game.player && !this.game.state.passed[player-1]) {
+        //Show backs of cards
+        let newhtml = `
+          <div class="other-player-hand hand tinyhand">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+            <img class="card" src="${this.card_img_dir}/red_back.png">
+          </div>
+        `;
+        //Need to put tinyhand and chip-stack both in graphic
+        this.playerbox.appendGraphic(newhtml, player);
       }
       document.querySelector("#deal").innerHTML = newHTML;
     }
