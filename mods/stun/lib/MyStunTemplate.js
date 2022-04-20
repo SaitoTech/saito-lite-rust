@@ -70,6 +70,7 @@ module.exports = (app, mod) => {
           <button id="connectTo" class="btn btn-primary ml-4">
             Connect 
           </button>
+          
         </div>
       </div>
     </div>

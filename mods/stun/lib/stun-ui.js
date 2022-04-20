@@ -149,6 +149,20 @@ const StunUI = {
 
                               }
 
+                              pc.onconnectionstatechange = e => {
+                                    console.log("connection state ", pc.connectionState)
+                                    switch (pc.connectionState) {
+
+                                          case "disconnected":
+                                                StunUI.displayConnectionClosed();
+                                                break;
+
+                                          default:
+                                                ""
+                                                break;
+                                    }
+                              }
+
                               // add data channels 
                               const data_channel = pc.createDataChannel('channel');
                               pc.dc = data_channel;
@@ -240,6 +254,20 @@ const StunUI = {
                   if (peer_b === my_key) {
                         console.log('my key', reply, my_key);
 
+                        StunUI.peer_connection.onconnectionstatechange = e => {
+                              console.log("connection state ", StunUI.peer_connection.connectionState)
+                              switch (StunUI.peer_connection.connectionState) {
+
+                                    case "disconnected":
+                                          StunUI.displayConnectionClosed()
+                                          break;
+
+                                    default:
+                                          ""
+                                          break;
+                              }
+                        }
+
                         const data_channel = StunUI.peer_connection.createDataChannel('channel');
                         StunUI.peer_connection.dc = data_channel;
                         StunUI.peer_connection.dc.onmessage = (e) => {
@@ -316,8 +344,23 @@ const StunUI = {
 
             //connect with peer
             $(".stun-container").on('click', '#connectTo', function (e) {
+
+
+
                   let selected_option = $('#connectSelect option:selected');
                   const stun_mod = app.modules.returnModule("Stun");
+
+                  if (StunUI.peer_connection && StunUI.peer_connection.connectionState === "connected") {
+                        console.log("Closing connection")
+                        StunUI.peer_connection.close();
+                        StunUI.displayConnectionClosed();
+                        StunUI.localStream = ""
+                        StunUI.remoteStream = ""
+                        // StunUI.peer_connection = "";
+
+                        return;
+                  }
+
                   const peer_key = selected_option.text().trim();
                   const my_key = app.wallet.returnPublicKey();
                   console.log("keys ", my_key, peer_key);
@@ -329,6 +372,8 @@ const StunUI = {
                         listeners: [],
                         iceCandidates: []
                   };
+
+
 
                   const createPeerConnection = new Promise((resolve, reject) => {
                         const execute = async () => {
@@ -356,6 +401,8 @@ const StunUI = {
                                                 },
                                           ],
                                     });
+
+
 
                                     pc.onicecandidate = (ice) => {
                                           if (!ice || !ice.candidate || !ice.candidate.candidate) {
@@ -474,11 +521,28 @@ const StunUI = {
       },
 
 
+
       displayMessage(sender, message) {
+            $('#connectTo').text(`Disconnect`);
+            $('#connectTo').removeClass('btn-primary');
+            $('#connectTo').addClass('btn-danger');
             $('#address-origin').text(`Received Messages`);
             $('#connection-status').html(` <p style="color: green" class="data">Connected to ${sender}</p>`);
             $('#msg-display').append(`<p style="border-radius: 8px; color: red; font-size:.9rem" class="data p-2 w-100" >${message}</p>`);
+      },
+
+      displayConnectionClosed() {
+            console.log('closing connection')
+
+            $('#connectTo').text("Connect")
+            $('#connectTo').removeClass('btn-danger')
+            $('#connectTo').addClass('btn-primary');
+            $('#connection-status').html(` <p style="color: green" class="data">Not connected to any peer</p>`);
+            document.querySelector('#localStream').srcObject = new MediaStream()
+            document.querySelector('#remoteStream').srcObject = new MediaStream()
       }
+
+
 }
 
 
