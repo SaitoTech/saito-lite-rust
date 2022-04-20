@@ -187,13 +187,19 @@ console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
               }
 
               if (game_cmd === "cancel") {
-                arcade_main_self.cancelGame(app, mod, game_sig);
-                return;
+		let c = confirm("Are you sure you want to cancel this game?");
+		if (c) {
+                  arcade_main_self.cancelGame(app, mod, game_sig);
+                  return;
+		}
               }
 
               if (game_cmd === "join") {
-                arcade_main_self.joinGame(app, mod, game_sig);
-                return;
+		let c = confirm("Are you sure you want to join this game?");
+		if (c) {
+                  arcade_main_self.joinGame(app, mod, game_sig);
+                  return;
+		}
               }
 
               if (game_cmd === "continue") {

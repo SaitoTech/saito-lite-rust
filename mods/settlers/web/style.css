@@ -1,12 +1,4 @@
 
-
-:root{
-  --p1-color: /*#e44;*/ #fb2215;
-  --p2-color: /*#049;*/ #15eefb;
-  --p3-color: /*#094;*/ #7bfb15;
-  --p4-color: /*#D63;*/ #9515fb;
-}
-
 .tip{
   width: unset;
 }
@@ -649,6 +641,7 @@ ul.horizontal_list li.iconoption{
 }
 
 
+
 /*Sit graphic on top of playerbox*/
 .me > .player-box-graphic{
   position: absolute;
@@ -847,7 +840,7 @@ ul.horizontal_list li.iconoption{
   max-height: unset;
   max-width: 300px;
   min-width: 250px;
-  left: 1px;
+  left: 10px;
   top: unset;
   bottom: 1px;
 }
@@ -967,5 +960,20 @@ ul.horizontal_list li.iconoption{
 }
 
 }
+
+/* reposition playerbox for me on large screens top-left */
+@media screen and (orientation: landscape) and (min-width: 1000px) {
+  .player-box.me{
+    max-height: unset;
+    max-width: 300px;
+    min-width: 250px;
+    left: 10px;
+    top: 56px;
+    bottom: unset;
+  }
+}
+
+
+
 
 /*Still need better layout for small screens*/
