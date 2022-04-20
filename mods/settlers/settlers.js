@@ -2471,7 +2471,7 @@ class Settlers extends GameTemplate {
     
     if (this.game.state.placedCity) {
       this.updateStatus(
-        `<div class="tbd">Now place a ${this.skin.r.name}...</div>`
+        `<div class="tbd">YOUR TURN: place ${this.skin.r.name}...</div>`
       );
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
