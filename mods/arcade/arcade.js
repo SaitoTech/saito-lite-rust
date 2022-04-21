@@ -213,7 +213,7 @@ class Arcade extends ModTemplate {
       let gameId = this.app.browser.returnURLParameter("jid");
       if (this.debug) {console.log("attempting to join game... " + gameId);}
       
-      let sql = `SELECT * FROM games WHERE game_id = "${gameId}" AND created_at > ${cutoff}`;
+      let sql = `SELECT * FROM games WHERE game_id = "${gameId}" AND (status = "open" OR status = "private") AND created_at > ${cutoff}`;
       this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
         if (res.rows) {
           arcade_self.addGamesToOpenList(

@@ -181,10 +181,10 @@ module.exports = ArcadeMain = {
 
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
 
-              if (game_cmd === "delete") {
+              /*if (game_cmd === "delete") {
                 arcade_main_self.deleteGame(app, mod, game_sig);
                 return;
-              }
+              }*/
 
               if (game_cmd === "cancel") {
             		let c = true;//confirm("Are you sure you want to cancel this game?");
@@ -663,7 +663,7 @@ module.exports = ArcadeMain = {
   },
 
 
-  deleteGame(app, mod, game_id) {
+  /*deleteGame(app, mod, game_id) {
     salert(`Delete game id: ${game_id}`);
 
     if (app.options.games) {
@@ -686,7 +686,7 @@ module.exports = ArcadeMain = {
       }
       this.removeGameFromList(game_id);
     }
-  },
+  },*/
 
   observeGame(app, mod, encryptedgamejson) {
     mod.observeGame(encryptedgamejson);
