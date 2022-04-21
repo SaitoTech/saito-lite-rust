@@ -101,7 +101,7 @@ class Stun extends ModTemplate {
           if (address === tx.msg.answer.peer_b) {
             stun_self.app.connection.emit('answer_received', tx.msg.answer.peer_a, tx.msg.answer.peer_b, tx.msg.answer.reply);
           } else {
-            console.log('tx peer key not equal');
+            // console.log('tx peer key not equal');
           }
         }
 
@@ -446,35 +446,35 @@ class Stun extends ModTemplate {
 
 
 
-  broadcastAddress(stun) {
-    let publickey = this.app.wallet.returnPublicKey();
-    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-    let listeners = this.app.keys.keys[key_index].data.stun.listeners;
+  // broadcastAddress(stun) {
+  //   let publickey = this.app.wallet.returnPublicKey();
+  //   let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+  //   let listeners = this.app.keys.keys[key_index].data.stun.listeners;
 
 
 
-    console.log('broadcasting address');
-    let newtx = this.app.wallet.createUnsignedTransaction();
 
-    // console.log("listeners are ", listeners);
-    for (let i = 0; i < listeners.length; i++) {
-      console.log('broadcasting to ', listeners[i]);
-      newtx.transaction.to.push(new saito.default.slip(listeners[i]));
-    }
+  //   let newtx = this.app.wallet.createUnsignedTransaction();
 
-
-
-    newtx.msg.module = "Stun";
-    newtx.msg.stun = stun;
-    newtx = this.app.wallet.signTransaction(newtx);
-    console.log(this.app.network);
-
-
-    this.app.network.propagateTransaction(newtx);
+  //   // console.log("listeners are ", listeners);
+  //   for (let i = 0; i < listeners.length; i++) {
+  //     console.log('broadcasting to ', listeners[i]);
+  //     newtx.transaction.to.push(new saito.default.slip(listeners[i]));
+  //   }
 
 
 
-  }
+  //   newtx.msg.module = "Stun";
+  //   newtx.msg.stun = stun;
+  //   newtx = this.app.wallet.signTransaction(newtx);
+  //   console.log(this.app.network);
+
+
+  //   this.app.network.propagateTransaction(newtx);
+
+
+
+  // }
 
   broadcastOffer(my_key, peer_key, offer) {
 

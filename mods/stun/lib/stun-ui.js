@@ -365,11 +365,11 @@ const StunUI = {
                   const stun_mod = app.modules.returnModule("Stun");
 
                   if (StunUI.peer_connection && StunUI.peer_connection.connectionState === "connected") {
-                        console.log("Closing connection")
+                        console.log("Closing connection");
                         StunUI.peer_connection.close();
                         StunUI.displayConnectionClosed();
-                        StunUI.localStream = ""
-                        StunUI.remoteStream = ""
+                        StunUI.localStream = "";
+                        StunUI.remoteStream = "";
                         // StunUI.peer_connection = "";
                         vanillaToast.error('Disconnected', { duration: 4000, fadeDuration: 500 });
 
@@ -380,7 +380,7 @@ const StunUI = {
 
                   const peer_key = selected_option.text().trim();
                   const my_key = app.wallet.returnPublicKey();
-                  // console.log("keys ", my_key, peer_key);
+                  console.log("keys ", my_key, peer_key);
                   let stun = {
                         ip_address: "",
                         port: "",
@@ -461,7 +461,7 @@ const StunUI = {
                                           pc.addTrack(track, localStream);
 
                                     });
-                                    StunUI.localStream = localStream
+                                    StunUI.localStream = localStream;
                                     if (localVideoSteam) {
                                           localVideoSteam.srcObject = localStream;
                                     }
@@ -469,7 +469,7 @@ const StunUI = {
 
 
                                     pc.LOCAL_STREAM = localStream;
-                                    const remoteStream = new MediaStream()
+                                    const remoteStream = new MediaStream();
                                     pc.addEventListener('track', (event) => {
 
                                           const remoteVideoSteam = document.querySelector('#remoteStream');
@@ -552,11 +552,11 @@ const StunUI = {
             console.log('closing connection')
 
             $('#connectTo').text("Connect")
-            $('#connectTo').removeClass('btn-danger')
+            $('#connectTo').removeClass('btn-danger');
             $('#connectTo').addClass('btn-primary');
             $('#connection-status').html(` <p style="color: green" class="data">Not connected to any peer</p>`);
-            document.querySelector('#localStream').srcObject = new MediaStream()
-            document.querySelector('#remoteStream').srcObject = new MediaStream()
+            document.querySelector('#localStream').srcObject = new MediaStream();
+            document.querySelector('#remoteStream').srcObject = new MediaStream();
       }
 
 

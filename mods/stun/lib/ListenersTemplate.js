@@ -16,17 +16,20 @@ module.exports = (app, mod) => {
 
 
   return ` <div class="appear listeners-container">
-    <label class="" for="listeners-input"
-      >Input Keys (Insert Keys separated by a comma)</label
-    >
-    <div class="input-container">
-      <textarea id="listeners-input" class="p-2" rows="4" cols="20"></textarea>
-      <button id="add-to-listeners-btn" class="btn btn-primary">
-        Add To Listeners
-      </button>
-    </div>
+   
     <ul id="stun-listeners" class="list-group">
         ${listenersHtml}
     </ul>
     </div>`;
 }
+
+
+{/* <label class="" for="listeners-input"
+>Input Keys (Insert Keys separated by a comma)</label
+>
+<div class="input-container">
+<textarea id="listeners-input" class="p-2" rows="4" cols="20"></textarea>
+<button id="add-to-listeners-btn" class="btn btn-primary">
+  Add To Listeners
+</button>
+</div> */}

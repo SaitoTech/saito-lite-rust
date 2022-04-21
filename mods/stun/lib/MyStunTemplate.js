@@ -53,7 +53,7 @@ module.exports = (app, mod) => {
 
   return `<card class="appear my-stun-container">
   <p style="font-weight: bold"> Video </p>
-  <div class="stun-video-container" style="display: flex"><video  class="stun-video" id="localStream" width="100%" height="100%" autoplay></video>
+  <div class="stun-video-container" style="display: flex"><video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
 
   <video class="stun-video"  id="remoteStream" width="100%" height="100%" autoplay></video> </div>
   
