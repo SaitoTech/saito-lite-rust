@@ -284,7 +284,7 @@ thead,  tfoot{
   background-image: url("img/empty_tile.png");
   background-size: cover;
   color: rgb(43,29,14);
-  
+  border-radius: 6px;
   font-size: 36px;
   
 }
@@ -296,7 +296,7 @@ thead,  tfoot{
   background-image: url("img/slot2.png");
   background-size: contain;
   border-image: initial;
-  border-radius: 0.3em;
+  border-radius: 4px;
   width: 54px;
   height: 54px;
 }
@@ -317,7 +317,7 @@ thead,  tfoot{
   background-size: cover;
   text-align: center;
   /*padding-top: 6px;*/
-  border-radius: 0.3em;
+  border-radius: 6px;
   height: 50px;
   width: 50px;
   margin: auto;
