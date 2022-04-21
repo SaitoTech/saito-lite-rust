@@ -4,6 +4,7 @@ const MyStunTemplate = require("./MyStunTemplate");
 const ListenersTemplate = require("./ListenersTemplate");
 const PeersTemplate = require("./PeersTemplate");
 const Stun = require("../stun");
+const { vanillaToast } = require("vanilla-toast");
 
 
 const StunUI = {
@@ -65,7 +66,7 @@ const StunUI = {
             });
 
             app.connection.on('listeners-update', (app, listeners) => {
-                  console.log('listeners update');
+
                   let listenersHtml;
                   if (listeners) {
                         listenersHtml = listeners.map(listener => ` <li class="list-group-item">${listener}</li>`).join('');
@@ -92,7 +93,7 @@ const StunUI = {
             app.connection.on('offer_received', (peer_key, my_key, offer) => {
 
 
-
+                  vanillaToast.show('Connecting ..', { duration: 70000, fadeDuration: 500 });
                   let my_index = app.keys.keys.findIndex(key => key.publickey === my_key);
                   let peer_key_index = app.keys.keys.findIndex(key => key.publickey === peer_key);
 
@@ -153,8 +154,15 @@ const StunUI = {
                                     console.log("connection state ", pc.connectionState)
                                     switch (pc.connectionState) {
 
+
+                                          case "connected":
+                                                vanillaToast.cancelAll();
+                                                vanillaToast.success('Connected', { duration: 3000, fadeDuration: 500 });
+                                                break;
+
                                           case "disconnected":
                                                 StunUI.displayConnectionClosed();
+                                                vanillaToast.error('Disconnected', { duration: 3000, fadeDuration: 500 });
                                                 break;
 
                                           default:
@@ -172,7 +180,7 @@ const StunUI = {
                                     StunUI.displayMessage(peer_key, e.data);
                               };
                               pc.dc.open = (e) => {
-                                    console.log('connection openend');
+                                    console.log('connection opened');
                                     $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
                               }
 
@@ -257,6 +265,12 @@ const StunUI = {
                         StunUI.peer_connection.onconnectionstatechange = e => {
                               console.log("connection state ", StunUI.peer_connection.connectionState)
                               switch (StunUI.peer_connection.connectionState) {
+
+
+                                    case "connected":
+                                          vanillaToast.cancelAll();
+                                          vanillaToast.success('Connected', { duration: 5000, fadeDuration: 500 });
+                                          break;
 
                                     case "disconnected":
                                           StunUI.displayConnectionClosed()
@@ -346,6 +360,7 @@ const StunUI = {
 
 
 
+
                   let selected_option = $('#connectSelect option:selected');
                   const stun_mod = app.modules.returnModule("Stun");
 
@@ -356,8 +371,11 @@ const StunUI = {
                         StunUI.localStream = ""
                         StunUI.remoteStream = ""
                         // StunUI.peer_connection = "";
+                        vanillaToast.error('Disconnected', { duration: 4000, fadeDuration: 500 });
 
                         return;
+                  } else {
+                        vanillaToast.show('Starting Video Call', { duration: 70000, fadeDuration: 500 });
                   }
 
                   const peer_key = selected_option.text().trim();
