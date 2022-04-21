@@ -213,13 +213,15 @@ class Arcade extends ModTemplate {
       let gameId = this.app.browser.returnURLParameter("jid");
       if (this.debug) {console.log("attempting to join game... " + gameId);}
       
-      let sql = `SELECT * FROM games WHERE game_id = "${gameId}" AND (status = "open" OR status = "private") AND created_at > ${cutoff}`;
+      let sql = `SELECT * FROM games WHERE game_id = "${gameId}" AND created_at > ${cutoff}`;
       this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
         if (res.rows) {
           arcade_self.addGamesToOpenList(
             res.rows.map((row) => {
               if (arcade_self.debug) {console.log(JSON.parse(JSON.stringify(row)));};
-              return new saito.default.transaction(JSON.parse(row.tx));
+              if (row.status == "open" || row.status == "private"){
+                return new saito.default.transaction(JSON.parse(row.tx));
+              }else {return null;}
             })
           );
           ArcadeMain.joinGame(arcade_self.app, arcade_self, gameId);
@@ -1372,7 +1374,7 @@ class Arcade extends ModTemplate {
     let players_array = unique_keys.join("_");
 
     let sql =
-      "UPDATE games SET players_array = $players_array WHERE (status = 'open' OR status = 'private') AND game_id = $game_id";
+      "UPDATE games SET players_array = $players_array WHERE game_id = $game_id";
     let params = {
       $players_array: players_array,
       //$status: "open",

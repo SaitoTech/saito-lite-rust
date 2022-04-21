@@ -20,6 +20,10 @@ body {
   overflow: hidden;
 }
 
+.player-box{
+  max-width: 250px;
+}
+
 .player-box-graphic{
   position: absolute;
   height: 100%;
@@ -55,7 +59,7 @@ body {
 }
 
 .poker-seat-5 .chip_stack{
-  left: 115%;
+  left: 100%;
 }
 .chip_stack .poker_chip{
   position: absolute;
@@ -84,7 +88,7 @@ body {
 
 .poker-seat-2 .chip_stack, .poker-seat-3 .chip_stack{
   left: unset;
-  right: 15%;
+  right: 100px;
 }
 
 .deal .card {
