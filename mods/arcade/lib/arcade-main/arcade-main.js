@@ -187,13 +187,19 @@ module.exports = ArcadeMain = {
               }
 
               if (game_cmd === "cancel") {
-                arcade_main_self.cancelGame(app, mod, game_sig);
-                return;
+            		let c = true;//confirm("Are you sure you want to cancel this game?");
+            		if (c) {
+                  arcade_main_self.cancelGame(app, mod, game_sig);
+                  return;
+		            }
               }
 
               if (game_cmd === "join") {
-                arcade_main_self.joinGame(app, mod, game_sig);
-                return;
+            		let c = true;//confirm("Are you sure you want to join this game?");
+            		if (c) {
+                  arcade_main_self.joinGame(app, mod, game_sig);
+                  return;
+		            }
               }
 
               if (game_cmd === "continue") {
@@ -247,6 +253,8 @@ module.exports = ArcadeMain = {
 
   async joinGame(app, mod, game_id) {
     let accepted_game = null;
+    let relay_mod = app.modules.returnModule("Relay");
+
     mod.games.forEach((g) => {
       if (g.transaction.sig === game_id) {
         accepted_game = g;
@@ -334,9 +342,15 @@ module.exports = ArcadeMain = {
     //
     // not enough players? join not accept
     //
+    let { players } = accepted_game.returnMessage();
     let players_needed = parseInt(accepted_game.msg.players_needed);
-    let players_available = accepted_game.msg.players.length;
-   
+    let players_available = players.length;
+    
+    let peers = [];
+    for (let i = 0; i < app.network.peers.length; i++) {
+      peers.push(app.network.peers[i].returnPublicKey());
+    }
+
     if (players_needed > players_available + 1) {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
@@ -348,17 +362,24 @@ module.exports = ArcadeMain = {
         relay_mod.sendRelayMessage(accepted_game.players, 'game relay gamemove', newtx);
       }
       ******/
-
+      //
+      // try fast accept
+      //
+      if (relay_mod != null) {
+        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
+      if (this.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
       return;
     }
+    console.log("I create the game with this JOIN!!!");
 
     //
     // enough players, so "accept" to kick off
     //
     if (accepted_game.transaction.from[0].add == app.wallet.returnPublicKey()) {
-      let { players } = accepted_game.returnMessage();
       if (players.length > 1) {
         salert(`You created this game! Waiting for enough players to join we can start...`);
       }
@@ -418,12 +439,15 @@ module.exports = ArcadeMain = {
         },
 
         async (res) => {
+          console.log("callback",res);
           if (res.rows) {
             if (res.rows.length > 0) {
-              if (
-                res.rows[0].game_still_open == 1 ||
-                (res.rows[0].game_still_open == 0 && players_needed > 2)
-              ) {
+              if (res.rows[0].game_still_open == 1 || (res.rows[0].game_still_open == 0 && players_needed > 2)) {
+                if (this.debug){
+                  console.log("We meet the accept conditions");
+                  console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade-main");
+                }
+
                 //
                 // data re: game in form of tx
                 //
@@ -433,17 +457,9 @@ module.exports = ArcadeMain = {
                 let newtx = mod.createAcceptTransaction(accepted_game);
                 mod.app.network.propagateTransaction(newtx);
 
-                let my_publickey = app.wallet.returnPublicKey();
-                let { players } = accepted_game.returnMessage();
-                let peers = [];
-                for (let i = 0; i < app.network.peers.length; i++) {
-                  peers.push(app.network.peers[i].returnPublicKey());
-                }
-
                 //
                 // try fast accept
                 //
-                let relay_mod = app.modules.returnModule("Relay");
                 if (relay_mod != null) {
                   relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
                   relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
@@ -572,8 +588,6 @@ module.exports = ArcadeMain = {
   privatizeGame(app, mod, game_sig) {
     console.log(JSON.parse(JSON.stringify(mod.games)));
 
-    mod.showShareLink(game_sig);
-
     let accepted_game = null;
     mod.games.forEach((g) => {
       if (g.transaction.sig === game_sig) {
@@ -600,11 +614,11 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "invite") {
         button.setAttribute("data-cmd", "publicize");
-        button.textContent = "PUBLICIZE";
-        let linkButton = button.parentNode.querySelector(".link_icon");
+        button.textContent = "OPEN";
+        /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.add("private");
-        }
+        }*/
       }
     });
   },
@@ -639,11 +653,11 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "publicize") {
         button.setAttribute("data-cmd", "invite");
-        button.textContent = "INVITE";
-        let linkButton = button.parentNode.querySelector(".link_icon");
+        button.textContent = "HIDE";
+        /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.remove("private");
-        }
+        }*/
       }
     });
   },
