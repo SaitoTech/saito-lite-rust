@@ -627,3 +627,6 @@ Resize board on smaller screens
   text-transform: uppercase;
 }
 
+.status-message{
+  background-color: unset;
+}
