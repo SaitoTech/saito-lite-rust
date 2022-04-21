@@ -165,7 +165,7 @@
         VanillaToast.prototype[preset] = function (text, option, callback) {
           if (!option) option = {};
 
-          // copy preset options
+          // copy preset optionshjhv
           for (var propertyName in constants[preset]) {
             if (option[propertyName] === undefined)
               option[propertyName] = constants[preset][propertyName];
