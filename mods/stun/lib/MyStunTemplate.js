@@ -45,7 +45,6 @@ module.exports = (app, mod) => {
 
     }
 
-    console.log("html ", html);
     return html;
 
 

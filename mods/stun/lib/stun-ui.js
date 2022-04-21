@@ -252,7 +252,7 @@ const StunUI = {
                   const preferred_crypto = app.wallet.returnPreferredCrypto();
                   let my_key = preferred_crypto.returnAddress();
                   if (peer_b === my_key) {
-                        console.log('my key', reply, my_key);
+                        // console.log('my key', reply, my_key);
 
                         StunUI.peer_connection.onconnectionstatechange = e => {
                               console.log("connection state ", StunUI.peer_connection.connectionState)
@@ -307,7 +307,6 @@ const StunUI = {
 
 
 
-                        console.log(StunUI.peer_connection);
 
 
                   } else {
@@ -363,7 +362,7 @@ const StunUI = {
 
                   const peer_key = selected_option.text().trim();
                   const my_key = app.wallet.returnPublicKey();
-                  console.log("keys ", my_key, peer_key);
+                  // console.log("keys ", my_key, peer_key);
                   let stun = {
                         ip_address: "",
                         port: "",
@@ -492,7 +491,7 @@ const StunUI = {
 
 
                   createPeerConnection.then(offer => {
-                        console.log(offer);
+
                         stun_mod.broadcastOffer(my_key, peer_key, offer);
                   });
 
@@ -500,7 +499,7 @@ const StunUI = {
 
             // add listeners to stun module
             $('.stun-container').on('click', '#add-to-listeners-btn', function (e) {
-                  console.log('add to listeners');
+
                   let input = $('#listeners-input').val().split(',');
                   const listeners = input.map(listener => listener.trim());
                   let stun_mod = app.modules.returnModule("Stun");
@@ -512,7 +511,7 @@ const StunUI = {
 
                   if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");
                   const text = $('#message-text').val();
-                  console.log('text message', text);
+                  // console.log('text message', text);
                   StunUI.peer_connection.dc.send(text);
 
             })

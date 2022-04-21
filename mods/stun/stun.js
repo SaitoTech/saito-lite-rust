@@ -128,26 +128,6 @@ class Stun extends ModTemplate {
       }
     }
 
-    // if (conf == 0) {
-    //   if (txmsg.module === "Stun") {
-
-    //     let address = app.wallet.returnPublicKey();
-
-
-
-    //     if (tx.msg.offer_icecandidates) {
-    //       console.log("ice candidates received");
-
-    //       if (address === tx.msg.offer_peer_info.peer_b) {
-    //         stun_self.app.connection.emit('icecandidates_received', tx.msg.offer_peer_info.peer_a, tx.msg.offer_peer_info.peer_b, tx.msg.offer_peer_info.offer);
-    //       } else {
-    //         console.log('tx peer key not equal');
-    //       }
-    //     }
-
-
-    //   }
-    // }
 
     if (conf == 0) {
       if (txmsg.module === "Stun") {
@@ -171,6 +151,16 @@ class Stun extends ModTemplate {
             app.connection.emit('listeners-update', stun_self.app, stun_self.app.keys.keys[index].data.stun.listeners);
             console.log("keys updated, added: ", from, " updated listeners: ", stun_self.app.keys.keys[index].data.stun.listeners);
           }
+        }
+
+
+
+      }
+    }
+    if (conf == 0) {
+      if (txmsg.module === "Stun") {
+        if (tx.msg.listeners) {
+          stun_self.addListenersFromPeers(tx.msg.listeners.listeners);
         }
 
 
@@ -273,6 +263,7 @@ class Stun extends ModTemplate {
 
   async initialize(app) {
 
+
     let publickey = this.app.wallet.returnPublicKey();
     let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
@@ -286,9 +277,33 @@ class Stun extends ModTemplate {
       this.app.keys.saveKeys();
 
     }
+
+
   }
 
 
+  onPeerHandshakeComplete() {
+    // lite clients not allowed to run this
+    if (this.app.BROWSER == 1) {
+      return;
+    }
+    const peers = [];
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    for (let i = 0; i < this.app.network.peers.length; i++) {
+      if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
+        peers.push(this.app.network.peers[i].returnPublicKey());
+        newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
+      }
+    }
+
+    newtx.msg.module = "Stun";
+    newtx.msg.listeners = {
+      listeners: peers
+    };
+    newtx = this.app.wallet.signTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
+
+  }
 
   // fetchStunInformation() {
 
@@ -441,7 +456,7 @@ class Stun extends ModTemplate {
     console.log('broadcasting address');
     let newtx = this.app.wallet.createUnsignedTransaction();
 
-    console.log("listeners are ", listeners);
+    // console.log("listeners are ", listeners);
     for (let i = 0; i < listeners.length; i++) {
       console.log('broadcasting to ', listeners[i]);
       newtx.transaction.to.push(new saito.default.slip(listeners[i]));
@@ -498,13 +513,34 @@ class Stun extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
   }
 
-  addListeners(listeners) {
-    if (listeners.length === 0) return console.log("No listeners to add");
+  addListenersFromPeers(peers) {
+    // only lite clients allowed to run this
+    if (this.app.BROWSER === 0) return;
+    console.log("adding peers as listeners ...");
+    if (peers.length === 0) return console.log("No peers to add");
 
-    let publickey = this.app.wallet.returnPublicKey();
-    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+    let filteredListeners;
+
+    // remove current istance public key
+    filteredListeners = peers.filter(peer => peer !== this.app.wallet.returnPublicKey());
+
+    // remove duplicates
+    const seen = new Map();
+    let filteredPeers = [];
+    for (let i = 0; i < filteredListeners.length; i++) {
+      if (!seen[filteredListeners[i]]) {
+        seen[filteredListeners[i]] = 1;
+        filteredPeers.push(filteredListeners[i]);
+
+      } else {
+        seen[filteredListeners[i]] += 1;
+      }
+    }
+    console.log('filtered peers ', filteredPeers, ' seen ', seen);
 
     // save key if it doesnt exist
+    let publickey = this.app.wallet.returnPublicKey();
+    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
     if (key_index === -1) {
       this.app.keys.addKey(publickey);
       this.app.keys.saveKeys();
@@ -514,49 +550,76 @@ class Stun extends ModTemplate {
       this.app.keys.saveKeys();
 
     }
-
-    let validated_listeners;
-
-    // check if key is valid
-    validated_listeners = listeners.map(listener => listener.trim());
-    validated_listeners = listeners.filter(listener => listener.length === 44);
-
-    // filter out already existing keys
-    validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
-
-    this.broadcastKeyToListeners(validated_listeners);
-
-    // add listeners to existing listeners
-    this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
+    this.app.keys.keys[key_index].data.stun.listeners = filteredPeers;
     this.app.keys.saveKeys();
+    // this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
 
 
 
-
-    this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
   }
 
 
-  broadcastKeyToListeners(listeners) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
-    let from = this.app.wallet.returnPublicKey();
-    console.log('Adding contacts :', listeners, " to ", from);
+  // addListeners(listeners) {
+  //   if (this.app.BROWSER === 0) return;
+  //   console.log("adding listeners ...");
+  //   if (listeners.length === 0) return console.log("No listeners to add");
 
-    for (let i = 0; i < listeners.length; i++) {
-      newtx.transaction.to.push(new saito.default.slip(listeners[i]));
-    }
+  //   let publickey = this.app.wallet.returnPublicKey();
+  //   let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+
+  //   // save key if it doesnt exist
+  //   if (key_index === -1) {
+  //     this.app.keys.addKey(publickey);
+  //     this.app.keys.saveKeys();
+  //   }
+  //   if (!this.app.keys.keys[key_index].data.stun) {
+  //     this.app.keys.keys[key_index].data.stun = this.stun;
+  //     this.app.keys.saveKeys();
+
+  //   }
+
+  //   let validated_listeners;
+
+  //   // check if key is valid
+  //   validated_listeners = listeners.map(listener => listener.trim());
+  //   validated_listeners = listeners.filter(listener => listener.length === 44);
+
+  //   // filter out already existing keys
+  //   validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
+
+  //   // this.broadcastKeyToListeners(validated_listeners);
+
+  //   // add listeners to existing listeners
+  //   this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
+  //   this.app.keys.saveKeys();
 
 
 
-    newtx.msg.module = "Stun";
-    newtx.msg.broadcast_details = {
-      listeners,
-      from
-    };
-    newtx = this.app.wallet.signTransaction(newtx);
 
-    this.app.network.propagateTransaction(newtx);
-  }
+  //   this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
+  // }
+
+
+  // broadcastKeyToListeners(listeners) {
+  //   let newtx = this.app.wallet.createUnsignedTransaction();
+  //   let from = this.app.wallet.returnPublicKey();
+  //   console.log('Adding contacts :', listeners, " to ", from);
+
+  //   for (let i = 0; i < listeners.length; i++) {
+  //     newtx.transaction.to.push(new saito.default.slip(listeners[i]));
+  //   }
+
+
+
+  //   newtx.msg.module = "Stun";
+  //   newtx.msg.broadcast_details = {
+  //     listeners,
+  //     from
+  //   };
+  //   newtx = this.app.wallet.signTransaction(newtx);
+
+  //   this.app.network.propagateTransaction(newtx);
+  // }
 
 
 

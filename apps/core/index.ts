@@ -125,6 +125,8 @@ class Saito {
 
       this.network.initialize();
 
+      console.log("peerss ", this.network.peers);
+
       if (this.server) {
         this.server.initialize();
       }
