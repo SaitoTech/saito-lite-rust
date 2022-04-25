@@ -525,6 +525,15 @@ const StunUI = {
 
             })
 
+            $('.stun-container').on('click', '#createInvite', function (e) {
+                  let stun_mod = app.modules.returnModule("Stun");
+                  stun_mod.createVideoInvite();
+            })
+            $('.stun-container').on('click', '#joinInvite', function (e) {
+                  let stun_mod = app.modules.returnModule("Stun");
+                  stun_mod.joinVideoInvite();
+            })
+
             $('.stun-container').on('click', '#send-message-btn', (e) => {
 
                   if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");

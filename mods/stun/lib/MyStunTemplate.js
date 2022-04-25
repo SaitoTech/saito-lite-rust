@@ -52,6 +52,23 @@ module.exports = (app, mod) => {
 
 
   return `<card class="appear my-stun-container">
+
+  <div class="row mb-4">
+  <div class="col-sm-4"><p class="name">Create Invite</p></div>
+  <div class="col-sm-8">
+    <div class="data d-flex">
+    <button id="createInvite" class="btn btn-primary ml-4"> Create Invite</button>
+    </div>
+  </div>
+</div>
+  <div class="row mb-4">
+  <div class="col-sm-4"><p class="name">Join Invite</p></div>
+  <div class="col-sm-8">
+    <div class="data d-flex">
+    <button id="joinInvite" class="btn btn-primary ml-4">Join Invite</button>
+    </div>
+  </div>
+</div>
   <p style="font-weight: bold"> Video </p>
   <div class="stun-video-container" style="display: flex"><video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
 

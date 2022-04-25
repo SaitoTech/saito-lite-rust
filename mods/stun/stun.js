@@ -10,6 +10,7 @@ var serialize = require('serialize-javascript');
 
 
 
+
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
@@ -34,6 +35,10 @@ class Stun extends ModTemplate {
     this.stun.pc = "";
     this.stun.iceCandidates = [];
     this.stun.counter = 0;
+
+    this.invites = [];
+    this.peer_connections = {};
+    this.videoMaxCapacity = 5;
 
 
 
@@ -167,6 +172,25 @@ class Stun extends ModTemplate {
 
       }
     }
+    if (conf == 0) {
+      if (txmsg.module === "Stun") {
+        if (tx.msg.invites) {
+          stun_self.invites = tx.msg.invites.invites
+          console.log("invites ", stun_self.invites);
+        }
+
+      }
+    }
+    if (conf == 0) {
+      if (txmsg.module === "Stun") {
+        if (tx.msg.invite) {
+          console.log('new invite')
+          stun_self.invites.push(tx.msg.invite.invite);
+          console.log(stun_self.invites);
+        }
+
+      }
+    }
 
 
   }
@@ -188,55 +212,7 @@ class Stun extends ModTemplate {
 
 
 
-  // async generateStun(publicKey) {
-
-
-
-  //   let stun = await this.fetchStunInformation();
-  //   if (!stun) {
-  //     console.log("no stun");
-  //     return;
-  //   }
-
-  //   //
-  //   // my key
-  //   //
-  //   let do_we_broadcast_and_update = 1;
-
-  //   let publickey = this.app.wallet.returnPublicKey();
-  //   console.log("public key ", publicKey, this.app.wallet.returnPublicKey())
-  //   let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-
-  //   if (index === -1) {
-  //     this.app.keys.addKey(publickey);
-  //     let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-  //     this.app.keys.keys[new_index].data.stun = stun;
-  //     this.app.keys.saveKeys();
-  //   }
-
-  //   let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-  //   const key = this.app.keys.keys[new_index];
-
-  //   // don't broadcast if is equal
-  //   if (JSON.stringify(key.data.stun) === JSON.stringify(stun)) {
-  //     do_we_broadcast_and_update = 1;
-  //   }
-  //   this.app.keys.keys[new_index].data.stun = { ...stun, listeners: this.app.keys.keys[new_index].data.stun.listeners };
-  //   this.app.keys.saveKeys();
-
-
-
-  //   // do we need to broadcast a message and update our keychain?
-  //   console.log(do_we_broadcast_and_update, "broadcast");
-  //   if (do_we_broadcast_and_update) {
-  //     this.broadcastAddress(this.app.keys.keys[new_index].data.stun);
-  //   }
-
-  // }
-
-
   respondTo(type) {
-
     if (type == 'email-appspace') {
       let obj = {};
       obj.render = this.renderStunUI;
@@ -254,6 +230,10 @@ class Stun extends ModTemplate {
   attachEvents(app, mod) {
     StunUI.attachEvents(app, mod);
   }
+
+
+
+
 
 
 
@@ -284,200 +264,59 @@ class Stun extends ModTemplate {
 
   onPeerHandshakeComplete() {
     // lite clients not allowed to run this
-    if (this.app.BROWSER == 1) {
-      return;
-    }
-    const peers = [];
-    let newtx = this.app.wallet.createUnsignedTransaction();
-    for (let i = 0; i < this.app.network.peers.length; i++) {
-      if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
-        peers.push(this.app.network.peers[i].returnPublicKey());
-        newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
+    if (this.app.BROWSER == 0) {
+      const peers = [];
+      let newtx = this.app.wallet.createUnsignedTransaction();
+      for (let i = 0; i < this.app.network.peers.length; i++) {
+        if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
+          peers.push(this.app.network.peers[i].returnPublicKey());
+          newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
+        }
       }
+
+      newtx.msg.module = "Stun";
+      newtx.msg.listeners = {
+        listeners: peers
+      };
+      newtx = this.app.wallet.signTransaction(newtx);
+      this.app.network.propagateTransaction(newtx);
+
+
+      // send latest copy of invites to this peer
+
+
+      let newtx2 = this.app.wallet.createUnsignedTransaction();
+
+      if (this.app.network.peers.length > 0) {
+        newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
+
+        console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.invites);
+        newtx2.msg.module = "Stun";
+        newtx2.msg.invites = {
+          invites: this.invites
+        };
+
+        console.log(newtx2)
+        newtx2 = this.app.wallet.signTransaction(newtx2);
+        this.app.network.propagateTransaction(newtx2);
+      }
+
+
+
+
     }
 
-    newtx.msg.module = "Stun";
-    newtx.msg.listeners = {
-      listeners: peers
-    };
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
+
+
+
+
 
   }
 
-  // fetchStunInformation() {
 
 
-  //   this.stun.counter += 1;
-  //   console.log("Stun count", this.stun.counter);
-  //   console.log("keys ", this.app.keys.keys);
-
-
-  //   return new Promise((resolve, reject) => {
-  //     let stun = {
-  //       ip_address: "",
-  //       port: "",
-  //       offer_sdp: "",
-  //       pc: "",
-  //       listeners: [],
-  //       iceCandidates: []
-  //     };
-  //     const createPeerConnection = async () => {
-
-  //       try {
-  //         const pc = new RTCPeerConnection({
-  //           iceServers: [
-  //             {
-  //               urls: "stun:openrelay.metered.ca:80",
-  //             },
-  //             {
-  //               urls: "turn:openrelay.metered.ca:80",
-  //               username: "openrelayproject",
-  //               credential: "openrelayproject",
-  //             },
-  //             {
-  //               urls: "turn:openrelay.metered.ca:443",
-  //               username: "openrelayproject",
-  //               credential: "openrelayproject",
-  //             },
-  //             {
-  //               urls: "turn:openrelay.metered.ca:443?transport=tcp",
-  //               username: "openrelayproject",
-  //               credential: "openrelayproject",
-  //             },
-  //           ],
-  //         });
-
-  //         pc.onicecandidate = (ice) => {
-  //           if (!ice || !ice.candidate || !ice.candidate.candidate) {
-
-  //             // pc.close();
-
-  //             stun.offer_sdp = pc.localDescription;
-
-  //             // let new_obj = $.extend(new_obj, pc);
-  //             // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-  //             // console.log('peer_connection ', peer_connection)
-  //             stun.pc = ""
-
-  //             this.app.connection.emit('peer_connection', pc)
-  //             console.log("ice candidates", JSON.stringify(stun.iceCandidates));
-  //             resolve(stun);
-  //             return;
-  //           }
-
-  //           if (ice.candidate && pc.remoteDescription) {
-  //             console.log('ice candidate', ice.candidate, ice)
-  //             pc.addIceCandidate(ice.candidate);
-  //           }
-
-  //           let split = ice.candidate.candidate.split(" ");
-  //           if (split[7] === "host") {
-  //             // console.log(`Local IP : ${split[4]}`);
-  //             // stun.ip_address = split[4];
-  //             // console.log(split);
-  //           } else {
-  //             // console.log(`External IP : ${split[4]}`);
-  //             // console.log(`PORT: ${split[5]}`);
-  //             stun.ip_address = split[4];
-  //             stun.port = split[5];
-  //             stun.iceCandidates.push(ice.candidate);
-  //             // resolve(stun);
-  //           }
-  //         };
-  //         const localVideoSteam = document.querySelector('#localStream');
-  //         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  //         localStream.getTracks().forEach(track => {
-  //           pc.addTrack(track, localStream);
-
-  //         });
-  //         if (localVideoSteam) {
-  //           localVideoSteam.srcObject = localStream;
-  //         }
-
-
-  //         pc.LOCAL_STREAM = localStream;
-  //         const remoteStream = new MediaStream()
-  //         pc.addEventListener('track', (event) => {
-
-  //           const remoteVideoSteam = document.querySelector('#remoteStream');
-  //           console.log('got remote stream ', event.streams);
-  //           event.streams[0].getTracks().forEach(track => {
-  //             remoteStream.addTrack(track);
-  //           });
-
-  //           pc.REMOTE_STREAM = remoteStream
-
-  //           if (remoteVideoSteam) {
-  //             remoteVideoSteam.srcObject = remoteStream;
-  //           }
-
-  //         });
-
-  //         const offer = await pc.createOffer();
-  //         pc.setLocalDescription(offer);
-
-  //         // stun.offer_sdp = offer;
-
-  //         // // let new_obj = $.extend(new_obj, pc);
-  //         // // let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-  //         // // console.log('peer_connection ', peer_connection)
-  //         // stun.pc = ""
-
-  //         // this.app.connection.emit('peer_connection', pc)
-  //         // resolve(stun);
-
-
-
-
-
-
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-
-  //     }
-  //     return createPeerConnection();
-
-  //   });
-  // }
-
-
-
-
-
-  // broadcastAddress(stun) {
-  //   let publickey = this.app.wallet.returnPublicKey();
-  //   let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-  //   let listeners = this.app.keys.keys[key_index].data.stun.listeners;
-
-
-
-
-  //   let newtx = this.app.wallet.createUnsignedTransaction();
-
-  //   // console.log("listeners are ", listeners);
-  //   for (let i = 0; i < listeners.length; i++) {
-  //     console.log('broadcasting to ', listeners[i]);
-  //     newtx.transaction.to.push(new saito.default.slip(listeners[i]));
-  //   }
-
-
-
-  //   newtx.msg.module = "Stun";
-  //   newtx.msg.stun = stun;
-  //   newtx = this.app.wallet.signTransaction(newtx);
-  //   console.log(this.app.network);
-
-
-  //   this.app.network.propagateTransaction(newtx);
-
-
-
-  // }
 
   broadcastOffer(my_key, peer_key, offer) {
-
     let newtx = this.app.wallet.createUnsignedTransaction();
     console.log('broadcasting offer  to ', peer_key);
     newtx.transaction.to.push(new saito.default.slip(peer_key));
@@ -492,7 +331,6 @@ class Stun extends ModTemplate {
     newtx = this.app.wallet.signTransaction(newtx);
     console.log(this.app.network);
     this.app.network.propagateTransaction(newtx);
-
   }
 
 
@@ -558,6 +396,98 @@ class Stun extends ModTemplate {
 
   }
 
+
+
+  createVideoInvite() {
+    const inviteCode = 'invite';
+    // prevent dupicate invite code creation -- for development purposes
+    let invite = this.invites.find(invite => invite.code === inviteCode);
+    // prevent dupicate invite code creation -- for development purposes
+    if (invite) return console.log('invite already created');
+    invite = { code: inviteCode, peers: [], peerCount: 0, isMaxCapicity: false, validityPeriod: 86400, startTime: Date.now(), checkpoint: 0 };
+
+
+    let newtx = this.app.wallet.createUnsignedTransaction();
+
+    for (let i = 0; i < this.app.network.peers.length; i++) {
+      if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
+        newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
+      }
+    }
+
+    newtx.msg.module = "Stun";
+    newtx.msg.invite = {
+      invite
+    };
+    newtx = this.app.wallet.signTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
+
+
+  }
+
+
+
+  async joinVideoInvite(inviteCode) {
+    const invite = this.invites.find(invite => invite.code === inviteCode);
+    const index = this.invites.findIndex(invite => invite.code === inviteCode);
+
+    console.log('invites :', this.invites, 'result :', invite, index);
+
+
+    if (!invite) return console.log('invite does not exist');
+
+    if (invite.isMaxCapicity) {
+      return console.log("Room has reached max capacity");
+    }
+
+    if (Date.now() < invite.startTime) {
+      return console.log("Video call time not reached");
+    }
+
+
+    // check if peer already exists
+
+    // check if peer  already exists
+
+    let publicKey = this.app.wallet.returnPublicKey();
+    let peerPosition = invite.peerCount + 1;
+
+    const peer_data = {
+      publicKey,
+      peerPosition,
+    }
+
+    invite.peers.push(peer_data);
+    invite.peerCount = invite.peerCount + 1;
+
+
+    // send connection to other peers if they exit
+    if (invite.peers.length > 1) {
+      for (let i = 0; i < invite.peers.length; i++) {
+        if (invite.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
+          const pc = await this.createPeerConnectionOffer();
+        }
+      }
+    }
+
+
+
+    // update invites 
+    this.invites[index] = invite;
+
+    console.log(this.invites)
+
+
+
+
+
+
+  }
+
+
+  async createPeerConnection() {
+    return "peer connection ha"
+  }
 
   // addListeners(listeners) {
   //   if (this.app.BROWSER === 0) return;
