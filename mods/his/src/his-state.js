@@ -1,4 +1,30 @@
 
+  areAllies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  areEnemies(faction1, faction2) {
+    try { if (this.game.diplomacy[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
+    try { if (this.game.diplomacy[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
+    return 0;
+  }
+
+  setAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].allies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
+  }
+
+  setEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
+
   addUnit(faction, space, type) {
     try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
@@ -155,10 +181,57 @@
     state.tmp_protestant_counter_reformation_bonus = 0;
     state.tmp_catholic_counter_reformation_bonus = 0;
 
+    state.augsburg_electoral_bonus = 0;
+    state.mainz_electoral_bonus = 0;
+    state.trier_electoral_bonus = 0;
+    state.cologne_electoral_bonus = 0;
+    state.wittenberg_electoral_bonus = 0;
+    state.brandenburg_electoral_bonus = 0;
+
+    state.debaters = [];
+
     return state;
 
   }
 
+
+  returnPregnancyChart() {
+
+    let chart = {};
+
+    chart['1'] = {
+      top : 1307,
+      left : 4075,
+    }
+
+    chart['2'] = {
+      top : 1220,
+      left : 4075,
+    }
+
+    chart['3'] = {
+      top : 1135,
+      left : 4075,
+    }
+
+    chart['4'] = {
+      top : 1051,
+      left : 4075,
+    }
+
+    chart['5'] = {
+      top : 963,
+      left : 4075,
+    }
+
+    chart['1'] = {
+      top : 850,
+      left : 4075,
+    }
+
+    return chart;
+
+  }
 
   returnColonies() {
 
@@ -455,7 +528,7 @@
       name : "Baltic Sea" ,
       neighbours : ["north"] ,
     }
-    seas['lyon'] = {
+    seas['gulflyon'] = {
       top : 1930 ,
       left : 2430 ,
       name : "Gulf of Lyon" ,
@@ -465,13 +538,13 @@
       top : 2330 ,
       left : 2430 ,
       name : "Barbary Coast" ,
-      neighbours : ["lyon","tyrrhenian","ionian","african"] ,
+      neighbours : ["gulflyon","tyrrhenian","ionian","african"] ,
     }
     seas['tyrrhenian'] = {
       top : 2260 ,
       left : 3300 ,
       name : "Tyrrhenian Sea" ,
-      neighbours : ["barbary","lyon"] ,
+      neighbours : ["barbary","gulflyon"] ,
     }
     seas['africa'] = {
       top : 2770 ,
@@ -1150,7 +1223,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["toulouse","avignon","zaragoza","valencia"],
       pass: ["toulouse","avignon"],
       language: "spanish",
@@ -1161,7 +1234,7 @@
       left: 2211,
       home: "hapsburg",
       political: "",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
       language: "other",
       religion: "catholic",
@@ -1183,7 +1256,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["cartagena","madrid","barcelona"],
       language: "spanish",
       type: "town"
@@ -1194,7 +1267,7 @@
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["lyon","barbary"],
+      ports: ["gulflyon","barbary"],
       neighbours: ["granada","valencia"],
       language: "spanish",
       type: "town"
@@ -1856,7 +1929,7 @@
       home: "independent",
       political: "",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["genoa","marseille"],
       pass: ["genoa"],
       language: "french",
@@ -1888,7 +1961,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: [],
       language: "other",
       type: "town"
@@ -1899,7 +1972,7 @@
       home: "genoa",
       political: "",
       religion: "catholic",
-      ports: ["lyon","tyrrhenian"],
+      ports: ["gulflyon","tyrrhenian"],
       neighbours: ["nice","pavia","turin","modena","siena"],
       pass: ["nice"],
       language: "italian",
@@ -2055,6 +2128,202 @@
   }
 
 
+  returnNewCardsForThisTurn(turn = 1) {
+
+    let deck = this.returnDeck();
+    let new_deck = {};
+
+    for (let key in deck) {
+      if (deck[key].turn === turn) {
+	new_deck[key] = deck[key];
+      }
+    }
+
+    return new_deck;
+
+  }
+
+  returnNewDiplomaticCardsForThisTurn(turn = 1) {
+
+    let deck = this.returnDiplomaticDeck();
+    let new_deck = {};
+
+    for (let key in deck) {
+      if (deck[key].turn === turn) {
+        new_deck[key] = deck[key];
+      }
+    }
+
+    return new_deck;
+
+  }
+
+
+  returnDiplomaticDeck() {
+
+    let deck = {};
+
+    deck['201'] = { 
+      img : "cards/HIS-201.svg" , 
+      name : "Andrea Doria" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['202'] = { 
+      img : "cards/HIS-202.svg" , 
+      name : "Frech Constable Invades" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['203'] = { 
+      img : "cards/HIS-203.svg" , 
+      name : "Corsair Raid" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['204'] = { 
+      img : "cards/HIS-204.svg" , 
+      name : "Diplomatic Marriage" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['205'] = { 
+      img : "cards/HIS-205.svg" , 
+      name : "Diplomatic Pressure" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['206'] = { 
+      img : "cards/HIS-206.svg" , 
+      name : "Frech Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['207'] = { 
+      img : "cards/HIS-207.svg" , 
+      name : "Henry Petitions for Divorce" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['208'] = { 
+      img : "cards/HIS-208.svg" , 
+      name : "Knights of St.John" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['209'] = { 
+      img : "cards/HIS-209.svg" , 
+      name : "Plague" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['210'] = { 
+      img : "cards/HIS-210.svg" , 
+      name : "Shipbuilding" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['211'] = { 
+      img : "cards/HIS-211.svg" , 
+      name : "Spanish Invasion" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['212'] = { 
+      img : "cards/HIS-212.svg" , 
+      name : "Venetian Alliance" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['213'] = { 
+      img : "cards/HIS-213.svg" , 
+      name : "Austrian Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['214'] = { 
+      img : "cards/HIS-214.svg" , 
+      name : "Imperial Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['215'] = { 
+      img : "cards/HIS-215.svg" , 
+      name : "Machiavelli" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['216'] = { 
+      img : "cards/HIS-216.svg" , 
+      name : "Ottoman Invasion" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['217'] = { 
+      img : "cards/HIS-217.svg" , 
+      name : "Secret Protestant Circle" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['218'] = { 
+      img : "cards/HIS-218.svg" , 
+      name : "Siege of Vienna" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+    deck['219'] = { 
+      img : "cards/HIS-219.svg" , 
+      name : "Spanish Inquisition" ,
+      ops : 0 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+    }
+
+    for (let key in deck) {
+      deck[key] = this.addEvents(deck[key]);
+    }
+
+    return deck;
+
+  }
+
   returnDeck() {
 
     var deck = {};
@@ -2062,51 +2331,87 @@
     /// HOME CARDS
     deck['001'] = { 
       img : "cards/HIS-001.svg" , 
-      name : "Card" ,
+      name : "Janissaries" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "ottoman" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['002'] = { 
       img : "cards/HIS-002.svg" , 
-      name : "Card" ,
+      name : "Holy Roman Emperor" ,
+      ops : 5 ,
+      turn : 1, 
+      type : "normal" ,
       faction : "hapsburg" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['003'] = { 
       img : "cards/HIS-003.svg" , 
-      name : "Card" ,
+      name : "Six Wives of Henry VIII" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "england" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['004'] = { 
       img : "cards/HIS-004.svg" , 
-      name : "Card" ,
+      name : "Patron of the Arts" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "french" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
-    if (this.game.players.length != 2) {
+    if (this.game.players.length == 2) {
       deck['005'] = { 
         img : "cards/HIS-005.svg" , 
-        name : "Card" ,
+        name : "Papal Bull" ,
+        ops : 4 ,
+        turn : 1 ,
+        type : "normal" ,
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     } else {
       deck['005'] = { 
         img : "cards/HIS-005-2P.svg" , 
-        name : "Card" ,
+        name : "Papal Bull" ,
+        ops : 4 ,
+        turn : 1 ,
+        type : "normal" , 
         faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       }
     }
     deck['006'] = { 
       img : "cards/HIS-006.svg" , 
-      name : "Card" ,
+      name : "Leipzig Debate" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" , 
       faction : "papacy" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['007'] = { 
       img : "cards/HIS-007.svg" , 
-      name : "Card" ,
+      name : "Here I Stand" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
       faction : "protestant" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     // 95 Theses
     deck['008'] = { 
       img : "cards/HIS-008.svg" , 
-      name : "Card" ,
+      name : "Luther's 95 Theses" ,
+      ops : 0 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeck : function(his_self, player) { return 1; } ,
       onEvent : function(game_mod, player) {
 
 	// protestant gets 2 roll bonus at start
@@ -2123,6 +2428,7 @@
         game_mod.convertSpace("protestant", "wittenberg");
         game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.addUnit("protestant", "wittenberg", "regular");
+        game_mod.addDebater("protestant", "wittenberg", "luther");
         game_mod.displaySpace("wittenberg");
 
 	return 1;
@@ -2176,511 +2482,891 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
     }
     deck['009'] = { 
       img : "cards/HIS-009.svg" , 
-      name : "Card" ,
+      name : "Barbary Pirates" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['010'] = { 
       img : "cards/HIS-010.svg" , 
-      name : "Card" ,
+      name : "Clement VII" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
-      name : "Card" ,
+      name : "Defender of the Faith" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['012'] = { 
       img : "cards/HIS-012.svg" , 
-      name : "Card" ,
+      name : "Master of Italy" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['013'] = { 
       img : "cards/HIS-013.svg" , 
-      name : "Card" ,
+      name : "Schmalkaldic League" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
-      name : "Card" ,
+      name : "Paul III" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
-      name : "Card" ,
+      name : "Society of Jesus" ,
+      ops : 2 ,
+      turn : 5 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['016'] = { 
       img : "cards/HIS-016.svg" , 
-      name : "Card" ,
+      name : "mandatory" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['017'] = { 
       img : "cards/HIS-017.svg" , 
-      name : "Card" ,
+      name : "Council of Trent" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['018'] = { 
       img : "cards/HIS-018.svg" , 
-      name : "Card" ,
+      name : "Dragu" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
     }
     deck['019'] = { 
       img : "cards/HIS-019.svg" , 
-      name : "Card" ,
+      name : "Edward VI" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
-      name : "Card" ,
+      name :"Henry II" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
-      name : "Card" ,
+      name : "Mary I" ,
+      ops : 2 ,
+      turn : 6 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
-      name : "Card" ,
+      name : "Julius III" ,
+      ops : 2 ,
+      turn : 7 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
-      name : "Card" ,
+      name : "Elizabeth I" ,
+      ops : 2 ,
+      turn : 0 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 
-      name : "Card" ,
+      name : "Arquebusiers" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['025'] = { 
       img : "cards/HIS-025.svg" , 
-      name : "Card" ,
+      name : "Field Artillery" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['026'] = { 
       img : "cards/HIS-026.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Bribed" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['027'] = { 
       img : "cards/HIS-027.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Grow Restless" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['028'] = { 
       img : "cards/HIS-028.svg" , 
-      name : "Card" ,
+      name : "Siege Mining" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['029'] = { 
       img : "cards/HIS-029.svg" , 
-      name : "Card" ,
+      name : "Surprise Attack" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['030'] = { 
       img : "cards/HIS-030.svg" , 
-      name : "Card" ,
+      name : "Tercios" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "combat" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
-      name : "Card" ,
+      name : "Foul Weather" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['032'] = { 
       img : "cards/HIS-032.svg" , 
-      name : "Card" ,
+      name : "Gout" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      menuOption  :       function(his_self, menu, player) {
+        if (menu == "move") {
+          return { event : 'gout', html : '<li class="option" id="gout">play gout</li>' };
+        }
+        return {};
+      },
+      menuOptionTriggers:  function(his_self, menu, player) {
+        if (menu == "move") {
+	  for (let i = 0; i < this.game.deck[0].fhand.length; i++) {
+	    if (this.game.deck[0].fhand[i].includes('032')) {
+	      return 1;
+	    }
+	  }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(his_self, menu, player) {
+        if (menu == "move") {
+alert("WE PLAYED GOUT");
+          his_self.endTurn();
+          his_self.updateLog("looks like someone got gout");
+        }
+        return 0;
+      },
     }
     deck['033'] = { 
       img : "cards/HIS-033.svg" , 
-      name : "Card" ,
+      name : "Landsknechts" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['034'] = { 
       img : "cards/HIS-034.svg" , 
-      name : "Card" ,
+      name : "Professional Rowers" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['035'] = { 
       img : "cards/HIS-035.svg" , 
-      name : "Card" ,
+      name : "Siege Artillery" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['036'] = { 
       img : "cards/HIS-036.svg" , 
-      name : "Card" ,
+      name : "Swiss Mercenaries" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['037'] = { 
       img : "cards/HIS-037.svg" , 
-      name : "Card" ,
+      name : "The Wartburg" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['038'] = { 
       img : "cards/HIS-038.svg" , 
-      name : "Card" ,
+      name : "Halley's Comet" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['039'] = { 
       img : "cards/HIS-039.svg" , 
-      name : "Card" ,
+      name : "Ausburg Confession" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
-      name : "Card" ,
+      name : "MachiaveIIi: The Prince" ,
+      ops : 3 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['041'] = { 
       img : "cards/HIS-041.svg" , 
-      name : "Card" ,
+      name : "Marburg Colloquy" ,
+      ops : 5 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['042'] = { 
       img : "cards/HIS-042.svg" , 
-      name : "Card" ,
+      name : "Roxelana" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['043'] = { 
       img : "cards/HIS-043.svg" , 
-      name : "Card" ,
+      name : "Zwingli Dons Armor" ,
+      ops : 3 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['044'] = { 
       img : "cards/HIS-044.svg" , 
-      name : "Card" ,
+      name : "Affair of the Placards" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['045'] = { 
       img : "cards/HIS-045.svg" , 
-      name : "Card" ,
+      name : "Clavin Expelled" ,
+      ops : 1 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['046'] = { 
       img : "cards/HIS-046.svg" , 
-      name : "Card" ,
+      name : "Calvin's Insitutes" ,
+      ops : 5 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['047'] = { 
       img : "cards/HIS-047.svg" , 
-      name : "Card" ,
+      name : "Copernicus" ,
+      ops : 6 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['048'] = { 
       img : "cards/HIS-048.svg" , 
-      name : "Card" ,
+      name : "Galleons" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['049'] = { 
       img : "cards/HIS-049.svg" , 
-      name : "Card" ,
+      name : "Huguenot Raiders" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['050'] = { 
       img : "cards/HIS-050.svg" , 
-      name : "Card" ,
+      name : "Mercator's Map" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['051'] = { 
       img : "cards/HIS-051.svg" , 
-      name : "Card" ,
+      name : "Michael Servetus" ,
+      ops : 4 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['052'] = { 
       img : "cards/HIS-052.svg" , 
-      name : "Card" ,
+      name : "Michelangelo" ,
+      ops : 4 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['053'] = { 
       img : "cards/HIS-053.svg" , 
-      name : "Card" ,
+      name : "Plantations" ,
+      ops : 2 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['054'] = { 
       img : "cards/HIS-054.svg" , 
-      name : "Card" ,
+      name : "Potosi Silver Mines " ,
+      ops : 3 ,
+      turn : 4 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['055'] = { 
       img : "cards/HIS-055.svg" , 
-      name : "Card" ,
+      name : "Jesuit Education" ,
+      ops : 3 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['056'] = { 
       img : "cards/HIS-056.svg" , 
-      name : "Card" ,
+      name : "Ppal Inquistion" ,
+      ops : 5 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['057'] = { 
       img : "cards/HIS-057.svg" , 
-      name : "Card" ,
+      name : "Philip of Hesse's Bigamy" ,
+      ops : 2 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['058'] = { 
       img : "cards/HIS-058.svg" , 
-      name : "Card" ,
+      name : "Spanish Inquisition" ,
+      ops : 5 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['059'] = { 
       img : "cards/HIS-059.svg" , 
-      name : "Card" ,
+      name : "Lady Jane Grey" ,
+      ops : 3 ,
+      turn : 6 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['060'] = { 
       img : "cards/HIS-060.svg" , 
-      name : "Card" ,
+      name : "Maurice of Saxony" ,
+      ops : 4 ,
+      turn : 6 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['061'] = { 
       img : "cards/HIS-061.svg" , 
-      name : "Card" ,
+      name : "Mary Defies Council" ,
+      ops : 1 ,
+      turn : 7 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['062'] = { 
       img : "cards/HIS-062.svg" , 
       name : "Card" ,
+      ops : 2 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['063'] = { 
       img : "cards/HIS-063.svg" , 
-      name : "Card" ,
+      name : "Dissolution of the Monasteries" ,
+      ops : 4 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['064'] = { 
       img : "cards/HIS-064.svg" , 
-      name : "Card" ,
+      name : "Pilgrimage of Grace" ,
+      ops : 3 ,
+      turn : 0 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['065'] = { 
       img : "cards/HIS-065.svg" , 
-      name : "Card" ,
+      name : "A Mighty Fortress" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['066'] = { 
       img : "cards/HIS-066.svg" , 
-      name : "Card" ,
+      name : "Akinji Raiders" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['067'] = { 
       img : "cards/HIS-067.svg" , 
-      name : "Card" ,
+      name : "Anabaptists" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['068'] = { 
       img : "cards/HIS-068.svg" , 
-      name : "Card" ,
+      name : "Andrea Doria" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['069'] = { 
       img : "cards/HIS-069.svg" , 
-      name : "Card" ,
+      name : "Auld Alliance" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['070'] = { 
       img : "cards/HIS-070.svg" , 
-      name : "Card" ,
+      name : "Charles Bourbon" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['071'] = { 
       img : "cards/HIS-071.svg" , 
-      name : "Card" ,
+      name : "City State Rebels" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
-      name : "Card" ,
+      name : "Cloth Price Fluctuate" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['073'] = { 
       img : "cards/HIS-073.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Marriage" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['074'] = { 
       img : "cards/HIS-074.svg" , 
-      name : "Card" ,
+      name : "Diplomatic Overture" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['075'] = { 
       img : "cards/HIS-075.svg" , 
-      name : "Card" ,
+      name : "Erasmus" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['076'] = { 
       img : "cards/HIS-076.svg" , 
-      name : "Card" ,
+      name : "Foreign Recruits" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['077'] = { 
       img : "cards/HIS-077.svg" , 
       name : "Card" ,
+      ops : "Fountain of Youth" ,
+      turn : 2 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['078'] = { 
       img : "cards/HIS-078.svg" , 
-      name : "Card" ,
+      name : "Frederick the Wise" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['079'] = { 
       img : "cards/HIS-079.svg" , 
-      name : "Card" ,
+      name : "Fuggers" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['080'] = { 
       img : "cards/HIS-080.svg" , 
-      name : "Card" ,
+      name : "Gabelle Revolt" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['081'] = { 
       img : "cards/HIS-081.svg" , 
-      name : "Card" ,
+      name : "Indulgence Vendor" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['082'] = { 
       img : "cards/HIS-082.svg" , 
-      name : "Card" ,
+      name : "Janissaries Rebel" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['083'] = { 
       img : "cards/HIS-083.svg" , 
-      name : "Card" ,
+      name : "John Zapolya" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['084'] = { 
       img : "cards/HIS-084.svg" , 
-      name : "Card" ,
+      name : "Julia Gonzaga" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['085'] = { 
       img : "cards/HIS-085.svg" , 
-      name : "Card" ,
+      name : "Katherina Bora" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['086'] = { 
       img : "cards/HIS-086.svg" , 
-      name : "Card" ,
+      name : "Knights of St.John" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['087'] = { 
       img : "cards/HIS-087.svg" , 
-      name : "Card" ,
+      name : "Mercenaries Demand Pay" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['088'] = { 
       img : "cards/HIS-088.svg" , 
-      name : "Card" ,
+      name : "Peasants' War" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['089'] = { 
       img : "cards/HIS-089.svg" , 
-      name : "Card" ,
+      name : "Pirate Haven" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['090'] = { 
       img : "cards/HIS-090.svg" , 
-      name : "Card" ,
+      name : "Printing Press" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['091'] = { 
       img : "cards/HIS-091.svg" , 
-      name : "Card" ,
+      name : "Ransom" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['092'] = { 
       img : "cards/HIS-092.svg" , 
-      name : "Card" ,
+      name : "Revolt in Egypt" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['093'] = { 
       img : "cards/HIS-093.svg" , 
-      name : "Card" ,
+      name : "Revolt in Ireland" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['094'] = { 
       img : "cards/HIS-094.svg" , 
-      name : "Card" ,
+      name : "Revolt of the Communeros" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['095'] = { 
       img : "cards/HIS-095.svg" , 
-      name : "Card" ,
+      name : "Sack of Rome" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['096'] = { 
       img : "cards/HIS-096.svg" , 
-      name : "Card" ,
+      name : "Sale of Moluccas" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['097'] = { 
       img : "cards/HIS-097.svg" , 
-      name : "Card" ,
+      name : "Scots Raid" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['098'] = { 
       img : "cards/HIS-098.svg" , 
-      name : "Card" ,
+      name : "Search for Cibola" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['099'] = { 
       img : "cards/HIS-099.svg" , 
-      name : "Card" ,
+      name : "Sebastian Cabot" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['100'] = { 
       img : "cards/HIS-100.svg" , 
-      name : "Card" ,
+      name : "Shipbuilding" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['101'] = { 
       img : "cards/HIS-101.svg" , 
-      name : "Card" ,
+      name : "Smallpox" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['102'] = { 
       img : "cards/HIS-102.svg" , 
-      name : "Card" ,
+      name : "Spring Preparations" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['103'] = { 
       img : "cards/HIS-103.svg" , 
-      name : "Card" ,
+      name : "Threat to Power" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['104'] = { 
       img : "cards/HIS-104.svg" , 
-      name : "Card" ,
+      name : "Trace Italienne" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['105'] = { 
       img : "cards/HIS-105.svg" , 
-      name : "Card" ,
+      name : "Treachery!" ,
+      ops : 5 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['106'] = { 
       img : "cards/HIS-106.svg" , 
-      name : "Card" ,
+      name : "Unpaid Mercenaries" ,
+      ops : 4 ,
+      turn : 3 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['107'] = { 
       img : "cards/HIS-107.svg" , 
-      name : "Card" ,
+      name : "Unsanitary Camp" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['108'] = { 
       img : "cards/HIS-108.svg" , 
-      name : "Card" ,
+      name : "Venetian Alliance" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['109'] = { 
       img : "cards/HIS-109.svg" , 
-      name : "Card" ,
+      name : "Venetian Informant" ,
+      ops : 1 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['110'] = { 
       img : "cards/HIS-110.svg" , 
-      name : "Card" ,
+      name : "War in Persia" ,
+      ops : 4 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['111'] = { 
       img : "cards/HIS-111.svg" , 
-      name : "Card" ,
+      name : "Colonial Governor/Native Uprising" ,
+      ops : 2 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['112'] = { 
       img : "cards/HIS-112.svg" , 
-      name : "Card" ,
+      name : "Thomas More" ,
+      ops : 3 ,
+      turn : 1 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['113'] = { 
       img : "cards/HIS-113.svg" , 
-      name : "Card" ,
+      name : "Imperial Coronation" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['114'] = { 
       img : "cards/HIS-114.svg" , 
-      name : "Card" ,
+      name : "La Forets's Embassy in Istanbul" ,
+      ops : 2 ,
+      turn : 3 ,
+      type : "mandatory" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['115'] = { 
       img : "cards/HIS-115.svg" , 
-      name : "Card" ,
+      name : "Thomos Cromwell" ,
+      ops : 3 ,
+      turn : 4 ,
+      type : "response" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
     deck['116'] = { 
       img : "cards/HIS-116.svg" , 
-      name : "Card" ,
-    }
-    deck['201'] = { 
-      img : "cards/HIS-201.svg" , 
-      name : "Card" ,
-    }
-    deck['202'] = { 
-      img : "cards/HIS-202.svg" , 
-      name : "Card" ,
-    }
-    deck['203'] = { 
-      img : "cards/HIS-203.svg" , 
-      name : "Card" ,
-    }
-    deck['204'] = { 
-      img : "cards/HIS-204.svg" , 
-      name : "Card" ,
-    }
-    deck['205'] = { 
-      img : "cards/HIS-205.svg" , 
-      name : "Card" ,
-    }
-    deck['206'] = { 
-      img : "cards/HIS-206.svg" , 
-      name : "Card" ,
-    }
-    deck['207'] = { 
-      img : "cards/HIS-207.svg" , 
-      name : "Card" ,
-    }
-    deck['208'] = { 
-      img : "cards/HIS-208.svg" , 
-      name : "Card" ,
-    }
-    deck['209'] = { 
-      img : "cards/HIS-209.svg" , 
-      name : "Card" ,
-    }
-    deck['210'] = { 
-      img : "cards/HIS-210.svg" , 
-      name : "Card" ,
-    }
-    deck['211'] = { 
-      img : "cards/HIS-211.svg" , 
-      name : "Card" ,
-    }
-    deck['212'] = { 
-      img : "cards/HIS-212.svg" , 
-      name : "Card" ,
-    }
-    deck['213'] = { 
-      img : "cards/HIS-213.svg" , 
-      name : "Card" ,
-    }
-    deck['214'] = { 
-      img : "cards/HIS-214.svg" , 
-      name : "Card" ,
-    }
-    deck['215'] = { 
-      img : "cards/HIS-215.svg" , 
-      name : "Card" ,
-    }
-    deck['216'] = { 
-      img : "cards/HIS-216.svg" , 
-      name : "Card" ,
-    }
-    deck['217'] = { 
-      img : "cards/HIS-217.svg" , 
-      name : "Card" ,
-    }
-    deck['218'] = { 
-      img : "cards/HIS-218.svg" , 
-      name : "Card" ,
-    }
-    deck['219'] = { 
-      img : "cards/HIS-219.svg" , 
-      name : "Card" ,
+      name : "Rough Wooing" ,
+      ops : 3 ,
+      turn : 5 ,
+      type : "normal" ,
+      removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
     }
 
     for (let key in deck) {
@@ -2691,4 +3377,242 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
 
   }
 
+
+  returnDiplomacyTable() {
+
+    let diplomacy 		= {};
+    diplomacy["ottoman"] 	= {};
+    diplomacy["england"] 	= {};
+    diplomacy["france"] 	= {};
+    diplomacy["papacy"] 	= {};
+    diplomacy["protestant"] 	= {};
+    diplomacy["hapsburg"] 	= {};
+
+    diplomacy["ottoman"]["hapsburg"] = {
+        top 	:	205 ,
+        left	:	4128 ,
+    }
+    diplomacy["ottoman"]["england"] = {
+        top 	:	205 ,
+        left	:	4222 ,
+    }
+    diplomacy["ottoman"]["france"] = {
+        top 	:             205 ,
+        left	:	4310 ,
+    }
+    diplomacy["ottoman"]["papacy"] = {
+        top 	:	205 ,
+        left	:	4400 ,
+    }
+    diplomacy["ottoman"]["protestant"] = {
+        top 	:	205 ,
+        left	:	4490 ,
+    }
+    diplomacy["ottoman"]["genoa"] = {
+        top 	:	205 ,
+        left	:	4580 ,
+    }
+    diplomacy["ottoman"]["hungary"] = {
+        top 	:	205 ,
+        left	:	4670 ,
+    }
+    diplomacy["ottoman"]["scotland"] = {
+        top 	:	205 ,
+        left	:	4760 ,
+    }
+    diplomacy["ottoman"]["venice"] = {
+        top 	:	205 ,
+        left	:	4851 ,
+    }
+
+    diplomacy["hapsburg"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4128 ,
+    }
+    diplomacy["hapsburg"]["england"] = {
+        top 	:	297 ,
+        left	:	4220 ,
+    }
+    diplomacy["hapsburg"]["france"] = {
+        top 	:	297 ,
+        left	:	4310 ,
+    }
+    diplomacy["hapsburg"]["papacy"] = {
+        top 	:	297 ,
+        left	:	4400 ,
+    }
+    diplomacy["hapsburg"]["protestant"] = {
+        top 	:	297 ,
+        left	:	4490 ,
+    }
+    diplomacy["hapsburg"]["genoa"] = {
+        top 	:	297 ,
+        left	:	4580 ,
+    }
+    diplomacy["hapsburg"]["hungary"] = {
+        top 	:	297 ,
+        left	:	4670 ,
+    }
+    diplomacy["hapsburg"]["scotland"] = {
+        top 	:	297 ,
+        left	:	4760 ,
+    }
+    diplomacy["hapsburg"]["venice"] = {
+        top 	:	297 ,
+        left	:	4851 ,
+    }
+
+
+    diplomacy["england"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4222 ,
+    }
+    diplomacy["england"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4220 ,
+    }
+    diplomacy["england"]["france"] = {
+        top 	:	386 ,
+        left	:	4310 ,
+    }
+    diplomacy["england"]["papacy"] = {
+        top 	:	386 ,
+        left	:	4400 ,
+    }
+    diplomacy["england"]["protestant"] = {
+        top 	:	386 ,
+        left	:	4490 ,
+    }
+    diplomacy["england"]["genoa"] = {
+        top 	:	386 ,
+        left	:	4580 ,
+    }
+    diplomacy["england"]["hungary"] = {
+        top 	:	386 ,
+        left	:	4670 ,
+    }
+    diplomacy["england"]["scotland"] = {
+        top 	:	386 ,
+        left	:	4760 ,
+    }
+    diplomacy["england"]["venice"] = {
+        top 	:	386 ,
+        left	:	4851 ,
+    }
+
+    diplomacy["france"]["ottoman"] = {
+        top 	:       205 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["england"] = {
+        top 	:	386 ,
+        left	:	4310 ,
+    }
+    diplomacy["france"]["papacy"] = {
+        top     :       478 ,
+        left    :       4400 ,    
+    }
+    diplomacy["france"]["protestant"] = {
+        top     :       478 ,
+        left    :       4490 ,    
+    }
+    diplomacy["france"]["genoa"] = {
+        top     :       478 ,
+        left    :       4580 ,    
+    }
+    diplomacy["france"]["hungary"] = {
+        top     :       478 ,
+        left    :       4670 ,    
+    }
+    diplomacy["france"]["scotland"] = {
+        top     :       478 ,
+        left    :       4760 ,    
+    }
+    diplomacy["france"]["venice"] = {
+        top     :       478 ,
+        left    :       4851 ,    
+    }
+
+
+    diplomacy["papacy"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["england"] = {
+        top 	:	386 ,
+        left	:	4400 ,
+    }
+    diplomacy["papacy"]["france"] = {
+        top     :       478 ,
+        left    :       4400 ,    
+    }
+    diplomacy["papacy"]["protestant"] = {
+        top     :       568 ,
+        left    :       4490 ,    
+    }
+    diplomacy["papacy"]["genoa"] = {
+        top     :       568 ,
+        left    :       4580 ,    
+    }
+    diplomacy["papacy"]["hungary"] = {
+        top     :       568 ,
+        left    :       4670 ,    
+    }
+    diplomacy["papacy"]["scotland"] = {
+        top     :       568 ,
+        left    :       4760 ,    
+    }
+    diplomacy["papacy"]["venice"] = {
+        top     :       568 ,
+        left    :       4851 ,    
+    }
+
+    diplomacy["protestant"]["ottoman"] = {
+        top 	:	205 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["hapsburg"] = {
+        top 	:	297 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["england"] = {
+        top 	:	386 ,
+        left	:	4490 ,
+    }
+    diplomacy["protestant"]["france"] = {
+        top     :       478 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["papacy"] = {
+        top     :       568 ,
+        left    :       4490 ,    
+    }
+    diplomacy["protestant"]["genoa"] = {
+        top     :       658 ,
+        left    :       4580 ,    
+    }
+    diplomacy["protestant"]["hungary"] = {
+        top     :       658 ,
+        left    :       4670 ,    
+    }
+    diplomacy["protestant"]["scotland"] = {
+        top     :       658 ,
+        left    :       4760 ,    
+    }
+    diplomacy["protestant"]["venice"] = {
+        top     :       568 ,
+        left    :       4851 ,    
+    }
+
+    return diplomacy;
+
+  }
 

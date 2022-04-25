@@ -99,6 +99,7 @@ module.exports = ArcadeMain = {
     if (document.querySelector(".arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
+console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
             ArcadeInviteTemplate(app, mod, invite, i),
             document.querySelector(".arcade-hero")
@@ -186,13 +187,19 @@ module.exports = ArcadeMain = {
               }
 
               if (game_cmd === "cancel") {
-                arcade_main_self.cancelGame(app, mod, game_sig);
-                return;
+		let c = confirm("Are you sure you want to cancel this game?");
+		if (c) {
+                  arcade_main_self.cancelGame(app, mod, game_sig);
+                  return;
+		}
               }
 
               if (game_cmd === "join") {
-                arcade_main_self.joinGame(app, mod, game_sig);
-                return;
+		let c = confirm("Are you sure you want to join this game?");
+		if (c) {
+                  arcade_main_self.joinGame(app, mod, game_sig);
+                  return;
+		}
               }
 
               if (game_cmd === "continue") {

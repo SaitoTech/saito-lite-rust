@@ -9,7 +9,6 @@
 }*/
 
 
-
 .noncard {
   color: black;
   padding: 10px;
@@ -448,8 +447,15 @@ body {
   /*max-width: 120px;*/
 }
 
+/** adjust to account for transparency on shown cards ***/
+.cardbox-menu {
+  width: 65%;
+  left: 48%;
+  padding: 0.5em;
+}
+
 .game-cardbox{
-  width: calc(55vh * 0.712);
+  width: 388px;
 }
 
 .cardbox-card {
@@ -461,8 +467,26 @@ body {
   height: 543px;
 }
 
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .cardbox-card{
+    height: 90vh;
+    width: calc(90vh * 0.714);
+  }
 
+   .game-cardbox{
+    top: 5vh;
+    height: 90vh;
+    width: calc(90vh * 0.714);
+  }
+}
 
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .cardbox-card, .game-cardbox{
+    top: 5vh;
+    width: 90vw;
+    height: calc(90vw * 1.4);
+  }
+}
 
 
 

@@ -4,9 +4,9 @@
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));
     let controlled_keys = 0;
     
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
 	}
       }
@@ -99,14 +99,38 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displayBoard() {
     try {
       this.displayColony();
-      this.displayConquest();
-      this.displayElectorateDisplay();
-      this.displayNewWorld();
-      this.displaySpaces();
-      this.displayNavalSpaces();
-      this.displayVictoryTrack();
     } catch (err) {
       console.log("error displaying board... " + err);
+    }
+    try {
+      this.displayConquest();
+    } catch (err) {
+      console.log("error displaying conquest... " + err);
+    }
+    try {
+      this.displayElectorateDisplay();
+    } catch (err) {
+      console.log("error displaying electorates... " + err);
+    }
+    try {
+      this.displayNewWorld();
+    } catch (err) {
+      console.log("error displaying new world... " + err);
+    }
+    try {
+      this.displaySpaces();
+    } catch (err) {
+      console.log("error displaying spaces... " + err);
+    }
+    try {
+      this.displayNavalSpaces();
+    } catch (err) {
+      console.log("error displaying naval spaces... " + err);
+    }
+    try {
+      this.displayVictoryTrack();
+    } catch (err) {
+      console.log("error displaying victory track... " + err);
     }
   }
 
@@ -120,6 +144,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   }
 
   displaySpaceDetailedView(name) {
+    // function is attached to this.spaces not this.game.spaces
     let html = this.spaces[name].returnView();    
     this.overlay.show(this.app, this, html);
   }
@@ -127,12 +152,43 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displayElectorateDisplay() {
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
+console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
-      let tile = this.returnSpaceTile(this.spaces[key]);
+      let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
+console.log("about to add electoral bonus");
+      if (this.returnElectoralBonus(key)) {
+        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
+      }
     }
   }
 
+
+  // returns 1 if the bonus for controlling is still outstanding
+  returnElectoralBonus(space) {
+
+    if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
+      return 1;
+    }
+    if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
+      return 1;
+    }
+    if (space === "trier" && this.game.state.trier_electoral_bonus == 0) {
+      return 1;
+    }
+    if (space === "cologne" && this.game.state.cologne_electoral_bonus == 0) {
+      return 1;
+    }
+    if (space === "wittenberg" && this.game.state.wittenberg_electoral_bonus == 0) {
+      return 1;
+    }
+    if (space === "brandenburg" && this.game.state.brandenburg_electoral_bonus == 0) {
+      return 1;
+    }
+
+    return 0;
+
+  }
 
   returnSpaceTile(space) {
 
@@ -543,6 +599,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
   }
 
+
   returnMercenaries(space) {
 
     let html = '<div class="space_mercenaries" id="">';
@@ -693,8 +750,9 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displaySpace(key) {
 
     let obj = document.getElementById(key);
-    let space = this.spaces[key];
+    let space = this.game.spaces[key];
     let tile = this.returnSpaceTile(space);
+
     let stype = "hex";
 
     if (space.type == "town") { stype = "hex"; }
@@ -718,9 +776,20 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
     if (space.type === "key") { show_tile = 1; }
 
     //
+    // and force if has units
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	show_tile = 1; 
+      }
+    }
+
+
+    //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
+
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;

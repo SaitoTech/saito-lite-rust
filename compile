@@ -3,7 +3,7 @@
 
 function post_compile {
 
-  cp ./built/lib/saito/boot.js ./web/saito/saito2.js
+  cp ./built/lib/saito/boot.ts ./web/saito/saito2.js
   cat ./web/saito/saito.js >> ./web/saito/saito2.js
   mv -f ./web/saito/saito2.js ./web/saito/saito.js
   echo "ignore..."
@@ -308,6 +308,3 @@ if [ "$1" == "recompile" ]; then
   post_compile
 
 fi
-
-
-

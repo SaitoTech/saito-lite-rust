@@ -34,6 +34,18 @@ class Chat extends ModTemplate {
 
         this.icon_fa = "far fa-comments";
         this.inTransitImageMsgSig = null;
+
+	this.added_identifiers_post_load = 0;
+
+    }
+
+
+
+    returnServices() {
+      let services = [];
+      // servers with chat installed are running community chat groups
+      if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
+      return services;
     }
 
 
@@ -230,6 +242,21 @@ class Chat extends ModTemplate {
                       })
                     }
             	    this.sendEvent('chat-render-request', {});
+
+		    //
+		    // check identifiers
+		    //
+		    if (this.added_identifiers_post_load == 0) {
+		      try {
+			setTimeout(()=>{
+		          this.app.browser.addIdentifiersToDom();
+		          this.added_identifiers_post_load = 1;
+			}, 1200);
+		      } catch (err) {
+			console.log("error adding identifiers post-chat");
+		      }
+		    }
+
                   }
                 }
               },
@@ -473,6 +500,12 @@ class Chat extends ModTemplate {
         if (app.network.peers.length > 0) {
 
             let recipient = app.network.peers[0].peer.publickey;
+	    for (let i = 0; i < app.network.peers.length; i++) {
+	      if (app.network.peers[i].hasService("chat")) {
+		recipient = app.network.peers[0].peer.publickey;
+		i = app.network.peers.length+1;
+	      }
+	    }
             let relay_mod = app.modules.returnModule('Relay');
 
             tx = this.app.wallet.signAndEncryptTransaction(tx);
@@ -509,6 +542,8 @@ class Chat extends ModTemplate {
             members.splice(0, 1);
             members.push(this.app.wallet.returnPublicKey());
         }
+
+console.log("MEMBERS ZERO: " + members[0]);
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
@@ -751,6 +786,7 @@ class Chat extends ModTemplate {
     // UI Functions //
     //////////////////
     openChatBox(group_id = null) {
+
         if (this.renderMode != "email" && this.renderMode != "none") {
             return;
         }
@@ -844,6 +880,7 @@ class Chat extends ModTemplate {
 
 
     returnCommunityChat() {
+console.log("WHAT ARE THE NAMES OF OUR GROUPS: " + JSON.stringify(this.groups));
         for (let i = 0; i < this.groups.length; i++) {
             if (this.app.options.peers.length > 0) {
                 if (this.groups[i].name === "Community Chat") {

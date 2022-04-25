@@ -5,6 +5,14 @@
   padding-right: 0;
 }
 
+.status-icon-menu{
+  height: unset;
+  width: 100%;
+}
+
+.status-text-menu ul li{
+  padding: unset;
+}
 
 .epidemic_overlay {
   display: flex;
@@ -48,6 +56,55 @@
   background-color: #6cb24f;
 }
 
+.scientist .hud-controls{
+  color: hsl(0,0%,20%);
+}
+
+/* have to override default tip without fucking up hud sizing */
+.tip.menu_icon{
+  width: 100px; 
+}
+
+.status-text-menu ul li.textchoice.confirmed{
+  background-color: rgb(69,69,69);
+  color: rgb(231,231,231);
+}
+.status-text-menu ul li.textchoice.confirmed:hover{
+  background-color: rgb(69,69,69);
+}
+
+.fa-border{
+  padding: 0.26em 0.14em;
+}
+
+.fake-border{
+  font-size: 1.2em;
+  display: inline-block;
+  background-color: rgba(10,10,10,0.6);
+  border: solid 0.08em #eee;
+  border-radius: 0.1em;
+  padding: 0.26em 0.14em;
+  width: 100px;
+  height: 100px;
+}
+
+.status-icon-menu i.menu_icon_icon:hover{
+  transform: unset;
+  background-color: whitesmoke;
+  color: black;
+}
+
+.tip .tiptext{
+  min-width: 100px;
+  font-size: 18px;
+  width: fit-content;
+  padding: 0.5em 1em;
+  box-sizing: content-box;
+  white-space: nowrap;
+  z-index: 300;
+  pointer-events: none;
+}
+
 .vial {
   position: absolute;
   background-size: cover;
@@ -79,15 +136,17 @@
   margin-bottom: 10px;
 }
 
-
-.cardfan{
-  all: unset;
+.move-to-discard{
+  transition: transform 2s;
+  transform: scale(50%) translateX(700px) translateY(-350px);
 }
 
-.cardfan .card{
+
+.bighand .card{
+  position: absolute;
   width: 25vh;
+  height: auto;
 }
-
 
 .display-cards {
   display: block;
@@ -165,6 +224,29 @@
 }
 
 
+.game-scoreboard .cube{
+  position: static;
+  height: 30px;
+  font-size: 24px;
+}
+
+.virus-count+img.cube{
+  margin-left: 10px;
+}
+
+.virus-count{
+  margin: 0 2px;
+}
+
+.safe{
+  color: darkgreen;
+}
+.caution{
+  color: darkorange; 
+}
+.danger{
+  color: darkred;
+}
 
 .card {
   cursor: pointer;
@@ -187,24 +269,43 @@ body {
   position: absolute;
 }
 .player {
-  position: relative;
+  position: absolute; /*relative;*/
   width: 32px;
   height: 60px;
+  z-index: 42;
   /*width: 72px;
   height: 100px;
   background-size: cover;*/
   display: none;
-  top: 40px;
+  /*top: 40px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%);*/
 }
 .player img{
   position: relative;
   width: 175%;
   left: -25%;
-
 }
 
+.player.active_player img{
+  border-radius: 20px;
+  background-color: #f5f5f5c0;
+  box-shadow: 0 0 10px 10px #f5f5f5f5;
+}
+
+.move_counter{
+  display: none;
+}
+
+.player.active_player .move_counter{
+  display: block;
+  position: absolute;
+  top: -20px;
+  right: -30px;
+  font-size: 2em;
+  color: black;
+  text-shadow: 0 5px 15px whitesmoke;
+}
 .research_station {
   position: absolute;
   background-image: url("/pandemic/img/Marker%20Research%20Station.png");
