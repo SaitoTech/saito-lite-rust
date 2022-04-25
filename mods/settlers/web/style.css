@@ -546,27 +546,27 @@ body {
   width: 2em;
 }
 
-/*.trade_overlay .select{
-  padding: 0.5em;
-  width: 120px;
-}*/
-
 .trade_overlay .selected{
   padding: 0em;
 }
 
 .trade_overlay .noselect{
   color: lightgrey;
-  /*font-style: italic;*/
 }
 
 .trade_overlay .selected{
-  /*border: 1px solid black;*/
   font-weight: bold;
 }
 
 .trade_overlay .selected .icon{
   width: 3em;
+}
+
+.splash_overlay {
+  padding: 2px;
+  width: 85vw;
+  height: 90vh;
+  max-height: 90vh;
 }
 
 .noselect .icon{
