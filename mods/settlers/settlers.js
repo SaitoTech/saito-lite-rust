@@ -123,6 +123,7 @@ class Settlers extends GameTemplate {
   }
 
   returnWelcomeOverlay(){
+/***
     let html = `<div class="rules-overlay trade_overlay">
                 <h1>Welcome to the Island of Saitoa</h1>
                 <h2>Initial Placement Phase</h2>
@@ -133,6 +134,10 @@ class Settlers extends GameTemplate {
                 <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
                 </div>
   `;
+***/
+   let html = `<div class="splash_overlay rules-overlay trade_overlay">
+	         <img src="/settlers/img/welcome.jpg" style="width:100%;height:100%" />
+               </div>`;
     return html;
   }
 
