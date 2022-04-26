@@ -35,18 +35,6 @@ module.exports = ArcadeSidebar = {
       }
     });
 
- 
-    // 
-    // render calendar if installed
-    //
-    app.modules.respondTo("tiny-calendar").forEach(module => {
-      if (module != null) {
-        module.respondTo('tiny-calendar').render(app, module);
-      }
-    });
-
-
-
   },
 
   
@@ -94,14 +82,6 @@ module.exports = ArcadeSidebar = {
     app.modules.respondTo("email-chat").forEach(module => {
       module.respondTo('email-chat').attachEvents(app, mod);
     });
-
-    app.modules.respondTo("arcade-sidebar").forEach(module => {
-      if (module != null) {
-        module.respondTo('arcade-sidebar').render(app, module);
-      }
-    });
-
-
 
   }
 
