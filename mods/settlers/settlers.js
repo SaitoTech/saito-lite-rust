@@ -2434,7 +2434,6 @@ class Settlers extends GameTemplate {
 
     //Enable player to put roads on adjacent edges
     if (this.game.player == player) {
-console.log("ADDING NEW ROADS TO GAMEBOARD!");
       let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
       for (let road of newRoads) {
         console.log("road: ",road);
@@ -2534,13 +2533,10 @@ console.log("ADDING NEW ROADS TO GAMEBOARD!");
         this.game.state.placedCity.replace("city_", "")
       );
       for (let road of newRoads) {
-console.log(`adding hover to road_${road}`);
         $(`#road_${road}`).addClass("new");
       }
-
       $(".road.new").addClass("rhover");
 
-console.log("added hover!");
       
       $(".road.new").off();
       $(".road.new").on("click", function () {
@@ -2555,8 +2551,6 @@ console.log("added hover!");
         settlers_self.endTurn();
       });
     } else {
-
-console.log("THIS IS ME 2: " + this.game.state.placedCity);
 
       this.updateStatus(
       `<div class="tbd">You may build a ${this.skin.r.name}...</div>`
