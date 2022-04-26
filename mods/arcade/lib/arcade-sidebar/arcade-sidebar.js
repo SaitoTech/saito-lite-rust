@@ -82,6 +82,13 @@ module.exports = ArcadeSidebar = {
       module.respondTo('email-chat').attachEvents(app, mod);
     });
 
+
+    app.modules.respondTo("arcade-sidebar").forEach(module => {
+      if (module != null) {
+        module.respondTo('arcade-sidebar').render(app, module);
+      }
+    });
+
   }
 
 }
