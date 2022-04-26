@@ -28,6 +28,9 @@ class Settlers extends GameTemplate {
 
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
+
+    // temp variable to help with post-splash flash
+    this.currently_active_player = 0;
   }
   //
   // requestInterface(type) {
@@ -135,7 +138,7 @@ class Settlers extends GameTemplate {
                 </div>
   `;
 ***/
-   let html = `<div class="splash_overlay rules-overlay trade_overlay">
+   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay trade_overlay">
 	         <img src="/settlers/img/welcome.jpg" style="width:100%;height:100%" />
                </div>`;
     return html;
@@ -839,16 +842,29 @@ class Settlers extends GameTemplate {
       // Build a town
       // Let player make selection, other players wait
       if (mv[0] == "player_build_city") {
+
         let player = parseInt(mv[1]);
+
+        this.currently_active_player = player;
+
         this.game.queue.splice(qe, 1);
         this.stopTrading();
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
-            document.querySelector(".close_welcome_overlay").onclick = (e) => {
-              this.overlay.hide();
-            };
+	    try {
+              this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+              document.querySelector(".welcome_overlay").onclick = (e) => {
+                this.overlay.hide();
+	        if (this.currently_active_player == this.game.player) {
+alert("we should get the flash");
+                  this.playerbox.addClass('flash');
+                  setTimeout(() => {
+                    $(".flash").removeClass("flash");
+                  }, 3000);
+		}
+              };
+	    } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -1311,14 +1327,13 @@ class Settlers extends GameTemplate {
         General Game Mechanics
       */
       //
-
-      // Player turn begins by rolling the dice (or playing dev card if available)
+      // player turn begins by rolling the dice (or playing dev card if available)
+      //
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll",player);
-
 
         if (this.game.player == player) {
 
@@ -1341,13 +1356,16 @@ class Settlers extends GameTemplate {
 
           this.updateStatus(html);
 
-          //Flash to be like "hey it's your move"
+	  //
+          // Flash to be like "hey it's your move"
+	  //
           if (this.is_sleeping){
+	    this.currently_active_player = player;
             this.playerbox.addClass('flash');
             setTimeout(() => {
                 $(".flash").removeClass("flash");
-              }, 3000);
-              this.is_sleeping = false;  
+            }, 3000);
+            this.is_sleeping = false;  
           }
 
           //roll the dice by clicking on the dice

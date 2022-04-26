@@ -35,6 +35,16 @@ module.exports = ArcadeSidebar = {
       }
     });
 
+ 
+    // 
+    // render calendar if installed
+    //
+    app.modules.respondTo("tiny-calendar").forEach(module => {
+      if (module != null) {
+        module.respondTo('tiny-calendar').render(app, module);
+      }
+    });
+
 
 
   },

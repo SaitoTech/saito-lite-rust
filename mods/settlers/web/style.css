@@ -564,9 +564,11 @@ body {
 
 .splash_overlay {
   padding: 2px;
-  width: 85vw;
-  height: 90vh;
+  width: auto;
+  height: auto;
   max-height: 90vh;
+  max-width: 95%;
+  min-width: 800px;
 }
 
 .noselect .icon{
@@ -960,15 +962,14 @@ ul.horizontal_list li.iconoption{
     top: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%);
-}   
+  }   
 
   .notme .diceroll{
     width: min(12vw, 110px);
     height: 50px;
     padding: min(0.5vw,5px) 0 ;
     flex-direction: row;
-}
-
+  }
 }
 
 /* reposition playerbox for me on large screens top-left */
@@ -983,7 +984,25 @@ ul.horizontal_list li.iconoption{
   }
 }
 
+@media screen and (orientation: landscape) and (max-width: 800px) {
+  .splash_overlay {
+    padding: 2px;
+    width: auto;
+    height: auto;
+    max-height: 90vh;
+    max-width: 95%;
+    min-width: 600px;
+  }
+}
+@media screen and (orientation: portrait) and (max-width: 800px) {
+  .splash_overlay {
+    padding: 2px;
+    width: auto;
+    height: auto;
+    max-height: 90vh;
+    max-width: 95%;
+    min-width: 400px;
+  }
+}
 
 
-
-/*Still need better layout for small screens*/
