@@ -73,6 +73,7 @@ class Scotland extends GameTemplate {
     this.maxPlayers = 6; 
 
     this.hud.mode = 0;
+    this.hud.auto_sizing = 0;
     this.sizer.maxZoom = 100;
   }
 
@@ -257,6 +258,7 @@ class Scotland extends GameTemplate {
       return;
     }
 
+    this.showBoard();
     //
     // locations
     //
@@ -511,10 +513,13 @@ class Scotland extends GameTemplate {
           this.playerTurn(player, pawn); // player is the human, pawn is the token  
         }else{
           if (pawn == this.game.state.numDetectives){
-            this.updateStatus(`Waiting for Mr X to move (Player ${player})`);
+            this.setHudClass();
+            this.updateStatus(`<div class="status-message">Waiting for Mr X to move (Player ${player})</div>`);
           }else{
-            this.updateStatus(`Waiting for Detective ${pawn+1} to move (Player ${player})`);
+            let sHeader = `Waiting for Detective ${pawn+1} to move (Player ${player})`;
+            this.updateStatus(`<div class="status-message">${sHeader}</div>${this.ticketsToHTML(this.game.state.numDetectives)}`);
           }
+          
         }  
         return 0;
       }
@@ -524,13 +529,9 @@ class Scotland extends GameTemplate {
   }
 
  
-  removeEventsFromBoard() {
-    //
-    // remove active events
-    //
+  disableBoardClicks() {
     $(".location").off();
     $(".location").css("border-color", "transparent");
-
     this.showBoard();
   }
 
@@ -550,6 +551,43 @@ class Scotland extends GameTemplate {
     return false;
   }
 
+
+  ticketsToHTML(pawn){
+    let html =  `<div class='status-icon-menu'>
+
+            <div class="menu_icon" id="taxi">
+              <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: yellow;"></i>
+              <div class="menu-text">
+               Taxi: ${this.game.state.tickets[pawn]["taxi"]}
+              </div>
+            </div>
+
+            <div class="menu_icon" id="bus">
+              <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #4382b5;"></i>
+              <div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div>
+            </div>
+
+            <div class="menu_icon" id="underground">
+               <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #be5e2f;"></i>
+               <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
+            </div>
+            `;
+    console.log(pawn, this.game.state.numDetectives);
+    if (pawn == this.game.state.numDetectives){
+      html += `<div class="menu_icon" id="mystery">
+                <i class="menu_icon_icon fas fa-mask fa-border"></i>
+                <div class="menu-text">X: ${this.game.state.tickets[pawn]["x"]}</div>
+              </div>
+              <div class="menu_icon" id="double">
+                <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
+                <div class="menu-text">Double: ${this.game.state.tickets[pawn]["double"]}</div>
+              </div>`;      
+    }
+    html += `</div>`;
+
+    return html;
+  }
+
   //
   // player is the human this.game.player
   // gamer is the player (may only be 2)
@@ -562,11 +600,8 @@ class Scotland extends GameTemplate {
 
     this.menu_backup_callback = function(){scotland_self.playerTurn(player, pawn);};    
 
-    //
     // refresh board
-    //
-    this.removeEventsFromBoard();
-    let useMysteryTicket = false;
+    this.disableBoardClicks();
 
     //
     // generate instructions and print to HUD
@@ -584,67 +619,20 @@ class Scotland extends GameTemplate {
       }
     }
 
-    let html = "";
-    html = `<div class="status-message">${sHeader}</div>
-          <div class='status-icon-menu'>
+    let html = `<div class="status-message">${sHeader}</div>${this.ticketsToHTML(pawn)}`; 
 
-            <div class="menu_icon" id="taxi">
-              <i class="menu_icon_icon fas fa-taxi fa-border"></i>
-              <div class="menu-text">
-               Taxi: ${this.game.state.tickets[pawn]["taxi"]}
-              </div>
-            </div>
-
-            <div class="menu_icon" id="bus">
-              <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #4382b5;"></i>
-              <div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div>
-            </div>
-
-            <div class="menu_icon" id="underground">
-               <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #be5e2f;"></i>
-               <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
-            </div>
-
-         </div>`;
-
-
-/*    if (player === this.game.state.x){
-      html += `<li class="menu_option" id="taxi">taxi</li>`;
-      html += `<li class="menu_option" id="bus">bus</li>`;
-      html += `<li class="menu_option" id="underground">underground</li>`;
-      
-      //TODO: Need to select mystery move and have it be doubled if necessary
-      if (this.game.state.tickets[pawn]["x"] > 0) {
-        html += `<li class="menu_option" id="mystery">mystery (${this.game.state.tickets[pawn]["x"]} tickets)</li>`;
-      }
-      if (this.game.state.tickets[pawn]["double"] > 0 && this.game.state.double_in_action == 0) {
-        html += `<li class="menu_option" id="double">double move (${this.game.state.tickets[pawn]["double"]})</li>`;
-      }
-    
-    }else{ //Detectives
-      if (this.game.state.tickets[pawn]["taxi"] > 0) {
-        html += `<li class="menu_option" id="taxi">taxi (${this.game.state.tickets[pawn]["taxi"]} tickets)</li>`;
-      }
-      if (this.game.state.tickets[pawn]["bus"] > 0) {
-        html += `<li class="menu_option" id="bus">bus (${this.game.state.tickets[pawn]["bus"]} tickets)</li>`;
-      }
-      if (this.game.state.tickets[pawn]["underground"] > 0) {
-        html += `<li class="menu_option" id="underground">underground (${this.game.state.tickets[pawn]["underground"]} tickets)</li>`;
-      }
-     }
-
-    this.updateStatusWithOptions(sHeader, `<ul>${html}</ul>`, true);
-  */
     this.updateStatus(html);
-    if (player !== this.game.state.x) {this.setHudClass(pawn);}
+    if (player !== this.game.state.x) {
+      this.setHudClass(pawn);
+    }else{
+      this.setHudClass(-1);
+    }
 
-    //
     // attach events
-    //
-
-    $(".menu_option").off();
-    $(".menu_option").on("click", function(){
-      $(".highlight-available-move").css("border-color", "transparent");
+    $(".menu_icon").off();
+    $(".menu_icon").on("click", function(){
+      scotland_self.disableBoardClicks();
+      let detectives = scotland_self.game.state.player_location.slice(0,scotland_self.game.state.numDetectives);  
       let action = $(this).attr("id");
       if (action == "double"){
         scotland_self.addMove("double");
@@ -652,81 +640,60 @@ class Scotland extends GameTemplate {
         return;
       }
       if (action == "taxi"){
-        enableTaxi();
-      }
-      if (action == "bus"){
-        enableBus();
-      }
-      if (action == "underground"){
-        enableUnderground();
-      }
-      if (action == "mystery"){
-        $(".highlight-available-move").css("border-color", "black");
-        useMysteryTicket = true;
-      }
-    });
-    
-
-    $(".location").off();
-    let detectives = this.game.state.player_location.slice(0,this.game.state.numDetectives);
-
-    const enableTaxi = function(){ 
-      if (scotland_self.game.state.tickets[pawn]["taxi"] > 0) {
+        if (scotland_self.game.state.tickets[pawn]["taxi"] > 0) {
         for (let z of mylocation.taxi) {
           if (!detectives.includes(parseInt(z))){
             can_player_move = 1;
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
               console.log("success...");
-              let ticket = (useMysteryTicket)? "x": "taxi";
-              scotland_self.movePlayer(player, pawn, target_id, ticket);
+              scotland_self.movePlayer(player, pawn, target_id, "taxi");
             });
             $(`#${z}`).css("border-color","yellow");
             $(`#${z}`).addClass("highlight-available-move");
           }
         }
-      }
-    }
-      
-    const enableBus = function(){
-      if (scotland_self.game.state.tickets[pawn]["bus"] > 0) {
-      for (let z of mylocation.bus) {
-        if (!detectives.includes(parseInt(z))){
-          can_player_move = 1;
-          $(`#${z}`).on("click", function () {
-            let target_id = $(this).attr("id");
-            console.log("success...");
-            let ticket = (useMysteryTicket)? "x": "bus";
-            scotland_self.movePlayer(player, pawn, target_id, ticket);
-          });
         }
-        $(`#${z}`).css("border-color","cyan");
-        $(`#${z}`).addClass("highlight-available-move");
       }
-      }
-    }
-    
-    const enableUnderground = function(){
-      if (scotland_self.game.state.tickets[pawn]["underground"] > 0) {
-      for (let z of mylocation.underground) {
-        if (!detectives.includes(parseInt(z))){
-          can_player_move = 1;
-          $(`#${z}`).on("click", function () {
-            let target_id = $(this).attr("id");
-            let ticket = (useMysteryTicket)? "x": "underground";
-            scotland_self.movePlayer(player, pawn, target_id, ticket);
-          });
+      if (action == "bus"){
+        if (scotland_self.game.state.tickets[pawn]["bus"] > 0) {
+        for (let z of mylocation.bus) {
+          if (!detectives.includes(parseInt(z))){
+            can_player_move = 1;
+            $(`#${z}`).on("click", function () {
+              let target_id = $(this).attr("id");
+              console.log("success...");
+              scotland_self.movePlayer(player, pawn, target_id, "bus");
+            });
+          }
+          $(`#${z}`).css("border-color","cyan");
+          $(`#${z}`).addClass("highlight-available-move");
         }
-        $(`#${z}`).css("border-color","red");
-        $(`#${z}`).addClass("highlight-available-move");
+        }
       }
-    }
-
-    }
-
-    const enableFerry = function(){
-       if (scotland_self.game.state.tickets[pawn]["x"] > 0) {
-        for (let z of mylocation.ferry) {
+      if (action == "underground"){
+        if (scotland_self.game.state.tickets[pawn]["underground"] > 0) {
+          for (let z of mylocation.underground) {
+            if (!detectives.includes(parseInt(z))){
+              can_player_move = 1;
+              $(`#${z}`).on("click", function () {
+                let target_id = $(this).attr("id");
+                scotland_self.movePlayer(player, pawn, target_id, "underground");
+              });
+            }
+            $(`#${z}`).css("border-color","red");
+            $(`#${z}`).addClass("highlight-available-move");
+          }
+        }
+      }
+      if (action == "mystery"){
+        $(".highlight-available-move").css("border-color", "black");
+        useMysteryTicket = true;
+        if (scotland_self.game.state.tickets[pawn]["x"] > 0) {
+        let mot = ["bus", "taxi", "underground", "ferry"];
+        for (let mode of mot){
+          console.log(mode);
+          for (let z of mylocation[mode]) {
           if (!detectives.includes(parseInt(z))){
             can_player_move = 1;
             $(`#${z}`).on("click", function () {
@@ -736,16 +703,14 @@ class Scotland extends GameTemplate {
           }
           $(`#${z}`).css("border-color","black");
           $(`#${z}`).addClass("highlight-available-move");
+          }  
         }
       }
-    }    
-   
-    enableTaxi();
-    enableBus();
-    enableUnderground();
-    enableFerry();
+      }
+    });
+    
 
-    if (can_player_move == 0) {
+    /*if (can_player_move == 0) {
       //Mr. X is boxed in and cannot move --> game over
       if (player === this.game.state.x){
         this.addMove(`win\ttrapped\t-1\t${source_id}`);
@@ -756,7 +721,7 @@ class Scotland extends GameTemplate {
       }
       $(".location").off();
       return 0;
-    }
+    }*/
   }
 
   movePlayer(player, pawn, target_id, ticket) {
@@ -830,12 +795,14 @@ class Scotland extends GameTemplate {
     return "";
   }
 
-  setHudClass(pawn_id){
+  setHudClass(pawn_id = null){
     let hh = document.querySelector(".hud-header");
     if (!hh) return;
 
     hh.classList.remove("pawn0", "pawn1", "pawn2", "pawn3", "pawn4");
-    hh.classList.add(`pawn${pawn_id}`);
+    if (pawn_id != null){
+      hh.classList.add(`pawn${pawn_id}`);  
+    }
 
   }
 
