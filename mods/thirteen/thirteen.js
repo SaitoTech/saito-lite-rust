@@ -283,10 +283,6 @@ class Thirteen extends GameTemplate {
 
       this.game.queue.push("init");
 
-      if (this.game.dice === "") {
-        this.initializeDice();
-      }
-
     }
 
 
