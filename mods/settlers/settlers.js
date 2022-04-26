@@ -618,7 +618,7 @@ class Settlers extends GameTemplate {
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
-      console.log("QUEUE: " + this.game.queue);
+      //console.log("QUEUE: " + this.game.queue);
       //console.log(JSON.parse(JSON.stringify(this.game.state)));
       
       /* Game Setup */
