@@ -28,7 +28,6 @@ module.exports = ArcadeSidebar = {
       }
     });
 
-
     app.modules.respondTo("arcade-sidebar").forEach(module => {
       if (module != null) {
         module.respondTo('arcade-sidebar').render(app, module);
