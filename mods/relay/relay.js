@@ -72,7 +72,7 @@ class Relay extends ModTemplate {
                 //
                 // forward to peer
                 //
-console.log("relay peer message");
+                //console.log("relay peer message");
                 peer.sendRequest("relay peer message", tx.transaction);
 
             }

@@ -150,7 +150,7 @@ isTagged(publickey, tag)
 
 saveKeys()
 
-saveGrouos()
+saveGroups()
 
 removeKey(publickey)
 

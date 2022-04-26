@@ -255,38 +255,12 @@ class Wordblocks extends GameTemplate {
     this.updateStatus("loading game...");
     this.loadGame(game_id);
 
-    if (this.wordlist == "") {
-      //TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
-      try {
-        var dictionary = this.game.options.dictionary;
-        let durl = "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".json";
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", durl, false); //true -> async 
-        //xhr.responseType = "json"; //only in async
-        xhr.send();
-        //xhr.onload = ()=>{
-        if (xhr.status != 200) {
-          salert(`Network issues downloading dictionary -- ${durl}`);
-        } else {
-          this.wordlist = Array.from(JSON.parse(xhr.response));
-          //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
-          console.log("My word list is a :", typeof this.wordlist);
-        }
-        //};
-      } catch (err) {
-        // instead of onerror
-        console.error(err);
-        salert("Network issues downloading dictionary, error caught");
-      }
-    }
-
-
     //
     // deal cards
     //
     if (this.game.deck.length == 0 && this.game.step.game == 1) {
       this.updateStatus("Generating the Game");
-
+      this.game.queue = [];
       this.game.queue.push("READY");
       for (let i = this.game.players.length; i > 0; i--) {
         this.game.queue.push(`DEAL\t1\t${i}\t7`);
@@ -302,9 +276,37 @@ class Wordblocks extends GameTemplate {
     //
     // stop here if initializing
     //
-    if (this.game.initializing == 1) {
+    if (this.game.initializing == 1 || !this.browser_active) {
       return;
     }
+
+
+       if (this.wordlist == ""){
+      //TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
+      try {
+        var dictionary = this.game.options.dictionary;
+        let durl = "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".json";
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", durl, true); //true -> async 
+        xhr.responseType = "json"; //only in async
+        xhr.send();
+        xhr.onload = ()=>{
+           if (xhr.status != 200) {
+            salert(`Network issues downloading dictionary -- ${durl}`);
+          } else {
+            this.wordlist = xhr.response;//;Array.from(JSON.parse(xhr.response));
+            //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
+            console.log("My word list is a :",typeof this.wordlist);
+          }
+        };
+      } catch (err) {
+        // instead of onerror
+        console.error(err);
+        salert("Network issues downloading dictionary, error caught");
+      }
+    }
+    
+
 
     //
     // return letters
@@ -1753,14 +1755,14 @@ class Wordblocks extends GameTemplate {
   }
 
   checkWord(word) {
-    if (word.length >= 1 && typeof this.wordlist != "undefined") {
+    if (word.length >= 1 && this.wordlist.length > 0) {
       if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
         return false;
       } else {
         return true;
       }
-    }
-    console.error("Word length or dictionary issue -- " + word);
+    } 
+    console.error("Word length or dictionary issue -- " + word,wordlist);
     return false;
   }
 

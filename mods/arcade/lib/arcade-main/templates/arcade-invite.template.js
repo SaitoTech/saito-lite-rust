@@ -1,5 +1,6 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
-
+  //console.log("ARCADEINVITETEMPLATE");
+  //console.log(invite);
   //
   // gameslug given game
   //
@@ -10,6 +11,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
 
 
   let inviteTypeClass = "open-invite";
+
   let game_initialized = 0;
   if (invite.isMine) { inviteTypeClass = "my-invite"; }
   if (invite.msg) {
@@ -20,18 +22,21 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       game_initialized = 1;
     }
   }
+  //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load
   //
+  //console.log(app.options.games);
   if (app.options) {
     if (app.options.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-	if (app.options.games[i].initializing == 1) {
-	  game_initialized = 0;
-	}
+      	if (app.options.games[i].initializing == 1) {
+      	  game_initialized = 0;
+      	}
       }
     }
   }
+  //console.log("Game_initialized: " + game_initialized);
   let playersNeeded = invite.msg.players_needed > 4 ? 5: invite.msg.players_needed;
   let playersHtml = `<div class="playerInfo" style="">`;
   if (invite.msg.players.length > invite.msg.players_needed) {
@@ -72,7 +77,10 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
      if (invite.isMine) {
        if (game_initialized == 1) { 
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">CONTINUE</button>`;
-       }
+       }else{
+          inviteHtml += `<div class="button_with_icon"><i class="fas fa-link link_icon private"></i>`;          
+          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="${(invite.msg.request == "private")?"publicize":"invite"}" class="button invite-tile-button">${(invite.msg.request == "private")?"OPEN":"HIDE"}</button></div>`;
+        }
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {
        if (game_initialized == 1) {
@@ -93,7 +101,9 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
 }
 
 
-
+/* 
+  This could use some improvement since some games have a lot of options...
+*/
 let makeDescription = (app, invite) => {
 
   let html = '';
@@ -103,10 +113,7 @@ let makeDescription = (app, invite) => {
     if (gameModule) {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
-        let output_me = 1;
-        if (output_me == 1) {
-          html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
-        }
+        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
       }
     }
   } 
