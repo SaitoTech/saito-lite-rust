@@ -138,8 +138,7 @@ class Blackjack extends GameTemplate {
     // game engine needs this to start
     //
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); }
-
+    
     //
     // initialize
     //

@@ -14,9 +14,6 @@
 
 console.log("PLAYERS INFO: " + JSON.stringify(this.game.players_info));
 
-      if (this.game.dice === "") {
-        this.initializeDice();
-      }
 
 console.log("\n\n\n\n");
 console.log("---------------------------");

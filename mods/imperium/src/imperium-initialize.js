@@ -366,11 +366,7 @@ console.log("error initing chat: " + err);
 
       is_this_a_new_game = 1;
 
-      //
-      // dice
-      //
-      this.initializeDice();
-
+      
 
       //
       // players first

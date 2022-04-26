@@ -71,8 +71,6 @@ class Hearts extends GameTemplate {
 
       this.game.state = this.returnState();
 
-      this.initializeDice();
-
       this.game.queue = [];
 
       this.game.queue.push("newround");

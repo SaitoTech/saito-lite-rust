@@ -143,16 +143,10 @@ class Poker extends GameTemplate {
   }
 
   initializeGame(game_id) {
-    //
-    // game engine needs this to start
-    //
     /*if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }*/
-    if (this.game.dice == "") {
-      this.initializeDice();
-    }
-
+  
     // initialize game state
     if (this.game.deck.length == 0) {
       this.game.state = this.returnState(this.game.players.length);
