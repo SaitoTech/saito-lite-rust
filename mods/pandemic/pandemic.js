@@ -86,12 +86,6 @@ class Pandemic extends GameTemplate {
  
     this.loadGame(game_id);
 
-    //
-    // new state if needed
-    //
-    if (this.game.dice == "") {
-      this.initializeDice();
-    }
 
     if (this.game.cities == undefined) {
       this.game.cities = this.returnCities();

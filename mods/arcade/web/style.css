@@ -1145,7 +1145,11 @@ select {
 }
 
 .dynamic_button_options {
-  width: 88%;
+  width: calc(100% - 60px);
+}
+
+.dynamic_button_options button{
+  border-radius: 5px 0px 0px 5px;
 }
 
 .dynamic_button.showAll {
@@ -1173,6 +1177,8 @@ select {
   border-radius: 0 5px 5px 0;
   height: 60px;
   line-height: 60px;
+  width: 60px;
+  text-align: center;
 }
 
 /* Transition */
@@ -1443,10 +1449,10 @@ span.rewards-row-name {
 }
 
 .invite-link > p {
-  margin-top: 2rem;
-  inline-size: 18rem;
+  margin-top: 1rem;
+  inline-size: 22rem;
   overflow-wrap: break-word;
-  line-height: 1.3rem;
+  line-height: 1.2rem;
 }
 
 .invite-link button {

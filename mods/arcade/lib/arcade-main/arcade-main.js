@@ -614,7 +614,7 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "invite") {
         button.setAttribute("data-cmd", "publicize");
-        button.textContent = "OPEN";
+        button.textContent = "PRIVATE";
         /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.add("private");
@@ -653,7 +653,7 @@ module.exports = ArcadeMain = {
       let game_cmd = button.getAttribute("data-cmd");
       if (game_cmd == "publicize") {
         button.setAttribute("data-cmd", "invite");
-        button.textContent = "HIDE";
+        button.textContent = "PUBLIC";
         /*let linkButton = button.parentNode.querySelector(".link_icon");
         if (linkButton){
           linkButton.classList.remove("private");

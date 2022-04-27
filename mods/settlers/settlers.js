@@ -390,8 +390,6 @@ class Settlers extends GameTemplate {
       this.skin.render(this.game.options.theme);
       this.game.stats = this.returnInitStats();
 
-      this.initializeDice();
-
       console.log("---------------------------");
       console.log("---------------------------");
       console.log("------ INITIALIZE GAME ----");

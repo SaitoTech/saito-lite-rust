@@ -51,8 +51,6 @@ class GameTestSuite extends GameTemplate {
 
       this.game.state = this.returnState();
 
-      this.initializeDice();
-
       this.game.queue.push("init");
       this.game.queue.push("NOTIFY\tYou are Player "+this.game.player);
       this.game.queue.push("READY");

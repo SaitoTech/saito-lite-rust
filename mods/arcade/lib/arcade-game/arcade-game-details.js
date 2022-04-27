@@ -102,9 +102,11 @@ module.exports = ArcadeGameDetails = {
     });
 
 
-    document.querySelector(".dynamic_button").addEventListener("click", (e) => {
+    if (document.querySelector(".dynamic_button")){
+      document.querySelector(".dynamic_button").addEventListener("click", (e) => {
       e.currentTarget.classList.toggle("showAll");
-    });
+      });  
+    }
 
     //Query game instructions
     //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
@@ -194,13 +196,17 @@ module.exports = ArcadeGameDetails = {
             console.log(gamedata);
             return;
           }
+          
+          //Close the overlay
+          mod.overlay.hide();
+          document.getElementById("background-shim").destroy();
+
           if (players_needed == 1) {
+
             mod.launchSinglePlayerGame(app, gamedata); //Game options don't get saved....
             return;
           } else {
-            mod.overlay.hide();
-            document.getElementById("background-shim").destroy();
-
+            
             //console.log("PRE CREATING OPEN TX");
             if (isPrivateGame == "private") {
               gamedata.invitation_type = "private";

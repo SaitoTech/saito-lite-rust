@@ -1399,9 +1399,25 @@ class Arcade extends ModTemplate {
     }
   }
 
-  launchSinglePlayerGame(app, gameobj) {
-    window.location = "/" + gameobj.slug;
-    return;
+  async launchSinglePlayerGame(app, gameobj) {
+    try{
+     
+      let arcade_self = this;
+      GameLoader.render(app, arcade_self);
+
+      let gameMod = app.modules.returnModule(gameobj.name);  
+      let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
+
+      GameLoader.render(app, arcade_self, game_id);
+      GameLoader.attachEvents(app, arcade_self);  
+     
+    }catch(err){
+      console.log(err);
+      return;
+    }
+
+    //window.location = "/" + gameobj.slug;
+    //return;
   }
 
   launchGame(game_id) {
@@ -1428,7 +1444,7 @@ class Arcade extends ModTemplate {
           //
           if (game_idx == -1) {
             console.log("keep loading game!");
-            GameLoader.render(this.app, this, -1);
+            GameLoader.render(arcade_self.app, arcade_self, -1);
             return;
           }
 
@@ -1459,8 +1475,8 @@ class Arcade extends ModTemplate {
             }else{
               clearInterval(arcade_self.initialization_timer);
               arcade_self.initialization_timer = null;
-              GameLoader.render(this.app, this, game_id);
-              GameLoader.attachEvents(this.app, this);  
+              GameLoader.render(arcade_self.app, arcade_self, game_id);
+              GameLoader.attachEvents(arcade_self.app, arcade_self);  
             }
           }
         }
