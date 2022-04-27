@@ -162,16 +162,6 @@ class Blockchain {
       return;
     }
 
-//
-// IS GB INDEXED?
-//
-if (this.app.blockchain.blockchain.genesis_block_hash !== "") {
-  if (this.debugging){
-    console.log("=== IS GENESIS BLOCK INDEXED ===");
-    console.log(this.isBlockIndexed(this.app.blockchain.blockchain.genesis_block_hash));
-  }
-}
-
 
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
