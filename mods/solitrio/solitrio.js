@@ -170,9 +170,11 @@ class Solitrio extends GameTemplate {
       class:"game-confirm-newbie",
       callback: function(app,game_mod){
         game_mod.game.options["play_mode"] = "auto";
-        game_mod.menu.render(app, game_mod);
-        game_mod.menu.attachEvents(app, game_mod);
-        game_mod.attachEventsToBoard();
+        game_mod.attachEventsToBoard(); //change the click style
+        try{
+          document.querySelector("#game-confirm-newbie").textContent = "Auto ✔";
+          document.querySelector("#game-confirm-expert").textContent = "Manual";   
+        }catch(err){}
       }
     });
    
@@ -182,9 +184,11 @@ class Solitrio extends GameTemplate {
       class:"game-confirm-expert",
       callback: function(app,game_mod){
        game_mod.game.options["play_mode"] = "manual";
-       game_mod.menu.render(app, game_mod);
-       game_mod.menu.attachEvents(app, game_mod);
-      game_mod.attachEventsToBoard(); 
+       game_mod.attachEventsToBoard(); //change the click style
+       try{
+        document.querySelector("#game-confirm-newbie").textContent = "Auto";
+        document.querySelector("#game-confirm-expert").textContent = "Manual ✔";  
+       }catch(err){}
       }
     });
 
