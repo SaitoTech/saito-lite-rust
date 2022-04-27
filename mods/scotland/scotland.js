@@ -509,6 +509,10 @@ class Scotland extends GameTemplate {
         if (!this.browser_active) return;
         this.game.queue.splice(qe, 1);
         
+        $(".active_player").removeClass("active_player");
+        let selector = (pawn == this.game.state.numDetectives) ? "#pawnX" : `#pawn${pawn+1}`;
+        $(selector).addClass("active_player");
+
         if (this.game.player == player){
           this.playerTurn(player, pawn); // player is the human, pawn is the token  
         }else{
@@ -762,7 +766,23 @@ class Scotland extends GameTemplate {
     }
   }
 
-  showPlayers() {
+  showPlayers(){
+    for (let i = 0; i <= this.game.state.numDetectives; i++) {
+      let pawn = document.querySelector(`#pawn${i+1}`);
+      if (pawn){
+        let position = this.game.state.player_location[i]; 
+        if (position != -1) {
+          pawn.style.top = this.scale(this.game.state.locations[position].top+40) + "px";
+          pawn.style.left = this.scale(this.game.state.locations[position].left+37) + "px";
+          pawn.classList.remove("invisible");
+        }else{
+          pawn.classList.add("invisible");
+        }
+      }
+    }    
+  }
+  
+  /*showPlayers() {
     $(".location").html("");
 
     for (let i = 0; i <= this.game.state.numDetectives; i++) {
@@ -772,8 +792,7 @@ class Scotland extends GameTemplate {
         $(divname).addClass("highlightpawn");
       }
     }
-
-  }
+  }*/
 
   returnPawn(pawn_id) {
     if (pawn_id === this.game.state.numDetectives){
