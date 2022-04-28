@@ -44,6 +44,7 @@ body {
    align-items: center;
    justify-content: center;
    margin-bottom: 3rem;
+   margin-top: 5rem;
 }
 
 .content h1 {
@@ -57,12 +58,12 @@ body {
 }
 
 .banner-logo {
-  width: 100px;
+  width: 200px;
   /* position: absolute; */
   right: 5rem;
   top: 1rem;
-  transform: rotateZ(33deg);
-  animation: rotate;
+  /* transform: rotateZ(33deg); */
+  /* animation: rotate; */
   animation-duration: 10s;
   animation-iteration-count: infinite;
   animation-fill-mode: forwards;
@@ -135,7 +136,7 @@ body {
     
   }
   .banner-logo {
-    width: 70px;
+    width: 150px;
     right: 2rem;
   }
 }
