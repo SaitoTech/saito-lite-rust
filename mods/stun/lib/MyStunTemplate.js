@@ -70,9 +70,19 @@ module.exports = (app, mod) => {
   </div>
 </div>
   <p style="font-weight: bold"> Video </p>
-  <div class="stun-video-container" style="display: flex"><video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
+  <div class="stun-video-container" style="display: flex">
+  <video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
+   <video class="stun-video"  id="remoteStream1" width="100%" height="100%" autoplay></video> 
+  </div>
 
-  <video class="stun-video"  id="remoteStream" width="100%" height="100%" autoplay></video> </div>
+  <div class="stun-video-container" style="display: flex">
+  <video class="stun-video"  id="remoteStream2" width="100%" height="100%" autoplay></video> 
+  <video class="stun-video"  id="remoteStream3" width="100%" height="100%" autoplay></video> 
+  </div>
+
+  <div class="stun-video-container" style="display: flex">
+  <video class="stun-video"  id="remoteStream4" width="100%" height="100%" autoplay></video> 
+  </div>
   
 
    

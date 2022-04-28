@@ -41,8 +41,8 @@ const StunUI = {
             if (StunUI.localStream && document.querySelector('#localStream')) {
                   document.querySelector('#localStream').srcObject = StunUI.localStream;
             }
-            if (StunUI.remoteStream && document.querySelector('#remoteStream')) {
-                  document.querySelector('#remoteStream').srcObject = StunUI.remoteStream;
+            if (StunUI.remoteStream && document.querySelector('#remoteStream1')) {
+                  document.querySelector('#remoteStream1').srcObject = StunUI.remoteStream;
             }
 
       },
@@ -58,10 +58,10 @@ const StunUI = {
                   console.log('stun update', app);
                   let localStream, remoteStream;
                   // localStream = document.querySelector('#localStream');
-                  // remoteStream = document.querySelector('#remoteStream');
+                  // remoteStream = document.querySelector('#remoteStream1');
                   StunUI.render(app, mod);
                   // document.querySelector('#localStream') = localStream;
-                  // document.querySelector('#remoteStream') = remoteStream;
+                  // document.querySelector('#remoteStream1') = remoteStream;
                   // StunUI.attachEvents(app, mod);
             });
 
@@ -203,7 +203,7 @@ const StunUI = {
                               const remoteStream = new MediaStream();
                               pc.addEventListener('track', (event) => {
 
-                                    const remoteVideoSteam = document.querySelector('#remoteStream');
+                                    const remoteVideoSteam = document.querySelector('#remoteStream1');
                                     console.log('got remote stream ', event.streams);
                                     event.streams[0].getTracks().forEach(track => {
                                           remoteStream.addTrack(track);
@@ -472,7 +472,7 @@ const StunUI = {
                                     const remoteStream = new MediaStream();
                                     pc.addEventListener('track', (event) => {
 
-                                          const remoteVideoSteam = document.querySelector('#remoteStream');
+                                          const remoteVideoSteam = document.querySelector('#remoteStream1');
                                           console.log('got remote stream ', event.streams);
                                           event.streams[0].getTracks().forEach(track => {
                                                 remoteStream.addTrack(track);
@@ -531,7 +531,8 @@ const StunUI = {
             })
             $('.stun-container').on('click', '#joinInvite', function (e) {
                   let stun_mod = app.modules.returnModule("Stun");
-                  stun_mod.joinVideoInvite();
+                  // invite code hardcoded for dev purposes
+                  stun_mod.joinVideoInvite('invite');
             })
 
             $('.stun-container').on('click', '#send-message-btn', (e) => {
@@ -565,7 +566,7 @@ const StunUI = {
             $('#connectTo').addClass('btn-primary');
             $('#connection-status').html(` <p style="color: green" class="data">Not connected to any peer</p>`);
             document.querySelector('#localStream').srcObject = new MediaStream();
-            document.querySelector('#remoteStream').srcObject = new MediaStream();
+            document.querySelector('#remoteStream1').srcObject = new MediaStream();
       }
 
 
