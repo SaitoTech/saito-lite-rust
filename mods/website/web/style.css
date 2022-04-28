@@ -49,10 +49,10 @@ body {
 }
 
 .banner-logo {
-  width: 200px;
+  width: 100px;
   position: absolute;
-  right: 10rem;
-  top: 5rem;
+  right: 5rem;
+  top: 1rem;
   transform: rotateZ(33deg);
   animation: rotate;
   animation-duration: 10s;
@@ -117,8 +117,8 @@ body {
     
   }
   .banner-logo {
-    width: 80px;
-    right: 6rem;
+    width: 50px;
+    right: 2rem;
   }
 }
 
