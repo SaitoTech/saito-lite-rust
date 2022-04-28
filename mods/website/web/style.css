@@ -16,32 +16,49 @@ nav > img {
   margin-left: 3rem;
 
 }
+
 body {
-  background-image: linear-gradient(to right, #cf2e2e, #ff6900, #fcb9008f );
+  background-image: url(/saito/img/dreamscape.png);
   height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-
+  color: #fff;
+  background-size: 100% 125%;
+  background-position: bottom;
 }
 
 .content {
 
     /* margin-top: 9rem; */
-    /* width: 70%; */
+    width: 80%;
+    max-width: 700px;
     height: 100%;
     display: flex;
-
-    
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    text-align: center;
 }
 
+.mask {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  background: #8888;
+  padding: 0 3rem;
+}
 
+.links {
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  width: 112.5%;
+}
 
 .content > img {
   font-size: 4rem;
@@ -49,12 +66,23 @@ body {
   color: white
 }
 
-.content__links {
-    
+.feature {
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+video {
+  height: 100%;
+  width: 177.77777778vh;
+  min-width: 100%;
+  min-height: 56.25vw;
 }
 
 .banner-logo {
-  width: 200px;
+  width: 30vw;;
+  min-width: 200px;
+  max-width: 700px;
   /* position: absolute; */
   right: 5rem;
   top: 1rem;
@@ -65,35 +93,29 @@ body {
   animation-fill-mode: forwards;
 }
 
-.content__links > a {
-  display: inline-block;
-  text-decoration: none;
-   padding: .8rem 1rem;
-   margin: 1rem;
-   border-radius: 8px;
-   border: none;
-   font-size: 1.2rem;
-   cursor: pointer;
-   background-color: transparent ;
-   border: 1px solid white;
-   color: white;
-   box-shadow: 2px 2px 4px rgba(0,0,0, .2);
-   width: 20rem;
-   text-align: center;
-   text-transform: uppercase;
-   font-weight: bold;
-   transition: all .3s;
+.links a button {
+  border-width: 2px;
+  border-color: var(--saito-orange);
+  color: var(--saito-orange);
+  font-weight: bolder;
 }
 
-.content__links > a:hover {
+.links a button:hover {
   transform: scale(1.1);
- box-shadow: 3px 3px 5px rgba(0,0,  0, .4);
- background-color: white;
- color: black;
+  border: 2px solid #fff;
+  background: var(--saito-orange); 
+  background-size: cover;
+  background-position: bottom;
+  text-shadow: none;
+  color: #fff;
 }
-.content__links >a:active {
-  transform: scale(1);
-  box-shadow: 0px 0px 0px rgba(0,0,  0, .4);
+
+hr {
+  height: 1px;
+  width: 100%;
+  margin: 4rem 0;
+  border: 0px;
+  border-top: 2px solid #fff;
 }
 
 @keyframes rotate {
@@ -133,24 +155,16 @@ body {
      width: 12rem;
     
   }
-  .banner-logo {
-    width: 150px;
-    right: 2rem;
-  }
+ 
 }
 
 @media screen  and (max-width: 970px) {
   .content >h1 {
-    font-size: 3.5rem;
+    font-size: 2rem;
   }
-  .content__links {
+  .links {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
   }
-  .content__links > a {
-
-    width: 15rem;
-    
-  }
-
+ 
 }
