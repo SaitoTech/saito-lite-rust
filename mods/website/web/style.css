@@ -29,7 +29,7 @@ body {
 
 .content {
 
-    margin-top: 13rem;
+    margin-top: 9rem;
     width: 70%;
     height: 75%;
     display: flex;
@@ -76,6 +76,7 @@ body {
    width: 20rem;
    text-align: center;
    text-transform: uppercase;
+   font-weight: bold;
 }
 
 @keyframes rotate {
