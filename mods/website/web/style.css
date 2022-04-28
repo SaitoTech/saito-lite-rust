@@ -23,33 +23,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
 
 }
 
 .content {
 
-    margin-top: 9rem;
-    width: 70%;
-    height: 75%;
+    /* margin-top: 9rem; */
+    /* width: 70%; */
+    height: 100%;
     display: flex;
 
+    
+    justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-.content > .banner-container {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
-   margin-bottom: 3rem;
-   margin-top: 5rem;
-}
 
-.content h1 {
+
+.content > img {
   font-size: 4rem;
-  /* margin-bottom: 3rem; */
+  margin-bottom: 2rem;
   color: white
 }
 
@@ -92,6 +88,8 @@ body {
 .content__links > a:hover {
   transform: scale(1.1);
  box-shadow: 3px 3px 5px rgba(0,0,  0, .4);
+ background-color: white;
+ color: black;
 }
 .content__links >a:active {
   transform: scale(1);
