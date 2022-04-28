@@ -16,6 +16,14 @@
   height: 3829px;
 }
 
+.gameboard canvas{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5135px;
+  height: 3829px;
+}
+
 .hud-header{
   margin: 0;
 }
@@ -40,6 +48,10 @@
   box-sizing: content-box;
   cursor: pointer;
   transition: top 1s, left 1s;
+}
+
+.player_pawn.invisible{
+  display: none;
 }
 
 .pawn {

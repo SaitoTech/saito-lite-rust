@@ -82,7 +82,24 @@ class Scotland extends GameTemplate {
     let html = `<div class="rules-overlay">
                 <h1>Scotland Yard</h1>
                 <p>A team of detectives is on the hunt for international terrorist Mr. X. Can London's finest trap him before their Oyster cards run out of credit?</p>     
-               </div>`;
+               </div>
+               <h2>Players</h2>
+               <p>One player controls Mr. X and competes against the rest of the players, who must work together as a team. Depending on the number of players, each player on the detective team may be responsible for moving one or more pawns on the board.</p>
+               <h2>How to Win</h2>
+               <p>Mr X wins if he can elude capture for 24 moves. The detectives win if they either land on a space occupied by Mr. X, or block him from being able to move to another space.</p>
+               <h2>How to Move</h2>
+               <p>Players trade tickets to move by taxi, bus, or underground. Detectives begin the game with a limited number of tickets and if they run out of tickets, they are no longer able to use that method of transportation.</p>
+               <p>Mr. X also begins with a limited number of tickets, but he gains the tickets discarded by the Detectives throughout the game. Mr. X also has two kinds of special tickets:</p>
+               <ul>
+                <li><em>Mystery Ticket:</em> Allows Mr. X to move by any means of transportation (including the ferry) without notifying the Detectives of how he moved.</li>
+                <li><em>Double Ticket:</em> Played in conjunction with regular tickets, Mr. X can move twice in a single turn.</li>
+               </ul>
+               <h2>Game Play</h2>
+               <p>Mr. X's pawn is invisible to the detectives, but Mr. X can see where the detectives are. However, with each move (excepting the Mystery ticket), the detectives know what means of transportation Mr. X uses on his turn. Furthermore, there are a limited number of starting positions in which the pawns can be placed. Those starting positions are highlighted in the early turns of the game.</p>
+               <p>After Mr X's third move, his position will be revealed to all the players and the race begins! Similarly, after moves 8, 13, 18, and 24, Mr. X will briefly surface to let the detectives know where he is.</p>
+               <p>Mr X should have an escape route planned after each of those special turns, while the detectives should coordinate to be near bus routes or underground stations in case the need to cover a lot of distance.</p>
+               <p>The detectives need to rely on logic and teamwork in order to track and capture Mr. X.</p>
+               `;
     return html;
   }
 
@@ -148,7 +165,7 @@ class Scotland extends GameTemplate {
       class: "game-underground",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
-        
+        game_mod.drawUndergroundMap();
       },
     });
     this.menu.addSubMenuOption("game-game",{
@@ -157,6 +174,7 @@ class Scotland extends GameTemplate {
       class: "game-bus",
       callback: function (app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.drawBusMap();
       },
     });
     this.menu.addSubMenuOption("game-game",{
@@ -513,6 +531,9 @@ class Scotland extends GameTemplate {
         let selector = (pawn == this.game.state.numDetectives) ? "#pawnX" : `#pawn${pawn+1}`;
         $(selector).addClass("active_player");
 
+        // refresh board
+        this.disableBoardClicks();
+
         if (this.game.player == player){
           this.playerTurn(player, pawn); // player is the human, pawn is the token  
         }else{
@@ -576,7 +597,6 @@ class Scotland extends GameTemplate {
                <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
             </div>
             `;
-    console.log(pawn, this.game.state.numDetectives);
     if (pawn == this.game.state.numDetectives){
       html += `<div class="menu_icon" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
@@ -604,9 +624,7 @@ class Scotland extends GameTemplate {
 
     this.menu_backup_callback = function(){scotland_self.playerTurn(player, pawn);};    
 
-    // refresh board
-    this.disableBoardClicks();
-
+    
     //
     // generate instructions and print to HUD
     //
@@ -650,7 +668,6 @@ class Scotland extends GameTemplate {
             can_player_move = 1;
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
-              console.log("success...");
               scotland_self.movePlayer(player, pawn, target_id, "taxi");
             });
             $(`#${z}`).css("border-color","yellow");
@@ -666,11 +683,10 @@ class Scotland extends GameTemplate {
             can_player_move = 1;
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
-              console.log("success...");
               scotland_self.movePlayer(player, pawn, target_id, "bus");
             });
           }
-          $(`#${z}`).css("border-color","cyan");
+          $(`#${z}`).css("border-color","#4382b5"); //cyan
           $(`#${z}`).addClass("highlight-available-move");
         }
         }
@@ -685,7 +701,7 @@ class Scotland extends GameTemplate {
                 scotland_self.movePlayer(player, pawn, target_id, "underground");
               });
             }
-            $(`#${z}`).css("border-color","red");
+            $(`#${z}`).css("border-color","#be5e2f"); //red
             $(`#${z}`).addClass("highlight-available-move");
           }
         }
@@ -754,12 +770,9 @@ class Scotland extends GameTemplate {
     this.showPlayers();
 
     if (this.game.player != this.game.state.x) {
-      console.log("Initial Hints for Detectives");
-      console.log(JSON.parse(JSON.stringify(this.game.state)));
       if (this.game.state.xmoves < 3) {
         for (let i = 0; i < this.game.state.starting_positions.length; i++) {
           let divname = "#" + this.game.state.starting_positions[i];
-          console.log(divname);
           $(divname).css("border-color", "white");
         }
       }
@@ -877,6 +890,53 @@ class Scotland extends GameTemplate {
   }
   returnStartingPositions() {
     return [13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198];
+  }
+
+  drawUndergroundMap(){
+    const c = document.querySelector(".gameboard canvas");
+    if (!c){ return;}
+
+    let ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, 5135, 3829);
+    ctx.beginPath();
+    ctx.strokeStyle = "#be5e2f";
+    ctx.lineWidth = 30;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (let site_id in this.game.state.locations){
+      let site = this.game.state.locations[site_id];
+      if (site.underground.length > 0){
+        for (let neigh of site.underground){
+          ctx.moveTo(site.left+37,site.top+40);
+          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+
+  drawBusMap(){
+    const c = document.querySelector(".gameboard canvas");
+    if (!c){ return;}
+
+    let ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, 5135, 3829);
+    ctx.beginPath();
+    ctx.strokeStyle = "#4382b5";
+    ctx.lineWidth = 30;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (let site_id in this.game.state.locations){
+      let site = this.game.state.locations[site_id];
+      if (site.bus.length > 0){
+        for (let neigh of site.bus){
+          ctx.moveTo(site.left+37,site.top+40);
+          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
+          ctx.stroke();
+        }
+      }
+    }
   }
 
   returnLocations() {
