@@ -82,6 +82,8 @@ class Arcade extends ModTemplate {
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
+        //console.log("Rendering arcade");
+        //console.log(this.games);
         ArcadeMain.render(this.app, this);
         ArcadeMain.attachEvents(this.app, this);
         
@@ -362,10 +364,14 @@ class Arcade extends ModTemplate {
   }
 
   joinGame(app, tx) {
+    if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
+      return;
+    }
+
     let txmsg = tx.returnMessage();
     let game_id = txmsg.game_id;
-    let blk = null;
-    let conf = 0;
+    //let blk = null;
+    //let conf = 0;
     let relay_mod = app.modules.returnModule("Relay");
     let peers = [];
     for (let i = 0; i < app.network.peers.length; i++) {
@@ -373,34 +379,45 @@ class Arcade extends ModTemplate {
     }
     let accepted_game = null;
 
-    for (let i = 0; i < this.games; i++) {
-      if (this.games[i].transaction?.msg) {
-        if (txmsg.game_id == this.games[i].transaction.msg.game_id) {
-          let existing_players_found = 0;
+    console.log("Received Join Message for game="+game_id,JSON.parse(JSON.stringify(tx)));
 
-          for (let z = 0; z < this.games[i].transaction.msg.players.length; z++) {
-            for (let zz = 0; zz < tx.transaction.to.length; zz++) {
-              if (this.games[i].transaction.msg.players[z] == tx.transaction.to[zz].add) {
-                existing_players_found++;
-                z = this.games[i].transaction.msg.players.length + 1;
-              }
+    for (let i = 0; i < this.games.length; i++) {
+      if (this.games[i].transaction.sig == game_id){
+        
+        accepted_game = this.games[i]; //cache a refence to the game in the module
+    
+       /* let existing_players_found = 0;
+
+        for (let z = 0; z < this.games[i].msg.players.length; z++) {
+          for (let zz = 0; zz < tx.transaction.to.length; zz++) {
+            if (this.games[i].msg.players[z] == tx.transaction.to[zz].add) {
+              existing_players_found++;
+              //z = this.games[i].transaction.msg.players.length + 1;
+              //to end the inner loop and cycle the outer loop
+              zz = tx.transaction.to.length;
             }
           }
-          if (existing_players_found < this.games[i].transaction.msg.players.length) {
-            //Do we do something here?
-          }
-          console.log("Existing players found: "+existing_players_found);
         }
-        if (this.games[i].transaction.sig == game_id){
-          accepted_game = this.games[i];
+        if (existing_players_found < this.games[i].msg.players.length) {
+          //Do we do something here?
         }
+        console.log("Existing players found: "+existing_players_found);*/
       }
     }
+
+    if (accepted_game == null){
+      console.log("Game not available");
+      console.log(this.games);
+      return;
+    }
+
     let { players } = (accepted_game)? accepted_game.returnMessage() : [];
-    
+    console.log(JSON.parse(JSON.stringify(players)));
+
     this.joinGameOnOpenList(tx); 
     //this.receiveJoinRequest(blk, tx, conf, app);
 
+    console.log(JSON.parse(JSON.stringify(accepted_game.returnMessage().players)));
     //
     // it is possible that we have multiple joins that bring us up to
     // the required number of players, but that did not arrive in the
@@ -409,14 +426,13 @@ class Arcade extends ModTemplate {
     //
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
-    if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
-      return;
-    }
+    
 
-    for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i].transaction.sig == txmsg.game_id) {
-        let number_of_willing_players = this.games[i].msg.players.length;
-        let number_of_players_needed = this.games[i].msg.players_needed;
+   // for (let i = 0; i < this.games.length; i++) {
+   //   if (this.games[i].transaction.sig == txmsg.game_id) {
+     
+        let number_of_willing_players = accepted_game.msg.players.length;
+        let number_of_players_needed = accepted_game.msg.players_needed;
 
         console.log("NUMBER OF WILLING PLAYERS IN THIS GAME: " + number_of_willing_players);
         console.log("NUMBER OF PLAYERS NEEDED IN THIS GAME: " + number_of_players_needed);
@@ -427,15 +443,16 @@ class Arcade extends ModTemplate {
           // browsers -- cannot use last player to join as players may disagree on
           // their order. so the first player is responsible for processing the "accept"
           //
-          console.log(JSON.parse(JSON.stringify(this.games[i].msg.players)));
+          console.log(JSON.parse(JSON.stringify(accepted_game.msg.players)));
 
-          if (this.games[i].msg.players[0] == this.app.wallet.returnPublicKey()) {
+          if (accepted_game.msg.players[0] == this.app.wallet.returnPublicKey()) {
             // i should send an accept request to kick this all off
-            this.games[i].msg.players.splice(0, 1);
-            this.games[i].msg.players_sigs.splice(0, 1);
+            
+            accepted_game.msg.players.splice(0, 1);
+            accepted_game.msg.players_sigs.splice(0, 1);
 
             console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade");
-            let newtx = this.createAcceptTransaction(this.games[i]);
+            let newtx = this.createAcceptTransaction(accepted_game);
             this.app.network.propagateTransaction(newtx);
 
             //
@@ -452,8 +469,6 @@ class Arcade extends ModTemplate {
           this.launchGame(txmsg.game_id);
           return;
         }
-      }
-    }
     
   }
 
@@ -654,13 +669,11 @@ class Arcade extends ModTemplate {
         if (txmsg.module == "Arcade" && txmsg.request == "close") {
           if (this.debug) {console.log("onConfirmation: close request received");}
           this.closeGameInvite(blk, tx, conf, app);
-          if (txmsg.sig) {
-            this.removeGameFromOpenList(txmsg.sig);
-            // try
-            if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
-              this.renderArcadeMain(this.app, this);
-            }
+            
+          if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
+            this.renderArcadeMain(this.app, this);
           }
+        
         }
 
         //
@@ -803,8 +816,6 @@ class Arcade extends ModTemplate {
             }
           }
         }
-        this.removeGameFromOpenList(txmsg.sig);
-        // try
         if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
           this.renderArcadeMain(this.app, this);
         }
@@ -1034,12 +1045,17 @@ class Arcade extends ModTemplate {
     return;
   }
 
+  //game_id = tx.msg.sig
+  /*
+  If the game is generated, it is stored in saito app.options.games, if it is still open for people to join
+  it is in arcade_mod.games
+  */
   closeGameInvite(blk, tx, conf, app){
     let found_game = false;
-    
+    let game_id = tx.returnMessage().sig;
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-        if (app.options.games[i].id === tx.returnMessage().sig) {
+        if (app.options.games[i].id === game_id) {
           found_game = true;
           if (this.debug){
             console.log("%%%%%%%%%%%%%%%%");
@@ -1072,10 +1088,21 @@ class Arcade extends ModTemplate {
     if (found_game){
       if (this.debug) {console.log("Resigning game");}
       this.receiveGameoverRequest(blk, tx, conf, app);
-    }else{
+    }else{ /////////////////////////////
+      let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
+      if (accepted_game){
+        let number_of_willing_players = accepted_game.msg.players.length;  
+        if (number_of_willing_players > 1 && true){ //Make sure not the game creator
+          if (this.debug) {console.log("Bowing out of game");}
+                    //tx.transaction.from[0].add
+          this.leaveGameOnOpenList(tx);
+          return;
+        }
+      }
       if (this.debug) {console.log("Canceling uninitialized game");}
       this.receiveCloseRequest(blk, tx, conf, app);
     }
+    this.removeGameFromOpenList(game_id);
   }
 
 
@@ -1825,7 +1852,7 @@ class Arcade extends ModTemplate {
     } 
 
     let txmsg = tx.returnMessage();
-
+    console.log(`Player ${tx.transaction.from[0].add} wants to join game ${txmsg.game_id} with message signed ${txmsg.invite_sig}`);
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i]?.transaction.sig == txmsg.game_id) {
         if (!this.games[i].msg.players.includes(tx.transaction.from[0].add) && txmsg.invite_sig) {
@@ -1839,12 +1866,44 @@ class Arcade extends ModTemplate {
     }
 
     try {
-      if (this.browser_active == 1) {
-        this.render(this.app);
+      if (this.browser_active) {
+        console.log("Player should get added to arcade hero");
+        this.renderArcadeMain(this.app, this);
       }
     } catch (err) {
       console.log("Non-fatal error rendering open game list");
     }
+  }
+
+  leaveGameOnOpenList(tx){
+   if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
+      return;
+    } 
+
+    let txmsg = tx.returnMessage();
+    let game_id = txmsg.sig;
+    console.log(`Player ${tx.transaction.from[0].add} wants out of game ${game_id}`);
+    for (let i = 0; i < this.games.length; i++) {
+      if (this.games[i]?.transaction.sig == game_id) {
+        if (this.games[i].msg.players.includes(tx.transaction.from[0].add)) {
+          let p_index = this.games[i].msg.players.indexOf(tx.transaction.from[0].add);
+          this.games[i].msg.players.splice(p_index, 1);
+          //Make sure player_sigs array exists and add invite_sig
+          if (this.games[i].msg.players_sigs.length > p_index){
+            this.games[i].msg.players_sigs.splice(p_index, 1);  
+          }
+        }
+      }
+    }
+
+    try {
+      if (this.browser_active) {
+        console.log("Player should get removed from arcade hero");
+        this.renderArcadeMain(this.app, this);
+      }
+    } catch (err) {
+      console.log("Non-fatal error rendering open game list");
+    } 
   }
 
   addGameToOpenList(tx) {
