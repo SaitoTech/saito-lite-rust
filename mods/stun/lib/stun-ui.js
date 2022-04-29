@@ -5,16 +5,21 @@ const ListenersTemplate = require("./ListenersTemplate");
 const PeersTemplate = require("./PeersTemplate");
 const Stun = require("../stun");
 const { vanillaToast } = require("vanilla-toast");
+const VideoChat = require('../../../lib/saito/ui/video-chat/video-chat');
 
 
 const StunUI = {
 
       selectedTab: "my-stun",
 
+      videoChat: "",
+
       peer_connection: "",
 
       localStream: "",
       remoteStream: "",
+
+
 
       stun: {
             ip_address: "",
@@ -44,6 +49,12 @@ const StunUI = {
             if (StunUI.remoteStream && document.querySelector('#remoteStream1')) {
                   document.querySelector('#remoteStream1').srcObject = StunUI.remoteStream;
             }
+
+            StunUI.videoChat = new VideoChat(app);
+
+
+
+
 
       },
 
@@ -203,16 +214,14 @@ const StunUI = {
                               const remoteStream = new MediaStream();
                               pc.addEventListener('track', (event) => {
 
-                                    const remoteVideoSteam = document.querySelector('#remoteStream1');
+
                                     console.log('got remote stream ', event.streams);
                                     event.streams[0].getTracks().forEach(track => {
                                           remoteStream.addTrack(track);
                                     });
-                                    if (remoteVideoSteam) {
-                                          remoteVideoSteam.srcObject = remoteStream;
-                                    }
+                                    StunUI.videoChat.addRemoteStream(remoteStream, "remote");
 
-                                    StunUI.remoteStream = remoteStream;
+
                               });
                               // const offer = await pc.createOffer();
                               // pc.setLocalDescription(offer);
@@ -455,16 +464,20 @@ const StunUI = {
                                                 // resolve(stun);
                                           }
                                     };
-                                    const localVideoSteam = document.querySelector('#localStream');
+
                                     const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                                     localStream.getTracks().forEach(track => {
                                           pc.addTrack(track, localStream);
 
                                     });
                                     StunUI.localStream = localStream;
-                                    if (localVideoSteam) {
-                                          localVideoSteam.srcObject = localStream;
-                                    }
+
+                                    StunUI.videoChat.show()
+                                    StunUI.videoChat.addLocalStream(localStream);
+
+
+
+
 
 
 
@@ -472,7 +485,7 @@ const StunUI = {
                                     const remoteStream = new MediaStream();
                                     pc.addEventListener('track', (event) => {
 
-                                          const remoteVideoSteam = document.querySelector('#remoteStream1');
+
                                           console.log('got remote stream ', event.streams);
                                           event.streams[0].getTracks().forEach(track => {
                                                 remoteStream.addTrack(track);
@@ -480,10 +493,7 @@ const StunUI = {
 
                                           StunUI.remoteStream = remoteStream;
 
-                                          if (remoteVideoSteam) {
-                                                remoteVideoSteam.srcObject = remoteStream;
-                                          }
-
+                                          StunUI.videoChat.addRemoteStream(remoteStream, "remote");
                                     });
 
                                     const data_channel = pc.createDataChannel('channel');
@@ -526,16 +536,18 @@ const StunUI = {
             })
 
             $('.stun-container').on('click', '#createInvite', function (e) {
-                  let stun_mod = app.modules.returnModule("Stun");
-                  stun_mod.createVideoInvite();
+                  let video_mod = app.modules.returnModule("Video");
+                  console.log(video_mod);
+                  video_mod.createVideoInvite();
             })
             $('.stun-container').on('click', '#joinInvite', function (e) {
-                  let stun_mod = app.modules.returnModule("Stun");
+                  let video_mod = app.modules.returnModule("Video");
                   // invite code hardcoded for dev purposes
-                  stun_mod.joinVideoInvite('invite');
+                  const inviteCode = $("#inviteCode").val();
+                  video_mod.joinVideoInvite(inviteCode.trim());
             })
 
-            $('.stun-container').on('click', '#send-message-btn', (e) => {
+            $('.stun-container').on('click', '#sendv-message-btn', (e) => {
 
                   if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");
                   const text = $('#message-text').val();

@@ -62,26 +62,17 @@ module.exports = (app, mod) => {
   </div>
 </div>
   <div class="row mb-4">
-  <div class="col-sm-4"><p class="name">Join Invite</p></div>
+  <div class="col-sm-4"><p class="name">Join Call</p></div>
   <div class="col-sm-8">
     <div class="data d-flex">
-    <button id="joinInvite" class="btn btn-primary ml-4">Join Invite</button>
+    <input placeholder="Insert Room Code" id="inviteCode" />
+    <button id="joinInvite" class="btn btn-primary ml-4">Join</button>
     </div>
   </div>
 </div>
   <p style="font-weight: bold"> Video </p>
   <div class="stun-video-container" style="display: flex">
-  <video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
-   <video class="stun-video"  id="remoteStream1" width="100%" height="100%" autoplay></video> 
-  </div>
 
-  <div class="stun-video-container" style="display: flex">
-  <video class="stun-video"  id="remoteStream2" width="100%" height="100%" autoplay></video> 
-  <video class="stun-video"  id="remoteStream3" width="100%" height="100%" autoplay></video> 
-  </div>
-
-  <div class="stun-video-container" style="display: flex">
-  <video class="stun-video"  id="remoteStream4" width="100%" height="100%" autoplay></video> 
   </div>
   
 
@@ -164,3 +155,16 @@ module.exports = (app, mod) => {
   <p style="color: red" class="data">Not connected to any pair</p>
 </div>
 </div> */}
+
+
+{/* <video  class="stun-video" muted="true" id="localStream" width="100%" height="100%" autoplay></video>
+<video class="stun-video"  id="remoteStream1" width="100%" height="100%" autoplay></video> 
+</div>
+
+<div class="stun-video-container" style="display: flex">
+<video class="stun-video"  id="remoteStream2" width="100%" height="100%" autoplay></video> 
+<video class="stun-video"  id="remoteStream3" width="100%" height="100%" autoplay></video> 
+</div>
+
+<div class="stun-video-container" style="display: flex">
+<video class="stun-video"  id="remoteStream4" width="100%" height="100%" autoplay></video>  */}
