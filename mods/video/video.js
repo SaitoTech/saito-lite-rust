@@ -21,6 +21,7 @@ class Video extends ModTemplate {
 
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
+        this.videoChat = new VideoChat(app, mod);
     }
 
     onConfirmation(blk, tx, conf, app) {
@@ -36,8 +37,6 @@ class Video extends ModTemplate {
                 if (tx.msg.answerInvite) {
 
                     if (address === tx.msg.answerInvite.peer_b) {
-
-                        // stun_self.app.connection.emit('answer_received', tx.msg.answer.peer_a, tx.msg.answer.peer_b, tx.msg.answer.reply);
                         if (app.BROWSER !== 1) return;
                         console.log("current instance: ", address, " answer invite: ", tx.msg.answerInvite);
                         console.log("peer connections: ", video_self.peer_connections);
@@ -76,15 +75,18 @@ class Video extends ModTemplate {
                 }
 
                 if (tx.msg.offers && app.BROWSER === 1) {
-                    console.log("offers received from ", tx.msg.offers.offer_creator, tx.msg.offers);
-                    const offer_creator = tx.msg.offers.offer_creator;
-                    if (address === offer_creator) return;
-                    for (let i = 0; i < tx.msg.offers.offer_recipients.length; i++) {
-                        if (address === tx.msg.offers.offer_recipients[i]) {
-                            stun_mod.acceptOfferAndCreateAnswer(app, offer_creator, tx.msg.offers.offers[i], tx.msg.offers.iceCandidates[i]);
-                        }
+                    if (app.BROWSER !== 1) return;
 
+                    const offer_creator = tx.msg.offers.offer_creator;
+                    console.log("offers received from ", tx.msg.offers.offer_creator, tx.msg.offers);
+                    if (address === offer_creator) return;
+                    const index = tx.msg.offers.offer_recipients.findIndex(item => item === address);
+
+                    if (index !== -1) {
+                        video_self.acceptOfferAndCreateAnswer(app, offer_creator, tx.msg.offers.offers[index], tx.msg.offers.iceCandidates[index]);
                     }
+
+
                 }
             }
         }
@@ -113,6 +115,159 @@ class Video extends ModTemplate {
 
     }
 
+    acceptOfferAndCreateAnswer(app, offer_creator, offer_sdp, iceCandidates) {
+        let stun_mod = app.modules.returnModule("Stun");
+
+        console.log('accepting offer');
+        console.log('info ', offer_creator, offer_sdp, iceCandidates)
+        const createPeerConnection = async () => {
+            let reply = {
+                answer: "",
+                iceCandidates: []
+            }
+            const pc = new RTCPeerConnection({
+                iceServers: [
+                    {
+                        urls: "stun:openrelay.metered.ca:80",
+                    },
+                    {
+                        urls: "turn:openrelay.metered.ca:80",
+                        username: "openrelayproject",
+                        credential: "openrelayproject",
+                    },
+                    {
+                        urls: "turn:openrelay.metered.ca:443",
+                        username: "openrelayproject",
+                        credential: "openrelayproject",
+                    },
+                    {
+                        urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                        username: "openrelayproject",
+                        credential: "openrelayproject",
+                    },
+                ],
+            });
+            try {
+
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        console.log('ice candidate check closed');
+
+                        let video_mod = app.modules.returnModule("Video");
+                        video_mod.peer_connections[offer_creator] = pc;
+                        console.log('broadcasting answer ', video_mod.peer_connections);
+                        video_mod.broadcastAnswerInvite(video_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        return;
+
+                    };
+
+                    reply.iceCandidates.push(ice.candidate);
+
+
+
+
+
+                }
+
+                // pc.onconnectionstatechange = e => {
+                //   console.log("connection state ", pc.connectionState)
+                //   switch (pc.connectionState) {
+
+
+                //     case "connected":
+                //       vanillaToast.cancelAll();
+                //       vanillaToast.success('Connected', { duration: 3000, fadeDuration: 500 });
+                //       break;
+
+                //     case "disconnected":
+                //       StunUI.displayConnectionClosed();
+                //       vanillaToast.error('Disconnected', { duration: 3000, fadeDuration: 500 });
+                //       break;
+
+                //     default:
+                //       ""
+                //       break;
+                //   }
+                // }
+
+                // add data channels 
+                const data_channel = pc.createDataChannel('channel');
+                pc.dc = data_channel;
+                pc.dc.onmessage = (e) => {
+
+                    console.log('new message from client : ', e.data);
+                    // StunUI.displayMessage(peer_key, e.data);
+                };
+                pc.dc.open = (e) => {
+                    console.log('connection opened');
+                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
+                }
+
+                // add tracks
+
+                const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                    console.log('got local stream for answerer');
+                });
+
+                let video_self = app.modules.returnModule("Video");
+
+                video_self.videoChat.show(pc);
+                video_self.videoChat.addLocalStream(localStream);
+
+
+                const remoteStream = new MediaStream();
+                pc.addEventListener('track', (event) => {
+                    let video_self = app.modules.returnModule("Video");
+                    console.log('got remote stream ', event.streams);
+                    event.streams[0].getTracks().forEach(track => {
+                        remoteStream.addTrack(track);
+                    });
+                    video_self.videoChat.addRemoteStream(remoteStream, offer_creator);
+
+                });
+
+
+                await pc.setRemoteDescription(offer_sdp);
+
+                const peerIceCandidates = iceCandidates;
+                // console.log('peer ice candidates', peerIceCandidates);
+                if (peerIceCandidates.length > 0) {
+                    console.log('adding offer candidates');
+                    for (let i = 0; i < peerIceCandidates.length; i++) {
+                        pc.addIceCandidate(peerIceCandidates[i]);
+                    }
+                }
+
+
+                console.log('remote description  is set');
+
+
+                reply.answer = await pc.createAnswer();
+
+                console.log("answer ", reply.answer);
+
+
+                pc.setLocalDescription(reply.answer);
+
+                // console.log("peer connection ", pc);
+
+
+
+
+
+            } catch (error) {
+                console.log("error", error);
+            }
+
+        }
+
+        createPeerConnection();
+
+    }
+
+
 
     createVideoInvite() {
         // invite code hardcoded here for dev purposes
@@ -122,7 +277,7 @@ class Video extends ModTemplate {
         const video_self = this.app.modules.returnModule("Video");
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
-           <p style="font-weight: bold;">  Invite Code: </p>
+           <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
            <p> ${inviteCode} </p>
         </div>
         `
@@ -154,6 +309,116 @@ class Video extends ModTemplate {
         const overlay = new SaitoOverlay(this.app);
 
         overlay.show(this.app, video_self, html);
+
+
+
+    }
+
+    createPeerConnectionOffer(publicKey) {
+        const stun_mod = this.app.modules.returnModule('Stun');
+
+        const createPeerConnection = new Promise((resolve, reject) => {
+            let iceCandidates = [];
+            const execute = async () => {
+
+                try {
+                    const pc = new RTCPeerConnection({
+                        iceServers: [
+                            {
+                                urls: "stun:openrelay.metered.ca:80",
+                            },
+                            {
+                                urls: "turn:openrelay.metered.ca:80",
+                                username: "openrelayproject",
+                                credential: "openrelayproject",
+                            },
+                            {
+                                urls: "turn:openrelay.metered.ca:443",
+                                username: "openrelayproject",
+                                credential: "openrelayproject",
+                            },
+                            {
+                                urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                                username: "openrelayproject",
+                                credential: "openrelayproject",
+                            },
+                        ],
+                    });
+
+
+
+                    pc.onicecandidate = (ice) => {
+                        if (!ice || !ice.candidate || !ice.candidate.candidate) {
+
+                            // pc.close();
+
+                            let offer_sdp = pc.localDescription;
+                            resolve({ publicKey, offer_sdp, iceCandidates, pc });
+                            // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
+
+                            return;
+                        } else {
+                            iceCandidates.push(ice.candidate);
+                        }
+
+                    };
+
+                    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    localStream.getTracks().forEach(track => {
+                        pc.addTrack(track, localStream);
+
+                    });
+
+
+
+                    this.videoChat.show(pc);
+                    this.videoChat.addLocalStream(localStream)
+
+
+
+                    pc.LOCAL_STREAM = localStream
+                    const remoteStream = new MediaStream();
+
+                    pc.addEventListener('track', (event) => {
+
+                        console.log('current peer connection ', this.peer_connections);
+
+
+
+                        console.log('got remote stream', event.streams);
+                        event.streams[0].getTracks().forEach(track => {
+                            remoteStream.addTrack(track);
+                            this.remoteStreamPosition += 1;
+                        });
+
+
+                        this.videoChat.addRemoteStream(remoteStream, publicKey);
+
+
+                    });
+
+                    const data_channel = pc.createDataChannel('channel');
+                    pc.dc = data_channel;
+                    pc.dc.onmessage = (e) => {
+
+                        console.log('new message from client : ', e.data);
+
+                    };
+                    pc.dc.open = (e) => console.log("connection opened");
+
+                    const offer = await pc.createOffer();
+                    pc.setLocalDescription(offer);
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            }
+            execute();
+
+        })
+
+        return createPeerConnection;
 
 
 
@@ -223,7 +488,7 @@ class Video extends ModTemplate {
             // send connection to other peers if they exit
             for (let i = 0; i < invite.peers.length; i++) {
                 if (invite.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
-                    peerConnectionOffers.push(stun_mod.createPeerConnectionOffer(invite.peers[i].publicKey));
+                    peerConnectionOffers.push(this.createPeerConnectionOffer(invite.peers[i].publicKey));
                 }
             }
         }

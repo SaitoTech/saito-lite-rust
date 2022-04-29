@@ -196,19 +196,17 @@ const StunUI = {
                               }
 
                               // add tracks
-                              const localVideoStream = document.querySelector('#localStream');
+
                               const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                               localStream.getTracks().forEach(track => {
                                     pc.addTrack(track, localStream);
                                     console.log('got local stream for answerer');
                               });
 
-                              if (localVideoStream) {
-                                    localVideoStream.srcObject = localStream;
-                              }
 
 
-                              StunUI.localStream = localStream;
+                              StunUI.videoChat.show(pc);
+                              StunUI.videoChat.addLocalStream(localStream);
 
 
                               const remoteStream = new MediaStream();
@@ -472,7 +470,7 @@ const StunUI = {
                                     });
                                     StunUI.localStream = localStream;
 
-                                    StunUI.videoChat.show()
+                                    StunUI.videoChat.show(pc)
                                     StunUI.videoChat.addLocalStream(localStream);
 
 
