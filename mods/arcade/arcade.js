@@ -1086,28 +1086,32 @@ class Arcade extends ModTemplate {
     }
     
     if (found_game){
-      if (this.debug) {console.log("Resigning game");}
+      if (this.debug) {console.log("Game initialized in app, triggering resignation through game engine");}
       this.receiveGameoverRequest(blk, tx, conf, app);
+      this.removeGameFromOpenList(game_id);
     }else{ /////////////////////////////
       let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
       if (accepted_game){
-        let number_of_willing_players = accepted_game.msg.players.length;  
-        if (number_of_willing_players > 1 && true){ //Make sure not the game creator
-          if (this.debug) {console.log("Bowing out of game");}
-                    //tx.transaction.from[0].add
+        if (accepted_game.transaction.from[0].add == tx.transaction.from[0].add){
+          if (this.debug) {console.log("Canceling invitation for an uninitialized game");}
+          this.receiveCloseRequest(blk, tx, conf, app);
+          this.removeGameFromOpenList(game_id);
+        }else{
+          if (this.debug) {console.log("Changed mind about joining the game");}
           this.leaveGameOnOpenList(tx);
-          return;
         }
+      }else{
+        if (this.debug) {console.log("Game not found, cannot cancel");}
+        this.receiveCloseRequest(blk, tx, conf, app);
       }
-      if (this.debug) {console.log("Canceling uninitialized game");}
-      this.receiveCloseRequest(blk, tx, conf, app);
     }
-    this.removeGameFromOpenList(game_id);
+    if (this.debug) {this.checkGameDatabase();}
   }
 
 
   async receiveCloseRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
+    console.log("Close game " + tx.msg.sig);
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
     let params = { $status: "close", $game_id: tx.msg.sig };
     await app.storage.executeDatabase(sql, params, "arcade");
@@ -1889,7 +1893,7 @@ class Arcade extends ModTemplate {
           let p_index = this.games[i].msg.players.indexOf(tx.transaction.from[0].add);
           this.games[i].msg.players.splice(p_index, 1);
           //Make sure player_sigs array exists and add invite_sig
-          if (this.games[i].msg.players_sigs.length > p_index){
+          if (this.games[i].msg.players_sigs && this.games[i].msg.players_sigs.length > p_index){
             this.games[i].msg.players_sigs.splice(p_index, 1);  
           }
         }
