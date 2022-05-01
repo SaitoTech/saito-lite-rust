@@ -68,10 +68,10 @@ class Video extends ModTemplate {
 
 
                 if (tx.msg.invite) {
-                    console.log('new invite')
-                    video_self.invites.push(tx.msg.invite.invite);
-                    console.log('peers ', video_self.app.network.peers);
-                    console.log("invites: ", video_self.invites);
+                    // console.log('new invite')
+                    // video_self.invites.push(tx.msg.invite.invite);
+                    // console.log('peers ', video_self.app.network.peers);
+                    // console.log("invites: ", video_self.invites);
                 }
 
                 if (tx.msg.offers && app.BROWSER === 1) {
@@ -92,25 +92,89 @@ class Video extends ModTemplate {
         }
     }
 
+    handlePeerRequest(app, req, peer, mycallback) {
+        if (req.request == null) {
+            return;
+        }
+        if (req.data == null) {
+            return;
+        }
+        let tx = req.data;
+        let video_self = app.modules.returnModule("Video");
+        switch (req.request) {
+
+            case "onboard_invites":
+                console.log('invite onboarded: ', tx.msg.invites.invites);
+                video_self.invites = tx.msg.invites.invites
+                break;
+
+            case "new_create_invite":
+
+
+
+                console.log('new invite created: ', tx.msg.invite.invite);
+                video_self.invites.push(tx.msg.invite.invite);
+                console.log('peers ', app.network.peers);
+                console.log("invites: ", video_self.invites);
+                break;
+
+            case "update_invites":
+
+                console.log('invite updated: ', tx.msg.invites.invites);
+                video_self.invites = tx.msg.invites.invites
+
+                break;
+
+            case "videochat_broadcast":
+                app.network.peers.forEach(peer => {
+                    console.log('sending to: ', peer.returnPublicKey());
+                    tx.transaction.to.push(new saito.default.slip(peer.returnPublicKey()));
+                    if (tx.msg.invite) {
+                        peer.sendRequest('new_create_invite', tx);
+                    }
+                    if (tx.msg.invites) {
+                        peer.sendRequest('update_invites', tx);
+                    }
+
+                })
+
+                // update server 
+                if (tx.msg.invite) {
+                    this.invites.push(tx.msg.invite.invite);
+                }
+                if (tx.msg.invites) {
+                    this.invites = tx.msg.invites.invites;
+                }
+
+            // app.network.(tx);
+        }
+    }
+
 
     onPeerHandshakeComplete() {
         // send latest copy of invites to this peer
         // lite clients are not allowed to run this
-        if (this.app.BROWSER == 0) {
+        if (this.app.BROWSER === 0) {
             let newtx2 = this.app.wallet.createUnsignedTransaction();
-            if (this.app.network.peers.length > 0) {
-                newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
 
-                console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.invites);
-                newtx2.msg.module = "Video";
-                newtx2.msg.invites = {
-                    invites: this.invites
-                };
+            newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
 
-                console.log(newtx2)
-                newtx2 = this.app.wallet.signTransaction(newtx2);
-                this.app.network.propagateTransaction(newtx2);
-            }
+            // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.invites);
+            const recipient = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
+            newtx2.msg.module = "Video";
+            newtx2.msg.invites = {
+                invites: this.invites
+            };
+
+            console.log('onboarding invite :', recipient, this.invites);
+
+            console.log(newtx2)
+            newtx2 = this.app.wallet.signTransaction(newtx2);
+            // this.app.network.propagateTransaction(newtx2);
+
+            let relay_mod = this.app.modules.returnModule('Relay');
+            relay_mod.sendRelayMessage(recipient, 'onboard_invites', newtx2);
+
         }
 
     }
@@ -293,18 +357,21 @@ class Video extends ModTemplate {
 
         let newtx = this.app.wallet.createUnsignedTransaction();
 
-        for (let i = 0; i < this.app.network.peers.length; i++) {
-            if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
-                newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
-            }
-        }
+        // get recipient -- server in this case
+        let recipient = this.app.network.peers[0].peer.publickey;
+        newtx.transaction.to.push(new saito.default.slip(recipient));
+
+
 
         newtx.msg.module = "Video";
         newtx.msg.invite = {
             invite
         };
         newtx = this.app.wallet.signTransaction(newtx);
-        this.app.network.propagateTransaction(newtx);
+
+
+        let relay_mod = this.app.modules.returnModule('Relay');
+        relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
 
         const overlay = new SaitoOverlay(this.app);
 
@@ -525,12 +592,13 @@ class Video extends ModTemplate {
         this.invites[index] = invite;
         let newtx = this.app.wallet.createUnsignedTransaction();
 
-        for (let i = 0; i < this.app.network.peers.length; i++) {
-            if (this.app.wallet.returnPublicKey() !== this.app.network.peers[i].returnPublicKey()) {
-                newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
-            }
+        let recipient = this.app.network.peers[0].returnPublicKey();
+        // for (let i = 0; i < this.app.network.peers.length; i++) {
+        //     if (this.app.wallet.returnPublicKey() !== this.app.network.peers[i].returnPublicKey()) {
+        //         newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
+        //     }
 
-        }
+        // }
 
         newtx.msg.module = "Video";
         newtx.msg.invites = {
@@ -538,7 +606,9 @@ class Video extends ModTemplate {
         };
 
         newtx = this.app.wallet.signTransaction(newtx);
-        this.app.network.propagateTransaction(newtx);
+        let relay_mod = this.app.modules.returnModule('Relay');
+        relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
+        // this.app.network.propagateTransaction(newtx);
 
 
 

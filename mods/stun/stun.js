@@ -421,10 +421,6 @@ class Stun extends ModTemplate {
 
         // console.log("peer connection ", pc);
 
-
-
-
-
       } catch (error) {
         console.log("error", error);
       }
