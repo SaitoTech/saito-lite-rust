@@ -1284,9 +1284,30 @@ div#message-wrapper {
   text-overflow: ellipsis;
 }
 
+.profile-key-cont {
+  position: relative;
+}
+
 .profile-public-key {
   width: 275px;
   margin: 0 9em 0 0;
+  display: inline-block;
+  width: 85%;
+  margin: 0px;
+}
+
+#copy-btn {
+  display: inline-block;
+  padding: 5px 6px 5px 6px;
+  background-color: #fff;
+  color: #26202C;
+  border-radius: 2px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.copy-check::before {
+  content:  "\f00c";
 }
 
 .header-mini-wallet .header-profile-photo {
@@ -1400,8 +1421,8 @@ div#message-wrapper {
 }
 
 .account-info {
-  display: flex;
   flex-flow: wrap;
+  display: inherit;
 }
 
 .account-info .saito-select {
