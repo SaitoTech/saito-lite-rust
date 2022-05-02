@@ -2391,7 +2391,6 @@ class Wordblocks extends GameTemplate {
             ${testHtml}
           </select>
           </div>
-
           <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
@@ -2400,7 +2399,6 @@ class Wordblocks extends GameTemplate {
           </select>
           </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
           `;
   }
 }

@@ -1,6 +1,9 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
+<<<<<<< HEAD
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
+=======
+>>>>>>> master
 const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
 
 
@@ -16,6 +19,7 @@ class Calendar extends ModTemplate {
     this.categories     = "Utilities";
 
     this.appointments   = [];
+
     this.calendar       = null;
     this.overlay        = null;
 
@@ -105,6 +109,7 @@ class Calendar extends ModTemplate {
       // save our events
       //
       if (tx.isTo(publickey)) {
+
 	let includes_tx = 0;
         for (let i = 0; i < this.appointments.length; i++) {
 	  if (this.appointments[i].transaction.sig === tx.transaction.sig) {
@@ -141,19 +146,16 @@ console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
     // transaction to end-user, containing msg.request / msg.data is
     //
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.returnPublicKey());
-    newtx.transaction.ts   		= new Date().getTime();
-    newtx.msg.module       		= "Calendar";
-    newtx.msg.type       		= event_type;
-    newtx.msg.title			= title;
-    newtx.msg.start			= event_start;
-    newtx.msg.end			= event_end;
-    newtx.msg.backgroundColor		= "green";
-    newtx.msg.borderColor		= "green";
+    newtx.msg.module       	= "Calendar";
+    newtx.msg.type       	= event_type;
+    newtx.msg.event_start   = event_start;
+    newtx.msg.event_end     = event_end;
+    newtx.msg.event_title   = title;
+    newtx.msg.event_text    = text;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
     this.appointments.push(newtx);
-
   }
 
 
@@ -167,6 +169,19 @@ console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
     return 0;
   }
 
+  convertTransactionToEvent(tx) {
+
+    let eventobj = {};
+        eventobj.title = tx.msg.event_title;
+        eventobj.start = tx.msg.event_start;
+        eventobj.end   = tx.msg.event_end;
+        eventobj.title = tx.msg.event_title;
+        eventobj.backgroundColor = 'green',
+        eventobj.borderColor = 'green'
+
+    return eventobj;
+
+  }
 
 
   //
@@ -192,5 +207,4 @@ console.log("LOADING CALENDAR APPOINTMENTS!");
 }
 
 module.exports = Calendar;
-
 
