@@ -10,8 +10,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   `;
 
-  if (mixin_mod.mixin.user_id == "") { html += `<div class="create_account button" id="create_account">Create Account</div>`; }
-
   html += `
 
       <div class="balances_header" id="balances_header">
