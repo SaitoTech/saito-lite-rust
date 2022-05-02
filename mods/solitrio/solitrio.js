@@ -13,6 +13,7 @@ class Solitrio extends GameTemplate {
 
     this.name            = "Solitrio";
     this.gamename        = "Solitrio";
+    this.slug            = "solitrio";
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
     this.categories      = "Arcade Games Entertainment";
 
@@ -24,6 +25,27 @@ class Solitrio extends GameTemplate {
     this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
     this.categories  = "Cardgame Game Solitaire";
     
+  }
+
+
+  //
+  // manually announce arcade banner support
+  //
+  respondTo(type) {
+
+    if (super.respondTo(type) != null) {
+      return super.respondTo(type);
+    }
+
+    if (type == "arcade-carousel") {
+      let obj = {};
+      obj.background = "/solitrio/img/arcade/arcade-banner-background.jpg";
+      obj.title = "Solitrio";
+      return obj;
+    }
+
+    return null;
+
   }
 
 
@@ -64,36 +86,24 @@ class Solitrio extends GameTemplate {
 
     console.log("SET WITH GAMEID: " + game_id);
 
-    this.updateStatus("loading game...");
-    //console.log("Load Game 1: "+game_id);
-    this.loadGame(game_id);
-
-    //  
-    // workaround to save issues
-    //
-    //console.log("Save Game 1");
-    this.saveGame();
-    //console.log("Load Game 2: "+this.game.id);
-    this.loadGame(this.game.id);
-
     if (this.game.status != "") { this.updateStatus(this.game.status); }
-console.log("this is our dice????: " + this.game.dice);
-    if (this.game.dice == "") { 
-this.initializeDice(); this.initializeSinglePlayerGame(); }
+    this.updateStatus("loading game...");
 
+    this.loadGame(game_id);
+    
     if (!this.game.state) {
-
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
       this.game.queue.push("round");
+      this.game.queue.push("READY");
     }
     
     console.log(JSON.parse(JSON.stringify(this.game)));
+
     if (this.browser_active){
       $('.slot').css('min-height', $('.card').css('min-height'));  
     }
-
   }
 
   newRound(){
@@ -160,17 +170,25 @@ this.initializeDice(); this.initializeSinglePlayerGame(); }
       class:"game-confirm-newbie",
       callback: function(app,game_mod){
         game_mod.game.options["play_mode"] = "auto";
-        game_mod.attachEventsToBoard();
+        game_mod.attachEventsToBoard(); //change the click style
+        try{
+          document.querySelector("#game-confirm-newbie").textContent = "Auto ✔";
+          document.querySelector("#game-confirm-expert").textContent = "Manual";   
+        }catch(err){}
       }
     });
    
     this.menu.addSubMenuOption("game-play",{
-      text: `Manual ${(this.game.options.play_mode=="manual")?"✔":""}`,
+      text: `Manual ${(this.game.options.play_mode=="auto")?"":"✔"}`,
       id:"game-confirm-expert",
       class:"game-confirm-expert",
       callback: function(app,game_mod){
        game_mod.game.options["play_mode"] = "manual";
-      game_mod.attachEventsToBoard(); 
+       game_mod.attachEventsToBoard(); //change the click style
+       try{
+        document.querySelector("#game-confirm-newbie").textContent = "Auto";
+        document.querySelector("#game-confirm-expert").textContent = "Manual ✔";  
+       }catch(err){}
       }
     });
 
@@ -200,7 +218,7 @@ this.initializeDice(); this.initializeSinglePlayerGame(); }
       id : "game-exit",
       class : "game-exit",
       callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("shuffle cards...");
+        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
         game_mod.prependMove("exit_game\t"+game_mod.game.player);
         game_mod.endTurn();
       }
@@ -601,11 +619,11 @@ this.initializeDice(); this.initializeSinglePlayerGame(); }
 
       if (mv[0] === "play") {
         //this.game.queue.splice(qe, 1);
-
-        this.handToBoard();        
-        this.displayBoard();
-        this.displayUserInterface();
-        
+        if (this.browser_active){
+          this.handToBoard();        
+          this.displayBoard();
+          this.displayUserInterface();  
+        }        
         return 0;
       }
 
@@ -626,7 +644,6 @@ this.initializeDice(); this.initializeSinglePlayerGame(); }
         this.game.queue.splice(qe, 1);
         this.scanBoard(true);
         this.game.state.recycles_remaining--;
-alert("done shuffle");
         return 1;
       }
       

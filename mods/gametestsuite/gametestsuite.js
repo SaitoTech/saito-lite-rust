@@ -51,8 +51,6 @@ class GameTestSuite extends GameTemplate {
 
       this.game.state = this.returnState();
 
-      this.initializeDice();
-
       this.game.queue.push("init");
       this.game.queue.push("NOTIFY\tYou are Player "+this.game.player);
       this.game.queue.push("READY");
@@ -476,9 +474,9 @@ class GameTestSuite extends GameTemplate {
 
     `);
 
-    let hash1 = game_self.app.crypto.hash(simultaneous_pick_card);;
-    let hash2 = game_self.app.crypto.hash(Math.random().toString());
-    let hash3 = game_self.app.crypto.hash(hash2 + hash1);
+    let hash1 = game_self.app.crypto.hash(simultaneous_pick_card);    // my card
+    let hash2 = game_self.app.crypto.hash(Math.random().toString());  // my secret
+    let hash3 = game_self.app.crypto.hash(hash2 + hash1);             // combined hash
 
     let card_sig = game_self.app.crypto.signMessage(simultaneous_pick_card, game_self.app.wallet.returnPrivateKey());
     let hash2_sig = game_self.app.crypto.signMessage(hash2, game_self.app.wallet.returnPrivateKey());

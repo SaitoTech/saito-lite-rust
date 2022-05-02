@@ -47,13 +47,23 @@
     if (obj.handleGameLoop == null) {
       obj.handleGameLoop = function(his_self, qe, mv) { return 1; }
     }
+
+
     //
-    // synchronous -- must return 1
+    // functions for convenience
     //
-    if (obj.postProduction == null) {
-      obj.postProduction = function(imperium_self, player, sector) { return 1; }
+    if (obj.removeFromDeck == null) { obj.removeFromDeck = function(his_self, player) { return 0; } }
+
+    if (obj.menuOptionTriggers == null) {
+      obj.menuOptionTriggers = function(his_self, stage, player) { return 0; }
     }
-  
+    if (obj.menuOption == null) {
+      obj.menuOption = function(his_self, stage, player) { return 0; }
+    }
+    if (obj.menuOptionActivated == null) {
+      obj.menuOptionActivated = function(his_self, stage, player) { return 0; }
+    }
+
     return obj;
 
   }

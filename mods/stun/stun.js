@@ -9,14 +9,9 @@ const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 
 
 
-
-
 console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
-
-
-
 
 
   constructor(app) {
@@ -60,18 +55,16 @@ class Stun extends ModTemplate {
 
 
 
-
   }
-
-
-
 
 
   onConfirmation(blk, tx, conf, app) {
 
+
+    console.log("testing ...");
+
     let stun_self = app.modules.returnModule("Stun");
     let txmsg = tx.returnMessage();
-
 
     if (conf == 0) {
       console.log("stun testing ...");
@@ -630,6 +623,7 @@ class Stun extends ModTemplate {
 
 
 
+
     this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
   }
 
@@ -653,6 +647,7 @@ class Stun extends ModTemplate {
     newtx = this.app.wallet.signTransaction(newtx);
 
     this.app.network.propagateTransaction(newtx);
+
   }
 
 

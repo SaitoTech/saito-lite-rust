@@ -310,7 +310,7 @@ class Keychain {
     this.app.storage.saveOptions();
   }
 
-  saveGrouos() {
+  saveGroups() {
     this.app.options.groups = this.groups;
     this.app.storage.saveOptions();
   }
@@ -716,7 +716,12 @@ class Keychain {
         return name[0].substr(0, 12) + "...";
       }
     }
-    return name;
+    if (name){
+      return name;  
+    }else{
+      return publickey;
+    }
+    
   }
 
   returnWatchedPublicKeys() {

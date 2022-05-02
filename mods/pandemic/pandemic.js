@@ -86,12 +86,6 @@ class Pandemic extends GameTemplate {
  
     this.loadGame(game_id);
 
-    //
-    // new state if needed
-    //
-    if (this.game.dice == "") {
-      this.initializeDice();
-    }
 
     if (this.game.cities == undefined) {
       this.game.cities = this.returnCities();
@@ -1571,6 +1565,8 @@ class Pandemic extends GameTemplate {
         let card = mv[2];
 
         this.removeCardFromHand(player,card);
+        this.game.deck[1].discards.push(card);
+
         this.game.queue.splice(qe, 1);
       }
 
@@ -1635,7 +1631,6 @@ class Pandemic extends GameTemplate {
             this.attachCardboxEvents(pandemic_self.playFromCardFan);
           }
         }
-        this.game.queue.splice(qe,1);
         return 0;
       }
       if (mv[0] === "interrupt"){
@@ -3107,7 +3102,7 @@ displayDisease() {
       }
 
       if (colors > 0){
-          switch (cubes){
+          switch (this.game.cities[i].virus[color]){
             case 1: 
             cubedeath =
             `<img class="cube" src="/pandemic/img/cube_${color}.png" style="top:${this.scale(10)}px;left:${this.scale(15)}px;"/>`;
@@ -3310,8 +3305,6 @@ displayDisease() {
     if (this.game.player == plyr){
       this.cardfan.hide();
     }
-    //this.game.state.player_topcard = card;
-    this.game.deck[1].discards.push(card);
 
     for (let i = 0; i < cards.length; i++) {
       if (cards[i] == card) {
