@@ -730,10 +730,6 @@ console.log("\n\n\n\n");
     }
     this.game.queue.push("init");
 
-    if (this.game.dice === "") {
-      this.initializeDice();
-    }
-
   }
 
   this.countries = this.game.countries;

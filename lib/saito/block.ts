@@ -1534,7 +1534,7 @@ class Block {
     //
     // only block #1 can have an issuance transaction
     //
-    if (cv.it_num > 0 && this.returnId() > 1) {
+    if (cv.it_num > 0 && this.block.id > 1) {
       console.log("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }

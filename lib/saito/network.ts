@@ -605,6 +605,7 @@ class Network {
         let previous_block_hash = syncobj.start;
 
         for (let i = 0; i < syncobj.prehash.length; i++) {
+
           let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
 
           if (this.debugging) { console.log("block hash as: " + block_hash); }

@@ -35,9 +35,20 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
           <div class="game-wizard-other-btns">
             <button type="button" id="game-rules-btn" class="game-rules-btn">How to Play</button>
             <button type="button" id="game-home-btn" class="game-home-btn">Home Page</button>
-          </div>  
-          <button type="button" id="game-invite-btn" class="game-invite-btn">${(mod.maxPlayers == 1) ? "Play":"Create New Game"}</button>
-        </div>
+          </div>`;  
+      if (mod.maxPlayers == 1){
+        html += `<button type="button" id="game-invite-btn" class="game-invite-btn" >Play</button>`;
+      }else{
+        html += `<div class="dynamic_button saito-select">
+                 <div class="dynamic_button_options saito-slct">
+                    <button type="button" id="game-invite-btn" class="game-invite-btn" data-type="open">Create Open Game</button>
+                    <button type="button" id="game-invite-btn" class="game-invite-btn tip" data-type="private">Create Private Game<div class="tiptext">Other players on the Saito network will not see this game and can only join if you provide them the invitation link</div></button>
+                 </div>
+                 </div>
+                `;
+      }
+          
+    html += `</div>
       </div>`;
 
   if (mod.publisher_message) {

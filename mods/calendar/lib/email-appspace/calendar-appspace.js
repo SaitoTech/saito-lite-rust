@@ -5,19 +5,26 @@ const CalendarSidebar = require('./calendar-sidebar.js');
 
 module.exports = CalendarAppspace = {
 
-    render(app, data) {
+    render(app, mod) {
 
-      document.querySelector(".email-appspace").innerHTML = CalendarAppspaceTemplate();
+      if (document.querySelector(".email-appspace")) {
+        document.querySelector(".email-appspace").innerHTML = CalendarAppspaceTemplate();
+      }
+      if (document.querySelector(".large-calendar")) {
+        document.querySelector(".large-calendar").innerHTML = CalendarAppspaceTemplate();
+      }
+      if (document.querySelector(".tiny-calendar")) {
+        document.querySelector(".tiny-calendar").innerHTML = CalendarAppspaceTemplate();
+      }
 
-      CalendarMain.render(app, data);
-      CalendarSidebar.render(app, data);
+      CalendarMain.render(app, mod);
+//      CalendarSidebar.render(app, mod);
 
     },
 
 
-    attachEvents(app, data) {
-      CalendarMain.attachEvents(app, data);
-      CalendarSidebar.attachEvents(app, data);
+    attachEvents(app, mod) {
+      CalendarMain.attachEvents(app, mod);
     },
 
 }
