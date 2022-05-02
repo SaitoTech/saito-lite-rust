@@ -25,7 +25,6 @@ module.exports = CalendarAppspace = {
 
     attachEvents(app, mod) {
       CalendarMain.attachEvents(app, mod);
-//      CalendarSidebar.attachEvents(app, mod);
     },
 
 }
