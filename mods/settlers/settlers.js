@@ -28,6 +28,9 @@ class Settlers extends GameTemplate {
 
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
+
+    // temp variable to help with post-splash flash
+    this.currently_active_player = 0;
   }
   //
   // requestInterface(type) {
@@ -123,6 +126,7 @@ class Settlers extends GameTemplate {
   }
 
   returnWelcomeOverlay(){
+/***
     let html = `<div class="rules-overlay trade_overlay">
                 <h1>Welcome to the Island of Saitoa</h1>
                 <h2>Initial Placement Phase</h2>
@@ -133,6 +137,10 @@ class Settlers extends GameTemplate {
                 <div class="button close_welcome_overlay" id="close_welcome_overlay">Start Playing</div>
                 </div>
   `;
+***/
+   let html = `<div id="welcome_overlay" class="welcome_overlay splash_overlay rules-overlay trade_overlay">
+	         <img src="/settlers/img/welcome.jpg" style="width:100%;height:100%" />
+               </div>`;
     return html;
   }
 
@@ -382,8 +390,6 @@ class Settlers extends GameTemplate {
       this.skin.render(this.game.options.theme);
       this.game.stats = this.returnInitStats();
 
-      this.initializeDice();
-
       console.log("---------------------------");
       console.log("---------------------------");
       console.log("------ INITIALIZE GAME ----");
@@ -394,11 +400,11 @@ class Settlers extends GameTemplate {
       this.game.queue.push("init");
 
       for (let i = 1; i <= this.game.players.length; i++) {
-        this.game.queue.push("player_build_road\t" + i);
+        this.game.queue.push("player_build_road\t" + i + "\t1");
         this.game.queue.push("player_build_city\t" + i);
       }
       for (let i = this.game.players.length; i >= 1; i--) {
-        this.game.queue.push("player_build_road\t" + i);
+        this.game.queue.push("player_build_road\t" + i + "\t1");
         this.game.queue.push("player_build_city\t" + i);
       }
 
@@ -591,12 +597,14 @@ class Settlers extends GameTemplate {
    * Commands: init, generate_map, winner
    */
   handleGameLoop() {
+
     let settlers_self = this;
 
     ///////////
     // QUEUE //
     ///////////
     if (this.game.queue.length > 0) {
+
       //Before popping, so if display players adds a win command, we will catch it.
       try {
         this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?
@@ -806,10 +814,21 @@ class Settlers extends GameTemplate {
 
       // Build a road, let player pick where to build a road
       if (mv[0] == "player_build_road") {
+
         let player = parseInt(mv[1]);
+
         this.game.queue.splice(qe, 1);
         this.stopTrading();
         if (this.game.player == player) {
+
+	  if (parseInt(mv[2])) {
+            let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
+            for (let road of newRoads) {
+              console.log("road: ",road);
+              this.addRoadToGameboard(road.substring(2), road[0]);
+            }
+	  }  
+
           this.playerBuildRoad(mv[1]);
         } else {
           this.updateStatus(
@@ -834,16 +853,37 @@ class Settlers extends GameTemplate {
       // Build a town
       // Let player make selection, other players wait
       if (mv[0] == "player_build_city") {
+
         let player = parseInt(mv[1]);
+
+        this.currently_active_player = player;
+
         this.game.queue.splice(qe, 1);
         this.stopTrading();
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
-            this.overlay.show(this.app, this, this.returnWelcomeOverlay());
-            document.querySelector(".close_welcome_overlay").onclick = (e) => {
-              this.overlay.hide();
-            };
+	    try {
+              this.overlay.show(this.app, this, this.returnWelcomeOverlay(), () => {
+	        if (parseInt(this.currently_active_player) === parseInt(this.game.player)) {
+                  $(".flash").removeClass("flash");
+                  this.playerbox.addClass('flash');
+                  setTimeout(() => {
+                    $(".flash").removeClass("flash");
+                  }, 3000);
+		}
+	      });
+              document.querySelector(".welcome_overlay").onclick = (e) => {
+                this.overlay.hide();
+	        if (this.currently_active_player == this.game.player) {
+                  $(".flash").removeClass("flash");
+                  this.playerbox.addClass('flash');
+                  setTimeout(() => {
+                    $(".flash").removeClass("flash");
+                  }, 3000);
+		}
+              };
+	    } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -887,7 +927,10 @@ class Settlers extends GameTemplate {
 
         if (this.game.player != player) {
           this.buildCity(player, slot);
-        }
+        } else {
+	  this.game.state.last_city = slot;
+	}
+
         this.updateLog(`Player ${player} built a ${this.skin.c1.name}`);
 
         return 1;
@@ -1306,14 +1349,13 @@ class Settlers extends GameTemplate {
         General Game Mechanics
       */
       //
-
-      // Player turn begins by rolling the dice (or playing dev card if available)
+      // player turn begins by rolling the dice (or playing dev card if available)
+      //
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
         this.game.state.playerTurn = player;
         this.playerbox.insertGraphic("diceroll",player);
-
 
         if (this.game.player == player) {
 
@@ -1336,13 +1378,16 @@ class Settlers extends GameTemplate {
 
           this.updateStatus(html);
 
-          //Flash to be like "hey it's your move"
+	  //
+          // Flash to be like "hey it's your move"
+	  //
           if (this.is_sleeping){
+	    this.currently_active_player = player;
             this.playerbox.addClass('flash');
             setTimeout(() => {
                 $(".flash").removeClass("flash");
-              }, 3000);
-              this.is_sleeping = false;  
+            }, 3000);
+            this.is_sleeping = false;  
           }
 
           //roll the dice by clicking on the dice
@@ -2261,6 +2306,10 @@ class Settlers extends GameTemplate {
     */
     if (existing_cities < 2) {
       this.playerbox.addClass("flash");
+      setTimeout(() => {
+        $(".flash").removeClass("flash");
+      }, 3000);
+
       if (existing_cities == 1){
         this.updateStatus(`<div class="tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
       }else{
@@ -2466,9 +2515,9 @@ class Settlers extends GameTemplate {
     Allows player to click a road 
   */
   playerBuildRoad() {
-    let settlers_self = this;
+ 
+   let settlers_self = this;
 
-    
     if (this.game.state.placedCity) {
       this.updateStatus(
         `<div class="tbd">YOUR TURN: place ${this.skin.r.name}...</div>`
@@ -2484,8 +2533,8 @@ class Settlers extends GameTemplate {
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");
       }
-
       $(".road.new").addClass("rhover");
+
       
       $(".road.new").off();
       $(".road.new").on("click", function () {
@@ -2500,6 +2549,7 @@ class Settlers extends GameTemplate {
         settlers_self.endTurn();
       });
     } else {
+
       this.updateStatus(
       `<div class="tbd">You may build a ${this.skin.r.name}...</div>`
       );

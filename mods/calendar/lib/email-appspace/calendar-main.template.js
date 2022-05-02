@@ -1,5 +1,5 @@
-module.exports = CalendarMainTemplate = () => {
+module.exports = CalendarMainTemplate = (divname) => {
   return `
-    <div id="calendar-box" class="calendar-box"></div>
+    <div id="${divname}" class="calendar-box ${divname}"></div>
   `;
 }

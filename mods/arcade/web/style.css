@@ -46,6 +46,12 @@ body {
 .game-overlay select {
   text-transform: capitalize;
 }
+.game-overlay .options_notice{
+  margin-bottom: 1.2rem;
+  color: var(--saito-white);
+  font-style: italic;
+  text-align: center;
+}
 
 #arcade-posts-insert-add-contact {
   margin-right: 15px;
@@ -109,7 +115,7 @@ body {
 }
 .arcade-games-wrapper {
   background-color: black;
-} 
+}
 
 .arcade-navigator-bars-menu {
   height: 100%;
@@ -179,27 +185,27 @@ body {
   background: var(--saito-jester);
 }
 
-#arcade-mobile-helper{
+#arcade-mobile-helper {
   display: none;
 }
 
-.arcade-game-mobile-header{
+.arcade-game-mobile-header {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.arcade-game-mobile-header .arcade-game-mobile-return-to-arcade{
+.arcade-game-mobile-header .arcade-game-mobile-return-to-arcade {
   position: absolute;
   left: 5%;
   font-size: 32px;
 }
 
-.arcade-apps.mobile-helper{
+.arcade-apps.mobile-helper {
   display: flex;
 }
 
-.mobile-helper li{
+.mobile-helper li {
   text-align: center;
   height: 45px;
   line-height: 45px;
@@ -319,8 +325,7 @@ body {
   height: 7em;
   overflow: hidden;
   position: relative;
-  text-shadow: 1px 0 2px black, 0 1px 2px black, -1px 0 2px black,
-    0 -1px 2px black;
+  text-shadow: 1px 0 2px black, 0 1px 2px black, -1px 0 2px black, 0 -1px 2px black;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
@@ -376,7 +381,7 @@ body {
   margin-right: 0.4em;
   font-size: 1em;
   overflow: auto;
-  background-color: #0005;  
+  background-color: #0005;
 }
 
 .invite-description {
@@ -425,7 +430,7 @@ body {
   align-self: end;
 }
 
-.arcade-tile .gameButtons{
+.arcade-tile .gameButtons {
   display: flex;
   flex-direction: column;
 }
@@ -436,6 +441,19 @@ body {
   border-radius: 5px;
   flex-grow: 1;
   margin-right: 5px;
+  min-width: 120px;
+}
+
+.button_with_icon{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;
+}
+.button_with_icon i{
+  font-size: 2em;
+  margin-right: 0 10px;
 }
 
 .invite-tile-wrapper .tiptext {
@@ -587,7 +605,6 @@ body {
   opacity: 0.7;
 }
 
-
 /* controls */
 button,
 .button,
@@ -652,17 +669,17 @@ button.add-games {
   margin: unset;
 }
 /*Game Specific Header, want slightly larger text and fit return icon*/
-.arcade-game-sidebar-header{
+.arcade-game-sidebar-header {
   text-align: left;
   background: var(--saito-jester);
   padding-left: 15px;
   padding-right: 15px;
   border: 1px solid var(--saito-red);
   border-bottom: 0px;
-  margin: unset; 
-  display:flex; 
-  align-items:center;
-  justify-content: space-between
+  margin: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .arcade-game-sidebar-return-to-arcade {
   font-size: 1.6em;
@@ -695,7 +712,6 @@ button.add-games {
   border: 1px solid var(--saito-red);
   background: #1e1e1f50;
 }
-
 
 .arcade-gamelist {
   width: 100%;
@@ -764,7 +780,7 @@ button.add-games {
   background-color: #0009;
   width: 60vw;
   max-height: 50vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
 }
 .game-wizard-post-description {
   font-size: 0.9em;
@@ -809,7 +825,6 @@ button.add-games {
   font-size: 0.8em;
   font-style: italic;
   font-weight: normal;
- 
 }
 
 .game-wizard-image {
@@ -830,7 +845,7 @@ button.add-games {
   justify-content: space-evenly;
 }
 
-.game-wizard-players-no-select{
+.game-wizard-players-no-select {
   width: 20em;
   height: 3em;
   line-height: 3;
@@ -854,7 +869,7 @@ button.add-games {
   flex-direction: column;
   justify-content: space-around;
 }
-.game-wizard-other-btns{
+.game-wizard-other-btns {
   display: none;
   /* display: flex; */
   flex-direction: row;
@@ -1118,6 +1133,29 @@ select {
 .account-info saito-select {
   background-color: #fff;
 }
+
+.dynamic_button {
+  overflow: hidden;
+}
+
+.dynamic_button.saito-select {
+  border-bottom: unset;
+  height: 60px;
+  width: unset;
+}
+
+.dynamic_button_options {
+  width: calc(100% - 60px);
+}
+
+.dynamic_button_options button{
+  border-radius: 5px 0px 0px 5px;
+}
+
+.dynamic_button.showAll {
+  overflow: visible;
+}
+
 /* Arrow */
 .saito-select::after {
   content: "\25BC";
@@ -1132,6 +1170,17 @@ select {
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
 }
+.dynamic_button.saito-select::after {
+  box-sizing: border-box;
+  border: 1px solid var(--saito-red);
+  background-color: #324;
+  border-radius: 0 5px 5px 0;
+  height: 60px;
+  line-height: 60px;
+  width: 60px;
+  text-align: center;
+}
+
 /* Transition */
 .saito-select:hover::after {
   color: var(--saito-red);
@@ -1370,7 +1419,87 @@ span.rewards-row-name {
   text-transform: uppercase;
 }
 
+.invite-link {
+  max-width: 90vw;
+  min-width: 25vw;
+  width: fit-content;
 
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgb(102, 51, 153);
+  color: white;
+  overflow-y: scroll;
+}
+
+.invite-link-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.invite-link-actions i {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.invite-link-actions i:hover {
+  transform: scale(1.05);
+  position: relative;
+}
+
+.invite-link > p {
+  margin-top: 1rem;
+  inline-size: 22rem;
+  overflow-wrap: break-word;
+  line-height: 1.2rem;
+}
+
+.invite-link button {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  /* color: rgb(14, 6, 22); */
+  /* border: 1px solid rgb(14, 6, 22); */
+  border-radius: 8px;
+  cursor: pointer;
+}
+.invite-link > p:hover::before {
+  /* transform: scale(1.05);
+  top: -2rem;
+  position: absolute;
+  cursor: pointer;
+  content: "Copy Link";
+  display: block;
+  width: 1rem;
+  height: 1rem; */
+}
+
+.invite-link .social-links {
+  margin-left: auto;
+  display: flex;
+
+  /* justify-content: space-between; */
+  /* width: 50%; */
+}
+
+.social-links img {
+  width: 25px;
+  cursor: pointer;
+}
+.social-links img:not(last-child) {
+  margin-right: 1rem;
+}
+
+.social-links a{
+  color: var(--saito-white);
+}
+
+i.link_icon{
+  display: none;
+}
+i.link_icon.private{
+  display: block;
+}
 /* *
   Mid - size
  * */
@@ -1427,10 +1556,9 @@ span.rewards-row-name {
   }
 
   /* Top sitting controls */
-  #arcade-mobile-helper{
+  #arcade-mobile-helper {
     display: block;
   }
-
 
   /* Pop out side bar*/
   .arcade-sidebar {
@@ -1475,7 +1603,7 @@ span.rewards-row-name {
 
   /* Completely hide side bar */
   .arcade-sidebar {
-    display:none;
+    display: none;
   }
 }
 @media only screen and (max-width: 600px) {
@@ -1486,14 +1614,13 @@ span.rewards-row-name {
     grid-template-rows: 1.3em auto 1fr;
   }
 
-
   .invite-tile-wrapper {
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 15em;
     font-size: 0.8em;
   }
 
-  .arcade-tile .gameButtons{
+  .arcade-tile .gameButtons {
     flex-direction: row;
   }
 
@@ -1590,14 +1717,16 @@ span.rewards-row-name {
   list-style: none;
 }
 
-
-
+.private-invite {
+  display: none;
+}
 
 /*
   OVERWRITE DEFAULT FORUM POST DISPLAY 
 */
 
-.forum-topic-link, .forum-topic-link:hover {
+.forum-topic-link,
+.forum-topic-link:hover {
   text-decoration: none;
   color: whitesmoke;
 }
@@ -1605,8 +1734,3 @@ span.rewards-row-name {
 .forum-post-header {
   color: whitesmoke;
 }
-
-
-
-
-

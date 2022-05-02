@@ -57,10 +57,12 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-mods/catan
-mods/catan/*
+mods/chirp
+mods/chirp/*
 mods/citysim
 mods/citysim/*
+mods/forge
+mods/forge/*
 mods/appstore/mods/*.zip
 mods/appstore/modules/
 mods/appstore/bundler/dist

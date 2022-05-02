@@ -86,33 +86,24 @@ class Solitrio extends GameTemplate {
 
     console.log("SET WITH GAMEID: " + game_id);
 
+    if (this.game.status != "") { this.updateStatus(this.game.status); }
     this.updateStatus("loading game...");
 
-    //  
-    // workaround to save issues
-    // - saving solitrio games results in the same game being
-    // loaded every time the module inits, as we fetch from the 
-    // same game_id / most-recent game_id.
-    //
     this.loadGame(game_id);
-    this.saveGame();
-    this.loadGame(this.game.id);
-
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-    if (this.game.dice == "") { this.initializeDice(); this.initializeSinglePlayerGame(); }
-
+    
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
       this.game.queue.push("round");
+      this.game.queue.push("READY");
     }
     
     console.log(JSON.parse(JSON.stringify(this.game)));
+
     if (this.browser_active){
       $('.slot').css('min-height', $('.card').css('min-height'));  
     }
-
   }
 
   newRound(){
@@ -179,17 +170,25 @@ class Solitrio extends GameTemplate {
       class:"game-confirm-newbie",
       callback: function(app,game_mod){
         game_mod.game.options["play_mode"] = "auto";
-        game_mod.attachEventsToBoard();
+        game_mod.attachEventsToBoard(); //change the click style
+        try{
+          document.querySelector("#game-confirm-newbie").textContent = "Auto ✔";
+          document.querySelector("#game-confirm-expert").textContent = "Manual";   
+        }catch(err){}
       }
     });
    
     this.menu.addSubMenuOption("game-play",{
-      text: `Manual ${(this.game.options.play_mode=="manual")?"✔":""}`,
+      text: `Manual ${(this.game.options.play_mode=="auto")?"":"✔"}`,
       id:"game-confirm-expert",
       class:"game-confirm-expert",
       callback: function(app,game_mod){
        game_mod.game.options["play_mode"] = "manual";
-      game_mod.attachEventsToBoard(); 
+       game_mod.attachEventsToBoard(); //change the click style
+       try{
+        document.querySelector("#game-confirm-newbie").textContent = "Auto";
+        document.querySelector("#game-confirm-expert").textContent = "Manual ✔";  
+       }catch(err){}
       }
     });
 
@@ -219,7 +218,7 @@ class Solitrio extends GameTemplate {
       id : "game-exit",
       class : "game-exit",
       callback : function(app, game_mod) {
-        game_mod.updateStatusWithOptions("shuffle cards...");
+        game_mod.updateStatusWithOptions("Saving game to the blockchain...");
         game_mod.prependMove("exit_game\t"+game_mod.game.player);
         game_mod.endTurn();
       }
@@ -620,11 +619,11 @@ class Solitrio extends GameTemplate {
 
       if (mv[0] === "play") {
         //this.game.queue.splice(qe, 1);
-
-        this.handToBoard();        
-        this.displayBoard();
-        this.displayUserInterface();
-        
+        if (this.browser_active){
+          this.handToBoard();        
+          this.displayBoard();
+          this.displayUserInterface();  
+        }        
         return 0;
       }
 
