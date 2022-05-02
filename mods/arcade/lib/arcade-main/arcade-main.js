@@ -580,7 +580,7 @@ module.exports = ArcadeMain = {
     }
 
     app.network.propagateTransaction(newtx);
-    //this.removeGameFromList(game_id);
+    this.removeGameFromList(game_id);
   },
 
   //&&&&&&&&&&&&&&&&
