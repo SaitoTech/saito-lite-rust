@@ -922,25 +922,6 @@ ul.horizontal_list li.iconoption{
 }
 
 
-.flash {
-  animation-name: flash;
-  animation-duration: .8s;
-  animation-iteration-count: 3;
-  animation-fill-mode: backwards;
-}
-
-@keyframes flash {
-  0% {
-    opacity: .8;
-    background-color: white;
-    color: black !important;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-
 /*
     Intermediate (roughly square screen size, technically landscape, but keep portrait layout)
 */

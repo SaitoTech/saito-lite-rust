@@ -532,7 +532,6 @@ module.exports = ArcadeMain = {
   },
 
   cancelGame(app, mod, game_id) {
-    let sig = game_id;
     var testsig = "";
     let players = [];
 
@@ -543,7 +542,7 @@ module.exports = ArcadeMain = {
         } else if (typeof app.options.games[i].id != "undefined") {
           testsig = app.options.games[i].id;
         }
-        if (testsig == sig) {
+        if (testsig == game_id) {
           app.options.games[i].over = 1;
           players = app.options.games[i].players;
           app.options.games.splice(i, 1);
@@ -564,7 +563,7 @@ module.exports = ArcadeMain = {
     }
 
     let msg = {
-      sig: sig,
+      sig: game_id,
       status: "close",
       request: "close",
       winner: players[0] == my_publickey ? players[1] : players[0],
@@ -581,7 +580,7 @@ module.exports = ArcadeMain = {
     }
 
     app.network.propagateTransaction(newtx);
-    this.removeGameFromList(sig);
+    this.removeGameFromList(game_id);
   },
 
   //&&&&&&&&&&&&&&&&

@@ -46,17 +46,17 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
     }
   } else {
     for (let i = 0; i < invite.msg.players_needed; i++) {
-      if (i < 4) {
+      //if (i < 4) {
         if (i < invite.msg.players.length) {
           let identicon = app.keys.returnIdenticon(invite.msg.players[i]);
           playersHtml += `<div class="player-slot tip id-${invite.msg.players[i]}"><img class="identicon" src="${identicon}"><div class="tiptext">${app.browser.returnAddressHTML(invite.msg.players[i])}</div></div>`;
         } else {
           playersHtml += `<div class="player-slot identicon-empty"></div>`;  
         }
-      } else {
+      /*} else {
         playersHtml += `<div style="color:#f5f5f59c;margin-left:0.2em;" class="player-slot-ellipsis fas fa-ellipsis-h"></div>`;  
         break;
-      }
+      }*/
     }
   }
   playersHtml += '</div>';
@@ -79,13 +79,15 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">CONTINUE</button>`;
        }else{
           inviteHtml += `<div class="button_with_icon"><i class="fas fa-link link_icon private"></i>`;          
-          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="${(invite.msg.request == "private")?"publicize":"invite"}" class="button invite-tile-button">${(invite.msg.request == "private")?"PRIVATE":"PUBLIC"}</button></div>`;
+          if (invite.transaction.from[0].add == app.wallet.returnPublicKey()){
+            inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="${(invite.msg.request == "private")?"publicize":"invite"}" class="button invite-tile-button">${(invite.msg.request == "private")?"PRIVATE":"PUBLIC"}</button></div>`;  
+          }
         }
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {
        if (game_initialized == 1) {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">WATCH</button>`;
-         inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
+         //inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
        } else {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="join" class="button invite-tile-button invite-tile-button-join">JOIN</button>`;
        }
@@ -113,7 +115,12 @@ let makeDescription = (app, invite) => {
     if (gameModule) {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
-        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
+        html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}`;
+        if (sgoa[i] !== null){
+          html += `: </div><div class="gameShortDescriptionValue">${sgoa[i]}</div></div>`;
+        }else{
+          html += `</div></div>`
+        }
       }
     }
   } 

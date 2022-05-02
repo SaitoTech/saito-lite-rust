@@ -22,7 +22,7 @@ class Poker extends GameTemplate {
     this.decimal_precision = 0; /*Default, since default is 15/30 blinds*/
     this.settlement = [];
     this.updateHTML = "";
-
+    this.useGraphics = true;
     return this;
   }
 
@@ -158,6 +158,7 @@ class Poker extends GameTemplate {
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
     this.game.chipValue = (this.game.options.chip) ? parseFloat(this.game.options.chip) : 0;
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
+    this.useGraphics = (this.game.options.chip_graphics == 1);
 
     if (this.browser_active) {
       console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
@@ -1264,7 +1265,7 @@ class Poker extends GameTemplate {
 
     for (let i = 1; i <= this.game.players.length; i++) {
       this.playerbox.refreshName(i);
-      this.refreshPlayerStack(i, true);
+      this.refreshPlayerStack(i, true);  
 
       if (!preserveLog){
         this.playerbox.refreshLog("",i);
@@ -1316,14 +1317,16 @@ class Poker extends GameTemplate {
       }
       // update pot
       let html = `<div class="pot-counter">${this.game.state.pot}</div>`;
-      for (let i = 0; i < this.game.state.player_pot.length; i++){
-        html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+      if (this.useGraphics){
+        for (let i = 0; i < this.game.state.player_pot.length; i++){
+          html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
+        }
+        html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
+        if (this.game.crypto){
+          html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
+        }
+        html += "</div>";
       }
-      html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
-      if (this.game.crypto){
-        html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
-      }
-      html += "</div>";
       document.querySelector(".pot").innerHTML = sanitize(html);
 
     } catch (err) { console.log("error displaying table",err);}
@@ -1344,17 +1347,19 @@ class Poker extends GameTemplate {
       html = `<div class="tip">${html}<div class="tiptext">${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div></div>`;
     }
     this.playerbox.refreshInfo(html, player);
+   
+    if (this.useGraphics){
+      //Draw literal stack
+      html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
+      html = html.substring(0,html.length - 6); //remove final </div> tag
+      let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
+      if (this.game.crypto){
+        bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
+      }
+
+      this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
+    } 
     
-    //Draw literal stack
-    html = this.returnPlayerStackHTML(player, this.game.state.player_credit[player - 1]);
-    html = html.substring(0,html.length - 6); //remove final </div> tag
-    let bonusExplainer = `<div>${this.game.state.player_credit[player - 1]} CHIPS</div>`;
-    if (this.game.crypto){
-      bonusExplainer += `<div>${this.sizeNumber(this.game.state.player_credit[player - 1] * this.game.chipValue)} ${this.game.crypto}</div>`;
-    }
-
-    this.playerbox.refreshGraphic(`${html}<div class="tiptext">${bonusExplainer}</div></div>`,player);
-
     //Append cards in graphics box for other players
     if (includeCards){
       if (player != this.game.player && !this.game.state.passed[player-1]) {
@@ -1365,8 +1370,13 @@ class Poker extends GameTemplate {
             <img class="card" src="${this.card_img_dir}/red_back.png">
           </div>
         `;
-        //Need to put tinyhand and chip-stack both in graphic
-        this.playerbox.appendGraphic(newhtml, player);
+        if (this.useGraphics){
+          //Need to put tinyhand and chip-stack both in graphic
+          this.playerbox.appendGraphic(newhtml, player);  
+        }else{
+          this.playerbox.refreshGraphic(newhtml, player);
+        }
+        
       }
     }
     
@@ -2565,6 +2575,10 @@ class Poker extends GameTemplate {
             </select>
           </div>
           <div class="overlay-input">
+            <input type="checkbox" name="chip_graphics" checked/>
+            <label for="chip_graphics">Use visual chips</label>
+          </div>
+          <div class="overlay-input">
             <label for="crypto">Crypto:</label>
             <select id="crypto" name="crypto">
               <option value="" selected>None</option>
@@ -2685,6 +2699,9 @@ class Poker extends GameTemplate {
       if (index == "blind_mode") {
         new_options[index] = options[index];
       }
+      if (index == "chip_graphics"){
+        new_options[index] = options[index]; 
+      }
     }
  
     return new_options;
@@ -2693,7 +2710,7 @@ class Poker extends GameTemplate {
   returnShortGameOptionsArray(options) {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};
-  
+    let useGraphics = false;
     for (let i in sgoa) {
       if (sgoa[i] != "") {
         let okey = i;
@@ -2718,11 +2735,23 @@ class Poker extends GameTemplate {
         if (i == "num_chips"){
           okey = "chips";
         }
+        if (i == "chip_graphics"){
+          if (oval == 1){
+            useGraphics = true;
+            okey = "show chips";
+            oval = null;
+          }
+        }
 
         if (output_me == 1) {
           ngoa[okey] = oval;
         }
       }
+    }
+
+    //Only checked options are stored, but we want visual confirmation of not checked
+    if (!useGraphics){
+      ngoa["hide chips"] = null;
     }
 
     return ngoa;
