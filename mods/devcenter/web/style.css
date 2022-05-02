@@ -380,6 +380,7 @@ button.button-active {
   margin-top: 50px;
   background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
   max-width: 100vw;
+  overflow-y: scroll;
 }
 
 .body .box {

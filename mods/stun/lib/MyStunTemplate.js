@@ -70,13 +70,7 @@ module.exports = (app, mod) => {
     </div>
   </div>
 </div>
-  <p style="font-weight: bold"> Video </p>
-  <div class="stun-video-container" style="display: flex">
-
-  </div>
   
-
-   
     <div class="row mb-4">
       <div class="col-sm-4"><p class="name">Connect With</p></div>
       <div class="col-sm-8">
@@ -92,30 +86,7 @@ module.exports = (app, mod) => {
       </div>
     </div>
 
-    <div class="row mb-4">
-<div class="col-sm-4"><p class="name">Status</p></div>
-<div  id="connection-status" class="col-sm-8">
-  <p style="color: red" class="data">Not connected to any pair</p>
-</div>
-</div>
-  
-    <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">Send Message to peer</p></div>
-      <div class="col-sm-8">
-        <div class="d-flex  align-items-end" style="">
-          <textarea
-            id="message-text"
-            style="border-radius: 8px"
-            cols="40"
-            class="data p-2 w-100"
-          ></textarea>
-    
-          <button id="send-message-btn" style="margin-left: 0.5rem" class="btn btn-primary">
-            Send
-          </button>
-        </div>
-      </div>
-    </div>
+ 
     <div class="row mb-4">
       <div class="col-sm-4"><p style="font-size: 12px;" id="address-origin" class="name"></p></div>
       <div class="col-sm-8">
@@ -168,3 +139,28 @@ module.exports = (app, mod) => {
 
 <div class="stun-video-container" style="display: flex">
 <video class="stun-video"  id="remoteStream4" width="100%" height="100%" autoplay></video>  */}
+
+{/* <div class="row mb-4">
+<div class="col-sm-4"><p class="name">Status</p></div>
+<div  id="connection-status" class="col-sm-8">
+  <p style="color: red" class="data">Not connected to any pair</p>
+</div>
+</div>
+  
+    <div class="row mb-4">
+      <div class="col-sm-4"><p class="name">Send Message to peer</p></div>
+      <div class="col-sm-8">
+        <div class="d-flex  align-items-end" style="">
+          <textarea
+            id="message-text"
+            style="border-radius: 8px"
+            cols="40"
+            class="data p-2 w-100"
+          ></textarea>
+    
+          <button id="send-message-btn" style="margin-left: 0.5rem" class="btn btn-primary">
+            Send
+          </button>
+        </div>
+      </div>
+    </div> */}

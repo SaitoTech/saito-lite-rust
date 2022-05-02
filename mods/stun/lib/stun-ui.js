@@ -114,31 +114,13 @@ const StunUI = {
                   // create new RTC connection 
 
                   const createPeerConnection = async () => {
+                        const stun_mod = app.modules.returnModule('Stun');
                         let reply = {
                               answer: "",
                               iceCandidates: []
                         }
                         const pc = new RTCPeerConnection({
-                              iceServers: [
-                                    {
-                                          urls: "stun:openrelay.metered.ca:80",
-                                    },
-                                    {
-                                          urls: "turn:openrelay.metered.ca:80",
-                                          username: "openrelayproject",
-                                          credential: "openrelayproject",
-                                    },
-                                    {
-                                          urls: "turn:openrelay.metered.ca:443",
-                                          username: "openrelayproject",
-                                          credential: "openrelayproject",
-                                    },
-                                    {
-                                          urls: "turn:openrelay.metered.ca:443?transport=tcp",
-                                          username: "openrelayproject",
-                                          credential: "openrelayproject",
-                                    },
-                              ],
+                              iceServers: stun_mod.servers
                         });
                         try {
 
@@ -400,30 +382,12 @@ const StunUI = {
 
 
                   const createPeerConnection = new Promise((resolve, reject) => {
+                        const stun_mod = app.modules.returnModule('Stun');
                         const execute = async () => {
 
                               try {
                                     const pc = new RTCPeerConnection({
-                                          iceServers: [
-                                                // {
-                                                //   urls: "stun:openrelay.metered.ca:80",
-                                                // },
-                                                {
-                                                      urls: "turn:openrelay.metered.ca:80",
-                                                      username: "openrelayproject",
-                                                      credential: "openrelayproject",
-                                                },
-                                                {
-                                                      urls: "turn:openrelay.metered.ca:443",
-                                                      username: "openrelayproject",
-                                                      credential: "openrelayproject",
-                                                },
-                                                {
-                                                      urls: "turn:openrelay.metered.ca:443?transport=tcp",
-                                                      username: "openrelayproject",
-                                                      credential: "openrelayproject",
-                                                },
-                                          ],
+                                          iceServers: stun_mod.servers
                                     });
 
 

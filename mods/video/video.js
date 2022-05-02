@@ -5,6 +5,7 @@ const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const { vanillaToast } = require("vanilla-toast");
 
 
 class Video extends ModTemplate {
@@ -190,26 +191,7 @@ class Video extends ModTemplate {
                 iceCandidates: []
             }
             const pc = new RTCPeerConnection({
-                iceServers: [
-                    {
-                        urls: "stun:openrelay.metered.ca:80",
-                    },
-                    {
-                        urls: "turn:openrelay.metered.ca:80",
-                        username: "openrelayproject",
-                        credential: "openrelayproject",
-                    },
-                    {
-                        urls: "turn:openrelay.metered.ca:443",
-                        username: "openrelayproject",
-                        credential: "openrelayproject",
-                    },
-                    {
-                        urls: "turn:openrelay.metered.ca:443?transport=tcp",
-                        username: "openrelayproject",
-                        credential: "openrelayproject",
-                    },
-                ],
+                iceServers: stun_mod.servers,
             });
             try {
 
@@ -233,26 +215,25 @@ class Video extends ModTemplate {
 
                 }
 
-                // pc.onconnectionstatechange = e => {
-                //   console.log("connection state ", pc.connectionState)
-                //   switch (pc.connectionState) {
+                pc.onconnectionstatechange = e => {
+                    console.log("connection state ", pc.connectionState)
+                    switch (pc.connectionState) {
 
 
-                //     case "connected":
-                //       vanillaToast.cancelAll();
-                //       vanillaToast.success('Connected', { duration: 3000, fadeDuration: 500 });
-                //       break;
+                        case "connected":
+                            vanillaToast.cancelAll();
+                            vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
+                            break;
 
-                //     case "disconnected":
-                //       StunUI.displayConnectionClosed();
-                //       vanillaToast.error('Disconnected', { duration: 3000, fadeDuration: 500 });
-                //       break;
+                        case "disconnected":
+                            vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
+                            break;
 
-                //     default:
-                //       ""
-                //       break;
-                //   }
-                // }
+                        default:
+                            ""
+                            break;
+                    }
+                }
 
                 // add data channels 
                 const data_channel = pc.createDataChannel('channel');
@@ -390,26 +371,7 @@ class Video extends ModTemplate {
 
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: [
-                            {
-                                urls: "stun:openrelay.metered.ca:80",
-                            },
-                            {
-                                urls: "turn:openrelay.metered.ca:80",
-                                username: "openrelayproject",
-                                credential: "openrelayproject",
-                            },
-                            {
-                                urls: "turn:openrelay.metered.ca:443",
-                                username: "openrelayproject",
-                                credential: "openrelayproject",
-                            },
-                            {
-                                urls: "turn:openrelay.metered.ca:443?transport=tcp",
-                                username: "openrelayproject",
-                                credential: "openrelayproject",
-                            },
-                        ],
+                        iceServers: stun_mod.servers,
                     });
 
 
@@ -429,6 +391,26 @@ class Video extends ModTemplate {
                         }
 
                     };
+
+                    pc.onconnectionstatechange = e => {
+                        console.log("connection state ", pc.connectionState)
+                        switch (pc.connectionState) {
+
+
+                            case "connected":
+                                vanillaToast.cancelAll();
+                                vanillaToast.success(`${publicKey} Connected`, { duration: 3000, fadeDuration: 500 });
+                                break;
+
+                            case "disconnecting":
+                                vanillaToast.error(`${publicKey} Disconnected`, { duration: 3000, fadeDuration: 500 });
+                                break;
+
+                            default:
+                                ""
+                                break;
+                        }
+                    }
 
                     const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                     localStream.getTracks().forEach(track => {
@@ -512,18 +494,18 @@ class Video extends ModTemplate {
         console.log('invites :', video_self.invites, 'result :', invite, index);
 
 
-        if (!invite) return console.log('invite does not exist');
+        if (!invite) return console.log('Ivite does not exist');
 
         if (invite.isMaxCapicity) {
             return console.log("Room has reached max capacity");
         }
 
         if (Date.now() < invite.startTime) {
-            return console.log("Video call time not reached");
+            return console.log("Video call time is not yet reached");
         }
 
 
-        // check if peer already exists
+
 
         // check if peer  already exists
 
@@ -543,6 +525,9 @@ class Video extends ModTemplate {
             console.log("key doesn't exist in invite list, adding now...");
             invite.peers.push(peer_data);
             invite.peerCount = invite.peerCount + 1;
+            if (invite.peerCount === this.videoMaxCapacity) {
+                invite.isMaxCapicity = true;
+            }
 
         }
 
@@ -576,7 +561,16 @@ class Video extends ModTemplate {
                 const iceCandidates = peerConnections.map(item => item.iceCandidates);
                 this.broadcastOffers(this.app.wallet.returnPublicKey(), offer_recipients, offers, iceCandidates);
             } else {
-                console.log("there needs to be more than 1 participant in the room");
+                const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localStream.getTracks().forEach(track => {
+                    console.log('got local stream for answerer');
+                });
+
+                let video_self = this.app.modules.returnModule("Video");
+
+                video_self.videoChat.show(new RTCPeerConnection({}));
+                video_self.videoChat.addLocalStream(localStream);
+                console.log("you are the only participant in the room");
             }
 
         } catch (error) {
