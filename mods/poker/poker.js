@@ -2736,11 +2736,11 @@ class Poker extends GameTemplate {
           okey = "chips";
         }
         if (i == "chip_graphics"){
-          useGrpahics = true;
           if (oval == 1){
+            useGraphics = true;
             okey = "show chips";
+            oval = null;
           }
-          oval = null;
         }
 
         if (output_me == 1) {
