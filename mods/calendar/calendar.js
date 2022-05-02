@@ -1,11 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-<<<<<<< HEAD
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-=======
->>>>>>> master
 const CalendarAppspace = require('./lib/email-appspace/calendar-appspace');
-
 
 
 class Calendar extends ModTemplate {
