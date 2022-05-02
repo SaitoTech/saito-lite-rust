@@ -1023,11 +1023,12 @@ select::-ms-expand {
 }
 
 select {
-  font-size: 1.2em;
+  font-size: 1em;
   flex: 1;
   padding: 0 0.5em;
   cursor: pointer;
   background: none;
+  line-height: 1em;
 }
 
 /* Arrow */
@@ -1238,7 +1239,7 @@ div#message-wrapper {
 }
 
 .personal-info .saito-select {
-  width: 14em;
+  //width: 14em;
 }
 
 .header-dropdown {
@@ -1292,7 +1293,7 @@ div#message-wrapper {
   width: 275px;
   margin: 0 9em 0 0;
   display: inline-block;
-  width: 85%;
+  width: 75%;
   margin: 0px;
 }
 
@@ -1304,6 +1305,7 @@ div#message-wrapper {
   border-radius: 2px;
   font-size: 17px;
   cursor: pointer;
+  border: 1px solid #26202C;
 }
 
 .copy-check::before {
