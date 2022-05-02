@@ -1202,10 +1202,12 @@ class Wordblocks extends GameTemplate {
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((slot) => {
             console.log(slot)
-            if (this.game.board[slot].fresh == 0) {
+	    if (this.game.board[slot]) {
+              if (this.game.board[slot].fresh == 0) {
 
-              touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] })
-            }
+                touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] })
+              }
+	    }
           })
         })
 
@@ -1228,9 +1230,10 @@ class Wordblocks extends GameTemplate {
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((plane) => {
             console.log(plane)
-            if (this.game.board[plane].fresh == 0) {
-
-              touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] })
+	    if (this.game.board[plane]) {
+              if (this.game.board[plane].fresh == 0) {
+                touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] })
+              }
             }
           })
         })
@@ -1317,8 +1320,10 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
-        this.game.board[boardslot].fresh = 0;
+      if (this.game.board[boardslot]) {
+        if (this.game.board[boardslot].fresh == 1) {
+          this.game.board[boardslot].fresh = 0;
+        }
       }
       divname = "#" + boardslot;
       $(divname).addClass("set");
@@ -1342,8 +1347,10 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
-        this.removeTilesFromHand(word[i]);
+      if (this.game.board[boardslot]) {
+        if (this.game.board[boardslot].fresh == 1) {
+          this.removeTilesFromHand(word[i]);
+        }
       }
     }
   }
@@ -1961,30 +1968,33 @@ class Wordblocks extends GameTemplate {
       this.letters = this.returnLetters();
     }
     for (let i = wordStart; i <= wordEnd; i++) {
+
       boardslot = boardSlotTemplate.replace("#", i);
       let letter_bonus = 1;
 
-      if (this.game.board[boardslot].fresh == 1) {
-        let tmpb = this.returnBonus(boardslot);
-        switch (
-        tmpb //Word_bonuses can be combined...maybe
-        ) {
-          case "3W":
-            word_bonus = word_bonus * 3;
-            break;
-          case "2W":
-            word_bonus = word_bonus * 2;
-            break;
-          case "3L":
-            letter_bonus = 3;
-            break;
-          case "2L":
-            letter_bonus = 2;
-            break;
+      if (this.game.board[boardslot]) {
+        if (this.game.board[boardslot].fresh == 1) {
+          let tmpb = this.returnBonus(boardslot);
+          switch (
+          tmpb //Word_bonuses can be combined...maybe
+          ) {
+            case "3W":
+              word_bonus = word_bonus * 3;
+              break;
+            case "2W":
+              word_bonus = word_bonus * 2;
+              break;
+            case "3L":
+              letter_bonus = 3;
+              break;
+            case "2L":
+              letter_bonus = 2;
+              break;
+          }
+          tilesUsed += 1;
+        } else {
+          touchesWord = 1;
         }
-        tilesUsed += 1;
-      } else {
-        touchesWord = 1;
       }
 
       let thisletter = this.game.board[boardslot].letter;
