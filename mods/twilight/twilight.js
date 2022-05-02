@@ -43,7 +43,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // newbie mode
     this.confirm_moves = 1;
@@ -729,10 +729,6 @@ console.log("\n\n\n\n");
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
     }
     this.game.queue.push("init");
-
-    if (this.game.dice === "") {
-      this.initializeDice();
-    }
 
   }
 

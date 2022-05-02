@@ -275,9 +275,9 @@ hr {
   position: absolute;
   width: 30px;
   height: 30px;
-  right: 0px;
+  right: -13px;
   border-radius: 50%;
-  top: 0px;
+  top: -15px;
   background-color: white;
   z-index: 100;
 }
@@ -1706,7 +1706,9 @@ div#message-wrapper {
     display: none;
   }
   .header-username {
-    display: none;
+    /* display: none; */
+    width: 4em;
+    margin-top: 10px;
   }
   #navigator {
     display: inline-block;
@@ -1778,6 +1780,18 @@ div#message-wrapper {
   background-size: cover;
   
 }
+
+.welcome-modal__input-container {
+  display: flex;
+
+}
+
+.welcome-modal__input {
+  width:60%; color:black;
+   background:#efefef;
+}
+
+
 
 /* Exclusively for modal-add-user-confirm.template */
 .confirm-modal-wrapper {
@@ -1895,6 +1909,7 @@ div#message-wrapper {
   .saito-overlay {
     width: 95vw;
   }
+
 }
 
 /* medium editor */

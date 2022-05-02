@@ -247,7 +247,6 @@ class Chat extends ModTemplate {
 		    // check identifiers
 		    //
 		    if (this.added_identifiers_post_load == 0) {
-console.log("ADD IDENTIFIERS POST LOAD: chat.js");
 		      try {
 			setTimeout(()=>{
 		          this.app.browser.addIdentifiersToDom();
@@ -544,6 +543,8 @@ console.log("ADD IDENTIFIERS POST LOAD: chat.js");
             members.push(this.app.wallet.returnPublicKey());
         }
 
+console.log("MEMBERS ZERO: " + members[0]);
+
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
             return;
@@ -785,6 +786,7 @@ console.log("ADD IDENTIFIERS POST LOAD: chat.js");
     // UI Functions //
     //////////////////
     openChatBox(group_id = null) {
+
         if (this.renderMode != "email" && this.renderMode != "none") {
             return;
         }
