@@ -50,14 +50,15 @@ The Reference Implementation of Saito is written in NodeJS. Developers can get s
 
 ## System Preparation
 
-Saito requires a recent version of NodeJS (>= 12). You can install this as follows:
+Saito requires a recent version of NodeJS (>= 16). You can install this as follows:
 
 ### Linux
 
 ```
-apt update
-apt upgrade
-apt install npm
+sudo apt-get update
+sudo apt-get install g++ make git python
+curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash
+sudo apt-get install -y nodejs npm
 ```
 
 ### Mac / Windows / Other
@@ -73,7 +74,7 @@ git clone https://github.com/saitotech/saito-lite-rust
 cd saito-lite-rust
 npm install
 npm run nuke
-npm start
+npm run dev
 ```
 
 The system will be started in 'local' or 'development' mode with a default set of modules responding on port 12101.
