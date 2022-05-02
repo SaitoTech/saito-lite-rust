@@ -249,8 +249,6 @@ class Scotland extends GameTemplate {
     if (this.game.state == undefined) {
       this.game.state = this.returnState();
 
-      this.initializeDice();
-
       console.log("\n\n\n\n");
       console.log("-------------------------");
       console.log("-------------------------");

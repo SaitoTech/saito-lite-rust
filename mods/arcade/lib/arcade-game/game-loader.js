@@ -7,10 +7,8 @@ module.exports = GameLoader = {
     mod.viewing_arcade_initialization_page = 1;
     if (game_id != "") {
       if (game_id == -1) {
-        // no button
         document.getElementById("arcade-main").innerHTML = GameLoadingTemplate(); //P2P Magic Happening
       } else {
-        // spinner
         document.getElementById("arcade-main").innerHTML = GameLoadedTemplate(game_id);
       }
     } else {

@@ -9,7 +9,6 @@ class Wordblocks extends GameTemplate {
     this.gamename = "Wordblocks";
 
     this.wordlist = [];
-    this.letterset = {};
     this.mydeck = {};
     this.score = "";
     this.app = app;
@@ -30,6 +29,7 @@ class Wordblocks extends GameTemplate {
     this.moves = [];
     this.firstmove = 1;
     this.last_played_word = [];
+    this.loadingDictionary = null; //a flag that we are loading the dictionary in the background
 
     this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
 
@@ -273,6 +273,12 @@ class Wordblocks extends GameTemplate {
       }
       this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
     }
+
+    this.getPlayerScore(0); //initialize playerscore variable if not already existing
+    this.getLastMove(0); //initialize lastmove variable if not already existing
+    
+    this.letters = this.returnLetters();
+
     //
     // stop here if initializing
     //
@@ -290,10 +296,12 @@ class Wordblocks extends GameTemplate {
         xhr.open("GET", durl, true); //true -> async 
         xhr.responseType = "json"; //only in async
         xhr.send();
+        this.loadingDictionary = true; //flag that the game module is processing xhr
         xhr.onload = ()=>{
            if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);
           } else {
+            this.loadingDictionary = false;
             this.wordlist = xhr.response;//;Array.from(JSON.parse(xhr.response));
             //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
             console.log("My word list is a :",typeof this.wordlist);
@@ -306,14 +314,6 @@ class Wordblocks extends GameTemplate {
       }
     }
     
-
-
-    //
-    // return letters
-    //
-    this.letters = this.returnLetters();
-
-
     //
     // load any existing tiles
     //
@@ -1686,8 +1686,9 @@ class Wordblocks extends GameTemplate {
 
   returnLetters() {
     var dictionary = this.game.options.dictionary;
+    
     if (dictionary === "twl" || dictionary === "sowpods") {
-      this.letterset = {
+      return {
         A: { score: 1 },
         B: { score: 3 },
         C: { score: 2 },
@@ -1717,7 +1718,7 @@ class Wordblocks extends GameTemplate {
       };
     }
     if (dictionary === "fise" || dictionary === "tagalog") {
-      this.letterset = {
+      return {
         A: { score: 1 },
         B: { score: 2 },
         C: { score: 3 },
@@ -1749,12 +1750,30 @@ class Wordblocks extends GameTemplate {
       this.letterset = {"A":{"score":1},"B":{"score":3},"C":{"score":2},"D":{"score":2},"E":{"score":1},"F":{"score":2},"G":{"score":2},"H":{"score":1},"I":{"score":1},"J":{"score":8},"K":{"score":4},"L":{"score":2},"M":{"score":2},"N":{"score":1},"O":{"score":1},"P":{"score":2},"Q":{"score":10},"R":{"score":1},"S":{"score":1},"T":{"score":1},"U":{"score":2},"V":{"score":3},"W":{"score":2},"X":{"score":8},"Y":{"score":2},"Z":{"score":10}};
     }*/
     if (dictionary === "test") {
-      let letterset = { A: { score: 1 }, C: { score: 3 }, T: { score: 2 } };
+      return { A: { score: 1 }, C: { score: 3 }, T: { score: 2 } };
     }
-    return this.letterset;
+    console.log("Error: No defined letter values");
+    return {};
   }
 
-  checkWord(word) {
+  letDictionaryLoad(){
+    let wordblocks_self = this;
+    return new Promise((resolve, reject) => {
+                let timer = setInterval(() => {
+                  console.log("loading dictionary...");
+                  if (wordblocks_self.loadingDictionary === false){
+                    console.log("dictionary loaded!");
+                    clearInterval(timer);
+                    resolve(1);
+                  }
+                },500);
+                 });
+    }
+
+  async checkWord(word) {
+    if (this.loadingDictionary){
+     await this.letDictionaryLoad(); 
+    }
     if (word.length >= 1 && this.wordlist.length > 0) {
       if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
         return false;
@@ -1762,7 +1781,7 @@ class Wordblocks extends GameTemplate {
         return true;
       }
     } 
-    console.error("Word length or dictionary issue -- " + word,wordlist);
+    console.error("Word length or dictionary issue -- " + word,this.wordlist);
     return false;
   }
 
@@ -1938,6 +1957,9 @@ class Wordblocks extends GameTemplate {
     let thisword = "";
     let score = 0;
     let html = "";
+    if (Object.keys(this.letters).length === 0){
+      this.letters = this.returnLetters();
+    }
     for (let i = wordStart; i <= wordEnd; i++) {
       boardslot = boardSlotTemplate.replace("#", i);
       let letter_bonus = 1;
@@ -2184,7 +2206,9 @@ class Wordblocks extends GameTemplate {
         let orient = mv[5];
         let expanded = mv[6];
         let score = 0;
-
+        if (!this.browser_active){
+          return 0;
+        }
         if (player != wordblocks_self.game.player) {
           this.addWordToBoard(word, orient, x, y);
           //this.setBoard(word, orient, x, y);
@@ -2238,6 +2262,10 @@ class Wordblocks extends GameTemplate {
 
       //Actually tile discarding action
       if (mv[0] === "turn") {
+        if (!this.browser_active){
+          return 0;
+        }
+
         //
         // observer mode
         //
@@ -2329,7 +2357,7 @@ class Wordblocks extends GameTemplate {
       return;
     }
 
-    this.game.score[player - 1] = this.game.score[player - 1] + score;
+    this.game.score[player - 1] = this.getPlayerScore(player) + score;
     this.playerbox.refreshInfo(
       `<span>Player ${player}:</span> <span class="playerscore" id="score_${player}">${this.game.score[player - 1]
       }</span>`,
@@ -2363,7 +2391,6 @@ class Wordblocks extends GameTemplate {
             ${testHtml}
           </select>
           </div>
-
           <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
@@ -2372,7 +2399,6 @@ class Wordblocks extends GameTemplate {
           </select>
           </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
           `;
   }
 }

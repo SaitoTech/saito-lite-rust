@@ -79,7 +79,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="continue" class="button invite-tile-button">CONTINUE</button>`;
        }else{
           inviteHtml += `<div class="button_with_icon"><i class="fas fa-link link_icon private"></i>`;          
-          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="${(invite.msg.request == "private")?"publicize":"invite"}" class="button invite-tile-button">${(invite.msg.request == "private")?"OPEN":"HIDE"}</button></div>`;
+          inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="${(invite.msg.request == "private")?"publicize":"invite"}" class="button invite-tile-button">${(invite.msg.request == "private")?"PRIVATE":"PUBLIC"}</button></div>`;
         }
        inviteHtml += `<button data-sig="${invite.transaction.sig}" data-cmd="cancel" class="button invite-tile-button">CANCEL</button>`;
      } else {
