@@ -679,8 +679,8 @@ class Pandemic extends GameTemplate {
 
   shareKnowledge() {
     let pandemic_self = this;
-    let player = this.game.players_info[this.game.player-1];
-    let city = player.city; //Where am I 
+    let player = this.game.player;
+    let city = this.game.players_info[player-1].city; //Where am I 
 
     //Assume I have the card
     let cardOwner = this.findCardOwner(city);
@@ -706,7 +706,7 @@ class Pandemic extends GameTemplate {
         html += "</ul>";
 
         if (numChoices > 1){
-          this.updateStatusWithOptions(`Give card to whom?`, html,true);
+          pandemic_self.updateStatusWithOptions(`Give card to whom?`, html,true);
           $(".nocard").off();
           $(".nocard").on("click", function () {
             $(".nocard").off();
@@ -724,10 +724,10 @@ class Pandemic extends GameTemplate {
   //no researcher and friend has city card
     if (researcher == 0){
       //Give Me the Card
-      if (cardOwner != this.game.player) {
+      if (cardOwner != player) {
         //CardOwner needs to approve this...!!!!
-        this.addMove(`takecard\t${this.game.player}\t${cardOwner}\t${city}`); //Remove from their hand
-        this.endTurn();
+        pandemic_self.addMove(`takecard\t${player}\t${cardOwner}\t${city}`); //Remove from their hand
+        pandemic_self.endTurn();
         
       }else { //I give the card
         offerCard(city);
@@ -735,15 +735,15 @@ class Pandemic extends GameTemplate {
       }
     }else {
     let researcherCards = pandemic_self.game.players_info[researcher - 1].cards.filter(c => !c.includes("event"));
-    if (this.game.player === researcher){
+    if (player === researcher){
       //I am a researcher and someone else has city card
-      if (cardOwner > 0 && cardOwner != this.game.player){
+      if (cardOwner > 0 && cardOwner != player){
         //Step 1, give or take
         let html = `<ul>
                       <li id="take" class="menu_option">Take ${city} card</li>
                       <li id="give" class="menu_option">Pick a card to give</li>
                     </ul>`;
-        this.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
+        pandemic_self.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
         $(".menu_option").off();
         $(".menu_option").on("click",function(){
           $(".menu_option").off();
@@ -764,21 +764,21 @@ class Pandemic extends GameTemplate {
         //I am a researcher and I have city card
         //I am a researcher and no one has city card
         //Pick a card to share
-        this.updateStatusAndListCards("Share knowledge of which city:", researcherCards, true);
-        this.attachCardboxEvents(function (c) {
+        pandemic_self.updateStatusAndListCards("Share knowledge of which city:", researcherCards, true);
+        pandemic_self.attachCardboxEvents(function (c) {
           offerCard(c);
         });
 
       }
     }else{ 
       //Friend is researcher and I have city card
-      if (cardOwner == this.game.player){
+      if (cardOwner == player){
         //Step 1, give or take
         let html = `<ul>
                       <li id="give" class="menu_option">Give ${city} card</li>
                       <li id="take" class="menu_option">Ask Researcher for a card</li>
                     </ul>`;
-        this.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
+        pandemic_self.updateStatusWithOptions(`How do you want to share knowledge?`,html,true);
         $(".menu_option").off();
         $(".menu_option").on("click",function(){
           $(".menu_option").off();
