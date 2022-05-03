@@ -445,6 +445,7 @@ thead,  tfoot{
 }
 
 .hud-status-update-message, .subrack {
+  width: 100%;
   margin: 0.6em auto;
 }
 
@@ -629,4 +630,8 @@ Resize board on smaller screens
 
 .status-message{
   background-color: unset;
+}
+
+.status_container{
+  width: 100%;
 }

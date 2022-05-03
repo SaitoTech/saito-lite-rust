@@ -420,8 +420,9 @@ class Wordblocks extends GameTemplate {
         <div class="subrack" id="subrack">
           <div class="rack-controls">
             <div id="shuffle" class="shuffle">Shuffle: <i class="fa fa-random"></i></div>
-            <div id="deletectrl" class="hidden deletectrl"><i class="fa fa-trash" aria-hidden="true" id="delete"></i><i id="canceldelete" class="far fa-window-close"></i></div>
+            <div id="deletectrl" class="hidden deletectrl">Discard: <i class="fa fa-trash" id="delete"></i><i id="canceldelete" class="hidden far fa-window-close"></i></div>
             <div>Remaining Tiles: ${this.game.deck[0].crypt.length}</div>
+            <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
         </div>
       </div
@@ -531,6 +532,10 @@ class Wordblocks extends GameTemplate {
       document.querySelector("#tiles .highlighttile");
 
     try {
+      //Show delete and skip controls
+      $("#deletectrl").removeClass("hidden");
+      $("#skipturn").removeClass("hidden");
+
       /*
       Define a few helper functions because there are multiple ways to get to the same code
       */
@@ -538,7 +543,7 @@ class Wordblocks extends GameTemplate {
         //Unselect all double-clicked tiles
         $(".tiles .tile").removeClass("todelete");
         $("#tiles").sortable("enable");
-        $("#deletectrl").addClass("hidden");
+        $("#canceldelete").addClass("hidden");
         $("#delete").off();
         $("#canceldelete").off();
         wordblocks_self.addEventsToBoard();
@@ -621,6 +626,13 @@ class Wordblocks extends GameTemplate {
         }
       };
 
+
+      $("#skipturn").off();
+      $("#skipturn").on("click",function(){
+        wordblocks_self.addMove("turn\t" + wordblocks_self.game.player + "\t");
+        wordblocks_self.endTurn();
+      });
+
       //Float helper tile with mouse over board
       $(document).on("mousemove", function (e) {
         //$("#helper").css("transform",`translate(${e.clientX+5}px, ${e.clientY+5}px)`);
@@ -631,7 +643,6 @@ class Wordblocks extends GameTemplate {
       $(".slot").off(); //Reset clicking on board
 
       $("#rack .tile").off();
-
       //Single click to select a tile and enter interactive placement mode
       $("#rack .tile").on("click", function (e) {
         if (!$(this).hasClass("noclick")) {
@@ -656,10 +667,40 @@ class Wordblocks extends GameTemplate {
       });
 
       //Discard Tiles -- Method 2
-      $("#rack .tile").on("dblclick", function () {
+      $("#delete").off();
+      $("#delete").on("click", function () {
+        wordblocks_self.clearBoard();
+        //Enter interactive discard mode.
+        $(".hud-status-update-message").text(
+          "Select the tiles you want to discard and click the trash icon to confirm (this will count as your turn)."
+        );
+
+        $("#tiles").sortable("disable");
+        $(".tile").off("click"); //block clicking
+        $("#canceldelete").removeClass("hidden");
+        //Single click to select for deletion
+        $("#rack .tile").on("click", function (e) {
+          this.classList.toggle("todelete");
+        });
+
+        $("#canceldelete").off();
+        $("#canceldelete").on("click", revertToPlay);
+
+        $("#delete").off();
+        $("#delete").on("click", function () {
+          let deletedTiles = "";
+          let tileRack = document.querySelectorAll(".tiles .tile");
+          for (let i = 0; i < tileRack.length; i++) {
+            if (tileRack[i].classList.contains("todelete"))
+              deletedTiles += tileRack[i].textContent;
+          }    
+          wordblocks_self.discardAndDrawTiles(deletedTiles);
+        });
+      });
+
+      /*$("#rack .tile").on("dblclick", function () {
         //Toggle deleted on/off with each double click
         this.classList.toggle("todelete");
-
         //Do we have tiles selected for deletion?
         let deletedTiles = "";
         let tileRack = document.querySelectorAll(".tiles .tile");
@@ -671,12 +712,12 @@ class Wordblocks extends GameTemplate {
         //If tiles selected for deletion enter deletemode
         if (deletedTiles.length > 0) {
           $(".hud-status-update-message").text(
-            "Select the tiles you want to trash and click the trash icon to confirm (this will count as your turn)."
+            "Select the tiles you want to discard and click the trash icon to confirm (this will count as your turn)."
           );
 
           $("#tiles").sortable("disable");
           $(".tile").off("click"); //block clicking
-          $("#deletectrl").removeClass("hidden");
+          $("#canceldelete").removeClass("hidden");
           $("#delete").off();
           $("#delete").on("click", function () {
             wordblocks_self.discardAndDrawTiles(deletedTiles);
@@ -687,7 +728,7 @@ class Wordblocks extends GameTemplate {
           //Exit deletemode
           revertToPlay();
         }
-      });
+      });*/
 
       /*
       Default/Original mode
@@ -724,27 +765,11 @@ class Wordblocks extends GameTemplate {
           let x = tmpx[1];
           let word = "";
 
-          let offsetX = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 25
-            : 55;
-          let offsetY = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 25
-            : 55;
+          let offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
+          let offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
 
-          let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 135
-            : 155;
-          let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 135
-            : 155;
+          let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
+          let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
 
           let left = $(this).offset().left + offsetX;
           let top = $(this).offset().top + offsetY;
@@ -904,6 +929,22 @@ class Wordblocks extends GameTemplate {
       $(".tosstiles").on("click", async function () {
         tiles = await sprompt("Which tiles do you want to discard?");
         if (tiles) {
+          let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
+          for (let i = 0; i < tiles.length; i++) {
+            let letter = tiles[i].toUpperCase();
+            let letter_found = 0;
+            for (let k = 0; k < tmphand.length; k++) {
+              if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
+                tmphand.splice(k, 1);
+                letter_found = 1;
+                k = tmphand.length + 1;
+              }
+            }
+            if (letter_found == 0) {
+              salert("INVALID: letter not in hand: " + letter);
+              return false;
+            }
+          }
           wordblocks_self.discardAndDrawTiles(tiles);
         }
       });
@@ -2281,18 +2322,22 @@ class Wordblocks extends GameTemplate {
 
         let player = mv[1];
         let discardedTiles = mv[2];
-
+        let msg = (discardedTiles.length > 0) ? "discarded some tiles" : "passed";
         if (player != this.game.player) {
           //string - int comparison
-          this.updateLog(`Player ${player} discarded some tiles.`);
+          this.updateLog(`Player ${player} ${msg}.`);
         } else {
-          this.updateLog(`You discarded some tiles.`);
+          this.updateLog(`You ${msg}.`);
         }
 
         //Update Specific Playerbox
-        let html = `<div class="lastmove" id="lastmove_${player}"><span>Discarded:</span><span class="discardedtiles">[${discardedTiles
-          .split("")
-          .join()}]</span><span class="wordscore">0</span></div>`;
+        let html = `<div class="lastmove" id="lastmove_${player}">`;
+        if (discardedTiles.length > 0 ){
+          html += `<span>Discarded:</span><span class="discardedtiles">[${discardedTiles.split("").join()}]</span>`;
+        }else{
+          html += `<span>Passed without playing</span>`;
+        }
+        html += `<span class="wordscore">0</span></div>`;
         this.playerbox.refreshLog(html, player);
 
         //Code to keep the discard and redraws in the game log history
