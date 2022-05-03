@@ -436,6 +436,8 @@ class Wordblocks extends GameTemplate {
       this.limitedEvents(); //Baseline functionality
     } catch (err) {
       console.error(err);
+      console.log("HAND: "+JSON.stringify(this.game.deck[0].hand));
+      console.log("CARDS: "+JSON.stringify(this.game.deck[0].cards));
     }
   }
 
@@ -1207,7 +1209,7 @@ class Wordblocks extends GameTemplate {
     } else {
       //Check to make sure newly played word touches another word
       // let touchesWord = 0;
-      let xStart = Math.max(1, x - 1);
+      /*let xStart = Math.max(1, x - 1);
       let yStart = Math.max(1, y - 1);
       let xEnd, yEnd;
       if (orientation == "horizontal") {
@@ -1228,27 +1230,25 @@ class Wordblocks extends GameTemplate {
       //     }
       //     console.log(touchesWord)
       //   }
-
+      */
       const touchesWord = []
       if (orientation == "horizontal") {
-        yStart = parseInt(yStart) + 1;
-        xStart = parseInt(xStart) + 1;
-        let allBoardSlots = []
-        for (let i = xStart; i < xEnd - 1; i++) {
-          let left = `${yStart}_${i - 1}`;
-          let top = `${yStart - 1}_${i}`;
-          let right = `${yStart}_${i + 1}`;
-          let bottom = `${yStart + 1}_${i}`;
-          let neighbors = [left, top, right, bottom]
-          allBoardSlots.push(neighbors)
+        let left = `${y}_${x - 1}`;
+        let right = `${y}_${x + word.length }`;
+        let allBoardSlots = [[left, right]];
+
+        for (let i = x; i < x + word.length; i++) {
+          let top = `${y - 1}_${i}`;
+          let bottom = `${y + 1}_${i}`;
+          let neighbors = [top, bottom];
+          allBoardSlots.push(neighbors);
         }
-        //console.log(allBoardSlots)
+        //console.log(allBoardSlots);
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((slot) => {
-            //console.log(slot)
             if (this.game.board[slot] && this.game.board[slot].fresh == 0) {
-              touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] })
+              touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] });
             }
           })
         })
@@ -1256,32 +1256,30 @@ class Wordblocks extends GameTemplate {
       }
 
       if (orientation == "vertical") {
-        yStart = parseInt(yStart) + 1;
-        xStart = parseInt(xStart) + 1;
-        let allBoardSlots = []
-        for (let i = yStart; i < yEnd - 1; i++) {
-          let left = `${i}_${xStart - 1}`;
-          let top = `${i - 1}_${xStart}`;
-          let right = `${i}_${xStart + 1}`;
-          let bottom = `${i + 1}_${xStart}`;
-          let neighbors = [left, top, right, bottom]
-          allBoardSlots.push(neighbors)
+        let top = `${y - 1}_${x}`;
+        let bottom = `${y + word.length}_${x}`;
+        let allBoardSlots = [[top, bottom]];
+        
+        for (let i = y; i < y + word.length; i++) {
+          let left = `${i}_${x - 1}`;
+          let right = `${i}_${x + 1}`;
+          let neighbors = [left, right];
+          allBoardSlots.push(neighbors);
         }
-        //console.log(allBoardSlots)
+        //console.log(allBoardSlots);
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((plane) => {
-            //console.log(plane)
             if (this.game.board[plane] && this.game.board[plane].fresh == 0) {
-              touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] })
+              touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] });
             }
           })
         })
-        //console.log(touchesWord)
       }
 
       if (!touchesWord.find(item => item.touchesWord == true)) {
         salert("Word does not cross or touch an existing word.");
+        console.log(touchesWord);
         return false;
       }
     }
