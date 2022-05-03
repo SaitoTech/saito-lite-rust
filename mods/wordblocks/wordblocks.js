@@ -26,6 +26,8 @@ class Wordblocks extends GameTemplate {
     this.tileHeight = 163;
     this.tileWidth = 148;
     this.letters = {};
+
+    this.tilesToHighlight = [];
     this.moves = [];
     this.firstmove = 1;
     this.last_played_word = [];
@@ -2010,6 +2012,16 @@ class Wordblocks extends GameTemplate {
 
       let thisletter = this.game.board[boardslot].letter;
       //console.log(boardslot,thisletter);
+      
+      /*
+      So we just save all the tiles in the play in a queue to animate after the fact
+      Because it may be confusing if multiple words are being played at once and they
+      all start flashing at once
+      However, we do need a way to also queue the numbers to display on the screen 
+      */
+      this.tilesToHighlight.push(`#${boardslot} .tile`);
+
+
       thisword += thisletter;
       score += this.letters[thisletter].score * letter_bonus;
       if (letter_bonus > 1) {
@@ -2059,7 +2071,7 @@ class Wordblocks extends GameTemplate {
     // find the start and end of the word
     //
     let wordBoundaries = this.getWordScope(mainAxis, boardSlotTemplate);
-
+    this.tilesToHighlight = []; // reset to empty array
     //Score main-axis word
     let results = this.scoreWord(
       wordBoundaries.start,
@@ -2251,6 +2263,7 @@ class Wordblocks extends GameTemplate {
         } else {
           score = this.getLastMove(player).score;
         }
+        this.animatePlay();
 
         //Update Specific Playerbox
         let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
@@ -2434,6 +2447,18 @@ class Wordblocks extends GameTemplate {
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
           `;
   }
+
+  async animatePlay(){
+    for (let tile of this.tilesToHighlight){
+      $(tile).css("color","white").css("background","black").delay(250)
+      .queue(function () {
+        $(this).css("color", "").css("background", "").dequeue();
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+  } 
+
 }
 
 module.exports = Wordblocks;
