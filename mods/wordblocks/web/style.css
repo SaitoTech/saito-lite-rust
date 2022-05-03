@@ -151,7 +151,7 @@ thead,  tfoot{
 
 
 /* Popup menu controls */
-.tile-placement-controls{
+.tile-placement-controls, .tile-submit-controls{
   position: absolute;
   top: -55px;
   right: -34%;
@@ -163,7 +163,7 @@ thead,  tfoot{
 }
 
 
-.tile-placement-controls .playable{
+.tile-submit-controls .playable{
   font-size: 1.5em;
   color: #fff;
   text-shadow: 1px 1px #555;
@@ -175,7 +175,7 @@ thead,  tfoot{
   width: 200px;
 }
 
-.tile-placement-controls .playable.invalid_word{
+.tile-submit-controls .playable.invalid_word{
   color: #777;
 }
 
@@ -481,7 +481,7 @@ thead,  tfoot{
     height: -moz-fit-content;
   }
 
-  .tile-placement-controls{
+  .tile-submit-controls{
     top: unset;
     left: 50%;
     right: unset;
