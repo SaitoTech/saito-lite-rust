@@ -587,14 +587,14 @@ class Wordblocks extends GameTemplate {
       }
 
       const checkBoard = function () {
-        $(".tile-placement-controls").remove(); //Removes previous addition
+        $(".tile-submit-controls").remove(); //Removes previous addition
         //Popup to commit word
         //Get the x,y, orientation and word from tiles
         let [word, orientation, y, x] = wordblocks_self.readWordFromBoard();
         if (word) {
 
           let html = `
-            <div class="tile-placement-controls">
+            <div class="tile-submit-controls">
               <div class="playable ${(wordblocks_self.checkWord(word) ? "valid_word" : "invalid_word")}">${word}</div>
               <div class="action" id="submit"><i class="fa fa-paper-plane"></i> Submit</div>
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
@@ -613,7 +613,7 @@ class Wordblocks extends GameTemplate {
           $(".action").off();
           $(".action").on("click", function () {
             $(".action").off();
-            $(".tile-placement-controls").remove();
+            $(".tile-submit-controls").remove();
             //Remove the temporary tiles
             wordblocks_self.clearBoard();
             if ($(this).attr("id") == "submit") {
