@@ -1242,9 +1242,8 @@ class Wordblocks extends GameTemplate {
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((slot) => {
-            console.log(slot)
-            if (this.game.board[slot].fresh == 0) {
-
+            //console.log(slot)
+            if (this.game.board[slot] && this.game.board[slot].fresh == 0) {
               touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] })
             }
           })
@@ -1268,9 +1267,8 @@ class Wordblocks extends GameTemplate {
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((plane) => {
-            console.log(plane)
-            if (this.game.board[plane].fresh == 0) {
-
+            //console.log(plane)
+            if (this.game.board[plane] && this.game.board[plane].fresh == 0) {
               touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] })
             }
           })
@@ -1358,7 +1356,7 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         this.game.board[boardslot].fresh = 0;
       }
       divname = "#" + boardslot;
@@ -1383,7 +1381,7 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         this.removeTilesFromHand(word[i]);
       }
     }
@@ -2005,7 +2003,7 @@ class Wordblocks extends GameTemplate {
       boardslot = boardSlotTemplate.replace("#", i);
       let letter_bonus = 1;
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         let tmpb = this.returnBonus(boardslot);
         switch (
         tmpb //Word_bonuses can be combined...maybe
@@ -2097,7 +2095,7 @@ class Wordblocks extends GameTemplate {
       boardslot = boardSlotTemplate.replace("#", i);
 
       //console.log(boardslot);
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         //...Is it newly placed...?
         let altTemplate = boardSlotTemplate
           .replace(crossAxis, "@")
