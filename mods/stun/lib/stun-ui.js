@@ -278,7 +278,7 @@ const StunUI = {
                               console.log('new message from client : ', e.data);
                               StunUI.displayMessage(peer_b, e.data);
                         };
-                        StunUI.peer_connection.dc.open = (e) => {
+                        StunUI.peer_connection.dc.onopen = (e) => {
                               $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
                               console.log("connection opened");
                         };

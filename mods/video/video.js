@@ -17,7 +17,7 @@ class Video extends ModTemplate {
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
-        this.invites = [];
+        this.rooms = [];
         this.remoteStreamPosition = 0;
 
         this.peer_connections = {};
@@ -34,27 +34,27 @@ class Video extends ModTemplate {
                 let video_self = app.modules.returnModule("Video");
                 let stun_mod = app.modules.returnModule('Stun');
 
-                let address = app.wallet.returnPublicKey();
-                if (tx.msg.answerInvite) {
+                let my_pubkey = app.wallet.returnPublicKey();
+                if (tx.msg.answer) {
 
-                    if (address === tx.msg.answerInvite.peer_b) {
+                    if (my_pubkey === tx.msg.answer.offer_creator) {
                         if (app.BROWSER !== 1) return;
-                        console.log("current instance: ", address, " answer invite: ", tx.msg.answerInvite);
+                        console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
                         console.log("peer connections: ", video_self.peer_connections);
-                        const reply = tx.msg.answerInvite.reply;
+                        const reply = tx.msg.answer.reply;
 
-                        if (video_self.peer_connections[tx.msg.answerInvite.peer_a]) {
-                            video_self.peer_connections[tx.msg.answerInvite.peer_a].setRemoteDescription(reply.answer).then(result => {
-                                console.log('remote description set', video_self.peer_connections[tx.msg.answerInvite.peer_a]);
+                        if (video_self.peer_connections[tx.msg.answer.answer_creator]) {
+                            video_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                                console.log('setting remote description of ', video_self.peer_connections[tx.msg.answer.answer_creator]);
 
-                            }).catch(error => console.log(" An error occured with setting remote description :", error));
-                            if (reply.iceCandidates.length > 0) {
-                                console.log("Adding answerInvite candidates");
-                                for (let i = 0; i < reply.iceCandidates.length; i++) {
-                                    video_self.peer_connections[tx.msg.answerInvite.peer_a].addIceCandidate(reply.iceCandidates[i]);
+                            }).catch(error => console.log(" An error occured with setting remote description for :", video_self.peer_connections[tx.msg.answer.answer_creator], error));
+                            if (reply.ice_candidates.length > 0) {
+                                console.log("Adding answer candidates");
+                                for (let i = 0; i < reply.ice_candidates.length; i++) {
+                                    video_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
                                 }
                             }
-                            console.log('peer connections', video_self.peer_connections);
+
                         } else {
                             console.log("peer connection not found");
                         }
@@ -62,29 +62,25 @@ class Video extends ModTemplate {
 
                     }
                 }
-                if (tx.msg.invites) {
-                    video_self.invites = tx.msg.invites.invites
-                    console.log("invites ", video_self.invites);
-                }
-
-
-                if (tx.msg.invite) {
-                    // console.log('new invite')
-                    // video_self.invites.push(tx.msg.invite.invite);
-                    // console.log('peers ', video_self.app.network.peers);
-                    // console.log("invites: ", video_self.invites);
+                if (tx.msg.rooms) {
+                    video_self.rooms = tx.msg.rooms.rooms
+                    console.log("rooms ", video_self.rooms);
                 }
 
                 if (tx.msg.offers && app.BROWSER === 1) {
                     if (app.BROWSER !== 1) return;
 
                     const offer_creator = tx.msg.offers.offer_creator;
+
+                    // offer creator should not respond
+                    if (my_pubkey === offer_creator) return;
                     console.log("offers received from ", tx.msg.offers.offer_creator, tx.msg.offers);
-                    if (address === offer_creator) return;
-                    const index = tx.msg.offers.offer_recipients.findIndex(item => item === address);
+
+                    // check if current instance is a recipent
+                    const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
 
                     if (index !== -1) {
-                        video_self.acceptOfferAndCreateAnswer(app, offer_creator, tx.msg.offers.offers[index], tx.msg.offers.iceCandidates[index]);
+                        video_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
                     }
 
 
@@ -104,47 +100,52 @@ class Video extends ModTemplate {
         let video_self = app.modules.returnModule("Video");
         switch (req.request) {
 
-            case "onboard_invites":
-                console.log('invite onboarded: ', tx.msg.invites.invites);
-                video_self.invites = tx.msg.invites.invites
+            case "onboard_rooms":
+                console.log('room onboarded: ', tx.msg.rooms.rooms);
+                video_self.rooms = tx.msg.rooms.rooms
+                app.options.rooms = tx.msg.rooms.rooms
+                app.storage.saveOptions();
                 break;
 
-            case "new_create_invite":
+            case "create_new_room":
 
 
 
-                console.log('new invite created: ', tx.msg.invite.invite);
-                video_self.invites.push(tx.msg.invite.invite);
-                console.log('peers ', app.network.peers);
-                console.log("invites: ", video_self.invites);
+                console.log('new room created: ', tx.msg.room.room);
+
+                app.options.rooms.push(tx.msg.room.room);
+                app.storage.saveOptions();
+                console.log("rooms: ", video_self.rooms);
                 break;
 
-            case "update_invites":
+            case "update_rooms":
 
-                console.log('invite updated: ', tx.msg.invites.invites);
-                video_self.invites = tx.msg.invites.invites
+                console.log('room updated: ', tx.msg.rooms.rooms);
+                app.options.rooms = tx.msg.rooms.rooms;
+                app.storage.saveOptions();
+                // video_self.rooms = tx.msg.rooms.rooms
 
                 break;
 
             case "videochat_broadcast":
                 app.network.peers.forEach(peer => {
                     console.log('sending to: ', peer.returnPublicKey());
-                    tx.transaction.to.push(new saito.default.slip(peer.returnPublicKey()));
-                    if (tx.msg.invite) {
-                        peer.sendRequest('new_create_invite', tx);
+
+                    if (tx.msg.room) {
+                        peer.sendRequest('create_new_room', tx);
                     }
-                    if (tx.msg.invites) {
-                        peer.sendRequest('update_invites', tx);
+                    if (tx.msg.rooms) {
+                        peer.sendRequest('update_rooms', tx);
                     }
 
                 })
 
                 // update server 
-                if (tx.msg.invite) {
-                    this.invites.push(tx.msg.invite.invite);
+                if (tx.msg.room) {
+                    this.rooms.push(tx.msg.room.room);
                 }
-                if (tx.msg.invites) {
-                    this.invites = tx.msg.invites.invites;
+                if (tx.msg.rooms) {
+                    this.rooms = tx.msg.rooms.rooms;
                 }
 
             // app.network.(tx);
@@ -153,42 +154,43 @@ class Video extends ModTemplate {
 
 
     onPeerHandshakeComplete() {
-        // send latest copy of invites to this peer
+        // send latest copy of rooms to this peer
         // lite clients are not allowed to run this
         if (this.app.BROWSER === 0) {
             let newtx2 = this.app.wallet.createUnsignedTransaction();
 
-            newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
+            // newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
 
-            // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.invites);
+            // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.rooms);
             const recipient = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
             newtx2.msg.module = "Video";
-            newtx2.msg.invites = {
-                invites: this.invites
+            newtx2.msg.rooms = {
+                rooms: this.rooms
             };
 
-            console.log('onboarding invite :', recipient, this.invites);
+            console.log('get rooms from server :', recipient, this.rooms);
 
             console.log(newtx2)
             newtx2 = this.app.wallet.signTransaction(newtx2);
-            // this.app.network.propagateTransaction(newtx2);
+
 
             let relay_mod = this.app.modules.returnModule('Relay');
-            relay_mod.sendRelayMessage(recipient, 'onboard_invites', newtx2);
+            relay_mod.sendRelayMessage(recipient, 'onboard_rooms', newtx2);
 
         }
 
     }
 
-    acceptOfferAndCreateAnswer(app, offer_creator, offer_sdp, iceCandidates) {
+    acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
         let stun_mod = app.modules.returnModule("Stun");
 
         console.log('accepting offer');
-        console.log('info ', offer_creator, offer_sdp, iceCandidates)
+        console.log('from:', offer_creator, offer)
+
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
-                iceCandidates: []
+                ice_candidates: []
             }
             const pc = new RTCPeerConnection({
                 iceServers: stun_mod.servers,
@@ -201,13 +203,13 @@ class Video extends ModTemplate {
 
                         let video_mod = app.modules.returnModule("Video");
                         video_mod.peer_connections[offer_creator] = pc;
-                        console.log('broadcasting answer ', video_mod.peer_connections);
-                        video_mod.broadcastAnswerInvite(video_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+
+                        video_mod.broadcastAnswer(video_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
 
                     };
 
-                    reply.iceCandidates.push(ice.candidate);
+                    reply.ice_candidates.push(ice.candidate);
 
 
 
@@ -274,14 +276,14 @@ class Video extends ModTemplate {
                 });
 
 
-                await pc.setRemoteDescription(offer_sdp);
+                await pc.setRemoteDescription(offer.offer_sdp);
 
-                const peerIceCandidates = iceCandidates;
-                // console.log('peer ice candidates', peerIceCandidates);
-                if (peerIceCandidates.length > 0) {
-                    console.log('adding offer candidates');
-                    for (let i = 0; i < peerIceCandidates.length; i++) {
-                        pc.addIceCandidate(peerIceCandidates[i]);
+                const offer_ice_candidates = offer.ice_candidates;
+                // console.log('peer ice candidates', offer_ice_candidates);
+                if (offer_ice_candidates.length > 0) {
+                    console.log('adding offer icecandidates');
+                    for (let i = 0; i < offer_ice_candidates.length; i++) {
+                        pc.addIceCandidate(offer_ice_candidates[i]);
                     }
                 }
 
@@ -315,25 +317,25 @@ class Video extends ModTemplate {
 
 
     createVideoInvite() {
-        // invite code hardcoded here for dev purposes
+        // room code hardcoded here for dev purposes
 
-        let inviteCode = this.generateString(6);
-        inviteCode = inviteCode.trim();
+        let roomCode = this.generateString(6);
+        roomCode = roomCode.trim();
         const video_self = this.app.modules.returnModule("Video");
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
            <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
-           <p> ${inviteCode} </p>
+           <p> ${roomCode} </p>
         </div>
         `
 
 
-        // prevent dupicate invite code creation -- for development purposes
-        let invite = this.invites.find(invite => invite.code === inviteCode);
-        if (invite) return console.log('invite already created');
+        // prevent dupicate room code creation -- for development purposes
+        let room = this.rooms.find(room => room.code === roomCode);
+        if (room) return console.log('room already created');
 
 
-        invite = { code: inviteCode, peers: [], peerCount: 0, isMaxCapicity: false, validityPeriod: 86400, startTime: Date.now(), checkpoint: 0 };
+        room = { code: roomCode, peers: [], peerCount: 0, isMaxCapicity: false, validityPeriod: 86400, startTime: Date.now(), checkpoint: 0 };
 
 
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -345,8 +347,8 @@ class Video extends ModTemplate {
 
 
         newtx.msg.module = "Video";
-        newtx.msg.invite = {
-            invite
+        newtx.msg.room = {
+            room
         };
         newtx = this.app.wallet.signTransaction(newtx);
 
@@ -366,7 +368,7 @@ class Video extends ModTemplate {
         const stun_mod = this.app.modules.returnModule('Stun');
 
         const createPeerConnection = new Promise((resolve, reject) => {
-            let iceCandidates = [];
+            let ice_candidates = [];
             const execute = async () => {
 
                 try {
@@ -382,12 +384,12 @@ class Video extends ModTemplate {
                             // pc.close();
 
                             let offer_sdp = pc.localDescription;
-                            resolve({ publicKey, offer_sdp, iceCandidates, pc });
+                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
                             // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
 
                             return;
                         } else {
-                            iceCandidates.push(ice.candidate);
+                            ice_candidates.push(ice.candidate);
                         }
 
                     };
@@ -485,22 +487,22 @@ class Video extends ModTemplate {
     }
 
 
-    async joinVideoInvite(inviteCode) {
+    async joinVideoInvite(roomCode) {
         const stun_mod = this.app.modules.returnModule("Stun");
         const video_self = this.app.modules.returnModule("Video");
-        const invite = video_self.invites.find(invite => invite.code === inviteCode);
-        const index = video_self.invites.findIndex(invite => invite.code === inviteCode);
+        const room = this.app.options.rooms.find(room => room.code === roomCode);
+        const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
 
-        console.log('invites :', video_self.invites, 'result :', invite, index);
+        console.log('rooms :', this.app.options.rooms, 'result :', room, index);
 
 
-        if (!invite) return console.log('Ivite does not exist');
+        if (!room) return console.log('Invite does not exist');
 
-        if (invite.isMaxCapicity) {
+        if (room.isMaxCapicity) {
             return console.log("Room has reached max capacity");
         }
 
-        if (Date.now() < invite.startTime) {
+        if (Date.now() < room.startTime) {
             return console.log("Video call time is not yet reached");
         }
 
@@ -510,7 +512,7 @@ class Video extends ModTemplate {
         // check if peer  already exists
 
         let publicKey = this.app.wallet.returnPublicKey();
-        let peerPosition = invite.peerCount + 1;
+        let peerPosition = room.peerCount + 1;
 
         const peer_data = {
             publicKey,
@@ -519,47 +521,56 @@ class Video extends ModTemplate {
 
 
         // check if publicKey is already in list of peers
-        const keyIndex = invite.peers.findIndex(peer => peer.publicKey === this.app.wallet.returnPublicKey())
+        const keyIndex = room.peers.findIndex(peer => peer.publicKey === this.app.wallet.returnPublicKey())
 
         if (keyIndex === -1) {
-            console.log("key doesn't exist in invite list, adding now...");
-            invite.peers.push(peer_data);
-            invite.peerCount = invite.peerCount + 1;
-            if (invite.peerCount === this.videoMaxCapacity) {
-                invite.isMaxCapicity = true;
+            console.log("key doesn't exist in room list, adding now...");
+            room.peers.push(peer_data);
+            room.peerCount = room.peerCount + 1;
+            if (room.peerCount === this.videoMaxCapacity) {
+                room.isMaxCapicity = true;
             }
 
         }
 
 
 
-        const peerConnectionOffers = []
+        let peerConnectionOffers = [];
 
-        if (invite.peers.length > 1) {
+        if (room.peers.length > 1) {
 
             // send connection to other peers if they exit
-            for (let i = 0; i < invite.peers.length; i++) {
-                if (invite.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
-                    peerConnectionOffers.push(this.createPeerConnectionOffer(invite.peers[i].publicKey));
+            for (let i = 0; i < room.peers.length; i++) {
+                if (room.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
+                    peerConnectionOffers.push(this.createPeerConnectionOffer(room.peers[i].publicKey));
                 }
             }
         }
 
 
         try {
-            const peerConnections = await Promise.all(peerConnectionOffers);
+            peerConnectionOffers = await Promise.all(peerConnectionOffers);
 
 
-            if (peerConnections.length > 0) {
-                console.log('peer connection offers ', peerConnections);
-                for (let i = 0; i < peerConnections.length; i++) {
-                    this.peer_connections[peerConnections[i].publicKey] = peerConnections[i].pc
+            if (peerConnectionOffers.length > 0) {
 
-                }
-                const offer_recipients = peerConnections.map(item => item.publicKey);
-                const offers = peerConnections.map(item => item.offer_sdp);
-                const iceCandidates = peerConnections.map(item => item.iceCandidates);
-                this.broadcastOffers(this.app.wallet.returnPublicKey(), offer_recipients, offers, iceCandidates);
+                const offers = [];
+                peerConnectionOffers.forEach((offer) => {
+                    // map key to pc
+                    console.log('offer :', offer)
+                    this.peer_connections[offer.recipient] = offer.pc
+
+
+                    offers.push({
+                        ice_candidates: offer.ice_candidates,
+                        offer_sdp: offer.offer_sdp,
+                        recipient: offer.recipient,
+                    })
+                })
+
+                // const offers = peerConnectionOffers.map(item => item.offer_sdp);
+
+                this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 localStream.getTracks().forEach(track => {
@@ -582,8 +593,9 @@ class Video extends ModTemplate {
         console.log("peer connections ", this.peer_connections);
 
 
-        // update invites 
-        this.invites[index] = invite;
+        // update rooms 
+        this.app.options.rooms[index] = room;
+        this.app.storage.saveOptions();
         let newtx = this.app.wallet.createUnsignedTransaction();
 
         let recipient = this.app.network.peers[0].returnPublicKey();
@@ -595,8 +607,8 @@ class Video extends ModTemplate {
         // }
 
         newtx.msg.module = "Video";
-        newtx.msg.invites = {
-            invites: this.invites
+        newtx.msg.rooms = {
+            rooms: this.app.options.rooms
         };
 
         newtx = this.app.wallet.signTransaction(newtx);
@@ -614,25 +626,22 @@ class Video extends ModTemplate {
 
 
 
-    broadcastOffers(my_key, offer_recipients, offers, iceCandidates) {
+    broadcastOffers(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
+
+
         console.log('broadcasting offers');
         for (let i = 0; i < offers.length; i++) {
-            if (offers.length === offer_recipients.length) {
-                newtx.transaction.to.push(new saito.default.slip(offer_recipients[i]));
-            } else {
-                return console.log("offer and receipent length not equal");
-            }
+            newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
+
         }
 
         newtx.msg.module = "Video";
         newtx.msg.offers = {
-            offer_creator: my_key,
-            offer_recipients: offer_recipients,
-            offers,
-            iceCandidates
+            offer_creator,
+            offers
         }
-        console.log('new tx', newtx);
+
         newtx = this.app.wallet.signTransaction(newtx);
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
@@ -640,15 +649,15 @@ class Video extends ModTemplate {
 
 
 
-    broadcastAnswerInvite(my_key, peer_key, reply) {
+    broadcastAnswer(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting answer  to ', peer_key);
-        newtx.transaction.to.push(new saito.default.slip(peer_key));
+        console.log('broadcasting answer to ', offer_creator);
+        newtx.transaction.to.push(new saito.default.slip(offer_creator));
 
         newtx.msg.module = "Video";
-        newtx.msg.answerInvite = {
-            peer_a: my_key,
-            peer_b: peer_key,
+        newtx.msg.answer = {
+            answer_creator,
+            offer_creator,
             reply: reply
         };
         newtx = this.app.wallet.signTransaction(newtx);

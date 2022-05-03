@@ -8,9 +8,7 @@ module.exports = (app, mod) => {
        <button id="my-stun-btn" data-id="my-stun" class="menu button-active">
          Connect
        </button>
-       <button id="listeners-btn" data-id="listeners" class="menu">
-         Listeners
-       </button>
+     
      
      </div>
 
@@ -25,3 +23,7 @@ module.exports = (app, mod) => {
 {/* <button id="peer-stun-btn" data-id="peer-stun" class="menu">
 Peer Stun
 </button> */}
+
+// <button id="listeners-btn" data-id="listeners" class="menu">
+// Listeners
+// </button>

@@ -47,7 +47,7 @@ class Relay extends ModTemplate {
         // transaction to end-user, containing msg.request / msg.data is
         //
         let tx = new saito.default.transaction();
-        console.log('pushing sender :', this.app.wallet.returnPublicKey());
+
         tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
         for (let i = 0; i < recipients.length; i++) {
             tx.transaction.to.push(new saito.default.slip(recipients[i]));

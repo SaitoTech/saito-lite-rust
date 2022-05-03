@@ -71,30 +71,7 @@ module.exports = (app, mod) => {
   </div>
 </div>
   
-    <div class="row mb-4">
-      <div class="col-sm-4"><p class="name">Connect With</p></div>
-      <div class="col-sm-8">
-        <div class="data d-flex">
-          <select id="connectSelect" class="form-select" aria-label="Default select example">
-            ${canConnectTo()}
-          </select>
-          <button id="connectTo" class="btn btn-primary ml-4">
-            Connect 
-          </button>
-          
-        </div>
-      </div>
-    </div>
 
- 
-    <div class="row mb-4">
-      <div class="col-sm-4"><p style="font-size: 12px;" id="address-origin" class="name"></p></div>
-      <div class="col-sm-8">
-        <div id="msg-display" class="">
-          
-        </div>
-      </div>
-    </div>
     </card>`;
 }
 
@@ -164,3 +141,28 @@ module.exports = (app, mod) => {
         </div>
       </div>
     </div> */}
+
+  //   <div class="row mb-4">
+  //   <div class="col-sm-4"><p class="name">Connect With</p></div>
+  //   <div class="col-sm-8">
+  //     <div class="data d-flex">
+  //       <select id="connectSelect" class="form-select" aria-label="Default select example">
+  //         ${canConnectTo()}
+  //       </select>
+  //       <button id="connectTo" class="btn btn-primary ml-4">
+  //         Connect 
+  //       </button>
+        
+  //     </div>
+  //   </div>
+  // </div>
+
+
+  // <div class="row mb-4">
+  //   <div class="col-sm-4"><p style="font-size: 12px;" id="address-origin" class="name"></p></div>
+  //   <div class="col-sm-8">
+  //     <div id="msg-display" class="">
+        
+  //     </div>
+  //   </div>
+  // </div>

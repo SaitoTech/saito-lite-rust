@@ -267,25 +267,25 @@ class Chat extends ModTemplate {
                         return 1;
                     }
 
-            	    this.sendEvent('chat-render-request', {});
+                    this.sendEvent('chat-render-request', {});
 
-		    //
-		    // check identifiers
-		    //
-		    if (this.added_identifiers_post_load == 0) {
-		      try {
-			setTimeout(()=>{
-		          this.app.browser.addIdentifiersToDom();
-		          this.added_identifiers_post_load = 1;
-			}, 1200);
-		      } catch (err) {
-			console.log("error adding identifiers post-chat");
-		      }
-		    }
-
-                  }
+                    //
+                    // check identifiers
+                    //
+                    if (this.added_identifiers_post_load == 0) {
+                        try {
+                            setTimeout(() => {
+                                this.app.browser.addIdentifiersToDom();
+                                this.added_identifiers_post_load = 1;
+                            }, 1200);
+                        } catch (err) {
+                            console.log("error adding identifiers post-chat");
+                        }
+                    }
 
                 }
+
+
             );
 
 
@@ -562,7 +562,7 @@ class Chat extends ModTemplate {
             members.push(this.app.wallet.returnPublicKey());
         }
 
-console.log("MEMBERS ZERO: " + members[0]);
+        console.log("MEMBERS ZERO: " + members[0]);
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
