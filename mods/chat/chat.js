@@ -97,7 +97,7 @@ class Chat extends ModTemplate {
     }
 
     attachEventsEmailChat(app, mod) {
-        let chatmod = app.modules.returnModule("Chat");
+        //let chatmod = app.modules.returnModule("Chat");
     }
 
 

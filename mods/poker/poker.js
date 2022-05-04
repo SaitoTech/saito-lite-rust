@@ -66,14 +66,6 @@ class Poker extends GameTemplate {
     super.initializeHTML(app);
 
     //
-    // ADD CHAT
-    //
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(app, this);
-      mod.respondTo("chat-manager").attachEvents(app, this);
-    });
-
-    //
     // ADD MENU
     //
     this.menu.addMenuOption({
