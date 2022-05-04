@@ -1094,7 +1094,7 @@ class Arcade extends ModTemplate {
       if (accepted_game){
         if (accepted_game.transaction.from[0].add == tx.transaction.from[0].add){
           if (this.debug) {console.log("Canceling invitation for an uninitialized game");}
-          this.receiveCloseRequest(blk, tx, conf, app);
+          this.receiveCloseRequest(blk, tx, conf, app); //Update SQL to mark game as closed
           this.removeGameFromOpenList(game_id);
         }else{
           if (this.debug) {console.log("Changed mind about joining the game");}
@@ -1102,7 +1102,7 @@ class Arcade extends ModTemplate {
         }
       }else{
         if (this.debug) {console.log("Game not found, cannot cancel");}
-        this.receiveCloseRequest(blk, tx, conf, app);
+        //this.receiveCloseRequest(blk, tx, conf, app);
       }
     }
     if (this.debug) {this.checkGameDatabase();}
