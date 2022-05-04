@@ -1697,6 +1697,7 @@ console.log("P: " + planet);
       space_units	: 	["warsun","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["plasma-scoring", "faction7-star-forge", "faction7-gashlai-physiology", "faction7-advanced-warsun-i","faction7-flagship"],
+      //action_cards      :       ["trade-rider", "imperial-rider"],
       background	: 	'faction7.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Embers of Muaat, a faction which forges its instruments of war in the heat of lava-powered furnaces and whose technical research expands to conquering the heat of the very starts themselves. Goodl luck!</div>`
@@ -2430,6 +2431,7 @@ console.log("P: " + planet);
       homeworld		: 	"sector51",
       space_units	: 	["carrier","cruiser","cruiser","fighter","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","pds","spacedock"],
+      //action_cards	:	["assassinate-representative","diplomatic-scandal"],
       tech		: 	["graviton-laser-system","faction3-peace-accords","faction3-quash","faction3-flagship"],
       background	: 	'faction3.jpg',
 
@@ -3902,33 +3904,35 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
         let laws = imperium_self.returnAgendaCards();
         let laws_selected = 0;
 
-        if (imperium_self.game.player == player) {
+        //
+        // now handled resetagenda to prevent save issues -- MAY 4
+        //
+        //if (imperium_self.game.player == 1) {
 
           //
           // refresh votes --> total available
           //
-          imperium_self.game.state.votes_available = [];
-          imperium_self.game.state.votes_cast = [];
-          imperium_self.game.state.how_voted_on_agenda = [];
-          imperium_self.game.state.voted_on_agenda = [];
-          imperium_self.game.state.voting_on_agenda = 0;
+        //  imperium_self.game.state.votes_available = [];
+        //  imperium_self.game.state.votes_cast = [];
+        //  imperium_self.game.state.how_voted_on_agenda = [];
+        //  imperium_self.game.state.voted_on_agenda = [];
+        //  imperium_self.game.state.voting_on_agenda = 0;
 
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-            imperium_self.game.state.votes_available.push(imperium_self.returnAvailableVotes(i+1));
-            imperium_self.game.state.votes_cast.push(0);
-            imperium_self.game.state.how_voted_on_agenda[i] = "abstain";
-            imperium_self.game.state.voted_on_agenda[i] = [];
+        //  for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+
+        //    imperium_self.game.state.votes_available.push(imperium_self.returnAvailableVotes(i+1));
+        //    imperium_self.game.state.votes_cast.push(0);
+        //    imperium_self.game.state.how_voted_on_agenda[i] = "abstain";
+        //    imperium_self.game.state.voted_on_agenda[i] = [];
+
             //
             // add extra 0s to ensure flexibility if extra agendas added
             //
-
-console.log("AP2: " + imperium_self.game.state.agendas_per_round);
-
-            for (let z = 0; z < imperium_self.game.state.agendas_per_round+2; z++) {
-              imperium_self.game.state.voted_on_agenda[i].push(0);
-            }
-          }
-        }
+        //    for (let z = 0; z < imperium_self.game.state.agendas_per_round+2; z++) {
+        //      imperium_self.game.state.voted_on_agenda[i].push(0);
+        //    }
+        //  }
+        //}
 console.log("----------------------");
 console.log("---" + JSON.stringify(imperium_self.game.state.voted_on_agenda) + "---");
 console.log("----------------------");
@@ -3975,6 +3979,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
                   imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+                  imperium_self.addMove("resetagenda");
 } else {
                   imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
                   imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
@@ -3983,6 +3988,7 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
                   imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
+                  imperium_self.addMove("resetagenda");
 }
                 }
                 imperium_self.endTurn();
@@ -6615,16 +6621,11 @@ console.log("STRAT SEC: " + player + " -- " + strategy_card_player);
 	  //
 	  if (winning_choice === "against") {
 	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-console.log("uncon plyr: " + i);
-console.log(" how voted: " + imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]]);
-
 	      if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "for") {
                 if (imperium_self.game.player == (i+1)) {
-alert("clearing out my action cards!");
 		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
 		  imperium_self.game.deck[1].hand = [];
 		} else {
-alert("clearing out my action cards!");
 		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
 		}
 	      }	      
@@ -6643,8 +6644,6 @@ alert("clearing out my action cards!");
 	onPass : function(imperium_self, winning_choice) {
 
 	  let io = imperium_self.returnInitiativeOrder();
-
-console.log("seeds of the empire: " + winning_choice);
 
 	  //
 	  // highest VP
@@ -7577,9 +7576,9 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
         onPass : function(imperium_self, winning_choice) {
           imperium_self.game.state.crown_of_emphidia = 1;
 
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-            if (winning_choice === imperium_self.returnFaction((i+1))) {
-              imperium_self.game.state.crown_of_emphidia_player = i+1;
+          for (let ii = 0; ii < imperium_self.game.players_info.length; ii++) {
+            if (winning_choice === imperium_self.returnFaction((ii+1))) {
+              imperium_self.game.state.crown_of_emphidia_player = ii+1;
             }
           }
 
@@ -11040,6 +11039,7 @@ console.log("error initing chat: " + err);
 
       is_this_a_new_game = 1;
 
+      
 
       //
       // players first
@@ -12925,6 +12925,38 @@ handleSystemsMenuItem() {
       }
   
 
+      //
+      //
+      //
+      if (mv[0] === "resetagenda") {
+
+        imperium_self.game.state.votes_available = [];
+        imperium_self.game.state.votes_cast = [];
+        imperium_self.game.state.how_voted_on_agenda = [];
+        imperium_self.game.state.voted_on_agenda = [];
+        imperium_self.game.state.voting_on_agenda = 0;
+
+        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+
+          imperium_self.game.state.votes_available.push(imperium_self.returnAvailableVotes(i+1));
+          imperium_self.game.state.votes_cast.push(0);
+          imperium_self.game.state.how_voted_on_agenda[i] = "abstain";
+          imperium_self.game.state.voted_on_agenda[i] = [];
+
+          //
+          // add extra 0s to ensure flexibility if extra agendas added
+          //
+          for (let z = 0; z < imperium_self.game.state.agendas_per_round+2; z++) {
+            imperium_self.game.state.voted_on_agenda[i].push(0);
+          }
+        }
+
+	this.game.queue.splice(qe, 1);
+	return 1;
+
+      }
+
+
 
       //
       // resolve [action] [1] [publickey voting or 1 for agenda]
@@ -13881,11 +13913,15 @@ console.log("----------------------------");
 	let vote = mv[3];
 	let votes = parseInt(mv[4]);
 
+console.log("GAME STATE PRE_ERROR: " + JSON.stringify(this.game.state));
+
 	this.game.state.votes_cast[player-1] = votes;
 	this.game.state.votes_available[player-1] -= votes;
 	this.game.state.voted_on_agenda[player-1][this.game.state.voting_on_agenda] = 1;
 
 	this.game.state.how_voted_on_agenda[player-1] = vote;
+
+console.log("GAME STATE PRE_ERROR");
 
         if (vote == "abstain") {
           this.updateLog(this.returnFactionNickname(player) + " abstains");
@@ -21004,7 +21040,7 @@ playerContinueTurn(player, sector) {
   html += '</ul>';
 
   this.updateStatus(html);
-  $('.option').on('click', function () {
+  $('.option').on('click', async function () {
 
     let action2 = $(this).attr("id");
 
@@ -21050,7 +21086,7 @@ playerContinueTurn(player, sector) {
         if (fleet_supply_in_sector == 1) {
           notice = "You have fleet supply for 1 additional capital ship in this sector. Do you still wish to produce more ships?";
         }
-        let c = sconfirm(notice);
+        let c = await sconfirm(notice);
         if (c) {
           imperium_self.addMove("continue\t" + imperium_self.game.player + "\t" + sector);
           imperium_self.playerProduceUnits(sector);
