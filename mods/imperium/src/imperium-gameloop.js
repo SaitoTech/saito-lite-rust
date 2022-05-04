@@ -65,6 +65,38 @@
       }
   
 
+      //
+      //
+      //
+      if (mv[0] === "resetagenda") {
+
+        imperium_self.game.state.votes_available = [];
+        imperium_self.game.state.votes_cast = [];
+        imperium_self.game.state.how_voted_on_agenda = [];
+        imperium_self.game.state.voted_on_agenda = [];
+        imperium_self.game.state.voting_on_agenda = 0;
+
+        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+
+          imperium_self.game.state.votes_available.push(imperium_self.returnAvailableVotes(i+1));
+          imperium_self.game.state.votes_cast.push(0);
+          imperium_self.game.state.how_voted_on_agenda[i] = "abstain";
+          imperium_self.game.state.voted_on_agenda[i] = [];
+
+          //
+          // add extra 0s to ensure flexibility if extra agendas added
+          //
+          for (let z = 0; z < imperium_self.game.state.agendas_per_round+2; z++) {
+            imperium_self.game.state.voted_on_agenda[i].push(0);
+          }
+        }
+
+	this.game.queue.splice(qe, 1);
+	return 1;
+
+      }
+
+
 
       //
       // resolve [action] [1] [publickey voting or 1 for agenda]
@@ -1021,11 +1053,15 @@ console.log("----------------------------");
 	let vote = mv[3];
 	let votes = parseInt(mv[4]);
 
+console.log("GAME STATE PRE_ERROR: " + JSON.stringify(this.game.state));
+
 	this.game.state.votes_cast[player-1] = votes;
 	this.game.state.votes_available[player-1] -= votes;
 	this.game.state.voted_on_agenda[player-1][this.game.state.voting_on_agenda] = 1;
 
 	this.game.state.how_voted_on_agenda[player-1] = vote;
+
+console.log("GAME STATE PRE_ERROR");
 
         if (vote == "abstain") {
           this.updateLog(this.returnFactionNickname(player) + " abstains");
