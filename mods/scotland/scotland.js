@@ -137,12 +137,8 @@ class Scotland extends GameTemplate {
     }
 
     super.initializeHTML(app);
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(app, this);
-      mod.respondTo("chat-manager").attachEvents(app, this);
-    });
-
-     this.menu.addMenuOption({
+    
+    this.menu.addMenuOption({
       text: "Game",
       id: "game-game",
       class: "game-game",
