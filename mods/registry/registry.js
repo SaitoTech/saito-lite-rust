@@ -283,6 +283,13 @@ console.log("SENDING TX TO ADDRESS: " + this.publickey);
             }
           } else {
 
+            //
+            // am email? for us? from the DNS registrar?
+            //
+            let identifier 	 = tx.msg.identifier;
+            let signed_message   = tx.msg.signed_message;
+            let sig		 = tx.msg.sig;
+
 	    // if i am server, save copy of record
             registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
 
