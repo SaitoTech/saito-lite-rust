@@ -203,7 +203,9 @@ console.log(res.data);
             }
             if (contains_transfer === 0) {
       	      this.deposits.push(d.data[i]);
-              
+
+              ticker = (typeof ticker == 'undefined') ? '' : ticker;
+
               if (d.data[i].closing_balance > d.data[i].opening_balance) {
                 siteMessage('Recieved new funds in '+ ticker +' wallet', 3000);
               }
