@@ -203,6 +203,11 @@ console.log(res.data);
             }
             if (contains_transfer === 0) {
       	      this.deposits.push(d.data[i]);
+
+              if (d.data[i].closing_balance > d.data[i].opening_balance) {
+                let ticker = this.app.wallet.returnPreferredCryptoTicker();
+                siteMessage('Recieved new funds in '+ ticker +' wallet', 3000);
+              }
       	    }
           }
           if (callback) { callback(res.data); }
