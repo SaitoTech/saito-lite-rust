@@ -709,6 +709,9 @@ class Browser {
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
+
+console.log("Add Identifiers to DOM -- un browser.js");
+
     if (keys.length == 0) {
       const addresses = document.getElementsByClassName(`saito-address`);
       Array.from(addresses).forEach((add) => {
@@ -722,6 +725,7 @@ class Browser {
     try {
       const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
       Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
+console.log("identifiers added to DOM...");
     } catch (err) {
       console.error(err);
     }

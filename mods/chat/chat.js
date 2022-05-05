@@ -246,8 +246,10 @@ class Chat extends ModTemplate {
 		    //
 		    // check identifiers
 		    //
+console.log("chat trying to add identifiers post load 1...");
 		    if (this.added_identifiers_post_load == 0) {
 		      try {
+console.log("chat trying to add identifiers post load 2...");
 			setTimeout(()=>{
 		          this.app.browser.addIdentifiersToDom();
 		          this.added_identifiers_post_load = 1;

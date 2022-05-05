@@ -140,9 +140,6 @@ module.exports = ArcadeMain = {
 
     try {
 
-      // fetch any usernames needed
-      app.browser.addIdentifiersToDom();
-
       //What is this?
       if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
         document.querySelector(".alert-banner").style.display = "block";
