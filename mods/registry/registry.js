@@ -26,7 +26,14 @@ class Registry extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service : "registry" , domain : "saito" });
+    //
+    // until other nodes are mirroring the DNS directory and capable of feeding out
+    // responses to inbound requests for DNS queries, only services that are actually
+    // registering domains should report they run the registry module.
+    //
+    if (this.publickey == this.app.wallet.returnPublicKey()) {
+      services.push({ service : "registry" , domain : "saito" });
+    }
     return services;
   }
   
