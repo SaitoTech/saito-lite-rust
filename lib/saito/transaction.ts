@@ -15,11 +15,9 @@ export enum TransactionType {
   GoldenTicket = 2,
   ATR = 3,
   Vip = 4,
-  StakerDeposit = 5,
-  StakerWithdrawal = 6,
+  SPV = 5,
+  Issuance = 6,
   Other = 7,
-  Issuance = 8,
-  SPV = 9,
 }
 
 class Transaction {
@@ -87,7 +85,6 @@ class Transaction {
           fslip.type,
           fslip.uuid,
           fslip.sid,
-          fslip.payout,
           fslip.lc
         );
       }
@@ -99,7 +96,6 @@ class Transaction {
           fslip.type,
           fslip.uuid,
           fslip.sid,
-          fslip.payout,
           fslip.lc
         );
       }

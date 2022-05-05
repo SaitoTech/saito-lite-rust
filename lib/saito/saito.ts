@@ -66,7 +66,6 @@ export default class SaitoCommon {
   static network = network0;
   static networkApi = networkapi;
   static peer = peer0;
-  static staking = staking0;
   static storage = storage0;
   static server = server0;
   static utxoset = utxoset0;
