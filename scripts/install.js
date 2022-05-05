@@ -6,7 +6,6 @@ const { spawnSync } = require( 'child_process' );
 const sqlite3 = require('sqlite3');
 
 
-
 /* -------------------------------------------------- */
 // START COMPILE
 /* -------------------------------------------------- */
@@ -14,22 +13,26 @@ const sqlite3 = require('sqlite3');
 console.clear();
 console.log( "\u001b[1;36m"+"** COMPILE SAITO **"+"\x1b[0m" );
 
-userInput("\nPLEASE SELECT COMPILE TYPE [TYPE NUMBER AND PRESS ENTER] \n1. Initial (New Install)\n2. Nuke (Destroy Old Install and re-build)\n3. Recompile Build\n4. Cancel\n").then( function(res){
+userInput("\nPLEASE SELECT COMPILE TYPE [TYPE NUMBER AND PRESS ENTER] \n1. First Time Setup (install from scratch)\n2. Nuke (destroy old and re-build)\n3. Recompile (update javascript without purging data)\n4. Cancel\n>").then( function(res){
 	switch(res){
 		case '1':
 			init();
-		break;
+			break;
 			
 		case '2':
 			nuke();
-		break;
+			break;
 			
 		case '3':
 			recompile();
-		break;
+			break;
+			
+		case '4':
+			break;
 			
 		default:
-			console.log(res)			
+			console.log(res +"\n>")			
+
 	}
 });
 
@@ -68,14 +71,14 @@ function init(){
 			
 		});
 		
-	}else{
+	} else {
 		
 		console.log("");
-    	console.log("Installing and compiling Saito with default modules...");
-    	console.log("");	
-		fs.copyFileSync("config/modules.default.js", "config/modules.config.js" );
-		
+    		console.log("Installing and compiling Saito with default modules...");
+    		console.log("");	
+		fs.copyFileSync("config/modules.default.js", "config/modules.config.js" );		
 		init2();
+
 	}
 
 }
@@ -99,7 +102,7 @@ function init2(){
 			nuke();
 		});
 		
-	}else{
+	} else {
 		
 		nuke();
 		
@@ -227,8 +230,10 @@ function post_compile( ){
 		
 		var entrypoint = "bundler/default/apps/lite/index.ts";
 		var outputfile = "saito.js";
+
+		var dirname = __dirname + "/..";
 		
-		console.log(__dirname)
+		console.log("INSTALLING FROM " + __dirname)
 		
 		webpack({
 		  optimization: {
@@ -259,9 +264,11 @@ function post_compile( ){
 			/\/www\//
 		  ],
 		  // Path to your entry point. From this file Webpack will begin his work
-		  entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
+		  //entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
+		  entry: ["babel-polyfill", path.resolve(dirname, entrypoint)],
 		  output: {
-			path: path.resolve(__dirname, "web/saito"),
+			//path: path.resolve(__dirname, "web/saito"),
+			path: path.resolve(dirname, "web/saito"),
 			filename: outputfile
 		  },
 		  resolve: {
@@ -336,8 +343,10 @@ function post_compile( ){
 			  {
 				test: /\.zip$/,
 				exclude: [
-				  path.resolve(__dirname, "mods/appstore/bundler"),
-				  path.resolve(__dirname, "mods/appstore/mods")
+				  //path.resolve(__dirname, "mods/appstore/bundler"),
+				  //path.resolve(__dirname, "mods/appstore/mods")
+				  path.resolve(dirname, "mods/appstore/bundler"),
+				  path.resolve(dirname, "mods/appstore/mods")
 				]
 			  }
 			]
@@ -501,9 +510,11 @@ function reset_bundler() {
 
 function copy_lite_mods_to_bundler_directory() {
 
-	var liteMods = require("./config/modules.config.js");
+console.log("trying litemods...");
+	const liteMods = require("./../config/modules.config.js");
+console.log("done trying litemods");
 
-	for(let i = 0; i < liteMods.lite.length; i++){
+	for (let i = 0; i < liteMods.lite.length; i++){
 		
 		var mod = liteMods.lite[i];
 		var modDir = liteMods.lite[i].split("/");
@@ -536,8 +547,13 @@ function removeDir(dir){
 }
 
 function copyDir(source, destination) {
-    fs.mkdirSync(destination, { recursive: true });
-    
+
+    try {
+      fs.mkdirSync(destination, { recursive: true });
+    } catch (err) {
+      console.log("Error making directory, perhaps already exists?");
+    }    
+
     fs.readdirSync(source, { withFileTypes: true }).forEach((entry) => {
       let sourcePath = path.join(source, entry.name);
       let destinationPath = path.join(destination, entry.name);
