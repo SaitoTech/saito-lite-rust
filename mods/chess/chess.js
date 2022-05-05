@@ -56,6 +56,18 @@ class Chessgame extends GameTemplate {
     if (!this.browser_active) { return; }
     super.initializeHTML(app);
 
+    this.app.modules.respondTo("chat-manager").forEach(mod => {
+      mod.respondTo('chat-manager').render(this_chess.app, this_chess);
+    });
+
+        //
+    // ADD CHAT
+    //
+    this.app.modules.respondTo("chat-manager").forEach((mod) => {
+      mod.respondTo("chat-manager").render(app, this);
+      mod.respondTo("chat-manager").attachEvents(app, this);
+    });
+
     //
     // ADD MENU
     //
@@ -340,6 +352,9 @@ console.log(JSON.stringify(msg));
 
     window.onresize = () => this.board.resize();
 
+    this.app.modules.respondTo('chat-manager').forEach(mod => {
+      mod.respondTo('chat-manager').attachEvents(this_chess.app, this_chess);
+    })
   }
 
   updateStatusMessage(str = "") {

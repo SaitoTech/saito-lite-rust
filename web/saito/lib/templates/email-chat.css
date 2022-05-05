@@ -521,6 +521,16 @@ p {
   .chat-box.chat-box-hide {
     height: 3.5em;
   }
-  
+  .chat-manager {
+    bottom: 1px;
+    right: 1px;
+  }
 }
 
+/*** Hide in Landscape Mode Small Screens ***/
+
+@media screen and (orientation:landscape) and (max-height: 600px) {
+  .chat-manager {
+    display: none;
+  }
+}

@@ -544,10 +544,8 @@ module.exports = ArcadeMain = {
         }
         if (testsig == game_id) {
           app.options.games[i].over = 1;
-          app.options.games[i].status = "I Resigned";
-    
           players = app.options.games[i].players;
-          //app.options.games.splice(i, 1);
+          app.options.games.splice(i, 1);
           app.storage.saveOptions();
         }
       }

@@ -204,6 +204,11 @@ class Settlers extends GameTemplate {
       this.displayDice();  
     }
 
+    this.app.modules.respondTo("chat-manager").forEach((mod) => {
+      mod.respondTo("chat-manager").render(app, this);
+      mod.respondTo("chat-manager").attachEvents(app, this);
+    });
+
     this.menu.addMenuOption({
       text: "Game",
       id: "game-game",

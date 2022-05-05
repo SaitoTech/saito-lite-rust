@@ -910,6 +910,11 @@ console.log("adding stuff!");
     }
 
 
+    this.app.modules.respondTo("chat-manager").forEach(mod => {
+      mod.respondTo('chat-manager').render(app, this);
+      mod.respondTo('chat-manager').attachEvents(app, this);
+    });
+
     // required here so menu will be proper
     try {
       if (this.app.options.gameprefs.hereistand_expert_mode == 1) {
