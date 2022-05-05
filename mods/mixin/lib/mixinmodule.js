@@ -338,7 +338,7 @@ console.log("checking for this trace ID: " + trace_id);
   // the mixin module might have a record of this already stored locally
   //
   if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
-  this.mixin.fetchDeposits(this.asset_id, (d) => {});
+  this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
 
   return 0;
 
