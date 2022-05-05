@@ -14,22 +14,26 @@ const sqlite3 = require('sqlite3');
 console.clear();
 console.log( "\u001b[1;36m"+"** COMPILE SAITO **"+"\x1b[0m" );
 
-userInput("\nPLEASE SELECT COMPILE TYPE [TYPE NUMBER AND PRESS ENTER] \n1. Initial (New Install)\n2. Nuke (Destroy Old Install and re-build)\n3. Recompile Build\n4. Cancel\n").then( function(res){
+userInput("\nPLEASE SELECT COMPILE TYPE [TYPE NUMBER AND PRESS ENTER] \n1. First Time Setup (install from scratch)\n2. Nuke (destroy old and re-build)\n3. Recompile (update javascript without purging data)\n4. Cancel\n>").then( function(res){
 	switch(res){
 		case '1':
 			init();
-		break;
+			break;
 			
 		case '2':
 			nuke();
-		break;
+			break;
 			
 		case '3':
 			recompile();
-		break;
+			break;
+			
+		case '4':
+			break;
 			
 		default:
-			console.log(res)			
+			console.log(res +"\n>")			
+
 	}
 });
 
@@ -68,14 +72,14 @@ function init(){
 			
 		});
 		
-	}else{
+	} else {
 		
 		console.log("");
-    	console.log("Installing and compiling Saito with default modules...");
-    	console.log("");	
-		fs.copyFileSync("config/modules.default.js", "config/modules.config.js" );
-		
+    		console.log("Installing and compiling Saito with default modules...");
+    		console.log("");	
+		fs.copyFileSync("config/modules.default.js", "config/modules.config.js" );		
 		init2();
+
 	}
 
 }
@@ -99,7 +103,7 @@ function init2(){
 			nuke();
 		});
 		
-	}else{
+	} else {
 		
 		nuke();
 		

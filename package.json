@@ -11,7 +11,7 @@
     "init": " ./compile init",
     "nuke": " ./compile nuke",
     "reset": " ./compile reset",
-    "compile": " ./compile recompile",
+    "compile": "node ./scripts/install.js",
     "old": " webpack --config ./webpack/old/.config.js",
     "test": "jest",
     "analyze": " --config ./webpack/old/webpack.analyze.js",
