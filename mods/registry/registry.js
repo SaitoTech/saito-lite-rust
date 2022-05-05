@@ -31,9 +31,9 @@ class Registry extends ModTemplate {
     // responses to inbound requests for DNS queries, only services that are actually
     // registering domains should report they run the registry module.
     //
-    if (this.publickey == this.app.wallet.returnPublicKey()) {
+    //if (this.publickey == this.app.wallet.returnPublicKey()) {
       services.push({ service : "registry" , domain : "saito" });
-    }
+    //}
     return services;
   }
   
@@ -282,6 +282,9 @@ console.log("SENDING TX TO ADDRESS: " + this.publickey);
 	      }
             }
           } else {
+
+	    // if i am server, save copy of record
+            registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
 
 	    // if i am a server, i will notify lite-peers of 
 	    console.log("notifying lite-peers of registration!");
