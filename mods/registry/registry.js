@@ -281,20 +281,22 @@ class Registry extends ModTemplate {
             }
           } else {
 
-            //
-            // am email? for us? from the DNS registrar?
-            //
-            let identifier 	 = tx.msg.identifier;
-            let signed_message   = tx.msg.signed_message;
-            let sig		 = tx.msg.sig;
+	    if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
+              //
+              // am email? for us? from the DNS registrar?
+              //
+              let identifier 	 = tx.msg.identifier;
+              let signed_message   = tx.msg.signed_message;
+              let sig		 = tx.msg.sig;
+ 
+	      // if i am server, save copy of record
+              registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
 
-	    // if i am server, save copy of record
-            registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
+	      // if i am a server, i will notify lite-peers of 
+	      console.log("notifying lite-peers of registration!");
+  	      this.notifyPeers(app, tx);
 
-	    // if i am a server, i will notify lite-peers of 
-	    console.log("notifying lite-peers of registration!");
-  	    this.notifyPeers(app, tx);
-
+	    }
 	  }
         }
       }
