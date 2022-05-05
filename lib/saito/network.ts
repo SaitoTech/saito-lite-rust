@@ -313,6 +313,7 @@ class Network {
       peer.socket.on("open", async (event) => {
         await this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
+        this.app.network.propagateServices(peer);
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) { console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`); }
@@ -322,6 +323,7 @@ class Network {
       });
     } else {
       peer.socket.peer = peer;
+      this.app.network.propagateServices(peer);
     }
 
     peer.socket.on("message", async (data) => {
