@@ -14,6 +14,11 @@
 
     try {
 
+    this.app.modules.respondTo("chat-manager").forEach(mod => {
+      mod.respondTo('chat-manager').render(app, this);
+      mod.respondTo('chat-manager').attachEvents(app, this);
+    });
+
     $('.content').css('visibility', 'visible');
     $('.hud_menu_game-status').css('display', 'none');
 

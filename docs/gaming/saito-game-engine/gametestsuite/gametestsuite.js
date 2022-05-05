@@ -64,6 +64,14 @@ class GameTestSuite extends GameTemplate {
     this.log.attachEvents(app, this);
 
     //
+    // add chat
+    //
+    this.app.modules.respondTo("chat-manager").forEach(mod => {
+      mod.respondTo('chat-manager').render(app, this);
+      mod.respondTo('chat-manager').attachEvents(app, this);
+    });
+
+    //
     // add events to DOM
     //
     // good behavior to wrap attempts to manipulate the DOM in 

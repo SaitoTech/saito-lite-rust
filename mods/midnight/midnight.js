@@ -46,6 +46,10 @@ class Midnight extends GameTemplate {
       // Override the game template initializeHTML function
       super.initializeHTML(app);
 
+      this.app.modules.respondTo("chat-manager").forEach(mod => {
+        mod.respondTo('chat-manager').render(this.app, this);
+      });
+
       this.menu.addMenuOption({
           text: "Game",
           id: "game-game",
