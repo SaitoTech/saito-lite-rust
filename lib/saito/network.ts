@@ -579,6 +579,8 @@ class Network {
 
         const buffer = Buffer.from(message.message_data, "utf8");
 
+console.log("RECEIVING SERVICES: " + JSON.stringify(buffer.toString("utf8")));
+
 	try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
 	} catch (err) {
@@ -941,10 +943,12 @@ class Network {
     if (peer == null) {
       for (let i = 0; i < this.peers.length; i++) {
         if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
+console.log("sending services request: " + JSON.stringify(my_services));
           this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), this.peers[i]);
         }
       }
     } else {
+console.log("sending services request: " + JSON.stringify(my_services));
       this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), peer);
     }
   }
