@@ -138,11 +138,6 @@ class Network {
     this.peers_connected++;
     peer.keepAlive();
 
-    //
-    // notify peer(s) of services
-    // - results in issues
-    //this.propagateServices(peer);
-
   }
 
   //
@@ -197,10 +192,6 @@ class Network {
     // do it here. this adds the message emission events to the socket
     //
     this.app.handshake.initiateHandshake(socket);
-    //
-    // results in websocket not ready issues/
-    //
-    //this.propagateServices(peer);
 
     return peer;
   }
@@ -274,6 +265,7 @@ class Network {
         this.app.network.requestBlockchain(peer);
         this.app.connection.emit("peer_connect", peer);
         this.app.connection.emit("connection_up", peer);
+        this.app.network.propagateServices(peer);
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) { console.log(
