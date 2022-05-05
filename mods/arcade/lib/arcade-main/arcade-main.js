@@ -285,23 +285,14 @@ module.exports = ArcadeMain = {
           salert(`You must set ${game_options.crypto} as your preferred crypto to join this game`);
           return;
         }
-        let cryptoMod = null;
-        try {
-          cryptoMod = app.wallet.returnCryptoModuleByTicker(game_options.crypto);
-        } catch (err) {
-          if (err.startsWith("Module Not Found")) {
-            salert("This game requires " + game_options.crypto + " crypto to play! Not Found!");
-            return;
-          } else {
-            throw err;
-          }
-        }
+      
+
 
         let c = await sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
         if (!c) {
           return;
         }
-
+        console.log(game_options.stake);
         //
         // if a specific cost / stake specified
         //
@@ -309,18 +300,24 @@ module.exports = ArcadeMain = {
         if (parseFloat(game_options.stake) > 0) {
           let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
-          crypto_transfer_manager.returnBalance(
+ //         try{
+           let current_balance = await crypto_transfer_manager.returnBalance(
             app,
             mod,
             my_address,
             game_options.crypto,
             function () { }
           );
-
-          let current_balance = await cryptoMod.returnBalance();
-
-          crypto_transfer_manager.hideOverlay();
-
+            console.log("Current balance", current_balance);
+/*          } catch (err) {
+            if (err.startsWith("Module Not Found")) {
+              salert("This game requires " + game_options.crypto + " crypto to play! Not Found!");
+              return;
+            } else {
+              throw err;
+            }
+          }
+*/
           try {
             if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
@@ -335,7 +332,7 @@ module.exports = ArcadeMain = {
         }
       }
     } catch (err) {
-      console.log("ERROR checking if crypto-required: " + err);
+     console.log("ERROR checking if crypto-required: " + err);
       return;
     }
 
