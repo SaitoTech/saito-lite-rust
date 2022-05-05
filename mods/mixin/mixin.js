@@ -195,15 +195,15 @@ console.log(res.data);
 	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
 	    "data":       "Transfer!"
             *********************************************/
-	    let contains_transfer = 0;
-	    for (let z = 0; z < this.deposits.length; z++) {
-	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
-	        contains_transfer = 1;
-	      }
+      	    let contains_transfer = 0;
+      	    for (let z = 0; z < this.deposits.length; z++) {
+      	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
+      	        contains_transfer = 1;
+      	      }
             }
             if (contains_transfer === 0) {
-	      this.deposits.push(d.data[i]);
-	    }
+      	      this.deposits.push(d.data[i]);
+      	    }
           }
           if (callback) { callback(res.data); }
         }
