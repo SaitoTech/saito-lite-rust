@@ -585,9 +585,6 @@ class Keychain {
                      from records
                      where ${where_statement}`;
 
-console.log("sending peer database request");
-console.log(sql);
-
     this.modtemplate.sendPeerDatabaseRequestWithFilter(
 
       "Registry",
@@ -596,8 +593,6 @@ console.log(sql);
 
       (res) => {
         try {
-
-console.log("RETURNED: " + JSON.stringify(res.rows));
 
           let rows = [];
           if (typeof res.rows == "undefined") {
@@ -626,14 +621,9 @@ console.log("RETURNED: " + JSON.stringify(res.rows));
       },
 
       (peer) => {
-console.log("checking peer services: " + JSON.stringify(peer.peer.services));
         if (peer.peer.services) {
-console.log("peer has services");
           for (let z = 0; z < peer.peer.services.length; z++) {
-console.log("z: " + z);
-console.log(peer.peer.services[z].service);
             if (peer.peer.services[z].service === "registry") {
-console.log("we have found registry server!");
               return 1;
             }
           }
@@ -654,16 +644,13 @@ console.log("we have found registry server!");
     if (!identifier) {
       return null;
     }
-    console.log(1);
     if (this.app.crypto.isPublicKey(identifier)) {
       return identifier;
     }
-    console.log(2);
     const publickey = this.returnPublicKeyByIdentifier(identifier);
     if (publickey != "") {
       return publickey;
     }
-    console.log(3);
     //
     // if no result, fetch from server (modtemplate)
     //

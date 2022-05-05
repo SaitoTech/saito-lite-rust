@@ -710,12 +710,9 @@ class Browser {
    */
   async addIdentifiersToDom(keys = []) {
 
-console.log("Add Identifiers to DOM -- un browser.js");
-
     if (keys.length == 0) {
       const addresses = document.getElementsByClassName(`saito-address`);
       Array.from(addresses).forEach((add) => {
-console.log(add);
         const pubkey = add.getAttribute("data-id");
         if (pubkey) {
           keys.push(pubkey);
@@ -723,12 +720,9 @@ console.log(add);
       });
     }
 
-console.log("querying for: " + JSON.stringify(keys));
-
     try {
       const answer = await this.app.keys.fetchManyIdentifiersPromise(keys);
       Object.entries(answer).forEach(([key, value]) => this.updateAddressHTML(key, value));
-console.log("identifiers added to DOM...");
     } catch (err) {
       console.error(err);
     }

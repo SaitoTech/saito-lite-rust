@@ -121,9 +121,9 @@ class Registry extends ModTemplate {
 
       let registry_self = this.app.modules.returnModule("Registry");
 
-      console.log("REGISTERING TO WHICH MODULE: " + this.name);
-      console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-      console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+      //console.log("REGISTERING TO WHICH MODULE: " + this.name);
+      //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+      //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
       let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
       if (!newtx) {
@@ -154,8 +154,6 @@ class Registry extends ModTemplate {
 
   // DEPRECATED, USE tryRegisterIdentifier()
   registerIdentifier(identifier, domain="@saito") {
-
-console.log("SENDING TX TO ADDRESS: " + this.publickey);
 
     let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (newtx == null) {
