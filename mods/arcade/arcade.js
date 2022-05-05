@@ -183,6 +183,13 @@ class Arcade extends ModTemplate {
     this.header = new SaitoHeader(app, this);
   }
 
+  attachEvents(){
+    
+  }
+  returnBaseHTML(app){
+
+  }
+
   checkGameDatabase(){
     //For debugging
     console.log("Querying all recent games regardless of status");
@@ -205,6 +212,7 @@ class Arcade extends ModTemplate {
   // load transactions into interface when the network is up
 
   onPeerHandshakeComplete(app, peer) {
+    console.log('peer handshake complete');
     if (this.browser_active == 0) {
       return;
     }

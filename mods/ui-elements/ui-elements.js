@@ -1,59 +1,44 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-const EmailMain = require("./lib/components/email-main");
-const EmailSidebar = require("./lib/components/email-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+const UI_ELEMENTS_TEMPLATE = require('./ui-elements-template.js');
 
-
-class DevCenter extends ModTemplate {
+class UI_ELEMENTS extends ModTemplate {
 
   constructor(app) {
 
     super(app);
 
-    this.name = "DevCenter";
-    this.appname = "Dev Center";
+    this.name = "ui_elements";
+    this.appname = "UI Elements";
     this.slug = "dev";
-    this.description = "Control panel for Saito application development and software debugging";
-    this.categories = "Core Admin Productivity Utilities";
+    this.description = "Re-usabale elements are here";
+    this.categories = "Design";
     this.chat = null;
-    this.events = ["chat-render-request"];
-    this.icon_fa = "fas fa-code";
+    // this.events = ["chat-render-request"];
+    // this.icon_fa = "fas fa-code";
 
     this.header = null;
 
-    this.emails = {};
-    this.emails.inbox = [];
-    this.emails.output = [];
-    this.emails.trash = [];
+    // this.emails = {};
+    // this.emails.inbox = [];
+    // this.emails.output = [];
+    // this.emails.trash = [];
+  }
 
-    this.mods = [];
+
+  initialize(app){
+    super.initialize(app)
+  }
+
+  initializeHTML() {
+  }
+
+
+  attachEvents(){
 
   }
-returnBaseHTML(app){
+
   
-}
-  initializeHTML(app) {
-
-    if (app.BROWSER && this.browser_active && (!app.options.dev || !app.options.dev.welcomesent)) {
-
-      let welcometx = app.wallet.createUnsignedTransaction();
-
-      welcometx.msg.module = "Email";
-      welcometx.msg.title = "Welcome to Saito";
-      welcometx.msg.message = `Saito is a network that runs blockchain applications in your browser!
-  <br/><br/>
-      We are currently under development, which mean any tokens in your account are TESTNET tokens which will disappear when the network is upgraded. If you are interested in purchasing tokens for use on the production network, please see our <a href="https://saito.io">main site</a> for instructions on how to do so. If you're curious what else you can do on Saito besides reading this message, why not check out the <a href="https://saito.io/arcade">Saito Arcade</a>?
-        <br/><br/>
-      Have questions? Why not join us on <a href="">Saito Telegram</a>?
-      `;
-      this.addEmail(welcometx);
-    }
-
-  }
-
-  addEmail(tx) {
-    this.emails.inbox.push(tx);
-  }
 
 
   render(app) {
@@ -73,12 +58,12 @@ returnBaseHTML(app){
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
     }
-    this.header.render(app, this);
-    this.header.attachEvents(app, this);
 
-    this.renderSidebar(app);
-    this.renderMain(app);
 
+  }
+
+  returnBaseHTML(app){
+    return UI_ELEMENTS_TEMPLATE(app)
   }
 
   renderMain(app) {
@@ -136,5 +121,5 @@ returnBaseHTML(app){
 
 }
 
-module.exports = DevCenter;
+module.exports = UI_ELEMENTS;
 

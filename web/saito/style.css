@@ -123,7 +123,7 @@ a:hover {
 .justify {
   text-align: justify;
 }
-
+/* 
 body {
   background-color: var(--background-general);
   color: var(--text-color-normal);
@@ -131,7 +131,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
   overflow: hidden;
-}
+} */
 
 ::-webkit-scrollbar {
   width: 7px;
