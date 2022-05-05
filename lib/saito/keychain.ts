@@ -565,6 +565,7 @@ class Keychain {
   }
 
   fetchManyIdentifiers(publickeys = [], mycallback) {
+
     const found_keys = [];
     const missing_keys = [];
 
@@ -585,6 +586,7 @@ class Keychain {
                      where ${where_statement}`;
 
     this.modtemplate.sendPeerDatabaseRequestWithFilter(
+
       "Registry",
 
       sql,
@@ -618,6 +620,7 @@ class Keychain {
       },
 
       (peer) => {
+console.log("checking peer services: " + JSON.stringify(peer.peer.services));
         if (peer.peer.services) {
           for (let z = 0; z < peer.peer.services.length; z++) {
             if (peer.peer.services[z].service === "registry") {
