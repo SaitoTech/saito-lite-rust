@@ -1,10 +1,13 @@
 module.exports = UI_ELEMENTS_TEMPLATE = (app) => {
-    return `
+  return `
+    <div class="container">
     <div class="email-appspace-design">
   
     <h3>h3 - Module header</h3>
   
-    <button onclick="salert('hey, hey, hey');" class="super">Main*</button>
+
+    <button id="toggle_btn" class="super">Toggle Dark Mode</button>
+    <button id="render_arcade" class="super">Render Arcade</button>
   
     <p>Four Colum Form*</p>
     <div class="grid-4">
@@ -123,6 +126,6 @@ module.exports = UI_ELEMENTS_TEMPLATE = (app) => {
   
   <button onclick="salert('This is a Saito native Alert');" >Alert</button>
   <button onclick="sconfirm('This is a Saito native Confirm');" >Confirm</button>
+  </div>
     `;
-  }
-  
+}
