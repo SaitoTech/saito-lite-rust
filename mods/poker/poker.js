@@ -134,7 +134,7 @@ class Poker extends GameTemplate {
     this.playerbox.addStatus(); //enable update Status to display in playerbox
   }
 
-  initializeGame(game_id) {
+  initializeGame(game_id) { 
     /*if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }*/
@@ -151,6 +151,7 @@ class Poker extends GameTemplate {
     this.game.chipValue = (this.game.options.chip) ? parseFloat(this.game.options.chip) : 0;
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
     this.useGraphics = (this.game.options.chip_graphics == 1);
+    this.decimal_precision = (this.game.options.chip.includes(".")) ? this.game.options.chip.length - 2 : this.game.options.chip.length;
 
     if (this.browser_active) {
       console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
@@ -436,16 +437,19 @@ class Poker extends GameTemplate {
               if (i != player_left_idx) {
                 //Only losers
                 if (this.game.state.player_pot[i] > 0) {
+                  let amount_to_send = this.game.state.player_pot[i]*this.game.chipValue;
+                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                   let ts = new Date().getTime();
                   this.rollDice();
                   let uh = this.game.dice;
-                  if (this.game.player - 1 == player_left_idx) {
+                  //if (this.game.player - 1 == player_left_idx) {
               // do not reformat -- adding whitespace screws with API
-                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  } else {
-                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  }
+                  //  this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  //} else {
+                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  //}
                 }
               }
             }
@@ -673,18 +677,26 @@ class Poker extends GameTemplate {
             //
             // send wagers to winner
             let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
+            if (chips_to_send !== Math.round(chips_to_send)){
+              salert("Uneven pot split. House keeps difference");
+              chips_to_send = Math.floor(chips_to_send);
+            }
+
             for (let i = 0; i < winners.length; i++) {
               //
               // non-winners send wagers to winner
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+                    let amount_to_send = this.game.chipValue * this.game.state.player_pot[ii] / winners.length ;
+                    amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                     // do not reformat -- adding whitespace screws with API
                     let ts = new Date().getTime();
                     this.rollDice();
                     let uh = this.game.dice;
-                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
-                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                   }
                 }
               }
@@ -695,12 +707,15 @@ class Poker extends GameTemplate {
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+                  let amount_to_send = this.game.state.player_pot[ii] * this.game.chipValue;
+                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                   let ts = new Date().getTime();
                   this.rollDice();
                   let uh = this.game.dice;
                   // do not reformat -- adding whitespace screws with API
-                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }
               }
             }
@@ -2685,6 +2700,9 @@ class Poker extends GameTemplate {
       if (index == "chip") {
         new_options[index] = options[index];
       }
+      if (index == "stake"){
+        new_options[index] = options[index]; 
+      }
       if (index == "num_chips") {
         new_options[index] = options[index];
       }
@@ -2703,20 +2721,21 @@ class Poker extends GameTemplate {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};
     let useGraphics = false;
+    let crypto = "";
     for (let i in sgoa) {
       if (sgoa[i] != "") {
         let okey = i;
         let oval = options[i];
 
         let output_me = 1;
-        if (i == "chip") {
+        if (okey == "chip") {
           if (oval !== "0"){
             okey = "small blind";  
           }else{
             output_me = 0;
           }
         }
-        if (i == "blind_mode") {
+        if (okey == "blind_mode") {
           if (oval == "increase") {
             okey = "mode";
             oval = "tournament";
@@ -2724,15 +2743,22 @@ class Poker extends GameTemplate {
             output_me = 0;
           }
         }
-        if (i == "num_chips"){
+        if (okey == "num_chips"){
           okey = "chips";
         }
-        if (i == "chip_graphics"){
+        if (okey == "chip_graphics"){
           if (oval == 1){
             useGraphics = true;
             okey = "show chips";
             oval = null;
           }
+        }
+        if (okey == "crypto"){
+          output_me = 0;
+          crypto = oval;
+        }
+        if (okey == "stake"){
+          oval += crypto;
         }
 
         if (output_me == 1) {
