@@ -2066,9 +2066,9 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
 	    if (imperium_self.game.player == owner) {
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player to receive 1 infantry and this planet" ,
-              function(player) {
+              function(p) {
 	        let lower_vp_player = 0;
-		let this_player_vp = player.vp;
+		let this_player_vp = p.vp;
 	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
 		  if (imperium_self.game.players_info[i] < this_player_vp) { lower_vp_player = 1; }
 		}

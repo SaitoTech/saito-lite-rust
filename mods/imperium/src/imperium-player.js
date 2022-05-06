@@ -83,6 +83,7 @@ returnPlayers(num = 0) {
     players[i].commodity_limit = 3;
     players[i].vp = 0;
     players[i].passed = 0;
+    players[i].player = (i+1);
     players[i].strategy_cards_played = [];
     players[i].strategy_cards_retained = [];
     players[i].cost_of_technology_primary = 6;
@@ -5390,8 +5391,6 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 //      return;
     }
     imperium_self.unlockInterface();
-
-
 
     let action = $(this).attr("id");
 
