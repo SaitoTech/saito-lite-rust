@@ -12,8 +12,8 @@
 
             imperium_self.playerSelectPlayerWithFilter(
               "Select a player who will not be able to vote on this Agenda: " ,
-              function(player) {
-                if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+                if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
               function(player) {
                 imperium_self.addMove("rider\t"+player+"\tassassinate-representative\t-1");
@@ -41,8 +41,8 @@
 
             imperium_self.playerSelectPlayerWithFilter(
               "Select a player to lose 4 votes: " ,
-              function(player) {
-                if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+                if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
               function(player) {
                 imperium_self.addMove("diplomatic_scandal\t"+imperium_self.game.player+"\t"+player);

@@ -3448,8 +3448,8 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
         imperium_self.playerSelectPlayerWithFilter(
           "Select a player from which to take an action card (if possible): " ,
-          function(player) {
-            if (player != imperium_self.game.player) { return 1; } return 0;
+          function(p) {
+            if (p.player != imperium_self.game.player) { return 1; } return 0;
           },
           function(player) {
             imperium_self.addMove("faction6_choose_card_triggered\t"+imperium_self.game.player+"\t"+player);
@@ -7846,9 +7846,9 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
 	    if (imperium_self.game.player == owner) {
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player to receive 1 infantry and this planet" ,
-              function(player) {
+              function(p) {
 	        let lower_vp_player = 0;
-		let this_player_vp = player.vp;
+		let this_player_vp = p.vp;
 	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
 		  if (imperium_self.game.players_info[i] < this_player_vp) { lower_vp_player = 1; }
 		}
@@ -8840,8 +8840,8 @@ ACTION CARD - types
 
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player and remove one token from their command pool: " ,
-              function(player) {
-	        if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+	        if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
 	      function(player) {
                 imperium_self.addMove("expend\t"+player+"\tcommand\t"+"1");
@@ -9022,8 +9022,8 @@ ACTION CARD - types
 
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player. They give you one of their action cards: ",
-              function(player) {
-	        if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+	        if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
 	      function(player) {
                 imperium_self.addMove("pull\t"+imperium_self.game.player+"\t"+player+"\t"+"action"+"\t"+"random");
@@ -9102,7 +9102,7 @@ ACTION CARD - types
             	imperium_self.playerSelectPlayerWithFilter(
 	          "Select a player to signal jam in that sector: " ,
                   function(p) {
-	            if (p != imperium_self.game.player) { return 1; } return 0;
+	            if (p.player != imperium_self.game.player) { return 1; } return 0;
                   },
 	          function(p) {
                     imperium_self.addMove("activate\t"+p+"\t"+sector);
@@ -9583,8 +9583,8 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 
             imperium_self.playerSelectPlayerWithFilter(
               "Select a player who will not be able to vote on this Agenda: " ,
-              function(player) {
-                if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+                if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
               function(player) {
                 imperium_self.addMove("rider\t"+player+"\tassassinate-representative\t-1");
@@ -9612,8 +9612,8 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 
             imperium_self.playerSelectPlayerWithFilter(
               "Select a player to lose 4 votes: " ,
-              function(player) {
-                if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+                if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
               function(player) {
                 imperium_self.addMove("diplomatic_scandal\t"+imperium_self.game.player+"\t"+player);
@@ -18841,6 +18841,7 @@ returnPlayers(num = 0) {
     players[i].commodity_limit = 3;
     players[i].vp = 0;
     players[i].passed = 0;
+    players[i].player = (i+1);
     players[i].strategy_cards_played = [];
     players[i].strategy_cards_retained = [];
     players[i].cost_of_technology_primary = 6;
@@ -24148,8 +24149,6 @@ playerSelectPlayerWithFilter(msg, filter_func, mycallback = null, cancel_func = 
 //      return;
     }
     imperium_self.unlockInterface();
-
-
 
     let action = $(this).attr("id");
 
