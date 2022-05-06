@@ -410,7 +410,7 @@ class Settlers extends GameTemplate {
       /*
       For some reason, you can only flip one card at a time, otherwise the decrypting fucks up
       But we treat the tiles and numeric tokens as decks to randomize the order
-      */
+      
       for (let j = 0; j < 19; j++) {
         for (let i = this.game.players.length - 1; i >= 0; i--) {
           this.game.queue.push("FLIPCARD\t2\t1\t1\t" + (i + 1)); //tiles
@@ -423,6 +423,9 @@ class Settlers extends GameTemplate {
         }
         this.game.queue.push("FLIPRESET\t2");
       }
+      */
+      this.game.queue.push(`POOLDEAL\t3\t18\t2`);
+      this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
       this.game.queue.push(
         "DECKANDENCRYPT\t3\t" +
@@ -2033,6 +2036,7 @@ class Settlers extends GameTemplate {
     let tileCt = 0;
     let tokenCt = 0;
     let tile, resourceName, token;
+    console.log(this.game.pool, this.game.deck);
     for (let hex of this.hexgrid.hexes) {
       tile = this.game.pool[0].hand[tileCt++];
       resourceName = this.game.deck[1].cards[tile].resource;

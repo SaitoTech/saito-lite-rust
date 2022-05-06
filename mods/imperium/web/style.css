@@ -14,11 +14,6 @@
 }
 
 
-.hud-body {
-  height: 370px;
-  min-height: 370px;
-}
-
 
 
 .game-menu ul li {
@@ -1481,6 +1476,7 @@ body {
 }
 .hud-square .hud-body {
   min-height: 367px;
+  height: 367px;
 }
 
 .status-message{

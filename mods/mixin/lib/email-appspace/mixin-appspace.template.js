@@ -53,13 +53,64 @@ module.exports = MixinAppspaceTemplate = (app) => {
       </div>
     </div>
 
+    <h2 class="transaction-header transaction-item">Transaction History</h2>
     <div class="activity_container" id="activity_container">
+        <div class="history_container transaction-item">
+            <div class='item item-header'>Time</div>
+             <div class='item item-header'>Type</div>
+             <div class='item item-header'>Asset</div>
+             <div class='item item-header'>Amount</div>
+             <div class='item item-header'>Status</div>
+        </div>
       <div class="activity_button button" id="activity_button">load account history</div>
     </div>
 
   </div>
 
   <style>
+
+    .deposit {
+        color: #14b214;
+    }
+
+    .Withdrawal {
+        color: #e34927;
+    }
+
+    .hide-btn {
+        display: none;
+    }
+
+    .transaction-header {
+        margin-top: 40px;
+    }
+
+    .history_container {
+      border-radius: 8px;
+      position: relative;
+      border: 1px solid #e7ebed;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      line-height: 50px;
+      flex-wrap: wrap; 
+    }
+
+    .item {
+      height: 50px;
+      width: calc(100% * (1/5));
+      flex-grow: 1;
+    }
+
+    .item-header {
+      background-color: #e7ebed;
+      font-weight: 700;
+    }
+
+
 .activity_button {
   margin-top: 20px;
   max-width: 200px;
