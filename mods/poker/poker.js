@@ -499,12 +499,13 @@ class Poker extends GameTemplate {
             //We can't just push "announce", have to reset queue to clear out any remaining turns
             this.game.queue = ["round", "announce"];
             //this.game.queue.push("announce");
-            for (let z = 0; z < cards_to_flip; z++) {
+            this.game.queue.push(`POOLDEAL\t1\t${cards_to_flip}\t1`);
+            /*for (let z = 0; z < cards_to_flip; z++) {
               for (let i = this.game.players.length - 1; i >= 0; i--) {
                 this.game.queue.push("FLIPCARD\t1\t1\t1\t" + (i + 1));
               }
               this.game.queue.push("FLIPRESET\t1");
-            }
+            }*/
 
             //
             // observer mode
@@ -2490,10 +2491,10 @@ class Poker extends GameTemplate {
   /*Helper functions for display and options*/
 
   cardToHuman(card) {
-    console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
+    
     if (!this.game.deck[0].cards[card]){
       console.log("Deck error: " + card);
-      
+      console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
       return "";
     }
     let h = this.game.deck[0].cards[card].name;
