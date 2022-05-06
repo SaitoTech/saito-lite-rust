@@ -209,6 +209,12 @@ class Arcade extends ModTemplate {
       return;
     }
 
+    // fetch any usernames needed
+    if (this.app.BROWSER == 1) {
+      app.browser.addIdentifiersToDom();
+    }
+
+
     let arcade_self = this;
     let cutoff = new Date().getTime() - this.old_game_removal_delay;
 

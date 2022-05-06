@@ -138,11 +138,6 @@ class Network {
     this.peers_connected++;
     peer.keepAlive();
 
-    //
-    // notify peer(s) of services
-    // - results in issues
-    //this.propagateServices(peer);
-
   }
 
   //
@@ -197,10 +192,6 @@ class Network {
     // do it here. this adds the message emission events to the socket
     //
     this.app.handshake.initiateHandshake(socket);
-    //
-    // results in websocket not ready issues/
-    //
-    //this.propagateServices(peer);
 
     return peer;
   }
@@ -274,6 +265,7 @@ class Network {
         this.app.network.requestBlockchain(peer);
         this.app.connection.emit("peer_connect", peer);
         this.app.connection.emit("connection_up", peer);
+        this.app.network.propagateServices(peer);
       };
       peer.socket.onclose = (event) => {
         if (this.debugging) { console.log(
@@ -321,6 +313,7 @@ class Network {
       peer.socket.on("open", async (event) => {
         await this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
+        this.app.network.propagateServices(peer);
       });
       peer.socket.on("close", (event) => {
         if (this.debugging) { console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`); }
@@ -330,6 +323,7 @@ class Network {
       });
     } else {
       peer.socket.peer = peer;
+      this.app.network.propagateServices(peer);
     }
 
     peer.socket.on("message", async (data) => {
@@ -586,6 +580,8 @@ class Network {
       case "SERVICES": {
 
         const buffer = Buffer.from(message.message_data, "utf8");
+
+console.log("RECEIVING SERVICES: " + JSON.stringify(buffer.toString("utf8")));
 
 	try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
@@ -949,10 +945,12 @@ class Network {
     if (peer == null) {
       for (let i = 0; i < this.peers.length; i++) {
         if (peer === this.peers[i] || (!peer && this.peers[i].peer.sendblks === 1)) {
+console.log("sending services request: " + JSON.stringify(my_services));
           this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), this.peers[i]);
         }
       }
     } else {
+console.log("sending services request: " + JSON.stringify(my_services));
       this.sendRequest("SERVICES", Buffer.from(JSON.stringify(my_services)), peer);
     }
   }

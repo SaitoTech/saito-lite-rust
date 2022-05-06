@@ -709,6 +709,7 @@ class Browser {
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
+
     if (keys.length == 0) {
       const addresses = document.getElementsByClassName(`saito-address`);
       Array.from(addresses).forEach((add) => {
