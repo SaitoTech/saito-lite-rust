@@ -21,14 +21,35 @@ module.exports = MixinAppspace = {
 
     try {
       document.querySelector(".activity_button").onclick = (e) => {
-
-alert("loading history...");
-
+        document.getElementById('activity_button').innerHTML = 'fetching history...';
+        
         mod.fetchSnapshots("", 20, "DESC", (d) => { 
-	  document.querySelector(".activity_container").innerHTML = "";
-	  for (let i = 0; i < d.data.length; i++) {
-	    document.querySelector(".activity_container").innerHTML += JSON.stringify(d.data[i]);;
-	  }
+          let html = "";
+          for (let i = 0; i < d.data.length; i++) {
+
+          let ticker = '';
+          for (let j=0; j<mod.mods.length; j++) {
+            if (mod.mods[j].asset_id == d.data[i].asset_id) {
+              ticker = mod.mods[j].ticker;
+              break;
+            }
+          }
+
+          let trans = d.data[i];
+          let created_at = trans.created_at.slice(0, 19).replace('T', ' ');
+          let type = (trans.closing_balance > trans.opening_balance) ? 'Deposit' : 'Withdrawal';
+          let amount = trans.amount;
+          let indicator = (type == 'Deposit') ? '+' : '-';
+
+          html = "<div class='item'>"+ created_at +"</div>" +
+          "<div class='item'>"+ type +"</div>" +
+          "<div class='item'>"+ ticker +"</div>" +
+          "<div class='item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
+          "<div class='item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
+          
+          document.getElementById('activity_button').setAttribute("class", "hide-btn");
+          document.querySelector(".history_container").innerHTML += html;
+          }
         });
       }
     } catch (err) {}
