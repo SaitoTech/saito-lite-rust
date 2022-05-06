@@ -24,7 +24,7 @@ class GameTestSuite extends GameTemplate {
     this.status = "Demonstration";
 
     // player numbers
-    this.minPlayers = 2;
+    this.minPlayers = 1; //2;
     this.maxPlayers = 6;
 
     this.game_cardfan_visible = 0;
@@ -49,8 +49,9 @@ class GameTestSuite extends GameTemplate {
     //
     if (!this.game.state) {
 
-      this.game.state = this.returnState();
+      this.game.state = this.returnState(this.game.players.length);
 
+      this.game.queue.push("welcome");
       this.game.queue.push("init");
       this.game.queue.push("NOTIFY\tYou are Player "+this.game.player);
       this.game.queue.push("READY");
@@ -79,14 +80,83 @@ class GameTestSuite extends GameTemplate {
   // initialize HTML and UI components
   //
   initializeHTML(app) {
+    //Game initialization begins from the Arcade. 
+    //So, it is best to prevent any HTML/DOM manipulation until in the right page
+    if (!this.browser_active){
+      return;
+    }
 
     super.initializeHTML(app);
+
+    //Put functionality into the menu
+
+    this.menu.addMenuOption({
+      text: "Game",
+      id: "game-game",
+      class: "game-game",
+      callback: function (app, game_mod) {
+        game_mod.menu.showSubMenu("game-game");
+      },
+    });
+
+    this.menu.addMenuOption({
+      text: "Interface",
+      id: "menu-interface",
+      class: "menu-interface",
+      callback: function (app, game_mod) {
+        game_mod.menu.showSubMenu("menu-interface");
+      },
+    });
+
+    this.menu.addMenuOption({
+      text: "Web3",
+      id: "menu-crypto",
+      class: "menu-crypto",
+      callback: function (app, game_mod) {
+        game_mod.menu.showSubMenu("menu-crypto");
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-crypto", {
+      text: "Check Balance",
+      id: "crypto-balance",
+      class: "crypto-balance",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.check_balance_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-crypto", {
+      text: "Send Payment",
+      id: "crypto-send",
+      class: "crypto-send",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.send_payment_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-crypto", {
+      text: "Receive Payment",
+      id: "crypto-receive",
+      class: "crypto-receive",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.receive_payment_test(game_mod.app);
+      },
+    });
+
+
+
 
     //
     // add log
     //
     this.log.render(app, this);
     this.log.attachEvents(app, this);
+
+
 
     //
     // add events to DOM
@@ -122,18 +192,31 @@ class GameTestSuite extends GameTemplate {
         this.game.queue.splice(qe, 1);
         return 1;
       }
-
-      if (mv[0] === "init") {
-        console.log("sometimes we can handle init stuff in queue...");
-        this.game.queue.splice(qe, 1);
-        return 1;
+      if (mv[0] === "welcome"){
+        if (this.browser_active){
+          this.overlay.show(this.returnWelcomeMessage());
+          this.game.queue.splice(qe, 1);
+        }
+        return 0; //Stops the game engine from cycling through the game loop
       }
-
     }
 
     return 1;
   }
 
+
+  returnWelcomeMessage(){
+      //
+      // update active crypto
+      //
+      let crypto = this.game.crypto || "SAITO";
+    
+      `<div class="introduction-container">
+          <p>This application provides click-to-test functionality of core backend components in the Saito Game Engine. It also serves as a showcase for how to simply and easily handle common game tasks like rolling dice, dealing cards or displaying UI elements. It also provides a basic starting point for coding games!</p>
+          <p>Online Docs: <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/readme.md" target="_newsaito">game engine overview</a> | <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/api.md" target="_newsaito">api details</a></p>
+          <p>Please note that testing web3 cryptocurrency support requires your wallet to be configured to support those cryptocurrencies. This application was created with support for <span id="saito_crypto">${crypto}</span> as the Web3 token -- to change to another token such as DOT or WND please specify in the advanced options menu on game create. Some card-related functionality may require you to have dealt cards to players.</p>
+      </div>`
+  }
 
   //
   // ( advanced options on Arcade start )
@@ -149,6 +232,7 @@ class GameTestSuite extends GameTemplate {
         <select name="crypto">
           <option value="" selected>None</option>
           <option value="SAITO">SAITO</option>
+          <option value="tst">TST</option>
     `;
     for (let i = 0; i < this.app.modules.mods.length; i++) {
       if (this.app.modules.mods[i].ticker != "" && this.app.modules.mods[i].ticker != undefined) {
@@ -165,15 +249,24 @@ class GameTestSuite extends GameTemplate {
   }
 
 
-  //
-  // default game state
-  //
-  returnState() {
+  /*
+   default game state
+   state is an object stored in the game (e.g. this.game.state), which is remembered between refreshes
+   due to default saveGame behavior in the game engine
+   This information is "public" 
+  */
+  returnState(numPlayers) {
 
     let state = {};
 
     state.cards_dealt_to_players = 0;
     state.simultaneous_pick_submitted = 0;
+    state.numPlayers = numPlayers;
+
+    state.players = [];
+    for (let i = 0; i < numPlayers; i++){
+      state.players.push({cards:[], score:0});
+    }
 
     return state;
   }
@@ -258,14 +351,6 @@ class GameTestSuite extends GameTemplate {
 
       let game_self = this;
 
-      //
-      // update active crypto
-      //
-      if (game_self.game.crypto != "") {
-	if (document.getElementById("saito_crypto")) {
-          document.getElementById("saito_crypto").innerHTML = game_self.game.crypto;
-        }
-      }
 
       //
       // add player boxes button
@@ -344,26 +429,6 @@ class GameTestSuite extends GameTemplate {
 	game_self.deal_cards_to_table_test(game_self.app);
       }
 
-      //
-      // request transfer from first opponent
-      //
-      document.getElementById("receive_payment_button").onclick = (e) => {
-	game_self.receive_payment_test(game_self.app);
-      }
-
-      //
-      // make transfer to first opponent
-      //
-      document.getElementById("send_payment_button").onclick = (e) => {
-	game_self.send_payment_test(game_self.app);
-      }
-
-      //
-      // check balance 
-      //
-      document.getElementById("check_balance_button").onclick = (e) => {
-	game_self.check_balance_test(game_self.app);
-      }
 
       //
       // display cardfan
