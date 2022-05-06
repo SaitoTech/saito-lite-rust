@@ -570,8 +570,7 @@ class Blackjack extends GameTemplate {
         //Dealer Goes Last
         this.game.queue.push("play\t"+(this.game.state.dealer));
         this.game.queue.push(`revealhand\t${this.game.state.dealer}`);
-        //this.game.queue.push("STATUS\tThe dealer is taking their turn");
-
+        
         //Cycle Other Players (in order from dealer)
         for (let i = 0; i < this.game.players.length-1; i++) {
           let otherPlayer = (this.game.state.dealer+i)%this.game.players.length+1;
