@@ -63,6 +63,8 @@ mods/citysim
 mods/citysim/*
 mods/forge
 mods/forge/*
+mods/mastersolitrio
+mods/mastersolitrio/*
 mods/appstore/mods/*.zip
 mods/appstore/modules/
 mods/appstore/bundler/dist
