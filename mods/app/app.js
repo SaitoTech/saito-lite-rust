@@ -1,12 +1,13 @@
 var ModTemplate = require('../../lib/templates/modtemplate');
-const DesignHTMLTemplate = require('./lib/email-appspace/design-appspace.template.js');
-class Portal extends ModTemplate {
+
+
+class App extends ModTemplate {
 
   constructor(app) {
     super(app);
 
     this.app = app;
-    this.name = "Portal";
+    this.name = "App";
     this.description = "Rendering as a Single Page Application";
     this.categories = "Development";
     this.current_module = "";
@@ -170,10 +171,6 @@ class Portal extends ModTemplate {
     return null;
   }
 
-  renderEmail(app, data) {
-    let DesignAppspace = require('./lib/email-appspace/design-appspace');
-    DesignAppspace.render(app, data);
-  }
 
 
 
@@ -181,4 +178,4 @@ class Portal extends ModTemplate {
 }
 
 
-module.exports = Portal;
+module.exports = App;

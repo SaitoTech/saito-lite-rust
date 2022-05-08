@@ -1,13 +1,12 @@
-const ModTemplate = require("../../lib/templates/modtemplate");
+const AppTemplate = require("../../lib/templates/apptemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const UI_ELEMENTS_TEMPLATE = require('./ui-elements-template.js');
 
-class UI_ELEMENTS extends ModTemplate {
+class UI_ELEMENTS extends AppTemplate {
 
   constructor(app) {
 
     super(app);
-
     this.name = "ui_elements";
     this.appname = "UI Elements";
     this.slug = "dev";
@@ -18,10 +17,8 @@ class UI_ELEMENTS extends ModTemplate {
     // this.icon_fa = "fas fa-code";
 
     this.header = null;
-    this.stylesheets = null;
-    this.stylesheetAdded = false;
-    this.scriptsAdded = false;
-    this.eventListeners = [];
+
+
     // this.emails = {};
     // this.emails.inbox = [];
     // this.emails.output = [];
@@ -30,16 +27,17 @@ class UI_ELEMENTS extends ModTemplate {
 
 
   initialize(app) {
-    super.initialize(app)
-    this.stylesheets = ["/saito/style.css", "/saito/saito.css", "/appstore/css/email-appspace.css"]; // In order of css specificity: increases in specificity from left to right;
-    this.scripts = [];
+    const stylesheets = ["/saito/style.css", "/saito/saito.css", "/appstore/css/email-appspace.css"]; // In order of css specificity: increases in specificity from left to right;
+    const scripts = ['/jsonTree.js'];
+    const meta = []
+
+    super.initialize(app, meta, stylesheets, scripts);
+
 
   }
 
   initializeHTML(app) {
-    this.attachMeta(app);
-    this.attachStyleSheets(app);
-    this.attachScripts(app);
+    super.initializeHTML(app);
 
   }
 
@@ -47,16 +45,16 @@ class UI_ELEMENTS extends ModTemplate {
   attachEvents(app) {
     const self = this;
     const listener = $('#toggle_btn').on('click', function (e) {
-      const portal_mod = app.modules.returnModule("Portal");
+      const app_mod = app.modules.returnModule("App");
 
-      portal_mod.toggleDarkMode();
+      app_mod.toggleDarkMode();
       self.eventListeners.push({ type: 'click', listener });
     });
     const listener2 = $('#render_arcade').on('click', function (e) {
-      const portal_mod = app.modules.returnModule("Portal");
+      const app_mod = app.modules.returnModule("App");
       const arcade_mod = app.modules.returnModule("Arcade");
 
-      portal_mod.render(app, arcade_mod);
+      app_mod.render(app, arcade_mod);
       self.eventListeners.push({ type: 'click', listener2 });
     });
 
@@ -64,11 +62,7 @@ class UI_ELEMENTS extends ModTemplate {
   }
 
 
-  removeEvents() {
-    this.eventListeners.forEach(eventListener => {
-      document.removeEventListener(eventListener.type, eventListener.listener);
-    })
-  }
+
 
 
 
@@ -99,52 +93,8 @@ class UI_ELEMENTS extends ModTemplate {
   }
 
 
-  attachStyleSheets(app) {
-    if (this.stylesheetAdded === true) return;
-    this.stylesheets.forEach(stylesheet => {
-      console.log('appending stylesheet ', stylesheet);
-      $('head').append(`<link rel="stylesheet" type="text/css" href="${stylesheet}">`);
-    })
-    this.stylesheetAdded = true;
-  }
 
-  attachScripts(app) {
-    if (this.scriptsAdded === true) return;
-    this.scripts.forEach(script => {
-      $('head').append(`<script type="text/javascript" src="${script}"> </script>`);
-    })
-    this.scriptsAdded = true;
-  }
 
-  attachMeta(app) {
-
-  }
-
-  removeStyleSheets(app) {
-    this.stylesheets.forEach(stylesheet => {
-      console.log('removing stylesheet ', stylesheet);
-      $(`link[rel=stylesheet][href~="${stylesheet}"`).remove();
-    })
-
-    this.stylesheetAdded = false;
-
-  }
-
-  removeMeta() {
-
-  }
-
-  removeScripts() {
-    this.scripts.forEach(script => {
-      console.log('removing script', script);
-      $(`script[src*="${script}"]`).remove()
-    })
-    this.scriptsAdded = false;
-  }
-
-  removeHTML() {
-    document.querySelector('body').innerHTML = "";
-  }
 
   renderMain(app) {
     if (app.BROWSER != 1 || this.browser_active != 1) {
@@ -165,15 +115,6 @@ class UI_ELEMENTS extends ModTemplate {
     console.log("### 3");
   }
 
-  destroy(app) {
-    console.log('destroying');
-    this.removeMeta();
-    this.removeStyleSheets();
-    this.removeHTML();
-    this.removeScripts();
-    this.removeEvents();
-    this.browser_active = 0;
-  }
 
   respondTo(type = "") {
     if (type == "header-dropdown") {

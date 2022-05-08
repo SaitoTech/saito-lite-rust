@@ -29,10 +29,21 @@ class DevCenter extends ModTemplate {
     this.mods = [];
 
   }
-returnBaseHTML(app){
-  
-}
+  returnBaseHTML(app) {
+    return ``
+  }
+
+  initialize(app) {
+    const stylesheets = ['/saito/style.css', '/dev/style.css', '/appstore/css/email-appspace.css', '/saito/lib/templates/email-chat.css', '/saito/lib/templates/crypto-transfer-manager.css', '/saito/lib/jsonTree/jsonTree.css'];
+    const scripts = [];
+    const meta = [];
+    super.initialize(app, meta, stylesheets, scripts);
+  }
+
+
   initializeHTML(app) {
+
+    super.initializeHTML(app);
 
     if (app.BROWSER && this.browser_active && (!app.options.dev || !app.options.dev.welcomesent)) {
 
