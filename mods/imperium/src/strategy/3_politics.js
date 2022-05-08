@@ -150,7 +150,6 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
                   imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
-                  imperium_self.addMove("resetagenda");
 } else {
                   imperium_self.addMove("resolve_agenda\t"+selected_agendas[i]);
                   imperium_self.addMove("post_agenda_stage_post\t"+selected_agendas[i]);
@@ -159,9 +158,9 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
                   imperium_self.addMove("pre_agenda_stage_post\t"+selected_agendas[i]);
                   imperium_self.addMove("pre_agenda_stage\t"+selected_agendas[i]);
                   imperium_self.addMove("resetconfirmsneeded\t"+imperium_self.game.players_info.length);
-                  imperium_self.addMove("resetagenda");
 }
                 }
+                imperium_self.addMove("resetagenda");
                 imperium_self.endTurn();
               }
             });
