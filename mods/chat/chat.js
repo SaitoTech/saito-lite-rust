@@ -28,24 +28,24 @@ class Chat extends ModTemplate {
         /* if someone closes community chat, don't pop it back open
            any navigation to another page with re-construct chat and forget this
          */
-        this.mute_community_chat = 0;  
+        this.mute_community_chat = 0;
         //this.max_msg_size = 1*1024*1024;
         this.max_msg_size = 1 * 300 * 1024;
 
         this.icon_fa = "far fa-comments";
         this.inTransitImageMsgSig = null;
 
-	this.added_identifiers_post_load = 0;
+        this.added_identifiers_post_load = 0;
 
     }
 
 
 
     returnServices() {
-      let services = [];
-      // servers with chat installed are running community chat groups
-      if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
-      return services;
+        let services = [];
+        // servers with chat installed are running community chat groups
+        if (this.app.BROWSER == 0) { services.push({ service: "chat" }); }
+        return services;
     }
 
 
@@ -212,7 +212,7 @@ class Chat extends ModTemplate {
     async onPeerHandshakeComplete(app, peer) {
 
         let loaded_txs = 0;
-	let community_chat_group_id = "";
+        let community_chat_group_id = "";
 
         //
         // create mastodon server
@@ -220,36 +220,60 @@ class Chat extends ModTemplate {
         if (peer.isMainPeer()) {
             console.log("peer handshake complete with: " + peer.peer.publickey);
             this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
-	    community_chat_group_id = this.groups[this.groups.length-1].id;
+            community_chat_group_id = this.groups[this.groups.length - 1].id;
 
-	    // not a publickey but group_id gets archived as if it were one
+            // not a publickey but group_id gets archived as if it were one
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
 
             this.sendPeerDatabaseRequestWithFilter(
 
-              "Archive" ,
+                "Archive",
 
-              sql ,
+                sql,
 
-              (res) => {
-                if (res) {
-                  if (res.rows) {
-                    for (let i = 0; i < res.rows.length; i++) {
-            	      let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
-            	      let txmsg = tx.returnMessage();
-                      this.binaryInsert(this.groups[this.groups.length-1].txs, tx, (a, b) => {
-                        return a.transaction.ts - b.transaction.ts;
-                      })
+                (res) => {
+                    if (res) {
+                        if (res.rows) {
+                            for (let i = 0; i < res.rows.length; i++) {
+                                let tx = new saito.default.transaction(JSON.parse(res.rows[i].tx));
+                                let txmsg = tx.returnMessage();
+                                this.binaryInsert(this.groups[this.groups.length - 1].txs, tx, (a, b) => {
+                                    return a.transaction.ts - b.transaction.ts;
+                                })
+                            }
+                            this.sendEvent('chat-render-request', {});
+
+                            //
+                            // check identifiers
+                            //
+                            if (this.added_identifiers_post_load == 0) {
+                                console.log("ADD IDENTIFIERS POST LOAD: chat.js");
+                                try {
+                                    setTimeout(() => {
+                                        this.app.browser.addIdentifiersToDom();
+                                        this.added_identifiers_post_load = 1;
+                                    }, 1200);
+                                } catch (err) {
+                                    console.log("error adding identifiers post-chat");
+                                }
+                            }
+
+                        }
                     }
-            	    this.sendEvent('chat-render-request', {});
+                },
+
+                (p) => {
+                    if (p.peer.publickey === peer.peer.publickey) {
+                        return 1;
+                    }
+
+                    this.sendEvent('chat-render-request', {});
 
 		    //
 		    // check identifiers
 		    //
-console.log("chat trying to add identifiers post load 1...");
 		    if (this.added_identifiers_post_load == 0) {
 		      try {
-console.log("chat trying to add identifiers post load 2...");
 			setTimeout(()=>{
 		          this.app.browser.addIdentifiersToDom();
 		          this.added_identifiers_post_load = 1;
@@ -258,17 +282,9 @@ console.log("chat trying to add identifiers post load 2...");
 			console.log("error adding identifiers post-chat");
 		      }
 		    }
-
-                  }
                 }
-              },
 
-              (p) => {
-                if (p.peer.publickey === peer.peer.publickey) {
-		  return 1;
-	        }
-	        return 0;
-	      }
+
             );
 
 
@@ -286,11 +302,11 @@ console.log("chat trying to add identifiers post load 2...");
         // load transactions from server, but not group chat again
         //
         let group_ids = this.groups.map(group => group.id);
-	for (let i = 0; i < group_ids.length; i++) {
-	  if (group_ids[i] === community_chat_group_id) {
-	    group_ids.splice(i, 1);
-	    i--;
-	  }
+        for (let i = 0; i < group_ids.length; i++) {
+            if (group_ids[i] === community_chat_group_id) {
+                group_ids.splice(i, 1);
+                i--;
+            }
         }
 
 
@@ -438,7 +454,7 @@ console.log("chat trying to add identifiers post load 2...");
                     this.app.storage.saveTransaction(modified_tx);
 
                     if (mycallback) {
-                        mycallback({"payload": "success", "error": {}});
+                        mycallback({ "payload": "success", "error": {} });
                     }
 
                     break;
@@ -480,7 +496,7 @@ console.log("chat trying to add identifiers post load 2...");
                         }
                     });
                     if (mycallback) {
-                        mycallback({"payload": "success", "error": {}});
+                        mycallback({ "payload": "success", "error": {} });
                     }
                     break;
             }
@@ -502,12 +518,12 @@ console.log("chat trying to add identifiers post load 2...");
         if (app.network.peers.length > 0) {
 
             let recipient = app.network.peers[0].peer.publickey;
-	    for (let i = 0; i < app.network.peers.length; i++) {
-	      if (app.network.peers[i].hasService("chat")) {
-		recipient = app.network.peers[0].peer.publickey;
-		i = app.network.peers.length+1;
-	      }
-	    }
+            for (let i = 0; i < app.network.peers.length; i++) {
+                if (app.network.peers[i].hasService("chat")) {
+                    recipient = app.network.peers[0].peer.publickey;
+                    i = app.network.peers.length + 1;
+                }
+            }
             let relay_mod = app.modules.returnModule('Relay');
 
             tx = this.app.wallet.signAndEncryptTransaction(tx);
@@ -545,7 +561,7 @@ console.log("chat trying to add identifiers post load 2...");
             members.push(this.app.wallet.returnPublicKey());
         }
 
-console.log("MEMBERS ZERO: " + members[0]);
+        console.log("MEMBERS ZERO: " + members[0]);
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
@@ -612,7 +628,7 @@ console.log("MEMBERS ZERO: " + members[0]);
 
     formatMessage(msg) {
 
-        msg = linkifyHtml(msg, {target: {url: '_self'}});
+        msg = linkifyHtml(msg, { target: { url: '_self' } });
         msg = marked(msg);
         msg = sanitizeHtml(msg, {
             allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
@@ -630,7 +646,7 @@ console.log("MEMBERS ZERO: " + members[0]);
             allowedSchemesAppliedToAttributes: ['href', 'cite'],
             allowProtocolRelative: true,
             transformTags: {
-                'a': sanitizeHtml.simpleTransform('a', {target: '_blank'})
+                'a': sanitizeHtml.simpleTransform('a', { target: '_blank' })
             }
         });
         return sanitize(msg);
@@ -777,8 +793,8 @@ console.log("MEMBERS ZERO: " + members[0]);
 
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.options.chat.groups = this.groups.map(group => {
-            let {id, name, members, is_encrypted} = group;
-            return {id, name, members, is_encrypted};
+            let { id, name, members, is_encrypted } = group;
+            return { id, name, members, is_encrypted };
         });
         this.app.storage.saveOptions();
     }
@@ -801,10 +817,10 @@ console.log("MEMBERS ZERO: " + members[0]);
             if (group.id == undefined || group.id == null) {
                 return;
             }
-           group_id = group.id;
+            group_id = group.id;
         }
 
-        let community_chat_group = this.returnCommunityChat(); 
+        let community_chat_group = this.returnCommunityChat();
         if (community_chat_group.id == group_id && this.mute_community_chat == 1) {
             return;
         }

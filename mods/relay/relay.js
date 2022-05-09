@@ -23,7 +23,7 @@ class Relay extends ModTemplate {
 
     returnServices() {
         let services = [];
-        services.push({service: "relay"});
+        services.push({ service: "relay" });
         return services;
     }
 
@@ -47,6 +47,7 @@ class Relay extends ModTemplate {
         // transaction to end-user, containing msg.request / msg.data is
         //
         let tx = new saito.default.transaction();
+
         tx.transaction.from.push(new saito.default.slip(this.app.wallet.returnPublicKey()));
         for (let i = 0; i < recipients.length; i++) {
             tx.transaction.to.push(new saito.default.slip(recipients[i]));
@@ -72,7 +73,9 @@ class Relay extends ModTemplate {
                 //
                 // forward to peer
                 //
+
                 //console.log("relay peer message");
+
                 peer.sendRequest("relay peer message", tx.transaction);
 
             }
@@ -116,7 +119,7 @@ class Relay extends ModTemplate {
                 // if interior transaction is intended for me, I process regardless
                 //
                 if (tx.isTo(app.wallet.returnPublicKey())) {
-// && !tx.isFrom(app.wallet.returnPublicKey())) {
+                    // && !tx.isFrom(app.wallet.returnPublicKey())) {
 
                     //console.log("RELAY MOD PROCESSING RELAYED TX: " + JSON.stringify(txmsg.request));
                     app.modules.handlePeerRequest(txmsg, peer, mycallback);
@@ -143,7 +146,7 @@ class Relay extends ModTemplate {
 
                             app.network.peers[i].sendRequest("relay peer message", message.data, function () {
                                 if (mycallback != null) {
-                                    mycallback({err: "", success: 1});
+                                    mycallback({ err: "", success: 1 });
                                 }
                             });
                         }
@@ -151,7 +154,7 @@ class Relay extends ModTemplate {
                     }
                     if (peer_found == 0) {
                         if (mycallback != null) {
-                            mycallback({err: "ERROR 141423: peer not found in relay module", success: 0});
+                            mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
                         }
                     }
                 }
