@@ -355,7 +355,15 @@ body {
   cursor: pointer;
 }
 
+.easterneurope{
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: 0 0 10px 5px pink;
+}
 
+.westerneurope{
+  background: rgba(0, 0, 255, 0.2);
+  box-shadow: 0 0 10px 5px lightblue;
+}
 
 .us, .ussr {
   float: left;
