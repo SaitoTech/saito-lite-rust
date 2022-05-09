@@ -83,6 +83,8 @@ class UI_ELEMENTS extends AppTemplate {
 
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
+      this.header.render(app, this);
+      this.header.attachEvents(app, this);
     }
 
 

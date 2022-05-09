@@ -1,5 +1,6 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const AppTemplate = require("../../lib/templates/apptemplate");
 const PostMain = require("./lib/post-main/post-main");
 const PostSidebar = require("./lib/post-sidebar/post-sidebar");
 const PostCreate = require("./lib/post-overlay/post-create");
@@ -9,7 +10,7 @@ const datetimeRelative = require("../../lib/helpers/datetime_formatter");
 const Base58 = require("base-58");
 const JSON = require("json-bigint");
 
-class Post extends ModTemplate {
+class Post extends AppTemplate {
   constructor(app) {
     super(app);
 
@@ -98,8 +99,17 @@ class Post extends ModTemplate {
     return services;
   }
 
+  initialize(app){
+
+    const meta = [];
+    const stylesheets = ['/saito/style.css', '/saito/lib/templates/email-chat.css', '/post/style.css'];
+    const scripts = [];
+    super.initialize(app, meta, stylesheets, scripts);
+  }
+
   /* Does this still get called or only render???*/
   initializeHTML(app) {
+    super.initializeHTML(app)
     if (this.header == null) {
       this.header = new SaitoHeader(app, this);
     }

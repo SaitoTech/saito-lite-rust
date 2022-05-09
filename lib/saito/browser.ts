@@ -126,6 +126,7 @@ class Browser {
       this.protocol = myurl.protocol;
       const myurlpath = myurl.pathname.split("/");
       let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : "";
+      console.log('my path ', myurlpath);
       if (active_module == "") {
         active_module = "website";
       }

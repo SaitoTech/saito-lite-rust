@@ -10,8 +10,8 @@ class DevCenter extends ModTemplate {
 
     super(app);
 
-    this.name = "DevCenter";
-    this.appname = "Dev Center";
+    this.name = "Devcenter";
+    this.appname = "DevCenter";
     this.slug = "dev";
     this.description = "Control panel for Saito application development and software debugging";
     this.categories = "Core Admin Productivity Utilities";
