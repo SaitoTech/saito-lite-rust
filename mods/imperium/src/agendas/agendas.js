@@ -841,16 +841,11 @@
 	  //
 	  if (winning_choice === "against") {
 	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-console.log("uncon plyr: " + i);
-console.log(" how voted: " + imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]]);
-
 	      if (imperium_self.game.state.choices[imperium_self.game.state.how_voted_on_agenda[i]] == "for") {
                 if (imperium_self.game.player == (i+1)) {
-alert("clearing out my action cards!");
 		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
 		  imperium_self.game.deck[1].hand = [];
 		} else {
-alert("clearing out my action cards!");
 		  imperium_self.game.players_info[i].action_cards_in_hand = 0;
 		}
 	      }	      
@@ -869,8 +864,6 @@ alert("clearing out my action cards!");
 	onPass : function(imperium_self, winning_choice) {
 
 	  let io = imperium_self.returnInitiativeOrder();
-
-console.log("seeds of the empire: " + winning_choice);
 
 	  //
 	  // highest VP
@@ -1803,9 +1796,9 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
         onPass : function(imperium_self, winning_choice) {
           imperium_self.game.state.crown_of_emphidia = 1;
 
-          for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-            if (winning_choice === imperium_self.returnFaction((i+1))) {
-              imperium_self.game.state.crown_of_emphidia_player = i+1;
+          for (let ii = 0; ii < imperium_self.game.players_info.length; ii++) {
+            if (winning_choice === imperium_self.returnFaction((ii+1))) {
+              imperium_self.game.state.crown_of_emphidia_player = ii+1;
             }
           }
 
@@ -2073,9 +2066,9 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
 	    if (imperium_self.game.player == owner) {
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player to receive 1 infantry and this planet" ,
-              function(player) {
+              function(p) {
 	        let lower_vp_player = 0;
-		let this_player_vp = player.vp;
+		let this_player_vp = p.vp;
 	        for (let i = 0; i < imperium_self.game.players_info.length; i++) {
 		  if (imperium_self.game.players_info[i] < this_player_vp) { lower_vp_player = 1; }
 		}

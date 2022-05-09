@@ -78,11 +78,7 @@ class President extends GameTemplate {
     if (!this.browser_active) { return; }
     
     super.initializeHTML(app);
-    this.app.modules.respondTo("chat-manager").forEach(mod => {
-      mod.respondTo('chat-manager').render(app, this);
-      mod.respondTo('chat-manager').attachEvents(app, this);
-    });
-
+ 
     //
     // add card events -- text shown and callback run if there
     //

@@ -26,7 +26,14 @@ class Registry extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push({ service : "registry" , domain : "saito" });
+    //
+    // until other nodes are mirroring the DNS directory and capable of feeding out
+    // responses to inbound requests for DNS queries, only services that are actually
+    // registering domains should report they run the registry module.
+    //
+    //if (this.publickey == this.app.wallet.returnPublicKey()) {
+      services.push({ service : "registry" , domain : "saito" });
+    //}
     return services;
   }
   
@@ -114,9 +121,9 @@ class Registry extends ModTemplate {
 
       let registry_self = this.app.modules.returnModule("Registry");
 
-      console.log("REGISTERING TO WHICH MODULE: " + this.name);
-      console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-      console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+      //console.log("REGISTERING TO WHICH MODULE: " + this.name);
+      //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+      //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
       let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
       if (!newtx) {
@@ -147,8 +154,6 @@ class Registry extends ModTemplate {
 
   // DEPRECATED, USE tryRegisterIdentifier()
   registerIdentifier(identifier, domain="@saito") {
-
-console.log("SENDING TX TO ADDRESS: " + this.publickey);
 
     let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (newtx == null) {
@@ -276,10 +281,22 @@ console.log("SENDING TX TO ADDRESS: " + this.publickey);
             }
           } else {
 
-	    // if i am a server, i will notify lite-peers of 
-	    console.log("notifying lite-peers of registration!");
-  	    this.notifyPeers(app, tx);
+	    if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
+              //
+              // am email? for us? from the DNS registrar?
+              //
+              let identifier 	 = tx.msg.identifier;
+              let signed_message   = tx.msg.signed_message;
+              let sig		 = tx.msg.sig;
+ 
+	      // if i am server, save copy of record
+              registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
 
+	      // if i am a server, i will notify lite-peers of 
+	      console.log("notifying lite-peers of registration!");
+  	      this.notifyPeers(app, tx);
+
+	    }
 	  }
         }
       }

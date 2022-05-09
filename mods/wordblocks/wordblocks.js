@@ -26,6 +26,8 @@ class Wordblocks extends GameTemplate {
     this.tileHeight = 163;
     this.tileWidth = 148;
     this.letters = {};
+
+    this.tilesToHighlight = [];
     this.moves = [];
     this.firstmove = 1;
     this.last_played_word = [];
@@ -64,10 +66,6 @@ class Wordblocks extends GameTemplate {
     if (!this.browser_active) { return; }
 
     super.initializeHTML(app);
-
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(this.app, this);
-    });
 
     this.menu.addMenuOption({
       text: "Game",
@@ -218,7 +216,7 @@ class Wordblocks extends GameTemplate {
 
     let totals = new Array(this.game.opponents.length + 1); //Each players total...
     totals.fill(0);
-    console.log(this.game.opponents);
+    //console.log(this.game.opponents);
     for (let z = 0; z < this.game.words_played[0].length; z++) {
       html += `</tr><tr><td>${z + 1}</td>`;
       for (let i = 0; i < this.game.opponents.length + 1; i++) {
@@ -237,7 +235,7 @@ class Wordblocks extends GameTemplate {
       //words_scored_html += '</table>';
       //html += `<td>${words_scored_html}</td>`;
     }
-    console.log(totals);
+    //console.log(totals);
     html +=
       '</tr><tr><td colspan="10"><hr></td></tr><tfoot><tr><td>Totals</td>';
     for (let total of totals) {
@@ -287,7 +285,8 @@ class Wordblocks extends GameTemplate {
     }
 
 
-       if (this.wordlist == ""){
+    if (this.wordlist == ""){
+      console.log("Loading dictionary...");
       //TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
       try {
         var dictionary = this.game.options.dictionary;
@@ -305,6 +304,7 @@ class Wordblocks extends GameTemplate {
             this.wordlist = xhr.response;//;Array.from(JSON.parse(xhr.response));
             //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
             console.log("My word list is a :",typeof this.wordlist);
+            this.startQueue();
           }
         };
       } catch (err) {
@@ -420,8 +420,9 @@ class Wordblocks extends GameTemplate {
         <div class="subrack" id="subrack">
           <div class="rack-controls">
             <div id="shuffle" class="shuffle">Shuffle: <i class="fa fa-random"></i></div>
-            <div id="deletectrl" class="hidden deletectrl"><i class="fa fa-trash" aria-hidden="true" id="delete"></i><i id="canceldelete" class="far fa-window-close"></i></div>
+            <div id="deletectrl" class="hidden deletectrl">Discard: <i class="fa fa-trash" id="delete"></i><i id="canceldelete" class="hidden far fa-window-close"></i></div>
             <div>Remaining Tiles: ${this.game.deck[0].crypt.length}</div>
+            <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
         </div>
       </div
@@ -431,6 +432,8 @@ class Wordblocks extends GameTemplate {
       this.limitedEvents(); //Baseline functionality
     } catch (err) {
       console.error(err);
+      console.log("HAND: "+JSON.stringify(this.game.deck[0].hand));
+      console.log("CARDS: "+JSON.stringify(this.game.deck[0].cards));
     }
   }
 
@@ -531,6 +534,10 @@ class Wordblocks extends GameTemplate {
       document.querySelector("#tiles .highlighttile");
 
     try {
+      //Show delete and skip controls
+      $("#deletectrl").removeClass("hidden");
+      $("#skipturn").removeClass("hidden");
+
       /*
       Define a few helper functions because there are multiple ways to get to the same code
       */
@@ -538,7 +545,7 @@ class Wordblocks extends GameTemplate {
         //Unselect all double-clicked tiles
         $(".tiles .tile").removeClass("todelete");
         $("#tiles").sortable("enable");
-        $("#deletectrl").addClass("hidden");
+        $("#canceldelete").addClass("hidden");
         $("#delete").off();
         $("#canceldelete").off();
         wordblocks_self.addEventsToBoard();
@@ -553,7 +560,7 @@ class Wordblocks extends GameTemplate {
         $("#helper").css({ top: e.clientY - 25, left: e.clientX - 25 });
 
         $("#status").on("click", function () {
-          console.log("*** Click on rack ***");
+          //console.log("*** Click on rack ***");
           returnToRack(tile);
         });
       };
@@ -567,7 +574,7 @@ class Wordblocks extends GameTemplate {
         let slot = tile.parentElement.id;
         $("#tiles").append(tile);
         $(tile).removeClass("tempplacement");
-        console.log("slot: " + slot);
+        //console.log("slot: " + slot);
         deselectTile();
         if (slot != "tiles") {
           wordblocks_self.game.board[slot].letter = "_";
@@ -582,15 +589,15 @@ class Wordblocks extends GameTemplate {
       }
 
       const checkBoard = function () {
-        $(".tile-placement-controls").remove(); //Removes previous addition
+        $(".tile-submit-controls").remove(); //Removes previous addition
         //Popup to commit word
         //Get the x,y, orientation and word from tiles
         let [word, orientation, y, x] = wordblocks_self.readWordFromBoard();
         if (word) {
 
           let html = `
-            <div class="tile-placement-controls">
-              <div class="playable ${(wordblocks_self.checkWord(word) ? "valid_word" : "invalid_word")}">${word}</div>
+            <div class="tile-submit-controls">
+              <div class="playable ${(wordblocks_self.checkWord(word)) ? "valid_word" : "invalid_word"}">${word}</div>
               <div class="action" id="submit"><i class="fa fa-paper-plane"></i> Submit</div>
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
             </div>`;
@@ -608,11 +615,11 @@ class Wordblocks extends GameTemplate {
           $(".action").off();
           $(".action").on("click", function () {
             $(".action").off();
-            $(".tile-placement-controls").remove();
+            $(".tile-submit-controls").remove();
             //Remove the temporary tiles
             wordblocks_self.clearBoard();
             if ($(this).attr("id") == "submit") {
-              console.log(`Submitting ${word}, ${orientation} at column ${x}, row ${y}`);
+              //console.log(`Submitting ${word}, ${orientation} at column ${x}, row ${y}`);
               wordblocks_self.tryPlayingWord(x, y, orientation, word);
             } else { //reload events
               wordblocks_self.addEventsToBoard();
@@ -620,6 +627,13 @@ class Wordblocks extends GameTemplate {
           });
         }
       };
+
+
+      $("#skipturn").off();
+      $("#skipturn").on("click",function(){
+        wordblocks_self.addMove("turn\t" + wordblocks_self.game.player + "\t");
+        wordblocks_self.endTurn();
+      });
 
       //Float helper tile with mouse over board
       $(document).on("mousemove", function (e) {
@@ -631,7 +645,6 @@ class Wordblocks extends GameTemplate {
       $(".slot").off(); //Reset clicking on board
 
       $("#rack .tile").off();
-
       //Single click to select a tile and enter interactive placement mode
       $("#rack .tile").on("click", function (e) {
         if (!$(this).hasClass("noclick")) {
@@ -641,7 +654,7 @@ class Wordblocks extends GameTemplate {
           } else {
             deselectTile();
             if (!$(this).hasClass("highlighttile")) {
-              console.log("Selection: " + this);
+              //console.log("Selection: " + this);
               selectTile(this, e); //Helper function to create floating tile
             }
           }
@@ -656,10 +669,40 @@ class Wordblocks extends GameTemplate {
       });
 
       //Discard Tiles -- Method 2
-      $("#rack .tile").on("dblclick", function () {
+      $("#delete").off();
+      $("#delete").on("click", function () {
+        wordblocks_self.clearBoard();
+        //Enter interactive discard mode.
+        $(".hud-status-update-message").text(
+          "Select the tiles you want to discard and click the trash icon to confirm (this will count as your turn)."
+        );
+
+        $("#tiles").sortable("disable");
+        $(".tile").off("click"); //block clicking
+        $("#canceldelete").removeClass("hidden");
+        //Single click to select for deletion
+        $("#rack .tile").on("click", function (e) {
+          this.classList.toggle("todelete");
+        });
+
+        $("#canceldelete").off();
+        $("#canceldelete").on("click", revertToPlay);
+
+        $("#delete").off();
+        $("#delete").on("click", function () {
+          let deletedTiles = "";
+          let tileRack = document.querySelectorAll(".tiles .tile");
+          for (let i = 0; i < tileRack.length; i++) {
+            if (tileRack[i].classList.contains("todelete"))
+              deletedTiles += tileRack[i].textContent;
+          }    
+          wordblocks_self.discardAndDrawTiles(deletedTiles);
+        });
+      });
+
+      /*$("#rack .tile").on("dblclick", function () {
         //Toggle deleted on/off with each double click
         this.classList.toggle("todelete");
-
         //Do we have tiles selected for deletion?
         let deletedTiles = "";
         let tileRack = document.querySelectorAll(".tiles .tile");
@@ -671,12 +714,12 @@ class Wordblocks extends GameTemplate {
         //If tiles selected for deletion enter deletemode
         if (deletedTiles.length > 0) {
           $(".hud-status-update-message").text(
-            "Select the tiles you want to trash and click the trash icon to confirm (this will count as your turn)."
+            "Select the tiles you want to discard and click the trash icon to confirm (this will count as your turn)."
           );
 
           $("#tiles").sortable("disable");
           $(".tile").off("click"); //block clicking
-          $("#deletectrl").removeClass("hidden");
+          $("#canceldelete").removeClass("hidden");
           $("#delete").off();
           $("#delete").on("click", function () {
             wordblocks_self.discardAndDrawTiles(deletedTiles);
@@ -687,7 +730,7 @@ class Wordblocks extends GameTemplate {
           //Exit deletemode
           revertToPlay();
         }
-      });
+      });*/
 
       /*
       Default/Original mode
@@ -724,27 +767,11 @@ class Wordblocks extends GameTemplate {
           let x = tmpx[1];
           let word = "";
 
-          let offsetX = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 25
-            : 55;
-          let offsetY = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 25
-            : 55;
+          let offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
+          let offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
 
-          let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 135
-            : 155;
-          let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(
-            navigator.userAgent
-          )
-            ? 135
-            : 155;
+          let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
+          let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
 
           let left = $(this).offset().left + offsetX;
           let top = $(this).offset().top + offsetY;
@@ -805,7 +832,7 @@ class Wordblocks extends GameTemplate {
 
             //Process Word
             if (word) {
-              console.log(`Submitting ${word}, ${orientation} at col ${x}, row ${y}`);
+              //console.log(`Submitting ${word}, ${orientation} at col ${x}, row ${y}`);
               wordblocks_self.tryPlayingWord(x, y, orientation, word);
             }
           });
@@ -837,7 +864,7 @@ class Wordblocks extends GameTemplate {
           if (clkTarget && $(clkTarget).hasClass("tempplacement")) {
             returnToRack(clkTarget/*, $(this).attr("id")*/);
           } else {
-            console.log(JSON.parse(JSON.stringify(wordblocks_self.game.board)));
+            //console.log(JSON.parse(JSON.stringify(wordblocks_self.game.board)));
           }
         });
         //Click rack when tile is selected to return it to rack
@@ -854,14 +881,14 @@ class Wordblocks extends GameTemplate {
             if (conflict.classList.contains("tempplacement")) {
               if (!tile) {
                 //If we don't have a currently selected tile
-                console.log(`Select new at (${$(this).attr("id")}):`, tile, conflict);
+                //console.log(`Select new at (${$(this).attr("id")}):`, tile, conflict);
                 selectTile(conflict, e);
               } else if (conflict.classList.contains("highlighttile")) {
                 //Toggle selection of tile
-                console.log(`Deselect (${$(this).attr("id")}):`, tile, conflict);
+                //console.log(`Deselect (${$(this).attr("id")}):`, tile, conflict);
                 deselectTile();
               } else {
-                console.log("Swap selection:", tile, conflict);
+                //console.log("Swap selection:", tile, conflict);
                 deselectTile();
                 selectTile(conflict, e);
               }
@@ -904,6 +931,22 @@ class Wordblocks extends GameTemplate {
       $(".tosstiles").on("click", async function () {
         tiles = await sprompt("Which tiles do you want to discard?");
         if (tiles) {
+          let tmphand = JSON.parse(JSON.stringify(wordblocks_self.game.deck[0].hand));
+          for (let i = 0; i < tiles.length; i++) {
+            let letter = tiles[i].toUpperCase();
+            let letter_found = 0;
+            for (let k = 0; k < tmphand.length; k++) {
+              if (wordblocks_self.game.deck[0].cards[tmphand[k]].name == letter) {
+                tmphand.splice(k, 1);
+                letter_found = 1;
+                k = tmphand.length + 1;
+              }
+            }
+            if (letter_found == 0) {
+              salert("INVALID: letter not in hand: " + letter);
+              return false;
+            }
+          }
           wordblocks_self.discardAndDrawTiles(tiles);
         }
       });
@@ -944,7 +987,7 @@ class Wordblocks extends GameTemplate {
       let [r, c] = playedTiles[0].parentElement.id.split("_");
       minx = parseInt(r);
       miny = parseInt(c);
-      console.log(`1 tile at ${r}_${c}`);
+      //console.log(`1 tile at ${r}_${c}`);
       ({ word, miny, minx } = this.expandWord(r, c, "horizontal"));
       if (word.length > 1) {
         orientation = "horizontal";
@@ -994,7 +1037,7 @@ class Wordblocks extends GameTemplate {
         fail = true;
       }
       if (fail) return ["", "invalid", miny, minx];
-      console.log(`Expanding from temporary tiles (${orientation})`);
+      //console.log(`Expanding from temporary tiles (${orientation})`);
       ({ word, miny, minx } = this.expandWord(minx, miny, orientation));
       return [word, orientation, miny, minx];
     }
@@ -1006,7 +1049,7 @@ class Wordblocks extends GameTemplate {
 */
   tryPlayingWord(x, y, orientation, word) {
     word = word.toUpperCase();
-    console.log(`Y:${y}_X:${x},  ${orientation}, ${word}`);
+    //console.log(`Y:${y}_X:${x},  ${orientation}, ${word}`);
     // reset board
     $(".tile-placement-controls").html("");
     //$(".status").html("Processing your turn.");
@@ -1162,7 +1205,7 @@ class Wordblocks extends GameTemplate {
     } else {
       //Check to make sure newly played word touches another word
       // let touchesWord = 0;
-      let xStart = Math.max(1, x - 1);
+      /*let xStart = Math.max(1, x - 1);
       let yStart = Math.max(1, y - 1);
       let xEnd, yEnd;
       if (orientation == "horizontal") {
@@ -1183,28 +1226,25 @@ class Wordblocks extends GameTemplate {
       //     }
       //     console.log(touchesWord)
       //   }
-
+      */
       const touchesWord = []
       if (orientation == "horizontal") {
-        yStart = parseInt(yStart) + 1;
-        xStart = parseInt(xStart) + 1;
-        let allBoardSlots = []
-        for (let i = xStart; i < xEnd - 1; i++) {
-          let left = `${yStart}_${i - 1}`;
-          let top = `${yStart - 1}_${i}`;
-          let right = `${yStart}_${i + 1}`;
-          let bottom = `${yStart + 1}_${i}`;
-          let neighbors = [left, top, right, bottom]
-          allBoardSlots.push(neighbors)
+        let left = `${y}_${x - 1}`;
+        let right = `${y}_${x + word.length }`;
+        let allBoardSlots = [[left, right]];
+
+        for (let i = x; i < x + word.length; i++) {
+          let top = `${y - 1}_${i}`;
+          let bottom = `${y + 1}_${i}`;
+          let neighbors = [top, bottom];
+          allBoardSlots.push(neighbors);
         }
-        console.log(allBoardSlots)
+        //console.log(allBoardSlots);
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((slot) => {
-            console.log(slot)
-            if (this.game.board[slot].fresh == 0) {
-
-              touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] })
+            if (this.game.board[slot] && this.game.board[slot].fresh == 0) {
+              touchesWord.push({ touchesWord: true, slot, letter: this.game.board[slot] });
             }
           })
         })
@@ -1212,33 +1252,30 @@ class Wordblocks extends GameTemplate {
       }
 
       if (orientation == "vertical") {
-        yStart = parseInt(yStart) + 1;
-        xStart = parseInt(xStart) + 1;
-        let allBoardSlots = []
-        for (let i = yStart; i < yEnd - 1; i++) {
-          let left = `${i}_${xStart - 1}`;
-          let top = `${i - 1}_${xStart}`;
-          let right = `${i}_${xStart + 1}`;
-          let bottom = `${i + 1}_${xStart}`;
-          let neighbors = [left, top, right, bottom]
-          allBoardSlots.push(neighbors)
+        let top = `${y - 1}_${x}`;
+        let bottom = `${y + word.length}_${x}`;
+        let allBoardSlots = [[top, bottom]];
+        
+        for (let i = y; i < y + word.length; i++) {
+          let left = `${i}_${x - 1}`;
+          let right = `${i}_${x + 1}`;
+          let neighbors = [left, right];
+          allBoardSlots.push(neighbors);
         }
-        console.log(allBoardSlots)
+        //console.log(allBoardSlots);
 
         allBoardSlots.forEach((neighbor) => {
           neighbor.forEach((plane) => {
-            console.log(plane)
-            if (this.game.board[plane].fresh == 0) {
-
-              touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] })
+            if (this.game.board[plane] && this.game.board[plane].fresh == 0) {
+              touchesWord.push({ touchesWord: true, plane, letter: this.game.board[plane] });
             }
           })
         })
-        console.log(touchesWord)
       }
 
       if (!touchesWord.find(item => item.touchesWord == true)) {
         salert("Word does not cross or touch an existing word.");
+        console.log(touchesWord);
         return false;
       }
     }
@@ -1317,7 +1354,7 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         this.game.board[boardslot].fresh = 0;
       }
       divname = "#" + boardslot;
@@ -1342,7 +1379,7 @@ class Wordblocks extends GameTemplate {
         boardslot = y + i + "_" + x;
       }
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         this.removeTilesFromHand(word[i]);
       }
     }
@@ -1756,33 +1793,13 @@ class Wordblocks extends GameTemplate {
     return {};
   }
 
-  letDictionaryLoad(){
-    let wordblocks_self = this;
-    return new Promise((resolve, reject) => {
-                let timer = setInterval(() => {
-                  console.log("loading dictionary...");
-                  if (wordblocks_self.loadingDictionary === false){
-                    console.log("dictionary loaded!");
-                    clearInterval(timer);
-                    resolve(1);
-                  }
-                },500);
-                 });
+  
+  checkWord(word) {
+    if (word.length == 0){
+      return false;
     }
-
-  async checkWord(word) {
-    if (this.loadingDictionary){
-     await this.letDictionaryLoad(); 
-    }
-    if (word.length >= 1 && this.wordlist.length > 0) {
-      if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
-        return false;
-      } else {
-        return true;
-      }
-    } 
-    console.error("Word length or dictionary issue -- " + word,this.wordlist);
-    return false;
+    return this.wordlist.indexOf(word.toLowerCase()) >= 0;
+     
   }
 
   returnBonus(pos) {
@@ -1964,7 +1981,7 @@ class Wordblocks extends GameTemplate {
       boardslot = boardSlotTemplate.replace("#", i);
       let letter_bonus = 1;
 
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         let tmpb = this.returnBonus(boardslot);
         switch (
         tmpb //Word_bonuses can be combined...maybe
@@ -1989,6 +2006,16 @@ class Wordblocks extends GameTemplate {
 
       let thisletter = this.game.board[boardslot].letter;
       //console.log(boardslot,thisletter);
+      
+      /*
+      So we just save all the tiles in the play in a queue to animate after the fact
+      Because it may be confusing if multiple words are being played at once and they
+      all start flashing at once
+      However, we do need a way to also queue the numbers to display on the screen 
+      */
+      this.tilesToHighlight.push(`#${boardslot} .tile`);
+
+
       thisword += thisletter;
       score += this.letters[thisletter].score * letter_bonus;
       if (letter_bonus > 1) {
@@ -2017,7 +2044,7 @@ class Wordblocks extends GameTemplate {
     if (word_bonus > 1) {
       html = "(" + html + ") x " + word_bonus;
     }
-    console.log("word:", thisword, "score:", score);
+    //console.log("word:", thisword, "score:", score);
     return { word: thisword, score: score, math: html };
   }
 
@@ -2033,12 +2060,12 @@ class Wordblocks extends GameTemplate {
     const boardSlotTemplate =
       orientation == "horizontal" ? crossAxis + "_#" : "#_" + crossAxis;
 
-    console.log(mainAxis, crossAxis, boardSlotTemplate);
+    //console.log(mainAxis, crossAxis, boardSlotTemplate);
     //
     // find the start and end of the word
     //
     let wordBoundaries = this.getWordScope(mainAxis, boardSlotTemplate);
-
+    this.tilesToHighlight = []; // reset to empty array
     //Score main-axis word
     let results = this.scoreWord(
       wordBoundaries.start,
@@ -2046,7 +2073,7 @@ class Wordblocks extends GameTemplate {
       boardSlotTemplate
     );
     if (results == -1) return -1;
-    console.log(orientation, wordBoundaries, results);
+    //console.log(orientation, wordBoundaries, results);
     let play = new Array(results);
     let totalscore = results.score;
 
@@ -2056,7 +2083,7 @@ class Wordblocks extends GameTemplate {
       boardslot = boardSlotTemplate.replace("#", i);
 
       //console.log(boardslot);
-      if (this.game.board[boardslot].fresh == 1) {
+      if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
         //...Is it newly placed...?
         let altTemplate = boardSlotTemplate
           .replace(crossAxis, "@")
@@ -2067,7 +2094,7 @@ class Wordblocks extends GameTemplate {
         if (crossWord.start != crossWord.end) {
           //Only score word if more than 1 letter
           //Make cross-axis variable
-          console.log(crossAxis, altTemplate, crossWord);
+          //console.log(crossAxis, altTemplate, crossWord);
           results = this.scoreWord(crossWord.start, crossWord.end, altTemplate);
           if (results == -1) return -1;
 
@@ -2078,7 +2105,7 @@ class Wordblocks extends GameTemplate {
     }
 
     this.firstmove = 0; //We have an acceptable move, so game has commenced. Repeat assignment simpler than adding conditional
-    console.log(play);
+    //console.log(play);
 
     this.last_played_word[player - 1] = {
       word: play[0].word,
@@ -2102,7 +2129,7 @@ class Wordblocks extends GameTemplate {
       boardslot = boardSlotTemplate.replace("#", i);
       fullword += this.game.board[boardslot].letter; //Reading letter
     }
-    console.log(`Found ${fullword} at row ${row}, col ${col} (${orientation})`, wordBoundaries);
+    //console.log(`Found ${fullword} at row ${row}, col ${col} (${orientation})`, wordBoundaries);
     let newx, newy;
     if (orientation == "horizontal") {
       newy = row;
@@ -2111,7 +2138,7 @@ class Wordblocks extends GameTemplate {
       newy = wordBoundaries.start;
       newx = col;
     }
-    console.log(`${orientation}, new row: ${newy}, new col: ${newx}`);
+    //console.log(`${orientation}, new row: ${newy}, new col: ${newx}`);
     return {
       word: fullword,
       minx: newx,
@@ -2125,9 +2152,15 @@ class Wordblocks extends GameTemplate {
   handleGameLoop(msg = null) {
     let wordblocks_self = this;
 
+    if (this.loadingDictionary){
+      return 0;
+    }
+
     ///////////
     // QUEUE // Possibilities: gameover, endgame, place, turn
     ///////////
+
+    console.log(JSON.stringify(this.game.queue));
 
     if (this.game.queue.length > 0) {
       //
@@ -2224,6 +2257,7 @@ class Wordblocks extends GameTemplate {
         } else {
           score = this.getLastMove(player).score;
         }
+        this.animatePlay();
 
         //Update Specific Playerbox
         let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
@@ -2281,18 +2315,22 @@ class Wordblocks extends GameTemplate {
 
         let player = mv[1];
         let discardedTiles = mv[2];
-
+        let msg = (discardedTiles.length > 0) ? "discarded some tiles" : "passed";
         if (player != this.game.player) {
           //string - int comparison
-          this.updateLog(`Player ${player} discarded some tiles.`);
+          this.updateLog(`Player ${player} ${msg}.`);
         } else {
-          this.updateLog(`You discarded some tiles.`);
+          this.updateLog(`You ${msg}.`);
         }
 
         //Update Specific Playerbox
-        let html = `<div class="lastmove" id="lastmove_${player}"><span>Discarded:</span><span class="discardedtiles">[${discardedTiles
-          .split("")
-          .join()}]</span><span class="wordscore">0</span></div>`;
+        let html = `<div class="lastmove" id="lastmove_${player}">`;
+        if (discardedTiles.length > 0 ){
+          html += `<span>Discarded:</span><span class="discardedtiles">[${discardedTiles.split("").join()}]</span>`;
+        }else{
+          html += `<span>Passed without playing</span>`;
+        }
+        html += `<span class="wordscore">0</span></div>`;
         this.playerbox.refreshLog(html, player);
 
         //Code to keep the discard and redraws in the game log history
@@ -2331,6 +2369,8 @@ class Wordblocks extends GameTemplate {
       if (shd_continue == 0) {
         return 0;
       }
+    }else{
+      console.log("No moves in queue");
     }
 
     return 1;
@@ -2401,6 +2441,18 @@ class Wordblocks extends GameTemplate {
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
           `;
   }
+
+  async animatePlay(){
+    for (let tile of this.tilesToHighlight){
+      $(tile).css("color","white").css("background","black").delay(250)
+      .queue(function () {
+        $(this).css("color", "").css("background", "").dequeue();
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+  } 
+
 }
 
 module.exports = Wordblocks;

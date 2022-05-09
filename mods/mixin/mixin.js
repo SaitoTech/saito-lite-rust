@@ -128,7 +128,7 @@ class Mixin extends ModTemplate {
       if (mixin_self.mixin.user_id !== "" || (pc !== "SAITO" && pc !== "")) {
         this.checkBalance(crypto_module.asset_id, function(res) {});
         this.fetchAddresses(crypto_module.asset_id, function(res) {});
-        this.fetchDeposits(crypto_module.asset_id, function(res) {});
+        this.fetchDeposits(crypto_module.asset_id, crypto_module.ticker, function(res) {});
       }
     });
 
@@ -157,7 +157,7 @@ class Mixin extends ModTemplate {
   //
   // https://developers.mixin.one/docs/api/transfer/snapshots
   //
-  fetchDeposits(asset_id, callback=null) {
+  fetchDeposits(asset_id, ticker, callback=null) {
 
     const appId = this.mixin.user_id;
     const sessionId = this.mixin.session_id;
@@ -195,15 +195,21 @@ console.log(res.data);
 	    "opponent_id":"a465ffdb-4441-4cb9-8b45-00cf79dfbc46",
 	    "data":       "Transfer!"
             *********************************************/
-	    let contains_transfer = 0;
-	    for (let z = 0; z < this.deposits.length; z++) {
-	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
-	        contains_transfer = 1;
-	      }
+      	    let contains_transfer = 0;
+      	    for (let z = 0; z < this.deposits.length; z++) {
+      	      if (d.data[i].trace_id === this.deposits[z].trace_id) {
+      	        contains_transfer = 1;
+      	      }
             }
             if (contains_transfer === 0) {
-	      this.deposits.push(d.data[i]);
-	    }
+      	      this.deposits.push(d.data[i]);
+
+              ticker = (typeof ticker == 'undefined') ? '' : ticker;
+
+              if (d.data[i].closing_balance > d.data[i].opening_balance) {
+                siteMessage('Recieved new funds in '+ ticker +' wallet', 3000);
+              }
+      	    }
           }
           if (callback) { callback(res.data); }
         }
