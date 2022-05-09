@@ -131,15 +131,16 @@
 
 
 
+
     this.menu.addMenuOption({
       text : "Cards",
-      id : "game-cardlist",
-      class : "game-cardlist",
+      id : "game-cards",
+      class : "game-cards",
       callback : function(app, game_mod) {
-        game_mod.menu.showSubMenu("game-cardlist");
+        game_mod.menu.showSubMenu("game-cards");
       }
     });
-    this.menu.addSubMenuOption("game-cardlist", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Strategy",
       id : "game-strategy-cardlist",
       class : "game-strategy-cardlist",
@@ -148,73 +149,20 @@
 	game_mod.handleStrategyMenuItem();
       }
     });
-    this.menu.addSubMenuOption("game-cardlist", {
-      text : "Action",
-      id : "game-action-cardlist",
-      class : "game-action-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
-      }
-    });
-    this.menu.addSubMenuOption("game-cardlist", {
-      text : "Tech",
-      id : "game-tech-cardlist",
-      class : "game-tech-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-cardlist", {
-      text : "Units",
-      id : "game-units-cardlist",
-      class : "game-units-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
-      }
-    });
-    this.menu.addSubMenuOption("game-cardlist", {
-      text : "Upgrades",
-      id : "game-unit-cardlist",
-      class : "game-unit-cardlist",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	let tech = game_mod.returnTechnology();
-        let t2 = [];
-        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
-        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
-      }
-    });
-    this.menu.addSubMenuOption("game-cardlist", {
-      text : "Tech Tree",
-      id : "game-tech-dependencies",
-      class : "game-tech-dependencies",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.handleTechMenuItem();
-      }
-    });
-    this.menu.addSubMenuOption("game-cardlist", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Agendas",
       id : "game-agenda-cardlist",
       class : "game-agenda-cardlist",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
-
 	let ac = [];
 	for (let i = 0; i < game_mod.game.state.agendas.length; i++) {
 	  ac.push(game_mod.agenda_cards[game_mod.game.state.agendas[i]]);
         }
-
         game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, ac, { columns : 3 , cardlistWidth : "90vw" , cardlistHeight : "90vh" });
       }
     });
-    this.menu.addSubMenuOption("game-cardlist", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Laws",
       id : "game-laws-cardlist",
       class : "game-laws-cardlist",
@@ -227,8 +175,7 @@
         game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnLawsOverlay());
       }
     });
-
-    this.menu.addSubMenuOption("game-cardlist", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Objectives",
       id : "game-objectives-cardlist",
       class : "game-objectives-cardlist",
@@ -236,6 +183,72 @@
         game_mod.menu.hideSubMenus();
 	game_mod.handleObjectivesMenuItem();
         //game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.stage_i_objectives, { cardlistHeight: "90vh" , cardlistWidth : "90vw" });
+      }
+    });
+
+
+
+
+
+
+
+    this.menu.addMenuOption({
+      text : "Reference",
+      id : "game-reference",
+      class : "game-reference",
+      callback : function(app, game_mod) {
+        game_mod.menu.showSubMenu("game-reference");
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Action",
+      id : "game-action-cardlist",
+      class : "game-action-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, game_mod.returnPlayerActionCards(), {});
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Tech",
+      id : "game-tech-cardlist",
+      class : "game-tech-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	let tech = game_mod.returnTechnology();
+        let t2 = [];
+        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit != 1) { t2.push(tech[x]); } }
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Units",
+      id : "game-units-cardlist",
+      class : "game-units-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.overlay.show(game_mod.app, game_mod, game_mod.returnUnitsOverlay());
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Upgrades",
+      id : "game-unit-cardlist",
+      class : "game-unit-cardlist",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	let tech = game_mod.returnTechnology();
+        let t2 = [];
+        for (let x in tech) { if (tech[x].type == "normal" && tech[x].unit == 1) { t2.push(tech[x]); } }
+        game_mod.overlay.showCardSelectionOverlay(game_mod.app, game_mod, t2, { backgroundImage : "/imperium/img/starscape-background4.jpg" , padding : "50px"});
+      }
+    });
+    this.menu.addSubMenuOption("game-reference", {
+      text : "Tech Tree",
+      id : "game-tech-dependencies",
+      class : "game-tech-dependencies",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleTechMenuItem();
       }
     });
 
