@@ -1,6 +1,6 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-// const StunUI = require('./lib/stun-ui');
+const EmailUI = require('./lib/email-ui');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
@@ -23,13 +23,43 @@ class Video extends ModTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.videoChat = new VideoChat(app, mod);
+
+        this.overlay = new SaitoOverlay(app, this);
+
     }
 
+
+
+    respondTo(type) {
+        if (type == 'email-appspace') {
+            let obj = {};
+            obj.render = this.renderEmail;
+            obj.attachEvents = this.attachEmailEvents;
+            return obj;
+        }
+        return null;
+    }
+
+
+    renderEmail(app, mod) {
+        EmailUI.render(app, mod);
+    }
+
+    attachEmailEvents(app, mod) {
+        EmailUI.attachEvents(app, mod);
+    }
+
+
+
+
     onConfirmation(blk, tx, conf, app) {
+
         let txmsg = tx.returnMessage();
 
         if (conf === 0) {
+
             if (txmsg.module === 'Video') {
+
                 console.log("video testing ...");
                 let video_self = app.modules.returnModule("Video");
                 let stun_mod = app.modules.returnModule('Stun');
@@ -88,6 +118,7 @@ class Video extends ModTemplate {
             }
         }
     }
+
 
     handlePeerRequest(app, req, peer, mycallback) {
         if (req.request == null) {
@@ -313,7 +344,6 @@ class Video extends ModTemplate {
         createPeerConnection();
 
     }
-
 
 
     createVideoInvite() {
