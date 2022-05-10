@@ -51,6 +51,8 @@ module.exports = MixinAppspace = {
           document.querySelector(".history_container").innerHTML += html;
           }
         });
+
+        document.getElementById('activity_button').innerHTML = 'load account history';
       }
     } catch (err) {}
 
@@ -89,6 +91,7 @@ module.exports = MixinAppspace = {
 	}
       }
     }
+
     document.querySelector(".balances_deposit").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);
@@ -99,13 +102,28 @@ module.exports = MixinAppspace = {
       overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
       });
 
+      document.querySelector("#copy-deposit-add").onclick = (e) => {
+        let public_key = document.querySelector(".public-address").value;
+        
+        navigator.clipboard.writeText(public_key);
+        document.querySelector("#copy-deposit-add").classList.add("copy-check");
+
+        setTimeout(() => {
+          document.querySelector("#copy-deposit-add").classList.remove("copy-check");            
+        }, 400);
+      };
+
       const QRCode = require('../../../../lib/helpers/qrcode');
       return new QRCode(
-        document.getElementById("deposit_qrcode"),
+        document.getElementById("qrcode"),
         address
       );
 
     }
+
+
+
+
   },
 
 }
