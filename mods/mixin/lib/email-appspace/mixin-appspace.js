@@ -67,29 +67,34 @@ module.exports = MixinAppspace = {
       overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
 
       document.querySelector(".withdraw_submit").onclick = (e) => {
+      	let amount = document.querySelector(".withdraw_amount").value;
+      	let address = document.querySelector(".withdraw_address").value;
 
-	let amount = document.querySelector(".withdraw_amount").value;
-	let address = document.querySelector(".withdraw_address").value;
-
-	let c = confirm(`Check fee for withdrawing ${amount} to ${address}?`);
- 	if (c) {
-	  document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Checking withdrawl fee. Please be patient...";
-	  mod.checkWithdrawalFee(asset_id, function(fee) {
-	    document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Withdrawal Fee: "+fee;
-	    let c2 = confirm(`Withdrawal fee is ${fee}. Please confirm withdrawal`);
-	    if (c2) {
-	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
-	      alert("Processing Withdrawal!");
-	      let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), function() {
-                mod.overlay.hide();
-              }, ticker);
-      	      overlay.hide();
-	    }
-	  });
-	} else {
-	  alert("withdrawal cancelled");
-	}
+      	let c = confirm(`Check fee for withdrawing ${amount} to ${address}?`);
+       	if (c) {
+      	  document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Checking withdrawl fee. Please be patient...";
+      	  mod.checkWithdrawalFee(asset_id, function(fee) {
+      	    document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Withdrawal Fee: "+fee;
+      	    let c2 = confirm(`Withdrawal fee is ${fee}. Please confirm withdrawal`);
+      	    if (c2) {
+      	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
+      	      alert("Processing Withdrawal!");
+      	      let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), function() {
+                      mod.overlay.hide();
+                    }, ticker);
+            	      overlay.hide();
+      	    }
+      	  });
+      	} else {
+      	  alert("withdrawal cancelled");
+      	}
       }
+
+      document.querySelector("#max-amount-btn").onclick = (e) => {
+        var amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+        document.querySelector("#withdraw_amount").value = amount_avl;
+      }
+
     }
 
     document.querySelector(".balances_deposit").onclick = (e) => {
