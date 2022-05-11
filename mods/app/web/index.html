@@ -70,21 +70,19 @@
   </head>
   <body>
     <header class="saito-header">
-      <img class="logo" alt="Logo" src="/saito/logo.svg" />
-  
+      <img class="logo" alt="Logo" src="/saito/img/logo.svg" />
+
       <nav>
-        <ul class="list">
-          <li class="list-item"><a href="#" class="link">Arcade</a></li>
-          <li class="list-item"><a href="#" class="link">Dev Center</a></li>
-          <li class="list-item"><a href="#" class="link">Blog</a></li>
+        <ul class="list d-none d-lg-flex">
+
           <li class="list-item big-menu-container">
-            <div class="link" id="big-menu-toggle" href="#">Shortcodes</div>
+            <div class="link shortcodes" id="big-menu-toggle" href="#">Shortcodes</div>
             <div class="big-menu">
               <a href="#" data-url="?display=buttons" class="big-menu-link" href="">Buttons</a>
-              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Grids</a>
-              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Forms</a>
-              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Selects</a>
-              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Cards</a>
+              <a href="#" data-url="?display=grid"  class="big-menu-link" href="">Grids</a>
+              <a href="#" data-url="?display=modals" class="big-menu-link" href="">Modals</a>
+              <a href="#" data-url="?display=cards" class="big-menu-link" href="">Cards</a>
+
             </div>
           </li>
         </ul>
@@ -94,10 +92,64 @@
             <span class="slider round"></span>
           </label>
         </div>
-        <div id="menuToggle">
-          <span></span>
-          <span></span>
-          <span></span>
+        <div class="relative">
+          <div id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div id="hamburger-contents">
+            <div class="saito-profile">
+              <img src="/saito/img/account.svg" />
+              <div class="saito-profile-info">
+                <p>wqhjM8kvwww...</p>
+                <div>0.0000 SAITO</div>
+              </div>
+            </div>
+
+            <div class="saito-menu-section">
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-plus"></i>
+                <p>Create Game</p>
+              </div>
+            </div>
+            <div class="saito-menu-section">
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+                <p>Reset/Nuke Wallet</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <p>Settings</p>
+                
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>Scan</p>
+              </div>
+            </div>
+            <div class="saito-menu-section">
+            
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-chess-board"></i>
+                <p class="breadcrumb-link" data-url="?display=buttons">Buttons</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rss"></i>
+                <p class="breadcrumb-link" data-url="?display=grid">Grid</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p class="breadcrumb-link" data-url="?display=modals">Modals</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p  class="breadcrumb-link" data-url="?display=cards">Cards</p>
+              </div>
+            </div>
+              
+            </div>
+          </div>
         </div>
       </nav>
     </header>
@@ -139,6 +191,23 @@
         </div>
       </div>
     </div>
+    <footer>
+      <img alt="Logo" src="/saito/img/logo.svg" />
+
+      <div class="links">
+        <a href="#">Arcade</a>
+        <a href="#">Dev Center</a>
+        <a href="#">Blog</a>
+        <a href="#">Posts</a>
+      </div>
+
+      <div class="contact-us">
+        <a href="#">Contact Us</a>
+        <a href="#">info@saito.io</a>
+        <!-- <a href="#">Blog</a>
+        <a href="#">Posts</a> -->
+      </div>
+    </footer>
   </body>
 
 

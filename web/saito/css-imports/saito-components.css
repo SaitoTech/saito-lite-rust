@@ -63,7 +63,7 @@
   position: relative;
   width: 100%;
   margin: 4rem 0;
-  border-top: 1px solid var(--saito-background);
+  border-top: 1px solid var(--saito-paper);
 }
 
 .line.line-sm {
@@ -707,7 +707,11 @@ a.h-text-dark:hover {
     var(--saito-paper) 0%,
     #fff 100%
   ) !important;
-  background-image: linear-gradient(to top, var(--saito-paper) 0%, #fff 100%) !important;
+  background-image: linear-gradient(
+    to top,
+    var(--saito-paper) 0%,
+    #fff 100%
+  ) !important;
 }
 
 .gradient-grey-orange,
@@ -3883,7 +3887,7 @@ body:not(.top-search-open) .top-search-parent #primary-menu-trigger {
   .mega-menu-content {
     position: absolute;
     visibility: hidden;
-  
+
     box-shadow: 0px 13px 42px 11px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--saito-background);
     border-top: 2px solid #1abc9c;
@@ -13577,7 +13581,7 @@ blockquote.float-end {
 .sm-form-control[readonly],
 fieldset[disabled] .sm-form-control {
   cursor: not-allowed;
-  background-color: var(--saito-background)eee;
+  background-color: var(--saito-background) eee;
   opacity: 1;
 }
 

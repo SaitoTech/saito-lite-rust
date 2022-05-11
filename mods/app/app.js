@@ -40,7 +40,6 @@ class App extends ModTemplate {
     // set default mod to ui_elements
     if (!this.current_module) {
       this.current_module = "ui-elements";
-      this.additionalURL = "ui-elements/?display=grid";
     }
 
     super.initialize(app);

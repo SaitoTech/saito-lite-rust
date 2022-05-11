@@ -1,15 +1,19 @@
 footer {
   margin-top: 2rem;
-  padding: 1.3rem 2rem;
+  padding: 1.3rem 3rem;
   background-color: var(--saito-black);
   color: var(--saito-paper);
   display: flex;
   align-items: stretch;
   border-top: 1px solid var(--saito-paper);
+  /* position: absolute; */
+  /* bottom: 0; */
+  width: 100vw;
+  margin-top: 6rem;
 }
 
 footer > img {
-  width: 9rem;
+  width: 14rem;
   margin-right: 4rem;
   height: 9rem;
   object-fit: contain;
@@ -19,10 +23,10 @@ footer > .links,
 .contact-us {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 2rem 4rem;
   border-right: 1px solid var(--saito-paper);
 
-  font-size: 0.8rem;
+  font-size: 1rem;
   justify-content: space-between;
 }
 
@@ -49,4 +53,33 @@ footer > .contact-us a:nth-child(2) {
 
 .contact-us a:hover {
   color: var(--saito-secondary);
+}
+
+@media screen and (min-width: 1800px) {
+  footer {
+    padding: 1.3rem 9rem;
+  }
+}
+
+@media screen and (max-width: 730px) {
+  footer {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+  }
+
+  footer > img {
+    width: 10rem;
+  }
+
+  footer > .links,
+  .contact-us {
+    border-right: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  #hamburger-contents {
+    width: 100vw;
+  }
 }

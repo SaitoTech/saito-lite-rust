@@ -1,55 +1,84 @@
 module.exports = (app) => {
-    return `<header id="header" class="full-header">
-    <div id="header-wrap">
-        <div class="container">
-            <div class="header-row">
+    return ` <header class="saito-header">
+    <img class="logo" alt="Logo" src="./img/saito_logo.png" />
 
+    <nav>
+      <ul class="list d-none d-lg-flex">
 
-                <div id="logo">
-                    <a href="index.html" class="standard-logo" data-dark-logo="images/img/logo-dark.png"><img src="/saito/img/logo.svg" alt="Logo"></a>
-                    <a href="index.html" class="retina-logo" data-dark-logo="images/img/logo-dark@2x.png"><img src="/saito/img/logo.svg" alt="Logo"></a>
-                </div>
-
-
-
-
-                <div id="primary-menu-trigger">
-                    <svg class="svg-trigger" viewBox="0 0 100 100"><path d="m 30,33 h 40 c 3.722839,0 7.5,3.126468 7.5,8.578427 0,5.451959 -2.727029,8.421573 -7.5,8.421573 h -20"></path><path d="m 30,50 h 40"></path><path d="m 70,67 h -40 c 0,0 -7.5,-0.802118 -7.5,-8.365747 0,-7.563629 7.5,-8.634253 7.5,-8.634253 h 20"></path></svg>
-                </div>
-
-                <nav class="primary-menu">
-
-                    <ul class="menu-container">
-                        <li class="menu-item">
-                            <a class="menu-link" data-route="Arcade"><div>Arcade</div></a>
-
-                        </li>
-
-                        <li class="menu-item">
-                            <a class="menu-link"  data-route="Devcenter"><div>Dev Center</div></a>
-
-                        </li>
-
-                        <li class="list-item big-menu-container">
-                        <div class="link" id="big-menu-toggle" href="#">Shortcodes</div>
-                        <div class="big-menu">
-                          <a href="#" class="big-menu-link" href="">Buttons</a>
-                          <a href="#" class="big-menu-link" href="">Grids</a>
-                          <a href="#" class="big-menu-link" href="">Forms</a>
-                          <a href="#" class="big-menu-link" href="">Selects</a>
-                          <a href="#" class="big-menu-link" href="">Cards</a>
-                        </div>
-                      </li>
-                    </ul>
-
-                </nav>
-
-
-            </div>
+        <li class="list-item big-menu-container">
+          <div class="link" id="big-menu-toggle" href="#">Shortcodes</div>
+          <div class="big-menu">
+            <a href="#" class="big-menu-link" href="">Buttons</a>
+            <a href="#" class="big-menu-link" href="">Grids</a>
+            <a href="#" class="big-menu-link" href="">Forms</a>
+            <a href="#" class="big-menu-link" href="">Selects</a>
+            <a href="#" class="big-menu-link" href="">Cards</a>
+          </div>
+        </li>
+      </ul>
+      <div style="margin-right: 3rem">
+        <label class="switch">
+          <input class="check-input" type="checkbox" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="relative" style="">
+        <div id="menuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-    </div>
-    <div class="header-wrap-clone"></div>
-</header>`
+        <div id="hamburger-contents">
+          <div class="saito-profile">
+            <img src="./img/account.svg" />
+            <div class="saito-profile-info">
+              <p>wqhjM8kvwww...</p>
+              <div>0.0000 SAITO</div>
+            </div>
+          </div>
+
+          <div class="saito-menu-section">
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-plus"></i>
+              <p>Create Game</p>
+            </div>
+          </div>
+          <div class="saito-menu-section">
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+              <p>Reset/Nuke Wallet</p>
+            </div>
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-gear"></i>
+              <p>Settings</p>
+              
+            </div>
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <p>Scan</p>
+            </div>
+          </div>
+          <div class="saito-menu-section">
+          
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-chess-board"></i>
+              <p>Arcade</p>
+            </div>
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-rss"></i>
+              <p>Blog</p>
+            </div>
+            <div class="saito-menu-item">
+              <i class="fa-solid fa-rocket"></i>
+              <p>Dev center</p>
+            </div>
+          </div>
+            
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>`
 
 }
 

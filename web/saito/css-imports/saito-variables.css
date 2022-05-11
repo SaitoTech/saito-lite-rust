@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap");
 
-/* :root {
+:root {
   --saito-background: white;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
@@ -15,13 +15,9 @@
   --saito-black: #1c1c23;
   --saito-black-faded: #1c1c23b5;
   --saito-font: "Lato", sans-serif;
-  --saito-cyber-black-wash: rgb(28, 28, 35, 0.3);
-  --saito-cyber-black: rgb(28, 28, 35);
-  --saito-red-wash: rgb(247, 31, 61, 0.3);
-  --saito-cyber-black-cut: rgb(28, 28, 35, 0.5);
-  --saito-wu: none;
-  --saito-width: 1500px;
-} */
+  --saito-header-height: 92.2344px;
+  --saito-secondary: #682f0b;
+}
 
 /* dark */
 /* :root {
@@ -43,3 +39,9 @@
   --saito-wu: none;
   --saito-width: 1500px;
 } */
+
+@media screen and (max-width: 501px) {
+  html {
+    --saito-header-height: 85.5938px !important;
+  }
+}

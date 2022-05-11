@@ -27,6 +27,7 @@ class UI_ELEMENTS extends AppTemplate {
   constructor(app) {
 
     super(app);
+    this.parameters['display'] = "grid";
     this.name = "ui-elements";
 
     this.description = "Re-usabale elements are here";
@@ -246,11 +247,27 @@ class UI_ELEMENTS extends AppTemplate {
 
         }
 
+      })
+    })
+    document.querySelectorAll('.breadcrumb-link').forEach(link => {
+      link.addEventListener('click', function () {
 
+        const app_mod = app.modules.returnModule("App");
+        const ui_mod = app.modules.returnModule("ui-elements");
 
+        const url = this.getAttribute('data-url');
+        const route = this.getAttribute('data-route');
 
+        if (route) {
+          const mod = app.modules.returnModule(route);
+          app_mod.render(app, mod, route);
+        } else if (url) {
+          console.log(ui_mod, url, this);
+          ui_mod.parameters['display'] = url.split("=")[url.split('=').length - 1];
+          ui_mod.render(app);
 
-
+        }
+        self.toggleMenu();
 
       })
     })
@@ -269,8 +286,12 @@ class UI_ELEMENTS extends AppTemplate {
       } else {
         slider.classList.add("checked");
       }
-    }
-    )
+    })
+
+    document.querySelector("#menuToggle").addEventListener("click", this.toggleMenu);
+
+
+
 
   }
 
@@ -280,6 +301,18 @@ class UI_ELEMENTS extends AppTemplate {
     return null;
   }
 
+  toggleMenu(e) {
+    console.log("toggling menu");
+    document
+      .querySelector("#hamburger-contents")
+      .classList.contains("show-menu")
+      ? document
+        .querySelector("#hamburger-contents")
+        .classList.remove("show-menu")
+      : document
+        .querySelector("#hamburger-contents")
+        .classList.add("show-menu");
+  }
 
 
 
