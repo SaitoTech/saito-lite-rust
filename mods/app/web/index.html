@@ -38,37 +38,123 @@
     <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
     <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
-
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Poppins:300,400,500,600,700|PT+Serif:400,400i&display=swap" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/saito/css-imports/bootstrap.css" />
+    <link rel="stylesheet" href="/saito/saito.css" />
+    
     <title>Saito</title>
   
-    <!-- <link rel="stylesheet" href="/saito/lib/templates/crypto-transfer-manager.css" /> -->
+    <!-- <link rel="stylesheet" href="/saito/saito.css" /> -->
     <!-- <link rel="stylesheet" href="/saito/lib/templates/email-chat.css" /> -->
     <!-- <link rel="stylesheet" href="/post/style.css" />
     <link rel="stylesheet" href="/arcade/style.css" /> -->
     <!-- <link rel="stylesheet" href="/arcade/carousel.css" /> -->
+    
+   <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
+    
 
 
-    <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
-    <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="/saito/lib/fitty/fitty.min.js"></script>
-  </head>
-  <body></body>
-
-  <script src="/saito/lib/jsonTree/jsonTree.js"></script>
+    <script src="/saito/lib/jsonTree/jsonTree.js"></script>
+    <!-- <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"
+  defer
+  ></script> -->
   <script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+  src="https://kit.fontawesome.com/dbb2399929.js"
   crossorigin="anonymous"
-defer
 ></script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+
+  </head>
+  <body>
+    <header class="saito-header">
+      <img class="logo" alt="Logo" src="/saito/logo.svg" />
+  
+      <nav>
+        <ul class="list">
+          <li class="list-item"><a href="#" class="link">Arcade</a></li>
+          <li class="list-item"><a href="#" class="link">Dev Center</a></li>
+          <li class="list-item"><a href="#" class="link">Blog</a></li>
+          <li class="list-item big-menu-container">
+            <div class="link" id="big-menu-toggle" href="#">Shortcodes</div>
+            <div class="big-menu">
+              <a href="#" data-url="?display=buttons" class="big-menu-link" href="">Buttons</a>
+              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Grids</a>
+              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Forms</a>
+              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Selects</a>
+              <a href="#" data-url="?display=grid" class="big-menu-link" href="">Cards</a>
+            </div>
+          </li>
+        </ul>
+        <div style="margin-right: 3rem">
+          <label class="switch">
+            <input class="check-input" type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div id="menuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </nav>
+    </header>
+    <div class="container pt-3">
+      <div class="row">
+        <div class="col-lg-3 d-none d-lg-block side-content">
+          <div class="saito-sidebar">
+            <div class="saito-sidebar-section">
+              <div class="title">Games</div>
+              <div class="content-list">
+                <div class="content-item">
+                  <i class="fa-brands fa-galactic-republic"></i>
+                  <span>WordBlocks</span>
+                </div>
+                <div class="content-item">
+                  <i class="fa-brands fa-galactic-senate"></i>
+                  <span>Settlers</span>
+                </div>
+                <div class="content-item">
+                  <i class="fa-solid fa-biohazard"></i>
+                  <span>Pandemic</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="saito-sidebar-section">
+              <div class="title">Chat</div>
+              <div class="content-list">
+                <div class="content-item">
+                  <i class="fa-brands fa-galactic-republic"></i>
+                  <span>Community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-9 main-content">
+         
+        </div>
+      </div>
+    </div>
+  </body>
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
   crossorigin="anonymous"
-></script>
+></script> -->
+
+
+
+
+
   
   <!--script src="https://kit.fontawesome.com/4034b0d9ac.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>

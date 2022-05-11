@@ -1,0 +1,52 @@
+footer {
+  margin-top: 2rem;
+  padding: 1.3rem 2rem;
+  background-color: var(--saito-black);
+  color: var(--saito-paper);
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--saito-paper);
+}
+
+footer > img {
+  width: 9rem;
+  margin-right: 4rem;
+  height: 9rem;
+  object-fit: contain;
+}
+
+footer > .links,
+.contact-us {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-right: 1px solid var(--saito-paper);
+
+  font-size: 0.8rem;
+  justify-content: space-between;
+}
+
+footer > .contact-us {
+  justify-content: center;
+  align-items: center;
+}
+
+footer > .contact-us a:nth-child(1) {
+  font-size: 1.4rem !important;
+  margin-bottom: 0.5;
+}
+footer > .contact-us a:nth-child(2) {
+  font-size: 1rem !important;
+}
+
+.links a {
+  margin-bottom: 0.5rem;
+}
+
+.links a:hover {
+  color: var(--saito-secondary);
+}
+
+.contact-us a:hover {
+  color: var(--saito-secondary);
+}

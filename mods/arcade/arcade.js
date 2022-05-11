@@ -152,7 +152,7 @@ class Arcade extends AppTemplate {
 
   initialize(app) {
     const meta = [];
-    const stylesheets = ["/saito/saito.css", "/saito/lib/templates/email-chat.css", "/post/style.css", "/arcade/style.css", "/arcade/carousel.css"];  // In order of css specificity: increases in specificity from left to right;
+    const stylesheets = ["/saito/style.css", "/saito/saito.css", "/saito/lib/templates/email-chat.css", "/post/style.css", "/arcade/style.css", "/arcade/carousel.css"];  // In order of css specificity: increases in specificity from left to right;
     const scripts = [];
     super.initialize(app, meta, stylesheets, scripts);
 
@@ -186,8 +186,8 @@ class Arcade extends AppTemplate {
     });
   }
 
-  initializeHTML(app) {
-    super.initializeHTML(app);
+  initializeHTML(app, additionalURL) {
+    super.initializeHTML(app, additionalURL);
     // this.header = new SaitoHeader(app, this);
 
 

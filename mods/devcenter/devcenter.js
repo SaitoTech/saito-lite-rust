@@ -34,16 +34,17 @@ class DevCenter extends ModTemplate {
   }
 
   initialize(app) {
-    const stylesheets = ['/saito/style.css', '/dev/style.css', '/appstore/css/email-appspace.css', '/saito/lib/templates/email-chat.css', '/saito/lib/templates/crypto-transfer-manager.css', '/saito/lib/jsonTree/jsonTree.css'];
-    const scripts = [];
+    const stylesheets = ['/saito/style.css', '/devcenter/style.css', '/appstore/css/email-appspace.css', '/saito/lib/templates/email-chat.css', '/saito/lib/templates/crypto-transfer-manager.css', '/saito/lib/jsonTree/jsonTree.css'];
+    const scripts = ['/saito/lib/jsonTree/jsonTree.js'];
     const meta = [];
+    console.log(stylesheets);
     super.initialize(app, meta, stylesheets, scripts);
   }
 
 
-  initializeHTML(app) {
+  initializeHTML(app, additionalURL) {
 
-    super.initializeHTML(app);
+    super.initializeHTML(app, additionalURL);
 
     if (app.BROWSER && this.browser_active && (!app.options.dev || !app.options.dev.welcomesent)) {
 

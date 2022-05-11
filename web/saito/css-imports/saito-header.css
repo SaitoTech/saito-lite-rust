@@ -1,0 +1,104 @@
+.saito-header {
+  display: flex;
+  width: 100vw;
+  background: linear-gradient(
+    77deg,
+    var(--saito-primary) 0%,
+    var(--saito-secondary) 69%
+  );
+  margin: 0;
+
+  align-items: center;
+  padding: 1.3rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.saito-header > img {
+  width: 9rem;
+}
+
+.saito-header nav {
+  display: flex;
+  align-items: center;
+
+  margin-left: auto;
+  justify-self: flex-end;
+}
+
+.saito-header .list {
+  display: flex;
+  margin-right: 7rem;
+}
+
+.saito-header .list .list-item {
+  list-style: none;
+}
+
+.saito-header .link {
+  color: var(--saito-white);
+  margin-right: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.saito-header .link:hover {
+  color: var(--saito-black);
+}
+
+#menuToggle {
+  margin-right: auto;
+}
+#menuToggle span {
+  display: block;
+  width: 33px;
+  height: 4px;
+  margin-bottom: 5px;
+  position: relative;
+
+  background: var(--saito-white);
+  border-radius: 3px;
+
+  z-index: 1;
+
+  transform-origin: 4px 0px;
+
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+  background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+  margin-left: auto;
+}
+
+#menuToggle span:first-child {
+  transform-origin: 0% 0%;
+}
+
+#menuToggle span:nth-last-child(2) {
+  transform-origin: 0% 100%;
+}
+
+.big-menu-container {
+  position: relative;
+}
+
+.big-menu-container:hover .big-menu {
+  display: block;
+}
+.big-menu {
+  color: var(--saito-white);
+  background-color: var(--saito-primary) !important;
+  position: absolute;
+  top: 1.5rem;
+  left: -1rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  display: none;
+  transition: all 0.2s;
+}
+.mega-menu:hover .big-menu {
+  display: block;
+}
+
+.big-menu-link {
+  margin-bottom: 1rem;
+  display: inline-block;
+}

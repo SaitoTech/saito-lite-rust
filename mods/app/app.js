@@ -1,5 +1,5 @@
 var ModTemplate = require('../../lib/templates/modtemplate');
-
+const Toggler = require('../../lib/saito/saito-ui/dark_mode_toggler');
 
 class App extends ModTemplate {
 
@@ -12,24 +12,10 @@ class App extends ModTemplate {
     this.categories = "Development";
     this.current_module = "";
     this.previous_module = "";
-    this.themes = {
-      dark: {
-        '--saito-primary': '#ff8235',
-        '--saito-secondary': '#cf2e2e',
-        '--saito-tetiary': 'rgb(234, 234, 239)',
-        '--saito-red': '#ff8235',
-        '--saito-orange': 'rgb(247, 31, 61)',
-        ' --saito-skyline-grey': 'rgb(234, 234, 239)'
-      },
-      light: {
-        '--saito-primary': '#cf2e2e',
-        '--saito-secondary': '#ff8235',
-        '--saito-tetiary': 'rgb(234, 234, 239)',
-        '--saito-orange': '#ff8235',
-        '--saito-red': 'rgb(247, 31, 61)',
-        ' --saito-skyline-grey': 'rgb(234, 234, 239)'
-      }
-    }
+
+
+
+    this.darkModeToggler = new Toggler(app);
 
     return this;
   }
@@ -53,14 +39,23 @@ class App extends ModTemplate {
 
     // set default mod to ui_elements
     if (!this.current_module) {
-      this.current_module = "ui_elements"
+      this.current_module = "ui-elements";
+      this.additionalURL = "ui-elements/?display=grid";
     }
 
     super.initialize(app);
 
   }
 
-  initializeHTML() {
+  initializeHTML(app) {
+
+    super.initializeHTML(app)
+
+    this.darkModeToggler.initialize();
+
+
+
+
 
   }
 
@@ -71,24 +66,9 @@ class App extends ModTemplate {
 
   }
 
-  toggleDarkMode() {
-    console.log('toggling dark mode');
-    this.darkMode = !this.darkMode;
-    if (this.darkMode === true) {
-      for (let i in this.themes.dark) {
-        document.querySelector(':root').style.setProperty(i, this.themes.dark[i]);
-      }
-    } else {
-      for (let i in this.themes.light) {
-        document.querySelector(':root').style.setProperty(i, this.themes.light[i]);
-      }
-    }
 
-    // this.rerender(this.app);
+  render(app, mod, additionalURL) {
 
-  }
-
-  render(app, mod) {
     const self = this;
     if (self.previous_module) {
       self.previous_module.destroy();
@@ -98,7 +78,6 @@ class App extends ModTemplate {
       if (mod.name) {
         mod.browser_active = 1;
         mod.initialize(app);
-        mod.initializeHTML(app);
         if (mod.returnBaseHTML) {
           const ui_template = mod.returnBaseHTML(app);
           if (ui_template) {
@@ -106,16 +85,20 @@ class App extends ModTemplate {
           }
 
         }
+        mod.initializeHTML(app, additionalURL);
         mod.render(app);
         mod.attachEvents(app);
         self.previous_module = mod;
       }
     } else {
+      if (!additionalURL) {
+        additionalURL = this.additionalURL;
+      }
       app.modules.mods.forEach(mod => {
         if (mod.name.toLowerCase() === self.current_module) {
           mod.browser_active = 1;
           mod.initialize(app);
-          mod.initializeHTML(app);
+          mod.initializeHTML(app, additionalURL);
           if (mod.returnBaseHTML) {
             const ui_template = mod.returnBaseHTML(app);
             if (ui_template) {
@@ -134,6 +117,11 @@ class App extends ModTemplate {
     }
 
 
+  }
+
+
+  toggleDarkMode() {
+    this.darkModeToggler.toggle();
   }
 
 

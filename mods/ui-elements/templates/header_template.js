@@ -6,7 +6,7 @@ module.exports = (app) => {
 
 
                 <div id="logo">
-                    <a href="index.html" class="standard-logo" data-dark-logo="images/img/logo-dark.png"><img src="/appssaito/img/logo.svg" alt="Logo"></a>
+                    <a href="index.html" class="standard-logo" data-dark-logo="images/img/logo-dark.png"><img src="/saito/img/logo.svg" alt="Logo"></a>
                     <a href="index.html" class="retina-logo" data-dark-logo="images/img/logo-dark@2x.png"><img src="/saito/img/logo.svg" alt="Logo"></a>
                 </div>
 
@@ -21,99 +21,25 @@ module.exports = (app) => {
 
                     <ul class="menu-container">
                         <li class="menu-item">
-                            <a class="menu-link" href="index.html"><div>Arcade</div></a>
+                            <a class="menu-link" data-route="Arcade"><div>Arcade</div></a>
 
                         </li>
 
                         <li class="menu-item">
-                            <a class="menu-link" href="index.html"><div>Dev Center</div></a>
+                            <a class="menu-link"  data-route="Devcenter"><div>Dev Center</div></a>
 
                         </li>
 
-                        <li class="menu-item mega-menu">
-                            <a class="menu-link" href="#"><div>Shortcodes</div></a>
-                            <div class="mega-menu-content">
-                                <div class="container">
-                                    <div class="row">
-                                        <ul class="sub-menu-container mega-menu-column col">
-                                         
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=buttons"><div><i class="icon-link"></i>Buttons</div></a>
-                                            </li>
-                                           
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=grid"><div><i class="icon-th-large"></i>Columns</div></a>
-                                            </li>
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=read-more"><div><i class="icon-ellipsis-h"></i>Read More</div></a>
-                                            </li>
-
-                                        
-                                          
-                                          
-                                        </ul>
-
-                                        <ul class="sub-menu-container mega-menu-column col">
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=cards"><div><i class="icon-th-list"></i>Lists &amp; Cards</div></a>
-                                            </li>
-
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=modals"><div><i class="icon-move"></i>Modal Boxes</div></a>
-                                            </li>
-
-                                            <li class="menu-item">
-                                            <a class="menu-link" data-url="?display=dividers"><div><i class="icon-indent-right"></i>Dividers</div></a>
-                                        </li>
-
-                                        <li class="menu-item">
-                                        <a class="menu-link" data-url="?display=date-time"><div><i class="icon-calendar3"></i>Date &amp; Time Pickers</div></a>
-                                    </li>
-
-                                          
-                                        </ul>
-                                        <ul class="sub-menu-container mega-menu-column col">
-
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=input-select"><div><i class="icon-line-columns"></i>Select Boxes</div></a>
-                                            </li>
-                                            <li class="menu-item">
-                                            <a class="menu-link" data-url="?display=icons"><div><i class="icon-lightbulb"></i>Icon Boxes</div></a>
-                                        </li>
-                                        <li class="menu-item">
-                                            <a class="menu-link" data-url="?display=gallery"><div><i class="icon-picture"></i>Galleries</div></a>
-                                        </li>
-                                        <li class="menu-item">
-                                            <a class="menu-link" data-url="?display=headings"><div><i class="icon-pencil2"></i>Heading Styles</div></a>
-                                        </li>
-                                        </ul>
-                                        <ul class="sub-menu-container mega-menu-column col">
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=alerts"><div><i class="icon-exclamation-sign"></i>Alert Boxes</div></a>
-                                            </li>
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=tabs"><div><i class="icon-star3"></i>Tabs</div></a>
-                                            </li>
-
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=toggles"><div><i class="icon-ok-circle"></i>Toggles</div></a>
-                                            </li>
-
-                                            <li class="menu-item">
-                                                <a class="menu-link" data-url="?display=radios"><div><i class="icon-line-square-check"></i>Radios &amp; Switches</div></a>
-                                            </li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                        <li class="list-item big-menu-container">
+                        <div class="link" id="big-menu-toggle" href="#">Shortcodes</div>
+                        <div class="big-menu">
+                          <a href="#" class="big-menu-link" href="">Buttons</a>
+                          <a href="#" class="big-menu-link" href="">Grids</a>
+                          <a href="#" class="big-menu-link" href="">Forms</a>
+                          <a href="#" class="big-menu-link" href="">Selects</a>
+                          <a href="#" class="big-menu-link" href="">Cards</a>
+                        </div>
+                      </li>
                     </ul>
 
                 </nav>

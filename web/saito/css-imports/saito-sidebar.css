@@ -1,0 +1,51 @@
+.side-content {
+  position: relative;
+}
+
+.saito-sidebar {
+  padding: 1rem;
+
+  border-right: 1px solid var(--saito-paper);
+
+  position: sticky;
+  top: 98px;
+
+  max-width: 18rem;
+  height: 100vh;
+}
+
+.saito-sidebar-section {
+  margin-bottom: 3rem;
+}
+
+.saito-sidebar-section .title {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: var(--saito-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.content-list .content-item {
+  padding: 0.5rem 0;
+  border-radius: 8px;
+}
+.content-list i {
+  padding-left: 0.5rem;
+  color: var(--saito-blue);
+}
+.content-list span {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.content-item:hover {
+  background-color: var(--saito-primary);
+  color: var(--saito-white);
+}
+.content-item:hover i {
+  color: var(--saito-white);
+}

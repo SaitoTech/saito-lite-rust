@@ -1,5 +1,11 @@
 module.exports = (app) => {
     return `
+    <section id="page-title" class="mb-6">
+    <div class="container clearfix">
+      <h1 class="saito-color-primary">Grid And Columns</h1>
+    </div>
+  </section>
+
     <div class="container clearfix">
 
 <div class="row col-mb-50 mb-0">
