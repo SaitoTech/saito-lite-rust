@@ -33,6 +33,27 @@
 .status-header {
 }
 
+/* General overlays */
+.ts-overlay h1 {
+  text-align: center;
+}
+.ts-overlay{
+  border-radius: 5px;
+  border: 5px solid blue;
+  border-right: 5px solid red;
+  border-bottom: 5px solid red;
+  background-color: lightgrey;
+  min-width: min(750px,90vw);
+  min-height: 50vh;
+  padding: 10px 0;
+}
+
+.ts-overlay .ts-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
 /*Stats overlay*/
 tbody th {
   text-align: left;
@@ -310,6 +331,7 @@ body {
   position: absolute;
   background-image: url("img/VPs.svg");
   background-size: cover;
+  transition: top 2s, left 2s;
 }
 
 .space_race_us {
@@ -357,13 +379,14 @@ body {
 
 .easterneurope{
   background: rgba(255, 0, 0, 0.2);
-  box-shadow: 0 0 10px 5px pink;
+  box-shadow: -2px 2px 8px 4px pink;
 }
 
 .westerneurope{
   background: rgba(0, 0, 255, 0.2);
-  box-shadow: 0 0 10px 5px lightblue;
+  box-shadow: -2px 2px 8px 4px lightblue;
 }
+
 
 .us, .ussr {
   float: left;
