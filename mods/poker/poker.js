@@ -2583,7 +2583,7 @@ class Poker extends GameTemplate {
             </select>
           </div>
           <div class="overlay-input">
-            <input type="checkbox" name="chip_graphics" checked/>
+            <input type="checkbox" name="chip_graphics" />
             <label for="chip_graphics">Use visual chips</label>
           </div>
           <div class="overlay-input">
