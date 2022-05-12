@@ -2,7 +2,7 @@
     if (card == "puppet") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Puppet Governments</div>");
+        this.updateStatus(`<div class='status-message' id='status-message'>US is playing ${this.cardToText(card)}</div>`);
         return 0;
       }
       if (this.game.player == 2) {
@@ -47,13 +47,17 @@
           }
         }
 
-        if (available_targets < ops_to_place) { ops_to_place = available_targets; }
-        if (ops_to_place > 0) {
-          return 0;
-        } else {
-          twilight_self.playerFinishedPlacingInfluence();
-          return 0;
+        if (available_targets < ops_to_place) { 
+          ops_to_place = available_targets; 
         }
+
+        //Safety catch if nowhere to place at all
+        if (ops_to_place == 0) {
+          twilight_self.playerFinishedPlacingInfluence();
+          twilight_self.endTurn();
+        } 
+        
+        return 0;
       }
     }
 
