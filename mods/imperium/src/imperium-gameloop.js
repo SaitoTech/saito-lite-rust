@@ -1540,9 +1540,10 @@ this.game.state.end_round_scoring = 0;
 	//
 	let io = this.returnInitiativeOrder();
 	for (let i = 0; i < io.length; i++) {
-          if (this.game.players_info[i].vp >= this.game.state.vp_target) {
-            this.updateStatus("Game Over: " + this.returnFaction(i) + " has reached " + this.game.state.vp_target + " VP");
-            this.updateLog("Game Over: " + this.returnFactionNickname(i) + " has reached " + this.game.state.vp_target + " VP");
+          if (this.game.players_info[io[i]].vp >= this.game.state.vp_target) {
+	    this.updateLeaderboard();
+            this.updateStatus("Game Over: " + this.returnFaction(io[i]) + " has reached " + this.game.state.vp_target + " VP");
+            this.updateLog("Game Over: " + this.returnFactionNickname(io[i]) + " has reached " + this.game.state.vp_target + " VP");
             return 0;
 	  }
         }
@@ -2777,7 +2778,7 @@ this.game.state.end_round_scoring = 0;
 
         if (item === "tech" || item === "technology") {
 
-  	  this.updateLog(this.returnFactionNickname(player) + " gains " + this.tech[mv[3]].name);
+  	  this.updateLog(this.returnFactionNickname(player) + " gains " + this.tech[mv[3]].name + "<p></p><div style='width:80%;font-size:1.0em;margin-left:auto;margin-right:auto;margin-top:15px;margin-bottom:15px'>" + this.tech[mv[3]].text +'</div>');
 
   	  if (!this.game.players_info[player-1].tech.includes(mv[3])) {
 	    this.game.players_info[player-1].tech.push(mv[3]);
@@ -2801,8 +2802,6 @@ this.game.state.end_round_scoring = 0;
           if (this.game.state.use_tutorials == 1 && !this.game.state.seen_goods_tutorial) {
             this.game.state.seen_goods_tutorial = 1;
             this.overlay.show(imperium_self.app, imperium_self, '<div style="margin-left:auto;margin-right:auto;height:90vh;width:auto"><img src="/imperium/img/tutorials/trade_goods.png" style="width:auto;height:100%" /></div>');
-// this likely causes disconnects as is not guaranteed to run on player turn
-//            this.playerAcknowledgeNotice("REMEMBER: use the trade strategy card to get trade goods. Commercial partnerships can be as valuable as large fleets in Red Imperium", function() {});
           }
 
   	}
@@ -5400,7 +5399,7 @@ this.game.state.end_round_scoring = 0;
           let defender_survivors = imperium_self.returnNumberOfGroundForcesOnPlanet(this.game.state.ground_combat_defender, sector, planet_idx);
 
 	  if (attacker_survivors > 0) {
-            this.updateLog(sys.p[planet_idx].name + " conquered by " + this.returnFactionNickname(player) + " (" + attacker_survivors + " infantry)");
+            this.updateLog(this.returnFactionNickname(player) + " conquers " + sys.p[planet_idx].name + " (" + attacker_survivors + " infantry)");
 
 	    let attacker = player;
 	    let defender = this.game.state.ground_combat_defender; 
@@ -5513,7 +5512,7 @@ this.game.state.end_round_scoring = 0;
         if (defender == -1) {
 
 	  if (sys.p[planet_idx].owner != player) {
-            this.updateLog(this.returnFactionNickname(player) + " seizes " + sys.p[planet_idx].name);
+            //this.updateLog(this.returnFactionNickname(player) + " seizes " + sys.p[planet_idx].name);
 	    if (sys.p[planet_idx].owner != -1) {
               this.game.players_info[sys.p[planet_idx].owner-1].lost_planet_this_round = player; // player who took it
 	    }

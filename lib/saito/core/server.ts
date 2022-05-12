@@ -339,9 +339,7 @@ class Server {
     });
 
     app.get("/block/:hash", async (req, res) => {
-
       try {
-
         const hash = req.params.hash;
         console.debug("server giving out block : " + hash);
         if (!hash) {
@@ -359,18 +357,13 @@ class Server {
 
         res.status(200);
         res.end(bufferString);
-
       } catch (err) {
-
-	console.log("ERROR: server cannot feed out block");
-
+        console.log("ERROR: server cannot feed out block");
       }
     });
 
     app.get("/json-block/:hash", async (req, res) => {
-
       try {
-
         const hash = req.params.hash;
         console.debug("server giving out block : " + hash);
 
@@ -398,17 +391,13 @@ class Server {
 
         res.status(200);
         res.end(buffer);
- 
-        } catch (err) {
-	  console.log("ERROR: server cannot feed out block");
-	}
-
+      } catch (err) {
+        console.log("ERROR: server cannot feed out block");
+      }
     });
 
     app.get("/json-block/:hash", async (req, res) => {
-
       try {
-
         const hash = req.params.hash;
         console.debug("server giving out block : " + hash);
 
@@ -434,11 +423,9 @@ class Server {
 
         res.status(200);
         res.end(buffer);
-
       } catch (err) {
         console.log("ERROR: server cannot feed out block ");
       }
-
     });
 
     /////////

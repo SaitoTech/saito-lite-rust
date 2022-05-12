@@ -1299,13 +1299,11 @@ div#message-wrapper {
 
 #copy-btn {
   display: inline-block;
-  padding: 5px 6px 5px 6px;
-  background-color: #fff;
-  color: #26202C;
+  padding: 0px 0px 7px 6px;
+  color: inherit;
   border-radius: 2px;
   font-size: 17px;
   cursor: pointer;
-  border: 1px solid #26202C;
 }
 
 .copy-check::before {
