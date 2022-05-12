@@ -43,7 +43,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 1;
@@ -2326,7 +2326,7 @@ try {
 
           if (this.is_testing == 1) {
             if (this.game.player == 2) {
-              this.game.deck[0].hand = ["che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
+              this.game.deck[0].hand = ["u2", "unintervention", "che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
             } else {
               this.game.deck[0].hand = ["quagmire", "aldrichames", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
             }
