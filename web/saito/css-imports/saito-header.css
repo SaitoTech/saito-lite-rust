@@ -100,7 +100,7 @@
 #hamburger-contents {
   display: block;
   height: 100vh;
-
+  color: var(--saito-default-font);
   width: 20rem;
   background-color: var(--saito-menu-background);
   position: absolute;
@@ -117,7 +117,7 @@
     1px 1rem 1rem var(--saito-border);
   border-top: none;
   -webkit-transform: translateX(20rem);
-  transform: translateX(20rem); 
+  transform: translateX(20rem);
 }
 
 .saito-profile {
@@ -251,7 +251,7 @@
   .shortcodes {
     font-size: 12px;
     position: absolute;
-    bottom: .15rem;
+    bottom: 0.15rem;
     margin-left: 2rem;
   }
 }

@@ -11211,7 +11211,7 @@ body:not(.device-touch) .social-icon i {
 -----------------------------------------------------------------*/
 
 .accordion-border {
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
   border-radius: 4px;
 }
 
@@ -11257,7 +11257,7 @@ body:not(.device-touch) .social-icon i {
   flex: 0 0 auto;
   width: auto;
   max-width: 100%;
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
   border-bottom: 0;
   border-left: 0;
   height: 41px;
@@ -11313,7 +11313,7 @@ body:not(.device-touch) .social-icon i {
 }
 
 .tabs-alt .tab-nav li.ui-tabs-active a {
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
   border-bottom: 0;
 }
 
@@ -11473,7 +11473,7 @@ body:not(.device-touch) .social-icon i {
 }
 
 .tabs-bordered .tab-container {
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
   border-top: 0;
   padding: 20px;
 }
@@ -11502,7 +11502,7 @@ body:not(.device-touch) .social-icon i {
   }
 
   .side-tabs .tab-nav li {
-    border: 1px solid var(--saito-paper);
+    border: 1px solid var(--saito-border);
     border-right: 0;
     border-top: 0;
     height: auto;
@@ -15758,7 +15758,7 @@ input.switch-flat-xlarge.switch-toggle-flat:checked + label::after {
   padding-top: 10px;
   padding-bottom: 10px;
   background-color: var(--saito-background);
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
 }
 
 .img-circle {

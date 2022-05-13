@@ -1,6 +1,7 @@
 /* ----------------------------------------------------------------
 	Basic
 -----------------------------------------------------------------*/
+
 *,
 *::before,
 *::after {
@@ -69,7 +70,7 @@ p {
 
 .list-group-item {
   background-color: var(--saito-background);
-  border: 1px solid var(--saito-paper);
+  border: 1px solid var(--saito-border);
   color: var(--saito-default-font);
 }
 
@@ -114,6 +115,11 @@ p {
 .table {
   border-color: var(--saito-paper) !important;
   color: var(--saito-default-font);
+}
+
+.form-check-input:checked {
+  background-color: var(--saito-primary);
+  border: var(--saito-primary);
 }
 
 /* Media Queries */

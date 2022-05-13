@@ -24,7 +24,7 @@ footer > .links,
   display: flex;
   flex-direction: column;
   padding: 2rem 4rem;
-  border-right: 1px solid var(--saito-paper);
+  border-right: 1px solid var(--saito-border);
 
   font-size: 1rem;
   justify-content: space-between;

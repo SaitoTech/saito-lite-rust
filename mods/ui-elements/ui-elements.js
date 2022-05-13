@@ -291,6 +291,11 @@ class UI_ELEMENTS extends AppTemplate {
     document.querySelector("#menuToggle").addEventListener("click", this.toggleMenu);
 
 
+    document.querySelector("#sidebar-toggle-mobile").addEventListener("click", () => {
+      console.log('clicking')
+      document.querySelector('.sidebar-mobile').classList.contains('display') == false ? document.querySelector('.sidebar-mobile').classList.add('display') : document.querySelector('.sidebar-mobile').classList.remove('display')
+
+    });
 
 
   }
