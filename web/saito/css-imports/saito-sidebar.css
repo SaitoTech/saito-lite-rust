@@ -144,6 +144,11 @@
 .saito-sidebar-toggle-container:hover {
   opacity: 0.9;
   transform: scale(1.2);
+  
+}
+.saito-sidebar-toggle-container:hover .saito-sidebar-toggle{
+ color: var(--saito-primary);
+  
 }
 .saito-sidebar-toggle {
   font-size: 2rem;

@@ -175,32 +175,7 @@ class UI_ELEMENTS extends AppTemplate {
     const to_display = this.parameters['display'];
 
     try {
-
-      // set heading 
-      const wrapper = document.querySelector('#wrapper');
-      // const header = document.createElement('div');
-      // header.innerHTML = HEADER_TEMPLATE(app);
-      // if (!document.querySelector('#header')) {
-      //   wrapper.prepend(header);
-
-      // }
-
-
-
-
-      const heading = this.pages[to_display].heading;
-      const subheading = this.pages[to_display].subheading;
       const html = this.pages[to_display].html;
-      // set page title
-      // const pageTitle = document.querySelector('#page-title');
-      // pageTitle.innerHTML = `
-      // <div class="container clearfix">
-      //   <h1 id="page-title-heading">${heading}</h1>
-      //   <span id="page-title-subheading">${subheading}</span>
-      // </div>`
-
-
-      // set page content 
 
       const pageContent = document.querySelector('.main-content');
       pageContent.innerHTML = html;
@@ -217,8 +192,6 @@ class UI_ELEMENTS extends AppTemplate {
 
   attachEvents(app) {
     const self = this;
-
-
     const listener2 = $('#render_arcade').on('click', function (e) {
       const app_mod = app.modules.returnModule("App");
       const arcade_mod = app.modules.returnModule("Arcade");
