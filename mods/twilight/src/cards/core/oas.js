@@ -6,7 +6,7 @@
     if (card == "oas") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing OAS</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing OAS</div>");
         return 0;
 
       }

@@ -7,9 +7,8 @@
     if (card == "asknot") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
         return 0;
-
       }
       if (this.game.player == 2) {
 

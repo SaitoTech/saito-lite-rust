@@ -51,7 +51,34 @@
 .ts-overlay .ts-body{
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+}
+
+.ts-overlay h1{
+  font-size: 3rem;
+}
+.waroverlay-body{
+  display: flex;
+  justify-content: space-around;
+  margin: 3em 1em;
+}
+.waroverlay-body .cardlist-container{
+  min-width: unset;
+  background-color: unset;
+}
+.warstats{
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.warstats div{
+  flex: 1;
+}
+
+.warstats .winner{
+  font-size: 1.5em;
+  font-weight: bold;
+  flex: 2;
 }
 
 /*Stats overlay*/

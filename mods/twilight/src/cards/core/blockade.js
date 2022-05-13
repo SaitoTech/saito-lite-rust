@@ -16,6 +16,7 @@
 
       if (this.game.player == 1) {
         this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
+        this.attachCardboxEvents();
         return 0;
       }
       if (this.game.player == 2) {

@@ -6,7 +6,7 @@ const JSON = require('json-bigint');
 // Missile Envy is a bit messy
 //
 var is_this_missile_envy_noneventable = 0;
-
+var is_player_skipping_playing_china_card = 0;
 var start_turn_game_state = null;
 var start_turn_game_queue = null;
 
@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -97,6 +97,28 @@ class Twilight extends GameTemplate {
       this.overlay.show(this.app, this, html);
   }
 
+
+  showWarOverlay(card, winner, roll, modifications, player = ""){
+    let html = `
+    <div class="ts-overlay">
+    <h1>${this.cardToText(card, true)}</h1>
+    <div class="waroverlay-body">
+    <div class="cardlist-container">
+      <div class="card card-hud">${this.returnCardImage(card)}</div>
+    </div>
+    <div class="warstats">
+      <div class="winner">${winner}</div>
+      <div>Roll: ${roll}</div>
+      <div>Mod: -${(modifications)?modifications:""}</div>
+      <div>Modified Roll: ${roll-modifications}</div>
+    `;
+    if (player){
+      html += `<div>Sponsor: ` + player.toUpperCase() + "</div>";
+    }  
+    html += `</div></div>`;
+
+    this.overlay.show(this.app, this, html);
+  }
 
 
   handleExportMenu() {
@@ -1215,6 +1237,7 @@ try {
 
             if (twilight_self.game.player == 2) {
               this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play second ${twilight_self.cardToText("che")} coup</div>`);
+              twilight_self.attachCardboxEvents();
               return 0;
             }   
 
@@ -1464,7 +1487,7 @@ try {
       if (mv[1] == "placement") { this.game.state.limit_placement = 1; }
       if (mv[1] == "milops") { this.game.state.limit_milops = 1; }
       if (mv[1] == "ignoredefcon") { this.game.state.limit_ignoredefcon = 1; }
-      if (mv[1] == "region") { this.game.state.limit_region += mv[2]; }
+      if (mv[1] == "region") { this.game.state.limit_region.push(mv[2]); }
       this.game.queue.splice(qe, 1);
     }
 
@@ -1589,7 +1612,7 @@ try {
       if (mv[1] == "placement") { this.game.state.limit_placement = 0; }
       if (mv[1] == "milops") { this.game.state.limit_milops = 0; }
       if (mv[1] == "ignoredefcon") { this.game.state.limit_ignoredefcon = 0; }
-      if (mv[1] == "region") { this.game.state.limit_region = ""; }
+      if (mv[1] == "region") { this.game.state.limit_region = []; }
       this.game.queue.splice(qe, 1);
     }
 
@@ -1684,36 +1707,38 @@ try {
 
     if (mv[0] === "cambridge") {
       if (this.game.player == 1) {
-        let placetxt = '<div class="status-message" id="status-message">' + player.toUpperCase() + " place 1 OP in";
-        for (let b = 1; b < mv.length; b++) {
-          placetxt += " ";
-          placetxt += mv[b];
-        }
-  	    placetxt += '</div>';
-        twilight_self.updateStatus(placetxt);
+        let placetxt = `<div class="status-message" id="status-message">${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
+          placetxt += " ";
+          placetxt += this.cardToText(mv[i], true); //FIX Names
+
+          //
+          // names of cards differ for these two. update so region matches
+          //
+          let region = mv[i];
+          if (region.includes("america")){   //centralamerica --> camerica, southamerica --> samerica
+            region = region[0] + "america";
+          }
+            
           for (var k in this.countries) {
-
-            //
-            // names of cards differ for these two. update so region matches
-            //
-            if (mv[i] == "centralamerica") { mv[i] = "camerica"; }
-            if (mv[i] == "southamerica") { mv[i] = "samerica"; }
-
-            if (this.countries[k].region.indexOf(mv[i]) > -1) {
-              let divname = "#"+k;
-              $(divname).off();
-              $(divname).on('click',function() {
-                let countryname = $(this).attr('id');
-                twilight_self.playerFinishedPlacingInfluence();
-                twilight_self.countries[countryname].ussr += 1;
-                twilight_self.showInfluence(countryname, "ussr");
-                twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
-                twilight_self.endTurn();
-              });
+            if (this.countries[k].region.indexOf(region) > -1) {
+              $("#"+k).addClass("easterneurope");
             }
           }
         }
+        
+        $(".easterneurope").off();
+        $(".easterneurope").on('click',function() {
+          let countryname = $(this).attr('id');
+          twilight_self.playerFinishedPlacingInfluence();
+          twilight_self.countries[countryname].ussr += 1;
+          twilight_self.showInfluence(countryname, "ussr");
+          twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
+          twilight_self.endTurn();
+        });
+        placetxt += '</div>';
+        twilight_self.updateStatus(placetxt);
+
       }
       this.game.queue.splice(qe, 1);
       shd_continue = 0;
@@ -1921,8 +1946,12 @@ try {
 
 
     if (mv[0] === "realign") {
-      this.updateLog(mv[1].toUpperCase() + " realigns " + this.countries[mv[2]].name + " with 1 OPS");
-      if (mv[1] != player) { this.playRealign(mv[2]); }
+      this.updateLog(mv[1].toUpperCase() + " attempts to realign " + this.countries[mv[2]].name);
+      
+      if (mv[1] != player) { //Other player needs to "check the math" 
+        this.playRealign(mv[2]);
+      }
+
       this.game.queue.splice(qe, 1);
     }
 
@@ -2254,9 +2283,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["fiveyearplan", "puppet", "duckandcover", "koreanwar", "romanianab", "nasser", "comecon", "naziscientist"];
+          this.game.deck[0].hand = ["fiveyearplan", "iraniraq", "duckandcover", "koreanwar", "brushwar", "nasser", "comecon", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["socgov", "fidel", "che", "vietnamrevolts", "blockade", "warsawpact", "degaulle", "china"];
+          this.game.deck[0].hand = ["socgov", "indopaki", "che", "vietnamrevolts", "blockade", "warsawpact", "arabisraeli", "china"];
         }
       }
 
@@ -2598,8 +2627,8 @@ try {
         return 0; //Stop running through the queue
       }
 
-      this.game.queue.push("sharehandsize");
-      this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+      /*this.game.queue.push("sharehandsize");
+      this.game.queue.push("RESETCONFIRMSNEEDED\tall");*/
 
       this.updateStatus("<div class='status-message' id='status-message'>Preparing for round " + this.game.state.round+"</div>");
 
@@ -2893,18 +2922,26 @@ try {
               }
               this.addMove("setvar\t"+this.game.player+"\topponent_cards_in_hand\t"+cards_in_hand);
               this.endTurn();
-              return 0;
             }
           }
-        }
+        } 
 
       if (confirmsNeeded == 0){
+        console.log("Removing " + this.game.queue[qe] + "from the queue");
         this.game.queue.splice(qe, 1);
         return 1;
       }
       return 0;
 
     }
+    //twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+    if (mv[0] === "war"){
+      let sponsor = mv[5] || "";
+      this.showWarOverlay(mv[1],mv[2],parseInt(mv[3]),parseInt(mv[4]),sponsor);
+      this.game.queue.splice(qe, 1);
+      return 1;
+    }
+
 
     //
     // avoid infinite loops
@@ -3188,7 +3225,8 @@ playerTurnHeadlineSelected(card, player) {
 
       twilight_self.game.spick_card = card;
       twilight_self.game.spick_hash = hash2;
-
+      twilight_self.game.spick_done = 0;
+      
       twilight_self.addMove("SIMULTANEOUS_PICK\t"+twilight_self.game.player+"\t"+hash3+"\t"+hash3_sig);
      
     }
@@ -3254,7 +3292,7 @@ playerTurnHeadlineSelected(card, player) {
         }
       } else {
         this.updateStatusAndListCards(`Waiting for USSR to move`);
-        
+        this.attachCardboxEvents();
       }
       return;
     }
@@ -3271,7 +3309,7 @@ playerTurnHeadlineSelected(card, player) {
         if (this.game.player == 2) {
           let scoring_cards = [];
           for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-            if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+            if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
               scoring_cards.push(this.game.deck[0].hand[i]);
             }
           }
@@ -3348,6 +3386,7 @@ playerTurnHeadlineSelected(card, player) {
         }
       } else {
         this.updateStatusAndListCards(`Waiting for US to move`);
+        this.attachCardboxEvents();
       }
       return;
     }
@@ -3411,7 +3450,7 @@ playerTurnHeadlineSelected(card, player) {
           }else{
             //Give player option to keep China card until next round
 
-            let user_message = 'You only have the China Card remaining. Do you wish to play it this turn?';
+            let user_message = `You only have the ${this.cardToText("china")} card remaining. Do you wish to play it this turn?`;
             let html = '<ul><li class="card" id="play">play card</li><li class="card" id="skipturn">skip turn</li></ul>';
             this.updateStatusWithOptions(user_message, html,false);
             this.attachCardboxEvents(function(action) {
@@ -3584,10 +3623,8 @@ playerTurnHeadlineSelected(card, player) {
             }
             playable_cards = [];
             for (i = 0; i < this.game.deck[0].hand.length; i++) {
-              if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-                if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-                  playable_cards.push(this.game.deck[0].hand[i]);
-                }
+              if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
+                playable_cards.push(this.game.deck[0].hand[i]);
               }
             }
           } else {
@@ -3681,7 +3718,7 @@ playerTurnHeadlineSelected(card, player) {
         }
       }
 
-      if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
+      if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card]?.scoring == 0) {
         let c = await sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
         if (c) {} else { return; }
       }
@@ -3706,7 +3743,7 @@ playerTurnHeadlineSelected(card, player) {
 
         //
         // scoring cards score, not get discarded
-        if (twilight_self.game.deck[0].cards[card].scoring == 0) {
+        if (twilight_self.game.deck[0].cards[card]?.scoring == 0) {
           twilight_self.hideCard(card);
           twilight_self.removeCardFromHand(card);
           twilight_self.addMove("resolve\tplay");
@@ -3752,7 +3789,7 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-      if (twilight_self.game.deck[0].cards[card].scoring == 1) {
+      if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="card" id="event">score region</li></ul>`;
 
@@ -4031,20 +4068,18 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.player == 0) { return; }
 
     let original_ops = ops;
-
+    let twilight_self = this;
+    
     //
     // modify ops
-    //
     ops = this.modifyOps(ops, card);
 
     let me = "ussr";
-    let twilight_self = this;
+    if (this.game.player == 2) { me = "us"; }
 
     // reset events / DOM
     twilight_self.playerFinishedPlacingInfluence();
-
-    if (this.game.player == 2) { me = "us"; }
-
+ 
     if (player === me) {
 
       let bind_back_button_state = true;
@@ -4052,9 +4087,9 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.back_button_cancelled == 1) { bind_back_button_state = false; }
 
-      let html = twilight_self.formatPlayOpsStatus(player, ops, bind_back_button_state); 
+      let html = twilight_self.formatPlayOpsStatus(player, ops); 
       
-      twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`,html,true);
+      twilight_self.updateStatusWithOptions(`${player.toUpperCase()} plays ${ops} OPS:`, html, bind_back_button_state);
 
       if (bind_back_button_state) {
         twilight_self.bindBackButtonFunction(() => {
@@ -4062,7 +4097,7 @@ playerTurnHeadlineSelected(card, player) {
           twilight_self.game.state.events.china_card_eligible = 1;
           twilight_self.addMove("revert");
           twilight_self.endTurn();
-  	  return;
+  	      return;
         });
       }
 
@@ -4101,6 +4136,7 @@ playerTurnHeadlineSelected(card, player) {
           if (j == 1) {
             twilight_self.uneventOpponentControlledCountries(player, card);
           }
+
           twilight_self.playerPlaceInfluence(player, (country, player) => {
 
             j--;
@@ -4180,115 +4216,155 @@ playerTurnHeadlineSelected(card, player) {
 
 
         if (action2 == "realign") {
-
-          let header_msg = `Realign with ${ops} OPS, or:`;
-          let html = `<ul><li class="card" id="cancelrealign">end turn</li></ul>`;
+          let alignment_rolls = ops;
+          let header_msg = `Pick a target to realign (${alignment_rolls} rolls), or:`;
+          let html = `<ul><li class="card" id="cancelrealign">end turn without rolling</li></ul>`;
           twilight_self.updateStatusWithOptions(header_msg,html,true);
 
           twilight_self.attachCardboxEvents(function(action2) {
-
             if (action2 == "cancelrealign") {
               twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+" opts to end realignments");
               twilight_self.endTurn();
               return;
             }
-
           });
 
-          let j = ops;
-          twilight_self.playerRealign(player, card, () => {
 
-            //
-            // disable countries without
-            //
-            for (var countryname in twilight_self.countries) {
+          ///////////////
+          //playerRealign(player, card, mycallback=null) {
 
-              let divname3 = "#"+countryname;
-
-              if (twilight_self.game.player == 1) {
-                if (twilight_self.countries[countryname].us < 1) {
-                  $(divname3).off();
-                  $(divname3).on('click',()=>{ twilight_self.displayModal('Invalid Realign Target'); });
-                }
-              } else {
-                if (twilight_self.countries[countryname].ussr < 1) {
-                  $(divname3).off();
-                  $(divname3).on('click',()=>{ twilight_self.displayModal('Invalid Realign Target'); });
-                }
-              }
-            }
-
-
-            j--;
-
+ 
+          $(".country").off();
+          $(".country").on('click', async function() {
             
-            let html = `<ul><li class="card" id="cancelrealign">end turn</li></ul>`;
-             
-            twilight_self.updateStatusWithOptions(`Realign with ${j} OPS, or:`,html,true);
-            twilight_self.attachCardboxEvents(function(action2) {
+            let c = $(this).attr('id');
 
-              if (action2 == "cancelrealign") {
+            let coupHeader = `Cannot Realign ${twilight_self.countries[c].name}`;
+            let failureReason = ""; //Also tells us if it is a valid target
 
-                //
-                // reverse order of realigns
-                //
-                // they need to be executed in the order that we did them for bonuses to work properly
-                //
-                let new_moves = [];
-                for (let z = twilight_self.moves.length-1; z >= 0; z--) {
-                  let tmpar = twilight_self.moves[z].split("\t");
-                  if (tmpar[0] === "realign") {
-                    new_moves.push(twilight_self.moves[z]);
-                  } else {
-                    new_moves.unshift(twilight_self.moves[z])
-                  }
-                }
-                twilight_self.moves = new_moves;
-                twilight_self.endTurn();
-                return;
+            //
+            // Region Restrictions
+            //
+            if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[c].region) > -1) {
+              failureReason = "Invalid Region for Realignment";
+            }
+
+            //
+            // DEFCON restrictions
+            //
+            if (twilight_self.game.state.limit_ignoredefcon == 0 && twilight_self.game.state.events.inftreaty == 0) {
+              if (twilight_self.countries[c].region == "europe" && twilight_self.game.state.defcon < 5) {
+                failureReason = "DEFCON prevents realignments in Europe";
               }
-            });
-
-
-            if (j <= 0) {
-              if (twilight_self.isRegionBonus(card) == 1) {
-                twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with bonus OP</div>");
-                j++;
-                twilight_self.limitToRegionBonus();
-                twilight_self.endRegionBonus();
-              } else {
-
-                //
-                // reverse order of realigns
-                //
-                // they need to be executed in the order that we did them for bonuses to work properly
-                //
-                let new_moves = [];
-                for (let z = twilight_self.moves.length-1; z >= 0; z--) {
-                  let tmpar = twilight_self.moves[z].split("\t");
-                  if (tmpar[0] === "realign") {
-                    new_moves.push(twilight_self.moves[z]);
-                  } else {
-                    new_moves.unshift(twilight_self.moves[z])
-                  }
-                }
-                twilight_self.moves = new_moves;
-                twilight_self.endTurn();
-                return;
+              if (twilight_self.countries[c].region == "asia" && twilight_self.game.state.defcon < 4) {
+                failureReason = "DEFCON prevents realignments in Asia";
+              }
+              if (twilight_self.countries[c].region == "seasia" && twilight_self.game.state.defcon < 4) {
+                failureReason = "DEFCON prevents realignments in Asia";
+              }
+              if (twilight_self.countries[c].region == "mideast" && twilight_self.game.state.defcon < 3) {
+                failureReason = "DEFCON prevents realignments in the Middle-East";
               }
             }
+
+            /* Though DEFCON is sufficient reason to stop a coup, it may be more interesting to the player to fail in more specific ways, if possible*/
+
+            if (twilight_self.game.state.events.usjapan == 1 && c == "japan" && player == "ussr") {
+              failureReason = "US / Japan Alliance prevents realignments in Japan";
+            }
+
+
+            // Nato Coup Restriction
+            if (twilight_self.countries[c].region == "europe" && twilight_self.game.state.events.nato == 1 && player == "ussr") {
+              if (twilight_self.isControlled("us", c) == 1) {
+                if ( (c == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (c == "france" && twilight_self.game.state.events.nato_france == 0) ) {
+                  //If West Germany or France have been removed from Nato (by Degaulle or WillyBrandt), then one can coup there....
+                } else {
+                  failureReason = "NATO prevents realignments of US-controlled countries in Europe";
+                }
+              }
+            }
+
+            if ((player == "us" && twilight_self.countries[c].ussr <= 0) || (player == "ussr" && twilight_self.countries[c].us <= 0)) {
+              failureReason = "No enemy influence";
+            } 
+
+
+            if (failureReason.length > 0) { 
+            
+              twilight_self.displayModal(coupHeader, failureReason);
+            
+            }else{ //No reason to fail, go ahead and launch coup   
+              //
+              // vietnam revolts and china card bonuses
+              //
+              if (twilight_self.countries[c].region !== "seasia") { twilight_self.game.state.events.vietnam_revolts_eligible = 0; }
+              if (twilight_self.countries[c].region !== "seasia" && twilight_self.countries[c].region !== "asia") { twilight_self.game.state.events.china_card_eligible = 0; }
+             
+              //Play move / add move to queue
+              var result = twilight_self.playRealign(c);
+              twilight_self.addMove("realign\t"+player+"\t"+c);
+
+
+              alignment_rolls--;
+
+              //Update directions
+              twilight_self.updateStatusWithOptions(`Pick a target to realign (${alignment_rolls} rolls), or:`,`<ul><li class="card" id="cancelrealign">end turn</li></ul>`,false);
+              twilight_self.attachCardboxEvents(function(action2) {
+                if (action2 == "cancelrealign") { //Not a cancel, keeps realignment rolls so far...
+                  twilight_self.reverseMoves("realign");
+                  return;
+                }
+              });
+
+              if (alignment_rolls <= 0) {
+                if (twilight_self.isRegionBonus(card) == 1) {
+                  twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with bonus OP</div>");
+                  twilight_self.limitToRegionBonus(); //Turn off click events outside of regional bonus
+                  twilight_self.endRegionBonus(); //Toggle flags about aplicability of regional bonuses
+                  alignment_rolls++;
+                } else {
+
+                  twilight_self.reverseMoves("realign");             
+                  return;
+                }
+              }
+
+            }
+          
           });
+
         }
+            
 
         twilight_self.bindBackButtonFunction(() => {
           twilight_self.playOps(player, ops, card);
-        });
+        });       
+
 
       });
+
+    }else{
+      this.updateStatusAndListCards(`${player.toUpperCase()} playing ${this.game.state.event_name} for ${ops} OPS`);
+      this.attachCardboxEvents();
     }
 
     return;
 
+  }
+
+  reverseMoves(action){
+    let new_moves = [];
+    for (let z = this.moves.length-1; z >= 0; z--) {
+      let tmpar = this.moves[z].split("\t");
+      if (tmpar[0] === action) {
+        new_moves.push(this.moves[z]);
+      } else {
+        new_moves.unshift(this.moves[z])
+      }
+    }
+    this.moves = new_moves;
+    this.endTurn();
   }
 
   async confirmEvent() {
@@ -4296,7 +4372,7 @@ playerTurnHeadlineSelected(card, player) {
     return c;
   }
 
-  formatPlayOpsStatus(player, ops, bind_back_button=false) {
+  formatPlayOpsStatus(player, ops) {
     let html = '<ul>';
 
     if ((this.game.player == this.game.state.events.cubanmissilecrisis)  && this.game.state.events.cubanmissilecrisis > 0 ) {
@@ -4940,126 +5016,6 @@ playerTurnHeadlineSelected(card, player) {
 
 
  
-  playerRealign(player, card, mycallback=null) {
-
-    // reset off
-    this.playerFinishedPlacingInfluence();
-
-    var twilight_self = this;
-    var valid_target = 0;
-
-    // all countries can be realigned
-    for (var i in this.countries) {
-
-      let countryname = i;
-
-      valid_target = 1;
-
-
-
-
-
-      //
-      // Region Restrictions
-      //
-      if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
-        valid_target = 0;
-      }
-
-      //
-      // DEFCON restrictions
-      //
-      if (twilight_self.game.state.limit_ignoredefcon == 0) {
-        if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
-          valid_target = 0;
-        }
-        if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
-          valid_target = 0;
-        }
-        if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
-          valid_target = 0;
-        }
-        if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
-          valid_target = 0;
-        }
-      }
-
-
-
-      //
-      // END OF HISTORY
-      //
-      if (twilight_self.game.state.events.inftreaty == 1){
-        valid_target = 1;
-      }    
-
-      //
-      // Can Only Realign Countries with Opponent Influence
-      //
-      if (twilight_self.game.player == 1) {
-        if (twilight_self.countries[countryname].us < 1) {
-          valid_target = 0;
-        }
-      } else {
-        if (twilight_self.countries[countryname].ussr < 1) {
-          valid_target = 0;
-        }
-      }
-
-
-      let divname      = '#'+i;
-
-      if (valid_target == 1) {
-
-        $(divname).off();
-        $(divname).on('click', function() {
-
-          let c = $(this).attr('id');
-
-          //
-          // US / Japan Alliance
-          //
-           if (twilight_self.game.state.events.usjapan == 1 && c == "japan" && player == "ussr") {
-            // twilight_self.displayModal("US / Japan Alliance prevents realignments in Japan");
-            twilight_self.displayModal("Invalid Realignment", `US / Japan Alliance prevents realignments in Japan`);
-	    return;
-          }
-
-          //
-          // Nato
-          //
-          if (twilight_self.game.state.events.nato == 1 && twilight_self.countries[c].region == "europe" && player == "ussr") {
-            if (twilight_self.isControlled("us", c) == 1) {
-              if ( (c == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (c == "france" && twilight_self.game.state.events.nato_france == 0) ) {} else {
-                twilight_self.displayModal("Invalid Realignment", `Nato prevents realignments in US Controlled countries in Europe`);
-	        return;
-              }
-            }
-          }
-
-
-          //
-          // vietnam revolts and china card bonuses
-          //
-          if (twilight_self.countries[c].region !== "seasia") { twilight_self.game.state.events.vietnam_revolts_eligible = 0; }
-          if (twilight_self.countries[c].region !== "seasia" && twilight_self.countries[c].region !== "asia") { twilight_self.game.state.events.china_card_eligible = 0; }
-         
-          var result = twilight_self.playRealign(c);
-          twilight_self.addMove("realign\t"+player+"\t"+c);
-          mycallback();
-                  
-        });
-
-      } else {
-
-        $(divname).off();
-        $(divname).on('click', function() {
-          twilight_self.displayModal("Invalid Target");
-        });
-
-      }
-    }
-  }
 
   playerPlaceInfluence(player, mycallback=null) {
 
@@ -5267,6 +5223,7 @@ playerTurnHeadlineSelected(card, player) {
       this.advanceSpaceRace(player);
     } else {
       this.updateLog(player.toUpperCase() + ` fails in the Space Race with roll ${roll}`);
+      this.displayModal(player.toUpperCase() + " fails to advance in the Space Race");
     }
 
   }
@@ -5326,7 +5283,7 @@ playerTurnHeadlineSelected(card, player) {
 
       /* Though DEFCON is sufficient reason to stop a coup, it may be more interesting to the player to fail in more specific ways, if possible*/
 
-      if (twilight_self.game.state.events.usjapan == 1 && countryname == "japan") {
+      if (twilight_self.game.state.events.usjapan == 1 && countryname == "japan" && player == "ussr") {
         failureReason = "US / Japan Alliance prevents coups in Japan";
       }
 
@@ -5369,7 +5326,7 @@ playerTurnHeadlineSelected(card, player) {
         }
         if (player == "ussr" && twilight_self.game.state.events.vietnam_revolts == 1 && twilight_self.game.countries[countryname].region == "seasia") {
     	    if (twilight_self.returnOpsOfCard(card) == 1 && twilight_self.game.state.events.redscare_player1 >= 1) {
-            twilight_self.updateLog("Vietnam Revolts bonus OP removed by Red Purge");
+            twilight_self.updateLog("Vietnam Revolts bonus OP negated by Red Purge");
     	    } else { 
             twilight_self.updateLog("Vietnam Revolts bonus OP added to Southeast Asia coup...");
             ops++;
@@ -5506,7 +5463,7 @@ playerTurnHeadlineSelected(card, player) {
     if (winning > 0) {
 
       if (this.browser_active == 1) {
-        this.displayModal('SUCCESSFUL COUP!', `${player.toUpperCase()} shifts influence in ${this.countries[countryname].name} by ${winning}`);
+        this.displayModal(`COUP in ${this.countries[countryname].name}!`, `${player.toUpperCase()} successfully shifts influence in by ${winning}`);
       }
 
       let removed = 0;
@@ -5529,7 +5486,12 @@ playerTurnHeadlineSelected(card, player) {
       this.placeInfluence(countryname, gained, player);
     
     } else {
-      this.displayModal(`COUP FAILS!`);
+      if ((player == "us" && this.game.player == 2) || (player == "ussr" && this.game.player == 1) ) {
+        this.displayModal(`COUP FAILS!`);
+      }else{
+        this.displayModal(`COUP in ${this.countries[countryname].name}!`,"Your forces repel the coup and the government remains in power");
+      }
+      
       this.updateLog(`${player.toUpperCase()}'s coup in ${this.countries[countryname].name} fails, no change in influence`);
     }
 
@@ -5549,11 +5511,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
   playRealign(country) {
-
-    let outcome_determined = 0;
-
-    while (outcome_determined == 0) {
-
+   
       let bonus_us = 0;
       let bonus_ussr = 0;
 
@@ -5581,6 +5539,7 @@ playerTurnHeadlineSelected(card, player) {
       if (country === "japan")  { bonus_us++; }
       if (country === "canada") { bonus_us++; }
       if (country === "finland") { bonus_ussr++; }
+      if (country === "poland") { bonus_ussr++; }
       if (country === "romania") { bonus_ussr++; }
       if (country === "afghanistan") { bonus_ussr++; }
       if (country === "northkorea") { bonus_ussr++; }
@@ -5597,38 +5556,27 @@ playerTurnHeadlineSelected(card, player) {
       let roll_us   = this.rollDice(6);
       let roll_ussr = this.rollDice(6);
 
-      this.updateLog(`US bonus (${bonus_us}) + US roll (${roll_us}) vs. USSR bonus (${bonus_ussr}) + USSR roll (${roll_ussr})`);
+      this.updateLog(`Realignment: US bonus (${bonus_us}) + US roll (${roll_us}) vs. USSR bonus (${bonus_ussr}) + USSR roll (${roll_ussr})`);
 
       roll_us   = roll_us + bonus_us;
       roll_ussr = roll_ussr + bonus_ussr;
 
       if (roll_us > roll_ussr) {
-        outcome_determined = 1;
         let diff = roll_us - roll_ussr;
         if (this.countries[country].ussr > 0) {
-          if (this.countries[country].ussr < diff) {
-            diff = this.countries[country].ussr;
-          }
+          diff = Math.min(diff, this.countries[country].ussr);
           this.removeInfluence(country, diff, "ussr");
         }
       }
       if (roll_us < roll_ussr) {
-        outcome_determined = 1;
         let diff = roll_ussr - roll_us;
         if (this.countries[country].us > 0) {
-          if (this.countries[country].us < diff) {
-            diff = this.countries[country].us;
-          }
+          diff = Math.min(diff, this.countries[country].us);
           this.removeInfluence(country, diff, "us");
         }
       }
-      if (roll_us === roll_ussr) {
-        outcome_determined = 1;
-      }
-    }
-
-    this.showInfluence(country, "us");
-    this.showInfluence(country, "ussr");
+   
+    this.showInfluence(country);
 
   }
 
@@ -5776,7 +5724,7 @@ playerTurnHeadlineSelected(card, player) {
       for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
 	        try {
-            if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+            if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
               let player = "us";
               let winner = "ussr";
               if (this.game.player == 1) { player = "ussr"; winner = "us"; this.game.winner = 2; }
@@ -6011,7 +5959,7 @@ playerTurnHeadlineSelected(card, player) {
     state.limit_realignments = 0;
     state.limit_placement = 0;
     state.limit_spacerace = 0;
-    state.limit_region = "";
+    state.limit_region = [];
     state.limit_ignoredefcon = 0;
 
     // track as US (+) and USSR (-)
@@ -6751,6 +6699,7 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
+
   limitToRegionBonus() {
     for (var i in this.countries) {
       if (this.countries[i].region.indexOf(this.game.state.events.region_bonus) == -1) {
@@ -6758,29 +6707,28 @@ playerTurnHeadlineSelected(card, player) {
         $(divname).off();
       } else {
 
-    let extra_bonus_available = 0;
-    if (this.game.state.events.region_bonus == "seasia" && this.game.state.events.china_card_eligible == 1) {
-      extra_bonus_available = 1;
-    }
-
-    if (extra_bonus_available == 0) {
-            if (this.game.player == 1) {
-
-              // prevent breaking control
-              if (this.isControlled("us", i) == 1) {
-                let divname = '#'+i;
-                $(divname).off();
+        let extra_bonus_available = 0;
+        if (this.game.state.events.region_bonus == "seasia" && this.game.state.events.china_card_eligible == 1) {
+          extra_bonus_available = 1;
         }
-            } else {
 
-              // prevent breaking control
-              if (this.isControlled("ussr", i) == 1) {
-                let divname = '#'+i;
-                $(divname).off();
+        if (extra_bonus_available == 0) {
+          if (this.game.player == 1) {
+            // prevent breaking control
+            if (this.isControlled("us", i) == 1) {
+              let divname = '#'+i;
+              $(divname).off();
+            }
+          } else {
+
+            // prevent breaking control
+            if (this.isControlled("ussr", i) == 1) {
+              let divname = '#'+i;
+              $(divname).off();
+            }
+          }
         }
       }
-    }
-        }
 
     }
     return;
@@ -7837,6 +7785,7 @@ playerTurnHeadlineSelected(card, player) {
 
   advanceSpaceRace(player) {
 
+    this.displayModal(`${player.toUpperCase()} advances in the Space Race`);
     //Parameters to simplify the function
     let sr_player = "space_race_us";
     let sr_opponent = "space_race_ussr";
@@ -7884,6 +7833,7 @@ playerTurnHeadlineSelected(card, player) {
     }else{
       this.game.state.vp -= vp_change;
     }
+    
     this.updateVictoryPoints();
     this.updateSpaceRace();
   }
@@ -8657,7 +8607,8 @@ playerTurnHeadlineSelected(card, player) {
   playEvent(player, card) {
 
     if (this.game.deck[0].cards[card] != undefined) {
-      this.updateStatus(`<div class='status-message' id='status-message'>Playing event: ${this.cardToText(card)}</div>`);
+      this.updateStatus(`<div class='status-message' id='status-message'>${player.toUpperCase()} is playing ${this.cardToText(card)}</div>`);
+      this.attachCardboxEvents();
     } else {
       //
       // event already run - sync loading error

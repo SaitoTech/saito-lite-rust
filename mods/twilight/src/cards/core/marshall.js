@@ -5,7 +5,7 @@
       var twilight_self = this;
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Marshall Plan</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Marshall Plan</div>");
         return 0;
 
       }

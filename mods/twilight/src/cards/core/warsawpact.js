@@ -7,7 +7,7 @@
       this.game.state.events.warsawpact = 1;
 
       if (this.game.player == 2) {
-        this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
+        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
         return 0;
       }
       if (this.game.player == 1) {

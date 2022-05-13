@@ -4,7 +4,7 @@
       this.game.state.events.reformer = 1;
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for USSR to play The Reformer</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>Waiting for USSR to play The Reformer</div>");
         return 0;
 
       }

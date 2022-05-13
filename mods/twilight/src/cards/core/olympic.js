@@ -11,6 +11,7 @@
 
       if (player == me) {
         this.updateStatus(`<div class='status-message' id='status-message'>${opponent.toUpperCase()} is deciding whether to boycott the ${this.cardToText(card)}</div>`);
+        this.attachCardboxEvents();
         return 0;
       } else {
 
@@ -26,8 +27,8 @@
             twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
             twilight_self.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
             twilight_self.addMove("defcon\tlower");
-            twilight_self.addMove("NOTIFY\t"+opponent.toUpperCase()+" gets 4 OPS");
-            twilight_self.addMove("NOTIFY\t"+me.toUpperCase()+" boycotts the Olympics");
+            twilight_self.addMove("modal\t"+me.toUpperCase()+" boycotts the Olympics");
+            twilight_self.addMove("NOTIFY\t"+me.toUpperCase()+" boycotts the Olympics, "+opponent.toUpperCase()+" gets 4 OPS");
             twilight_self.endTurn();
             return;
           }
@@ -51,15 +52,15 @@
 
               if (ussrroll > usroll) {
                 twilight_self.addMove("vp\tussr\t2");
-                twilight_self.addMove("NOTIFY\tUSSR rolls "+ussrroll+" / US rolls "+usroll);
-                twilight_self.addMove("NOTIFY\t"+me.toUpperCase()+" participates in the Olympics");
+                twilight_self.addMove("NOTIFY\tOlympic Games: USSR rolls "+ussrroll+" / US rolls "+usroll);
+                twilight_self.addMove("modal\t USSR wins the Olympics");
                 twilight_self.endTurn();
                 winner = 1;
               }
               if (usroll > ussrroll) {
                 twilight_self.addMove("vp\tus\t2");
-                twilight_self.addMove("NOTIFY\tUSSR rolls "+ussrroll+" / US rolls "+usroll);
-                twilight_self.addMove("NOTIFY\t"+me.toUpperCase()+" participates in the Olympics");
+                twilight_self.addMove("NOTIFY\tOlympic Games: USSR rolls "+ussrroll+" / US rolls "+usroll);
+                twilight_self.addMove("modal\t US wins the Olympics");
                 twilight_self.endTurn();
                 winner = 2;
               }
