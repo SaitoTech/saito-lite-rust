@@ -45,7 +45,7 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
     </div>
 
     <div id="withdrawl-confirm-cont" class="decision-cont">
-      <p class="check-fee-text">Check fee for withdrawing <b>1 trx</b> to <b>TC19yhPpSKvyZGsvDJp2oJi5NmBJDgPfiq</b>?</p>
+      <p class="check-fee-text">Check fee for withdrawing?</p>
       <a href="#" id="withdraw-accept"> Yes </a> &nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;
       <a href="#" id="withdraw-reject"> Cancel withdraw</a>
     </div>

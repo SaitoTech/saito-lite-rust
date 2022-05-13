@@ -107,10 +107,16 @@ module.exports = MixinAppspace = {
           return false;          
         }
 
+        if (amount < 0) {
+          document.querySelector(".max-amount-error").innerHTML = "Amount should be greater than 0";
+          document.querySelector(".max-amount-error").style.display = "block";
+          return false;          
+        }
+
 
         document.querySelector(".decision-cont").style.display = 'none';
         document.querySelector("#withdrawl-sent-cont").style.display = 'none';
-        document.getElementById("confirm-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
+        document.getElementById("check-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
         document.querySelector("#withdrawl-confirm-cont").style.display = 'block';
 
       }
