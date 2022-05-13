@@ -103,12 +103,13 @@ module.exports = MixinAppspace = {
         amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
 
         if (amount > amount_avl) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Not enough amount avaibale ("+amount_avl+" available)";
           document.querySelector(".max-amount-error").style.display = "block";
           return false;          
         }
 
-        if (amount < 0) {
-          document.querySelector(".max-amount-error").innerHTML = "Amount should be greater than 0";
+        if (amount <= 0) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Amount should be greater than 0";
           document.querySelector(".max-amount-error").style.display = "block";
           return false;          
         }

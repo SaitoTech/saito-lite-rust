@@ -30,7 +30,7 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
                 Available Balance &nbsp; ${withdraw_balance} ${deposit_ticker}
               </div>
             </div>
-            <div class="max-amount-error error-msg">Error: Amount shouldnt be greater than max amount (${withdraw_balance} ${deposit_ticker})</div>
+            <div class="max-amount-error error-msg"></div>
             <input type="number" min="0" step="0.00000001" id="withdraw_amount" class="input-elem withdraw_amount" value="" required>
             <div class="max-amount-btn" id="max-amount-btn">MAX</div>
           </div>
@@ -45,7 +45,7 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
     </div>
 
     <div id="withdrawl-confirm-cont" class="decision-cont">
-      <p class="check-fee-text">Check fee for withdrawing?</p>
+      <p id="check-fee-text">Check fee for withdrawing?</p>
       <a href="#" id="withdraw-accept"> Yes </a> &nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;
       <a href="#" id="withdraw-reject"> Cancel withdraw</a>
     </div>
