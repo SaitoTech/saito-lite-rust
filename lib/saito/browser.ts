@@ -229,7 +229,7 @@ class Browser {
         }
       }
     } catch (err) {
-      console.log("error in urlparams: " + err);
+      //console.log("error in urlparams: " + err);
     }
     return "";
   }
