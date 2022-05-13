@@ -4,38 +4,56 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
 
   <div class="email-appspace-withdraw-overlay" id="email-appspace-withdraw-overlay">
   
-    <div class="no-margin">
-      <div class="input-heading">Token</div>
-      <p>${deposit_ticker}</p>
-    </div>
-
-      <div class="note withdrawl">
-      Please enter an ${deposit_ticker} address and amount for withdrawal. You will next confirm the 
-      network withdrawal fee, which will be deducted from the total withdrawn. Please note withdrawal 
-      functionality is in BETA and cross-chain token deposits are not supported
-    </div>
-    
-    <div class="input-cont">
-      <div class="input-heading">Receiving Address</div>
-      <input type="text" class="input-elem withdraw_address" value="">
-    </div>
-
-    <div class="input-cont">
-      <div class="amount-cont">
-        <div class="input-heading amount-item">Amount</div>
-        <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_balance}">
-          Available Balance &nbsp; ${withdraw_balance} ${deposit_ticker}
-        </div>
+    <div id="withdrawl-form-cont" class="decision-cont">
+      
+      <div class="no-margin">
+        <div class="input-heading">Token</div>
+        <p>${deposit_ticker}</p>
       </div>
-      <input type="text" id="withdraw_amount" class="input-elem withdraw_amount" value="0.00">
-      <div class="max-amount-btn" id="max-amount-btn">MAX</div>
+
+        <div class="note withdrawl">
+          Please enter an ${deposit_ticker} address and amount for withdrawal. You will next confirm the 
+          network withdrawal fee, which will be deducted from the total withdrawn. Please note withdrawal 
+          functionality is in BETA and cross-chain token deposits are not supported
+        </div>
+        
+        <form class="withdrawal-form" id="withdrawal-form" action="/" method="POST">
+          <div class="input-cont">
+            <div class="input-heading">Receiving Address</div>
+            <input type="text" class="input-elem withdraw_address" value="" required>
+          </div>
+
+          <div class="input-cont">
+            <div class="amount-cont">
+              <div class="input-heading amount-item">Amount</div>
+              <div class="amount-item" id="amount-avl" data-amount-avl="${withdraw_balance}">
+                Available Balance &nbsp; ${withdraw_balance} ${deposit_ticker}
+              </div>
+            </div>
+            <div class="max-amount-error error-msg">Error: Amount shouldnt be greater than max amount (${withdraw_balance} ${deposit_ticker})</div>
+            <input type="number" min="0" step="0.00000001" id="withdraw_amount" class="input-elem withdraw_amount" value="" required>
+            <div class="max-amount-btn" id="max-amount-btn">MAX</div>
+          </div>
+
+           <div class="info-cont">
+             <div class="info-item">
+                <input type="submit" class="withdraw_submit" value="WITHDRAW">
+             </div>
+            </div>
+        </form>
+      
     </div>
 
-     <div class="info-cont">
-       <div class="info-item">
-          <div class="withdraw_submit">WITHDRAW</div>
-       </div>
-       </div>
+    <div id="withdrawl-confirm-cont" class="decision-cont">
+      <p class="check-fee-text">Check fee for withdrawing <b>1 trx</b> to <b>TC19yhPpSKvyZGsvDJp2oJi5NmBJDgPfiq</b>?</p>
+      <a href="#" id="withdraw-accept"> Yes </a> &nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="withdraw-reject"> Cancel withdraw</a>
+    </div>
+
+    <div id="withdrawl-sent-cont" class="decision-cont">
+      <p id="confirm-fee-text">Fee is 23, confirm withdraw?</p>
+      <a href="#" id="withdraw-fee-accept"> Yes </a> &nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="withdraw-fee-reject"> Cancel withdraw</a>
     </div>
     
   </div>
@@ -44,6 +62,19 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
 
 
 <style>
+  #withdrawl-confirm-cont, #withdrawl-sent-cont {
+    display: none;
+  }
+
+  .decision-cont a {
+    color: #fff;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .decision-cont a:hover {
+    color: #333;
+  }
+
   .email-appspace-withdraw-overlay {
     width: 45vw;
     padding: 50px 30px;
@@ -61,6 +92,11 @@ module.exports = MixinWithdrawTemplate = (app, deposit_ticker, withdraw_balance=
 
   .no-margin {
     margin: 0px;
+  }
+
+  .max-amount-error {
+    display: none;
+    color: #5d1919;
   }
 
   .input-heading{

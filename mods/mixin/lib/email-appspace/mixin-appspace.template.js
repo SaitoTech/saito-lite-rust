@@ -69,14 +69,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   <style>
 
-    .deposit {
-        color: #14b214;
-    }
-
-    .Withdrawal {
-        color: #e34927;
-    }
-
     .hide-btn {
         display: none;
     }
@@ -184,6 +176,14 @@ module.exports = MixinAppspaceTemplate = (app) => {
 .balances_withdraw {
 }
 .balances_deposit {
+}
+
+.deposit {
+    color: #14b214;
+}
+
+.withdrawal {
+    color: #e34927;
 }
   </style>
 
