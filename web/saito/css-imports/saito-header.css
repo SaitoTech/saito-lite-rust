@@ -99,7 +99,7 @@
 
 #hamburger-contents {
   display: block;
-
+  pointer-events: none;
   color: var(--saito-default-font);
 
   background-color: var(--saito-menu-background);
@@ -197,6 +197,7 @@
 
   -webkit-transform: translateX(0) !important;
   transform: translateX(0) !important;
+  pointer-events: auto !important;
 }
 
 .big-menu-container {
