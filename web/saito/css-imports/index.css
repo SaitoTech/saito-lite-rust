@@ -1,4 +1,3 @@
-
 @import url("./saito-variables.css");
 @import url("./saito-animate.css");
 @import url("./saito-font-icons.css");
@@ -9,6 +8,8 @@
 @import url("./saito-typography.css");
 @import url("./saito-components.css");
 @import url("./saito-buttons.css");
+@import url("./saito-forms.css");
+@import url("./saito-tables.css");
 @import url("./saito-header.css");
 @import url("./saito-sidebar.css");
 @import url("./saito-utility-classes.css");

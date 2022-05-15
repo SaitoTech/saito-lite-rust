@@ -1,0 +1,90 @@
+form {
+  padding: 2rem 2rem;
+  padding-top: 1.5rem;
+  border: 1px solid var(--saito-border);
+  border-radius: 8px;
+  box-shadow: 4px 4px 12px var(--saito-border);
+}
+
+.saito-form hr {
+  background-color: var(--saito-border);
+}
+
+.saito-form-header {
+  margin-bottom: 1rem;
+}
+.saito-form-header > h3 {
+}
+
+.saito-form-body {
+  padding: 1rem 0;
+}
+.saito-form-group:not(:last-child) {
+  position: relative;
+  margin-bottom: rem;
+}
+.saito-input-group {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.saito-label {
+  color: var(--saito-default);
+  font-size: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.saito-input-group {
+  margin-bottom: 2rem;
+}
+
+.saito-input-group > input,
+select {
+  padding: 0.3rem;
+  width: 100%;
+}
+
+.saito-input-group input {
+  border: none;
+  border-bottom: 1px solid var(--saito-border);
+
+  background-color: transparent;
+  color: var(--saito-default-font);
+  transition: all 0.3s;
+}
+
+.saito-input-group select {
+  padding: 0.3rem;
+  background: linear-gradient(
+    77deg,
+    var(--saito-primary) 0%,
+    var(--saito-secondary) 69%
+  );
+  /* border: 1px solid var(--saito-border); */
+  border: none;
+  color: var(--saito-white);
+  border-radius: 8px;
+}
+.saito-input-group input::placeholder {
+  transition: all 0.3s;
+}
+
+.saito-input-group input:focus {
+  border-bottom: 1px solid var(--saito-secondary);
+}
+
+.saito-input-group input:focus::placeholder {
+  color: var(--saito-primary) !important;
+  font-size: 0.7rem;
+  transform: translateX(80%);
+  opacity: 0;
+}
+
+.saito-form-footer {
+  display: flex;
+  padding: 1rem 0;
+}
+
+.saito-form-footer > button {
+  margin-left: auto;
+}

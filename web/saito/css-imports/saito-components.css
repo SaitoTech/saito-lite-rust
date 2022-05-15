@@ -62,7 +62,7 @@
   clear: both;
   position: relative;
   width: 100%;
-  margin: 4rem 0;
+  margin: 3rem 0;
   border-top: 1px solid var(--saito-paper);
 }
 
@@ -6591,39 +6591,6 @@ body:not(.has-plugin-html5video) .video-wrap video {
 
 .breadcrumb i {
   width: auto !important;
-}
-
-/* Page Title - Dark
------------------------------------------------------------------*/
-
-#page-title.page-title-dark {
-  background-color: #333;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1) !important;
-  border-bottom: none;
-}
-
-#page-title.page-title-dark h1 {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-#page-title.page-title-dark span {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-#page-title.page-title-dark .breadcrumb > .active {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-#page-title.page-title-dark .breadcrumb a {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-#page-title.page-title-dark .breadcrumb a:hover {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-#page-title.page-title-dark .breadcrumb-item + .breadcrumb-item::before {
-  color: #ccc;
 }
 
 /* Page Title - Right Aligned
@@ -13974,7 +13941,7 @@ h3.titular-title {
   flex-grow: 1;
   max-width: 100%;
   height: 0;
-  border-top: 3px double var(--saito-paper);
+  border-top: 3px double var(--saito-border);
 }
 
 .fancy-title::before {

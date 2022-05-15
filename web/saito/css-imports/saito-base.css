@@ -22,6 +22,10 @@ body {
   overflow-x: hidden !important;
 }
 
+.main-content {
+  padding-top: 1rem;
+}
+
 dl,
 dt,
 dd,
@@ -67,7 +71,6 @@ p {
 }
 
 /* Bootstrap overrides */
-
 .list-group-item {
   background-color: var(--saito-background);
   border: 1px solid var(--saito-border);

@@ -54,7 +54,6 @@
   color: var(--saito-white);
 }
 
-
 .side-content {
   position: relative;
 }
@@ -111,7 +110,6 @@
   color: var(--saito-white);
 }
 
-
 /* Sidebar mobile */
 
 .sidebar-mobile {
@@ -131,8 +129,8 @@
   height: 60px;
   background-color: var(--saito-border);
   position: fixed;
-  bottom: 2rem;
-  left: 1rem;
+  bottom: 4rem;
+  left: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,11 +142,9 @@
 .saito-sidebar-toggle-container:hover {
   opacity: 0.9;
   transform: scale(1.2);
-  
 }
-.saito-sidebar-toggle-container:hover .saito-sidebar-toggle{
- color: var(--saito-primary);
-  
+.saito-sidebar-toggle-container:hover .saito-sidebar-toggle {
+  color: var(--saito-primary);
 }
 .saito-sidebar-toggle {
   font-size: 2rem;

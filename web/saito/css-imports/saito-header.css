@@ -99,16 +99,16 @@
 
 #hamburger-contents {
   display: block;
-  height: 100vh;
+
   color: var(--saito-default-font);
-  width: 20rem;
+
   background-color: var(--saito-menu-background);
   position: absolute;
   right: 0;
   top: var(--saito-header-height);
   border: 1px solid var(--saito-border);
 
-  transition: all 0.5s;
+  transition: all 0.2s;
   opacity: 0;
   z-index: 10;
   padding: 2rem;
@@ -116,8 +116,10 @@
     1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
     1px 1rem 1rem var(--saito-border);
   border-top: none;
-  -webkit-transform: translateX(20rem);
-  transform: translateX(20rem);
+  /* -webkit-transform: translateX(20rem); */
+  /* transform: translateX(20rem); */
+  width: 10rem;
+  height: 100vh;
 }
 
 .saito-profile {
@@ -191,6 +193,8 @@
 
 .show-menu {
   opacity: 1 !important;
+  width: 20rem !important;
+
   -webkit-transform: translateX(0) !important;
   transform: translateX(0) !important;
 }

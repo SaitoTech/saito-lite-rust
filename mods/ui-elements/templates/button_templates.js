@@ -1,6 +1,6 @@
 module.exports = (app) => {
 
-    return `	
+  return `	
   
       <section id="page-title" class="mb-6">
         <div class="container clearfix">

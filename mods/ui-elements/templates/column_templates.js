@@ -6,7 +6,7 @@ module.exports = (app) => {
     </div>
   </section>
 
-    <div class="container clearfix">
+    <div class="">
 
 <div class="row col-mb-50 mb-0">
     <div class="col-12">

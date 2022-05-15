@@ -18,6 +18,9 @@ const GALLERY_TEMPLATE = require("./templates/gallery_templates")
 const HEADING_TEMPLATE = require("./templates/heading_templates")
 const TOGGLE_TEMPLATE = require("./templates/toggle_templates")
 const RADIO_TEMPLATE = require("./templates/radio_templates")
+const FORM_TEMPLATE = require("./templates/form_templates")
+const TABLE_TEMPLATE = require("./templates/table_templates")
+
 
 class UI_ELEMENTS extends AppTemplate {
 
@@ -76,6 +79,16 @@ class UI_ELEMENTS extends AppTemplate {
         heading: "lists and Cards",
         subheading: "",
         html: CARD_TEMPLATE(app)
+      },
+      forms: {
+        heading: "Forms and Inputs",
+        subheading: "",
+        html: FORM_TEMPLATE(app)
+      },
+      tables: {
+        heading: "Forms and Inputs",
+        subheading: "",
+        html: TABLE_TEMPLATE(app)
       },
       modals: {
         heading: 'Modals',
