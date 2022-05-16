@@ -25,13 +25,19 @@ class GameTestSuite extends GameTemplate {
 
     // player numbers
     this.minPlayers = 1; //2;
-    this.maxPlayers = 6;
+    this.maxPlayers = 1; //6;
 
     this.game_cardfan_visible = 0;
-    this.game_menu_visible = 0;
+    this.game_menu_visible = 1;
     this.game_hud_visible = 0;
     this.game_cardbox_visible = 0;
     this.game_playerboxes_visible = 0;
+    this.game_boardsizer_visible = 0;
+
+    this.gameMode = 0;
+
+    this.hud.mode = 0;
+    this.hud.enable_mode_change = 1;
 
     return this;
 
@@ -68,7 +74,7 @@ class GameTestSuite extends GameTemplate {
     //
     if (this.game.options.crypto != undefined) { 
       this.game.crypto = this.game.options.crypto;
-      let crypto_key = this.app.wallet.returnCryptoAddressByTicker(this.game.options.crypto);
+      let crypto_key = this.app.wallet.returnCryptoAddressByTicker(this.game.crypto);
       this.addMove("CRYPTOKEY\t"+this.app.wallet.returnPublicKey()+"\t"+crypto_key+"\t"+this.app.crypto.signMessage(crypto_key, this.app.wallet.returnPrivateKey()));
       this.endTurn();
     }
@@ -99,6 +105,81 @@ class GameTestSuite extends GameTemplate {
       },
     });
 
+    this.menu.addSubMenuOption("game-game", {
+          text : "Intro",
+          id : "game-intro",
+          class : "game-type",
+          callback : function(app, game_mod) {
+            game_mod.gameMode = 0;
+            $("#main").html(game_mod.returnMainHTML());
+            game_mod.addEventsToDom(app);
+            game_mod.updateMenuCheck();
+          },
+      });
+    this.menu.addSubMenuOption("game-game", {
+          text : "Card Game",
+          id : "game-cardgame",
+          class : "game-type",
+          callback : function(app, game_mod) {
+            game_mod.gameMode = 1;
+            $("#main").html(game_mod.returnCardGameHTML());
+            game_mod.updateMenuCheck();
+          },
+      });
+    this.menu.addSubMenuOption("game-game", {
+          text : "Board Game",
+          id : "game-boardgame",
+          class : "game-type",
+          callback : function(app, game_mod) {
+            game_mod.gameMode = 2;
+            $("#main").html(game_mod.returnBoardGameHTML());
+            game_mod.updateMenuCheck();
+          },
+      });
+    this.menu.addSubMenuOption("game-game", {
+          text : "HexBoard",
+          id : "game-hexboard",
+          class : "game-type",
+          callback : function(app, game_mod) {
+            game_mod.gameMode = 3;
+            $("#main").html(game_mod.returnHexGameHTML());
+            game_mod.updateMenuCheck();
+          },
+      });
+
+
+    this.menu.addSubMenuOption("game-game", {
+          text : "Exit",
+          id : "game-exit",
+          class : "game-exit",
+          callback : function(app, game_mod) {
+            window.location.href = "/arcade";
+          },
+      });
+
+    /* Simulate different numbers of players*/
+    this.menu.addMenuOption({
+      text: "Players",
+      id: "menu-players",
+      class: "menu-players",
+      callback: function (app, game_mod){
+        game_mod.menu.showSubMenu("menu-players");
+      },
+    });
+
+    for (let i = 1; i < 7; i++){
+      this.menu.addSubMenuOption("menu-players", {
+        text: `${i}`,
+        id: `menu-${i}-player`,
+        class: "menu-num-players",
+        callback: function (app, game_mod){
+          game_mod.menu.hideSubMenus();
+          game_mod.adjustPlayers(i);
+        },
+      });  
+    }
+    
+    /* Interface */
     this.menu.addMenuOption({
       text: "Interface",
       id: "menu-interface",
@@ -108,6 +189,99 @@ class GameTestSuite extends GameTemplate {
       },
     });
 
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "HUD",
+      id: "menu-hud",
+      class: "menu-hud",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_cardhud_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Playerbox",
+      id: "menu-playerbox",
+      class: "menu-playerbox",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.add_player_boxes_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Log",
+      id: "menu-log",
+      class: "menu-log",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.log.toggleLog();
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "HUD",
+      id: "menu-hud",
+      class: "menu-hud",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_cardhud_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Board Sizer",
+      id: "menu-board-sizer",
+      class: "menu-board-sizer",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_boardsizer_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Card fan",
+      id: "menu-fan",
+      class: "menu-fan",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_cardfan_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Card box",
+      id: "menu-cardbox",
+      class: "menu-cardbox",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.toggle_cardbox_test(game_mod.app);
+      },
+    });
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Overlay",
+      id: "menu-overlay",
+      class: "menu-overlay",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_overlay_test(game_mod.app);
+      },
+    });
+
+
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Blocking overlay",
+      id: "menu-block-overlay",
+      class: "menu-overlay",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_blocking_overlay_test(game_mod.app);
+      },
+    });
+
+
+    /* Crypto*/
     this.menu.addMenuOption({
       text: "Web3",
       id: "menu-crypto",
@@ -128,7 +302,7 @@ class GameTestSuite extends GameTemplate {
     });
 
     this.menu.addSubMenuOption("menu-crypto", {
-      text: "Send Payment",
+      text: "Payment",
       id: "crypto-send",
       class: "crypto-send",
       callback: function (app, game_mod) {
@@ -137,7 +311,7 @@ class GameTestSuite extends GameTemplate {
       },
     });
 
-    this.menu.addSubMenuOption("menu-crypto", {
+    /*this.menu.addSubMenuOption("menu-crypto", {
       text: "Receive Payment",
       id: "crypto-receive",
       class: "crypto-receive",
@@ -146,17 +320,16 @@ class GameTestSuite extends GameTemplate {
         game_mod.receive_payment_test(game_mod.app);
       },
     });
+    */
 
 
+    this.menu.render(app, this);
+    this.menu.attachEvents(app, this);
 
-
-    //
-    // add log
-    //
     this.log.render(app, this);
     this.log.attachEvents(app, this);
 
-
+    this.updateMenuCheck();
 
     //
     // add events to DOM
@@ -167,6 +340,22 @@ class GameTestSuite extends GameTemplate {
     // Saito stack.
     //
     try {
+
+      switch(this.gameMode){
+        case 1:
+           $("#main").html(this.returnCardGameHTML());
+           break;
+        case 2:
+           $("#main").html(this.returnBoardGameHTML());
+           break;
+        case 3:
+           $("#main").html(this.returnHexGameHTML());
+           break;
+        default:
+           $("#main").html(this.returnMainHTML());
+         
+      }
+
       this.addEventsToDom(this.app);
     } catch (err) {
       console.log("Error: " + err);
@@ -194,7 +383,7 @@ class GameTestSuite extends GameTemplate {
       }
       if (mv[0] === "welcome"){
         if (this.browser_active){
-          this.overlay.show(this.returnWelcomeMessage());
+          this.overlay.show(this.app, this, this.returnWelcomeMessage());
           this.game.queue.splice(qe, 1);
         }
         return 0; //Stops the game engine from cycling through the game loop
@@ -211,7 +400,7 @@ class GameTestSuite extends GameTemplate {
       //
       let crypto = this.game.crypto || "SAITO";
     
-      `<div class="introduction-container">
+      return `<div class="introduction-container">
           <p>This application provides click-to-test functionality of core backend components in the Saito Game Engine. It also serves as a showcase for how to simply and easily handle common game tasks like rolling dice, dealing cards or displaying UI elements. It also provides a basic starting point for coding games!</p>
           <p>Online Docs: <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/readme.md" target="_newsaito">game engine overview</a> | <a href="https://github.com/SaitoTech/saito-lite/blob/master/docs/saito-game-engine/api.md" target="_newsaito">api details</a></p>
           <p>Please note that testing web3 cryptocurrency support requires your wallet to be configured to support those cryptocurrencies. This application was created with support for <span id="saito_crypto">${crypto}</span> as the Web3 token -- to change to another token such as DOT or WND please specify in the advanced options menu on game create. Some card-related functionality may require you to have dealt cards to players.</p>
@@ -353,62 +542,6 @@ class GameTestSuite extends GameTemplate {
 
 
       //
-      // add player boxes button
-      //
-      document.getElementById("add_player_boxes_button").onclick = (e) => {
-        game_self.add_player_boxes_test(game_self.app);
-      }
-
-      //
-      // insecure dice roll
-      //
-      document.getElementById("insecure_dice_roll_button").onclick = (e) => {
-	game_self.insecure_dice_roll_test(game_self.app);
-      }
-
-      //
-      // secure dice roll
-      //
-      document.getElementById("secure_dice_roll_button").onclick = (e) => {
-	game_self.secure_dice_roll_test(game_self.app);
-      }
-
-      //
-      // simultaneous pick
-      //
-      document.getElementById("simultaneous_pick_button").onclick = (e) => {
-	game_self.simultaneous_pick_test(game_self.app);
-      };
-
-      //
-      // consecutive moves
-      //
-      document.getElementById("consecutive_moves_button").onclick = (e) => {
-	game_self.consecutive_moves_test(game_self.app);
-      }
-
-      //
-      // simultaneous moves
-      //
-      document.getElementById("simultaneous_moves_button").onclick = (e) => {
-	game_self.simultaneous_moves_test(game_self.app);
-      }
-
-      //
-      // show non-blocking overlay
-      //
-      document.getElementById("display_overlay_button").onclick = (e) => {
-	game_self.display_overlay_test(game_self.app);
-      }
-
-      //
-      // show blocking overlay
-      //
-      document.getElementById("display_blocking_overlay_button").onclick = (e) => {
-	game_self.display_blocking_overlay_test(game_self.app);
-      }
-
-      //
       // deal cards to players
       //
       document.getElementById("deal_cards_to_player_button").onclick = (e) => {
@@ -419,52 +552,56 @@ class GameTestSuite extends GameTemplate {
       // deal cards to the table
       //
       document.getElementById("shuffle_deck_button").onclick = (e) => {
-	game_self.shuffle_deck_test(game_self.app);
+	     game_self.shuffle_deck_test(game_self.app);
       }
 
       //
       // deal cards to the table
       //
       document.getElementById("deal_cards_to_table_button").onclick = (e) => {
-	game_self.deal_cards_to_table_test(game_self.app);
+	     game_self.deal_cards_to_table_test(game_self.app);
       }
 
 
-      //
-      // display cardfan
-      //
-      document.getElementById("display_cardfan_button").onclick = (e) => {
-	if (!game_self.game.deck[0]) {
-	  alert("Deal cards to players before testing the Cardfan");
-	  return;
-	}
-        game_self.display_cardfan_test(game_self.app);
+      document.getElementById("add_player").onclick = (e) =>{
+        if (game_self.game.players.length < 6){
+          game_self.adjustPlayers(game_self.game.players.length + 1);    
+          $("#player_count").text(`Players -- ${game_self.game.players.length}`);    
+        }        
+      }
+      document.getElementById("subtract_player").onclick = (e) =>{
+        if (game_self.game.players.length > 1 ){
+          game_self.adjustPlayers(game_self.game.players.length - 1);    
+          $("#player_count").text(`Players -- ${game_self.game.players.length}`);    
+        }        
       }
 
-      //
-      // display cardhud
-      //
-      document.getElementById("display_cardhud_button").onclick = (e) => {
-	      game_self.display_cardhud_test(game_self.app);
-      }
 
-      //
-      // toggle cardbox
-      //
-      document.getElementById("toggle_cardbox_button").onclick = (e) => {
-	if (!game_self.game.deck[0]) {
-	  alert("Deal cards to players before toggling the Popup Cardbox");
-	  return;
-	}
-	game_self.toggle_cardbox_test(game_self.app);
-      }
 
       //
       // add to menu to page
       //
       document.getElementById("add_menu_button").onclick = (e) => {
-	game_self.add_menu_test(game_self.app);
+	       game_self.add_menu_test(game_self.app);
       }
+
+            //
+      // show non-blocking overlay
+      //
+      document.getElementById("display_overlay_button").onclick = (e) => {
+  game_self.display_overlay_test(game_self.app);
+      }
+
+      //
+      // show blocking overlay
+      //
+      document.getElementById("display_blocking_overlay_button").onclick = (e) => {
+  game_self.display_blocking_overlay_test(game_self.app);
+      }
+
+
+
+
 
   }
 
@@ -655,13 +792,18 @@ class GameTestSuite extends GameTemplate {
     game_self.addMove("SIMPLEDEAL\t"+3+"\t"+1+"\t"+JSON.stringify(game_self.returnDeck()));
     game_self.endTurn();
 
+
+    if (this.game_cardfan_visible){
+      this.cardfan.render();
+    }
+
   }
 
   deal_cards_to_table_test(app) {
 
     let game_self = this;
 
-    game_self.updateLog(`
+    /*game_self.updateLog(`
 
 			dealing cards to a common pool requires creating and encrypting
 			a deck, and then creating a POOL into which cards can be dealt
@@ -683,7 +825,11 @@ class GameTestSuite extends GameTemplate {
     }
     game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck())); // create deck with index 1 (deck-1)
     game_self.endTurn();
-
+    */
+    game_self.addMove("LOGPOOL\t1");
+    game_self.addMove("POOLDEAL\t3\t1\t1"); // deal 3 cards from deck-1 to pool-1
+    game_self.addMove("POOL\t1"); // create pool with index 1 (pool-1)
+    game_self.endTurn();
   }
 
 
@@ -701,6 +847,7 @@ class GameTestSuite extends GameTemplate {
 
     game_self.addMove("NOTIFY\tDeck 1 shuffle complete");
     game_self.addMove("SHUFFLE\t1");
+    game_self.addMove("DECK\t1\t" + JSON.stringify(game_self.returnDeck()));
     game_self.endTurn();
 
   }
@@ -730,27 +877,33 @@ class GameTestSuite extends GameTemplate {
 
     let sender = game_self.game.players[game_self.game.player-1];
     let receiver = sender;
-    for (let i = 0; i < game_self.game.players.length; i++) {
+    /*for (let i = 0; i < game_self.game.players.length; i++) {
       if (game_self.game.players[i] != sender) {
         receiver = game_self.game.players[i]; 
         break;
       }
-    }
+    }*/
 
-    game_self.addMove("RECEIVE" + "\t" + sender + "\t" + receiver + "\t" + "0.0001" + "\t" + (new Date().getTime()) + "\t" + game_self.game.crypto);
-    game_self.addMove("SEND" + "\t" + sender + "\t" + receiver + "\t" + "0.0001" + "\t" + (new Date().getTime()) + "\t" + game_self.game.crypto);
+    let ts = new Date().getTime();
+    this.rollDice();
+    let uh = this.game.dice;
+    game_self.addMove(`RECEIVE\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`);
+    game_self.addMove(`SEND\t${sender}\t${receiver}\t0.0001\t${ts}\t${uh}\t${game_self.game.crypto}`);
     game_self.endTurn();
 
   }
 
-  check_balance_test(app) {
+  /*
+  Game engine command BALANCE doesn't work very well.... or at all
+  */
+  async check_balance_test(app) {
 
     let game_self = this;
 
     let amount = 0;
     let address = game_self.game.keys[game_self.game.player-1];
     let ticker = game_self.game.crypto;
-
+    /*
     game_self.addMove("NOTIFY\tThe balance check is finished: balance adequate!");
     game_self.updateLog(`The game engine is checking to see if the balance at address ${address} is at least ${amount} ${ticker}. The game will halt for all players until the balance is at this amount.`);
 
@@ -760,7 +913,29 @@ class GameTestSuite extends GameTemplate {
       game_self.addMove("BALANCE" + "\t" + amount + "\t" + address);
     }
     game_self.endTurn();
+    */
+    
+    let current_balance = await game_self.crypto_transfer_manager.returnBalance(
+                    app,
+                    game_self,
+                    address,
+                    ticker,
+                    function () { }
+                  );
+    game_self.updateStatus(`you have ${current_balance} ${ticker}`);
 
+  }
+
+
+  display_boardsizer_test(app){
+    if (this.game_boardsizer_visible == 0){
+      this.sizer.render(this.app, this);
+      this.sizer.attachEvents(this.app, this);
+      this.game_boardsizer_visible = 1;
+    }else{
+      //this.sizer.hide();
+      this.game_boardsizer_visible = 0;
+    }
   }
 
   display_cardfan_test(app) {
@@ -825,37 +1000,14 @@ class GameTestSuite extends GameTemplate {
 
   add_menu_test(app) {
     if (this.game_menu_visible == 0) {
-      this.menu.addMenuOption({
-          text : "Game",
-          id : "game-game",
-          class : "game-game",
-          callback : function(app, game_mod) {
-            game_mod.menu.showSubMenu("game-game");
-          },
-      });
-      this.menu.addSubMenuOption("game-game", {
-          text : "Log",
-          id : "game-log",
-          class : "game-log",
-          callback : function(app, game_mod) {
-            game_mod.menu.hideSubMenus();
-            game_mod.log.toggleLog();
-          },
-      });
-      this.menu.addSubMenuOption("game-game", {
-          text : "Exit",
-          id : "game-exit",
-          class : "game-exit",
-          callback : function(app, game_mod) {
-            window.location.href = "/arcade";
-          },
-      });
       this.menu.render(this.app, this);
       this.menu.attachEvents(this.app, this);
       this.game_menu_visible = 1;
+      this.updateLog("Show Menu");
     } else {
       this.menu.hide();
       this.game_menu_visible = 0;
+      this.updateLog("Hide Menu");
     }
   }
 
@@ -893,6 +1045,99 @@ class GameTestSuite extends GameTemplate {
     return null;
 
   }
+
+
+
+  returnMainHTML(){
+    return `<div class="gameboard" id="gameboard">
+        <div class="test-buttons">
+        <div>
+          <h2>Interfaces</h2>
+          <div class="button add_menu" id="add_menu_button">Toggle Menu</div>
+          <div class="button display_overlay" id="display_overlay_button">Display Overlay</div>
+        </div>
+
+        <div>
+          <h2>Decks</h2>
+          <div class="button shuffle_cards" id="shuffle_deck_button">Shuffle Deck</div>
+          <div class="button deal_cards_to_pile" id="deal_cards_to_player_button">Deal Cards to Players</div>
+          <div class="button deal_cards_to_table" id="deal_cards_to_table_button">Deal Cards to Table</div>
+        </div>
+
+        <div>
+          <h2 id="player_count">Players -- ${this.game.players.length}</h2>
+          <div class="button" id="add_player">Add Player</div>
+          <div class="button" id="subtract_player">Remove Player</div>
+        </div>
+        </div>
+      </div>
+      `;
+  }
+
+  returnCardGameHTML(){
+    return ``;
+  }
+
+  returnBoardGameHTML(){
+    return ``;
+  }
+
+  returnHexGameHTML(){
+    return ``;
+  }
+
+  //"✔"
+  updateMenuCheck(){
+    try{
+      Array.from(document.querySelectorAll(".game-type")).forEach(mItem => {
+        mItem.textContent = mItem.textContent.replace("✔","");
+      });
+      //menu-num-players
+      Array.from(document.querySelectorAll(".menu-num-players")).forEach(mItem => {
+        mItem.textContent = mItem.textContent.replace("✔","");
+      });
+
+      switch(this.gameMode){
+        case 1:
+          document.getElementById("game-cardgame").textContent += "✔";
+          break;
+        case 2:
+          document.getElementById("game-boardgame").textContent += "✔";
+          break;
+        case 3:
+          document.getElementById("game-hexboard").textContent += "✔";
+          break;
+        default:
+          document.getElementById("game-intro").textContent += "✔";
+          break;
+      }
+
+      let divname = `menu-${this.game.players.length}-player`;
+      document.getElementById(divname).textContent += "✔";
+    }catch(err){}
+  }
+
+
+  adjustPlayers(numPlayers){
+    while (numPlayers < this.game.players.length){
+      this.removePlayer(this.game.players.pop());
+    }
+    while (numPlayers > this.game.players.length){
+      let pseudoAddress = "P"+this.app.crypto.hash(Math.random().toString(32));
+      this.addPlayer(pseudoAddress);
+    }
+  
+    if (this.game_playerboxes_visible){
+      let boxes = document.querySelectorAll(".player-box");
+        for (let box of boxes){
+          box.remove();
+        }
+      this.game_playerboxes_visible = 0;
+      this.add_player_boxes_test(this.app);
+    }
+  }
+
+
 
 
 }
