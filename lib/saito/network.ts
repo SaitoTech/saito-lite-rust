@@ -568,20 +568,18 @@ class Network {
         break;
 
       case "SPVCHAIN": {
-        if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
+        //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
         const litechain = JSON.parse(buffer.toString("utf8"));
 
-        if (this.debugging) { console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain)); }
+        //if (this.debugging) { console.log("RECEIVED LITECHAIN: " + JSON.stringify(litechain)); }
         break;
       }
 
       case "SERVICES": {
 
         const buffer = Buffer.from(message.message_data, "utf8");
-
-console.log("RECEIVING SERVICES: " + JSON.stringify(buffer.toString("utf8")));
 
 	try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
@@ -596,7 +594,7 @@ console.log("RECEIVING SERVICES: " + JSON.stringify(buffer.toString("utf8")));
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
-        if (this.debugging) { console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj)); }
+        //if (this.debugging) { console.log("RECEIVED GSTCHAIN 1: " + JSON.stringify(syncobj)); }
 
         let previous_block_hash = syncobj.start;
 
@@ -604,12 +602,12 @@ console.log("RECEIVING SERVICES: " + JSON.stringify(buffer.toString("utf8")));
 
           let block_hash = this.app.crypto.hash(syncobj.prehash[i] + previous_block_hash);
 
-          if (this.debugging) { console.log("block hash as: " + block_hash); }
+          //if (this.debugging) { console.log("block hash as: " + block_hash); }
 
           if (parseInt(syncobj.txs[i]) > 0) {
-            if (this.debugging) { console.log("fetching blcok! " + block_hash); }
+            //if (this.debugging) { console.log("fetching blcok! " + block_hash); }
             await this.fetchBlock(block_hash);
-            if (this.debugging) { console.log("done fetch block!"); }
+            //if (this.debugging) { console.log("done fetch block!"); }
           } else {
             // ghost block
             if (this.debugging) { console.log("adding ghostchain blcok! " + block_hash); }
