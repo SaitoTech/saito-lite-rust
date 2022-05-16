@@ -39,7 +39,7 @@ module.exports = MixinAppspace = {
           let created_at = trans.created_at.slice(0, 19).replace('T', ' ');
           let type = (trans.closing_balance > trans.opening_balance) ? 'Deposit' : 'Withdrawal';
           let amount = trans.amount;
-          let indicator = (type == 'Deposit') ? '+' : '-';
+          let indicator = (type == 'Deposit') ? '+' : '';
 
           html = "<div class='item'>"+ created_at +"</div>" +
           "<div class='item'>"+ type +"</div>" +
@@ -66,32 +66,69 @@ module.exports = MixinAppspace = {
 
       overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
 
-      document.querySelector(".withdraw_submit").onclick = (e) => {
-      	let amount = document.querySelector(".withdraw_amount").value;
-      	let address = document.querySelector(".withdraw_address").value;
+      document.querySelector("#withdraw-reject").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'block';
+      }
 
-      	let c = confirm(`Check fee for withdrawing ${amount} to ${address}?`);
-       	if (c) {
-      	  document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Checking withdrawl fee. Please be patient...";
-      	  mod.checkWithdrawalFee(asset_id, function(fee) {
-      	    document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Withdrawal Fee: "+fee;
-      	    let c2 = confirm(`Withdrawal fee is ${fee}. Please confirm withdrawal`);
-      	    if (c2) {
-      	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
-      	      alert("Processing Withdrawal!");
-      	      let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), function() {
+      document.querySelector("#withdraw-accept").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'none';  
+           
+          mod.checkWithdrawalFee(asset_id, function(fee) {
+            document.getElementById("confirm-fee-text").innerHTML = 'Withdrawal fee is '+fee+'. Continue with withdrawal?';
+            document.querySelector("#withdrawl-sent-cont").style.display = 'block';
+          });
+
+      }
+
+      document.querySelector("#withdraw-fee-accept").onclick = (e) => {
+          let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), btoa(sender+address+amount+Date.now()), function() {
                       mod.overlay.hide();
                     }, ticker);
-            	      overlay.hide();
-      	    }
-      	  });
-      	} else {
-      	  alert("withdrawal cancelled");
-      	}
+                    overlay.hide();
+          
+          document.querySelector("#email-appspace-withdraw-overlay").innerHTML = 'Withdrawal Successful!';
+          setTimeout(function(){
+            location.reload();
+          }, 1500);
+      }
+
+      document.querySelector("#withdraw-fee-reject").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-sent-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'block';
+      }
+
+      document.querySelector("#withdrawal-form").onsubmit = (e) => {
+        e.preventDefault();
+        document.querySelector(".error-msg").style.display = "none";
+      	amount = document.querySelector(".withdraw_amount").value;
+      	address = document.querySelector(".withdraw_address").value;
+        amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+
+        if (amount > amount_avl) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Not enough amount avaibale ("+amount_avl+" available)";
+          document.querySelector(".max-amount-error").style.display = "block";
+          return false;          
+        }
+
+        if (amount <= 0) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Amount should be greater than 0";
+          document.querySelector(".max-amount-error").style.display = "block";
+          return false;          
+        }
+
+
+        document.querySelector(".decision-cont").style.display = 'none';
+        document.querySelector("#withdrawl-sent-cont").style.display = 'none';
+        document.getElementById("check-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
+        document.querySelector("#withdrawl-confirm-cont").style.display = 'block';
+
       }
 
       document.querySelector("#max-amount-btn").onclick = (e) => {
-        var amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+        let amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
         document.querySelector("#withdraw_amount").value = amount_avl;
       }
 
