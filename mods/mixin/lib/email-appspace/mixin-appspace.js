@@ -83,10 +83,15 @@ module.exports = MixinAppspace = {
       }
 
       document.querySelector("#withdraw-fee-accept").onclick = (e) => {
-          let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), btoa(sender+address+amount), function() {
+          let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), btoa(sender+address+amount+Date.now()), function() {
                       mod.overlay.hide();
                     }, ticker);
                     overlay.hide();
+          
+          document.querySelector("#email-appspace-withdraw-overlay").innerHTML = 'Withdrawal Successful!';
+          setTimeout(function(){
+            location.reload();
+          }, 1500);
       }
 
       document.querySelector("#withdraw-fee-reject").onclick = (e) => {
