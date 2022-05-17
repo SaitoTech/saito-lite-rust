@@ -1037,7 +1037,7 @@ select {
   content: "\25BC";
   position: absolute;
   top: 0;
-  right: 0;
+  right: 1.5em;
   padding: 0 1em;
   background: #fff;
   cursor: pointer;
