@@ -38,6 +38,15 @@ body {
   z-index: -10;
 }
 
+/* For the gd ACKNOLWEDGE from saveload */
+.status-header, .status-text-menu, .status-text-menu ul, .status-text-menu ul li, .textchoice{
+  background: unset;
+}
+.textchoice:hover{
+  color: black;
+}
+
+
 /* Since Poker only has two cards in a hand, can adjust the angles*/
 .cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
   transform: rotate(-15deg);
