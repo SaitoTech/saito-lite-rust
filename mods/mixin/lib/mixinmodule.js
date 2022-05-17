@@ -90,6 +90,10 @@ console.log("checking to see if we have received payment with unique_hash: " + u
 console.log("checking to see if we have received payment with trace_id: " + trace_id);
 console.log("deposits complete: " + JSON.stringify(this.mixin.deposits));
 
+console.log("this.mixin.deposits length: " + this.mixin.deposits.length);
+console.log("this.options.transfers_inbound length: " + this.options.transfers_inbound.length);
+console.log("this.options.transfers_outbound length: " + this.options.transfers_outbound.length);
+
     for (let i = 0; i < this.mixin.deposits.length; i++) {
       if (
         this.mixin.deposits[i].trace_id === trace_id
@@ -227,6 +231,7 @@ console.log("this is a Mixin address so send in-network transfer request to: " +
       let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
 console.log("and saving outbound payment");
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
+console.log("and done saving outbound payment");
       return;
     }
   }
