@@ -20,6 +20,13 @@ body {
   overflow: hidden;
 }
 
+.crypto_logo{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20vw;
+}
+
 .player-box{
   max-width: 250px;
 }
