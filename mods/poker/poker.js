@@ -274,6 +274,7 @@ class Poker extends GameTemplate {
     if (alive_players == 1) {
       this.game.queue = [];
       this.game.queue.push("winner\t" + winner);
+      this.settleLastRound();
       return 1;
     }
 
