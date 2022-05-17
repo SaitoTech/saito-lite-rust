@@ -190,7 +190,11 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
-    cryptomod.modal_overlay.hide();
+    cryptomod.modal_overlay.hide(function(){
+      setTimeout(function(){
+        document.querySelector('#settings-dropdown').classList.add("show-right-sidebar");
+      }, 500);
+    });
   }
 }
 

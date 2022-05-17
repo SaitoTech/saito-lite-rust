@@ -54,7 +54,8 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
   </div>
   
   <div class="note">
-    * Please do not deposit large amounts while Saito is under development due to risk of wallet compromise.
+    * Please do not deposit large amounts while Saito is under development due to risk of wallet compromise. <br >
+    * To see your deposit address, please <b>activate ${deposit_ticker}</b> on the sidebar and refresh the page.
   </div>
   
 </div>
@@ -124,7 +125,7 @@ module.exports = MixinDepositTemplate = (app, deposit_address, deposit_confirmat
 
   .note {
     margin-top: 30px;
-    font-size: 10px;
+    font-size: 13px;
   }
 
   .add-cont {
