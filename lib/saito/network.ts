@@ -68,6 +68,7 @@ class Network {
   // we initiate an outgoing connection
   //
   addPeer(peerjson) {
+
     let peerhost = "";
     let peerport = "";
 
@@ -242,8 +243,6 @@ class Network {
   }
 
   initializeWebSocket(peer, remote_socket = false, browser = false) {
-
-    console.debug("network.initializeWebSocket: " + remote_socket + " / " + browser);
 
     //
     // browsers can only use w3c sockets
@@ -434,6 +433,7 @@ class Network {
   }
 
   initialize() {
+
     if (this.app.options) {
       if (this.app.options.server) {
         if (
@@ -488,6 +488,7 @@ class Network {
     this.peer_monitor_timer = setInterval(() => {
       this.pollPeers();
     }, this.peer_monitor_timer_speed);
+
   }
 
   isPrivateNetwork() {
@@ -1027,6 +1028,7 @@ console.log("sending services request: " + JSON.stringify(my_services));
   }
 
   requestBlockchain(peer = null) {
+
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;

@@ -134,6 +134,7 @@ class Server {
       const { host, port, protocol, publickey } = this.server;
       this.server.endpoint = { host, port, protocol, publickey };
       this.app.options.server.endpoint = { host, port, protocol, publickey };
+console.log("SAVE OPTIONS IN SERVER");
       this.app.storage.saveOptions();
     }
 
@@ -141,6 +142,7 @@ class Server {
     // save options
     //
     this.app.options.server = this.server;
+console.log("SAVE OPTIONS IN SERVER 2");
     this.app.storage.saveOptions();
 
     //

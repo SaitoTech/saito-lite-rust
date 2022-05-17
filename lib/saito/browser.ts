@@ -60,6 +60,7 @@ class Browser {
         }
 
         channel.onmessage = (e) => {
+console.log("document onmessage change");
           if (!document.hidden) {
             channel.postMessage({
               active: 1,
@@ -83,12 +84,14 @@ class Browser {
         document.addEventListener(
           "visibilitychange",
           () => {
+console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
+console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -101,6 +104,7 @@ class Browser {
 
         window.addEventListener("storage", (e) => {
           if (this.active_tab == 0) {
+console.log("LOAD OPTIONS IN BROWSER");
             this.app.storage.loadOptions();
           }
         });
@@ -350,6 +354,7 @@ class Browser {
   // functionality as needed.
   //
   setActiveTab(active) {
+console.log("SET ACTIVE TAB");
     this.active_tab = active;
     this.app.blockchain.process_blocks = active;
     this.app.storage.save_options = active;
