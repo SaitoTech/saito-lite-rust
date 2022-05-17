@@ -419,10 +419,14 @@ console.log("---------------------");
         // upgrade //
         /////////////
         if (this.app.options.wallet.version < this.wallet.version) {
+
           if (this.app.BROWSER == 1) {
+
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
+
 	    let mixin = this.app.options.mixin; 
+	    let crypto = this.app.options.crypto; 
 
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
@@ -454,12 +458,14 @@ console.log("---------------------");
 
 	    // keep mixin
 	    this.app.options.mixin = mixin;
+	    this.app.options.crypto = crypto;
 
             this.saveWallet();
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             alert("Saito Upgrade: Wallet Reset");
+
           } else {
             //
             // purge old slips
