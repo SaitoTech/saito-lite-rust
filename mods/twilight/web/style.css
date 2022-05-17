@@ -24,6 +24,9 @@
 .hud-header.american{
   background:  linear-gradient(to right, rgba(0,0,255,0.6), rgba(255,255,255,0.4), rgba(0,0,255,0.6));
 }
+/*.hud{
+  pointer-events: none;
+}*/
 
 .status-message {
   padding-left: 0;
@@ -34,6 +37,11 @@
 }
 
 /* General overlays */
+.rules-overlay{
+  background: whitesmoke;
+  padding: 0.5em 2.5em;
+}
+
 .ts-overlay h1 {
   text-align: center;
 }

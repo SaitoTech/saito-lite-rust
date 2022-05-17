@@ -16,7 +16,7 @@
 
         this.addMove("resolve\tcambridge");
 
-        let scoring_cards = "";
+        let scoring_cards = "", scoring_alert = "";
         
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           
@@ -53,7 +53,7 @@
         } else {
           let scoring_alert  = "cambridge\t" + keys.replaceAll(" ", "\t");
           this.addMove(scoring_alert);
-          this.addMove("showhand\t1\t"+keys);
+          this.addMove("showhand\t2\t"+keys);
           this.addMove("NOTIFY\tUS has scoring cards for: " + revealed);
           this.endTurn();
           this.updateStatus(`<div class='status-message' id='status-message'>USSR is placing influence for ${this.cardToText(card)}</div>`);
