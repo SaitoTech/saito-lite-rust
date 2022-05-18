@@ -5,9 +5,8 @@
       let ypos = 0;
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Colonial Rear Guards</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Colonial Rear Guards</div>");
         return 0;
-
       }
       if (this.game.player == 2) {
 

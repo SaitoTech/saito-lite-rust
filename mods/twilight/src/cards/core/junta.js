@@ -11,8 +11,7 @@
       if (player == "us" && this.game.player == 2) { my_go = 1; }
 
       if (my_go == 0) {
-        this.updateStatus('<div class="status-message" id="status-message">' + player.toUpperCase() + " <span>playing Junta</span></div>");
-
+        return 0;
       }
       if (my_go == 1) {
 

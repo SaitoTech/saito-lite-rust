@@ -2,9 +2,8 @@
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
         return 0;
-
       }
 
       let html = `<ul>

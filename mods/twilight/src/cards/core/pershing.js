@@ -5,7 +5,7 @@
     if (card == "pershing") {
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR playing Pershing II Deployed</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR playing Pershing II Deployed</div>");
         return 0;
 
       }

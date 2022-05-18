@@ -1,7 +1,7 @@
 
     if (card == "debtcrisis") {
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US playing Latin American Debt Crisis</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US playing Latin American Debt Crisis</div>");
         return 0;
       }
 

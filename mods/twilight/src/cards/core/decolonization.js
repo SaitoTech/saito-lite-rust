@@ -9,7 +9,7 @@
       let ypos = 0;
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Decolonization</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Decolonization</div>");
         return 0;
       }
       if (this.game.player == 1) {
