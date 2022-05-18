@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saito Social Platform</title>
+
+    <link 
+      href="/saito/style.css"
+      rel="stylesheet" 
+    />
+    <link 
+      href="/saito/lib/templates/crypto-transfer-manager.css"
+      rel="stylesheet"
+    />
+    <link
+      href="/saito/lib/templates/email-chat.css"
+      rel="stylesheet"
+    />
+    <link 
+      href="/chirp/style.css"
+      rel="stylesheet" 
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+
+    <!-- sidebar starts -->
+    <div class="sidebar" id="sidebar"></div>
+    <!-- sidebar ends -->
+
+
+    <!-- feed starts -->
+    <div class="feed" id="feed">
+    </div>
+    <!-- feed ends -->
+
+    <!-- widgets starts -->
+    <div class="widgets">
+      <div class="widgets__input">
+        <span class="material-icons widgets__searchIcon"> search </span>
+        <input type="text" placeholder="Search on Saito" />
+      </div>
+
+      <div class="widgets__widgetContainer">
+        <h2>Trends for you</h2>
+        <div class="widget-trends">
+          Elon Musk
+          <span>34051 Saitons </span>
+        </div>
+        <div class="widget-trends">
+          Web3
+          <span>4892 Saitons </span>
+        </div>
+        <div class="widget-trends">
+          Saito x Binance
+          <span>420 Saitons </span>
+        </div>
+      </div>
+      <div class="widgets__widgetContainer">
+        <h2>Team</h2>
+        <div class="widget-trends user">
+          <img
+            src="https://pbs.twimg.com/profile_images/1498334372490985476/ppnmrugO_400x400.jpg"
+          />
+          <div class="text">
+            David Lancashire
+            <div class="saito-user">
+              <span class="saito">🟥</span>
+              <span>dlancashi</span>
+            </div>
+          </div>
+          <div class="btn-follow">Follow</div>
+        </div>
+        <div class="widget-trends user">
+          <img
+            src="https://pbs.twimg.com/profile_images/1509864860338769923/MkZu3Nul_400x400.jpg"
+          />
+          <div class="text">
+            NaaQ
+            <div class="saito-user">
+              <span class="saito">🟥</span>
+              <span>stevennaaq</span>
+            </div>
+          </div>
+          <div class="btn-follow">Follow</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- widgets ends -->
+
+
+    <!-- SAITO MAGIC --->
+    <script src="/saito/saito.js" id="saito"></script>
+
+  </body>
+</html>
