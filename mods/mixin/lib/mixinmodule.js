@@ -144,13 +144,12 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
       <div class="mixin_crypto_title">Heads up!</div>
 
       <div class="mixin_crypto_warning">
-      Third-party cryptocurrency support in Saito is currently experimental. All users should 
-      be aware that support is experimental. If your browser wallet is compromised you may lose 
-      all crypto you upload.
+      Third-party cryptocurrency support in Saito is experimental. If your browser wallet
+      is compromised you may lose all crypto you upload.
 
       <p></p>
 
-      Please be sensible and do not put more than 100 USD worth of crypto in your live wallet
+      Please be sensible and do not put more than 25 USD worth of crypto in your live wallet
       while our network is under development.
       </div>
 
