@@ -40,6 +40,16 @@
     <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Poppins:300,400,500,600,700|PT+Serif:400,400i&display=swap" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/saito/css-imports/bootstrap.css" />
+    <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+    crossorigin="anonymous"
+  />
     <link rel="stylesheet" href="/saito/saito.css" />
     
     <title>Saito</title>
@@ -64,6 +74,14 @@
   <script
   src="https://kit.fontawesome.com/dbb2399929.js"
   crossorigin="anonymous"
+></script>
+  <script
+  src="/saito/lib/scripts/plugins.min.js"
+ 
+></script>
+  <script
+  src="/saito/lib/scripts/functions.js"
+ 
 ></script>
     <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
 
@@ -200,7 +218,12 @@
               <i class="fa-solid fa-biohazard"></i>
               <span>Pandemic</span>
             </div>
+            <div data-route="chirp" data-additional="" class="route-link content-item">
+              <i class="fa-solid fa-comment"></i>
+              <span>Chirp</span>
+            </div>
           </div>
+        
         </div>
 
         <div class="saito-sidebar-section">
@@ -213,6 +236,9 @@
           </div>
         </div>
       </div>
+
+       
+      </div>
    </div>
     <header class="saito-header">
       <img class="logo" alt="Logo" src="/saito/img/logo.svg" />
@@ -220,7 +246,7 @@
       <nav>
         <ul class="list d-none d-lg-flex">
 
-          <li class="list-item big-menu-container">
+          <!-- <li class="list-item big-menu-container">
             <div class="link shortcodes" id="big-menu-toggle" href="#">Shortcodes</div>
             <div class="big-menu">
               <a href="#" data-url="?display=buttons" class="big-menu-link" href="">Buttons</a>
@@ -231,7 +257,7 @@
               <a href="#" data-url="?display=tables" class="big-menu-link" href="">Tables</a>
 
             </div>
-          </li>
+          </li> -->
         </ul>
         <div style="margin-right: 3rem">
           <label class="switch">
@@ -326,6 +352,10 @@
                 <div class="content-item">
                   <i class="fa-solid fa-biohazard"></i>
                   <span>Pandemic</span>
+                </div>
+                <div data-route="chirp" data-additional="" class="route-link content-item">
+                  <i class="fa-solid fa-comment"></i>
+                  <span>Chirp</span>
                 </div>
               </div>
             </div>

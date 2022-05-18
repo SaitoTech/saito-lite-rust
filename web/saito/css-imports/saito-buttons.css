@@ -19,6 +19,7 @@
   letter-spacing: 1px;
   border: none;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  
 }
 
 body:not(.device-touch) .button {
@@ -780,6 +781,9 @@ button {
   border-radius: 30px;
   margin: 5px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button:hover {
@@ -847,8 +851,9 @@ button.button-small {
   padding: 7px 17px;
   font-size: 12px;
   line-height: 20px;
-  min-width: 0;
-}
+  min-width: 2.5rem;
+
+ }
 
 button.button-large {
   padding: 16px 26px;
