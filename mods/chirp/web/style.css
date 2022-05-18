@@ -186,6 +186,7 @@ div.action {
   align-items: flex-start;
   border-bottom: 1px solid var(--twitter-background);
   padding-bottom: .8rem;
+  margin-bottom: 1.5rem;
 }
 
 .post__body img {
