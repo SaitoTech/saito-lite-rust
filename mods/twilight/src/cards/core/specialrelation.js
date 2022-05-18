@@ -4,7 +4,7 @@
       if (this.isControlled("us", "uk") == 1) {
 
         if (this.game.player == 1) {
-          this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship</div>");
+          //this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship</div>");
           return 0;
         }
 

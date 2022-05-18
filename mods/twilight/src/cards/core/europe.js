@@ -1,6 +1,7 @@
 
     if (card == "europe") {
       let vp_adjustment = this.calculateScoring("europe");
+      this.showScoreOverlay(card, vp_adjustment);
       let total_vp = vp_adjustment.us.vp - vp_adjustment.ussr.vp;
       this.game.state.vp += total_vp;
       this.updateLog("<span>Europe:</span> " + total_vp + " <span>VP</span>");

@@ -5,7 +5,7 @@
     if (card == "easteuropean") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing East European Unrest</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing East European Unrest</div>");
         return 0;
       }
       if (this.game.player == 2) {

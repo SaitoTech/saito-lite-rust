@@ -7,7 +7,7 @@
       this.game.state.events.warsawpact = 1;
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for USSR to play Warsaw Pact</div>");
+        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
         return 0;
       }
       if (this.game.player == 1) {
@@ -23,6 +23,7 @@
         twilight_self.updateStatusWithOptions("USSR establishes the Warsaw Pact:",html,false);
 
         twilight_self.attachCardboxEvents(function(action2) {
+          const europeanCountries = ["czechoslovakia", "austria", "hungary", "romania", "yugoslavia", "bulgaria", "eastgermany", "poland", "finland"];
 
           if (action2 == "remove") {
 
@@ -32,17 +33,23 @@
             var countries_to_purge = 4;
             var options_purge = [];
 
-            if (twilight_self.countries['czechoslovakia'].us > 0) { options_purge.push('czechoslovakia'); }
-            if (twilight_self.countries['austria'].us > 0) { options_purge.push('austria'); }
-            if (twilight_self.countries['hungary'].us > 0) { options_purge.push('hungary'); }
-            if (twilight_self.countries['romania'].us > 0) { options_purge.push('romania'); }
-            if (twilight_self.countries['yugoslavia'].us > 0) { options_purge.push('yugoslavia'); }
-            if (twilight_self.countries['bulgaria'].us > 0) { options_purge.push('bulgaria'); }
-            if (twilight_self.countries['eastgermany'].us > 0) { options_purge.push('eastgermany'); }
-            if (twilight_self.countries['poland'].us > 0) { options_purge.push('poland'); }
-            if (twilight_self.countries['finland'].us > 0) { options_purge.push('finland'); }
+            for (var c of europeanCountries) {
+              let divname      = '#'+c;
+              
+              if (twilight_self.countries[c].us > 0) { 
+                options_purge.push(c); 
+                $(divname).addClass("easterneurope");
+                twilight_self.countries[c].place = 1;
+              }
 
-            if (options_purge.length <= countries_to_purge) {
+            }
+
+            if (options_purge == 0){
+              
+              twilight_self.displayModal("US has no influence in Eastern Europe", "Add influence instead");
+              action2 = "add";
+
+            }else if (options_purge.length <= countries_to_purge) {
 
               for (let i = 0; i < options_purge.length; i++) {
                 twilight_self.addMove("remove\tussr\tus\t"+options_purge[i]+"\t"+twilight_self.countries[options_purge[i]].us);
@@ -50,44 +57,32 @@
               }
 
               twilight_self.endTurn();
+              twilight_self.updateStatus(`Only ${options_purge.length} countries in Eastern Europe with US influence...`);
 
             } else {
 
               var countries_purged = 0;
 
-              for (var i in twilight_self.countries) {
+              $(".easterneurope").off();
+              $(".easterneurope").on('click', function() {
 
-                let countryname  = i;
-                let divname      = '#'+i;
+                let c = $(this).attr('id');
 
-                if (i == "czechoslovakia" || i == "austria" || i == "hungary" || i == "romania" || i == "yugoslavia" || i == "bulgaria" ||  i == "eastgermany" || i == "poland" || i == "finland") {
-
-                  if (twilight_self.countries[countryname].us > 0) {
-                    twilight_self.countries[countryname].place = 1;
+                if (twilight_self.countries[c].place != 1) {
+                  twilight_self.displayModal("Invalid Option", "No US influence to remove");
+                } else {
+                  twilight_self.countries[c].place = 0;
+                  let uspur = twilight_self.countries[c].us;
+                  twilight_self.removeInfluence(c, uspur, "us");
+                  twilight_self.addMove("remove\tussr\tus\t"+c+"\t"+uspur);
+                  countries_purged++;
+                
+                  if (countries_purged == countries_to_purge) {
+                    twilight_self.playerFinishedPlacingInfluence();
+                    twilight_self.endTurn();
                   }
-
-                  $(divname).off();
-                  $(divname).on('click', function() {
-
-                    let c = $(this).attr('id');
-
-                    if (twilight_self.countries[c].place != 1) {
-                      twilight_self.displayModal("Invalid Option");
-                    } else {
-                      twilight_self.countries[c].place = 0;
-                      let uspur = twilight_self.countries[c].us;
-                      twilight_self.removeInfluence(c, uspur, "us", function() {
-                        twilight_self.addMove("remove\tussr\tus\t"+c+"\t"+uspur);
-                        countries_purged++;
-                        if (countries_purged == countries_to_purge) {
-                          twilight_self.playerFinishedPlacingInfluence();
-                          twilight_self.endTurn();
-                        }
-                      });
-                    }
-                  });
                 }
-              }
+              });
             }
           }
 
@@ -99,38 +94,37 @@
             var ops_to_place = 5;
             var ops_placed = {};
 
-            for (var i in twilight_self.countries) {
+            for (var c of europeanCountries) {
 
-              let countryname  = i;
-              ops_placed[countryname] = 0;
-              let divname      = '#'+i;
+              ops_placed[c] = 0;
+              let divname      = '#'+c;
+              $(divname).addClass("easterneurope");
+              twilight_self.countries[c].place = 1;
 
-              if (i == "czechoslovakia" || i == "austria" || i == "hungary" || i == "romania" || i == "yugoslavia" || i == "bulgaria" ||  i == "eastgermany" || i == "poland" || i == "finland") {
-
-                twilight_self.countries[countryname].place = 1;
-
-                $(divname).off();
-                $(divname).on('click', function() {
-
-                  let c = $(this).attr('id');
-
-                  if (twilight_self.countries[c].place != 1) {
-                    twilight_self.displayModal("Invalid Placement");
-                  } else {
-                    ops_placed[c]++;
-                    twilight_self.placeInfluence(c, 1, "ussr", function() {
-                      twilight_self.addMove("place\tussr\tussr\t"+c+"\t1");
-                      if (ops_placed[c] >= 2) { twilight_self.countries[c].place = 0; }
-                      ops_to_place--;
-                      if (ops_to_place == 0) {
-                        twilight_self.playerFinishedPlacingInfluence();
-                        twilight_self.endTurn();
-                      }
-                    });
-                  }
-                });
-              }
             }
+
+            $(".easterneurope").off();
+            $(".easterneurope").on('click', function() {
+
+              let c = $(this).attr('id');
+
+              if (twilight_self.countries[c].place != 1) {
+                twilight_self.displayModal("Invalid Placement");
+              } else {
+                ops_placed[c]++;
+                ops_to_place--;
+                twilight_self.placeInfluence(c, 1, "ussr");
+                twilight_self.addMove("place\tussr\tussr\t"+c+"\t1");
+                
+                if (ops_placed[c] >= 2) { twilight_self.countries[c].place = 0; }
+                
+                if (ops_to_place == 0) {
+                  twilight_self.playerFinishedPlacingInfluence();
+                  twilight_self.endTurn();
+                }
+              }
+            });
+
           }
         });
         return 0;

@@ -37,7 +37,7 @@
         })
 
       } else {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is selecting a country for its free coup</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR is selecting a country for its free coup</div>");
         return 0;
       }
 
