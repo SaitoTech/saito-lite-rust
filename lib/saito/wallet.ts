@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.089,
+    version: 4.109,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -337,7 +337,7 @@ console.log("---------------------");
     return tx;
   }
 
-  initialize() {
+  async initialize() {
     //
     // add ghost crypto module so Saito interface available
     //
@@ -436,7 +436,7 @@ console.log("---------------------");
             this.app.modules.onWalletReset();
 
             // reset and save
-            this.app.storage.resetOptions();
+            await this.app.storage.resetOptions();
             this.app.storage.saveOptions();
 
             // re-specify after reset
@@ -781,6 +781,7 @@ console.log("---------------------");
    * the new wallet to local storage.
    */
   async resetWallet() {
+
     this.wallet.privatekey = this.app.crypto.generateKeys();
     this.wallet.publickey = this.app.crypto.returnPublicKey(this.wallet.privatekey);
 
