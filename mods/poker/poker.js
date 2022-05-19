@@ -195,15 +195,15 @@ class Poker extends GameTemplate {
 
     //Parse game options
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
-    this.game.stake =  (this.game.options.stake)? parseFloat(this.game.options.stake) : 0;
+    this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 0;
     this.game.chipValue = this.game.stake / parseInt(this.game.options.num_chips);
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
     this.useGraphics = (this.game.options.chip_graphics == 1);
     let chipValueStr = this.game.chipValue.toString();
     this.decimal_precision = (chipValueStr.includes(".")) ? chipValueStr.split(".")[1].length : chipValueStr.length;
+    console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
     console.log(chipValueStr, this.decimal_precision);
     if (this.browser_active) {
-      console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
       this.displayBoard();
     }
   }
@@ -370,7 +370,6 @@ class Poker extends GameTemplate {
 
     console.log("START ROUND");
     
-    this.displayBoard();  
     
     this.updateLog("Round: " + this.game.state.round);
     this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
@@ -380,10 +379,12 @@ class Poker extends GameTemplate {
     }
     
     /*
+    //this.displayBoard();  
     document.querySelector(".round").innerHTML = `Round : ${this.game.state.round}`;
     document.querySelector(".dealer").innerHTML = `Button : Player ${this.game.state.button_player}`;
     */
     this.initializeQueue();
+
   }
 
    /*
@@ -391,13 +392,14 @@ class Poker extends GameTemplate {
   */
   initializeQueue() {
 
+    //console.log("old queue:" + JSON.stringify(this.game.queue));
     this.game.queue = [];
 
     this.game.queue.push("round");
     this.game.queue.push("READY");
-    this.game.queue.push("POOL\t1"); // pool for cards on table
+    this.game.queue.push("POOL\t1"); // CREATE pool for cards on table
 
-    //Deal two cards to everyone
+    /*Deal two cards to everyone
     for (let i = this.game.players.length; i>0; i--){
       this.game.queue.push(`DEAL\t1\t${i}\t2`);
     }
@@ -409,9 +411,12 @@ class Poker extends GameTemplate {
       this.game.queue.push(`DECKXOR\t1\t${i}`);
     }
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+    */
+    this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
 
-    // adds any outstanding settlement to queue
+    // adds any outstanding settlement to queue (if not already processed)
     this.settleLastRound();
+
 
   }
 
@@ -522,7 +527,7 @@ class Poker extends GameTemplate {
             this.game.state.player_cards = {};
             this.game.state.player_cards_reported = 0;
             this.game.state.player_cards_required = 0;
-
+            this.game.queue = [];
             let first_scorer = -1;
 
             for (let i = 0; i < this.game.state.passed.length; i++) {
@@ -633,6 +638,8 @@ class Poker extends GameTemplate {
         let card1 = mv[2];
         let card2 = mv[3];
 
+        this.game.queue.splice(qe,1);
+
         //Pocket
         this.game.state.player_cards[scorer - 1].push(
           this.returnCardFromDeck(card1)
@@ -720,8 +727,6 @@ class Poker extends GameTemplate {
 
           this.updateHTML = updateHTML;
 
-          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`);
-          
           if (winners.length > 1) {
             this.updateLog(`${winnerStr} split the pot for ${pot_size} each`);
 
@@ -772,9 +777,17 @@ class Poker extends GameTemplate {
             }
           }
 
+          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
+            this.game.halted = 0;
+            let cont = this.runQueue();
+            if (cont == 0) {
+              this.processFutureMoves();
+            }
+          });
+          this.game.halted = 1;
           this.startNextRound();
 
-          return 1;
+          return 0;
         }
 
         //If not everyone has reported there hand yet, find the next in sequence from this scorer
@@ -2662,7 +2675,7 @@ class Poker extends GameTemplate {
           <div id="chip_wrapper" class="overlay-input" style="display:none;">
             <label for="stake">Game stake:</label>
             
-            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="1" step="1">
+            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
           </div>
           <datalist id="suggestedChipValues">
             <option value="0.01">
