@@ -1,7 +1,7 @@
 const saito = require("./../../lib/saito/saito");
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const AppTemplate = require('../../lib/templates/apptemplate');
+// const ModTemplate = require('../../lib/templates/modtemplate');
 const ArcadeMain = require("./lib/arcade-main/arcade-main");
 const ArcadeSidebar = require("./lib/arcade-sidebar/arcade-sidebar");
 const GameCreateMenu = require("./lib/arcade-main/game-create-menu");
@@ -13,7 +13,7 @@ const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 
 
-class Arcade extends AppTemplate {
+class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
 

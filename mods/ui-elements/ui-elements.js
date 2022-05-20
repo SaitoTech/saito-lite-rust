@@ -1,4 +1,4 @@
-const AppTemplate = require("../../lib/templates/apptemplate");
+const ModTemplate = require("../../lib/templates/modtemplate");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const UI_ELEMENTS_TEMPLATE = require('./templates/ui-elements-template.js');
 const TABS_TEMPLATE = require('./templates/tab_templates');
@@ -22,7 +22,7 @@ const FORM_TEMPLATE = require("./templates/form_templates")
 const TABLE_TEMPLATE = require("./templates/table_templates")
 
 
-class UI_ELEMENTS extends AppTemplate {
+class UI_ELEMENTS extends ModTemplate {
 
 
 
@@ -161,9 +161,9 @@ class UI_ELEMENTS extends AppTemplate {
 
   }
 
-  initializeHTML(app, additionalURL) {
+  initializeHTML(app) {
 
-    super.initializeHTML(app, additionalURL);
+    super.initializeHTML(app);
 
 
 
@@ -173,7 +173,9 @@ class UI_ELEMENTS extends AppTemplate {
 
 
 
-
+attachEvents(app){
+  super.attachEvents(app);
+}
 
 
 

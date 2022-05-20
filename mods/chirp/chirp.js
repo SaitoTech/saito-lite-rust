@@ -1,13 +1,8 @@
 const saito = require("./../../lib/saito/saito");
-const AppTemplate = require("../../lib/templates/apptemplate");
-const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
-const ChirpSidebar = require("./lib/chirp/chirp-sidebar");
-const ChirpFeed = require("./lib/chirp/chirp-feed");
-const ChirpNew = require("./lib/chirp/chirp-new");
-const ChirpBaseTemplate = require('./lib/chirp/chirp-base-template');
+const ModTemplate = require("../../lib/templates/modtemplate");
+const ChirpMain = require("./lib/main/chirp-main");
 
-class Chirp extends AppTemplate {
+class Chirp extends ModTemplate {
 
   constructor(app) {
     super(app);
@@ -38,7 +33,7 @@ class Chirp extends AppTemplate {
 
   initialize(app) {
     const meta = [];
-    const styles = ['/chirp/style.css'];
+    const styles = ['/saito/chirp.css'];
     const scripts = []
     super.initialize(app, meta, styles, scripts);
   }
@@ -95,41 +90,14 @@ class Chirp extends AppTemplate {
   //   }
   // }
 
-  returnBaseHTML(app) {
-    return ChirpBaseTemplate(app)
-  }
-
-
-
-
-  //
-  // renderMain
-  //
-  // calling these functions will write the main column of the application. we specify that
-  // this should only happen if the user is looking at this application, to avoid situations
-  // where the browser tries to renderMain() while the user is interacting with another 
-  // application.
-  //
   render() {
     if (this.browser_active == 1) {
-      ChirpFeed.render(this.app, this);
-      ChirpFeed.attachEvents(this.app, this);
+      ChirpMain.render(this.app, this);
+      ChirpMain.attachEvents(this.app, this);
     }
   }
 
-  //
-  // renderSidebar
-  //
-  // we separate this from renderMain() simply because we are allowing the Chat module to 
-  // insert its chat box into the left-hand sidebar. This allows us to call renderSidebar()
-  // when chat-render-request fires and avoid the need to re-write the entire screen.
-  //
-  renderSidebar() {
-    if (this.browser_active == 1) {
-      ChirpSidebar.render(this.app, this);
-      ChirpSidebar.attachEvents(this.app, this);
-    }
-  }
+
 
 
   //
@@ -186,44 +154,6 @@ class Chirp extends AppTemplate {
   }
 
 
-  //
-  // initialize()
-  //
-  // this function runs every time Saito initializes, which is the first time the server
-  // loads and every time the browser is refreshed. This function is a suitable place
-  // for initializing the DOM and attaching events.
-  //
-  // be aware that this function fires EVERY time Saito initializes regardless of 
-  // whether the user is actually VIEWING the application. If we want to restrict code
-  // to running ONLY when the user is viewing this application, we should wrap code
-  // with a check against (this.browser_active == 1).
-  //
-  //
-
-
-  //
-  // initializeHTML()
-  //
-  // this function is similar to initialize() except it only runs for the module that 
-  // the user is actively viewing. this makes it a superior place to put DOM creation
-  // and event attachment. 
-  //
-  // initializeHTML(app) {
-
-  //   this.header = new SaitoHeader(app, this);
-  //   this.header.render(app, this);
-  //   this.header.attachEvents(app, this);
-
-  //   this.overlay = new SaitoOverlay(app);
-
-  //   this.renderMain();
-  //   this.renderSidebar();
-
-  // }
-
-  //
-  // load transactions when the network goes up
-  //
   onPeerHandshakeComplete(app, peer) {
 
     //
