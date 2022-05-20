@@ -1,4 +1,5 @@
 const saito = require("./../../lib/saito/saito");
+const Toggler = require('../../lib/saito/saito-ui/dark_mode_toggler');
 const ModTemplate = require("../../lib/templates/modtemplate");
 const ChirpMain = require("./lib/main/chirp-main");
 
@@ -18,6 +19,7 @@ class Chirp extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
+    this.darkModeToggler = new Toggler(app);
 
   }
 
@@ -38,9 +40,7 @@ class Chirp extends ModTemplate {
     super.initialize(app, meta, styles, scripts);
   }
 
-  initializeHTML(app, additionalURL) {
-    super.initializeHTML(app, additionalURL)
-  }
+
   // chirp
 
   returnServices() {
@@ -90,68 +90,128 @@ class Chirp extends ModTemplate {
   //   }
   // }
 
-  render() {
+  render(app) {
+
+
     if (this.browser_active == 1) {
+      super.render(app)
+      this.darkModeToggler.initialize();
       ChirpMain.render(this.app, this);
       ChirpMain.attachEvents(this.app, this);
     }
   }
 
+  attachEvents(app) {
+
+    const self = this;
+
+    document.querySelector(".switch").addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('toggling dark mode')
+      const slider = document.querySelector(".slider");
+      console.log(slider.classList.contains("checked"));
 
 
+      self.darkModeToggler.toggle();
+      // self.eventListeners.push({ type: 'click', listener });
+      if (slider.classList.contains("checked")) {
+        slider.classList.remove("checked");
+      } else {
+        slider.classList.add("checked");
+      }
+    })
 
-  //
-  // respondTo()
-  //
-  // this function allows Chirp to respond to other modules and components, such as would be
-  // needed to insert a settings panel in the /dev center, or even add this module to the 
-  // Arcade as a game. Here we announce support for two forms of integration:
-  //
-  // 1. adding a link to the slide-in header-menu if viewing Chirp
-  // 2. adding a link to Chirp to the header-menu Navigation section
-  //
-  respondTo(type = "") {
-    let chirp_mod = this;
+    document.querySelector("#menuToggle").addEventListener("click", this.toggleMenu);
 
-    //
-    // New Chirp -- add to slide-in menu!
-    //
-    if (type == "header-menu") {
-      if (this.browser_active) {
-        return {
-          returnMenu: function (app, mod) {
-            return `
-              <div class="wallet-action-row" id="header-dropdown-new-chirp">
-                <span class="scan-qr-info"><i class="settings-fas-icon fas fa-crow"></i> New Chirp</span>
-              </div>
-      `;
-          },
-          attachEvents: function (app, mod) {
-            document.querySelectorAll("#header-dropdown-new-chirp").forEach((element) => {
-              element.onclick = (e) => {
-                alert("HTML Overlay?");
-                ChirpNew.render(app, mod);
-                ChirpNew.attachEvents(app, mod);
-              };
-            });
-          },
-        };
+
+    document.querySelector("#sidebar-toggle-mobile").addEventListener("click", () => {
+      console.log('clicking')
+      document.querySelector('.sidebar-mobile').classList.contains('display') == false ? document.querySelector('.sidebar-mobile').classList.add('display') : document.querySelector('.sidebar-mobile').classList.remove('display')
+
+    });
+
+    //  Chat events
+    document.querySelector("#chat-container-close").addEventListener("click", () => {
+
+      document.querySelector('.saito-chat-container').classList.remove('display-chat');
+    });
+
+    document.querySelectorAll(".saito-chat-toggle").forEach(item => {
+      item.addEventListener("click", () => {
+        const chatContainer = document.querySelector('.saito-chat-container');
+        const chatBody = document.querySelector('.saito-chat-body');
+        chatContainer.classList.contains('display-chat') == false ? chatContainer.classList.add('display-chat') : chatContainer.classList.remove('display-chat')
+        chatBody.scroll({
+          top: chatBody.scrollHeight,
+          behavior: "smooth"
+        })
+
+      });
+
+    })
+
+    document.body.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+
+        sendMessage()
+      }
+    })
+
+    document.querySelector("#saito-sendmsg-btn").addEventListener('click', sendMessage)
+
+    function sendMessage() {
+      const chatInput = document.querySelector('#saito-chat-input');
+      const chatBody = document.querySelector('.saito-chat-body')
+
+      const time = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()} `
+      if (chatInput.value != "") {
+        console.log(chatInput.value);
+        const template = `<div class="saito-chat-bubble me"> 
+           <div class="chat-dialog">
+             <img src="/saito/img/account.svg"/>
+             <div>
+               <p class="saito-chat-address">kkadiaiudaol...</p>
+               <p>${chatInput.value.trim()}</p>
+    
+             </div>
+             <span>${time}</span>
+           </div>
+    
+         </div>`;
+
+        chatBody.insertAdjacentHTML('beforeend', template);
+        chatInput.value = "";
+
+        chatBody.scroll({
+          top: chatBody.scrollHeight,
+          behavior: "smooth"
+        })
+
+        console.log(template);
       }
     }
 
-    //
-    // add Chirp to Navigation Menu
-    //
-    if (type == "header-dropdown") {
-      return {
-        name: this.appname ? this.appname : this.name,
-        icon_fa: this.icon_fa,
-        browser_active: this.browser_active,
-        slug: this.returnSlug(),
-      };
-    }
-    return null;
+
+
+
   }
+
+
+
+  toggleMenu(e) {
+    console.log("toggling menu");
+    document
+      .querySelector("#hamburger-contents")
+      .classList.contains("show-menu")
+      ? document
+        .querySelector("#hamburger-contents")
+        .classList.remove("show-menu")
+      : document
+        .querySelector("#hamburger-contents")
+        .classList.add("show-menu");
+  }
+
+
 
 
   onPeerHandshakeComplete(app, peer) {

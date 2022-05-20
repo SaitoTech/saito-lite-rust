@@ -165,17 +165,14 @@ class UI_ELEMENTS extends ModTemplate {
 
     super.initializeHTML(app);
 
-
-
-
   }
 
 
 
 
-attachEvents(app){
-  super.attachEvents(app);
-}
+  attachEvents(app) {
+    super.attachEvents(app);
+  }
 
 
 

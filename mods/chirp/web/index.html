@@ -1,108 +1,421 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saito Social Platform</title>
+    <meta name="description" content="Saito Network" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!--meta name="author" content="Stephen Peterkins"-->
 
-    <link 
-      href="/saito/style.css"
-      rel="stylesheet" 
-    />
-    <link 
-      href="/saito/lib/templates/crypto-transfer-manager.css"
-      rel="stylesheet"
-    />
-    <link
-      href="/saito/lib/templates/email-chat.css"
-      rel="stylesheet"
-    />
-    <link 
-      href="/chirp/style.css"
-      rel="stylesheet" 
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
-      crossorigin="anonymous"
+      href="/saito/lib/font-awesome-5/css/all.css"
+      type="text/css"
+      media="screen"
     />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="saito.io arcade" />
+    <meta name="apple-mobile-web-app-title" content="Saito Arcade" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="msapplication-navbutton-color" content="#FFFFFF" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="msapplication-starturl" content="/index.html" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@SaitoOfficial" />
+    <meta name="twitter:creator" content="@dlancashi" />
+
+    <meta property="og:image" content="https://saito.io/website/img/arcade-banner3.jpg" />
+    <meta property="og:title" content="Saito Arcade" />
+    <meta property="og:url" content="https://saito.io/arcade" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Play games on the blockchain" />
+    <meta property="og:site_name" content="Saito Arcade" />
+
+    <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+    <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Poppins:300,400,500,600,700|PT+Serif:400,400i&display=swap" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/saito/css-imports/bootstrap.css" />
+    <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+    crossorigin="anonymous"
+  />
+    <link rel="stylesheet" href="/saito/saito.css" />
+    
+    <title>Saito</title>
+  
+    <!-- <link rel="stylesheet" href="/saito/saito.css" /> -->
+    <!-- <link rel="stylesheet" href="/saito/lib/templates/email-chat.css" /> -->
+    <!-- <link rel="stylesheet" href="/post/style.css" />
+    <link rel="stylesheet" href="/arcade/style.css" /> -->
+    <!-- <link rel="stylesheet" href="/arcade/carousel.css" /> -->
+    
+   <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
+    
+
+
+    <script src="/saito/lib/jsonTree/jsonTree.js"></script>
+    <!-- <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"
+  defer
+  ></script> -->
+  <script
+  src="https://kit.fontawesome.com/dbb2399929.js"
+  crossorigin="anonymous"
+></script>
+  <script
+  src="/saito/lib/scripts/plugins.min.js"
+ 
+></script>
+  <script
+  src="/saito/lib/scripts/functions.js"
+ 
+></script>
+    <script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+
   </head>
   <body>
-
-    <!-- sidebar starts -->
-    <div class="sidebar" id="sidebar"></div>
-    <!-- sidebar ends -->
-
-
-    <!-- feed starts -->
-    <div class="feed" id="feed">
-    </div>
-    <!-- feed ends -->
-
-    <!-- widgets starts -->
-    <div class="widgets">
-      <div class="widgets__input">
-        <span class="material-icons widgets__searchIcon"> search </span>
-        <input type="text" placeholder="Search on Saito" />
-      </div>
-
-      <div class="widgets__widgetContainer">
-        <h2>Trends for you</h2>
-        <div class="widget-trends">
-          Elon Musk
-          <span>34051 Saitons </span>
-        </div>
-        <div class="widget-trends">
-          Web3
-          <span>4892 Saitons </span>
-        </div>
-        <div class="widget-trends">
-          Saito x Binance
-          <span>420 Saitons </span>
-        </div>
-      </div>
-      <div class="widgets__widgetContainer">
-        <h2>Team</h2>
-        <div class="widget-trends user">
-          <img
-            src="https://pbs.twimg.com/profile_images/1498334372490985476/ppnmrugO_400x400.jpg"
-          />
-          <div class="text">
-            David Lancashire
-            <div class="saito-user">
-              <span class="saito">🟥</span>
-              <span>dlancashi</span>
-            </div>
-          </div>
-          <div class="btn-follow">Follow</div>
-        </div>
-        <div class="widget-trends user">
-          <img
-            src="https://pbs.twimg.com/profile_images/1509864860338769923/MkZu3Nul_400x400.jpg"
-          />
-          <div class="text">
-            NaaQ
-            <div class="saito-user">
-              <span class="saito">🟥</span>
-              <span>stevennaaq</span>
-            </div>
-          </div>
-          <div class="btn-follow">Follow</div>
-        </div>
-      </div>
+    <div id="sidebar-toggle-mobile" class="saito-sidebar-toggle-container d-lg-none">
+      <i class="fa-solid fa-align-left saito-sidebar-toggle"></i>
     </div>
 
-    <!-- widgets ends -->
+    <div class="saito-chat-container">
+      <div class="saito-chat-header">
+          <h4>Community Chat</h4>
+          <i id="chat-container-close" class="fa-solid fa-xmark"></i>
+      </div>
+      <div class="saito-chat-body">
+        <div class="saito-chat-bubble other"> 
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">zzieaoaiofoa...</p>
+              <p>Hi how are ya</p>
 
+            </div>
+            <span>12.30am</span>
+          </div>
 
-    <!-- SAITO MAGIC --->
-    <script src="/saito/saito.js" id="saito"></script>
+        </div>
+        <div class="saito-chat-bubble other"> 
 
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">yhajdjaodadf...</p>
+              <p>Doing Great!</p>
+
+            </div>
+            <span>12.31am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble other"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">yhajdjaodadf...</p>
+              <p>Doing Okay!</p>
+
+            </div>
+            <span>12.31am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble me"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">kkadiaiudaol...</p>
+              <p>Where are you guys Located at </p>
+
+            </div>
+            <span>12.31am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble other"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">wxfesxuuya...</p>
+              <p>In London, You? </p>
+
+            </div>
+            <span>12.33am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble other"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">kkadiaiudaol...</p>
+              <p>France </p>
+
+            </div>
+            <span>12.34am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble other"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">wxfesxuuya...</p>
+              <p>Anyone else in this room? </p>
+
+            </div>
+            <span>12.36am</span>
+          </div>
+        </div>
+        <div class="saito-chat-bubble me"> 
+
+          <div class="chat-dialog">
+            <img src="/saito/img/account.svg"/>
+            <div>
+              <p class="saito-chat-address">kkadiaiudaol...</p>
+              <p>Not sure, it seems so </p>
+
+            </div>
+            <span>12.36am</span>
+          </div>
+        </div>
+      </div>
+      <div class="saito-chat-input-container">
+
+          <input id="saito-chat-input" placeholder="Type message" />
+          <i id="saito-sendmsg-btn" class="fa-solid fa-paper-plane"></i>
+      </div>
+</div>
+
+    <div class="sidebar-mobile d-lg-none">
+      <div class="saito-sidebar saito-sidebar-mobile">
+        <div class="saito-sidebar-section">
+          <div class="title">Games</div>
+          <div class="content-list">
+            <div class="content-item">
+              <i class="fa-brands fa-galactic-republic"></i>
+              <span>WordBlocks</span>
+            </div>
+            <div class="content-item">
+              <i class="fa-brands fa-galactic-senate"></i>
+              <span>Settlers</span>
+            </div>
+            <div class="content-item">
+              <i class="fa-solid fa-biohazard"></i>
+              <span>Pandemic</span>
+            </div>
+            <div data-route="chirp" data-additional="" class="route-link content-item">
+              <i class="fa-solid fa-comment"></i>
+              <span>Chirp</span>
+            </div>
+          </div>
+        
+        </div>
+
+        <div class="saito-sidebar-section">
+          <div class="title">Chat</div>
+          <div class="content-list saito-chat-toggle">
+            <div class="content-item">
+              <i class="fa-brands fa-galactic-republic"></i>
+              <span>Community</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       
+      </div>
+   </div>
+    <header class="saito-header">
+      <img class="logo" alt="Logo" src="/saito/img/logo.svg" />
+
+      <nav>
+        <ul class="list d-none d-lg-flex">
+
+          <!-- <li class="list-item big-menu-container">
+            <div class="link shortcodes" id="big-menu-toggle" href="#">Shortcodes</div>
+            <div class="big-menu">
+              <a href="#" data-url="?display=buttons" class="big-menu-link" href="">Buttons</a>
+              <a href="#" data-url="?display=grid"  class="big-menu-link" href="">Grids</a>
+              <a href="#" data-url="?display=modals" class="big-menu-link" href="">Modals</a>
+              <a href="#" data-url="?display=cards" class="big-menu-link" href="">Cards</a>
+              <a href="#" data-url="?display=forms" class="big-menu-link" href="">Form</a>
+              <a href="#" data-url="?display=tables" class="big-menu-link" href="">Tables</a>
+
+            </div>
+          </li> -->
+        </ul>
+        <div style="margin-right: 3rem">
+          <label class="switch">
+            <input class="check-input" type="checkbox" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="relative">
+          <div id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div id="hamburger-contents">
+            <div class="saito-profile">
+              <img src="/saito/img/account.svg" />
+              <div class="saito-profile-info">
+                <p>wqhjM8kvwww...</p>
+                <div>0.0000 SAITO</div>
+              </div>
+            </div>
+
+            <div class="saito-menu-section">
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-plus"></i>
+                <p>Create Game</p>
+              </div>
+            </div>
+            <div class="saito-menu-section">
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+                <p>Reset/Nuke Wallet</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <p>Settings</p>
+                
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>Scan</p>
+              </div>
+            </div>
+            <div class="saito-menu-section">
+            
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p class="breadcrumb-link" data-url="?display=buttons">Buttons</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p class="breadcrumb-link" data-url="?display=grid">Grid</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p class="breadcrumb-link" data-url="?display=modals">Modals</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p  class="breadcrumb-link" data-url="?display=cards">Cards</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p  class="breadcrumb-link" data-url="?display=form">Forms</p>
+              </div>
+              <div class="saito-menu-item">
+                <i class="fa-solid fa-rocket"></i>
+                <p  class="breadcrumb-link" data-url="?display=tables">Tables</p>
+              </div>
+            </div>
+              
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <div class="container pt-3">
+      <div class="row">
+        <div class="col-lg-3 d-none d-lg-block side-content">
+          <div class="saito-sidebar">
+            <div class="saito-sidebar-section">
+              <div class="title">Games</div>
+              <div class="content-list">
+                <div class="content-item">
+                  <i class="fa-brands fa-galactic-republic"></i>
+                  <span>WordBlocks</span>
+                </div>
+                <div class="content-item">
+                  <i class="fa-brands fa-galactic-senate"></i>
+                  <span>Settlers</span>
+                </div>
+                <div class="content-item">
+                  <i class="fa-solid fa-biohazard"></i>
+                  <span>Pandemic</span>
+                </div>
+                <div data-route="chirp" data-additional="" class="route-link content-item">
+                  <i class="fa-solid fa-comment"></i>
+                  <span>Chirp</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="saito-sidebar-section">
+              <div class="title">Chat</div>
+              <div class="content-list">
+                <div class="content-item saito-chat-toggle">
+                  <i class="fa-brands fa-galactic-republic"></i>
+                  <span>Community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class=" col-sm-12 col-lg-9 ">
+          <div class="container main-content ">
+
+          </div>
+         
+        </div>
+      </div>
+    </div>
+    <footer>
+      <img alt="Logo" src="/saito/img/logo.svg" />
+
+      <div class="links">
+        <a href="#">Arcade</a>
+        <a href="#">Dev Center</a>
+        <a href="#">Blog</a>
+        <a href="#">Posts</a>
+      </div>
+
+      <div class="contact-us">
+        <a href="#">Contact Us</a>
+        <a href="#">info@saito.io</a>
+        <!-- <a href="#">Blog</a>
+        <a href="#">Posts</a> -->
+      </div>
+    </footer>
   </body>
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"
+></script> -->
+
+
+
+
+
+  
+  <!--script src="https://kit.fontawesome.com/4034b0d9ac.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script-->
 </html>
+
+  
