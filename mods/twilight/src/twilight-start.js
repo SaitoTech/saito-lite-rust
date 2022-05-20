@@ -4068,10 +4068,6 @@ if (this.game.player == 0) {
 
     let twilight_self = this;
 
-    //
-    // if the clock is going, ask to confirm moves
-    //
-    //twilight_self.confirm_this_move = 1;
 
     //
     // END OF HISTORY
