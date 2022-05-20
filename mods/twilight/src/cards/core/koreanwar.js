@@ -5,30 +5,36 @@
     if (card == "koreanwar") {
 
       let target = 4;
-
-      if (this.isControlled("us", "japan") == 1) { target++; }
-      if (this.isControlled("us", "taiwan") == 1) { target++; }
-      if (this.isControlled("us", "northkorea") == 1) { target++; }
+      
+      let modifications = 0;
+      if (this.isControlled("us", "japan") == 1) { modifications++; }
+      if (this.isControlled("us", "taiwan") == 1) { modifications++; }
+      if (this.isControlled("us", "northkorea") == 1) { modifications++; }
 
       let roll = this.rollDice(6);
-      let modified = target - 4;
+      
+      this.updateLog(`${player.toUpperCase()} rolls: ${roll}, adjusted: ${roll-modifications}`);
+      //this.updateLog("<span>" + player.toUpperCase()+"</span> <span>modified:</span> "+(roll-modified));
 
-      this.updateLog("<span>" + player.toUpperCase()+"</span> <span>rolls:</span> "+roll);
-      this.updateLog("<span>" + player.toUpperCase()+"</span> <span>modified:</span> "+(roll-modified));
+      let winner = "";
 
-      if (roll >= target) {
+      if (roll - modifications >= target) {
+        winner = "North Korea wins!";
         this.updateLog("North Korea wins the Korean War");
-        this.placeInfluence("southkorea", this.countries['southkorea'].us, "ussr");
-        this.removeInfluence("southkorea", this.countries['southkorea'].us, "us");
+        if (this.countries['southkorea'].us > 0){
+          this.placeInfluence("southkorea", this.countries['southkorea'].us, "ussr");
+          this.removeInfluence("southkorea", this.countries['southkorea'].us, "us");  
+        }
         this.game.state.vp -= 2;
-        this.game.state.milops_ussr += 2;
-        this.updateMilitaryOperations();
         this.updateVictoryPoints();
       } else {
+        winner = "South Korea wins!";
         this.updateLog("South Korea wins the Korean War");
-        this.game.state.milops_ussr += 2;
-        this.updateMilitaryOperations();
       }
+
+      this.game.state.milops_ussr += 2;
+      this.updateMilitaryOperations();
+      this.showWarOverlay(card, winner, roll, modifications);
       return 1;
 
     }

@@ -964,7 +964,7 @@ class Poker extends GameTemplate {
         console.log("call portion: "  + call_portion);*/
   
         if (raise_portion <= 0){
-          salert("Insufficient raise");
+          alert("Insufficient raise");
           console.error("Call process in raise/Insufficient Raise",mv);
           this.outputState();
         }
