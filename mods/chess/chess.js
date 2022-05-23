@@ -124,6 +124,7 @@ class Chessgame extends GameTemplate {
     console.log('######################         #######################');
     console.log('######################################################');
     console.log('######################################################');
+    console.log(game_id);
 
     if (this.browser_active == 1) {
 
