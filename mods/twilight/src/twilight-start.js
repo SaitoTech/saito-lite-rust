@@ -2326,7 +2326,7 @@ try {
 
           if (this.is_testing == 1) {
             if (this.game.player == 2) {
-              this.game.deck[0].hand = ["u2", "unintervention", "che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
+              this.game.deck[0].hand = ["che","asknot","communistrevolution","nuclearsubs", "abmtreaty","colonial","puppet","cia", "europe","asia"];
             } else {
               this.game.deck[0].hand = ["quagmire", "aldrichames", "cia", "brezhnev", "saltnegotiations", "grainsales","africa", "cubanmissile","china"];
             }
@@ -4068,6 +4068,10 @@ if (this.game.player == 0) {
 
     let twilight_self = this;
 
+    //
+    // if the clock is going, ask to confirm moves
+    //
+    //twilight_self.confirm_this_move = 1;
 
     //
     // END OF HISTORY
@@ -5101,7 +5105,7 @@ if (this.game.player == 0) {
   playerPlaceInitialInfluence(player) {
 
     try {
-this.startClock();
+    this.startClock();
 
     let twilight_self = this;
 
