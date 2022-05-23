@@ -182,6 +182,7 @@ div.action {
 }
 
 .post {
+  margin-top: 2rem;
   display: flex;
   align-items: flex-start;
   border-bottom: 1px solid var(--twitter-background);

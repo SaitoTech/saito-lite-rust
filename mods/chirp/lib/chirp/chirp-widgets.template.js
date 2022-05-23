@@ -42,7 +42,7 @@ module.exports = ChirpWidgetsTemplate = () => {
               <span>dlancashi</span>
             </div>
           </div>
-          <div class="btn-follow">Follow</div>
+          <button class="button-small">Follow</button>
         </div>
         <div class="widget-trends user">
           <img
@@ -55,7 +55,7 @@ module.exports = ChirpWidgetsTemplate = () => {
               <span>stevennaaq</span>
             </div>
           </div>
-          <div class="btn-follow">Follow</div>
+          <button class="button-small">Follow</button>
         </div>
       </div>
 

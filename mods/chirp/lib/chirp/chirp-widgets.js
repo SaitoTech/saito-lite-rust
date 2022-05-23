@@ -13,6 +13,7 @@ module.exports = ChirpWidgets = {
     // render calendar if installed
     //
     app.modules.respondTo("tiny-calendar").forEach(module => {
+      console.log('responds to ', module);
       if (module != null) {
         module.respondTo('tiny-calendar').render(app, module);
       }
@@ -20,9 +21,9 @@ module.exports = ChirpWidgets = {
 
   },
 
-  
+
   attachEvents(app, mod) {
-  
+
     //
     // let chat module work its wonders
     //

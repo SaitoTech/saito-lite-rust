@@ -9,15 +9,15 @@ class Calendar extends ModTemplate {
   constructor(app) {
     super(app);
 
-    this.app            = app;
-    this.name           = "Calendar";
-    this.description    = "Calendar for viewing and making appointments";
-    this.categories     = "Utilities";
+    this.app = app;
+    this.name = "Calendar";
+    this.description = "Calendar for viewing and making appointments";
+    this.categories = "Utilities";
 
-    this.appointments   = [];
+    this.appointments = [];
 
-    this.calendar       = null;
-    this.overlay        = null;
+    this.calendar = null;
+    this.overlay = null;
 
     this.tiny_calendar_active = 0;
     this.overlay_calendar_active = 0;
@@ -37,9 +37,9 @@ class Calendar extends ModTemplate {
     //
     if (type == 'email-appspace' || type == 'large-calendar') {
       let obj = {};
-	  obj.render = this.renderLargeCalendar;
-	  obj.attachEvents = this.attachEventsLargeCalendar;
-	  obj.script = `
+      obj.render = this.renderLargeCalendar;
+      obj.attachEvents = this.attachEventsLargeCalendar;
+      obj.script = `
 		<link href='/saito/lib/fullcalendar/packages/core/main.css' rel='stylesheet' />
 		<link href='/saito/lib/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
 		<link href='/saito/lib/fullcalendar/packages/list/main.css' rel='stylesheet' />
@@ -54,15 +54,9 @@ class Calendar extends ModTemplate {
     //
     if (type == 'tiny-calendar') {
       let obj = {};
-	  obj.render = this.renderTinyCalendar;
-	  obj.attachEvents = this.attachEventsTinyCalendar;
-	  obj.script = `
-		<link href='/saito/lib/fullcalendar/packages/core/main.css' rel='stylesheet' />
-		<link href='/saito/lib/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
-		<link href='/saito/lib/fullcalendar/packages/list/main.css' rel='stylesheet' />
-		<script src='/saito/lib/fullcalendar/packages/core/main.js'></script>
-		<script src='/saito/lib/fullcalendar/packages/daygrid/main.js'></script>
-		<script src='/saito/lib/fullcalendar/packages/list/main.js'></script>
+      obj.render = this.renderTinyCalendar;
+      obj.attachEvents = this.attachEventsTinyCalendar;
+      obj.script = `
 	  `;
       return obj;
     }
@@ -70,22 +64,22 @@ class Calendar extends ModTemplate {
   }
 
   renderLargeCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     CalendarAppspace.render(app, mod);
+    mod = app.modules.returnModule("Calendar");;
+    CalendarAppspace.render(app, mod);
   }
   attachEventsLargeCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     CalendarAppspace.attachEvents(app, mod);
+    mod = app.modules.returnModule("Calendar");;
+    CalendarAppspace.attachEvents(app, mod);
   }
   renderTinyCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     mod.tiny_calendar_active = 1;
-     CalendarAppspace.render(app, mod);
+    mod = app.modules.returnModule("Calendar");;
+    mod.tiny_calendar_active = 1;
+    CalendarAppspace.render(app, mod);
   }
   attachEventsTinyCalendar(app, mod) {
-     mod = app.modules.returnModule("Calendar");;
-     mod.tiny_calendar_active = 1;
-     CalendarAppspace.attachEvents(app, mod);
+    mod = app.modules.returnModule("Calendar");;
+    mod.tiny_calendar_active = 1;
+    CalendarAppspace.attachEvents(app, mod);
   }
 
 
@@ -106,48 +100,48 @@ class Calendar extends ModTemplate {
       //
       if (tx.isTo(publickey)) {
 
-	let includes_tx = 0;
+        let includes_tx = 0;
         for (let i = 0; i < this.appointments.length; i++) {
-	  if (this.appointments[i].transaction.sig === tx.transaction.sig) {
-	    includes_tx = 1;
-	  }
-	}
-	if (includes_tx == 0) {
-	  this.appointments.push(tx);
-	}
+          if (this.appointments[i].transaction.sig === tx.transaction.sig) {
+            includes_tx = 1;
+          }
+        }
+        if (includes_tx == 0) {
+          this.appointments.push(tx);
+        }
 
-console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
+        console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
 
         app.storage.saveTransaction(tx);
 
-	//
-	// re-render calendar if possible
-	//
-	//try {
-	//  data = {};
-	//  data.calendar = this;
-	//  this.renderEmail(app, data);
-	//  this.attachEventsEmail(app, data);
-	//} catch (err) {
-	//}
+        //
+        // re-render calendar if possible
+        //
+        //try {
+        //  data = {};
+        //  data.calendar = this;
+        //  this.renderEmail(app, data);
+        //  this.attachEventsEmail(app, data);
+        //} catch (err) {
+        //}
 
       }
     }
   }
 
 
-  addEvent(event_type="event", event_start=null, event_end=null, title, text) {
+  addEvent(event_type = "event", event_start = null, event_end = null, title, text) {
 
     //
     // transaction to end-user, containing msg.request / msg.data is
     //
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.returnPublicKey());
-    newtx.msg.module       	= "Calendar";
-    newtx.msg.type       	= event_type;
-    newtx.msg.event_start   = event_start;
-    newtx.msg.event_end     = event_end;
-    newtx.msg.event_title   = title;
-    newtx.msg.event_text    = text;
+    newtx.msg.module = "Calendar";
+    newtx.msg.type = event_type;
+    newtx.msg.event_start = event_start;
+    newtx.msg.event_end = event_end;
+    newtx.msg.event_title = title;
+    newtx.msg.event_text = text;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
@@ -168,12 +162,12 @@ console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
   convertTransactionToEvent(tx) {
 
     let eventobj = {};
-        eventobj.title = tx.msg.event_title;
-        eventobj.start = tx.msg.event_start;
-        eventobj.end   = tx.msg.event_end;
-        eventobj.title = tx.msg.event_title;
-        eventobj.backgroundColor = 'green',
-        eventobj.borderColor = 'green'
+    eventobj.title = tx.msg.event_title;
+    eventobj.start = tx.msg.event_start;
+    eventobj.end = tx.msg.event_end;
+    eventobj.title = tx.msg.event_title;
+    eventobj.backgroundColor = 'green',
+      eventobj.borderColor = 'green'
 
     return eventobj;
 
@@ -187,7 +181,7 @@ console.log("ADDING APPOINTMENT: " + JSON.stringify(this.appointments));
 
     if (this.isCalendarActive() == 0) { return; }
 
-console.log("LOADING CALENDAR APPOINTMENTS!");
+    console.log("LOADING CALENDAR APPOINTMENTS!");
 
     //
     // load calendar appointments

@@ -20,7 +20,7 @@
 
 .saito-sidebar-section .title {
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--saito-secondary);
   margin-bottom: 0.5rem;
 }
@@ -28,6 +28,11 @@
 .content-list .content-item {
   padding: 0.5rem 0;
   border-radius: 8px;
+
+}
+
+.content-list .content-item span {
+  font-size:  1.3rem;
 }
 .content-list i {
   padding-left: 0.5rem;

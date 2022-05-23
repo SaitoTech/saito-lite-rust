@@ -20,7 +20,8 @@ class Chirp extends ModTemplate {
     this.overlay = null;
     this.darkModeToggler = new Toggler(app);
 
-    this.styles = ['/saito/chirp.css'];
+    this.styles = ['/saito/chirp.css', '/saito/lib/fullcalendar/packages/daygrid/main.css', '/saito/lib/fullcalendar/packages/core/main.css', '/saito/lib/fullcalendar/packages/list/main.css',];
+    this.scripts = ['/saito/lib/fullcalendar/packages/core/main.js', '/saito/lib/fullcalendar/packages/daygrid/main.js', '/saito/lib/fullcalendar/packages/list/main.js']
 
   }
 

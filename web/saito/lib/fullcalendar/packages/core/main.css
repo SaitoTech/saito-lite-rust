@@ -10,7 +10,7 @@
 
 body .fc {
   /* extra precedence to overcome jqui */
-  font-size: 1em;
+  font-size: .7rem;
 }
 
 /* Colors
@@ -108,7 +108,7 @@ hr.fc-divider {
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: 1em;
+  font-size: .8rem;
   /* normalize cross-browser */
 }
 
