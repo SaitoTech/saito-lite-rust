@@ -2187,8 +2187,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['lubeck'] = {
-      top: 261,
-      left: 2987,
+      top: 258,
+      left: 2985,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2198,8 +2198,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['stettin'] = {
-      top: 313,
-      left: 3217,
+      top: 310,
+      left: 3214,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2209,8 +2209,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['brandenburg'] = {
-      top: 467,
-      left: 3081,
+      top: 460,
+      left: 3077,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2219,8 +2219,8 @@ console.log("adding stuff!");
       type: "electorate"
     }
     spaces['wittenberg'] = {
-      top: 610,
-      left: 3133,
+      top: 600,
+      left: 3130,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2229,8 +2229,8 @@ console.log("adding stuff!");
       type: "electorate"
     }
     spaces['magdeburg'] = {
-      top: 538,
-      left: 2935,
+      top: 534,
+      left: 2932,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2239,8 +2239,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['brunswick'] = {
-      top: 570,
-      left: 2725,
+      top: 568,
+      left: 2722,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2259,8 +2259,8 @@ console.log("adding stuff!");
       type: "electorate"
     }
     spaces['kassel'] = {
-      top: 716,
-      left: 2668,
+      top: 714,
+      left: 2665,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2269,8 +2269,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['erfurt'] = {
-      top: 752,
-      left: 2827,
+      top: 750,
+      left: 2824,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2279,8 +2279,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['leipzig'] = {
-      top: 692,
-      left: 2985,
+      top: 690,
+      left: 2983,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2289,8 +2289,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['regensburg'] = {
-      top: 959,
-      left: 3035,
+      top: 956,
+      left: 3033,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2299,8 +2299,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['salzburg'] = {
-      top: 1111,
-      left: 3151,
+      top: 1108,
+      left: 3147,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2310,8 +2310,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['augsburg'] = {
-      top: 1083,
-      left: 2864,
+      top: 1080,
+      left: 2860,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2321,8 +2321,8 @@ console.log("adding stuff!");
       type: "electorate"
     }
     spaces['nuremberg'] = {
-      top: 929,
-      left: 2837,
+      top: 925,
+      left: 2834,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2331,8 +2331,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['mainz'] = {
-      top: 872,
-      left: 2668,
+      top: 868,
+      left: 2666,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2341,8 +2341,8 @@ console.log("adding stuff!");
       type: "electorate"
     }
     spaces['trier'] = {
-      top: 897,
-      left: 2520,
+      top: 894,
+      left: 2516,
       home: "",
       political: "hapsburg",
       religion: "catholic",
@@ -2361,8 +2361,8 @@ console.log("adding stuff!");
       type: "town"
     }
     spaces['worms'] = {
-      top: 1010,
-      left: 2707,
+      top: 1009,
+      left: 2704,
       home: "",
       political: "hapsburg",
       religion: "catholic",
