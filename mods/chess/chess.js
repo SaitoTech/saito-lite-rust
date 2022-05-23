@@ -685,9 +685,9 @@ console.log(JSON.stringify(msg));
         <option value="black" default>Black</option>
         <option value="white">White</option>
       </select>
-      </div>`;
+      </div>
 
-      /*`<div class="overlay-input">
+      <div class="overlay-input">
       <label for="clock">Time Limit:</label>
       <select name="clock">
         <option value="0" default>no limit</option>
@@ -697,9 +697,9 @@ console.log(JSON.stringify(msg));
         <option value="60">60 minutes</option>
         <option value="90">90 minutes</option>
       </select>
-      </div>`*/
+      </div>
 
-      html += `<div class="overlay-input">
+      <div class="overlay-input">
       <label for="observer_mode">Observer Mode:</label>
       <select name="observer">
         <option value="enable" selected>enable</option>
@@ -708,7 +708,6 @@ console.log(JSON.stringify(msg));
       </div>
     
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
         
     `;
 
