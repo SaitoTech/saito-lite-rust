@@ -127,17 +127,10 @@ class Chessgame extends GameTemplate {
     console.log(game_id);
 
     if (this.browser_active == 1) {
-
-console.log("A");
       chess = require('./lib/chess.js');
-console.log("B");
       chessboard = require('./lib/chessboard');
-console.log("C");
-
       this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
-console.log("D");
       this.engine = new chess.Chess();
-console.log("E");
     }
 
     //
@@ -200,7 +193,6 @@ console.log("E");
 
 console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
 console.log(JSON.stringify(msg));
-//alert("LOOP");
 
     if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
       return;
@@ -692,6 +684,7 @@ console.log(JSON.stringify(msg));
       <label for="clock">Time Limit:</label>
       <select name="clock">
         <option value="0" default>no limit</option>
+        <option value="1">1 minute</option>
         <option value="2">2 minutes</option>
         <option value="10">10 minutes</option>
         <option value="30">30 minutes</option>
