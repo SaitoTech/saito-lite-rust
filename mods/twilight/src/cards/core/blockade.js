@@ -24,20 +24,19 @@
         this.addMove("resolve\tblockade");
 
         let twilight_self = this;
-        let available = 0;
+        
         let cards_to_discard = [];
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
             let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0);
             if (avops >= 3) { 
-              available = 1; 
               cards_to_discard.push(this.game.deck[0].hand[i]);
             }
           }
         }
 
-        if (available == 0) {
+        if (cards_to_discard.length == 0) {
           this.addMove("remove\tus\tus\twestgermany\t"+this.countries['westgermany'].us);
           this.addMove("NOTIFY\tUS loses all influence from West Germany");
           this.removeInfluence("westgermany", this.countries['westgermany'].us, "us");

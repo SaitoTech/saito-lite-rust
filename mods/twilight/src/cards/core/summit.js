@@ -26,7 +26,7 @@
       if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "seasia") == 1)   { us_roll++; }
 
-      this.updateLog("<span>Summit: US rolls</span> "+usbase+" (+"+(us_roll - usbase)+") and USSR rolls "+ussrbase+" (+"+(ussr_roll-ussrbase)+")");
+      this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 
       let is_winner = 0;
 
@@ -34,7 +34,8 @@
       if (ussr_roll > us_roll) { is_winner = 1; }
 
       if (is_winner == 0) {
-        this.updateLog("<span>Summit: no winner</span>");
+        this.updateLog(`${this.cardToText(card)}: no winner`);
+        this.displayModal(`${this.cardToText(card)}: no winner`);
         return 1;
       } else {
 
@@ -52,10 +53,10 @@
           twilight_self.addMove("resolve\tsummit");
 
           if (us_roll > ussr_roll) {
-            twilight_self.updateLog("<span>US receives 2 VP from Summit</span>");
+            twilight_self.updateLog("US receives 2 VP from Summit");
             twilight_self.addMove("vp\tus\t2");
           } else {
-            twilight_self.updateLog("<span>USSR receives 2 VP from Summit</span>");
+            twilight_self.updateLog("USSR receives 2 VP from Summit");
             twilight_self.addMove("vp\tussr\t2");
           }
 

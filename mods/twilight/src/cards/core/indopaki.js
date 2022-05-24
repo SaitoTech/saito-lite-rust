@@ -49,7 +49,6 @@
             }
             twilight_self.addMove(`milops\t${player}\t2`);
             twilight_self.addMove(`vp\t${player}\t2`);
-            twilight_self.showInfluence(invaded);
 
           } else { //India fails invasion
             winner = (invaded == "pakistan")? "Pakistan repels Indians aggression!": "India repels Pakistani aggression!";
