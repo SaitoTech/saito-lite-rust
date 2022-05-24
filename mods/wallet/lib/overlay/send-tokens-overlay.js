@@ -12,7 +12,8 @@ module.exports = SendTokensOverlay = {
 
   attachEvents(app, mod) {
 
-    document.getElementById("wallet-send-tokens-submit-btn").onclick = (e) => {
+    document.getElementById("wallet-send-tokens-form").onsubmit = (e) => {
+      e.preventDefault();
 
       let recipient = document.getElementById("wallet-send-tokens-recipient").value;
       let amount = document.getElementById("wallet-send-tokens-amount").value;
@@ -31,8 +32,9 @@ alert("PREFERRED CRYPTO: " + app.wallet.wallet.preferred_crypto);
       let c = confirm(`Do you wish to send ${amount} ${app.wallet.wallet.preferred_crypto}/${ticker} to ${recipient}`);
       if (c) {
 	let sender = cryptomod.returnAddress();
-	let hash = app.wallet.sendPayment([sender], [recipient], [amount], (new Date().getTime()), function() {
+	let hash = app.wallet.sendPayment([sender], [recipient], [amount], (new Date().getTime()), btoa(sender+recipient+amount+Date.now()), function() {
 	  mod.overlay.hide();
+    salert("Transfer successful");
 	}, ticker);
       } else {
         salert("Transfer cancelled");

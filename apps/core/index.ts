@@ -99,7 +99,7 @@ class Saito {
       //
       await hash_loader(this);
 
-      this.wallet.initialize();
+      await this.wallet.initialize();
       this.mempool.initialize();
       this.miner.initialize();
       this.keys.initialize();
@@ -125,11 +125,10 @@ class Saito {
 
       this.network.initialize();
 
-      console.log("peerss ", this.network.peers);
-
       if (this.server) {
         this.server.initialize();
       }
+
     } catch (err) {
       console.log(
         "Error occured initializing your Saito install. The most likely cause of this is a module that is throwing an error on initialization. You can debug this by removing modules from your config file to test which ones are causing the problem and restarting."

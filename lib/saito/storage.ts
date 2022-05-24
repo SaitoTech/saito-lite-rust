@@ -109,7 +109,7 @@ class Storage {
     }
     try {
       if (typeof Storage !== "undefined") {
-        localStorage.setItem("options", JSON.stringify(this.app.options));
+       localStorage.setItem("options", JSON.stringify(this.app.options));
       }
     } catch (err) {
       console.log(err);

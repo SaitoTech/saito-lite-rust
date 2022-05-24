@@ -63,7 +63,9 @@ class MixinModule extends CryptoModule {
     if (this.mixin) {
       if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
+console.log("---------------------");
 console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
+console.log("---------------------");
 	  this.mixin.createAccount();
         }
       }

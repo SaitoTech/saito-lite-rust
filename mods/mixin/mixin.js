@@ -896,6 +896,7 @@ console.log("IN CALLBACK IN MIXIN.JS ON CLIENT RES: " + JSON.stringify(res));
   }
 
   save() {
+console.log("SAVING IN MIXIN: " + JSON.stringify(this.mixin));
     this.app.options.mixin = this.mixin;
     this.app.storage.saveOptions();
   }
