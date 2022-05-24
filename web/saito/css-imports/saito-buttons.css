@@ -1,0 +1,1047 @@
+/* ----------------------------------------------------------------
+	togglebuttons
+-----------------------------------------------------------------*/
+
+.button {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  margin: 5px;
+  padding: 8px 22px;
+  font-size: 0.875rem;
+  line-height: 24px;
+  background-color: #1abc9c;
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  
+}
+
+body:not(.device-touch) .button {
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.button.button-dark {
+  background-color: #444;
+}
+
+.button.button-light {
+  background-color: #eee;
+  color: #333;
+  text-shadow: none !important;
+}
+
+.button:hover {
+  background-color: #444;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button.button-dark:hover {
+  background-color: #1abc9c;
+}
+
+.button.button-mini {
+  padding: 4px 14px;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+.button.button-small {
+  padding: 7px 17px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.button.button-large {
+  padding: 8px 26px;
+  font-size: 1rem;
+  line-height: 30px;
+}
+
+.button.button-xlarge {
+  padding: 9px 32px;
+  font-size: 18px;
+  letter-spacing: 2px;
+  line-height: 34px;
+}
+
+.button.button-desc {
+  text-align: left;
+  padding: 24px 34px;
+  font-size: 1.25rem;
+  height: auto;
+  line-height: 1;
+  font-family: "Poppins", sans-serif;
+}
+
+.button.button-desc span {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  font-family: "PT Serif", serif;
+  font-style: italic;
+  text-transform: none;
+}
+
+.button i {
+  position: relative;
+  margin-right: 5px;
+  width: 16px;
+  text-align: center;
+}
+
+.button.text-end i {
+  margin: 0 0 0 5px;
+}
+
+.button-mini i {
+  margin-right: 3px;
+}
+
+.button-mini.text-end i {
+  margin: 0 0 0 3px;
+}
+
+.button-small i {
+  margin-right: 4px;
+}
+
+.button-small.text-end i {
+  margin: 0 0 0 4px;
+}
+
+.button-xlarge i {
+  margin-right: 8px;
+}
+
+.button-xlarge.text-end i {
+  margin: 0 0 0 8px;
+}
+
+.button.button-desc i {
+  font-size: 48px;
+  width: 48px;
+  text-align: center;
+  margin-right: 12px;
+}
+
+.button.button-desc.text-end i {
+  margin: 0 0 0 12px;
+}
+
+.button.button-desc div {
+  display: inline-block;
+}
+
+.button.button-rounded {
+  border-radius: 3px;
+}
+
+/* Buttons - Border
+-----------------------------------------------------------------*/
+
+.button.button-border {
+  border: 2px solid #444;
+  background-color: transparent;
+  color: #333;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.button.button-border-thin {
+  border-width: 1px;
+}
+
+.button.button-border.button-desc {
+  line-height: 1;
+}
+
+.button.button-border:not(.button-fill):hover {
+  background-color: #444;
+  color: #fff;
+  border-color: transparent !important;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button.button-border.button-light {
+  border-color: #fff;
+  color: #fff;
+}
+
+.button.button-border.button-light:hover {
+  background-color: #fff;
+  color: #333;
+  text-shadow: none;
+}
+
+/* Buttons - Border
+-----------------------------------------------------------------*/
+
+.button.button-3d {
+  border-radius: 3px;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  -webkit-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+.button.button-3d:hover {
+  background-color: #1abc9c;
+  opacity: 0.9;
+}
+
+.button.button-3d.button-light:hover,
+.button.button-reveal.button-light:hover {
+  text-shadow: none;
+  color: #333;
+}
+
+/* Buttons - Icon Reveal
+-----------------------------------------------------------------*/
+
+.button.button-reveal {
+  padding-left: 28px;
+  padding-right: 28px;
+  overflow: hidden;
+}
+
+.button.button-reveal i {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -32px;
+  width: 32px;
+  height: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.button.button-reveal.button-border i {
+  top: -2px;
+}
+
+.button.button-reveal.text-end i {
+  left: auto;
+  right: -32px;
+}
+
+.button.button-reveal.button-3d i,
+.button.button-reveal.button-rounded i {
+  border-radius: 3px 0 0 3px;
+}
+
+.button.button-reveal.button-3d.text-end i,
+.button.button-reveal.button-rounded.text-end i {
+  border-radius: 0 3px 3px 0;
+}
+
+.button.button-reveal span {
+  display: inline-block;
+  position: relative;
+  left: 0;
+}
+
+body:not(.device-touch) .button.button-reveal i,
+body:not(.device-touch) .button.button-reveal span {
+  -webkit-transition: left 0.3s ease, right 0.3s ease;
+  -o-transition: left 0.3s ease, right 0.3s ease;
+  transition: left 0.3s ease, right 0.3s ease;
+}
+
+.button.button-reveal.button-mini {
+  padding-left: 17px;
+  padding-right: 17px;
+}
+
+.button.button-reveal.button-mini i {
+  left: -22px;
+  width: 22px;
+}
+
+.button.button-reveal.button-mini.text-end i {
+  left: auto;
+  right: -22px;
+}
+
+.button.button-reveal.button-small {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+.button.button-reveal.button-small i {
+  left: -26px;
+  width: 26px;
+}
+
+.button.button-reveal.button-small.text-end i {
+  left: auto;
+  right: -26px;
+}
+
+.button.button-reveal.button-large {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.button.button-reveal.button-large i {
+  left: -38px;
+  width: 38px;
+}
+
+.button.button-reveal.button-large.text-end i {
+  left: auto;
+  right: -38px;
+}
+
+.button.button-reveal.button-xlarge {
+  padding-right: 40px;
+  padding-left: 40px;
+}
+
+.button.button-reveal.button-xlarge i {
+  left: -44px;
+  width: 44px;
+}
+
+.button.button-reveal.button-xlarge.text-end i {
+  left: auto;
+  right: -44px;
+}
+
+.button.button-reveal:hover i {
+  left: 0;
+}
+
+.button.button-reveal.text-end:hover i {
+  left: auto;
+  right: 0;
+}
+
+.button.button-reveal:hover span {
+  left: 16px;
+}
+
+.button.button-reveal.button-mini:hover span {
+  left: 11px;
+}
+
+.button.button-reveal.button-small:hover span {
+  left: 13px;
+}
+
+.button.button-reveal.button-large:hover span {
+  left: 19px;
+}
+
+.button.button-reveal.button-xlarge:hover span {
+  left: 22px;
+}
+
+.button.button-reveal.text-end:hover span {
+  left: -16px;
+}
+
+.button.button-reveal.button-mini.text-end:hover span {
+  left: -11px;
+}
+
+.button.button-reveal.button-small.text-end:hover span {
+  left: -13px;
+}
+
+.button.button-reveal.button-large.text-end:hover span {
+  left: -19px;
+}
+
+.button.button-reveal.button-xlarge.text-end:hover span {
+  left: -22px;
+}
+
+/* Buttons - Promo 100% Width
+-----------------------------------------------------------------*/
+
+.button.button-full {
+  display: block;
+  width: 100%;
+  white-space: normal;
+  margin: 0;
+  height: auto;
+  line-height: 1.6;
+  padding: 30px 0;
+  font-size: 30px;
+  font-weight: 300;
+  text-transform: none;
+  border-radius: 0;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.button.button-full.button-light {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.button.button-full strong {
+  font-weight: 700;
+  border-bottom: 2px solid #eee;
+}
+
+body:not(.device-touch) .button.button-full strong {
+  -webkit-transition: border 0.2s ease-in-out;
+  -o-transition: border 0.2s ease-in-out;
+  transition: border 0.2s ease-in-out;
+}
+
+.button.button-full.button-light strong {
+  border-bottom-color: #333;
+}
+
+.button.button-full.button-light:hover strong {
+  border-bottom-color: #eee;
+}
+
+/* Buttons - Circle
+-----------------------------------------------------------------*/
+
+.button.button-circle {
+  border-radius: 20px;
+}
+
+.button.button-mini.button-circle {
+  border-radius: 14px;
+}
+
+.button.button-small.button-circle {
+  border-radius: 17px;
+}
+
+.button.button-large.button-circle {
+  border-radius: 23px;
+}
+
+.button.button-xlarge.button-circle {
+  border-radius: 26px;
+}
+
+/* Buttons - Fill Effect
+-----------------------------------------------------------------*/
+
+.button.button-border.button-fill {
+  overflow: hidden;
+  transform-style: preserve-3d;
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+  -webkit-backface-visibility: hidden;
+}
+
+.button.button-border.button-fill span {
+  position: relative;
+}
+
+.button.button-border.button-fill:hover {
+  background-color: transparent !important;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button.button-border.button-fill.button-light:hover {
+  border-color: #eee !important;
+  color: #333 !important;
+  text-shadow: none;
+}
+
+.button.button-border.button-fill::before {
+  content: "";
+  position: absolute;
+  background-color: #444;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+  -webkit-backface-visibility: hidden;
+}
+
+.button.button-border.button-fill.button-light::before {
+  background-color: #eee;
+}
+
+.button.button-border.button-fill.fill-from-right::before {
+  left: auto;
+  right: 0;
+}
+
+.button.button-border.button-fill:hover::before {
+  width: 100%;
+}
+
+.button.button-border.button-fill.fill-from-top::before,
+.button.button-border.button-fill.fill-from-bottom::before {
+  -webkit-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.button.button-border.button-fill.fill-from-top::before {
+  width: 100%;
+  height: 0;
+}
+
+.button.button-border.button-fill.fill-from-top:hover::before {
+  height: 100%;
+}
+
+.button.button-border.button-fill.fill-from-bottom::before {
+  width: 100%;
+  height: 0;
+  top: auto;
+  bottom: 0;
+}
+
+.button.button-border.button-fill.fill-from-bottom:hover::before {
+  height: 100%;
+}
+
+/* Buttons - States
+-----------------------------------------------------------------*/
+.button.disabled,
+.button:disabled {
+  opacity: 0.65 !important;
+  pointer-events: none !important;
+}
+
+/* Buttons - Colors
+-----------------------------------------------------------------*/
+
+.button-red:not(.button-border) {
+  background-color: #c02942 !important;
+}
+.button-3d.button-red:hover,
+.button-reveal.button-red:hover,
+.button-border.button-red:hover,
+.button-border.button-red.button-fill::before {
+  background-color: #c02942 !important;
+}
+
+.button-border.button-red {
+  color: #c02942;
+  border-color: #c02942;
+}
+
+.button-teal:not(.button-border) {
+  background-color: #53777a !important;
+}
+.button-3d.button-teal:hover,
+.button-reveal.button-teal:hover,
+.button-border.button-teal:hover,
+.button-border.button-teal.button-fill::before {
+  background-color: #53777a !important;
+}
+
+.button-border.button-teal {
+  color: #53777a;
+  border-color: #53777a;
+}
+
+.button-light.button-yellow:not(.button-border) {
+  background-color: #ecd078 !important;
+}
+.button-3d.button-yellow:hover,
+.button-reveal.button-yellow:hover,
+.button-border.button-yellow:hover,
+.button-border.button-yellow.button-fill::before {
+  background-color: #ecd078 !important;
+}
+
+.button-border.button-yellow,
+.button-border.button-yellow.button-fill.button-light:hover {
+  color: #ecd078 !important;
+  border-color: #ecd078 !important;
+}
+
+.button-border.button-yellow:hover,
+.button-border.button-yellow.button-fill.button-light:hover {
+  color: #333 !important;
+}
+
+.button-green:not(.button-border) {
+  background-color: #59ba41 !important;
+}
+.button-3d.button-green:hover,
+.button-reveal.button-green:hover,
+.button-border.button-green:hover,
+.button-border.button-green.button-fill::before {
+  background-color: #59ba41 !important;
+}
+
+.button-border.button-green {
+  color: #59ba41;
+  border-color: #59ba41;
+}
+
+.button-brown:not(.button-border) {
+  background-color: #774f38 !important;
+}
+.button-3d.button-brown:hover,
+.button-reveal.button-brown:hover,
+.button-border.button-brown:hover,
+.button-border.button-brown.button-fill::before {
+  background-color: #774f38 !important;
+}
+
+.button-border.button-brown {
+  color: #774f38;
+  border-color: #774f38;
+}
+
+.button-aqua:not(.button-border) {
+  background-color: #40c0cb !important;
+}
+.button-3d.button-aqua:hover,
+.button-reveal.button-aqua:hover,
+.button-border.button-aqua:hover,
+.button-border.button-aqua.button-fill::before {
+  background-color: #40c0cb !important;
+}
+
+.button-border.button-aqua {
+  color: #40c0cb;
+  border-color: #40c0cb;
+}
+
+.button-light.button-lime:not(.button-border) {
+  background-color: #aee239 !important;
+}
+.button-3d.button-lime:hover,
+.button-reveal.button-lime:hover,
+.button-border.button-lime:hover,
+.button-border.button-lime.button-fill::before {
+  background-color: #aee239 !important;
+}
+
+.button-border.button-lime {
+  color: #aee239;
+  border-color: #aee239;
+}
+
+.button-purple:not(.button-border) {
+  background-color: #5d4157 !important;
+}
+.button-3d.button-purple:hover,
+.button-reveal.button-purple:hover,
+.button-border.button-purple:hover,
+.button-border.button-purple.button-fill::before {
+  background-color: #5d4157 !important;
+}
+
+.button-border.button-purple {
+  color: #5d4157;
+  border-color: #5d4157;
+}
+
+.button-leaf:not(.button-border) {
+  background-color: #a8caba !important;
+}
+.button-3d.button-leaf:hover,
+.button-reveal.button-leaf:hover,
+.button-border.button-leaf:hover,
+.button-border.button-leaf.button-fill::before {
+  background-color: #a8caba !important;
+}
+
+.button-border.button-leaf {
+  color: #a8caba;
+  border-color: #a8caba;
+}
+
+.button-pink:not(.button-border) {
+  background-color: #f89fa1 !important;
+}
+.button-3d.button-pink:hover,
+.button-reveal.button-pink:hover,
+.button-border.button-pink:hover,
+.button-border.button-pink.button-fill::before {
+  background-color: #f89fa1 !important;
+}
+
+.button-border.button-pink {
+  color: #f89fa1;
+  border-color: #f89fa1;
+}
+
+.button-dirtygreen:not(.button-border) {
+  background-color: #1693a5 !important;
+}
+.button-3d.button-dirtygreen:hover,
+.button-reveal.button-dirtygreen:hover,
+.button-border.button-dirtygreen:hover,
+.button-border.button-dirtygreen.button-fill::before {
+  background-color: #1693a5 !important;
+}
+
+.button-border.button-dirtygreen {
+  color: #1693a5;
+  border-color: #1693a5;
+}
+
+.button-blue:not(.button-border) {
+  background-color: #1265a8 !important;
+}
+.button-3d.button-blue:hover,
+.button-reveal.button-blue:hover,
+.button-border.button-blue:hover,
+.button-border.button-blue.button-fill::before {
+  background-color: #1265a8 !important;
+}
+
+.button-border.button-blue {
+  color: #1265a8;
+  border-color: #1265a8;
+}
+
+.button-amber:not(.button-border) {
+  background-color: #eb9c4d !important;
+}
+.button-3d.button-amber:hover,
+.button-reveal.button-amber:hover,
+.button-border.button-amber:hover,
+.button-border.button-amber.button-fill::before {
+  background-color: #eb9c4d !important;
+}
+
+.button-border.button-amber {
+  color: #eb9c4d;
+  border-color: #eb9c4d;
+}
+
+.button-black:not(.button-border) {
+  background-color: #111 !important;
+}
+.button-3d.button-black:hover,
+.button-reveal.button-black:hover,
+.button-border.button-black:hover,
+.button-border.button-black.button-fill::before {
+  background-color: #111 !important;
+}
+
+.button-border.button-black {
+  color: #111;
+  border-color: #111;
+}
+
+.button-white:not(.button-border) {
+  background-color: #f9f9f9 !important;
+}
+.button-3d.button-white:hover,
+.button-reveal.button-white:hover {
+  background-color: #f9f9f9 !important;
+}
+
+/* Buttons - No Hover
+-----------------------------------------------------------------*/
+
+.button.button-nohover:hover {
+  opacity: inherit !important;
+  background-color: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+}
+
+/*  Saito - Specific Buttons */
+
+button {
+  min-width: 10.5rem;
+  background: linear-gradient(
+    77deg,
+    var(--saito-primary) 0%,
+    var(--saito-secondary) 69%
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+  padding: 13px 19px;
+  color: #fff;
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+  border-radius: 30px;
+  margin: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button:hover {
+  transform: scale(1.1);
+  background: transparent;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+}
+
+.saito-btn-secondary {
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+  background-color: transparent;
+  background: none;
+}
+
+.saito-btn-secondary:hover {
+  background-color: var(--saito-primary) !important;
+  color: var(--saito-white);
+}
+.saito-btn-tetiary {
+  border: 1px solid var(--saito-white);
+  color: var(--saito-white);
+  background-color: transparent;
+}
+
+button:hover {
+  animation: pulse 1s infinite;
+  transition: 0.3s;
+}
+
+body:not(.device-touch) .button {
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+button.button-dark {
+  background-color: #444;
+}
+
+button.button-light {
+  background-color: #eee;
+  color: #333;
+  text-shadow: none !important;
+}
+
+.button:hover {
+  background-color: #444;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+button.button-dark:hover {
+  background-color: #1abc9c;
+}
+
+button.button-mini {
+  padding: 4px 14px;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+button.button-small {
+  padding: 7px 17px;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 2.5rem;
+
+ }
+
+button.button-large {
+  padding: 16px 26px;
+  font-size: 1.1rem;
+  line-height: 30px;
+  min-width: 13.5rem;
+}
+button.button-desc {
+  text-align: left;
+  padding: 24px 34px;
+  font-size: 1.25rem;
+  height: auto;
+  line-height: 1;
+  font-family: "Poppins", sans-serif;
+}
+
+button.button-desc span {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  font-family: "PT Serif", serif;
+  font-style: italic;
+  text-transform: none;
+}
+
+.button i {
+  position: relative;
+  margin-right: 5px;
+  width: 16px;
+  text-align: center;
+}
+
+button.text-end i {
+  margin: 0 0 0 5px;
+}
+
+.button-mini i {
+  margin-right: 3px;
+}
+
+.button-mini.text-end i {
+  margin: 0 0 0 3px;
+}
+
+.button-small i {
+  margin-right: 4px;
+}
+
+.button-small.text-end i {
+  margin: 0 0 0 4px;
+}
+
+.button-xlarge i {
+  margin-right: 8px;
+}
+
+.button-xlarge.text-end i {
+  margin: 0 0 0 8px;
+}
+
+button.button-desc i {
+  font-size: 48px;
+  width: 48px;
+  text-align: center;
+  margin-right: 12px;
+}
+
+button.button-desc.text-end i {
+  margin: 0 0 0 12px;
+}
+
+button.button-desc div {
+  display: inline-block;
+}
+
+button.button-rounded {
+  border-radius: 3px;
+}
+
+/* Buttons - Border
+-----------------------------------------------------------------*/
+
+button.button-border {
+  border: 2px solid #444;
+  background-color: transparent;
+  color: #333;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+button.button-border-thin {
+  border-width: 1px;
+}
+
+button.button-border.button-desc {
+  line-height: 1;
+}
+
+button.button-border:not(.button-fill):hover {
+  background-color: #444;
+  color: #fff;
+  border-color: transparent !important;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+button.button-border.button-light {
+  border-color: #fff;
+  color: #fff;
+}
+
+button.button-border.button-light:hover {
+  background-color: #fff;
+  color: #333;
+  text-shadow: none;
+}
+
+/* 
+ */
+
+/* CSS rules are kept repetitive so that you can get CSS rules for each button easily :) */
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+}
+
+input:focus + .slider {
+}
+
+input:checked + .slider:before {
+}
+
+.checked {
+  background-color: var(--saito-primary);
+  box-shadow: 0 0 1px var(--saito-primary);
+}
+
+.checked::before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

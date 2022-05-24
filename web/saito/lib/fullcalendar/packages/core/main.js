@@ -6513,7 +6513,7 @@ Docs & License: https://fullcalendar.io/
         widgetHeader: 'fc-widget-header',
         widgetContent: 'fc-widget-content',
         buttonGroup: 'fc-button-group',
-        button: 'fc-button fc-button-primary',
+        button: 'button-small',
         buttonActive: 'fc-button-active',
         popoverHeader: 'fc-widget-header',
         popoverContent: 'fc-widget-content',

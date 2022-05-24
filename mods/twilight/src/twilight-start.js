@@ -5101,7 +5101,7 @@ if (this.game.player == 0) {
   playerPlaceInitialInfluence(player) {
 
     try {
-this.startClock();
+    this.startClock();
 
     let twilight_self = this;
 

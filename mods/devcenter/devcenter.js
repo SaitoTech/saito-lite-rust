@@ -10,8 +10,8 @@ class DevCenter extends ModTemplate {
 
     super(app);
 
-    this.name = "DevCenter";
-    this.appname = "Dev Center";
+    this.name = "Devcenter";
+    this.appname = "DevCenter";
     this.slug = "dev";
     this.description = "Control panel for Saito application development and software debugging";
     this.categories = "Core Admin Productivity Utilities";
@@ -29,8 +29,22 @@ class DevCenter extends ModTemplate {
     this.mods = [];
 
   }
+  returnBaseHTML(app) {
+    return ``
+  }
 
-  initializeHTML(app) {
+  initialize(app) {
+    const stylesheets = ['/saito/style.css', '/devcenter/style.css', '/appstore/css/email-appspace.css', '/saito/lib/templates/email-chat.css', '/saito/lib/templates/crypto-transfer-manager.css', '/saito/lib/jsonTree/jsonTree.css'];
+    const scripts = ['/saito/lib/jsonTree/jsonTree.js'];
+    const meta = [];
+    console.log(stylesheets);
+    super.initialize(app, meta, stylesheets, scripts);
+  }
+
+
+  initializeHTML(app, additionalURL) {
+
+    super.initializeHTML(app, additionalURL);
 
     if (app.BROWSER && this.browser_active && (!app.options.dev || !app.options.dev.welcomesent)) {
 
@@ -123,7 +137,7 @@ class DevCenter extends ModTemplate {
 
      this.app.storage.loadTransactions("Dev", 50, (txs) => {
       for (let i = 0; i < txs.length; i++) {
-	txs[i].decryptMessage(app);
+  txs[i].decryptMessage(app);
         this.addTransaction(txs[i]);
       }
       let readyCount = app.browser.getValueFromHashAsNumber(window.location.hash, "ready")

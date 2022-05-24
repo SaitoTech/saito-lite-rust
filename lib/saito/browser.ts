@@ -113,7 +113,7 @@ console.log("LOAD OPTIONS IN BROWSER");
       }
 
       //
-      // try and figure out what module is running
+      // try and figure out what moule is running
       // This code will error in a node.js environment - that's ok.
       // Abercrombie's rule.
       //
@@ -130,7 +130,10 @@ console.log("LOAD OPTIONS IN BROWSER");
       this.protocol = myurl.protocol;
       const myurlpath = myurl.pathname.split("/");
       let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : "";
-      if (active_module == "") { active_module = "website"; }
+      console.log('my path ', myurlpath);
+      if (active_module == "") {
+        active_module = "website";
+      }
       this.active_module = active_module;
 
       //
@@ -177,6 +180,8 @@ console.log("LOAD OPTIONS IN BROWSER");
           //
           const urlParams = new URLSearchParams(location.search);
 
+          console.log("url params ", urlParams);
+
           this.app.modules.mods[i].handleUrlParams(urlParams);
         }
       }
@@ -217,11 +222,7 @@ console.log("LOAD OPTIONS IN BROWSER");
         siteMessage("Websocket Connection Lost");
       });
     }
-
-
   }
-
-
 
   returnURLParameter(name) {
     try {
