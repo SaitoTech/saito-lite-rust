@@ -17,7 +17,14 @@
       this.game.state.vp += us_bonus;
       this.updateVictoryPoints();
       this.updateLog("<span>US VP bonus is:</span> " + us_bonus);
-
+      
+      if (!i_played_the_card){
+        if (player == "ussr"){
+          this.game.queue.push(`ACKNOWLEDGE\tUSSR triggers ${this.cardToText(card)}.`);
+        }else{
+          this.game.queue.push(`ACKNOWLEDGE\tUS plays ${this.cardToText(card)}.`);
+        }
+      }
       return 1;
 
     }

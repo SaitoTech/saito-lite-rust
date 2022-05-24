@@ -5,27 +5,22 @@
     ////////////////////
     if (card == "duckandcover") {
 
-      this.lowerDefcon();
-      this.updateDefcon();
+      if (!i_played_the_card){
+        if (player == "ussr"){
+          this.game.queue.push(`ACKNOWLEDGE\tUSSR triggers ${this.cardToText(card)}.`);
+        }else{
+          this.game.queue.push(`ACKNOWLEDGE\tUS plays ${this.cardToText(card)}.`);
+        }
+      }
 
+      this.lowerDefcon();
+      
       let vpchange = 5-this.game.state.defcon;
 
-      if (this.game.state.defcon <= 1 && this.game.over != 1) {
-        if (this.game.state.turn == 0) {
-          this.endGame("us", "defcon");
-        } else {
-          this.endGame("ussr", "defcon");
-        }
+      this.game.state.vp = this.game.state.vp+vpchange;
+      this.updateLog("US gains "+vpchange+" VP from Duck and Cover");
+      this.updateVictoryPoints();
 
-        return;
-
-      } else {
-
-        this.game.state.vp = this.game.state.vp+vpchange;
-        this.updateLog("US gains "+vpchange+" VP from Duck and Cover");
-        this.updateVictoryPoints();
-
-      }
       return 1;
     }
 

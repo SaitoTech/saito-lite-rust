@@ -5,7 +5,7 @@
     if (card == "destalinization") {
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Destalinization</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Destalinization</div>");
         return 0;
 
       }

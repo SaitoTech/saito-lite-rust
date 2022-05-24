@@ -5,7 +5,7 @@
         if (this.game.state.turn == 0) {
           this.game.state.vp += 1;
           this.updateLog("US gains 1 VP from Defectors");
-          this.updateDefcon();
+          this.updateVictoryPoints();
         }
         return 1;
       }

@@ -2,7 +2,7 @@
     if (card == "southafrican") {
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing South African Unrest</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing South African Unrest</div>");
         return 0;
 
       }

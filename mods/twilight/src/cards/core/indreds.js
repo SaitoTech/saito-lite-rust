@@ -2,7 +2,7 @@
     if (card == "indreds") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Independent Reds</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Independent Reds</div>");
         return 0;
       }
 

@@ -28,7 +28,10 @@
           }
         }
       }
-
+      
+      if (!i_played_the_card){
+        this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
+      }
       this.updateVictoryPoints();
       return 1;
 
