@@ -973,45 +973,36 @@ try {
       if (mv[0] == "init") {
 
         this.game.queue.splice(qe, 1);
-        //console.log(this.game.options.player1);
-        //console.log(this.game.players,this.game.player, this.app.wallet.returnPublicKey());
-  	    //
+  	    
   	    // observer skips
-  	    if (this.game.player === 0) { 
-  	      if (!this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-            let roll = this.rollDice(6);
+  	    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
             return 1;
-  	      }
   	    } 
-        
-        // randomly choose who is us and ussr
-        if (!this.game.options.player1 || this.game.options.player1 == "random") {
-          let roll = this.rollDice(6);
-          if (roll <= 3) {
-            this.game.options.player1 = "us";
-           } else {
-           this.game.options.player1 = "ussr";
-          }
-        }
-        /*console.log(this.game.options.player1);
-        if (this.game.players[1] === this.app.wallet.returnPublicKey()) {
-          if (this.game.options.player1 === "us") {
-            this.game.player = 2;
-          } else { 
-            //Switch players
-            this.game.player = 1;
-          }
-        } else {
-          if (this.game.options.player1 === "us") {
-            //Switch players
 
-            this.game.player = 1;
-          } else {
-            this.game.player = 2;
+        //Game engine automatically randomizes player order, so we are good to go
+        if (!this.game.options.player1 || this.game.options.player1 == "random"){
+          return 1;
+        }
+        
+        //Reordeer the players so that originator can be the correct role
+        if (this.game.options.player1 === "ussr"){
+          if (this.game.players[0] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }else{
+          if (this.game.players[1] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
           }
         }
-        console.log(this.game.players,this.game.player,this.app.wallet.returnPublicKey());
-        */
+        //Fix game.player so that it corresponds to the indices of game.players[]
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+            this.game.player = i+1;
+          }
+        }
+        
       }
 
   	if (mv[0] === "update_observers") {
