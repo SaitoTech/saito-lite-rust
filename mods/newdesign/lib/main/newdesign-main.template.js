@@ -5,8 +5,6 @@ module.exports = (app) => {
     <div class="container" id="container">
     <h3>h3 - Module header</h3>
 
-    <button class="main">Main*</button>
-  
     <p>Form Items</p>
     <div>
         <div>Title</div>
