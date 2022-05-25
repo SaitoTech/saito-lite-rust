@@ -13,8 +13,8 @@ class NewDesign extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    
-    //this.styles = ['/saito/saito.css'];
+
+    this.styles = ['/saito/saito.css'];
 
   }
 
