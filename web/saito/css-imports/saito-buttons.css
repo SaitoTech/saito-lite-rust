@@ -1,0 +1,53 @@
+
+button {
+  min-width: 10.5rem;
+  background: linear-gradient(
+    77deg,
+    var(--saito-primary) 0%,
+    var(--saito-secondary) 69%
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  text-align: center;
+  padding: 13px 19px;
+  color: #fff;
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+  border-radius: 30px;
+  margin: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button:hover {
+  transform: scale(1.1);
+  background: transparent;
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+}
+
+.saito-btn-secondary {
+  border: 1px solid var(--saito-primary);
+  color: var(--saito-primary);
+  background-color: transparent;
+  background: none;
+}
+
+.saito-btn-secondary:hover {
+  background-color: var(--saito-primary) !important;
+  color: var(--saito-white);
+}
+.saito-btn-tetiary {
+  border: 1px solid var(--saito-white);
+  color: var(--saito-white);
+  background-color: transparent;
+}
+
+button:hover {
+  animation: pulse 1s infinite;
+  transition: 0.3s;
+}

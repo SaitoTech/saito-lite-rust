@@ -1,0 +1,148 @@
+.saito-chat-container {
+  position: fixed;
+  bottom: 0;
+  color: var(--saito-default);
+  right: 0;
+  border: 1px solid var(--saito-border);
+
+  background-color: var(--saito-chat-background);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 4px 4px 12px var(--saito-border);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: scroll;
+  z-index: 17;
+}
+
+.saito-chat-header {
+  border-bottom: 1px solid var(--saito-border);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saito-chat-header > i {
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: all 0.3s;
+}
+
+.saito-chat-header > i:hover {
+  transform: rotateZ(90deg) scale(1.2);
+  color: var(--saito-secondary);
+}
+
+.saito-chat-input-container {
+  /* background-color: var(--saito-black); */
+  height: 3rem;
+  width: 100%;
+  margin-top: auto;
+  color: var(--saito-white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-top: 1px solid var(--saito-border);
+}
+
+.saito-chat-input-container > input {
+  background-color: transparent;
+  border: none;
+  width: 80%;
+  color: var(--saito-default-font);
+}
+
+.saito-chat-input-container > i {
+  cursor: pointer;
+  color: var(--saito-primary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.saito-chat-input-container > i:hover {
+  transform: rotateZ(30deg) scale(1.3);
+}
+
+/*   */
+
+.saito-chat-body {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  overflow: scroll;
+
+  /* position: relative; */
+
+  height: 35rem;
+}
+
+.saito-chat-bubble {
+  background-color: var(--saito-secondary);
+
+  /* min-width: 5rem;
+  min-height: 3rem; */
+  color: var(--saito-white);
+  position: relative;
+  padding: 0.5rem 1rem 1.1rem 0.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  max-width: 60%;
+  cursor: pointer;
+}
+
+.saito-chat-bubble.other {
+  align-self: flex-start;
+}
+.saito-chat-bubble.me {
+  align-self: flex-end;
+  justify-content: flex-end;
+  background-color: var(--saito-primary);
+}
+
+.saito-chat-bubble p {
+  word-break: break-all;
+}
+
+.chat-dialog {
+  display: flex;
+  align-items: center;
+}
+
+.chat-dialog .saito-chat-address {
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.chat-dialog .saito-chat-address:hover {
+  transform: scale(1.1);
+}
+
+.chat-dialog > img {
+  width: 30px;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+}
+
+.chat-dialog > span {
+  font-size: 0.5rem;
+  position: absolute;
+  right: 0;
+  bottom: 0.1rem;
+  right: 0.5rem;
+}
+
+.display-chat {
+  pointer-events: auto !important;
+  width: 25rem !important;
+  min-height: 30rem !important;
+  height: 35rem;
+  opacity: 1 !important;
+}

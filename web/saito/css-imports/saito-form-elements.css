@@ -1,0 +1,171 @@
+
+/*
+
+.saito-form hr {
+  background-color: var(--saito-border);
+}
+
+.saito-form-header {
+  margin-bottom: 1rem;
+}
+.saito-form-header > h3 {
+}
+
+.saito-form-body {
+  padding: 1rem 0;
+}
+.saito-form-group:not(:last-child) {
+  position: relative;
+  margin-bottom: rem;
+}
+.saito-input-group {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.saito-label {
+  color: var(--saito-default);
+  font-size: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.saito-input-group {
+  margin-bottom: 2rem;
+}
+
+.saito-input-group > input,
+select {
+  padding: 0.3rem;
+  width: 100%;
+}
+
+.saito-input-group input {
+  border: none;
+  border-bottom: 1px solid var(--saito-border);
+
+  background-color: transparent;
+  color: var(--saito-default-font);
+  transition: all 0.3s;
+}
+
+.saito-input-group select {
+  padding: 0.3rem;
+  background: linear-gradient(
+    77deg,
+    var(--saito-primary) 0%,
+    var(--saito-secondary) 69%
+  );
+
+  border: none;
+  color: var(--saito-white);
+  border-radius: 8px;
+}
+.saito-input-group input::placeholder {
+  transition: all 0.3s;
+}
+
+.saito-input-group input:focus {
+  border-bottom: 1px solid var(--saito-secondary);
+}
+
+.saito-input-group input:focus::placeholder {
+  color: var(--saito-primary) !important;
+  font-size: 0.7rem;
+  transform: translateX(80%);
+  opacity: 0;
+}
+
+.saito-form-footer {
+  display: flex;
+  padding: 1rem 0;
+}
+
+.saito-form-footer > button {
+  margin-left: auto;
+} */
+
+
+form {
+  padding: 2rem 2rem;
+  padding-top: 1.5rem;
+  border: 1px solid var(--saito-border);
+  border-radius: 8px;
+  box-shadow: var(--saito-box-shadow);
+}
+
+
+label {
+  font-size: 1rem;
+  margin: .5rem 0;
+  color: var(--saito-border);
+  display: inline-block;
+  cursor: pointer;
+}
+
+label:hover {
+  color: var(--saito-secondary);
+}
+
+
+
+input[type="text"], input[type="password"] {
+  background-color: transparent;
+  border-radius: 10px;
+  padding: .5rem 1rem;
+  border: 1px solid var(--saito-border);
+  color: var(--saito-default);
+  outline: none;
+}
+
+input[type="checkbox"]{
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+border: 1px solid var(--saito-primary);
+  width: 15px;
+  height: 15px;
+  margin: 0 .5rem;
+  border-radius: 3px;
+  cursor: pointer;
+
+
+}
+
+
+input:focus {
+border: 1px solid var(--saito-secondary);
+}
+
+
+textarea {
+  background-color: transparent;
+  display: block;
+  padding: 1rem;
+  border: 1px solid var(--saito-border);
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+
+textarea:focus {
+  border: 1px solid var(--saito-secondary);
+}
+
+
+
+
+select {
+  padding: .5rem 2rem;
+  border-radius: 10px;
+  outline: none;
+  border: 1px solid var(--saito-white);
+  background-color: var(--saito-secondary);
+  color: white;
+
+
+}
+
+select:focus {
+  border: 1px solid var(--saito-white);
+  
+}

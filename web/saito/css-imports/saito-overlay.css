@@ -1,0 +1,114 @@
+
+
+.saito-overlay-backdrop,
+.game-overlay-backdrop {
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #444;
+  opacity: 0.4;
+  z-index: 100;
+}
+
+.saito-overlay,
+.game-overlay {
+  position: fixed;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: auto;
+  margin-right: auto;
+  background-color: transparent;
+  z-index: 1000;
+  min-width: 10%;
+  min-height: 10%;
+  /*padding: 10px;*/
+}
+
+.saito-overlay-closebox {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: -13px;
+  border-radius: 50%;
+  top: -15px;
+  background-color: white;
+  z-index: 100;
+}
+
+.saito-overlay-closebox-btn {
+  display: block;
+  height: 32px;
+  width: 32px;
+  color: red;
+  font-size: 31px;
+}
+
+.saito-overlay-closebox-btn:hover {
+  transform: scale(1);
+}
+
+/* Make sure game overlay can cover saito-overlay */
+.game-overlay {
+  z-index: 2010;
+}
+
+.game-overlay-backdrop {
+  z-index: 2000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.saito-overlay-menu {
+  padding: 10px;
+  background-color: whitesmoke;
+  opacity: 0.8;
+  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.saito-overlay-menu ul li {
+  width: 100%;
+  line-height: 3.5em;
+  border-top: 1px solid var(--saito-skyline-grey);
+  cursor: pointer;
+  text-align: -webkit-match-parent;
+  display: list-item;
+  list-style: none;
+  padding: 0 1em;
+}
+
+.saito-overlay-menu ul li:hover {
+  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75), -2px -2px 5px #eee;
+  background: #0001;
+}
+
+.rules-overlay{
+  background: var(--saito-nightscape);
+  padding: 1em;
+  font-size: 20px;
+  border: 2px white solid;
+  border-radius: 10px;
+  max-width: 80vw;
+  min-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.rules-overlay p{
+  margin-top: 0.5em;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+    .saito-overlay {
+      width: 95vw;
+    }
+  
+  }
+  
