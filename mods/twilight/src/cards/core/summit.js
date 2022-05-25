@@ -63,7 +63,7 @@
           let x = 0;
           let y = 0;
 
-          this.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
+          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
 
           twilight_self.attachCardboxEvents(function(action2) {
 
@@ -84,7 +84,7 @@
 
           });
         }else{
-          this.updateStatus(`You lost the ${twilight_self.cardToText(card)}, waiting for opponent to change DEFCON`);
+          this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);
         }
         return 0;
       }

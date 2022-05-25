@@ -4,35 +4,35 @@
     // Arms Race
     //
     if (card == "armsrace") {
-
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      
+      let bonus = 0;
 
       if (player == "us") {
         if (this.game.state.milops_us > this.game.state.milops_ussr) {
-          this.updateLog("US gains 1 VP from Arms Race");
+          bonus = 1;
           this.game.state.vp += 1;
           if (this.game.state.milops_us >= this.game.state.defcon) {
-            this.updateLog("US gains 2 bonus VP rom Arms Race");
             this.game.state.vp += 2;
+            bonus = 3;
           }
-        }
+        }  
       } else {
         if (this.game.state.milops_ussr > this.game.state.milops_us) {
-          this.updateLog("USSR gains 1 VP from Arms Race");
+          bonus = 1;
           this.game.state.vp -= 1;
           if (this.game.state.milops_ussr >= this.game.state.defcon) {
-            this.updateLog("USSR gains 2 bonus VP from Arms Race");
+            bonus = 3;
             this.game.state.vp -= 2;
           }
         }
       }
-      
+      this.updateVictoryPoints();
+      this.updateLog(`${player.toUpperCase()} gains ${bonus} VP from ${this.cardToText(card)}`);
+
       if (!i_played_the_card){
         this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
       }
-      this.updateVictoryPoints();
+      
       return 1;
 
     }

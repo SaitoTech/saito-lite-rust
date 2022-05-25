@@ -13,17 +13,23 @@
       this.updateLog("USSR gains 2 VP");
 
       if (this.game.state.events.reformer == 1) {
-        this.addMove("resolve\tglasnost");
-        this.addMove("unlimit\tcoups");
-        this.addMove("ops\tussr\tglasnost\t4");
-        this.addMove("limit\tcoups");
-        this.addMove("notify\tUSSR plays 4 OPS for influence or realignments");
-        this.endTurn();
+        this.game.queue.push("resolve\tglasnost");
+        this.game.queue.push("unlimit\tcoups");
+        this.game.queue.push("ops\tussr\tglasnost\t4");
+        this.game.queue.push("limit\tcoups");
+        this.game.queue.push("notify\tUSSR plays 4 OPS for influence or realignments");
       } else {
-        return 1;
+        if (!i_played_the_card){
+          if (player == "ussr"){
+            this.game.queue.push(`ACKNOWLEDGE\tUSSR plays ${this.cardToText(card)}.`);
+          }else{
+            this.game.queue.push(`ACKNOWLEDGE\tUS triggers ${this.cardToText(card)}.`);
+          }
+        }
+        
       }
 
-      return 0;
+      return 1;
     }
 
 

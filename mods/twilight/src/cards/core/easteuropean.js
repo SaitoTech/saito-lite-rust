@@ -12,13 +12,9 @@
 
         var twilight_self = this;
 
-        var ops_to_purge = 1;
+        var ops_to_purge = (this.game.state.round > 7)? 2: 1;
         var countries_to_purge = 3;
         var options_purge = [];
-
-        if (this.game.state.round > 7) {
-          ops_to_purge = 2;
-        }
 
         twilight_self.addMove("resolve\teasteuropean");
 
@@ -33,52 +29,46 @@
         if (twilight_self.countries['finland'].ussr > 0) { options_purge.push('finland'); }
 
         if (options_purge.length <= countries_to_purge) {
+          //Speed up the game and select for the player
+          let msg = `${twilight_self.cardToText(card)}: Auto remove ${ops_to_purge} OPS from `
           for (let i = 0; i < options_purge.length; i++) {
             twilight_self.addMove("remove\tus\tussr\t"+options_purge[i]+"\t"+ops_to_purge);
             twilight_self.removeInfluence(options_purge[i], ops_to_purge, "ussr");
+            msg += twilight_self.countries[options_purge[i]].name + ", ";
           }
+          twilight_self.addMove("NOTIFY\t"+msg.slice(0, -2));
           twilight_self.endTurn();
         } else {
 
           twilight_self.updateStatus("<div class='status-message' id='status-message'>Remove "+ops_to_purge+" from 3 countries in Eastern Europe</div>");
-
-          var countries_purged = 0;
-
-          for (var i in twilight_self.countries) {
-
-            let countryname  = i;
-            let divname      = '#'+i;
-
-            if (i == "czechoslovakia" || i == "austria" || i == "hungary" || i == "romania" || i == "yugoslavia" || i == "bulgaria" ||  i == "eastgermany" || i == "poland" || i == "finland") {
-
-              if (twilight_self.countries[countryname].ussr > 0) {
-                twilight_self.countries[countryname].place = 1;
-              }
-
-              $(divname).off();
-              $(divname).on('click', function() {
-
-                let c = $(this).attr('id');
-
-                if (twilight_self.countries[c].place != 1) {
-                  twilight_self.displayModal("Invalid Option");
-                } else {
-                  twilight_self.countries[c].place = 0;
-                  twilight_self.removeInfluence(c, ops_to_purge, "ussr", function() {
-                    twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+ops_to_purge);
-                    countries_to_purge--;
-
-                    if (countries_to_purge == 0) {
-                      twilight_self.playerFinishedPlacingInfluence();
-                      twilight_self.endTurn();
-                    }
-                  });
-                }
-              });
-            }
+          
+          for (let c of options_purge) {
+            $("#"+c).addClass("westerneurope");
+            this.countries[c].place = 1;
           }
-        }
 
+          $(".westerneurope").off();
+          $(".westerneurope").on('click', function() {
+
+            let c = $(this).attr('id');
+
+            if (twilight_self.countries[c].place != 1) {
+              twilight_self.displayModal("Invalid Option");
+            } else {
+              twilight_self.countries[c].place = 0; //Only remove once
+              let o = Math.min(ops_to_purge, twilight_self.countries[c].ussr);
+              twilight_self.removeInfluence(c, o, "ussr");
+              twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+o);
+              
+              countries_to_purge--;
+              if (countries_to_purge == 0) {
+                twilight_self.playerFinishedPlacingInfluence();
+                twilight_self.endTurn();
+                return 0;
+              }
+            }
+          });
+        }
         return 0;
       }
     }

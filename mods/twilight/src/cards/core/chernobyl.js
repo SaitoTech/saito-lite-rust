@@ -22,7 +22,7 @@
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);
-        twilight_self.addMove("notify\tUS restricts placement in "+action2);
+        twilight_self.addMove("NOTIFY\tUS restricts placement in "+action2);
         twilight_self.endTurn();
 
       });

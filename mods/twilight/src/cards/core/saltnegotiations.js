@@ -21,44 +21,40 @@
         return 1;
       }
 
-      let my_go = 0;
 
-      if (player === "ussr" && this.game.player == 1) { my_go = 1; }
-      if (player === "us" && this.game.player == 2) { my_go = 1; }
-
-      if (my_go == 0) {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent retrieving card from discard pile</div>");
+      if (!i_played_the_card) {
         return 0;
       }
 
       // pick discarded card
       var twilight_self = this;
 
-      let html = "<ul>";
+      let discard_deck = [];
       for (var i in this.game.deck[0].discards) {
         if (this.game.deck[0].discards[i].scoring == 0) {
           if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-            html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+            discard_deck.push(i);
+            console.log(i);
+            //html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
           }
         }
       }
-      html += '<li class="card" id="nocard">do not reclaim card...</li></ul>';
       
-      twilight_self.updateStatusWithOptions("Choose Card to Reclaim:",html,false);
+      twilight_self.updateStatusAndListCards("Choose Card to Reclaim:",discard_deck,true);
       twilight_self.addMove("resolve\tsaltnegotiations");
-      twilight_self.attachCardboxEvents(function(action2) {
 
-        if (action2 != "nocard") {
-          twilight_self.game.deck[0].hand.push(action2);
-          twilight_self.addMove("notify\t"+player.toUpperCase() +" retrieved "+twilight_self.game.deck[0].cards[action2].name);
-        } else {
-          twilight_self.addMove("notify\t"+player.toUpperCase() +" does not retrieve card");
-        }
+      twilight_self.attachCardboxEvents(function(action2) {
+        twilight_self.game.deck[0].hand.push(action2);
+        twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" retrieved "+twilight_self.cardToText(action2));
         twilight_self.addMove("undiscard\t"+action2); 
         twilight_self.endTurn();
-
       });
 
+      twilight_self.bindBackButtonFunction(()=>{
+        twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" does not retrieve card");
+        twilight_self.endTurn();
+      })
+                
       return 0;
     }
 

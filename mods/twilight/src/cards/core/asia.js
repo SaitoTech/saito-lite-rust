@@ -11,8 +11,6 @@
       if (player == "us") { this.game.state.stats.us_scorings++; }
       if (player == "ussr") { this.game.state.stats.ussr_scorings++; }
 
-
-
       return 1;
     }
 
