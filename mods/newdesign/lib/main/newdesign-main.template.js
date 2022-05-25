@@ -70,7 +70,7 @@ module.exports = (app) => {
           }
   </pre>
   
-  <p>Fieldset></p>
+  <p>Fieldset</p>
   <fieldset>
       <h1>h1 Heading</h1>
       <h2>h2 Heading</h2>
