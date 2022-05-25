@@ -23,6 +23,7 @@ module.exports = (app) => {
       <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input type="radio"></input></div>
       <label>Select</label>
       <div>
+
         <select>
         <option>One</option>
         <option>Two</option>
@@ -47,7 +48,7 @@ module.exports = (app) => {
 
 
 
-<p>Pre</p>
+<h4>Pre</h4>
 <pre>
     {
         "bf": 1,
@@ -67,7 +68,10 @@ module.exports = (app) => {
         }
 </pre>
 
-<h3>Fieldset</h3>
+<hr/>
+
+
+<h4>Fieldset</h4>
 <fieldset>
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>
@@ -80,7 +84,7 @@ module.exports = (app) => {
     </p>    
 </fieldset>
 
-<hr>
+
 </div>
 
   `;
