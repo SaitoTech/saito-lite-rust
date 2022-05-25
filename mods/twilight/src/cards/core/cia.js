@@ -21,9 +21,8 @@
           keys += this.game.deck[0].hand[i];
         }
 
-        this.addMove("showhand\t1\t"+keys);
-
         if (this.game.deck[0].hand.length > 0 ) {
+          this.addMove("showhand\t1\t"+keys);
           this.addMove("notify\tUSSR holds: "+revealed);
         } else {
           this.addMove("notify\tUSSR has no cards to reveal");

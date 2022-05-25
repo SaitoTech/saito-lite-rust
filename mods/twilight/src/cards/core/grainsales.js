@@ -12,7 +12,6 @@
       // burn 1 roll
       //
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for random card from USSR</div>");
         let burnrand = this.rollDice();
         return 0;
       }
@@ -22,8 +21,7 @@
       // of randomness
       //
       if (this.game.player == 1) {
-
-        this.updateStatus("<div class='status-message' id='status-message'>Sending random card to US</div>");
+      
         this.addMove("resolve\tgrainsales");
 
         let available_cards = [];
@@ -38,7 +36,7 @@
           let burnrand = this.rollDice();
           this.addMove("ops\tus\tgrainsales\t2");
           this.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
-          this.addMove("notify\tUSSR has no cards to discard");
+          this.addMove(`NOTIFY\tUSSR has no cards to give for ${this.cardToText(card)}`);
           this.endTurn();
           return 0;
         } else {
@@ -46,13 +44,14 @@
           twilight_self.rollDice(available_cards.length, function(roll) {
 
             roll = parseInt(roll)-1;
-            let card = available_cards[roll];
+            let newcard = available_cards[roll];
 
-            twilight_self.removeCardFromHand(card);
-            twilight_self.addMove("grainsales\tussr\t"+card);
+            twilight_self.removeCardFromHand(newcard);
+            twilight_self.addMove("grainsales\tussr\t"+newcard);
             twilight_self.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
-            twilight_self.addMove("notify\tUSSR shares "+twilight_self.game.deck[0].cards[card].name);
+            twilight_self.addMove("notify\tUSSR shares "+twilight_self.cardToText(newcard));
             twilight_self.endTurn();
+            twilight_self.updateStatus(`<div class='status-message' id='status-message'>Sending ${twilight_self.cardToText(newcard)} to US</div>`);
           });
         }
       }

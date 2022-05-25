@@ -1,8 +1,6 @@
 
-
-
     //
-    //
+    // US may discard any number of cards and replace them with a new draw
     if (card == "asknot") {
 
       if (this.game.player == 1) {
@@ -14,7 +12,6 @@
         var twilight_self = this;
         let cards_discarded = 0;
 
-        
         let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
         let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
@@ -95,7 +92,7 @@
 
           } else {
             cards_discarded++;
-            $(action2).hide();
+            $("#"+action2).hide();
             twilight_self.removeCardFromHand(action2);
             twilight_self.addMove("discard\tus\t"+action2);
           }
