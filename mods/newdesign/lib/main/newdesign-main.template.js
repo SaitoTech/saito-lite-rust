@@ -67,6 +67,12 @@ module.exports = (app) => {
         "ts": 1572407380711
         }
 </pre>
+<hr/>
+<h4>Buttons </h4>
+<button>First</button>
+<button class="saito-btn-secondary">Second</button>
+<button class="button-small">Third</button>
+<button class="button-large"Fourth>Third</button>
 
 <hr/>
 

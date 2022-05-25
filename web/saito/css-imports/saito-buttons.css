@@ -51,3 +51,13 @@ button:hover {
   animation: pulse 1s infinite;
   transition: 0.3s;
 }
+
+.button-small {
+  min-width: 6rem;
+  padding: 10px 19px;
+}
+
+.button-large {
+  min-width: 14rem;
+  padding: 14px 19px;
+}
