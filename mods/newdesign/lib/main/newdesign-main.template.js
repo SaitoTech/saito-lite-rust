@@ -90,7 +90,7 @@ module.exports = (app) => {
 
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>
-    <h3 class="saito-primary-color">h3 Heading - Module and Page Title</h3>
+    <h3 class="saito-primary-color">h3 Heading</h3>
     <h4>h4 Sub Heading</h4>
     <h5>h4 Sub Heading</h5>
     <h6>h4 Sub Heading</h4>    

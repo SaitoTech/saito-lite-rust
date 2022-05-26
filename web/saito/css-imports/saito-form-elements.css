@@ -15,7 +15,7 @@ form {
 
 
 /* ----------------------------------------------------------------
-form labels
+form label
 -----------------------------------------------------------------*/
 label {
 
@@ -154,7 +154,7 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::after{
-  color:white;
+  color:var(--saito-white);
   opacity: 1;
   
 }
