@@ -507,7 +507,6 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    console.log(tx.msg.game, txmsg.module);
     let gamemod = this.app.modules.returnModule(tx.msg.game);
     
     if (!gamemod){

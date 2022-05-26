@@ -415,6 +415,7 @@ class Wuziqi extends GameTemplate {
                 return 1;
             }
         }
+        return 0;
     }
 
     // Add button to continue the game
