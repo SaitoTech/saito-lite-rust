@@ -41,7 +41,7 @@
           placeable.push("benelux");
         }
 
-        for (let i of placeable.length) {
+        for (let i of placeable) {
           $("#"+i).addClass("westerneurope");
         }
 
