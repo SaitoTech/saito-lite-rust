@@ -430,6 +430,7 @@ width: 100%;
 border-bottom-right-radius: 20px;
 border: 1px solid var(--saito-border);
 border-top: none;
+z-index: 12;
 
 
 }
