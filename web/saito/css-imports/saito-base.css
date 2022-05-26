@@ -2,16 +2,12 @@
 	Basic
 -----------------------------------------------------------------*/
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   transition: all .2s;
-
 }
-
 
 :root {
   font-size: 10px;
@@ -35,15 +31,9 @@ body {
   background-color: #EAEAEF;
 }
 
-
 .main-content {
   padding-top: 1rem;
 }
-
-
-
-
-
 
 /* ----------------------------------------------------------------
 media queries
@@ -54,6 +44,7 @@ media queries
     font-size: 14px;
   }
 }
+
 @media screen and (max-width: 500px) {
   body {
     font-size: 16px;
