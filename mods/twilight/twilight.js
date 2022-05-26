@@ -3775,8 +3775,6 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-
-
       if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="card" id="event">score region</li></ul>`;
@@ -12539,7 +12537,7 @@ playerTurnHeadlineSelected(card, player) {
           placeable.push("benelux");
         }
 
-        for (let i of placeable.length) {
+        for (let i of placeable) {
           $("#"+i).addClass("westerneurope");
         }
 
@@ -12962,7 +12960,7 @@ playerTurnHeadlineSelected(card, player) {
 
       if (this.game.player == 2) {
 
-        for (let i of options_purge){
+        for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");
           this.countries[i].place = 1;
         }
