@@ -366,19 +366,10 @@ Selects
 -----------------------------------------------------------------*/
 
 select {
-  /* background-color: var(--saito-primary);
-  border-radius: 10px;
-  border: 1px solid var(--saito-border);
-  color: var(--saito-white);
-  outline: none;
-  font-size: 1.2rem;
-  cursor: pointer;
- width: 20rem;;
- padding: 15px 15px;
- border: none; */
+
 }
 
-.wrapper {
+.saito-select-wrapper {
   width: 180px;
   width: 100%;
   border: 1px solid var(--saito-border);
@@ -386,7 +377,7 @@ select {
   position: relative;
 }
 
-.select-btn {
+.saito-select-btn {
 
   padding: 10px 20px;
   border-radius: 7px;
@@ -397,19 +388,19 @@ select {
 
 }
 
-.select-btn span {
+.saito-select-btn span {
   font-size: 1.6rem;
   color: var(--saito-black);
 }
 
-.select-btn i {
+.saito-select-btn i {
   font-size: 14px;
   color: red;
   cursor: pointer;
 }
 
 
-.search {
+.saito-select-search {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -417,7 +408,7 @@ select {
 }
 
 
-.content {
+.saito-select-content {
   margin-top: 15px;
   padding: 20px;
 position: absolute;
@@ -435,19 +426,19 @@ z-index: 12;
 
 }
 
-  .wrapper i {
+  .saito-select-wrapper i {
   transform: rotateX(180deg);
   font-size: 1.8rem;
 }
 
-.content li {
+.saito-select-content li {
   list-style: none;
   cursor: pointer;
   width: 100%;
   padding: 0.3rem 0;
 }
 
-.content li:not(:last-child) {
+.saito-select-content li:not(:last-child) {
   margin-bottom: 1rem;
 }
 
