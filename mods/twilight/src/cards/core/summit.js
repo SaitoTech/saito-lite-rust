@@ -26,7 +26,7 @@
       if (this.doesPlayerDominateRegion("us", "samerica") == 1) { us_roll++; }
       if (this.doesPlayerDominateRegion("us", "seasia") == 1)   { us_roll++; }
 
-      this.updateLog("<span>Summit: US rolls</span> "+usbase+" (+"+(us_roll - usbase)+") and USSR rolls "+ussrbase+" (+"+(ussr_roll-ussrbase)+")");
+      this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 
       let is_winner = 0;
 
@@ -34,7 +34,8 @@
       if (ussr_roll > us_roll) { is_winner = 1; }
 
       if (is_winner == 0) {
-        this.updateLog("<span>Summit: no winner</span>");
+        this.updateLog(`${this.cardToText(card)}: no winner`);
+        this.displayModal(`${this.cardToText(card)}: no winner`);
         return 1;
       } else {
 
@@ -52,39 +53,38 @@
           twilight_self.addMove("resolve\tsummit");
 
           if (us_roll > ussr_roll) {
-            twilight_self.updateLog("<span>US receives 2 VP from Summit</span>");
+            twilight_self.updateLog("US receives 2 VP from Summit");
             twilight_self.addMove("vp\tus\t2");
           } else {
-            twilight_self.updateLog("<span>USSR receives 2 VP from Summit</span>");
+            twilight_self.updateLog("USSR receives 2 VP from Summit");
             twilight_self.addMove("vp\tussr\t2");
           }
 
           let x = 0;
           let y = 0;
 
-          this.updateStatusWithOptions('You win the Summit:','<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
+          twilight_self.updateStatusWithOptions(`You win the ${twilight_self.cardToText(card)}:`,'<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li><li class="card" id="same">do not change</li></ul>',false);
 
           twilight_self.attachCardboxEvents(function(action2) {
 
             if (action2 == "raise") {
-              twilight_self.updateStatus("<div class='status-message' id='status-message'>broadcasting choice....</div>");
               twilight_self.addMove("defcon\traise");
               twilight_self.addMove("notify\tDEFCON is raised by 1");
               twilight_self.endTurn();
             }
             if (action2 == "lower") {
-              twilight_self.updateStatus("<div class='status-message' id='status-message'>broadcasting choice....</div>");
               twilight_self.addMove("defcon\tlower");
               twilight_self.addMove("notify\tDEFCON is lowered by 1");
               twilight_self.endTurn();
             }
             if (action2 == "same") {
-              twilight_self.updateStatus("<div class='status-message' id='status-message'>broadcasting choice....</div>");
               twilight_self.addMove("notify\tDEFCON left untouched");
               twilight_self.endTurn();
             }
 
           });
+        }else{
+          this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);
         }
         return 0;
       }

@@ -24,6 +24,9 @@
 .hud-header.american{
   background:  linear-gradient(to right, rgba(0,0,255,0.6), rgba(255,255,255,0.4), rgba(0,0,255,0.6));
 }
+/*.hud{
+  pointer-events: none;
+}*/
 
 .status-message {
   padding-left: 0;
@@ -31,6 +34,59 @@
   border-radius: 0px;
 }
 .status-header {
+}
+
+/* General overlays */
+.rules-overlay{
+  background: whitesmoke;
+  padding: 0.5em 2.5em;
+}
+
+.ts-overlay h1 {
+  text-align: center;
+}
+.ts-overlay{
+  border-radius: 5px;
+  border: 5px solid blue;
+  border-right: 5px solid red;
+  border-bottom: 5px solid red;
+  background-color: lightgrey;
+  min-width: min(750px,90vw);
+  min-height: 50vh;
+  padding: 10px 0;
+}
+
+.ts-overlay .ts-body{
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-overlay h1{
+  font-size: 3rem;
+}
+.waroverlay-body{
+  display: flex;
+  justify-content: space-around;
+  margin: 3em 1em;
+}
+.waroverlay-body .cardlist-container{
+  min-width: unset;
+  background-color: unset;
+}
+.warstats{
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.warstats div{
+  flex: 1;
+}
+
+.warstats .winner{
+  font-size: 1.5em;
+  font-weight: bold;
+  flex: 2;
 }
 
 /*Stats overlay*/
@@ -310,6 +366,7 @@ body {
   position: absolute;
   background-image: url("img/VPs.svg");
   background-size: cover;
+  transition: top 2s, left 2s;
 }
 
 .space_race_us {
@@ -355,6 +412,15 @@ body {
   cursor: pointer;
 }
 
+.easterneurope{
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: -2px 2px 8px 4px pink;
+}
+
+.westerneurope{
+  background: rgba(0, 0, 255, 0.2);
+  box-shadow: -2px 2px 8px 4px lightblue;
+}
 
 
 .us, .ussr {

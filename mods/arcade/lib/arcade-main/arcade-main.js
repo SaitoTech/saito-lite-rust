@@ -396,9 +396,8 @@ module.exports = ArcadeMain = {
             GameLoader.attachEvents(app, mod);
 
           } else {
-            //
-            // game exists, so "continue" not "join"
-            //
+           
+            // game exists and is no longer initializing, so "continue" not "join"
             existing_game.ts = new Date().getTime();
             existing_game.initialize_game_run = 0;
             app.storage.saveOptions();

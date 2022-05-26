@@ -5,7 +5,7 @@
     if (card == "suezcrisis") {
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Suez Crisis</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Suez Crisis</div>");
         return 0;
       }
       if (this.game.player == 1) {
@@ -62,24 +62,22 @@
 
             let countryname = options_purge[m];
             options_purged[countryname] = 0;
-            twilight_self.countries[countryname].place = 1;
 
             let divname      = '#'+countryname;
+            $(divname).addClass("easterneurope");
 
             $(divname).off();
             $(divname).on('click', function() {
 
               let c = $(this).attr('id');
 
-              if (twilight_self.countries[c].place != 1) {
+              if (options_purged[c] >= 2) {
                 twilight_self.displayModal("Invalid Option");
               } else {
                 twilight_self.removeInfluence(c, 1, "us");
                 twilight_self.addMove("remove\tussr\tus\t"+c+"\t1");
                 options_purged[c]++;
-                if (options_purged[c] >= 2) {
-                  twilight_self.countries[c].place = 0;
-                }
+                
                 ops_to_purge--;
                 if (ops_to_purge == 0) {
                   twilight_self.playerFinishedPlacingInfluence();
