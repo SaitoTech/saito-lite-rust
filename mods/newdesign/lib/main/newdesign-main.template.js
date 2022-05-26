@@ -23,7 +23,7 @@ module.exports = (app) => {
       <label>Radio Buttons</label>
       <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input type="radio"></input></div>
       <label>Select</label>
-     
+
       <select>
         <option value="0">Select car:</option>
         <option value="1">Audi</option>

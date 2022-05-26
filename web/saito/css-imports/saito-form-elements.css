@@ -361,9 +361,12 @@ textarea::placeholder {
 
 
 
+/* ----------------------------------------------------------------
+Selects
+-----------------------------------------------------------------*/
 
 select {
-  background-color: var(--saito-primary);
+  /* background-color: var(--saito-primary);
   border-radius: 10px;
   border: 1px solid var(--saito-border);
   color: var(--saito-white);
@@ -372,5 +375,85 @@ select {
   cursor: pointer;
  width: 20rem;;
  padding: 15px 15px;
- border: none;
+ border: none; */
+}
+
+.wrapper {
+  width: 180px;
+  width: 100%;
+  border: 1px solid var(--saito-border);
+  border-radius: 8px;
+  position: relative;
+}
+
+.select-btn {
+
+  padding: 10px 20px;
+  border-radius: 7px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.select-btn span {
+  font-size: 1.6rem;
+  color: var(--saito-black);
+}
+
+.select-btn i {
+  font-size: 14px;
+  color: red;
+  cursor: pointer;
+}
+
+
+.search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+
+.content {
+  margin-top: 15px;
+  padding: 20px;
+position: absolute;
+width: 100%;
+  background-color: white;
+  /* display: flex; */
+  justify-content: start;
+  display: none;
+  border-bottom-left-radius: 20px;
+border-bottom-right-radius: 20px;
+border: 1px solid var(--saito-border);
+border-top: none;
+
+
+}
+
+  .wrapper i {
+  transform: rotateX(180deg);
+  font-size: 1.8rem;
+}
+
+.content li {
+  list-style: none;
+  cursor: pointer;
+  width: 100%;
+  padding: 0.3rem 0;
+}
+
+.content li:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.show-content {
+  display: flex;
+}
+.flip-carret {
+  transition: all 0.3s;
+  transform: rotateX(0) !important;
 }
