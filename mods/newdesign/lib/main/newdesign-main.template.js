@@ -2,17 +2,18 @@ module.exports = (app) => {
 
   return `
 
-  <div class="container" id="container">
-  <h3 class="saito-primary-color">h3 - Module header</h3>
+  <div class="saito-container" id="container">
+  <h3>h3 - Module header</h3>
 
   <h4>Form Items</h4>
   <form>
-      <h4 class="saito-secondary-color">Title</h4>
+    
+      <h4 >Title</h4>
       <p>This is a row of plain text.</p>
       <label>Password</label>
-      <div><input id="password" type="password" value="This is a password field" class="password" /></div>
+      <div><input id="password" type="password" placeholder="This is a password field" class="password" /></div>
       <label>Text Input</label>
-      <div><input type="text" value="This is a text field."></input></div>
+      <div><input placeholder="Text Field" type="text" ></input></div>
       <label>Date Input</label>
       <div><input type="date" value="2022-05-25"></input></div>
       <label>Range Input</label>
@@ -22,17 +23,24 @@ module.exports = (app) => {
       <label>Radio Buttons</label>
       <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input type="radio"></input></div>
       <label>Select</label>
-      <div>
-
-        <select>
-        <option>One</option>
-        <option>Two</option>
-        <option>Three</option>
-        <option>Last of Many</option>
-        </select>
-      </div>
+     
+      <select>
+        <option value="0">Select car:</option>
+        <option value="1">Audi</option>
+        <option value="2">BMW</option>
+        <option value="3">Citroen</option>
+        <option value="4">Ford</option>
+        <option value="5">Honda</option>
+        <option value="6">Jaguar</option>
+        <option value="7">Land Rover</option>
+        <option value="8">Mercedes</option>
+        <option value="9">Mini</option>
+        <option value="10">Nissan</option>
+        <option value="11">Toyota</option>
+        <option value="12">Volvo</option>
+      </select>
       <label>Text Area</label>
-<textarea cols="15" rows="7">
+<textarea placeholder="Text area">
     Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
 </textarea>
    </form>
@@ -71,14 +79,15 @@ module.exports = (app) => {
 <h4>Buttons </h4>
 <button>First</button>
 <button class="saito-btn-secondary">Second</button>
-<button class="button-small">Third</button>
-<button class="button-large"Fourth>Third</button>
+<button class="saito-btn-small">Third</button>
+<button class="saito-btn-secondary saito-btn-large"Fourth>Third</button>
 
 <hr/>
 
 
 <h4>Fieldset</h4>
 <fieldset>
+
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>
     <h3 class="saito-primary-color">h3 Heading - Module and Page Title</h3>
