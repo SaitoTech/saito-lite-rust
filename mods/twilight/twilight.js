@@ -3775,8 +3775,6 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-
-
       if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="card" id="event">score region</li></ul>`;
