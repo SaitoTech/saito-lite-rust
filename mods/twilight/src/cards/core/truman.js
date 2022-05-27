@@ -35,7 +35,7 @@
 
       if (this.game.player == 2) {
 
-        for (let i of options_purge){
+        for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");
           this.countries[i].place = 1;
         }

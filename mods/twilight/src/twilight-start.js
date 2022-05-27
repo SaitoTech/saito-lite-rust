@@ -2402,7 +2402,7 @@ try {
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["truman", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["socgov", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
         }
       }
 
@@ -3509,6 +3509,7 @@ playerTurnHeadlineSelected(card, player) {
         }
       };
     } else {
+
       /*Function called with a particular card in mind*/
       if (selected_card === "scoringcard") {
         user_message = 'Scoring card must be played: <ul>';
@@ -3522,6 +3523,7 @@ playerTurnHeadlineSelected(card, player) {
         playable_cards.push(selected_card);
       }
     }
+
 
     //
     // Add dummy card for canceling Cuban Missile Crisis
@@ -3654,6 +3656,7 @@ playerTurnHeadlineSelected(card, player) {
 
     twilight_self.playerFinishedPlacingInfluence();
 
+
     //
     // cannot play if no cards remain
     //
@@ -3707,10 +3710,12 @@ playerTurnHeadlineSelected(card, player) {
         }
       }
 
+
       if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card]?.scoring == 0) {
         let c = await sconfirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
         if (c) {} else { return; }
       }
+
 
       twilight_self.hideCard(); //close cardbox in case it is open
 
@@ -3742,10 +3747,9 @@ playerTurnHeadlineSelected(card, player) {
         }
       }
 
-
       //
       // Cuban Missile Crisis
-      if (card == "cancelcubanmissilecrisis") {
+      if (card === "cancel cuban missile crisis") {
         twilight_self.cancelCubanMissileCrisis();
         return 0;
       }
