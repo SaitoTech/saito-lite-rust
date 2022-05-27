@@ -2,13 +2,15 @@
 	Basic
 -----------------------------------------------------------------*/
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+<<<<<<< HEAD
   transition: all 0.2s;
+=======
+  transition: all .2s;
+>>>>>>> f98d8e137625f3015a935b883fd617304fb29459
 }
 
 :root {
@@ -54,5 +56,9 @@ media queries
 }
 
 .modal-dialog {
+<<<<<<< HEAD
   border: 20rem;
+=======
+  border: 200px;
+>>>>>>> f98d8e137625f3015a935b883fd617304fb29459
 }

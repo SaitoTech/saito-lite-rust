@@ -1,13 +1,17 @@
 /* ----------------------------------------------------------------
 buttons
 -----------------------------------------------------------------*/
-@import url("./saito-colors.css");
 
+@import url("./saito-colors.css");
 button {
   min-width: 10.5rem;
+<<<<<<< HEAD
   background: linear-gradient(77deg,
       var(--saito-primary) 0%,
       var(--saito-secondary) 69%);
+=======
+  background: linear-gradient( 77deg, var(--saito-primary) 0%, var(--saito-secondary) 69%);
+>>>>>>> f98d8e137625f3015a935b883fd617304fb29459
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -24,15 +28,12 @@ button {
   margin: .5rem;
 }
 
-
 button:hover {
   /* transform: scale(1.1);
   background: transparent;
   border: 1px solid var(--saito-primary);
   color: var(--saito-primary); */
 }
-
-
 
 .saito-btn-secondary {
   border: 2px solid var(--saito-primary);
@@ -45,7 +46,10 @@ button:hover {
   line-height: 1.2;
   color: var(--saito-primary);
   background: transparent;
+<<<<<<< HEAD
 
+=======
+>>>>>>> f98d8e137625f3015a935b883fd617304fb29459
 }
 
 .saito-btn-secondary:hover {
@@ -72,6 +76,10 @@ button:hover {
 
 .saito-btn-large {
   min-width: 26rem;
+<<<<<<< HEAD
   padding: 2.3rem 2.3rem;
   font-size: 2rem !important;
+=======
+  padding: 14px 19px;
+>>>>>>> f98d8e137625f3015a935b883fd617304fb29459
 }
