@@ -3775,8 +3775,6 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-
-
       if (twilight_self.game.deck[0].cards[card]?.scoring == 1) {
         let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
         let html = `<ul><li class="card" id="event">score region</li></ul>`;
@@ -9793,7 +9791,7 @@ playerTurnHeadlineSelected(card, player) {
               twilight_self.endTurn();
               return 0;
             }
-            this.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
+            twilight_self.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
           } else {
             twilight_self.displayModal("you already placed there...");
           }
@@ -12539,7 +12537,7 @@ playerTurnHeadlineSelected(card, player) {
           placeable.push("benelux");
         }
 
-        for (let i of placeable.length) {
+        for (let i of placeable) {
           $("#"+i).addClass("westerneurope");
         }
 
@@ -12962,7 +12960,7 @@ playerTurnHeadlineSelected(card, player) {
 
       if (this.game.player == 2) {
 
-        for (let i of options_purge){
+        for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");
           this.countries[i].place = 1;
         }

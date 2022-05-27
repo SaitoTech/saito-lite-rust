@@ -778,11 +778,7 @@ class Poker extends GameTemplate {
           }
 
           this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
-            this.game.halted = 0;
-            let cont = this.runQueue();
-            if (cont == 0) {
-              this.processFutureMoves();
-            }
+            this.restartQueue();
           });
           this.game.halted = 1;
           this.startNextRound();
