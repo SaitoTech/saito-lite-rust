@@ -1229,9 +1229,11 @@ class Blackjack extends GameTemplate {
           <option value="" selected>none</option>
     `;
 
+    let listed = [];
     for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].ticker != "" && this.app.modules.mods[i].ticker != undefined) {
+      if (this.app.modules.mods[i].ticker && !listed.includes(this.app.modules.mods[i].ticker)) {
         options_html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
+        listed.push(this.app.modules.mods[i].ticker);
       }
     }
 
