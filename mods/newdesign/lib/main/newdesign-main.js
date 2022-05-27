@@ -1,18 +1,25 @@
 const NewDesignMainTemplate = require('./newdesign-main.template');
 
-module.exports = NewDesignMain = {
+
+module.exports = {
 
   render(app) {
     if (!document.querySelector('.container')) {
       app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
 
-    // attach events
-
-    console.log(document.querySelector('select').value);
+    this.attachEvents()
 
 
   },
+
+  attachEvents() {
+    const elem = document.querySelector('input[name="datepicker"]');
+    const datepicker = new Datepicker(elem, {
+
+    })
+
+  }
 
 
 

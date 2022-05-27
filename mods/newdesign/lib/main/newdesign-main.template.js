@@ -1,3 +1,5 @@
+
+
 module.exports = (app) => {
 
   return `
@@ -6,7 +8,7 @@ module.exports = (app) => {
   <h3>h3 - Module header</h3>
 
   <h4>Form Items</h4>
-  <form>
+  <form class="saito-white-background">
     
       <h4 >Title</h4>
       <p>This is a row of plain text.</p>
@@ -15,7 +17,7 @@ module.exports = (app) => {
       <label>Text Input</label>
       <div><input placeholder="Text Field" type="text" ></input></div>
       <label>Date Input</label>
-      <div><input type="date" value="2022-05-25"></input></div>
+      <div><input type="text" name="datepicker"></input></div>
       <label>Range Input</label>
       <div><input type="range" value="8"></input></div>
       <label>Checkboxes</label>
@@ -40,6 +42,7 @@ module.exports = (app) => {
         <option value="12">Volvo</option>
       </select>
     
+     
       <label>Text Area</label>
 <textarea placeholder="Text area">
     Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
@@ -80,14 +83,14 @@ module.exports = (app) => {
 <h4>Buttons </h4>
 <button>First</button>
 <button class="saito-btn-secondary">Second</button>
-<button class="saito-btn-small">Third</button>
-<button class="saito-btn-secondary saito-btn-large"Fourth>Third</button>
+<button class="saito-btn-small">Small</button>
+<button class="saito-btn-secondary saito-btn-large">Large</button>
 
 <hr/>
 
 
 <h4>Fieldset</h4>
-<fieldset>
+<fieldset class="saito-white-background">
 
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>

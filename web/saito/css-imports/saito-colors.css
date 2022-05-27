@@ -4,3 +4,7 @@
 .saito-secondary-color {
     color: var(--saito-secondary);
 }
+
+.saito-white-background {
+    background-color: var(--saito-white);
+}

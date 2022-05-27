@@ -14,14 +14,14 @@ button {
   background-position: center;
   background-size: cover;
   text-align: center;
-  height: 66px;
-  padding: 15px 20px;
-  font-size: 14px;
+
+  padding: 1.5rem 2rem;
+  font-size: 1.4rem;
   color: #fff;
   font-weight: 500;
   border: none;
-  border-radius: 30px;
-  min-width: 220px;
+  border-radius: 3rem;
+  min-width: 22rem;
   cursor: pointer;
   margin: .5rem;
 }
@@ -39,10 +39,9 @@ button:hover {
 .saito-btn-secondary {
   border: 2px solid var(--saito-primary);
   display: inline-block;
-  border-radius: 50px;
-  padding: 15px 20px;
-  min-width: 220px;
-  font-size: 14px;
+  border-radius: 5rem;
+  min-width: 22rem;
+  font-size: 1.4rem;
   font-weight: 500;
   text-align: center;
   line-height: 1.2;
@@ -67,11 +66,13 @@ button:hover {
 }
 
 .saito-btn-small {
-  min-width: 14rem;
-  padding: 7px 19px;
+  min-width: 10rem;
+  /* height: 3rem; */
+  padding: .7rem 1.9rem;
 }
 
 .saito-btn-large {
   min-width: 26rem;
-  padding: 14px 19px;
+  padding: 2.3rem 2.3rem;
+  font-size: 2rem !important;
 }

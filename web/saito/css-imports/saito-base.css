@@ -32,7 +32,7 @@ body {
 
 .saito-container {
   padding: 3rem 10rem;
-  background-color: #EAEAEF;
+  background-color: var(--saito-background);
 }
 
 
@@ -51,15 +51,15 @@ media queries
 
 @media screen and (max-width: 700px) {
   body {
-    font-size: 14px;
+    font-size: 1.4rem;
   }
 }
 @media screen and (max-width: 500px) {
   body {
-    font-size: 16px;
+    font-size: 1.6rem;
   }
 }
 
 .modal-dialog {
-  border: 200px;
+  border: 20rem;
 }

@@ -22,7 +22,7 @@ h6 {
   color: var(--saito-default-font);
   font-weight: 600;
   line-height: 1.5;
-  margin-bottom: 1.3rem;
+  margin: 1.3rem 0;
   font-family: var(--saito-font);
 }
 
@@ -32,41 +32,40 @@ h6 {
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 5rem;
 }
 
 h2 {
-  font-size: 45px;
+  font-size: 4.5rem;
 }
 
 h3 {
   position: relative;
-  font-size: 40px;
-  margin-bottom: 30px;
+  font-size: 4rem;
+  margin: 3rem 0;
   line-height: 1.33;
 }
 
 h4 {
-  font-size: 35px;
+  font-size: 3.5rem;
   color:var(--saito-primary);
   font-weight: 500;
-  margin-bottom: 10px;
+  margin: 1rem 0;
   line-height: 1.33;
 }
 
 h5 {
-  font-size: 30px
+  font-size: 3rem;
 }
 
 h6 {
-  font-size: 25px
+  font-size: 2.5rem
 }
 
 
 h5,
 h6 {
   font-weight: bold;
-  /* margin-bottom: 0.8rem; */
 }
 
 
@@ -75,7 +74,7 @@ h6 {
 -----------------------------------------------------------------*/ 
 
 p {
-  font-size: 18px;
+  font-size: 1.8rem;
   font-weight: bold;
   margin: .3rem 0;
 }
@@ -101,13 +100,9 @@ div {
 Fieldset
 -----------------------------------------------------------------*/ 
 fieldset {
-  border: 1px solid var(--saito-border);
   padding: 3rem  2rem;
-  border-radius: 20px;
-  background-color: var(--saito-white);
-
-  width: 50rem;
-
+  border-radius: 2rem;
+  border: none;
 }
 
 
@@ -142,7 +137,7 @@ Media Queries
 a {
   color: var(--saito-white);
   transition: 0.2s;
-  color: white;
+  color: var(--saito-white);
 }
 
 a:hover {

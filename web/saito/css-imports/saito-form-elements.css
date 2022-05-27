@@ -1,25 +1,15 @@
-
-
 form {
   padding: 3rem 2rem;
   padding-top: 1.5rem;
-  border: 1px solid var(--saito-border);
-  border-radius: 20px;
-  width: 50rem;
-  background-color: var(--saito-white);
 
-
+  border-radius: 2rem;
 }
-
-
-
 
 /* ----------------------------------------------------------------
 form label
 -----------------------------------------------------------------*/
 label {
-
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   color: var(--saito-default);
   display: inline-block;
   cursor: pointer;
@@ -29,114 +19,94 @@ label:hover {
   color: var(--saito-primary);
 }
 
-
-
 /* ----------------------------------------------------------------
 date inputs
 -----------------------------------------------------------------*/
 
-
-
 input[type="date"] {
   background-color: var(--saito-primary);
-  border-radius: 10px;
+  border-radius: 1rem;
   border: 1px solid var(--saito-border);
   color: var(--saito-white);
   outline: none;
   font-size: 1.2rem;
   cursor: pointer;
- width: 100% !important;
- padding: 15px 15px;
-
+  width: 100% !important;
+  padding: 1.5rem 1.5rem;
 }
 
 input[type="date"]::-webkit-datetime-edit {
   color: var(--saito-white);
-
 }
-input[type="date"]::-webkit-inner-spin-button{
+input[type="date"]::-webkit-inner-spin-button {
   color: var(--saito-primary);
   background-color: var(--saito-primary);
   appearance: none;
-
 }
 input[type="date"]::-webkit-calendar-picker-indicator {
   appearance: none;
 
   filter: invert(100%);
   /* background-color: var(--saito-white); */
-
-
 }
 
 input[type="date"]::-webkit-clear-button {
-  font-size: 18px;
-  height: 70px;
+  font-size: 1.8rem;
+  height: 7rem;
   position: relative;
   color: green;
   background-color: green;
 }
 
-
-
-
-
-
-
 /* ----------------------------------------------------------------
 text and password inputs
 -----------------------------------------------------------------*/
 
-
-
-input[type="text"], input[type="password"] {
-  
-  border-radius: 10px;
-  background: #EAEAEF;
-  margin-right: 20px;
-  padding: 15px 15px;
+input[type="text"],
+input[type="password"] {
+  border-radius: 1rem;
+  background: #eaeaef;
+  margin-right: 2rem;
+  padding: 1.5rem 1.5rem;
   /* color: #1C1C23; */
   font-size: 1.6rem;
   width: 20rem;
   border: none;
 }
 
- input[type="text"]:focus, input[type="password"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   outline: none;
-} 
-
-input[type="text"]::placeholder, input[type="password"]::placeholder {
-  color: var(--saito-border);
 }
 
-
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: var(--saito-border);
+}
 
 /* ----------------------------------------------------------------
 checkbox input
 -----------------------------------------------------------------*/
 
-
-input[type="checkbox"]{
+input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
   border: none;
-border: 1px solid var(--saito-primary);
-  width: 17px;
-  height: 17px;
-  margin: 0 .5rem;
+  border: 1px solid var(--saito-primary);
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.5rem;
   border-radius: 3px;
   cursor: pointer;
   position: relative;
 
   display: inline-block;
-
 }
-
 
 input[type="checkbox"]::after {
   font-family: "Font Awesome 5 Free";
-   font-weight: 900;
-  content: "\f00c" ;
+  font-weight: 900;
+  content: "\f00c";
   position: absolute;
   display: flex;
   justify-content: center;
@@ -144,187 +114,172 @@ input[type="checkbox"]::after {
   width: 100%;
   height: 100%;
   font-size: 1.6rem;
- opacity: 0;
-  
+  opacity: 0;
 }
 
 input[type="checkbox"]:checked {
   background-color: var(--saito-primary);
-  
 }
 
-input[type="checkbox"]:checked::after{
-  color:var(--saito-white);
+input[type="checkbox"]:checked::after {
+  color: var(--saito-white);
   opacity: 1;
-  
 }
 
 /* ----------------------------------------------------------------
 radio inputs
 -----------------------------------------------------------------*/
 
-
-input[type="radio"]{
+input[type="radio"] {
   appearance: none;
   -webkit-appearance: none;
   border: 1px solid var(--saito-primary);
-  width: 15px;
-  height: 15px;
-  margin: 0 .5rem;
- border-radius: 50%;
- position: relative;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.5rem;
+  border-radius: 50%;
+  position: relative;
 }
 
-
-
 input[type="radio"]::after {
-
-   font-weight: 900;
-  content: "" ;
+  font-weight: 900;
+  content: "";
   width: 90%;
   height: 90%;
   background-color: var(--saito-primary);
   position: absolute;
- left:0;
- right: 0;
- top:0;
- bottom: 0;
- margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 
-  font-size: 10px;
- opacity: 0;
- border-radius: 50%;
-  
-
+  font-size: 1rem;
+  opacity: 0;
+  border-radius: 50%;
 }
 
-
-
-input[type="radio"]:checked::after{
-  color:white;
+input[type="radio"]:checked::after {
+  color: var(--saito-white);
   opacity: 1;
-  
 }
-
-
 
 /* ----------------------------------------------------------------
 Range inputs
 -----------------------------------------------------------------*/
 
-input[type=range] {
+input[type="range"] {
   -webkit-appearance: none;
-  margin: 18px 0;
+  margin: 1.8rem 0;
   width: 100%;
 }
-input[type=range]:focus {
+input[type="range"]:focus {
   outline: none;
 }
-input[type=range]::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 6px;
+  height: .6rem;
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: 1.3px;
   border: var(--saito-border);
 }
-input[type=range]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
-  height: 20px;
-  width: 7px;
+  height: 2rem;
+  width: .7rem;
   border-radius: 3px;
   background: #ffffff;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -8px;
+  margin-top: -.8rem;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: var(--saito-primary)
+input[type="range"]:focus::-webkit-slider-runnable-track {
+  background: var(--saito-primary);
 }
 
 /* input[type=range]:focus::-webkit-slider-thumb {
   background: var(--saito-primary)
 } */
-input[type=range]::-moz-range-track {
+input[type="range"]::-moz-range-track {
   width: 100%;
-  height: 8.4px;
+  height: .84rem;
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: 1.3px;
   border: var(--saito-border);
 }
-input[type=range]::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
-  height: 36px;
-  width: 16px;
+  height: 3.6rem;
+  width: 1.6rem;
   border-radius: 3px;
   background: var(--saito-white);
   cursor: pointer;
 }
-input[type=range]::-ms-track {
+input[type="range"]::-ms-track {
   width: 100%;
   height: 8.4px;
   cursor: pointer;
   background: transparent;
   border-color: transparent;
-  border-width: 16px 0;
+  border-width: 1.6rem 0;
   color: transparent;
 }
-input[type=range]::-ms-fill-lower {
+input[type="range"]::-ms-fill-lower {
   background: var(--saito-primary);
   border: var(--saito-border);
   border-radius: 2.6px;
   box-shadow: var(--saito-box-shadow);
 }
-input[type=range]::-ms-fill-upper {
+input[type="range"]::-ms-fill-upper {
   background: #3071a9;
   border: var(--saito-border);
   border-radius: 2.6px;
   box-shadow: var(--saito-box-shadow);
 }
-input[type=range]::-ms-thumb {
+input[type="range"]::-ms-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
-  height: 36px;
-  width: 16px;
+  height: 3.6rem;
+  width: 1.6rem;
   border-radius: 3px;
   background: #ffffff;
   cursor: pointer;
 }
-input[type=range]:focus::-ms-fill-lower {
+input[type="range"]:focus::-ms-fill-lower {
   background: var(--saito-primary);
 }
-input[type=range]:focus::-ms-fill-upper {
+input[type="range"]:focus::-ms-fill-upper {
   background: var(--saito-primary);
 }
 
-
-input[type="text"], input[type="password"], select {
+input[type="text"],
+input[type="password"],
+select {
   width: 100% !important;
 }
 
-
-
 textarea {
-  background-color:#EAEAEF;
+  background-color: #eaeaef;
   display: block;
   padding: 1rem;
-  border: 1px solid var(--saito-border);
   border-radius: 8px;
   width: 100%;
   outline: none;
-  padding: 15px 15px;
+  padding: 1.5rem 1.5rem;
   height: 15rem;
+  border: none;
+  font-size: 1.6rem;
 }
 
 textarea::placeholder {
   color: var(--saito-border);
 }
-
 
 .dropdown {
   position: relative;
@@ -336,14 +291,13 @@ textarea::placeholder {
   position: absolute;
   background-color: var(--saito-primary);
   color: var(--saito-white);
-  min-width: 160px;
+  min-width: 16rem;
 
-  padding: 12px 16px;
+  padding: 1.2rem 1.6rem;
   z-index: 1;
-  border-radius: 0 0 20px 20px;
- flex-direction: column;
+  border-radius: 0 0 2rem 2rem;
+  flex-direction: column;
   justify-content: center;
-
 }
 
 .dropdown-content > p {
@@ -352,40 +306,32 @@ textarea::placeholder {
 }
 
 .dropdown-content > p:hover {
-
 }
 .dropdown:hover .dropdown-content {
   display: flex;
 }
-
-
-
 
 /* ----------------------------------------------------------------
 Selects
 -----------------------------------------------------------------*/
 
 select {
-
 }
 
 .saito-select-wrapper {
-  width: 180px;
+  width: 18rem;
   width: 100%;
-  border: 1px solid var(--saito-border);
   border-radius: 8px;
   position: relative;
 }
 
 .saito-select-btn {
-
-  padding: 10px 20px;
-  border-radius: 7px;
-  background-color: white;
+  padding: 1rem 0;
+  /* border-radius: 7px; */
+  background-color: var(--saito-white);
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 }
 
 .saito-select-btn span {
@@ -394,48 +340,51 @@ select {
 }
 
 .saito-select-btn i {
-  font-size: 14px;
+  font-size: 1.4rem;
   color: red;
   cursor: pointer;
 }
 
-
-.saito-select-search {
+/* .saito-select-search {
   display: flex;
   justify-content: center;
   align-items: center;
-
-}
-
+} */
 
 .saito-select-content {
-  margin-top: 15px;
-  padding: 20px;
-position: absolute;
-width: 100%;
-  background-color: white;
-  /* display: flex; */
+  margin-top: 1.5rem;
+  /* padding: 2rem; */
+  position: absolute;
+  top: 3.5rem;
+  width: 100%;
+  background-color: #eaeaef;
   justify-content: start;
   display: none;
-  border-bottom-left-radius: 20px;
-border-bottom-right-radius: 20px;
-border: 1px solid var(--saito-border);
-border-top: none;
-z-index: 12;
-
-
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  border-top: none;
+  z-index: 12;
+  border: 1px solid var(--saito-white);
 }
 
-  .saito-select-wrapper i {
-  transform: rotateX(180deg);
+.saito-select-wrapper i {
+
   font-size: 1.8rem;
+
 }
 
 .saito-select-content li {
   list-style: none;
   cursor: pointer;
   width: 100%;
-  padding: 0.3rem 0;
+  padding: 1rem 1.5rem;
+  color: var(--saito-black);
+
+}
+
+.saito-select-content li:hover {
+  background-color: var(--saito-primary);
+  color: white;
 }
 
 .saito-select-content li:not(:last-child) {
@@ -443,9 +392,9 @@ z-index: 12;
 }
 
 .show-content {
-  display: flex;
+  display: block;
 }
 .flip-carret {
   transition: all 0.3s;
-  transform: rotateX(0) !important;
+  transform: rotateX(180deg) !important;
 }
