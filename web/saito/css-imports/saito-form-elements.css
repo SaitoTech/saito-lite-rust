@@ -1,7 +1,6 @@
 form {
   padding: 3rem 2rem;
   padding-top: 1.5rem;
-
   border-radius: 2rem;
 }
 
@@ -38,11 +37,13 @@ input[type="date"] {
 input[type="date"]::-webkit-datetime-edit {
   color: var(--saito-white);
 }
+
 input[type="date"]::-webkit-inner-spin-button {
   color: var(--saito-primary);
   background-color: var(--saito-primary);
   appearance: none;
 }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   appearance: none;
 
@@ -173,29 +174,33 @@ input[type="range"] {
   margin: 1.8rem 0;
   width: 100%;
 }
+
 input[type="range"]:focus {
   outline: none;
 }
+
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: .6rem;
+  height: 0.6rem;
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: 1.3px;
   border: var(--saito-border);
 }
+
 input[type="range"]::-webkit-slider-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
   height: 2rem;
-  width: .7rem;
+  width: 0.7rem;
   border-radius: 3px;
   background: #ffffff;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -.8rem;
+  margin-top: -0.8rem;
 }
+
 input[type="range"]:focus::-webkit-slider-runnable-track {
   background: var(--saito-primary);
 }
@@ -205,13 +210,14 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 } */
 input[type="range"]::-moz-range-track {
   width: 100%;
-  height: .84rem;
+  height: 0.84rem;
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
   border-radius: 1.3px;
   border: var(--saito-border);
 }
+
 input[type="range"]::-moz-range-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
@@ -221,6 +227,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--saito-white);
   cursor: pointer;
 }
+
 input[type="range"]::-ms-track {
   width: 100%;
   height: 8.4px;
@@ -230,18 +237,21 @@ input[type="range"]::-ms-track {
   border-width: 1.6rem 0;
   color: transparent;
 }
+
 input[type="range"]::-ms-fill-lower {
   background: var(--saito-primary);
   border: var(--saito-border);
   border-radius: 2.6px;
   box-shadow: var(--saito-box-shadow);
 }
+
 input[type="range"]::-ms-fill-upper {
   background: #3071a9;
   border: var(--saito-border);
   border-radius: 2.6px;
   box-shadow: var(--saito-box-shadow);
 }
+
 input[type="range"]::-ms-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
@@ -251,9 +261,11 @@ input[type="range"]::-ms-thumb {
   background: #ffffff;
   cursor: pointer;
 }
+
 input[type="range"]:focus::-ms-fill-lower {
   background: var(--saito-primary);
 }
+
 input[type="range"]:focus::-ms-fill-upper {
   background: var(--saito-primary);
 }
@@ -300,13 +312,13 @@ textarea::placeholder {
   justify-content: center;
 }
 
-.dropdown-content > p {
+.dropdown-content>p {
   font-size: 1.4rem;
   cursor: pointer;
 }
 
-.dropdown-content > p:hover {
-}
+.dropdown-content>p:hover {}
+
 .dropdown:hover .dropdown-content {
   display: flex;
 }
@@ -315,8 +327,7 @@ textarea::placeholder {
 Selects
 -----------------------------------------------------------------*/
 
-select {
-}
+select {}
 
 .saito-select-wrapper {
   width: 18rem;
@@ -368,9 +379,7 @@ select {
 }
 
 .saito-select-wrapper i {
-
   font-size: 1.8rem;
-
 }
 
 .saito-select-content li {
@@ -379,7 +388,6 @@ select {
   width: 100%;
   padding: 1rem 1.5rem;
   color: var(--saito-black);
-
 }
 
 .saito-select-content li:hover {
@@ -394,6 +402,7 @@ select {
 .show-content {
   display: block;
 }
+
 .flip-carret {
   transition: all 0.3s;
   transform: rotateX(180deg) !important;

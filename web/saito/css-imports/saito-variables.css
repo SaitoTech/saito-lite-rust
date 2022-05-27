@@ -1,4 +1,3 @@
-
 /* ----------------------------------------------------------------
 font imports
 -----------------------------------------------------------------*/
@@ -54,7 +53,7 @@ font imports
   --saito-white: #fff;
   --saito-black: #1c1c23;
   --saito-black-faded: #1c1c23b5;
-   --saito-box-shadow: 4px 4px 12px #a5a5a5bb;
+  --saito-box-shadow: 4px 4px 12px #a5a5a5bb;
   --saito-header-height: 92.2344px;
   --saito-menu-background: #fff;
   --saito-profile-background: #fff;

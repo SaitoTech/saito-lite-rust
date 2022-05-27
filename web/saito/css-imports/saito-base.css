@@ -8,10 +8,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: all .2s;
-
+  transition: all 0.2s;
 }
-
 
 :root {
   font-size: 10px;
@@ -35,15 +33,9 @@ body {
   background-color: var(--saito-background);
 }
 
-
 .main-content {
   padding-top: 1rem;
 }
-
-
-
-
-
 
 /* ----------------------------------------------------------------
 media queries
@@ -54,6 +46,7 @@ media queries
     font-size: 1.4rem;
   }
 }
+
 @media screen and (max-width: 500px) {
   body {
     font-size: 1.6rem;

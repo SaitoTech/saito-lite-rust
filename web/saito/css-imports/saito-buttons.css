@@ -5,11 +5,9 @@ buttons
 
 button {
   min-width: 10.5rem;
-  background: linear-gradient(
-    77deg,
-    var(--saito-primary) 0%,
-    var(--saito-secondary) 69%
-  );
+  background: linear-gradient(77deg,
+      var(--saito-primary) 0%,
+      var(--saito-secondary) 69%);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -47,13 +45,14 @@ button:hover {
   line-height: 1.2;
   color: var(--saito-primary);
   background: transparent;
-  
+
 }
 
 .saito-btn-secondary:hover {
   background-color: var(--saito-primary) !important;
   color: var(--saito-white);
 }
+
 .saito-btn-tetiary {
   border: 1px solid var(--saito-white);
   color: var(--saito-white);

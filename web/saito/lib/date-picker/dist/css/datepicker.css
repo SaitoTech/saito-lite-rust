@@ -38,9 +38,9 @@
   text-align: center;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .datepicker-main {
@@ -113,7 +113,7 @@
   font-size: 1rem;
   min-width: auto;
   background: none;
-  color: var(--saito-primary)
+  color: var(--saito-primary);
 }
 
 .datepicker-controls .button:focus,
@@ -212,7 +212,7 @@
 }
 
 @media (max-width: 22.5rem) {
-  .calendar-weeks + .days .datepicker-grid {
+  .calendar-weeks+.days .datepicker-grid {
     width: 13.78125rem;
   }
 }
