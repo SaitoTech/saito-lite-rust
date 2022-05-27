@@ -6960,10 +6960,12 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
-    //Asia will still be a special case, maybe...
+    // skip for SEASIA (special case)
+    if (region !== "seasia") {
+      scoring = this.calculateControlledBattlegroundCountries(scoring, bg_countries); //fill in scoring.us/ussr.bg
+      scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
+    }
 
-    scoring = this.calculateControlledBattlegroundCountries(scoring, bg_countries); //fill in scoring.us/ussr.bg
-    scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
 
     switch (region) {
 
