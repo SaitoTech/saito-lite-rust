@@ -8,7 +8,7 @@ module.exports = (app) => {
   <h3>h3 - Module header</h3>
 
   <h4>Form Items</h4>
-  <form class="saito-white-background">
+  <form class=" saito-box saito-white-background">
     
       <h4 >Title</h4>
       <p>This is a row of plain text.</p>
@@ -44,9 +44,9 @@ module.exports = (app) => {
     
      
       <label>Text Area</label>
-<textarea placeholder="Text area">
-    Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
-</textarea>
+      <textarea placeholder="Text area">
+          Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+      </textarea>
    </form>
 
   
@@ -90,7 +90,7 @@ module.exports = (app) => {
 
 
 <h4>Fieldset</h4>
-<fieldset class="saito-white-background">
+<fieldset class="saito-box saito-white-background">
 
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>
@@ -104,9 +104,60 @@ module.exports = (app) => {
 </fieldset>
 
 
+<hr/>
+
+<h4>Grid System</h4>
+<div class="saito-white-background saito-mt-2 saito-p-3">
+          <div class="row">
+              <div class="col-1-of-2 saito-gray-background p-2"> Col 1 of 2 </div>
+              <div class="col-1-of-2 p-2"> Col 1 of 2 </div>
+          </div>
+          <div class="row">
+              <div class="col-1-of-3 saito-gray-background p-2"> Col 1 of 3 </div>
+              <div class="col-2-of-3 p-2"> Col 2 of 3 </div>
+          </div>
+          <div class="row">
+              <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+              <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+              <div class="col-2-of-4 saito-gray-background p-2"> Col 2 of 4 </div>
+          </div>
+          <div class="row">
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-2-of-4 p-2"> Col 2 of 4 </div>
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          </div>
+          <div class="row">
+          <div class="col-2-of-4 saito-gray-background p-2"> Col 2 of 4 </div>
+          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          </div>
+          <div class="row">
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-3-of-4 p-2"> Col 3 of 4 </div>
+         
+          </div>
+          <div class="row">
+          <div class="col-3-of-4 saito-gray-background p-2"> Col 3 of 4 </div>
+          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+         
+          </div>
+          <div class="row">
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+         
+          </div>
+    
+</div>
+
+
 </div>
 
   `;
 
 }
 
+
+
+//   2-1-1, 1-2-1, 1-1-2.

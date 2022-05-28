@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------
-	Basic
+ Saito Base: CSS default settings, layouts
 -----------------------------------------------------------------*/
 
 *,
@@ -32,6 +32,13 @@ body {
 .saito-container {
   padding: 3rem 10rem;
   background-color: var(--saito-background);
+}
+
+.saito-box {
+  padding: 1.5rem 2rem 3rem 2rem;
+  border-radius: 2rem;
+  border: none;
+  box-shadow: 0 0 20px rgb(0 0 0 / 10%)
 }
 
 .main-content {

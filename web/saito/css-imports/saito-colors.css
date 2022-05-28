@@ -6,6 +6,18 @@
     color: var(--saito-secondary);
 }
 
+.saito-primary-background {
+    background-color: var(--saito-primary);
+}
+
+.saito-secondary-background {
+    background-color: var(--saito-secondary);
+}
+
 .saito-white-background {
     background-color: var(--saito-white);
+}
+
+.saito-gray-background {
+    background-color: rgb(188, 188, 188);
 }

@@ -66,7 +66,7 @@
 .datepicker-view .days .datepicker-cell,
 .datepicker-view .dow {
   flex-basis: 14.2857142857%;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   /* padding: 1rem; */
 }
 
@@ -147,10 +147,11 @@
 .datepicker-header .datepicker-controls .button {
   border-color: transparent;
   font-weight: bold;
+  font-size: 1.6rem;
 }
 
 .datepicker-header .datepicker-controls .button:hover {
-  background-color: #f9f9f9;
+  /* background-color: #f9f9f9; */
 }
 
 .datepicker-header .datepicker-controls .button:focus:not(:active) {
@@ -208,7 +209,7 @@
 }
 
 .datepicker-grid {
-  width: 20rem;
+  width: 30rem;
 }
 
 @media (max-width: 22.5rem) {
@@ -229,7 +230,7 @@
 .datepicker-cell.selected,
 .datepicker-cell.selected:hover {
   background-color: var(--saito-primary);
-  color: #fff;
+  color: var(--saito-white);
   font-weight: 600;
 }
 

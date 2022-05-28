@@ -25,7 +25,10 @@ button {
 }
 
 
-button:hover {}
+button:hover {
+  filter: opacity(.9);
+  transform: scale(1.1);
+}
 
 
 
