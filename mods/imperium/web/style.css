@@ -1706,6 +1706,12 @@ body {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
   text-transform: uppercase;
+  padding: 15px;
+}
+.option {
+  cursor: pointer;
+  font-family: 'orbitron-medium', helvetica, arial, courier;
+  padding: 15px;
 }
 
 .status ul .cardchoice-card {
