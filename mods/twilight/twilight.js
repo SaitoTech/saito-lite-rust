@@ -52,7 +52,7 @@ class Twilight extends GameTemplate {
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
     this.type       	 = "Strategy Boardgame";
-    this.categories 	 = "Bordgame Game"
+    this.categories 	 = "Boardgame Game"
     //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -791,7 +791,7 @@ initializeGame(game_id) {
       let o = Object.assign({}, l, k);
       let p = Object.assign({}, m, o);
       let q = Object.assign({}, n, p);
-
+      
       this.game.queue.push("DECK\t1\t"+JSON.stringify(k));
     } else {
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
@@ -1459,11 +1459,6 @@ try {
 
             } else {
 
-              //let tmpar = action2.split("_");
-              //tempar[0] my crypt, tempar[1] is decoded
-              //let id_to_remove = ".card_"+tmpar[0];
-              //$(id_to_remove).hide();
-              ;
               pos_to_discard.push(cardoptions.indexOf(action2));
               cards_discarded++;
               $("#"+action2).hide();
@@ -2400,9 +2395,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["truman", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
+          //this.game.deck[0].hand = ["asknot", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          //this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
         }
       }
 
@@ -2659,7 +2654,7 @@ try {
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
               twilight_self.endTurn(1);
             } else {
-              $(action2).hide();
+              $("#"+action2).hide(); 
               twilight_self.hideCard();
               twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding...</div>");
               twilight_self.removeCardFromHand(action2);
@@ -8808,7 +8803,7 @@ playerTurnHeadlineSelected(card, player) {
       }
       this.updateVictoryPoints();
       this.updateLog(`${player.toUpperCase()} gains ${bonus} VP from ${this.cardToText(card)}`);
-
+      this.displayModal(this.cardToText(card), `${player.toUpperCase()} gains ${bonus} VP`);
       if (!i_played_the_card){
         this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
       }
@@ -8852,9 +8847,10 @@ playerTurnHeadlineSelected(card, player) {
         let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
         let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
+          let card_in_hand = this.game.deck[0].hand[i];
+          if (card_in_hand != "china" && card_in_hand != this.game.state.headline_opponent_card && card_in_hand != this.game.state.headline_card) {
             //html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-            cardList.push(this.game.deck[0].hand[i]);
+            cardList.push(card_in_hand);
           }
         }
 
@@ -8918,8 +8914,8 @@ playerTurnHeadlineSelected(card, player) {
                 twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
                 twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
                 twilight_self.addMove("DECKBACKUP\t1");
-                twilight_self.addMove("NOTIFY\Tcards remaining: " + twilight_self.game.deck[0].crypt.length);
-                twilight_self.addMove("NOTIFY\TShuffling discarded cards back into the deck...");
+                twilight_self.addMove("NOTIFY\tcards remaining: " + twilight_self.game.deck[0].crypt.length);
+                twilight_self.addMove("NOTIFY\tShuffling discarded cards back into the deck...");
 
               }
       	    }
@@ -8928,10 +8924,12 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.endTurn();
 
           } else {
-            cards_discarded++;
-            $("#"+action2).hide();
-            twilight_self.removeCardFromHand(action2);
-            twilight_self.addMove("discard\tus\t"+action2);
+            if (this.game.deck[0].hand.includes(action2)){
+              cards_discarded++;
+              $("#"+action2).hide();
+              twilight_self.removeCardFromHand(action2);
+              twilight_self.addMove("discard\tus\t"+action2);  
+            }
           }
         });
 
@@ -9494,7 +9492,7 @@ playerTurnHeadlineSelected(card, player) {
               twilight_self.endTurn();
               return 0;
             }
-            this.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
+            twilight_self.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
           } else {
             twilight_self.displayModal("you already placed there...");
           }

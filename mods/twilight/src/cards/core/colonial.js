@@ -35,7 +35,7 @@
               twilight_self.endTurn();
               return 0;
             }
-            this.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
+            twilight_self.updateStatus(`<div class='status-message' id='status-message'>Place ${ops_to_place} influence in Africa or Southeast Asia (1 per country)</div>`);
           } else {
             twilight_self.displayModal("you already placed there...");
           }
