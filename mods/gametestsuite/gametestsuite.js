@@ -1,4 +1,5 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const saito = require('../../lib/saito/saito');
 const JSON = require('json-bigint');
 
@@ -27,6 +28,7 @@ class GameTestSuite extends GameTemplate {
     this.minPlayers = 1; //2;
     this.maxPlayers = 1; //6;
 
+    this.scoreboard = new GameScoreboard(app);
     this.game_cardfan_visible = 0;
     this.game_menu_visible = 1;
     this.game_hud_visible = 0;
@@ -269,7 +271,6 @@ class GameTestSuite extends GameTemplate {
       },
     });
 
-
     this.menu.addSubMenuOption("menu-interface", {
       text: "Blocking overlay",
       id: "menu-block-overlay",
@@ -280,6 +281,24 @@ class GameTestSuite extends GameTemplate {
       },
     });
 
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Scoreboard",
+      id: "menu-scoreboard",
+      class: "menu-scoreboard",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_scoreboard_test(game_mod.app);
+      },
+    });
+    this.menu.addSubMenuOption("menu-interface", {
+      text: "Game Clock",
+      id: "menu-game-clock",
+      class: "menu-game-clock",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.display_game_clock_test(game_mod.app);
+      },
+    });
 
     /* Crypto*/
     this.menu.addMenuOption({
@@ -420,8 +439,6 @@ class GameTestSuite extends GameTemplate {
         <label for="crypto">Crypto:</label>
         <select name="crypto">
           <option value="" selected>None</option>
-          <option value="SAITO">SAITO</option>
-          <option value="tst">TST</option>
     `;
     for (let i = 0; i < this.app.modules.mods.length; i++) {
       if (this.app.modules.mods[i].ticker != "" && this.app.modules.mods[i].ticker != undefined) {
@@ -766,6 +783,19 @@ class GameTestSuite extends GameTemplate {
     this.overlay.blockClose();
     document.getElementById("close_overlay_button").onclick = (e) => { game_self.overlay.hide(); }
 
+  }
+
+
+  display_scoreboard_test(app){
+    this.scoreboard.render(app, this);
+    this.scoreboard.attachEvents(app, this);
+    this.scoreboard.update(`<div>Num Players: ${this.game.players.length}</div>`);
+  }
+
+
+  display_game_clock_test(app){
+    this.clock.render(app, this);
+    this.clock.attachEvents(app, this);
   }
 
   deal_cards_to_player_test(app) {
