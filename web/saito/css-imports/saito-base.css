@@ -8,7 +8,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: all 0.2s;
 }
 
 
@@ -30,37 +29,47 @@ body {
 }
 
 .saito-container {
-  padding: 3rem 10rem;
-  background-color: var(--saito-background);
+  padding: 3rem 8rem;
 }
 
-.saito-box {
-  padding: 1.5rem 2rem 3rem 2rem;
-  border-radius: 2rem;
-  border: none;
-  box-shadow: 0 0 20px rgb(0 0 0 / 10%)
+
+
+
+.modal-dialog {
+  border: 20rem;
 }
 
-.main-content {
-  padding-top: 1rem;
+pre {
+  overflow: scroll;
 }
+
 
 /* ----------------------------------------------------------------
 media queries
 -----------------------------------------------------------------*/
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 1200px) {
   body {
     font-size: 1.4rem;
   }
-}
 
-@media screen and (max-width: 500px) {
-  body {
-    font-size: 1.6rem;
+  .saito-container {
+    padding: 3rem 2.6rem;
   }
 }
 
-.modal-dialog {
-  border: 20rem;
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 1.4rem;
+  }
+
+  .saito-container {
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  body {
+    font-size: 1.6rem;
+  }
 }

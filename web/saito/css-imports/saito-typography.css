@@ -22,7 +22,7 @@ h6 {
   color: var(--saito-default-font);
   font-weight: 600;
   line-height: 1.5;
-  margin: 1.3rem 0;
+  margin: 1rem 0;
   font-family: var(--saito-font);
 }
 
@@ -40,13 +40,12 @@ h2 {
 h3 {
   position: relative;
   font-size: 4rem;
-  margin: 3rem 0;
+  margin: 2rem 0;
   line-height: 1.33;
 }
 
 h4 {
   font-size: 3.5rem;
-  color: var(--saito-primary);
   font-weight: 500;
   margin: 1rem 0;
   line-height: 1.33;
@@ -72,8 +71,8 @@ h6 {
 -----------------------------------------------------------------*/
 
 p {
-  font-size: 1.8rem;
-  margin: .3rem 0;
+  /* font-size: 1.8rem; */
+
 }
 
 
@@ -89,9 +88,6 @@ hr {
 }
 
 
-div {
-  margin-bottom: .5rem;
-}
 
 
 
@@ -104,24 +100,27 @@ Media Queries
 
 @media (max-width: 767.98px) {
   h1 {
-    font-size: 1.75rem;
+    font-size: 4rem;
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 3.5rem;
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 3rem;
   }
 
   h4 {
-    font-size: 1rem;
+    font-size: 2.5rem;
   }
 }
 
 
 
+p {
+  color: var(--saito-black);
+}
 
 a {
   color: var(--saito-white);

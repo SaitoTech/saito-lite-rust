@@ -26,8 +26,8 @@ button {
 
 
 button:hover {
-  filter: opacity(.9);
-  transform: scale(1.1);
+  background: var(--saito-primary) !important;
+  color: var(--saito-white);
 }
 
 
@@ -46,10 +46,10 @@ button:hover {
 
 }
 
-.saito-btn-secondary:hover {
+/* .saito-btn-secondary:hover {
   background-color: var(--saito-primary) !important;
   color: var(--saito-white);
-}
+} */
 
 .saito-btn-tetiary {
   border: 1px solid var(--saito-white);
@@ -65,7 +65,7 @@ button:hover {
 .saito-btn-small {
   min-width: 10rem;
   /* height: 3rem; */
-  padding: .7rem 1.9rem;
+  padding: .7rem 1.9rem !important;
 }
 
 .saito-btn-large {

@@ -8,7 +8,7 @@ module.exports = (app) => {
   <h3>h3 - Module header</h3>
 
   <h4>Form Items</h4>
-  <form class=" saito-box saito-white-background">
+  <form class=" saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
     
       <h4 >Title</h4>
       <p>This is a row of plain text.</p>
@@ -90,7 +90,7 @@ module.exports = (app) => {
 
 
 <h4>Fieldset</h4>
-<fieldset class="saito-box saito-white-background">
+<fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background">
 
     <h1 class="saito-primary-color">h1 Heading</h1>
     <h2 class="saito-secondary-color">h2 Heading</h2>
@@ -107,44 +107,144 @@ module.exports = (app) => {
 <hr/>
 
 <h4>Grid System</h4>
-<div class="saito-white-background saito-mt-2 saito-p-3">
+<div class="saito-white-background saito-mt-2 saito-p-2">
           <div class="row">
-              <div class="col-1-of-2 saito-gray-background p-2"> Col 1 of 2 </div>
-              <div class="col-1-of-2 p-2"> Col 1 of 2 </div>
+              <div class="col-1-of-2 saito-p-2"> 
+                  <div class="saito-infobox saito-box-rounded saito-box-shadow">
+                      <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4> <h2 class="saito-primary-color"> WIKI </h2> </div>
+                      <div class="saito-infobox-body">
+                       <p>The saito wiki community-editable resource and knowledge repository <p> 
+                       <br/>
+                       <p>This is your for any information about the Saito Project.  <p>
+                       <br/>
+                       <p>This is your for any information about the Saito Project.  <p>
+                      </div>
+                      <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+                  </div>
+              </div>
+              <div class="col-1-of-2 saito-p-2"> 
+              <div class="saito-infobox saito-box-rounded  saito-box-shadow">
+              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY  </h4><h2 class="saito-primary-color"> WIKI </h2>  </div>
+              <div class="saito-infobox-body">
+               <p>The saito wiki community-editable resource and knowledge repository <p> 
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+              </div>
+              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            </div>
+               </div>
+          </div>
+   
+          <div class="row">
+              <div class="col-1-of-3  saito-p-2"> 
+              <div class="saito-infobox   saito-box-shadow">
+              <div class="saito-infobox-title">
+               <h4 class="saito-primary-color"> COMMUNITY </h4>
+               <h2 class="saito-primary-color"> Wiki </h2>
+                 </div>
+              <div class="saito-infobox-body">
+               <p>The saito wiki community-editable resource and knowledge repository <p> 
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+              
+              </div>
+              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+                </div>
+              <div class="col-1-of-3 saito-p-2"> 
+              <div class="saito-infobox   saito-box-shadow">
+              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4>  <h2 class="saito-primary-color"> Wiki </h2></div>
+              <div class="saito-infobox-body">
+               <p>The saito wiki community-editable resource and knowledge repository <p> 
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+             
+              </div>
+              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+               </div>
+              <div class="col-1-of-3 saito-p-2"> 
+              <div class="saito-infobox   saito-box-shadow">
+              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
+              <div class="saito-infobox-body">
+               <p>The saito wiki community-editable resource and knowledge repository <p> 
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+           
+              </div>
+              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+              
+              </div>
           </div>
           <div class="row">
-              <div class="col-1-of-3 saito-gray-background p-2"> Col 1 of 3 </div>
-              <div class="col-2-of-3 p-2"> Col 2 of 3 </div>
+          <div class="col-1-of-3 saito-p-2"> 
+            <div class="saito-contentbox saito-box-shadow"> 
+               <h4 class="saito-primary-color"> Content Box </h4>
+             
+            
+
+            </div>
+           </div>
+          <div class="col-2-of-3 saito-p-2">
+          <div class="saito-contentbox saito-box-shadow">
+          <h4 class="saito-primary-color"> Content Box </h4>
+           </div>
+          </div>
+      </div>
+       <div class="row">
+            <div class="col-2-of-4">
+            <div class="saito-infobox saito-box-secondary ">
+            <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
+            <div class="saito-infobox-body">
+             <p>The saito wiki community-editable resource and knowledge repository <p> 
+             <br/>
+             <p>This is your for any information about the Saito Project.  <p>
+         
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+        </div>
+            </div>
+            <div class="col-2-of-4">
+            <div class="saito-infobox  saito-box-secondary ">
+              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
+              <div class="saito-infobox-body">
+               <p>The saito wiki community-editable resource and knowledge repository <p> 
+               <br/>
+               <p>This is your for any information about the Saito Project.  <p>
+           
+              </div>
+              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+            </div>
+       </div>
+          <div class="row">
+              <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+              <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
+              <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
           </div>
           <div class="row">
-              <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
-              <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-              <div class="col-2-of-4 saito-gray-background p-2"> Col 2 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+          <div class="col-2-of-4 saito-p-2"> Col 2 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
           </div>
           <div class="row">
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
-          <div class="col-2-of-4 p-2"> Col 2 of 4 </div>
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+          <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
           </div>
           <div class="row">
-          <div class="col-2-of-4 saito-gray-background p-2"> Col 2 of 4 </div>
-          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
-          </div>
-          <div class="row">
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
-          <div class="col-3-of-4 p-2"> Col 3 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+          <div class="col-3-of-4 saito-p-2"> Col 3 of 4 </div>
          
           </div>
+ 
           <div class="row">
-          <div class="col-3-of-4 saito-gray-background p-2"> Col 3 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
           <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-         
-          </div>
-          <div class="row">
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 saito-gray-background p-2"> Col 1 of 4 </div>
+          <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
           <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
          
           </div>

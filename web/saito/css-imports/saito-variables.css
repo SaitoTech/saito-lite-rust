@@ -41,7 +41,7 @@ font imports
 
 :root {
   --saito-font: visuelt-light;
-  --saito-background: #f8f8f8;
+  --saito-background: #EAEAEF;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tetiary: rgb(234, 234, 239);
@@ -51,6 +51,7 @@ font imports
   --saito-white: #fff;
   --saito-black: #1c1c23;
   --saito-black-faded: #1c1c23b5;
+  --saito-light-background: #eaeaef;
   --saito-box-shadow: 4px 4px 12px #a5a5a5bb;
   --saito-header-height: 92.2344px;
   --saito-menu-background: #fff;
