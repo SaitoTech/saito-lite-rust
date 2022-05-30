@@ -5,25 +5,27 @@ module.exports = (app) => {
   return `
 
   <div class="saito-container" id="container">
-  <h3>h3 - Module header</h3>
+    <h3>h3 - Module header</h3>
 
-  <h4>Form Items</h4>
-  <form class=" saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
-    
-      <h4 >Title</h4>
+    <h4>Form Items</h4>
+    <form class=" saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
+
+      <h4>Title</h4>
       <p>This is a row of plain text.</p>
       <label>Password</label>
       <div><input id="password" type="password" placeholder="This is a password field" class="password" /></div>
       <label>Text Input</label>
-      <div><input placeholder="Text Field" type="text" ></input></div>
+      <div><input placeholder="Text Field" type="text"></input></div>
       <label>Date Input</label>
       <div><input type="text" name="datepicker"></input></div>
       <label>Range Input</label>
       <div><input type="range" value="8"></input></div>
       <label>Checkboxes</label>
-      <div><input type="checkbox" checked></input><input type="checkbox"></input><input type="checkbox"></input><input type="checkbox"></input></div>
+      <div><input type="checkbox" checked></input><input type="checkbox"></input><input type="checkbox"></input><input
+          type="checkbox"></input></div>
       <label>Radio Buttons</label>
-      <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input type="radio"></input></div>
+      <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input
+          type="radio"></input></div>
       <label>Select</label>
 
       <select>
@@ -41,218 +43,255 @@ module.exports = (app) => {
         <option value="11">Toyota</option>
         <option value="12">Volvo</option>
       </select>
-    
-     
+
+
       <label>Text Area</label>
       <textarea placeholder="Text area">
-          Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
-      </textarea>
-   </form>
-
-  
-
-  
-
-
-<hr/>
- 
+              Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+          </textarea>
+    </form>
 
 
 
 
-<h4>Pre</h4>
-<pre>
-    {
-        "bf": 1,
-        "coinbase": "478016666.66666667",
-        "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
-        "difficulty": 0,
-        "id": 2,
-        "merkle": "",
-        "paysplit": 0.5,
-        "powsplit": 0.5,
-        "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
-        "reclaimed": "0.0",
-        "sr": 0,
-        "stakepool": "0",
-        "treasury": "2390083333.33333333",
-        "ts": 1572407380711
-        }
-</pre>
-<hr/>
-<h4>Buttons </h4>
-<button>First</button>
-<button class="saito-btn-secondary">Second</button>
-<button class="saito-btn-small">Small</button>
-<button class="saito-btn-secondary saito-btn-large">Large</button>
-
-<hr/>
 
 
-<h4>Fieldset</h4>
-<fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background">
-
-    <h1 class="saito-primary-color">h1 Heading</h1>
-    <h2 class="saito-secondary-color">h2 Heading</h2>
-    <h3 class="saito-primary-color">h3 Heading</h3>
-    <h4>h4 Sub Heading</h4>
-    <h5>h4 Sub Heading</h5>
-    <h6>h4 Sub Heading</h4>    
-    <p>Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
-
-    </p>    
-</fieldset>
+    <hr />
 
 
-<hr/>
 
-<h4>Grid System</h4>
-<div class="saito-white-background saito-mt-2 saito-p-2">
-          <div class="row">
-              <div class="col-1-of-2 saito-p-2"> 
-                  <div class="saito-infobox saito-box-rounded saito-box-shadow">
-                      <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4> <h2 class="saito-primary-color"> WIKI </h2> </div>
-                      <div class="saito-infobox-body">
-                       <p>The saito wiki community-editable resource and knowledge repository <p> 
-                       <br/>
-                       <p>This is your for any information about the Saito Project.  <p>
-                       <br/>
-                       <p>This is your for any information about the Saito Project.  <p>
-                      </div>
-                      <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
-                  </div>
-              </div>
-              <div class="col-1-of-2 saito-p-2"> 
-              <div class="saito-infobox saito-box-rounded  saito-box-shadow">
-              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY  </h4><h2 class="saito-primary-color"> WIKI </h2>  </div>
-              <div class="saito-infobox-body">
-               <p>The saito wiki community-editable resource and knowledge repository <p> 
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-              </div>
-              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+
+
+    <h4>Pre</h4>
+    <pre>
+        {
+            "bf": 1,
+            "coinbase": "478016666.66666667",
+            "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
+            "difficulty": 0,
+            "id": 2,
+            "merkle": "",
+            "paysplit": 0.5,
+            "powsplit": 0.5,
+            "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
+            "reclaimed": "0.0",
+            "sr": 0,
+            "stakepool": "0",
+            "treasury": "2390083333.33333333",
+            "ts": 1572407380711
+            }
+    </pre>
+    <hr />
+    <h4>Buttons </h4>
+    <button>First</button>
+    <button class="saito-btn-secondary">Second</button>
+    <button class="saito-btn-small">Small</button>
+    <button class="saito-btn-secondary saito-btn-large">Large</button>
+
+    <hr />
+
+
+    <h4>Fieldset</h4>
+    <fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background">
+
+      <h1 class="saito-primary-color">h1 Heading</h1>
+      <h2 class="saito-secondary-color">h2 Heading</h2>
+      <h3 class="saito-primary-color">h3 Heading</h3>
+      <h4>h4 Sub Heading</h4>
+      <h5>h4 Sub Heading</h5>
+      <h6>h4 Sub Heading</h4>
+        <p>Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle
+          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken,
+          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf
+          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+
+        </p>
+    </fieldset>
+
+
+    <hr />
+
+    <h4>Grid System</h4>
+    <div class="saito-white-background saito-mt-2 saito-p-2">
+      <div class="row">
+        <div class="col-1-of-2 saito-p-2">
+          <div class="saito-infobox saito-box-rounded saito-box-shadow">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> WIKI </h2>
             </div>
-               </div>
-          </div>
-   
-          <div class="row">
-              <div class="col-1-of-3  saito-p-2"> 
-              <div class="saito-infobox   saito-box-shadow">
-              <div class="saito-infobox-title">
-               <h4 class="saito-primary-color"> COMMUNITY </h4>
-               <h2 class="saito-primary-color"> Wiki </h2>
-                 </div>
-              <div class="saito-infobox-body">
-               <p>The saito wiki community-editable resource and knowledge repository <p> 
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-              
-              </div>
-              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
-          </div>
-                </div>
-              <div class="col-1-of-3 saito-p-2"> 
-              <div class="saito-infobox   saito-box-shadow">
-              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4>  <h2 class="saito-primary-color"> Wiki </h2></div>
-              <div class="saito-infobox-body">
-               <p>The saito wiki community-editable resource and knowledge repository <p> 
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-             
-              </div>
-              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
-          </div>
-               </div>
-              <div class="col-1-of-3 saito-p-2"> 
-              <div class="saito-infobox   saito-box-shadow">
-              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
-              <div class="saito-infobox-body">
-               <p>The saito wiki community-editable resource and knowledge repository <p> 
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-           
-              </div>
-              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
-          </div>
-              
-              </div>
-          </div>
-          <div class="row">
-          <div class="col-1-of-3 saito-p-2"> 
-            <div class="saito-contentbox saito-box-shadow"> 
-               <h4 class="saito-primary-color"> Content Box </h4>
-             
-            
-
-            </div>
-           </div>
-          <div class="col-2-of-3 saito-p-2">
-          <div class="saito-contentbox saito-box-shadow">
-          <h4 class="saito-primary-color"> Content Box </h4>
-           </div>
-          </div>
-      </div>
-       <div class="row">
-            <div class="col-2-of-4">
-            <div class="saito-infobox saito-box-secondary ">
-            <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
             <div class="saito-infobox-body">
-             <p>The saito wiki community-editable resource and knowledge repository <p> 
-             <br/>
-             <p>This is your for any information about the Saito Project.  <p>
-         
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
         </div>
+        <div class="col-1-of-2 saito-p-2">
+          <div class="saito-infobox saito-box-rounded  saito-box-shadow">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> WIKI </h2>
             </div>
-            <div class="col-2-of-4">
-            <div class="saito-infobox  saito-box-secondary ">
-              <div class="saito-infobox-title"> <h4 class="saito-primary-color"> COMMUNITY </h4><h2 class="saito-primary-color"> Wiki </h2>  </div>
-              <div class="saito-infobox-body">
-               <p>The saito wiki community-editable resource and knowledge repository <p> 
-               <br/>
-               <p>This is your for any information about the Saito Project.  <p>
-           
-              </div>
-              <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
-          </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
             </div>
-       </div>
-          <div class="row">
-              <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
-              <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
-              <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
-          <div class="row">
-          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
-          <div class="col-2-of-4 saito-p-2"> Col 2 of 4 </div>
-          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-1-of-3  saito-p-2">
+          <div class="saito-infobox   saito-box-shadow">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> Wiki </h2>
+            </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
-          <div class="row">
-          <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
-          <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        </div>
+        <div class="col-1-of-3 saito-p-2">
+          <div class="saito-infobox   saito-box-shadow">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> Wiki </h2>
+            </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
-          <div class="row">
-          <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
-          <div class="col-3-of-4 saito-p-2"> Col 3 of 4 </div>
-         
+        </div>
+        <div class="col-1-of-3 saito-p-2">
+          <div class="saito-infobox   saito-box-shadow">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> Wiki </h2>
+            </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
- 
-          <div class="row">
-          <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
-          <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-         
-          </div>
-    
-</div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-1-of-3 saito-p-2">
+          <div class="saito-contentbox saito-box-shadow">
+            <h4 class="saito-primary-color"> Content Box </h4>
 
 
-</div>
+
+          </div>
+        </div>
+        <div class="col-2-of-3 saito-p-2">
+          <div class="saito-contentbox saito-box-shadow">
+            <h4 class="saito-primary-color"> Content Box </h4>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-2-of-4">
+          <div class="saito-infobox saito-box-secondary ">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> Wiki </h2>
+            </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+        </div>
+        <div class="col-2-of-4">
+          <div class="saito-infobox  saito-box-secondary ">
+            <div class="saito-infobox-title">
+              <h4 class="saito-primary-color"> COMMUNITY </h4>
+              <h2 class="saito-primary-color"> Wiki </h2>
+            </div>
+            <div class="saito-infobox-body">
+              <p>The saito wiki community-editable resource and knowledge repository
+              <p>
+                <br />
+              <p>This is your for any information about the Saito Project.
+              <p>
+
+            </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
+        <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+      </div>
+      <div class="row">
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-2-of-4 saito-p-2"> Col 2 of 4 </div>
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+      </div>
+      <div class="row">
+        <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+        <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+      </div>
+      <div class="row">
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-3-of-4 saito-p-2"> Col 3 of 4 </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
 
   `;
 
