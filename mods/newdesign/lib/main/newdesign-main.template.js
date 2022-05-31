@@ -5,7 +5,12 @@ module.exports = (app) => {
   return `
 
   <div class="saito-container" id="container">
-    <h3>h3 - Module header</h3>
+
+  <div class="saito-contentbox saito-box-shadow mb-2">
+  <h3>h3 - Module header</h3>
+</div>
+  <br/>
+
 
     <h4>Form Items</h4>
     <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
@@ -125,7 +130,11 @@ module.exports = (app) => {
               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
             
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
         <div class="col-1-of-2 saito-p-2">
@@ -140,7 +149,11 @@ module.exports = (app) => {
             <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. </p>
             
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
       </div>
@@ -161,7 +174,11 @@ module.exports = (app) => {
             
 
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
         <div class="col-1-of-3 saito-p-2">
@@ -175,7 +192,11 @@ module.exports = (app) => {
             
 
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
         <div class="col-1-of-3 saito-p-2">
@@ -190,7 +211,11 @@ module.exports = (app) => {
             
 
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
 
         </div>
@@ -225,7 +250,11 @@ module.exports = (app) => {
             
 
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
         <div class="col-2-of-4 saito-p-2">
@@ -239,7 +268,11 @@ module.exports = (app) => {
             
 
             </div>
+<<<<<<< HEAD
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+=======
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
+>>>>>>> newdesign-module
           </div>
         </div>
       </div>
