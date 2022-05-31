@@ -27,10 +27,6 @@ webpack({
     {
       archiver: "archiver"
     },
-
-    {
-      "vanillajs-datepicker": "vanillajs-datepicker"
-    },
     {
       child_process: "child_process"
     },

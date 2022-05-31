@@ -24,6 +24,7 @@ tests/config/env
 test/
 
 
+
 data/*.sq3
 data/*/*.blk
 data/blocks/*.blk
@@ -47,7 +48,7 @@ web/saito/saito.js
 web/saito/saito.js.map
 web/saito/*.wasm
 web/saito/saito.js.LICENSE.txt
-
+/compile-e
 mods/covid/bundler/
 
 mods/popup
