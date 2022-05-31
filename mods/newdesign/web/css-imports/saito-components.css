@@ -1,0 +1,103 @@
+/* ----------------------------------------------------------------
+Components
+-----------------------------------------------------------------*/
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito box
+-----------------------------------------------------------------*/
+.saito-box {
+    padding: var(--saito-box-padding);
+    border: none;
+    background-color: var(--saito-white);
+}
+
+.saito-box-shadow {
+    box-shadow: 2px 2px 20px rgb(0 0 0 / 10%);
+}
+
+
+
+.saito-box-rounded {
+    border-radius: 2rem;
+}
+
+
+
+/* ----------------------------------------------------------------
+Saito Info box
+-----------------------------------------------------------------*/
+.saito-infobox {
+    padding: var(--saito-box-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--saito-white);
+    height: 100%;
+    position: relative;
+    text-align: center;
+
+}
+
+.saito-infobox-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    margin: 2rem;
+    text-align: center;
+}
+
+.saito-infobox-title h3 {
+    position: relative;
+    font-weight: bold;
+    bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+.saito-infobox-title h3::after {
+    position: absolute;
+    content: "";
+    height: .5rem;
+    width: 10rem;
+    bottom: -.4rem;
+    background-color: var(--saito-primary);
+
+
+}
+
+
+.saito-infobox-footer {
+    margin-top: auto;
+}
+
+
+.saito-box.saito-box-secondary,
+.saito-infobox.saito-box-secondary {
+    background-color: var(--saito-background);
+
+}
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Content box
+-----------------------------------------------------------------*/
+
+.saito-contentbox {
+    background-color: var(--saito-white);
+    padding: var(--saito-box-padding);
+    border-radius: 2.5rem;
+    height: 100%;
+}
