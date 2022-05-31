@@ -112,8 +112,9 @@ module.exports = (app) => {
     <hr />
 
     <h4>Grid System</h4>
-    <div class="saito-white-background saito-mt-2 saito-p-2">
-      <div class="row">
+    <div class="saito-mt-2">
+      <div class="saito-light-background">
+      <div class="row  ">
         <div class="col-1-of-2 saito-p-2">
           <div class="saito-infobox saito-box-rounded saito-box-shadow">
             <div class="saito-infobox-title">
@@ -210,6 +211,8 @@ module.exports = (app) => {
           </div>
         </div>
       </div>
+      </div>
+      <div class="saito-white-background saito-p-1 saito-mt-6">
       <div class="row">
         <div class="col-2-of-4 saito-p-2">
           <div class="saito-infobox saito-box-secondary ">
@@ -267,6 +270,7 @@ module.exports = (app) => {
         <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
 
+      </div>
       </div>
 
     </div>
