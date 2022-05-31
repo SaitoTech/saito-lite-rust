@@ -5,7 +5,11 @@ module.exports = (app) => {
   return `
 
   <div class="saito-container" id="container">
-    <h3>h3 - Module header</h3>
+
+  <div class="saito-contentbox saito-box-shadow mb-2">
+  <h3>h3 - Module header</h3>
+</div>
+  <br/>
 
     <h4>Form Items</h4>
     <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
