@@ -15,8 +15,21 @@ body {
 }
 
 .test-buttons {
-
+  display: flex;
+  width: fit-content;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border: 5px solid whitesmoke;
+  border-radius: 10px;
+  padding: 1em;
 }
+.test-buttons > div{
+  display: flex;
+  flex-direction: column;
+}
+
 .test-commentary {
   background-color: whitesmoke;
   padding: 20px;

@@ -28,7 +28,7 @@
       }
       this.updateVictoryPoints();
       this.updateLog(`${player.toUpperCase()} gains ${bonus} VP from ${this.cardToText(card)}`);
-
+      this.displayModal(this.cardToText(card), `${player.toUpperCase()} gains ${bonus} VP`);
       if (!i_played_the_card){
         this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
       }
