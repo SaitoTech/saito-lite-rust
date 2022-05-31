@@ -8,7 +8,7 @@ module.exports = (app) => {
     <h3>h3 - Module header</h3>
 
     <h4>Form Items</h4>
-    <form class=" saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
+    <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
 
       <h4>Title</h4>
       <p>This is a row of plain text.</p>
@@ -117,18 +117,12 @@ module.exports = (app) => {
         <div class="col-1-of-2 saito-p-2">
           <div class="saito-infobox saito-box-rounded saito-box-shadow">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> WIKI </h2>
+              <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+              <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
@@ -136,18 +130,14 @@ module.exports = (app) => {
         <div class="col-1-of-2 saito-p-2">
           <div class="saito-infobox saito-box-rounded  saito-box-shadow">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> WIKI </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+            <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo </p>
+            <br/>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. </p>
+            
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
@@ -158,15 +148,16 @@ module.exports = (app) => {
         <div class="col-1-of-3  saito-p-2">
           <div class="saito-infobox   saito-box-shadow">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> Wiki </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+            <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.  </p>
+            <br/>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.  </p>
+              <br/>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.  </p>
+            
 
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
@@ -175,15 +166,12 @@ module.exports = (app) => {
         <div class="col-1-of-3 saito-p-2">
           <div class="saito-infobox   saito-box-shadow">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> Wiki </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+            <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo </p>
+            
 
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
@@ -192,15 +180,13 @@ module.exports = (app) => {
         <div class="col-1-of-3 saito-p-2">
           <div class="saito-infobox   saito-box-shadow">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> Wiki </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+            <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo</p>
+            <p> Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
 
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
@@ -209,57 +195,52 @@ module.exports = (app) => {
         </div>
       </div>
       <div class="row">
-        <div class="col-1-of-3 saito-p-2">
+        <div class="col-1-of-2 saito-p-2">
           <div class="saito-contentbox saito-box-shadow">
-            <h4 class="saito-primary-color"> Content Box </h4>
-
-
-
+            <h4 class="saito-primary-color"> h4 Sub heading </h4>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
           </div>
         </div>
-        <div class="col-2-of-3 saito-p-2">
+        <div class="col-1-of-2 saito-p-2">
           <div class="saito-contentbox saito-box-shadow">
-            <h4 class="saito-primary-color"> Content Box </h4>
+            <h4 class="saito-primary-color">h4 Sub heading</h4>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
           </div>
         </div>
       </div>
       <div class="row">
-        <div class="col-2-of-4">
+        <div class="col-2-of-4 saito-p-2">
           <div class="saito-infobox saito-box-secondary ">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> Wiki </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+              <h3 class="saito-primary-color"> h3 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
 
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
         </div>
-        <div class="col-2-of-4">
+        <div class="col-2-of-4 saito-p-2">
           <div class="saito-infobox  saito-box-secondary ">
             <div class="saito-infobox-title">
-              <h4 class="saito-primary-color"> COMMUNITY </h4>
-              <h2 class="saito-primary-color"> Wiki </h2>
+            <h4 class="saito-primary-color"> h4 Sub Heading </h4>
+            <h3 class="saito-primary-color"> h2 Sub Heading </h3>
             </div>
             <div class="saito-infobox-body">
-              <p>The saito wiki community-editable resource and knowledge repository
-              <p>
-                <br />
-              <p>This is your for any information about the Saito Project.
-              <p>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
+            
 
             </div>
             <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row ">
         <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
         <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
@@ -281,10 +262,10 @@ module.exports = (app) => {
       </div>
 
       <div class="row">
-        <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
-        <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
-        <div class="col-1-of-4 saito-box-secondary   p-2"> Col 1 of 4 </div>
-        <div class="col-1-of-4 p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
 
       </div>
 

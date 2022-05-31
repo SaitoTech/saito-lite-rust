@@ -34,7 +34,7 @@ text and password inputs
 input[type="text"],
 input[type="password"] {
   border-radius: 1rem;
-  background: #eaeaef;
+  background: var(--saito-background);
   margin-right: 2rem;
   padding: 1.5rem 1.5rem;
   font-size: 1.6rem;
@@ -243,7 +243,7 @@ input[type="range"]:focus::-ms-fill-upper {
 input[type="text"],
 input[type="password"],
 select {
-  width: 100% !important;
+  width: 100%;
 }
 
 
@@ -332,18 +332,14 @@ select {}
   cursor: pointer;
 }
 
-/* .saito-select-search {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */
+
 
 .saito-select-content {
   margin-top: 1.5rem;
   position: absolute;
   top: 3.5rem;
   width: 100%;
-  background-color: #eaeaef;
+  background-color: var(--saito-background);
   justify-content: start;
   display: none;
   border-bottom-left-radius: 2rem;
@@ -380,5 +376,5 @@ select {}
 
 .flip-carret {
   transition: all 0.3s;
-  transform: rotateX(180deg) !important;
+  transform: rotateX(180deg);
 }

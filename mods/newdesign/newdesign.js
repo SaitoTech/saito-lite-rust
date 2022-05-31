@@ -14,7 +14,7 @@ class NewDesign extends ModTemplate {
     this.header = null;
     this.overlay = null;
 
-    this.styles = ['/saito/saito.css', '/saito/lib/date-picker/dist/css/datepicker.css'];
+    this.styles = ['/newdesign/style.css', '/saito/lib/date-picker/dist/css/datepicker.css'];
     this.scripts = ['/saito/lib/date-picker/dist/js/datepicker-full.js']
 
   }

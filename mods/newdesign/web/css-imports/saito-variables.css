@@ -51,16 +51,20 @@ font imports
   --saito-white: #fff;
   --saito-black: #1c1c23;
   --saito-black-faded: #1c1c23b5;
-  --saito-light-background: #eaeaef;
-  --saito-box-shadow: 4px 4px 12px #a5a5a5bb;
+  --saito-box-shadow: 4px 4px 7px #a5a5a5bb;
   --saito-header-height: 92.2344px;
   --saito-menu-background: #fff;
   --saito-profile-background: #fff;
   --saito-border: #a5a5a5bb;
   --saito-chat-background: #fff;
+  --saito-box-padding: 3rem 4rem;
 }
 
-/* dark */
+
+
+/* ----------------------------------------------------------------
+To be implemented later
+-----------------------------------------------------------------*/
 /* :root {
   --saito-background: rgb(8, 8, 9);
   --saito-primary: #730111;
@@ -80,49 +84,3 @@ font imports
   --saito-wu: none;
   --saito-width: 1500px;
 } */
-
-@media screen and (max-width: 501px) {
-  html {
-    --saito-header-height: 85.5938px !important;
-  }
-}
-
-/* light: {
-  "--saito-font": "visuelt-light",
-  "--saito-background": "white",
-  "--saito-primary": "#f71f3d",
-  "--saito-secondary": "#ff8235",
-  "--saito-tetiary": "rgb(234, 234, 239)",
-  "--saito-blue": "#35b2ff",
-  "--saito-default-font": "#555",
-  "--saito-paper": "#f2f0f0",
-  "--saito-white": "#f9f2f2",
-  "--saito-black": "#1c1c23",
-  "--saito-black-faded": "#1c1c23b5",
-
-  "--saito-header-height": "92.2344px",
-  "--saito-menu-background": "white",
-  "--saito-profile-background": "white",
-  "--saito-border": "#a5a5a5bb",
-  "--saito-chat-background": "white"
-
-},
-dark: {
-  "--saito-font": "visuelt-light",
-  "--saito-background": "#333",
-  "--saito-primary": "#f71f3d",
-  "--saito-secondary": "#ff8235",
-  "--saito-tetiary": "rgb(234, 234, 239)",
-  "--saito-blue": "#3c6177",
-  "--saito-default-font": "#d2d2d2",
-  "--saito-paper": "#1c1c236b",
-  "--saito-white": "#ffffff",
-  "--saito-black": "#1c1c23",
-  "--saito-black-faded": "#1c1c23b5",
-
-  "--saito-header-height": " 92.2344px",
-  "--saito-menu-background": "#212529",
-  "--saito-profile-background": "#1c1c23",
-  "--saito-border": "#555",
-  "--saito-chat-background": "rgb(33, 37, 41)"
-}, */

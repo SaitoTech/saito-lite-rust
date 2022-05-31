@@ -1,5 +1,6 @@
 .row {
-    margin: 0 auto
+    margin: 0 auto;
+    display: flex;
 }
 
 .row:not(:last-child) {
@@ -15,12 +16,14 @@
 @media only screen and (max-width: 59.25em) {
     .row {
         max-width: 50rem;
+        display: block;
     }
 }
 
 @media only screen and (max-width: 50.25em) {
     .row {
         max-width: 100%;
+        display: block;
     }
 }
 
@@ -47,7 +50,7 @@
 
 @media only screen and (max-width: 59.25em) {
     .row [class^="col-"] {
-        width: 100% !important
+        width: 100% !important;
     }
 }
 

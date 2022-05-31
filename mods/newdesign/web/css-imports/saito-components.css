@@ -11,7 +11,7 @@ Components
 Saito box
 -----------------------------------------------------------------*/
 .saito-box {
-    padding: 1.5rem 2rem;
+    padding: var(--saito-box-padding);
     border: none;
     background-color: var(--saito-white);
 }
@@ -20,10 +20,7 @@ Saito box
     box-shadow: 0 0 20px rgb(0 0 0 / 10%);
 }
 
-.saito-box-secondary {
-    background-color: var(--saito-background) !important;
 
-}
 
 .saito-box-rounded {
     border-radius: 2rem;
@@ -35,19 +32,18 @@ Saito box
 Saito Info box
 -----------------------------------------------------------------*/
 .saito-infobox {
+    padding: var(--saito-box-padding);
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: var(--saito-white);
-    min-height: 20.57rem !important;
-    padding: 3rem 4rem;
+    height: 100%;
     position: relative;
     text-align: center;
 
 }
 
-.saito-infobox>.saito-infobox-body {
-    min-height: calc(0.2 * 20.57rem);
+.saito-infobox-body {
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -56,7 +52,7 @@ Saito Info box
     text-align: center;
 }
 
-.saito-infobox-title h2 {
+.saito-infobox-title h3 {
     position: relative;
     font-weight: bold;
     bottom: 1rem;
@@ -67,7 +63,7 @@ Saito Info box
 }
 
 
-.saito-infobox-title h2::after {
+.saito-infobox-title h3::after {
     position: absolute;
     content: "";
     height: .5rem;
@@ -79,9 +75,18 @@ Saito Info box
 }
 
 
-.saito-infobox>.saito-infobox-footer {
+.saito-infobox-footer {
     margin-top: auto;
 }
+
+
+.saito-box.saito-box-secondary,
+.saito-infobox.saito-box-secondary {
+    background-color: var(--saito-background);
+
+}
+
+
 
 
 
@@ -92,7 +97,7 @@ Saito Content box
 
 .saito-contentbox {
     background-color: var(--saito-white);
-    border-radius: 5rem;
-    padding: 3rem 4rem;
+    padding: var(--saito-box-padding);
     border-radius: 2.5rem;
+    height: 100%;
 }
