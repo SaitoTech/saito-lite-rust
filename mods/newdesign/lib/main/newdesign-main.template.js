@@ -241,30 +241,30 @@ module.exports = (app) => {
         </div>
       </div>
       <div class="row ">
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
-        <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+        <div class="col-2-of-4 saito-light-background  saito-p-2"> Col 2 of 4 </div>
       </div>
       <div class="row">
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-2-of-4 saito-p-2"> Col 2 of 4 </div>
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
       </div>
       <div class="row">
-        <div class="col-2-of-4 saito-box-secondary   saito-p-2"> Col 2 of 4 </div>
+        <div class="col-2-of-4 saito-light-background  saito-p-2"> Col 2 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
       </div>
       <div class="row">
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-3-of-4 saito-p-2"> Col 3 of 4 </div>
 
       </div>
 
       <div class="row">
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
-        <div class="col-1-of-4 saito-box-secondary   saito-p-2"> Col 1 of 4 </div>
+        <div class="col-1-of-4 saito-light-background  saito-p-2"> Col 1 of 4 </div>
         <div class="col-1-of-4 saito-p-2"> Col 1 of 4 </div>
 
       </div>

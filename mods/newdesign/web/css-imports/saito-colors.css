@@ -17,3 +17,7 @@
 .saito-white-background {
     background-color: var(--saito-white);
 }
+
+.saito-light-background {
+    background-color: var(--saito-background);
+}
