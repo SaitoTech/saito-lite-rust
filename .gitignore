@@ -59,10 +59,10 @@ mods/appstore/modules
 mods/appstore/modules/*
 mods/chirp
 mods/chirp/*
-mods/citysim
-mods/citysim/*
 mods/forge
 mods/forge/*
+mods/citysim
+mods/citysim/*
 mods/mastersolitrio
 mods/mastersolitrio/*
 mods/appstore/mods/*.zip

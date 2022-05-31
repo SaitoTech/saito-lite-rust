@@ -160,6 +160,15 @@ Margins
     margin-bottom: 2rem;
 }
 
+
+.saito-mr-6 {
+    margin-right: 6rem
+}
+
+.saito-ml-6 {
+    margin-left: 6rem;
+}
+
 .saito-mt-6 {
     margin-top: 6rem;
 }
@@ -168,13 +177,6 @@ Margins
     margin-bottom: 6rem;
 }
 
-.saito-ml-6 {
-    margin-left: 6rem;
-}
-
-.saito-mr-6 {
-    margin-right: 6rem
-}
 
 .saito-my-1 {
     padding: .5rem 0;

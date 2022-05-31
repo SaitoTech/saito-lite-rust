@@ -387,29 +387,11 @@ class Arcade extends ModTemplate {
     }
     let accepted_game = null;
 
-    console.log("Received Join Message for game="+game_id,JSON.parse(JSON.stringify(tx)));
+    if (this.debug){ console.log("Received Join Message for game="+game_id,JSON.parse(JSON.stringify(tx)));}
 
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i].transaction.sig == game_id){
-        
         accepted_game = this.games[i]; //cache a refence to the game in the module
-    
-       /* let existing_players_found = 0;
-
-        for (let z = 0; z < this.games[i].msg.players.length; z++) {
-          for (let zz = 0; zz < tx.transaction.to.length; zz++) {
-            if (this.games[i].msg.players[z] == tx.transaction.to[zz].add) {
-              existing_players_found++;
-              //z = this.games[i].transaction.msg.players.length + 1;
-              //to end the inner loop and cycle the outer loop
-              zz = tx.transaction.to.length;
-            }
-          }
-        }
-        if (existing_players_found < this.games[i].msg.players.length) {
-          //Do we do something here?
-        }
-        console.log("Existing players found: "+existing_players_found);*/
       }
     }
 
@@ -420,12 +402,14 @@ class Arcade extends ModTemplate {
     }
 
     let { players } = (accepted_game)? accepted_game.returnMessage() : [];
-    console.log(JSON.parse(JSON.stringify(players)));
+    
+    if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
-    this.joinGameOnOpenList(tx); 
+    this.joinGameOnOpenList(tx); //Update Arcade hero to reflect new player
+    
     //this.receiveJoinRequest(blk, tx, conf, app);
 
-    console.log(JSON.parse(JSON.stringify(accepted_game.returnMessage().players)));
+    if (this.debug) { console.log(JSON.parse(JSON.stringify(accepted_game.returnMessage().players))); }
     //
     // it is possible that we have multiple joins that bring us up to
     // the required number of players, but that did not arrive in the
@@ -523,11 +507,10 @@ class Arcade extends ModTemplate {
       return;
     }
 
-    console.log(tx.msg.game, txmsg.module);
     let gamemod = this.app.modules.returnModule(tx.msg.game);
     
     if (!gamemod){
-      console.error("Game mod not found!");
+      console.error("Game module not found!");
       return;
     }
 
@@ -547,7 +530,7 @@ class Arcade extends ModTemplate {
       // Method 0 
       //siteMessage(txmsg.module + ' invite accepted.', 20000);
       // Method 1
-      if (this.browser_active == 0) {
+      /*if (this.browser_active == 0) {
         if (txmsg.module === "Arcade" && tx.isTo(app.wallet.returnPublicKey())) {
           this.showAlert();
         }
@@ -561,7 +544,7 @@ class Arcade extends ModTemplate {
                 txmsg.module + " invite accepted.",
                 "game-acceptance-notification"
               );
-
+      */
       //
       // only launch game if it is for us -- observer mode?
       //
@@ -1223,6 +1206,7 @@ class Arcade extends ModTemplate {
       players_needed: parseInt(players_needed),
       players: [this.app.wallet.returnPublicKey()],
       players_sigs: [accept_sig],
+      originator: this.app.wallet.returnPublicKey(),
     };
     tx = this.app.wallet.signTransaction(tx);
 
@@ -1830,7 +1814,8 @@ class Arcade extends ModTemplate {
     } 
 
     let txmsg = tx.returnMessage();
-    console.log(`Player ${tx.transaction.from[0].add} wants to join game ${txmsg.game_id} with message signed ${txmsg.invite_sig}`);
+    if (this.debug){ console.log(`Player ${tx.transaction.from[0].add} wants to join game ${txmsg.game_id} with message signed ${txmsg.invite_sig}`);}
+    
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i]?.transaction.sig == txmsg.game_id) {
         if (!this.games[i].msg.players.includes(tx.transaction.from[0].add) && txmsg.invite_sig) {
@@ -1845,7 +1830,7 @@ class Arcade extends ModTemplate {
 
     try {
       if (this.browser_active) {
-        console.log("Player should get added to arcade hero");
+        if (this.debug) { console.log("Player should get added to arcade hero"); }
         this.renderArcadeMain(this.app, this);
       }
     } catch (err) {

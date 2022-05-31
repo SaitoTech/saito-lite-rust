@@ -18,6 +18,11 @@
       this.updateVictoryPoints();
       this.updateDefcon();
 
+      if (!i_played_the_card){
+        this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
+      }
+
+
       return 1;
     }
 

@@ -7,16 +7,19 @@
         this.game.state.events.nato_westgermany = 1;
       }
 
-      this.countries["eastgermany"].us += 3;
-      this.showInfluence("eastgermany", "us");
-
-      if (this.game.player == 2) {
-        this.addMove("resolve\tteardown");
-        this.addMove("teardownthiswall\tus");
-        this.endTurn();
+      this.placeInfluence("eastgermany", 3, "us");
+      
+      this.game.queue.push("resolve\tteardown");
+      this.game.queue.push("teardownthiswall\tus");
+        
+      if (!i_played_the_card){
+        if (player == "ussr"){
+          this.game.queue.push(`ACKNOWLEDGE\tUSSR triggers ${this.cardToText(card)}.`);
+        }else{
+          this.game.queue.push(`ACKNOWLEDGE\tUS plays ${this.cardToText(card)}.`);
+        }
       }
-
-      return 0;
+      return 1;
     }
 
 

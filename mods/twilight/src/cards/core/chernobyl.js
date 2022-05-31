@@ -2,9 +2,8 @@
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
         return 0;
-
       }
 
       let html = `<ul>
@@ -23,7 +22,7 @@
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);
-        twilight_self.addMove("notify\tUS restricts placement in "+action2);
+        twilight_self.addMove("NOTIFY\tUS restricts placement in "+action2);
         twilight_self.endTurn();
 
       });

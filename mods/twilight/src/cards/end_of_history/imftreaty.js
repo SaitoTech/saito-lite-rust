@@ -1,3 +1,7 @@
+    /*
+      Both players -1 to all Coup Attempts for remainder of turn
+      Ignore DEFCON for realignment
+    */
 
     if (card == "inftreaty") {
 
