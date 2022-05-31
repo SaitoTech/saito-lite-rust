@@ -283,17 +283,19 @@ console.log(JSON.stringify(msg));
     if (!chatmod) { chat_icon.style.display = "none"; }
 
 
-    resign_icon.onclick = () => {
-      let c = confirm("Do you really want to resign?");
-      if (c) {
-	this.resignGame(this.game.id);
-	alert("You have resigned the game...");
-	window.location.href = '/arcade';
-	return;
+    if (resign_icon) {
+      resign_icon.onclick = () => {
+        let c = confirm("Do you really want to resign?");
+        if (c) {
+        	this.resignGame(this.game.id);
+        	alert("You have resigned the game...");
+        	window.location.href = '/arcade';
+        	return;
+        }
       }
     }
 
-    if (chatmod) {
+    if (chatmod && chat_icon) {
     chat_icon.onclick = () => {
       if (chatmod) {
 	chatmod.openChatBox();
@@ -315,20 +317,16 @@ console.log(JSON.stringify(msg));
       this.endTurn(data);
 
       move_accept.disabled = true;
-      move_accept.classList.remove('green');
 
       move_reject.disabled = true;
-      move_reject.classList.remove('red');
     };
 
     move_reject.onclick = () => {
       this.setBoard(this.game.position);
 
       move_accept.disabled = true;
-      move_accept.classList.remove('green');
 
       move_reject.disabled = true;
-      move_reject.classList.remove('red');
     }
 
     window.onresize = () => this.board.resize();
@@ -352,8 +350,10 @@ console.log(JSON.stringify(msg));
     var status = '';
 ;
     var moveColor = 'White';
+    let bgColor = '#fff';
     if (this.engine.turn() === 'b') {
       moveColor = 'Black';
+      bgColor = '#111';
     }
 
     // checkmate?
@@ -373,11 +373,11 @@ console.log(JSON.stringify(msg));
     // game still on
     else {
 
-      status = moveColor + ' to move';
+      document.getElementById('turn-shape').style.backgroundColor = bgColor;
 
       // check?
       if (this.engine.in_check() === true) {
-        status += ', ' + moveColor + ' is in check';
+        status = moveColor + ' is in check';
       }
 
     }
@@ -565,9 +565,9 @@ console.log(JSON.stringify(msg));
 
     var squareEl = document.querySelector(`#board .square-${square}`);
 
-    var background = '#a9a9a9';
+    var background = '#B7A07E';
     if (squareEl.classList.contains('black-3c85d') === true) {
-      background = '#696969';
+      background = '#46301D';
     }
 
     squareEl.style.background = background;
@@ -581,11 +581,9 @@ console.log(JSON.stringify(msg));
     let move_reject = document.getElementById('move_reject');
 
     move_accept.disabled = false;
-    move_accept.classList.add('green');
-
+    
     move_reject.disabled = false;
-    move_reject.classList.add('red');
-
+    
   };
 
   colours(x) {
