@@ -125,7 +125,7 @@ module.exports = (app) => {
               <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores alias hic! </p>
             
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
         <div class="col-1-of-2 saito-p-2">
@@ -140,7 +140,7 @@ module.exports = (app) => {
             <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. </p>
             
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ module.exports = (app) => {
             
 
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
         <div class="col-1-of-3 saito-p-2">
@@ -175,7 +175,7 @@ module.exports = (app) => {
             
 
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
         <div class="col-1-of-3 saito-p-2">
@@ -190,7 +190,7 @@ module.exports = (app) => {
             
 
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
 
         </div>
@@ -225,7 +225,7 @@ module.exports = (app) => {
             
 
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
         <div class="col-2-of-4 saito-p-2">
@@ -239,7 +239,7 @@ module.exports = (app) => {
             
 
             </div>
-            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Explore </button> </div>
+            <div class="saito-infobox-footer"> <button class="saito-btn-secondary"> Button </button> </div>
           </div>
         </div>
       </div>
