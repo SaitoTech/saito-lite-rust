@@ -745,13 +745,7 @@ class Transaction {
       //
       // validate signature
       //
-      if (
-        !app.crypto.verifyHash(
-          app.crypto.hash(this.serializeForSignature(app).toString("hex")),
-          this.transaction.sig,
-          this.transaction.from[0].add
-        )
-      ) {
+      if (!this.validateSignature(app)) {
         console.log("ERROR:382029: transaction signature does not validate");
         return false;
       }
@@ -759,7 +753,7 @@ class Transaction {
       //
       // validate routing path sigs
       //
-      if (!this.validateRoutingPath()) {
+      if (!this.validateRoutingPath(app)) {
         console.log("ERROR 482033: routing paths do not validate, transaction invalid");
         return false;
       }
@@ -865,13 +859,33 @@ class Transaction {
     return true;
   }
 
-  validateRoutingPath() {
+  validateRoutingPath(app) {
     console.log("JS needs to validate routing paths still...");
 
     //
     // return true;
     //
     return true;
+  }
+
+  validateSignature(app) {
+
+    //
+    // validate signature
+    //
+    if (
+      !app.crypto.verifyHash(
+        app.crypto.hash(this.serializeForSignature(app).toString("hex")),
+        this.transaction.sig,
+        this.transaction.from[0].add
+      )
+    ) {
+      console.log("ERROR:382029: transaction signature does not validate");
+      return false;
+    }
+
+    return true;
+
   }
 
   generateMetadata() {
