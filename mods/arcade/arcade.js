@@ -42,7 +42,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = false;
+    this.debug = true;
 
   }
 
@@ -649,12 +649,6 @@ class Arcade extends ModTemplate {
           this.saveGameState(blk, tx, conf, app);
         }
 
-        /*if (txmsg.request === "sorry") {
-          if (tx.isTo(app.wallet.returnPublicKey())) {
-            this.receiveSorryAcceptedTransaction(blk, tx, conf, app);
-          }
-        }*/
-
         //
         // acceptances
         //
@@ -1040,18 +1034,20 @@ class Arcade extends ModTemplate {
           }
           
           //only run for the other players, not the person who initiated the resignation
-          if (app.options.games[i].players.includes(tx.transaction.from[0].add) &&
-              app.wallet.returnPublicKey() !== tx.transaction.from[0].add) {
-            let gamemod = app.modules.returnModule(app.options.games[i].module);
-            if (gamemod) {
-              gamemod.loadGame(tx.returnMessage().sig);
-              gamemod.updateStatus("Opponent Resigned");
-              gamemod.updateLog("Opponent Resigned");
+          if (!app.options.games[i].over){
+            if (app.options.games[i].players.includes(tx.transaction.from[0].add) &&
+                app.wallet.returnPublicKey() !== tx.transaction.from[0].add) {
+              let gamemod = app.modules.returnModule(app.options.games[i].module);
+              if (gamemod) {
+                gamemod.loadGame(tx.returnMessage().sig);
+                gamemod.updateStatus("Opponent Resigned");
+                gamemod.updateLog("Opponent Resigned");
+              }
+              app.options.games[i].status = "Opponent Resigned";
+              app.options.games[i].over = 1;
             }
-            app.options.games[i].status = "Opponent Resigned";
-            app.options.games[i].over = 1;
           }
-
+          console.log(JSON.parse(JSON.stringify(app.options.games[i])));
           app.options.games.splice(i, 1);                  
           app.storage.saveOptions();
           break;
@@ -1311,48 +1307,7 @@ class Arcade extends ModTemplate {
     return tx;
   }
 
-  receiveSorryAcceptedTransaction(blk, tx, conf, app) {
-    /*let txmsg = tx.returnMessage();
-
-    try {
-      //
-      // delete from local stores
-      //
-      if (app.options.games) {
-        for (let i = app.options.games.length - 1; i >= 0; i--) {
-          if (app.options.games[i].id == txmsg.game_id) {
-            //console.info("########################");
-            //console.info("### SENDING SORRY TX ###");
-            //console.info("########################");
-            //console.info("\n\n\nSORRY -- RECEIVED: " + JSON.stringify(app.options.games[i]));
-            if (
-              app.options.games[i].players.length ==
-                parseInt(app.options.games[i].players_needed) &&
-              !app.options.games[i].players.includes(tx.transaction.from[0].add)
-            ) {
-              if (this.browser_active == 1) {
-                salert(
-                  "Opponent has responded claiming game already accepted :( -- returning to Arcade"
-                );
-              }
-
-              app.options.games.splice(i, 1);
-              app.storage.saveOptions();
-            }
-          }
-        }
-      }
-
-      if (this.browser_active == 1) {
-        salert("Sorry! Your opponent has replied that has already accepted that game!");
-        window.location = "/arcade";
-        return;
-      }
-    } catch (err) {
-      //console.info("ERROR WITH SORRY ACCEPTED TRANSACTION: " + err);
-    }*/
-  }
-
+  
   /*
   Everyone who receives the accept request should update their local database to reflect who is playing the game and new game status
   */

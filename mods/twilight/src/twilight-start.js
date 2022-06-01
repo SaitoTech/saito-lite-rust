@@ -1122,32 +1122,23 @@ try {
       } else {
         if (mv[1] == "us") {
           this.game.state.vp -= this.game.state.wargames_concession;
-          this.updateVictoryPoints();
-          if (this.game.state.vp > 0) {
-              this.endGame("us","Wargames");
-          }
-          if (this.game.state.vp < 0) {
-              this.endGame("ussr","Wargames");
-          }
-          if (this.game.state.vp == 0) {
-            this.endGame("tie game","Wargames");
-          }
         } else {
           this.game.state.vp += this.game.state.wargames_concession;
-          this.updateVictoryPoints();
-          if (this.game.state.vp > 0) {
-              this.endGame("us","Wargames");
-          }
-          if (this.game.state.vp < 0) {
-            this.endGame("ussr","Wargames");
-          }
-          if (this.game.state.vp == 0) {
-            this.endGame("tie game","Wargames");
-          }
         }
+        this.updateVictoryPoints();
+        if (this.game.state.vp > 0) {
+          this.endGame(2,"Wargames");
+        }
+        if (this.game.state.vp < 0) {
+          this.endGame(1,"Wargames");
+        }
+        if (this.game.state.vp == 0) {
+          this.tieGame();
+        }
+
       }
 
-      this.game.queue.splice(qe, 1);
+      return 0;
     }
 
 
@@ -5375,11 +5366,11 @@ playerTurnHeadlineSelected(card, player) {
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
-      this.endGame("us","Cuban Missile Crisis");
+      this.endGame(2,"Cuban Missile Crisis");
       return;
     }
     if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
-      this.endGame("ussr","Cuban Missile Crisis");
+      this.endGame(1,"Cuban Missile Crisis");
       return;
     }
 
@@ -5688,31 +5679,17 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
-  endGame(winner, method) {
-
-    this.game.over = 1;
-    this.game.queue = [];
-    if (winner == "us") { this.game.winner = 2; }
-    if (winner == "ussr") { this.game.winner = 1; }
-    if (winner == "tie game") { 
-      this.game.winner = 0; 
-      this.game.over = 1;
-      this.tieGame(this.game.id);
-      return;
+  identifyPlayer(player){
+    return this.playerRoles[player].toUpperCase();
+  }
+  identifyPlayerByPublicKey(pkey){
+    let player = this.game.players.indexOf(pkey);
+    if (player >= 0 && player < this.game.players.length){
+      return this.identifyPlayer(player+1);  
+    }else{
+      return "";
     }
-
-    if (this.game.winner != this.game.player) {
-      //
-      // share wonderful news
-      //
-      this.game.over = 0;
-      this.resignGame(this.game.id);
-    }
-
-    if (this.browser_active == 1) {
-      this.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
-      this.updateStatus("<div class='status-message' id='status-message'>The Game is Over - " + winner.toUpperCase() + " wins by " + method + "</div>");
-    }
+    
   }
 
   displayBoard() {
@@ -5740,14 +5717,10 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.state.round > 1) {
       for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
-	        try {
-            if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
-              let player = "us";
-              let winner = "ussr";
-              if (this.game.player == 1) { player = "ussr"; winner = "us"; this.game.winner = 2; }
-              this.endGame(winner, "opponent held scoring card");
-            }
-          } catch (err) {}
+          if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
+            this.endGame(3 - this.game.player, "scoring card held");
+            return;
+          }
 	      }
       }
     }
@@ -6818,14 +6791,14 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.vp--;
       this.updateLog("USSR receives 1 VP for the China Card");
       if (this.game.state.vp <= -20) {
-        this.endGame("ussr", "victory points");
+        this.endGame(1, "victory points");
         return;
       }
     } else {
       this.game.state.vp++;
       this.updateLog("US receives 1 VP for the China Card");
       if (this.game.state.vp >= 20) {
-        this.endGame("us", "victory points");
+        this.endGame(2, "victory points");
         return;
       }
     }
@@ -6867,13 +6840,13 @@ playerTurnHeadlineSelected(card, player) {
     this.updateVictoryPoints();
 
     if (this.game.state.vp == 0) {
-      this.endGame("tie game", "final scoring");
+      this.tieGame();
       return 1;
     }
     if (this.game.state.vp < 0) {
-      this.endGame("ussr", "final scoring");
+      this.endGame(1, "final scoring");
     } else {
-      this.endGame("us", "final scoring");
+      this.endGame(2, "final scoring");
     }
 
     return 1;
@@ -7573,6 +7546,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
     this.game.state.defcon--;
+    this.updateDefcon();
 
     this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
@@ -7587,25 +7561,14 @@ playerTurnHeadlineSelected(card, player) {
 
     if (this.game.state.defcon <= 1) {
       if (this.game.state.headline == 1) {
-        //
         // phasing player in headline loses
-        //
-        if (this.game.state.player_to_go == 1) {
-          this.endGame("us", "USSR triggers thermonuclear war");
-        }
-        if (this.game.state.player_to_go == 2) {
-          this.endGame("ussr", "US triggers thermonuclear war");
-        }
-        return;
+        this.endGame(3 - this.game.state.player_to_go, "thermonuclear war");
+      }else{
+        this.endGame(3 - this.game.state.turn, "thermonuclear war");  
       }
-      if (this.game.state.turn == 1) {
-        this.endGame("us", "USSR triggers thermonuclear war 1");
-      } else {
-        this.endGame("ussr", "US triggers thermonuclear war 2");
-      }
+      return;
     }
 
-    this.updateDefcon();
   }
 
 
@@ -8090,10 +8053,10 @@ playerTurnHeadlineSelected(card, player) {
     }
 
     if (this.game.state.vp > 19) {
-        this.endGame("us", "victory point track");
+        this.endGame(2, "victory point track");
     }
     if (this.game.state.vp < -19) {
-      this.endGame("ussr", "victory point track");
+      this.endGame(1, "victory point track");
     }
 
   }
