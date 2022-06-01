@@ -14,18 +14,16 @@ class gametest extends ModTemplate {
 
         return this;
     }
-
-    //attachEvents(app, mod) {
-
-    //    document.querySelector('#add_staff').onclick = () => {
-    //        var publicKey = this.app.wallet.returnPublicKey();
-    //        if (publicKey) {
-    //            document.getElementById("publicKey").innerHTML = publicKey;
-    //          //  registerToDatabase(identifier);
-    //        }
-    //    }
-
-    //}
+   
+    attachEvents(app, mod) {
+        document.querySelector('#add_staff').onclick = () => {
+            var publicKey = this.app.wallet.returnPublicKey();
+            if (publicKey) {
+                document.getElementById("publicKey").innerHTML = publicKey;
+              //  registerToDatabase(identifier);
+            }
+        }
+    }
 
 
 

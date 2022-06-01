@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\apps",
-    "\\apps\\lite",
     "\\config",
     "\\mods",
-    "\\mods\\website",
-    "\\mods\\website\\web",
-    "\\mods\\website\\web\\css",
-    "\\mods\\website\\web\\img",
-    "\\web"
+    "\\mods\\calendar",
+    "\\mods\\calendar\\lib",
+    "\\mods\\email",
+    "\\mods\\staff",
+    "\\mods\\staff\\web",
+    "\\web",
+    "\\web\\saito"
   ],
-  "SelectedNode": "\\mods\\website\\web\\css",
+  "SelectedNode": "\\mods\\staff\\staff.js",
   "PreviewInSolutionExplorer": false
 }
