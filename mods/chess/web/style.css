@@ -65,6 +65,17 @@ h1 {
     height: 100%;
 }
 
+#resign_icon {
+    color: #e51111;
+    font-size: 36px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+#resign_icon:hover {
+    color: #a50909;
+}
+
 /*.module_container {
     max-width: 1200px; 
     margin: auto;
@@ -98,6 +109,8 @@ h1 {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: 69% 50%;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
 }
 
 #promotion-choices {
@@ -119,13 +132,6 @@ h1 {
     border: 4px solid #eee;
 }
 
-.controls {
-    display:block;
-    background: rgba(0,0,0,0.4);
-    margin-left: 9%;
-    color: #fff;
-    box-shadow: 10px 10px 20px #222;
-}
 
 #status_display {
     font-size: 2.0vw;
@@ -155,7 +161,7 @@ span#captured {
 }
 
 img.captured {
-    width: 55px;
+    width: 3vw;
 }
 
 .chess_button {
@@ -262,9 +268,8 @@ justify-content: space-around;
 //align-items: center;
 text-align: center;
 flex-wrap: wrap;
-//border: 1px solid red;
 position: absolute;
-width: 65%;
+width: 75%;
 left: 50%;
 top: 50%;
 transform: translate(-50%, -50%);
@@ -274,6 +279,15 @@ transform: translate(-50%, -50%);
   width: calc(100% * (1/2.5));
   flex-grow: 1;
   position: relative;
+}
+
+.controls {
+    display: block;
+    margin-left: 9vw;
+    color: #fff;
+    flex: 0 0 250px;
+    border-radius: 5px;
+    width: 30vw;
 }
 
 .player-hud {
@@ -289,22 +303,48 @@ transform: translate(-50%, -50%);
     display: flex;
     flex-direction: row;
     justify-content: start;
-    font-size: 24px;
-    border-bottom: 1px solid #ddd;
+    font-size: 1.2vw;
+    //border-bottom: 1px solid #f9f9f9;
     padding: 10px 25px;
     text-align: left;
-    min-height: 100px;
+    min-height: 65px;
+    background: rgba(255,255,255,0.6);
+    color: #444;
+    margin-top: 5px;
+    border-radius: 8px;
 }
 
 .tool-item {
     line-height: 45px;
-    min-width: 200px;
+    min-width: 9vw;
 }
 
+#status {
+    line-height: 45px;
+    margin-left: 15px;
+}
 .turn-shape {
     min-width: 45px;
     height: 45px;
     border-radius: 25px;
+    border: 2px solid;
+}
+
+#copy-btn {
+    font-size: 25px;
+    cursor: pointer;
+    line-height: 44px;  
+    padding-left: 11px;
+}
+
+.copy-check::before {
+  content:  "\f00c !important";
+}
+
+.player-identicon {
+    width: 40px;
+    margin-right: 20px;
+    margin-top: 5px;
 }
 
 @media only screen and (max-width: 900px) {
@@ -340,7 +380,10 @@ transform: translate(-50%, -50%);
 	margin-right: auto;
     }*/
     #board {
-        max-width: 500px;
+        max-width: 80%;
+        margin: 0px;
+        margin-left: 42.5%;
+        transform: translateX(-56%);
     }
     #status_display {
         font-size: 24px;
@@ -354,10 +397,165 @@ transform: translate(-50%, -50%);
         overflow-x: hidden;
     }
     #opponent_id {
-        font-size: 20px;
+        font-size: inherit;
     }
     html, body {
         overflow: hidden;
+    }
+
+    .module_container {
+        display: block;
+        width: 95%;
+    }
+
+    .column {
+        width: 100%;
+        margin: 0px;
+    }
+
+    .controls {    
+        width: 55%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+
+    img.captured {
+        width: 3vw;
+    }
+
+    .tool-cont {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        font-size: 15px;
+        padding: 5px 9px;
+        text-align: left;
+        min-height: 57px;
+        background: rgba(255,255,255,0.6);
+        color: #444;
+        margin-top: 5px;
+        border-radius: 8px;
+    }
+
+    .tool-item {
+        line-height: 45px;
+        min-width: 100px;
+    }
+
+    .turn-shape {
+        min-width: 30px !important;
+        height: 30px;
+        border-radius: 25px;
+        border: 2px solid;
+        margin-top: 9px;
+    }
+
+    .button_row {
+        margin-top: 20px;
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: 50% 50%;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+        margin-bottom: 10px;
+        margin-left: 50%;
+        width: 80%;
+        transform: translateX(-50%);
+
+    }
+
+    .chess_button {
+        background-color: #222;
+        font-size: 3vw;
+    }
+
+    #copy-btn {
+        font-size: 20px;
+    }
+
+    #resign_icon {
+        font-size: 25px;
+        line-height: 45px;
+    }
+
+    .player-identicon {
+        width: 30px;
+        margin-top: 9px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    #board {
+        max-width: 90vw;
+        margin: 0px;
+        transform: none;
+        margin-left: 35%;
+        transform: translateX(-50%);
+    }
+
+    .alpha-d2270 {
+        bottom: -18px;
+        right: 12px;
+        font-size: 14px;
+    }
+
+    .numeric-fc462 {
+        top: 6px;
+        left: -14px;
+        font-size: 14px;
+    }
+
+    .board-b72b1 {
+        border: 20px solid #222;
+    }
+
+    img.captured {
+        width: 6vw;
+    }
+
+    .chessboard-63f37 {
+        width: 90vw;
+    }
+
+    .button_row {
+        margin-top: 20px;
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: 50% 50%;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+        margin-bottom: 10px;
+        left: 0px;
+        width: 50%;
+        margin-left: 0px;
+    }
+    
+    #move_accept {
+        margin-left: 50px;
+    }
+
+    .chess_button {
+        background-color: #222;
+        font-size: 5vw;
+    }
+
+    .controls {
+        width: 95%;
+    }
+
+    .button_row {
+        margin-top: 20px;
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: 69% 50%;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+        margin-bottom: 10px;
+        left: 0px;
+        width: 53%;
+        margin-left: 0px;
+        transform: none;
     }
 }
 
@@ -395,4 +593,8 @@ button:disabled, button[disabled] {
 
 button:disabled:hover {
     background: #000 !important;
+}
+
+#move_accept:hover {
+    background: #0f6e0f;
 }

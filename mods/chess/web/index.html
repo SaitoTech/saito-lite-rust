@@ -47,8 +47,10 @@
             <div class="board-space column">
                 <div id="board"></div>
                 <div id="buttons" class="button_row">
-                    <button id="move_accept" class="chess_button column " disabled>✔</button>
+
                     <button id="move_reject" class="chess_button column" disabled>✘</button>
+                    <button id="move_accept" class="chess_button column " disabled>✔</button>
+                    
                 </div>
                 <div id="promotion" class="promotion-holder">
                     <span id="promotion-choices"></span>
@@ -64,40 +66,35 @@
                     </div>
                     <div class="player-stats"></div>
                 </div> -->
-<!-- 
-                 <p class="old-hud" id="status_display">Status: <span id="status"></span>
-                    <span id="home" class="home">
-                        <i id="resign_icon" class=""></i>
-                        <i id="chat_icon" class=""></i>
-                        <a href="/arcade">
-                            <i id="home_icon" class=""></i>
-                        </a>
-                    </span></p> -->
 
                 <div class="tool-cont">
                     <div class="tool-item item-name">TURN</div>
                     <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
+                    <div class="item-detail" id="status">
+                    </div>
                 </div>
 
                 <div class="tool-cont">
                     <div class="tool-item item-name">OPPONENT</div>
+                    <div id="opponent_identicon"></div>
                     <div class="tool-item item-detail" id="opponent_id"></div>
+                    <i id="copy-btn" class="fas fa-copy fa-regular"></i>
                 </div>
                 <!-- <p class="old-hud" id="status_oponent">Opponent: <span id="opponent_id"></span></p> -->
                 <!-- <p class="old-hud" id="status_captured">Captured: <span id="captured"></span></p> -->
                 <div class="tool-cont">
-                    <div class="tool-item item-name">CAPTURED</div>
-                    <div class="tool-item item-detail" id="captured"></div>
-                </div>
-                <div class="tool-cont">
-                    <div class="tool-item item-name">STATUS</div>
-                    <div class="tool-item item-detail" id="status">
-                        <i id="resign_icon" class=""></i>
+                    <div class="tool-item item-name">RESIGN</div>
+                    <div class="tool-item item-detail">
+                        <i id="resign_icon" class="fas fa-solid fa-flag"></i>
                         <i id="chat_icon" class=""></i>
                         <a href="/arcade">
                             <i id="home_icon" class=""></i>
                         </a>
                     </div>
+                </div>
+                <div class="tool-cont">
+                    <div class="tool-item item-name">CAPTURED</div>
+                    <div class="tool-item item-detail" id="captured"></div>
                 </div>
             </div>
         </div>
