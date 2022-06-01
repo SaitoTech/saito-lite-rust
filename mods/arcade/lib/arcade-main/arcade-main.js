@@ -363,7 +363,7 @@ module.exports = ArcadeMain = {
         relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
         relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
       }
-      if (this.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
+      if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
       return;
@@ -436,7 +436,7 @@ module.exports = ArcadeMain = {
           if (res.rows) {
             if (res.rows.length > 0) {
               if (res.rows[0].game_still_open == 1 || (res.rows[0].game_still_open == 0 && players_needed > 2)) {
-                if (this.debug){
+                if (mod.debug){
                   console.log("We meet the accept conditions");
                   console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade-main");
                 }
