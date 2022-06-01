@@ -101,3 +101,68 @@ Saito Content box
     border-radius: 2.5rem;
     height: 100%;
 }
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Menu
+-----------------------------------------------------------------*/
+
+.saito-menu-container {
+    background-color: var(--saito-white);
+}
+
+
+
+
+.saito-menu-container>ul>li {
+    padding: .8rem 1rem;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    transition: all .2s;
+
+}
+
+.saito-menu-container>ul>li:not(:last-child) {
+    margin-bottom: 1rem;
+
+}
+
+
+.saito-menu-container>ul>li:hover,
+.saito-menu-container>ul>li:hover>i {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-menu-container>ul>li>i {
+
+    font-size: 2rem;
+    width: 2rem;
+    margin-right: 3rem;
+}
+
+.saito-menu-container>ul>li>span {
+    font-size: 2rem;
+}
+
+
+
+.saito-menu-container.saito-menu-right>ul>li {
+    flex-direction: row-reverse;
+}
+
+.saito-menu-container.saito-menu-right>ul>li>i {
+    margin-left: 3rem;
+    margin-right: 0;
+}
+
+.saito-menu-rounded {
+    border-radius: .8rem;
+}
