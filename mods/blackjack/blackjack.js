@@ -25,6 +25,7 @@ class Blackjack extends GameTemplate {
 
     this.settlement = [];
     this.updateHTML = "";
+    this.decimal_precision = 0;
 
     return this;
   }
@@ -156,8 +157,11 @@ class Blackjack extends GameTemplate {
       this.game.stake = 1000;
       this.game.crypto = "";
     }
-    
-
+    let minbet = (this.game.stake / 100).toString();
+    if (minbet.includes(".")){
+      this.decimal_precision = minbet.split(".")[1].length;
+    }
+    //console.log("Num dec places needed:" + this.decimal_precision);
     if (this.browser_active) {
       this.displayBoard();
     }
@@ -462,7 +466,7 @@ class Blackjack extends GameTemplate {
           let ts = new Date().getTime();
           this.rollDice();
           let uh = this.game.dice;
-          this.game.queue.push(`SEND\t${this.game.players[this.game.state.dealer-1]}\t${this.game.players[player-1]}\t${wager*2}\t${ts}\t${uh}\t${this.game.crypto}`);  
+          this.game.queue.push(`SEND\t${this.game.players[this.game.state.dealer-1]}\t${this.game.players[player-1]}\t${(wager*2).toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
         }
     
         this.updateLog(`Player ${player} has a blackjack!`);
@@ -498,7 +502,7 @@ class Blackjack extends GameTemplate {
             let ts = new Date().getTime();
             this.rollDice();
             let uh = this.game.dice;
-            this.game.queue.push(`SEND\t${this.game.players[player-1]}\t${this.game.players[this.game.state.dealer-1]}\t${wager}\t${ts}\t${uh}\t${this.game.crypto}`);  
+            this.game.queue.push(`SEND\t${this.game.players[player-1]}\t${this.game.players[this.game.state.dealer-1]}\t${wager.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
           }
         } else {
           this.updateLog(`Dealer busts`);
@@ -743,7 +747,7 @@ class Blackjack extends GameTemplate {
     let stake = parseFloat(this.game.options.stake);
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
-    let html = `<div class="status-info">How much would you like to wager? (Available credit: ${myCredit})</div>`;
+    let html = `<div class="status-info">How much would you like to wager? (Available credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
       if (fractions[i]*stake<myCredit)
@@ -867,9 +871,9 @@ class Blackjack extends GameTemplate {
         this.playerbox.refreshName(i+1);
 
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
-          newhtml = `<div class="chips">${this.game.state.player[i].credit-this.game.state.player[i].wager} ${this.game.crypto || "SAITO"}, Bet: ${this.game.state.player[i].wager}</div>`;
+          newhtml = `<div class="chips">${(this.game.state.player[i].credit-this.game.state.player[i].wager).toFixed(this.decimal_precision)} ${this.game.crypto || "SAITO"}, Bet: ${this.game.state.player[i].wager}</div>`;
         }else{
-          newhtml = `<div class="chips">${this.game.state.player[i].credit} ${this.game.crypto || "SAITO"}</div>`;
+          newhtml = `<div class="chips">${this.game.state.player[i].credit.toFixed(this.decimal_precision)} ${this.game.crypto || "SAITO"}</div>`;
         }
         
         if (this.game.state.dealer == (i+1)) {
@@ -1060,10 +1064,10 @@ class Blackjack extends GameTemplate {
           //Temporarily store all chips collected from players in the dealer's "wager"
           this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt,this.game.state.player[i].credit);
           this.game.state.player[i].credit -= debt;
-          playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total} loses to blackjack.</span><span>Loss: ${debt}</span></h3>`;
+          playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total} loses to blackjack.</span><span>Loss: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
           playerHTML += this.handToHTML(this.game.state.player[i].hand);
 
-          logMsg += `Player ${i+1} loses ${debt}, `;
+          logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `;
           //Check for bankruptcy to personalize message
           if (this.game.state.player[i].credit < 0){
             logMsg += "going bankrupt, ";
@@ -1073,7 +1077,7 @@ class Blackjack extends GameTemplate {
             let ts = new Date().getTime();
             this.rollDice();
             let uh = this.game.dice;
-            this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[this.game.state.dealer-1]}\t${debt}\t${ts}\t${uh}\t${this.game.crypto}`);  
+            this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[this.game.state.dealer-1]}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
           }
 
         }
@@ -1089,7 +1093,7 @@ class Blackjack extends GameTemplate {
             if (this.game.state.player[i].winner){
               this.game.state.player[this.game.state.dealer-1].wager -= debt;
               this.game.state.player[i].credit += Math.min(debt, this.game.state.player[this.game.state.dealer-1].credit);
-              logMsg += `Player ${i+1} wins ${debt}, `;
+              logMsg += `Player ${i+1} wins ${debt.toFixed(this.decimal_precision)}, `;
               sender = this.game.players[this.game.state.dealer-1];
               receiver = this.game.players[i];     
 
@@ -1097,7 +1101,7 @@ class Blackjack extends GameTemplate {
               this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt, this.game.state.player[i].credit);
               this.game.state.player[i].credit -= debt;
               
-              logMsg += `Player ${i+1} loses ${debt}, `
+              logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `
               if (this.game.state.player[i].credit<=0){
                 logMsg += "going bankrupt, ";       
               }
@@ -1105,13 +1109,13 @@ class Blackjack extends GameTemplate {
               sender = this.game.players[i];     
 
             }
-            playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total}.</span><span>${(this.game.state.player[i].winner)?"Win":"Loss"}: ${Math.abs(debt)}</span></h3>`;
+            playerHTML += `<h3 class="justify"><span>${this.game.state.player[i].name}: ${this.game.state.player[i].total}.</span><span>${(this.game.state.player[i].winner)?"Win":"Loss"}: ${Math.abs(debt).toFixed(this.decimal_precision)}</span></h3>`;
             playerHTML += this.handToHTML(this.game.state.player[i].hand);
             if (this.game.crypto){
               let ts = new Date().getTime();
               this.rollDice();
               let uh = this.game.dice;
-              this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt}\t${ts}\t${uh}\t${this.game.crypto}`);  
+              this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
             }
           }
           //check and process secondary hands
@@ -1122,18 +1126,18 @@ class Blackjack extends GameTemplate {
               if (ts > dealerScore){
                 this.game.state.player[this.game.state.dealer-1].wager -= debt;
                 this.game.state.player[i].credit += Math.min(debt, this.game.state.player[this.game.state.dealer-1].credit);
-                logMsg += `Player ${i+1} wins ${debt}, `;     
-                playerHTML += `<span>Win: ${debt}</span></h3>`;
+                logMsg += `Player ${i+1} wins ${debt.toFixed(this.decimal_precision)}, `;     
+                playerHTML += `<span>Win: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
                 sender = this.game.players[this.game.state.dealer-1];
                 receiver = this.game.players[i];     
               }else{
                 this.game.state.player[this.game.state.dealer-1].wager += Math.min(debt, this.game.state.player[i].credit);
                 this.game.state.player[i].credit -= debt;
-                logMsg += `Player ${i+1} loses ${debt}, `
+                logMsg += `Player ${i+1} loses ${debt.toFixed(this.decimal_precision)}, `
                 if (this.game.state.player[i].credit<=0){
                   logMsg += "going bankrupt, ";       
                 }
-                playerHTML += `<span>Loss: ${debt}</span></h3>`;
+                playerHTML += `<span>Loss: ${debt.toFixed(this.decimal_precision)}</span></h3>`;
                 receiver = this.game.players[this.game.state.dealer-1];
                 sender = this.game.players[i];     
               }
@@ -1143,7 +1147,7 @@ class Blackjack extends GameTemplate {
                 let ts = new Date().getTime();
                 this.rollDice();
                 let uh = this.game.dice;
-                this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt}\t${ts}\t${uh}\t${this.game.crypto}`);  
+                this.settlement.push(`SEND\t${sender}\t${receiver}\t${debt.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
               }
             }
           }
@@ -1160,9 +1164,9 @@ class Blackjack extends GameTemplate {
   
     let dealerLog = "";
     if (dealerEarnings>0){
-      dealerLog = `Dealer wins ${dealerEarnings} for the round.`;
+      dealerLog = `Dealer wins ${dealerEarnings.toFixed(this.decimal_precision)} for the round.`;
     }else if (dealerEarnings<0){
-      dealerLog = `Dealer pays out ${-dealerEarnings} for the round.`;
+      dealerLog = `Dealer pays out ${Math.abs(dealerEarnings).toFixed(this.decimal_precision)} for the round.`;
     }else{
       dealerLog = `Dealer has no change in credits.`;
     } 
