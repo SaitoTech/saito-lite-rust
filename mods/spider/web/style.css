@@ -38,7 +38,6 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: minmax(20%,max-content) 1fr;
 }
 
 .game-scoreboard{
@@ -51,16 +50,18 @@ body {
 .card-stack-array{
   width: calc(100vw - 100px);
   height: calc(100vh - 200px);
-  margin: 50px;
+  margin: 50px auto;
   display: grid;
   grid-template-columns: repeat(10, minmax(auto,130px));
   justify-content: space-evenly;
+  grid-gap: 3px;
+  max-width: 1600px;
 }
 
 
 .card-stack{
   display: grid;
-  grid-template-rows: repeat(auto-fit, 0.7vw);
+  grid-template-rows: repeat(auto-fit, min(0.7vw, 9px));
 }
 
 .spider-footer{
@@ -78,7 +79,7 @@ body {
 
 .completed_stack_box{
   border-radius: 5px;
-  border: 2px solid whitesmoke;
+  border: 1px dashed whitesmoke;
   height: 100%;
   position: relative;
   display: flex;
@@ -88,11 +89,9 @@ body {
   line-height: 300%;
   text-align: center;
   justify-content: flex-start;
+  flex: 2;
 }
 
-.completed_stack_box span{
-  margin-left: 50px;
-}
 
 .completed_stack{
   position: relative;
@@ -105,8 +104,8 @@ body {
 }
 
 .undo{
-  height: 50px;
-  width: 50px;
+  height: 75px;
+  width: 75px;
 }
 
 
@@ -121,6 +120,8 @@ body {
   text-align: center;
   margin: 6px;
   margin-top: 0;
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .draw-pile img{
