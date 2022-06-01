@@ -2,7 +2,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
 
-class gametest extends ModTemplate {
+class Staff extends ModTemplate {
 
     constructor(app) {
 
@@ -72,3 +72,5 @@ class gametest extends ModTemplate {
     //}
 
 }
+
+module.exports = Staff;
