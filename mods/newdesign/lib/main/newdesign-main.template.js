@@ -4,7 +4,7 @@ module.exports = (app) => {
 
   return `
 
-  <div class="saito-container" id="container">
+  <div class="saito-container" id="container mb-6">
 
   <div class="saito-contentbox saito-box-shadow mb-2">
   <h3>h3 - Module header</h3>
@@ -12,7 +12,7 @@ module.exports = (app) => {
   <br/>
 
     <h4>Form Items</h4>
-    <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background">
+    <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background saito-mt-2">
 
       <h4>Title</h4>
       <p>This is a row of plain text.</p>
@@ -67,7 +67,7 @@ module.exports = (app) => {
 
 
     <h4>Pre</h4>
-    <pre>
+    <pre class="saito-mt-2">
         {
             "bf": 1,
             "coinbase": "478016666.66666667",
@@ -87,16 +87,18 @@ module.exports = (app) => {
     </pre>
     <hr />
     <h4>Buttons </h4>
+    <div class="saito-mt-2">
     <button>First</button>
     <button class="saito-btn-secondary">Second</button>
     <button class="saito-btn-small">Small</button>
     <button class="saito-btn-secondary saito-btn-large">Large</button>
+    </div>
 
     <hr />
 
 
     <h4>Fieldset</h4>
-    <fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background">
+    <fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background saito-mt-2">
 
       <h1 class="saito-primary-color">h1 Heading</h1>
       <h2 class="saito-secondary-color">h2 Heading</h2>
@@ -279,8 +281,126 @@ module.exports = (app) => {
 
     </div>
 
+    <hr/>
 
+    <h4>Menus</h4>
+     <div class="saito-mt-2">
+            <div class="row"> 
+                <div class="col-1-of-3 saito-p-3">
+                    <div class="saito-menu-container saito-py-2">
+                        <ul>
+                            <li>
+                                <i class="far fa-address-card saito-primary-color"> </i>
+                                <span> Menu 1 </span>
+                             </li>
+                            <li>
+                            <i class="fab fa-airbnb saito-primary-color"> </i>
+                               <span> Menu 2</span>
+                             </li>
+                            <li>
+                            <i class="fas fa-allergies saito-primary-color"> </i>
+                               <span> Menu 3</span>
+                             </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-1-of-3 saito-p-3">
+                <div class="saito-menu-container saito-menu-right saito-py-2">
+                <ul>
+                    <li>
+                        <i class="far fa-address-card saito-primary-color"> </i>
+                        <span> Menu 1 </span>
+                     </li>
+                    <li>
+                    <i class="fab fa-airbnb saito-primary-color"> </i>
+                       <span> Menu 3</span>
+                     </li>
+                    <li>
+                    <i class="fas fa-allergies saito-primary-color"> </i>
+                       <span> Menu 3</span>
+                     </li>
+                </ul>
+            </div>
+                </div>
+                <div class="col-1-of-3 saito-p-3 ">
+                <div class="saito-menu-container saito-menu-right saito-py-2">
+                <ul>
+                    <li>
+                        <i class="far fa-address-card saito-primary-color"> </i>
+                        <span> Really Long Menu 1 </span>
+                     </li>
+                    <li>
+                    <i class="fab fa-airbnb saito-primary-color"> </i>
+                       <span> Menu 2</span>
+                     </li>
+                    <li>
+                    <i class="fas fa-allergies saito-primary-color"> </i>
+                       <span> Really Long Menu 3</span>
+                     </li>
+                </ul>
+            </div>
+                </div>
+            </div>
+            <div class="row"> 
+                <div class="col-1-of-3 saito-p-3">
+                    <div class="saito-menu-container  saito-menu-rounded saito-py-2">
+                        <ul>
+                            <li>
+                                <i class="far fa-address-card saito-primary-color"> </i>
+                                <span> Menu 1 </span>
+                             </li>
+                            <li>
+                            <i class="fab fa-airbnb saito-primary-color"> </i>
+                               <span> Menu 2</span>
+                             </li>
+                            <li>
+                            <i class="fas fa-allergies saito-primary-color"> </i>
+                               <span> Menu 3</span>
+                             </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-1-of-3 saito-p-3">
+                <div class="saito-menu-container saito-menu-right saito-menu-rounded  saito-py-2">
+                <ul>
+                    <li>
+                        <i class="far fa-address-card saito-primary-color"> </i>
+                        <span> Menu 1 </span>
+                     </li>
+                    <li>
+                    <i class="fab fa-airbnb saito-primary-color"> </i>
+                       <span> Menu 3</span>
+                     </li>
+                    <li>
+                    <i class="fas fa-allergies saito-primary-color"> </i>
+                       <span> Menu 3</span>
+                     </li>
+                </ul>
+            </div>
+                </div>
+                <div class="col-1-of-3 saito-p-3 ">
+                <div class="saito-menu-container  saito-menu-right saito-menu-rounded saito-py-2">
+                <ul>
+                    <li>
+                        <i class="far fa-address-card saito-primary-color"> </i>
+                        <span> Really Long Menu 1 </span>
+                     </li>
+                    <li>
+                    <i class="fab fa-airbnb saito-primary-color"> </i>
+                       <span> Menu 2</span>
+                     </li>
+                    <li>
+                    <i class="fas fa-allergies saito-primary-color"> </i>
+                       <span> Really Long Menu 3</span>
+                     </li>
+                </ul>
+            </div>
+                </div>
+            </div>
+     </div>
   </div>
+
+
 
   `;
 

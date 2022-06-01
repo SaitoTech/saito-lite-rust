@@ -69,6 +69,8 @@ Paddings
 
 
 
+
+/* Vertical Paddings */
 .saito-py-1 {
     padding: .5rem 0;
 }
@@ -80,6 +82,9 @@ Paddings
 .saito-py-3 {
     padding: 2rem 0;
 }
+
+
+/* Vertical Paddings */
 
 .saito-px-1 {
     padding: 0 .5rem;
@@ -178,6 +183,9 @@ Margins
 }
 
 
+
+/* Vertical Margins */
+
 .saito-my-1 {
     padding: .5rem 0;
 }
@@ -189,6 +197,9 @@ Margins
 .saito-my-3 {
     padding: 2rem 0;
 }
+
+
+/* Vertical Horizontal Margins */
 
 .saito-mx-1 {
     padding: 0 .5rem;
