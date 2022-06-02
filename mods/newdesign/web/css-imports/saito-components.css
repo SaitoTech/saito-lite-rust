@@ -185,12 +185,12 @@ Saito User List and Saito User
 }
 
 .saito-user:not(:last-child) {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .saito-user>img {
-    width: 7rem;
-    height: 7rem;
+    width: 6rem;
+    height: 6rem;
     border-radius: 8px;
     cursor: pointer;
     margin-right: 2rem;
@@ -202,7 +202,7 @@ Saito User List and Saito User
 }
 
 .saito-user p {
-    width: 200px;
+    width: 20rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -213,6 +213,12 @@ Saito User List and Saito User
     color: var(--saito-primary);
 }
 
+
+
+
+.saito-user.saito-user-dense:not(:last-child) {
+    margin-bottom: 1px;
+}
 
 
 .saito-user.saito-user-dense>img {
@@ -232,6 +238,18 @@ Saito User List and Saito User
 .saito-user.saito-user-dense span {
     display: none;
 }
+
+@media screen and (max-width: 768px) {
+    .saito-user p {
+        width: 15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.8rem;
+    }
+}
+
+@media screen and (max-width: 320px) {}
 
 
 /* ----------------------------------------------------------------
@@ -279,3 +297,16 @@ Saito Tabs
 .saito-tab-content>*.show {
     display: block;
 }
+
+@media screen and (max-width: 768px) {
+    .saito-tab-buttons {
+        display: block;
+    }
+
+    .saito-tab-buttons>ul {
+        display: block;
+    }
+
+}
+
+@media screen and (max-width: 320px) {}

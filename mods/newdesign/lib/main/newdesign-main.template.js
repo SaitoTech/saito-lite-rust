@@ -4,29 +4,63 @@ module.exports = (app) => {
 
   return `
 
-  <div class="saito-container" id="container mb-6">
+  <div class="saito-container" id="container saito-mb-6">
 
-    <div class="saito-contentbox saito-box-shadow mb-2">
-      <h3>h3 - Module header</h3>
+  <div class="saito-contentbox saito-box-shadow saito-mb-2">
+    <h3>h3 - Module header</h3>
+  </div>
+  <br />
+
+  <div id="tab-buttons" class="saito-tab-buttons saito-my-3">
+    <ul class="saito-white-background">
+      <li active class="active" data-target="#general"> General </li>
+      <li data-target="#forms"> Forms </li>
+      <li data-target="#grids"> Grids </li>
+      <li data-target="#boxes"> Boxes </li>
+      <li data-target="#menus"> Menus </li>
+      <li data-target="#user_lists"> User Lists </li>
+    </ul>
+  </div>
+
+
+  <div class="saito-tab-content">
+
+    <div class="saito-tab show" id="general">
+      <h4>Fieldset</h4>
+      <fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background saito-mt-2">
+
+        <h1 class="saito-primary-color">h1 Heading</h1>
+        <h2 class="saito-secondary-color">h2 Heading</h2>
+        <h3 class="saito-primary-color">h3 Heading</h3>
+        <h4>h4 Sub Heading</h4>
+        <h5>h4 Sub Heading</h5>
+        <h6>h4 Sub Heading</h4>
+          <p>Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank
+            chicken
+            shankle
+            cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken,
+            boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip
+            meatloaf
+            picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+
+          </p>
+      </fieldset>
     </div>
-    <br />
 
-    <div id="tab-buttons" class="saito-tab-buttons my-3">
-      <ul  class="saito-white-background">
-        <li active class="active" data-target="#form"> Form </li>
-        <li data-target="#buttons"> Buttons </li>
-        <li data-target="#grid"> Grid </li>
-        <li data-target="#boxes"> Boxes </li>
-        <li data-target="#menus"> Menu </li>
-        <li data-target="#user_list"> User List </li>
-      </ul>
-    </div>
+    <div class="saito-tab" id="forms">
+
+      <h4>Buttons </h4>
+      <div class="saito-mt-2">
+        <button>First</button>
+        <button class="saito-btn-secondary">Second</button>
+        <button class="saito-btn-small">Small</button>
+        <button class="saito-btn-secondary saito-btn-large">Large</button>
+      </div>
 
 
-    <div class="saito-tab-content">
-    <div class="saito-tab show" id="form">
       <h4>Form Items</h4>
       <form class="saito-box saito-box-shadow  saito-box-rounded  saito-white-background saito-mt-2">
+
 
 
         <h4>Title</h4>
@@ -40,8 +74,8 @@ module.exports = (app) => {
         <label>Range Input</label>
         <div><input type="range" value="8"></input></div>
         <label>Checkboxes</label>
-        <div><input type="checkbox" checked></input><input type="checkbox"></input><input type="checkbox"></input><input
-            type="checkbox"></input></div>
+        <div><input type="checkbox" checked></input><input type="checkbox"></input><input
+            type="checkbox"></input><input type="checkbox"></input></div>
         <label>Radio Buttons</label>
         <div><input type="radio" checked></input><input type="radio"></input><input type="radio"></input><input
             type="radio"></input></div>
@@ -66,8 +100,8 @@ module.exports = (app) => {
 
         <label>Text Area</label>
         <textarea placeholder="Text area">
-                Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
-            </textarea>
+              Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+          </textarea>
       </form>
 
 
@@ -83,59 +117,36 @@ module.exports = (app) => {
 
       <h4>Pre</h4>
       <pre class="saito-mt-2">
-          {
-              "bf": 1,
-              "coinbase": "478016666.66666667",
-              "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
-              "difficulty": 0,
-              "id": 2,
-              "merkle": "",
-              "paysplit": 0.5,
-              "powsplit": 0.5,
-              "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
-              "reclaimed": "0.0",
-              "sr": 0,
-              "stakepool": "0",
-              "treasury": "2390083333.33333333",
-              "ts": 1572407380711
-              }
-      </pre>
-      <hr />
-      <h4>Fieldset</h4>
-      <fieldset class="saito-box saito-box-shadow  saito-box-rounded saito-white-background saito-mt-2">
+        {
+            "bf": 1,
+            "coinbase": "478016666.66666667",
+            "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
+            "difficulty": 0,
+            "id": 2,
+            "merkle": "",
+            "paysplit": 0.5,
+            "powsplit": 0.5,
+            "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
+            "reclaimed": "0.0",
+            "sr": 0,
+            "stakepool": "0",
+            "treasury": "2390083333.33333333",
+            "ts": 1572407380711
+            }
+    </pre>
 
-        <h1 class="saito-primary-color">h1 Heading</h1>
-        <h2 class="saito-secondary-color">h2 Heading</h2>
-        <h3 class="saito-primary-color">h3 Heading</h3>
-        <h4>h4 Sub Heading</h4>
-        <h5>h4 Sub Heading</h5>
-        <h6>h4 Sub Heading</h4>
-          <p>Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle
-            cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken,
-            boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip
-            meatloaf
-            picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
 
-          </p>
-      </fieldset>
     </div>
 
 
 
 
-    <div class="saito-tab" id="buttons">
-      <h4>Buttons </h4>
-      <div class="saito-mt-2">
-        <button>First</button>
-        <button class="saito-btn-secondary">Second</button>
-        <button class="saito-btn-small">Small</button>
-        <button class="saito-btn-secondary saito-btn-large">Large</button>
-      </div>
-    </div>
 
 
 
-    <div class="saito-tab " id="grid">
+
+
+    <div class="saito-tab " id="grids">
       <h4>Grid System</h4>
       <div class="saito-white-background saito-mt-2 saito-p-2">
         <div class="row ">
@@ -183,7 +194,8 @@ module.exports = (app) => {
                 <div class="saito-infobox-body">
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora
                     numquam
-                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores
+                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure
+                    dolores
                     alias hic! </p>
 
                 </div>
@@ -272,7 +284,8 @@ module.exports = (app) => {
             <div class="col-1-of-2 saito-px-2">
               <div class="saito-contentbox saito-box-shadow">
                 <h4 class="saito-primary-color"> h4 Sub heading </h4>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora
+                  numquam
                   accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores
                   alias hic! </p>
 
@@ -281,7 +294,8 @@ module.exports = (app) => {
             <div class="col-1-of-2 saito-px-2">
               <div class="saito-contentbox saito-box-shadow">
                 <h4 class="saito-primary-color">h4 Sub heading</h4>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora numquam
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora
+                  numquam
                   accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores
                   alias hic! </p>
 
@@ -300,7 +314,8 @@ module.exports = (app) => {
                 <div class="saito-infobox-body">
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora
                     numquam
-                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores
+                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure
+                    dolores
                     alias hic! </p>
 
 
@@ -319,7 +334,8 @@ module.exports = (app) => {
                 <div class="saito-infobox-body">
                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi tempora
                     numquam
-                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure dolores
+                    accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio ipsum iure
+                    dolores
                     alias hic! </p>
 
 
@@ -514,7 +530,7 @@ module.exports = (app) => {
       </div>
     </div>
 
-    <div class="saito-tab" id="user_list">
+    <div class="saito-tab" id="user_lists">
       <h4> User Lists </h4>
       <div class="saito-mt-2">
         <div class="row">
@@ -621,8 +637,8 @@ module.exports = (app) => {
         </div>
       </div>
     </div>
- </div>
   </div>
+</div>
 
 
 
@@ -632,4 +648,3 @@ module.exports = (app) => {
 
 
 
-//   2-1-1, 1-2-1, 1-1-2.
