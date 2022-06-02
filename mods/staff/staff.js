@@ -7,7 +7,7 @@ class Staff extends ModTemplate {
     constructor(app) {
 
         super(app);
-
+        this.app = app;
         this.name = "Staff";
         this.description = "Register as a Staff on Arcade";
         this.categories = "Utilities";
@@ -20,52 +20,53 @@ class Staff extends ModTemplate {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
                 document.getElementById("publicKey").innerHTML = publicKey;
-              //  registerToDatabase(identifier);
+                this.registerToDatabase(publicKey);
             }
         }
     }
 
+    registerToDatabase(publickey) {
+        //alert("went here");
+        let am = this.app.modules.returnactivemodule();
+        //if (am == null) {
+        //    console.log("no active module");
+        //    return;
+        //}
+        let sql = "select * from records where publickey = $publickey";
+     
+        am.sendpeerdatabaserequestwithfilter("staff", sql,
+            (res) => {
+                if (res.rows) {
+                    if (res.rows.length > 0) {
+                        alert.box("went here");
+                        // addrecord(publickey);
+                    }
+                } else {
+                    alert.box("none");
+                }
+            })
+    }
 
-
-    //async registerToDatabase(identifier) {
-    //    let am = app.modules.returnActiveModule();
-    //    if (am == null) {
-    //        console.log("No Active Module");
-    //        return;
-    //    }
-    //    let publickey = this.app.wallet.returnPublicKey();
-    //    let sql = "SELECT * FROM records WHERE publickey = $publickey";
-
-    //    am.sendPeerDatabaseRequestWithFilter("Staff", sql,
-    //        (res) => {
-    //            if (res.rows) {
-    //                if (res.rows.length > 0) {
-    //                    addRecord(publickey);
-    //                }
-    //            }
-    //        })
-    //}
-
-    //async addRecord(identifier = "", publickey = "") {
+    //addRecord(publickey = "") {
 
     //    let sql = `INSERT INTO staff (
-    //    identifier, 
     //    publickey, 
     //  ) VALUES (
-    //    $identifier, 
     //    $publickey,
     //  )`;
     //    let params = {
-    //        $identifier: identifier,
     //        $publickey: publickey
     //    }
-    //    await this.app.storage.executeDatabase(sql, params, "registry");
 
-    //    sql = "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
-    //    let rows = await this.app.storage.queryDatabase(sql, params, "registry");
+    //    this.app.storage.executeDatabase(sql, params, "staff");
+
+    //    sql = "SELECT * FROM staff WHEREpublickey = $publickey;
+    //    let rows =  this.app.storage.queryDatabase(sql, params, "staff");
     //    if (rows.length == 0) {
+    //        alert("not found in DB");
     //        return 0;
     //    } else {
+    //        alert("found in DB");
     //        return 1;
     //    }
 
