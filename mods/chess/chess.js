@@ -177,7 +177,25 @@ class Chessgame extends GameTemplate {
       }
 
       let opponent_elem = document.getElementById('opponent_id');
-      if (opponent_elem) opponent_elem.innerHTML = sanitize(opponent);
+      if (opponent_elem) {
+        opponent_elem.innerHTML = sanitize(opponent);
+        opponent_elem.setAttribute('data-add', opponent)
+      }
+
+      let identicon = "";
+
+      name = this.game.players[0];
+      name = this.app.keys.returnUsername(opponent);
+      identicon = this.app.keys.returnIdenticon(name);
+
+      if (name != "") {
+        if (name.indexOf("@") > 0) {
+          name = name.substring(0, name.indexOf("@"));
+        }
+      }
+
+      let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
+      document.getElementById("opponent_identicon").innerHTML = html;
 
       this.updateStatusMessage();
       this.attachEvents();
@@ -277,23 +295,27 @@ console.log(JSON.stringify(msg));
     let resign_icon = document.getElementById('resign_icon');
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
+    let copy_btn = document.getElementById('copy-btn');
     if (!move_accept) return;
 
     let chatmod = this.app.modules.returnModule("Chat");
     if (!chatmod) { chat_icon.style.display = "none"; }
 
 
-    resign_icon.onclick = () => {
-      let c = confirm("Do you really want to resign?");
-      if (c) {
-	this.resignGame(this.game.id);
-	alert("You have resigned the game...");
-	window.location.href = '/arcade';
-	return;
+    if (resign_icon) {
+      resign_icon.onclick = () => {
+        let c = confirm("Do you really want to resign?");
+        if (c) {
+        	this.resignGame(this.game.id);
+        	alert("You have resigned the game...");
+          document.getElementById('status').innerHTML = "Opponent resigned the game";
+        	window.location.href = '/arcade';
+        	return;
+        }
       }
     }
 
-    if (chatmod) {
+    if (chatmod && chat_icon) {
     chat_icon.onclick = () => {
       if (chatmod) {
 	chatmod.openChatBox();
@@ -302,6 +324,20 @@ console.log(JSON.stringify(msg));
     }
     }
 
+
+    copy_btn.onclick = () => {
+          let public_key = document.getElementById('opponent_id').getAttribute('data-add');
+
+          navigator.clipboard.writeText(public_key).then(function(x) {
+            copy_btn.classList.add("copy-check");
+          });
+           copy_btn.classList.add("copy-check");
+
+          setTimeout(() => {
+            copy_btn.classList.remove("copy-check");            
+          }, 400);
+        
+    }
 
     move_accept.onclick = () => {
       console.log('send move transaction and wait for reply.');
@@ -315,20 +351,16 @@ console.log(JSON.stringify(msg));
       this.endTurn(data);
 
       move_accept.disabled = true;
-      move_accept.classList.remove('green');
 
       move_reject.disabled = true;
-      move_reject.classList.remove('red');
     };
 
     move_reject.onclick = () => {
       this.setBoard(this.game.position);
 
       move_accept.disabled = true;
-      move_accept.classList.remove('green');
 
       move_reject.disabled = true;
-      move_reject.classList.remove('red');
     }
 
     window.onresize = () => this.board.resize();
@@ -341,6 +373,7 @@ console.log(JSON.stringify(msg));
 
     let statusEl = document.getElementById('status');
 
+
     //
     // print message if provided
     //
@@ -350,10 +383,12 @@ console.log(JSON.stringify(msg));
     }
 
     var status = '';
-;
+
     var moveColor = 'White';
+    let bgColor = '#fff';
     if (this.engine.turn() === 'b') {
       moveColor = 'Black';
+      bgColor = '#111';
     }
 
     // checkmate?
@@ -373,14 +408,16 @@ console.log(JSON.stringify(msg));
     // game still on
     else {
 
-      status = moveColor + ' to move';
+      document.getElementById('turn-shape').style.backgroundColor = bgColor;
 
       // check?
       if (this.engine.in_check() === true) {
-        status += ', ' + moveColor + ' is in check';
+        status = moveColor + ' is in check';
       }
 
     }
+
+    document.getElementById('buttons').style.display = "none";
 
     statusEl.innerHTML = sanitize(status);
     console.log(this.game.position);
@@ -499,7 +536,7 @@ console.log(JSON.stringify(msg));
     });
 
     document.getElementById('promotion').style.display = "none";
-    document.getElementById('buttons').style.display = "grid";
+    document.getElementById('buttons').style.display = "flex";
 
     this_chess.updateStatusMessage("Confirm Move to Send!");
 
@@ -520,7 +557,7 @@ console.log(JSON.stringify(msg));
     promotion_choices.childNodes.forEach(node => {
       node.onclick = () => {
         promotion.style.display = "none";
-        buttons.style.display = "grid";
+        buttons.style.display = "flex";
         this_chess.promoteAfterDrop(source, target, node.alt);
       }
     });
@@ -565,9 +602,9 @@ console.log(JSON.stringify(msg));
 
     var squareEl = document.querySelector(`#board .square-${square}`);
 
-    var background = '#a9a9a9';
+    var background = '#c5e8a2';
     if (squareEl.classList.contains('black-3c85d') === true) {
-      background = '#696969';
+      background = '#769656';
     }
 
     squareEl.style.background = background;
@@ -577,15 +614,14 @@ console.log(JSON.stringify(msg));
   onChange(oldPos, newPos) {
 
     this_chess.lockBoard(this_chess.engine.fen(newPos));
+    document.getElementById('buttons').style.display = "flex";
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
 
     move_accept.disabled = false;
-    move_accept.classList.add('green');
-
+    
     move_reject.disabled = false;
-    move_reject.classList.add('red');
-
+    
   };
 
   colours(x) {
