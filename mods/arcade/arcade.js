@@ -524,27 +524,26 @@ class Arcade extends ModTemplate {
 
       if (this.debug) {console.log("ALREADY INITED? " + this.viewing_arcade_initialization_page);}
      
-  
-      //
-      // alert us someone has accepted our game if elsewhere
-      // Method 0 
-      //siteMessage(txmsg.module + ' invite accepted.', 20000);
-      // Method 1
-      /*if (this.browser_active == 0) {
-        if (txmsg.module === "Arcade" && tx.isTo(app.wallet.returnPublicKey())) {
-          this.showAlert();
-        }
+      if (this.browser_active) {
+        GameLoader.render(app, this);   
       }else{
-         GameLoader.render(app, this);   
-       }
+        // alert us someone has accepted our game if elsewhere
+        
+        // Method 1 
+        siteMessage(txmsg.module + ' invite accepted.', 20000);
+        // Method 2
+          if (txmsg.module === "Arcade" && tx.isTo(app.wallet.returnPublicKey())) {
+            this.showAlert(); //Doesn't really do anything... changes a display of something to block
+          } 
+        //Method 3
+        app.browser.sendNotification(
+                  "Game Accepted",
+                  txmsg.module + " invite accepted.",
+                  "game-acceptance-notification"
+                ); //This function's code is all commented out
+      }
       
-      //Method 2
-      app.browser.sendNotification(
-                "Game Accepted",
-                txmsg.module + " invite accepted.",
-                "game-acceptance-notification"
-              );
-      */
+      
       //
       // only launch game if it is for us -- observer mode?
       //

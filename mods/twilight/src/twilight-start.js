@@ -52,7 +52,7 @@ class Twilight extends GameTemplate {
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
     this.type       	 = "Strategy Boardgame";
-    this.categories 	 = "Bordgame Game"
+    this.categories 	 = "Boardgame Game"
     //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -791,7 +791,7 @@ initializeGame(game_id) {
       let o = Object.assign({}, l, k);
       let p = Object.assign({}, m, o);
       let q = Object.assign({}, n, p);
-
+      
       this.game.queue.push("DECK\t1\t"+JSON.stringify(k));
     } else {
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
@@ -1459,11 +1459,6 @@ try {
 
             } else {
 
-              //let tmpar = action2.split("_");
-              //tempar[0] my crypt, tempar[1] is decoded
-              //let id_to_remove = ".card_"+tmpar[0];
-              //$(id_to_remove).hide();
-              ;
               pos_to_discard.push(cardoptions.indexOf(action2));
               cards_discarded++;
               $("#"+action2).hide();
@@ -2400,9 +2395,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["truman", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
+          //this.game.deck[0].hand = ["asknot", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          //this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
         }
       }
 
@@ -2659,7 +2654,7 @@ try {
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
               twilight_self.endTurn(1);
             } else {
-              $(action2).hide();
+              $("#"+action2).hide(); 
               twilight_self.hideCard();
               twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding...</div>");
               twilight_self.removeCardFromHand(action2);
@@ -6960,10 +6955,12 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
-    //Asia will still be a special case, maybe...
+    // skip for SEASIA (special case)
+    if (region !== "seasia") {
+      scoring = this.calculateControlledBattlegroundCountries(scoring, bg_countries); //fill in scoring.us/ussr.bg
+      scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
+    }
 
-    scoring = this.calculateControlledBattlegroundCountries(scoring, bg_countries); //fill in scoring.us/ussr.bg
-    scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
 
     switch (region) {
 

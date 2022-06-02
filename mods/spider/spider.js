@@ -1,5 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var GameTemplate = require('../../lib/templates/gametemplate');
+const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 
 
 //////////////////
@@ -19,6 +20,7 @@ class Spider extends GameTemplate {
     //So we have multiple categories defined??
     this.categories       = "Cardgame Game Solitaire";
 
+    this.scoreboard      = new GameScoreboard(app);
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
     this.type            = "Solitaire Cardgame";
@@ -114,7 +116,7 @@ class Spider extends GameTemplate {
       this.game.queue.push("round");
       this.game.queue.push("READY");
     }
-    
+
     console.log(JSON.parse(JSON.stringify(this.game)));
     
     //Set difficulty
@@ -141,8 +143,12 @@ class Spider extends GameTemplate {
       html += `<div id="card-stack${i}" class="card-stack"></div>`
     }
     html += "</div>";
-    html += `<div class="undo"><i class="fas fa-undo fa-border"></i></div>`
-    html += "<div class='draw-pile'>New Game</div>";
+    html += `<div class="spider-footer">
+              <div class="completed_stack_box"></div>
+              <div class="undo"><i class="fas fa-undo fa-border"></i></div>
+              <div class='draw-pile'>New Game</div>
+            </div>
+            `;
     console.log(html);
     return html;
   }
@@ -161,7 +167,7 @@ class Spider extends GameTemplate {
         html += `<div class="card ${(this.isFaceDown(card))?"facedown":"flipped"}" id="${i}_${j+1}">${this.returnCardImageHTML(card)}</div>`;
       }
       if (!html){
-        html = `<div class="card empty_slot" id="${i}_0"><img src="/spider/img/gameboard.jpg"/></div>`
+        html = `<div class="card empty_slot" id="${i}_0"></div>`
       }
       document.getElementById(divname).innerHTML = html;
         
@@ -183,6 +189,20 @@ class Spider extends GameTemplate {
     }
     document.querySelector(".draw-pile").innerHTML = html;
 
+
+    //Completed stacks
+    html = "";
+    for (let i = 0; i < this.game.state.completed_stacks.length; i++){
+      html += `<div class="completed_stack">`;
+      for (let j = 1; j <= 13; j++){
+         html += `<div class="card completed_card" style="position:absolute;left=${j}px;top=${j}px">${this.returnCardImageHTML(this.game.state.completed_stacks[i]+j)}</div>`;    
+      }  
+      html += "</div>";
+    }
+    if (html){
+      document.querySelector(".completed_stack_box").innerHTML = html;
+    }
+
     this.attachEventsToBoard();
   }
 
@@ -202,11 +222,16 @@ class Spider extends GameTemplate {
     }
 
     this.game.state.moves = 0;
-    this.game.state.completed_stacks = 0;
+    this.game.state.completed_stacks = [];
+    this.game.state.score = 100;
 
     //Reset/Increment State
     this.game.state.round++;
     this.game.state.draws_remaining = 5;
+    
+    if (this.browser_active){
+      this.updateScore(0);
+    }
   }
 
 
@@ -367,6 +392,14 @@ class Spider extends GameTemplate {
 
   }
 
+  updateScore(change = -1){
+    this.game.state.score += change;
+    this.scoreboard.update(`<div class="score">Score: ${this.game.state.score}</div>`);
+    if (this.game.state.score <= 0){
+      this.prependMove("lose");
+      this.endTurn();
+    }
+  }
   
   returnState() {
 
@@ -375,8 +408,9 @@ class Spider extends GameTemplate {
     state.round = 0;
     state.wins = 0;
     state.moves = 0;
+    state.score = 100;
     state.recycles_remaining = 5;
-    state.completed_stacks = 0;
+    state.completed_stacks = [];
     state.board = [];
     for (let i = 0; i < 10; i++){
       state.board.push([]);
@@ -386,11 +420,12 @@ class Spider extends GameTemplate {
   }
 
 
-  returnStatsHTML(){
+  returnStatsHTML(title = "Game Statistics"){
     let html = `<div class="rules-overlay">
-    <h1>Game Stats</h1>
+    <h1>${title}</h1>
     <table>
     <tbody>
+    <tr><th>Latest Score:</th><td>${this.game.state.score}</td></tr>
     <tr><th>Games Played:</th><td>${this.game.state.round-1}</td></tr>
     <tr><th>Games Won:</th><td>${this.game.state.wins}</td></tr>
     <tr><th>Win Percentage:</th><td>${(this.game.state.round>1)? Math.round(1000* this.game.state.wins / (this.game.state.round-1))/10 : 0}%</td></tr>
@@ -412,24 +447,43 @@ class Spider extends GameTemplate {
     //Undo last move
     $(".undo").off();
     $(".undo").on('click', function(){
+      spider_self.updateScore();
       spider_self.undoMove();
     });
 
     //Deal another round of cards
     $('.draw-pile').off();
-    $('.draw-pile').on('click', function(){
+    $('.draw-pile').on('click', async function(){
+      if (spider_self.moves.length == 0){
+        let c = await sconfirm("Are you sure you want to do that?");
+        if (!c){
+          return;
+        }
+      }
       if (spider_self.game.state.draws_remaining > 0){
-        spider_self.prependMove("draw");
-        spider_self.endTurn();  
+        if (spider_self.canDraw()){
+          spider_self.updateScore();
+          spider_self.prependMove("draw");
+          spider_self.endTurn();  
+        }else{
+          salert("You cannot deal with open slots!");
+        }
       }else{
         spider_self.newRound();
         spider_self.endTurn();  
       }
     });
 
+    $(".card-stack").off();
+    $(".card-stack").on('click', function(){
+      spider_self.untoggleAll();
+      selected_stack = null;
+    });
+
     //Manipulate cards
     $('.card').off();
-    $('.card').on('click', function() {
+    $('.card').on('click', function(e) {
+      e.stopPropagation();
 
       let card_pos = $(this).attr("id");
 
@@ -452,6 +506,7 @@ class Spider extends GameTemplate {
           //Can we move the selected_stack to this place
           if (spider_self.canMoveStack(selected_stack, card_pos)){
             spider_self.untoggleAll();
+            spider_self.updateScore();
             spider_self.prependMove(`move\t${selected_stack}\t${card_pos[0]}\t${selected_stack_size}`);
             spider_self.moveStack(selected_stack, card_pos);
             let key = spider_self.revealCard(selected_stack[0]); 
@@ -563,8 +618,16 @@ class Spider extends GameTemplate {
     return null;
   }
 
+  canDraw(){
+    for (let i = 0; i < 10; i++){
+      if (this.game.state.board[i].length == 0){
+        return false;
+      }
+    }
+    return true;
+  }
 
-  checkStack(stackNum){
+  async checkStack(stackNum){
     if (this.game.state.board[stackNum].length < 13){
       return;
     }
@@ -586,13 +649,80 @@ class Spider extends GameTemplate {
         this.game.state.board[stackNum].push(card);
       }
     }else{
+      this.updateScore(50);
+      await this.animateStackVictory(stackNum);
+      this.game.state.completed_stacks.push(suit);
+      console.log(this.game.state.completed_stacks);
       this.prependMove(`complete\t${stackNum}\t${suit}`);
       let temp = this.revealCard(stackNum);
       if (temp){
         this.prependMove(`flip\t${stackNum}\t${temp}`);       
       }
+      if (this.game.state.completed_stacks.length == 8){
+        this.prependMove("win");
+        this.endTurn();
+      }
     }
     this.displayBoard();
+  }
+
+
+  async animateDeal(){
+    const timeout = ms => new Promise(res => setTimeout(res, ms));
+    for (let i = 0; i < 10; i++){
+      this.revealCard(i);
+      await timeout(150);
+      this.displayBoard();
+    }
+  }
+
+  async animateStackVictory(stackNo){
+    const timeout = ms => new Promise(res => setTimeout(res, ms));
+    let cardWidth = document.querySelector(".card img").getBoundingClientRect().width;
+    let cardHeight = document.querySelector(".card img").getBoundingClientRect().height;
+    let completedStack = Array.from(document.querySelector("#card-stack"+stackNo).children);
+    for (let i = completedStack.length - 13; i < completedStack.length; i++) {
+      let card_to_move = completedStack[i];
+    }
+    let newTop = Math.min(document.querySelector(".completed_stack_box").getBoundingClientRect().top, window.innerHeight - cardHeight);
+    let newLeft = Math.min(cardWidth,95) * this.game.state.completed_stacks.length;
+    
+    for (let i = 0; i < 13; i++){
+      let card_to_move = completedStack.pop();
+      let bcr = card_to_move.querySelector("img").getBoundingClientRect();
+      //$(".gameboard").append(card_to_move);
+      card_to_move.style.position = "absolute";
+      card_to_move.style.left = bcr.left+"px";
+      card_to_move.style.top = bcr.top+"px";
+      card_to_move.style.width = bcr.width+"px";
+      card_to_move.style.height = bcr.height+"px";
+      card_to_move.style.transition = "left 1.25s, top 1.25s";
+      card_to_move.classList.add("prepare_to_move");
+      await timeout(25);
+      card_to_move.style.left = newLeft + "px";
+      card_to_move.style.top = newTop + "px"; 
+      await timeout(175);
+    }
+    $(".prepare_to_move").addClass("completed_card");
+    $(".prepare_to_move").removeClass("prepare_to_move");
+      //card_to_move.classList.add("completed_card");
+  }
+
+  async animateFinalVictory(){
+    const timeout = ms => new Promise(res => setTimeout(res, ms));
+
+    $(".card.completed_card").css("width","100px");
+    $(".gameboard").append($(".card.completed_card"));
+
+    let cards = document.querySelectorAll(".card.completed_card");
+    let max_x = window.innerWidth - 50;
+    let max_y = window.innerHeight - 100;
+
+    for (let i = 0; i < cards.length; i++){
+      cards[i].style.left = Math.floor(Math.random() * max_x) + 25;
+      cards[i].style.top = Math.floor(Math.random() * max_y) + 50;
+      await timeout(50);
+    }
   }
 
 
@@ -674,9 +804,23 @@ class Spider extends GameTemplate {
         this.newRound();
       }
 
-      if (mv[0] === "win"){
-        this.game.state.wins++;
+      if (mv[0] === "lose"){
+        this.game.queue.splice(qe, 1);
+        this.displayModal("You Lose!", "Too many moves");
         this.newRound();
+        return 1;
+      }
+
+      if (mv[0] === "win"){
+        this.game.queue.splice(qe, 1);
+        this.game.state.wins++;
+        this.animateFinalVictory();
+        this.overlay.show(this.app, this, this.returnStatsHTML("Winner!"), ()=>{
+          this.newRound();
+          $(".completed_card").remove();
+          this.restartQueue();
+        });
+        return 0;
       }
 
       if (mv[0] === "draw"){
@@ -701,20 +845,18 @@ class Spider extends GameTemplate {
             this.game.state.board[indexCt].push(card);
             indexCt = ( indexCt + 1 ) % 10;
           }
-          //Flip bottom row
-          for (let i = 0; i < 10; i++){
-            let cardToFlip = this.game.state.board[i].pop();
-            this.game.state.board[i].push(this.game.deck[0].cards[cardToFlip]);
-          }
-          
           this.displayBoard();
-          
+
+          //Flip bottom row
+          this.animateDeal();
+                    
         }        
         return 0;
       }
 
       if (mv[0] === "exit_game"){
         this.game.queue.splice(qe, 1);
+        this.game.queue.push("play");
         let player = parseInt(mv[1])
         this.saveGame(this.game.id);
 
@@ -756,16 +898,10 @@ class Spider extends GameTemplate {
 
       }
 
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) { 
-        console.log("NOT CONTINUING");
-        return 0; 
-      }
+      return 1;
 
     } 
-    return 1;
+    return 0; 
   }
 
   undoMove(){
@@ -778,6 +914,7 @@ class Spider extends GameTemplate {
       mv = this.moves.shift().split("\t");
     }
     if (mv[0] == "complete"){
+      this.game.state.completed_stacks.pop();
       let slot = parseInt(mv[1]);
       for (let i = 13; i > 0; i--){
         this.game.state.board[slot].push(`${mv[2]}${i}`);
@@ -803,7 +940,7 @@ class Spider extends GameTemplate {
 
 
   returnDeck(numSuits) {
-    let suits = ["S","H","C","D"];
+    let suits = ["S","D","C","H"];
     var deck = {};
     /* WTF is with this indexing system??? */
     //2-10 of each suit, with indexing gaps on the 1's

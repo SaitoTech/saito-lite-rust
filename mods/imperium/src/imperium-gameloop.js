@@ -1541,7 +1541,7 @@ this.game.state.end_round_scoring = 0;
 	//
 	let io = this.returnInitiativeOrder();
 	for (let i = 0; i < io.length; i++) {
-          if (this.game.players_info[io[i]].vp >= this.game.state.vp_target) {
+          if (this.game.players_info[io[i]-1].vp >= this.game.state.vp_target) {
 	    this.updateLeaderboard();
             this.updateStatus("Game Over: " + this.returnFaction(io[i]) + " has reached " + this.game.state.vp_target + " VP");
             this.updateLog("Game Over: " + this.returnFactionNickname(io[i]) + " has reached " + this.game.state.vp_target + " VP");
