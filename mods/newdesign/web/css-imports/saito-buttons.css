@@ -3,7 +3,8 @@ buttons
 -----------------------------------------------------------------*/
 @import url("./saito-colors.css");
 
-button {
+button,
+.saito-btn-primary {
   min-width: 10.5rem;
   background: linear-gradient(77deg,
       var(--saito-primary) 0%,
@@ -48,7 +49,7 @@ button:hover {
 
 
 
-.saito-btn-tetiary {
+.saito-btn-tertiary {
   border: 1px solid var(--saito-white);
   color: var(--saito-white);
   background-color: transparent;
