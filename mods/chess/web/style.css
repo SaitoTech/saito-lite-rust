@@ -52,7 +52,7 @@ h1 {
 #board {
     max-width: 700px;
     margin: auto;
-    //margin-left: -40px
+    margin-bottom: 10px;
 }
 
 .module_label {
@@ -106,10 +106,9 @@ h1 {
 
 .button_row {
     margin-top: 28px;
-    display: grid;
+    display: none;
     grid-gap: 10px;
     grid-template-columns: 69% 50%;
-    visibility: hidden;
     transition: all 0.3s ease-in-out;
 }
 
@@ -384,6 +383,7 @@ transform: translate(-50%, -50%);
         margin: 0px;
         margin-left: 50%;
         transform: translateX(-50%);
+        margin-bottom: 10px;
     }
     .board-b72b1{
         margin-left:  -25px;
@@ -462,10 +462,9 @@ transform: translate(-50%, -50%);
 
     .button_row {
         margin-top: 20px;
-        display: grid;
+        display: none;
         grid-gap: 10px;
         grid-template-columns: 50% 50%;
-        visibility: hidden;
         transition: all 0.3s ease-in-out;
         margin-bottom: 10px;
         margin-left: 50%;
@@ -499,6 +498,7 @@ transform: translate(-50%, -50%);
         max-width: 70%;
         margin: 0px;
         transform: none;
+        margin-bottom: 10px;
     }
 
     .alpha-d2270 {
@@ -528,19 +528,7 @@ transform: translate(-50%, -50%);
         width: 100vw;
     }
 
-    .button_row {
-        margin-top: 20px;
-        display: grid;
-        grid-gap: 10px;
-        grid-template-columns: 50% 50%;
-        visibility: hidden;
-        transition: all 0.3s ease-in-out;
-        margin-bottom: 10px;
-        left: 0px;
-        width: 50%;
-        margin-left: 0px;
-    }
-    
+ 
     #move_accept {
         margin-left: 50px;
     }
@@ -552,7 +540,7 @@ transform: translate(-50%, -50%);
 
     .controls {
         width: 95%;
-        max-height: 230px;
+        max-height: 240px;
         overflow-y: scroll;
     }
 
@@ -561,7 +549,6 @@ transform: translate(-50%, -50%);
         display: grid;
         grid-gap: 10px;
         grid-template-columns: 50% 50%;
-        visibility: hidden;
         transition: all 0.3s ease-in-out;
         margin-bottom: 10px;
         left: 0px;
@@ -570,9 +557,19 @@ transform: translate(-50%, -50%);
         transform: none;
     }
 
-    #identicon-cont {
+    .tool-cont {
         width: 98%;
     }
+
+    #captured-cont {
+        width: 64%;
+    }
+
+    #resign-cont {
+        width: 34%;
+    }
+
+
 }
 
 .red {

@@ -417,7 +417,7 @@ console.log(JSON.stringify(msg));
 
     }
 
-    document.getElementById('buttons').style.visibility = "hidden";
+    document.getElementById('buttons').style.display = "none";
 
     statusEl.innerHTML = sanitize(status);
     console.log(this.game.position);
@@ -536,7 +536,7 @@ console.log(JSON.stringify(msg));
     });
 
     document.getElementById('promotion').style.display = "none";
-    document.getElementById('buttons').style.visibility = "visible";
+    document.getElementById('buttons').style.display = "grid";
 
     this_chess.updateStatusMessage("Confirm Move to Send!");
 
@@ -614,7 +614,7 @@ console.log(JSON.stringify(msg));
   onChange(oldPos, newPos) {
 
     this_chess.lockBoard(this_chess.engine.fen(newPos));
-    document.getElementById('buttons').style.visibility = "visible";
+    document.getElementById('buttons').style.display = "grid";
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
 
