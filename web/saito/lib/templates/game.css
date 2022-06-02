@@ -595,6 +595,17 @@ i.menu_icon_icon{
   background-color: #ccc3;
 }
 
+
+/* Undo HUD styling in Playerbox */
+.player-box .status-header, .player-box .status-text-menu, .player-box .status-text-menu ul, .player-box .status-text-menu ul li, .player-box .textchoice{
+  background: unset;
+}
+.player-box .textchoice:hover{
+  color: black;
+}
+
+
+
 .status-cardbox { 
   display: grid;
   width: 100%;     /*Fit the status, fit the hud*/

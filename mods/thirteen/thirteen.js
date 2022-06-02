@@ -225,8 +225,6 @@ class Thirteen extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
 
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-
     //
     // initialize
     //

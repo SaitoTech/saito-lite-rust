@@ -2173,60 +2173,41 @@ class Wordblocks extends GameTemplate {
       let mv = this.game.queue[qe].split("\t");
 
       //
-      // game over conditions
+      // game over -- pick the winner
       //
 
       if (mv[0] === "gameover") {
-        //
-        // pick the winner
-        //
+        this.game.queue = [];
+        
         let x = 0;
-        let idx = 0;
+        let idx = -1;
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (wordblocks_self.game.score[i] > x) {
-            x = wordblocks_self.game.score[i];
+        //Find Highest Score
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (this.game.score[i] > x) {
+            x = this.game.score[i];
             idx = i;
           }
         }
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (
-            i != idx &&
-            wordblocks_self.game.score[i] == wordblocks_self.game.score[idx]
-          ) {
-            idx = -1;
+        //Check for ties -- will need to improve the logic for multi winners
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (i != idx && this.game.score[i] == this.game.score[idx]) {
+            this.tieGame();
           }
         }
 
-        wordblocks_self.game.winner = idx + 1;
-        //wordblocks_self.game.over = 1;
-        wordblocks_self.saveGame(wordblocks_self.game.id);
+        this.game.winner = idx + 1;
 
         if (wordblocks_self.browser_active == 1) {
           var result = `Game Over -- Player ${wordblocks_self.game.winner} Wins!`;
 
-          if (idx < 0) {
-            result = "It's a tie! Well done everyone!";
-          }
-
-          wordblocks_self.updateStatusWithTiles(result);
-          wordblocks_self.updateLog(result);
-
           if (this.game.winner == this.game.player) {
-            //not resigning as game.winner is set.
             this.resignGame();
           }
         }
 
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         return 0;
-      }
-
-      if (mv[0] === "endgame") {
-        this.game.queue.splice(this.game.queue.length - 1, 1);
-        this.addMove("gameover");
-        return 1;
       }
 
       //
@@ -2379,9 +2360,8 @@ class Wordblocks extends GameTemplate {
       this.game.deck[0].hand.length == 0 &&
       this.game.deck[0].crypt.length == 0
     ) {
-      this.addMove("endgame");
+      this.addMove("gameover");
       this.endTurn();
-      return 1;
     }
 
     return 0;

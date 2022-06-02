@@ -710,10 +710,7 @@ initializeGame(game_id) {
       this.confirm_moves = 1;
     }*/
   }
-  
-  if (this.game.status != "") { this.updateStatus(this.game.status); }
-  this.restoreLog();
-  
+    
   //
   // VP needed
   //

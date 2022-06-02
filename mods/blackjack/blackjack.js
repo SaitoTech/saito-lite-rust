@@ -129,11 +129,6 @@ class Blackjack extends GameTemplate {
 
 
   initializeGame(game_id) {
-
-    //
-    // game engine needs this to start
-    //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
     
     //
     // initialize
@@ -280,6 +275,7 @@ class Blackjack extends GameTemplate {
     let solventPlayers = this.countActivePlayers(); 
     if (solventPlayers === 1 ){ //Clear winner 
       this.game.queue.push(`winner\t${this.firstActivePlayer()}`);
+      this.settleLastRound();
       return 1;
     }else if (this.game.state.player.length > 2){ //if more than 2, remove extras
         for (let i = 0; i < this.game.state.player.length; i++){
@@ -656,17 +652,14 @@ class Blackjack extends GameTemplate {
       }
 
       if (mv[0] === "winner") { //copied from poker
-        let winner = parseInt(mv[1]);
-        let winnerName = this.game.state.player[winner].name + " wins!";
-        this.updateLog("Game Over: " + winnerName);
-        let status = "<h2>Game Over: </h2><p>";
-        status += (winner+1 == this.game.player)? "You win!" : winnerName;
-        status += "</p>";
-        this.updateStatus(status);
-        this.settleLastRound();  
-        this.game.winner = this.game.players[winner];
-        //this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+        this.game.queue = [];
+        //Notably not keyed to game.player, but by the index
+        this.game.winner = parseInt(mv[1]) + 1;
+        if (this.game.player == this.game.winner){
+          this.resignGame(this.game.id); 
+        }
         return 0;
+
       }
 
 

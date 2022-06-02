@@ -83,14 +83,8 @@ class Solitrio extends GameTemplate {
 
 
   initializeGame(game_id) {
-
     console.log("SET WITH GAMEID: " + game_id);
 
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.updateStatus("loading game...");
-
-    this.loadGame(game_id);
-    
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
@@ -895,6 +889,20 @@ no status atm, but this is to update the hud
     return card.substring(1);
   }
 
+  resignGame(game_id = null, tiegame = 0, reason = "") {
+    console.log("Mark game as closed");
+    this.loadGame(game_id);
+    this.game.over = 2;
+    this.saveGame(game_id);
+    //Refresh Arcade if in it
+    let arcade = this.app.modules.returnModule("Arcade");
+    if (arcade){
+      //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
+      arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
+    }
+
+
+  }
 
 }
 

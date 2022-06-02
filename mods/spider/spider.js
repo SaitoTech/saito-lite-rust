@@ -104,11 +104,6 @@ class Spider extends GameTemplate {
 
     console.log("SET WITH GAMEID: " + game_id);
 
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.updateStatus("loading game...");
-
-    this.loadGame(game_id);
-    
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();

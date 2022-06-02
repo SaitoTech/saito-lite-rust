@@ -356,15 +356,16 @@ class Wuziqi extends GameTemplate {
             // Game over conditions
             if (mv[0] === "gameover") {
                 // Remove this item from the queue.
-                this.game.queue.splice(this.game.queue.length - 1, 1);
+                this.game.queue = [];
 
                 //Winner sent the move
-                if (mv[1]!=this.game.player) salert("You lose.");
+                this.game.winner = parseInt(mv[1]); 
+
                 //Not duplicated in board events, so both players run these
                 this.updateScore();
-                this.updateStatus("<span class='playertitle'>" + this.game.sides[mv[1] - 1] + "</span> wins!")
                 this.drawBoard(this.game.board);
-                //this.resignGame(); //<- throws a 567567 error                
+
+                this.resignGame(); //<- throws a 567567 error                
                 return 0; //end queue cycling
             }
             // Round over

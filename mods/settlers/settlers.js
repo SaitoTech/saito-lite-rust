@@ -648,25 +648,19 @@ class Settlers extends GameTemplate {
 
       if (mv[0] == "winner") {
         
-        let winner = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
+        this.game.winner = parseInt(mv[1]);
+        this.game.queue = [];
 
         this.updateLog(
-          `Player ${winner} is ${this.skin.winState} of Saitoa! The game is over.`
+          `Player ${this.game.winner} is ${this.skin.winState} of Saitoa! The game is over.`
         );
-        if (this.game.player == winner) {
-          this.updateStatus(
-            `<div class="tbd">You are the winner! Congratulations!</div>`
-          );
-        } else {
-          this.updateStatus(
-            `<div class="tbd">Player ${winner} wins! Better luck next time.</div>`
-          );
-        }
+
         this.overlay.show(this.app, this, this.returnStatsOverlay());
-        $(".rules-overlay h1").text(`Game Over: Player ${winner} wins!`);
-        this.game.winner = this.game.players[winner - 1];
-        this.resignGame(this.game.id); //? post to leaderboard - ignore 'resign'
+        $(".rules-overlay h1").text(`Game Over: Player ${this.game.winner} wins!`);
+        
+        if (this.game.player == this.game.winner){
+          this.resignGame(this.game.id); 
+        }
         return 0;
       }
 

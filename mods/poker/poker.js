@@ -182,9 +182,6 @@ class Poker extends GameTemplate {
   }
 
   initializeGame(game_id) { 
-    /*if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }*/
   
     // initialize game state
     if (this.game.deck.length == 0) {
@@ -441,13 +438,10 @@ class Poker extends GameTemplate {
 
       if (mv[0] === "winner") {
         this.game.queue = [];
-        let winner = parseInt(mv[1]); //Notably not keyed to game.player, but by the index
-        //this.updateStatus("Game Over: " + this.game.state.player_names[winner] + " wins!");
-        //this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
-        //this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
-        this.game.winner = winner+1;
+        //Notably not keyed to game.player, but by the index
+        this.game.winner = parseInt(mv[1]) + 1;
         if (this.game.player == this.game.winner){
-          this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+          this.resignGame(this.game.id); //Notifies all players of gameover condition
         }
         return 0;
       }
