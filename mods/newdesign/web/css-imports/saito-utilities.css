@@ -187,28 +187,28 @@ Margins
 /* Vertical Margins */
 
 .saito-my-1 {
-    padding: .5rem 0;
+    margin: .5rem 0;
 }
 
 .saito-my-2 {
-    padding: 1rem 0;
+    margin: 1rem 0;
 }
 
 .saito-my-3 {
-    padding: 2rem 0;
+    margin: 2rem 0;
 }
 
 
 /* Vertical Horizontal Margins */
 
 .saito-mx-1 {
-    padding: 0 .5rem;
+    margin: 0 .5rem;
 }
 
 .saito-mx-2 {
-    padding: 0 1rem;
+    margin: 0 1rem;
 }
 
 .saito-mx-3 {
-    padding: 0 2rem;
+    margin: 0 2rem;
 }

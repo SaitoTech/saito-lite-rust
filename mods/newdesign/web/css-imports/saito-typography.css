@@ -123,11 +123,10 @@ p {
   color: var(--saito-black);
 }
 
-a {
+/* a {
   color: var(--saito-white);
   transition: 0.2s;
-  color: var(--saito-white);
-}
+} */
 
 a:hover {
   opacity: 0.8;

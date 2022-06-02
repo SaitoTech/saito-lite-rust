@@ -40,7 +40,7 @@ body {
 }
 
 pre {
-  overflow: scroll;
+  overflow: auto;
 }
 
 
