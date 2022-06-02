@@ -12262,13 +12262,18 @@ playerTurnHeadlineSelected(card, player) {
 
       let discard_deck = [];
       for (var i in this.game.deck[0].discards) {
-        if (this.game.deck[0].discards[i].scoring == 0) {
-          if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-            discard_deck.push(i);
-            console.log(i);
-            //html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+	// edge-case bug where scoring is not in scoring card (???)
+	try {
+          if (this.game.deck[0].discards[i].scoring == 0) {
+            if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
+              discard_deck.push(i);
+              console.log(i);
+              //html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+            }
           }
-        }
+        } catch (err) {
+	  console.log("ERROR: please check scoring error in SALT for card: " + i);
+	}
       }
       
       twilight_self.updateStatusAndListCards("Choose Card to Reclaim:",discard_deck,true);
