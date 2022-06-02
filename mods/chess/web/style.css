@@ -569,6 +569,9 @@ transform: translate(-50%, -50%);
         width: 34%;
     }
 
+    #resign_icon { 
+        margin-left: -25px;
+    }
 
 }
 
@@ -610,4 +613,5 @@ button:disabled:hover {
 
 #move_accept:hover {
     background: #0f6e0f;
+    color: #fff;
 }
