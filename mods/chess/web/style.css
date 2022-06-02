@@ -107,9 +107,8 @@ h1 {
 .button_row {
     margin-top: 28px;
     display: none;
-    grid-gap: 10px;
-    grid-template-columns: 69% 50%;
     transition: all 0.3s ease-in-out;
+    justify-content: space-around;
 }
 
 #promotion-choices {
@@ -171,6 +170,8 @@ img.captured {
     color: #fff;
     max-height: 100px;
     border: none;
+    min-width: unset;
+    width: 45%;
 }
 
 

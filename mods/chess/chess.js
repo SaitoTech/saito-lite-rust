@@ -383,7 +383,7 @@ console.log(JSON.stringify(msg));
     }
 
     var status = '';
-;
+
     var moveColor = 'White';
     let bgColor = '#fff';
     if (this.engine.turn() === 'b') {
@@ -536,7 +536,7 @@ console.log(JSON.stringify(msg));
     });
 
     document.getElementById('promotion').style.display = "none";
-    document.getElementById('buttons').style.display = "grid";
+    document.getElementById('buttons').style.display = "flex";
 
     this_chess.updateStatusMessage("Confirm Move to Send!");
 
@@ -557,7 +557,7 @@ console.log(JSON.stringify(msg));
     promotion_choices.childNodes.forEach(node => {
       node.onclick = () => {
         promotion.style.display = "none";
-        buttons.style.display = "grid";
+        buttons.style.display = "flex";
         this_chess.promoteAfterDrop(source, target, node.alt);
       }
     });
@@ -614,7 +614,7 @@ console.log(JSON.stringify(msg));
   onChange(oldPos, newPos) {
 
     this_chess.lockBoard(this_chess.engine.fen(newPos));
-    document.getElementById('buttons').style.display = "grid";
+    document.getElementById('buttons').style.display = "flex";
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
 
