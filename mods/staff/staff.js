@@ -25,52 +25,59 @@ class Staff extends ModTemplate {
         }
     }
 
-    registerToDatabase(publickey) {
-        //alert("went here");
-        let am = this.app.modules.returnactivemodule();
-        //if (am == null) {
-        //    console.log("no active module");
-        //    return;
-        //}
-        let sql = "select * from records where publickey = $publickey";
-     
-        am.sendpeerdatabaserequestwithfilter("staff", sql,
-            (res) => {
-                if (res.rows) {
-                    if (res.rows.length > 0) {
-                        alert.box("went here");
-                        // addrecord(publickey);
-                    }
-                } else {
-                    alert.box("none");
-                }
-            })
+    addRecord(publickey = "") {
+
+        let sql = `INSERT INTO staff (publickey) VALUES ($publickey)`;
+        let params = {
+            $publickey: publickey
+        }
+
+        this.app.storage.executeDatabase(sql, params, "staff");
+
+        sql = "SELECT * FROM staff WHERE publickey = $publickey";
+
+        let rows = this.app.storage.queryDatabase(sql, params, "staff");
+        if (rows.length <= 0) {
+            alert(rows);
+            alert("not found in db");
+            return 0;
+        } else {
+            alert(rows);
+            alert("found in db");
+            return 1;
+        }
+
     }
 
-    //addRecord(publickey = "") {
+    async registerToDatabase(publickey) {
+        //alert("went here");
+        let am = this.app.modules.returnActiveModule();
+        if (am == null) {
+            console.log("no active module");
+            return;
+        } else {
+            this.addRecord(publickey);
+        }
 
-    //    let sql = `INSERT INTO staff (
-    //    publickey, 
-    //  ) VALUES (
-    //    $publickey,
-    //  )`;
-    //    let params = {
-    //        $publickey: publickey
-    //    }
 
-    //    this.app.storage.executeDatabase(sql, params, "staff");
 
-    //    sql = "SELECT * FROM staff WHEREpublickey = $publickey;
-    //    let rows =  this.app.storage.queryDatabase(sql, params, "staff");
-    //    if (rows.length == 0) {
-    //        alert("not found in DB");
-    //        return 0;
-    //    } else {
-    //        alert("found in DB");
-    //        return 1;
-    //    }
+        //let sql = "SELECT * FROM records WHERE publickey = $publickey";
+        //alert("sql");
 
-    //}
+        //am.sendPeerDatabaseRequestWithFilter("Staff", sql,
+        //    (res) => {
+        //        if (res.rows) {
+        //            if (res.rows.length > 0) {
+        //                alert("went here");
+        //                // addrecord(publickey);
+        //            }
+        //        } else {
+        //            alert("none");
+        //        }
+        //    })
+    }
+
+    
 
 }
 
