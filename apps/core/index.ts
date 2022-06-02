@@ -17,7 +17,6 @@ import BurnFee from "../../lib/saito/burnfee";
 import Storage from "../../lib/saito/storage";
 import NetworkAPI from "../../lib/saito/networkapi";
 import Network from "../../lib/saito/network";
-import Staking from "../../lib/saito/staking";
 
 import hash_loader from "./hash-loader";
 import Handshake from "../../lib/saito/handshake";
@@ -42,7 +41,6 @@ class Saito {
   miner: Miner;
   keys: Keychain;
   network: Network;
-  staking: Staking;
   networkApi: NetworkAPI;
   burnfee: BurnFee;
   blockchain: Blockchain;
@@ -84,7 +82,6 @@ class Saito {
     this.burnfee = new BurnFee();
     this.blockchain = new Blockchain(this);
     this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
-    this.staking = new Staking(this);
     this.handshake = new Handshake(this);
   }
 

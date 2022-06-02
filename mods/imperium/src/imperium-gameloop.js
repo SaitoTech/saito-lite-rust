@@ -16,7 +16,8 @@
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-//console.log("QUEUE: " + JSON.stringify(this.game.queue));
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
+console.log("MV: " + mv[0]);
 
       if (mv[0] === "gameover") {
   	if (imperium_self.browser_active == 1) {

@@ -3,7 +3,7 @@ import Slip, { SlipType } from "./slip";
 import Transaction, { HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType } from "./transaction";
 import { Saito } from "../../apps/core";
 
-const BLOCK_HEADER_SIZE = 229;
+const BLOCK_HEADER_SIZE = 245;
 
 export enum BlockType {
   Ghost = 0,
@@ -27,6 +27,8 @@ class Block {
     signature: "",
     avg_income: BigInt(0),
     avg_variance: BigInt(0),
+    avg_atr_income: BigInt(0),
+    avg_atr_variance: BigInt(0),
   };
   public lc: number;
   public force: any;
@@ -153,6 +155,8 @@ class Block {
 
     this.block.avg_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(213, 221)));
     this.block.avg_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(221, 229)));
+    this.block.avg_atr_income = BigInt(this.app.binary.u64FromBytes(buffer.slice(229, 237)));
+    this.block.avg_atr_variance = BigInt(this.app.binary.u64FromBytes(buffer.slice(237, 245)));
 
 
     let start_of_transaction_data = BLOCK_HEADER_SIZE;
@@ -300,7 +304,10 @@ class Block {
   async generateConsensusValues() {
 
     //
-    // this is also set in blockchain.js
+    // this is the number of blocks we will recurse backwards to issue the
+    // staker payout. if this permits strings of blocks that are less than 
+    // the theoretical maximum number of golden-ticket free blocks that can
+    // be produced then the network will experience deflation.
     //
     const MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
@@ -319,6 +326,7 @@ class Block {
     cv.expected_difficulty = 1;
     cv.total_rebroadcast_nolan = BigInt(0);
     cv.total_rebroadcast_fees_nolan = BigInt(0);
+    cv.total_rebroadcast_staking_payouts_nolan = BigInt(0);
     cv.total_rebroadcast_slips = 0;
     cv.nolan_falling_off_chain = BigInt(0);
     cv.rebroadcast_hash = "";
@@ -328,9 +336,11 @@ class Block {
     cv.fee_transaction = null;
     cv.avg_income = BigInt(0);
     cv.avg_variance = BigInt(0);
+    cv.avg_atr_income = BigInt(0);
+    cv.avg_atr_variance = BigInt(0);
 
     //
-    // total fees and indices
+    // calculate total fees and indices
     //
     for (let i = 0; i < this.transactions.length; i++) {
       try {
@@ -342,7 +352,6 @@ class Block {
           this.has_fee_transaction = true;
           this.ft_idx = i;
         }
-
         if (this.transactions[i].isGoldenTicket()) {
           cv.gt_num += 1;
           cv.gt_idx = i;
@@ -359,6 +368,96 @@ class Block {
         console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
       }
     }
+
+
+    //
+    // calculate automatic transaction rebroadcasts / ATR / atr
+    //
+    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + 1) {
+
+      const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
+      const pruned_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
+      console.log("pruned block id: " + pruned_block_id);
+      console.log("pruned block hash: " + pruned_block_hash);
+      const pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
+
+      //
+      // generate metadata should have already loaded this pruned-block into
+      // memory with all of the transactions that we will need to examine to
+      // determine which should be rebroadcast.
+      //
+      if (pruned_block) {
+
+        //
+        // only unspent UTXO eligible
+        //
+        for (let i = 0; i < pruned_block.transactions.length; i++) {
+
+          const tx = pruned_block.transactions[i];
+
+          for (let k = 0; k < tx.transaction.to.length; k++) {
+
+            const output = tx.transaction.to[k];
+
+	    //
+	    // these need to be calculated dynamically based on the 
+	    // value of the TX and the byte-size of the transaction
+	    //
+            const REBROADCAST_FEE = BigInt(200000000);
+            const STAKING_SUBSIDY = BigInt(100000000);
+	    const UTXO_ADJUSTMENT = REBROADCAST_FEE - STAKING_SUBSIDY;
+
+            //
+            // valid means spendable and non-zero
+            //
+            if (output.validate(this.app)) {
+              //
+              // TODO - no parse int as numbers potentially too big
+              //
+              if (output.returnAmount() > UTXO_ADJUSTMENT) {
+
+                cv.total_rebroadcast_nolan += output.returnAmount();
+                cv.total_rebroadcast_fees_nolan += REBROADCAST_FEE;
+                cv.total_rebroadcast_staking_payouts_nolan += STAKING_SUBSIDY;
+                cv.total_rebroadcast_slips += 1;
+
+                //
+                // create rebroadcast transaction
+                //
+                // TODO - floating fee based on previous block average
+                //
+                const rebroadcast_transaction = new Transaction();
+                rebroadcast_transaction.generateRebroadcastTransaction(
+                  this.app,
+                  output,
+                  REBROADCAST_FEE,
+                  STAKING_SUBSIDY
+                );
+
+                //
+                // update cryptographic hash of all ATRs
+                //
+                cv.rebroadcast_hash = this.app.crypto.hash(
+                  cv.rebroadcast_hash +
+                    rebroadcast_transaction.serializeForSignature(this.app).toString("hex")
+                );
+              } else {
+                //
+                // rebroadcast dust is either collected into the treasury or
+                // distributed as a fee for the next block producer. for now
+                // we will simply distribute it as a fee. we may need to
+                // change this if the DUST becomes a significant enough amount
+                // each block to reduce consensus security.
+                //
+                cv.total_rebroadcast_fees_nolan += output.returnAmount();
+              }
+            }
+          }
+        }
+      }
+    }
+
+
 
     //
     // difficulty and fee averages
@@ -386,17 +485,32 @@ class Block {
       //
       cv.avg_income = previous_block.block.avg_income;
       cv.avg_variance = previous_block.block.avg_variance;
+      cv.avg_atr_income = previous_block.block.avg_atr_income;
+      cv.avg_atr_variance = previous_block.block.avg_atr_variance;
 
       if (previous_block.block.avg_income > cv.total_fees) {
 	let adjustment = (previous_block.block.avg_income - cv.total_fees) / this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) { cv.avg_income -= adjustment; }
       }
-      if (previous_block.block.avg_income > cv.total_fees) {
-	let adjustment = (previous_block.block.avg_income + cv.total_fees) / this.app.blockchain.blockchain.genesis_period;
+      if (previous_block.block.avg_income < cv.total_fees) {
+	let adjustment = (cv.total_fees - previous_block.block.avg_income) / this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) { cv.avg_income += adjustment; }
       }
 
+      //
+      // average atr income and variance adjusts slowly.
+      //
+      if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
+	let adjustment = (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) / this.app.blockchain.blockchain.genesis_period;
+        if (adjustment > 0) { cv.avg_atr_income -= adjustment; }
+      }
+      if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
+	let adjustment = (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) / this.app.blockchain.blockchain.genesis_period;
+        if (adjustment > 0) { cv.avg_atr_income += adjustment; }
+      }
+
     } else {
+
       //
       // if there is no previous block, the difficulty is not adjusted. validation
       // rules will cause the block to fail unless it is the first block.
@@ -405,89 +519,21 @@ class Block {
       //
       // set average income and variance so non-failure on first block
       // doesn't result in failure calculating avg_income and avg_variance
+      // or avg_atr_variance or avg_atr_income.
       //
       cv.avg_income = this.block.avg_income;
       cv.avg_variance = this.block.avg_variance;
+
+      cv.avg_atr_income = this.block.avg_atr_income;
+      cv.avg_atr_variance = this.block.avg_atr_variance;
+
     }
 
     //
-    // calculate automatic transaction rebroadcasts / ATR / atr
-    //
-    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + 1) {
-      const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
-      const pruned_block_hash =
-        this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
-      console.log("pruned block id: " + pruned_block_id);
-      console.log("pruned block hash: " + pruned_block_hash);
-      const pruned_block = await this.app.blockchain.loadBlockAsync(pruned_block_hash);
-
-      //
-      // generate metadata should have prepared us with a pre-prune block
-      // that contains all of the transactions and is ready to have its
-      // ATR rebroadcasts calculated.
-      //
-      if (pruned_block) {
-        //
-        // identify unspent transactions
-        //
-        for (let i = 0; i < pruned_block.transactions.length; i++) {
-          const tx = pruned_block.transactions[i];
-
-          for (let k = 0; k < tx.transaction.to.length; k++) {
-            const output = tx.transaction.to[k];
-            const REBROADCAST_FEE = BigInt(200000000);
-
-            //
-            // valid means spendable and non-zero
-            //
-            if (output.validate(this.app)) {
-              //
-              // TODO - no parse int as numbers potentially too big
-              //
-              if (output.returnAmount() > REBROADCAST_FEE) {
-                cv.total_rebroadcast_nolan += output.returnAmount();
-                cv.total_rebroadcast_fees_nolan += REBROADCAST_FEE;
-                cv.total_rebroadcast_slips += 1;
-
-                //
-                // create rebroadcast transaction
-                //
-                // TODO - floating fee based on previous block average
-                //
-                const rebroadcast_transaction = new Transaction();
-                rebroadcast_transaction.generateRebroadcastTransaction(
-                  this.app,
-                  output,
-                  REBROADCAST_FEE
-                );
-
-                //
-                // update cryptographic hash of all ATRs
-                //
-                cv.rebroadcast_hash = this.app.crypto.hash(
-                  cv.rebroadcast_hash +
-                    rebroadcast_transaction.serializeForSignature(this.app).toString("hex")
-                );
-              } else {
-                //
-                // rebroadcast dust is either collected into the treasury or
-                // distributed as a fee for the next block producer. for now
-                // we will simply distribute it as a fee. we may need to
-                // change this if the DUST becomes a significant enough amount
-                // each block to reduce consensus security.
-                //
-                cv.total_rebroadcast_fees_nolan += output.returnAmount();
-              }
-            }
-          }
-        }
-      }
-    }
-
-    //
-    // calculate payments to miners / routers / stakers
+    // calculate payments to miners / routers
     //
     if (cv.gt_idx > 0) {
+
       const golden_ticket_transaction = this.transactions[cv.gt_idx];
       const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
@@ -568,14 +614,17 @@ class Block {
           if (loop_idx >= MAX_STAKER_RECURSION) {
             cont = 0;
           } else {
+
             const staking_block = await this.app.blockchain.loadBlockAsync(staking_block_hash);
             if (staking_block) {
+
               //
               // in case we need another loop
               //
               staking_block_hash = staking_block.returnPreviousBlockHash();
 
               if (!did_the_block_before_our_staking_block_have_a_golden_ticket) {
+
                 //
                 // update with this block info in case of next loop
                 //
@@ -583,18 +632,8 @@ class Block {
                   staking_block.hasGoldenTicket();
 
                 //
-                // calculate staker and router payments
+                // calculate staker block payments
                 //
-                // the staker payout is contained in the slip of the winner. this is
-                // because we calculate it afresh every time we reset the staking table
-                // the payment for the router requires calculating the amount that will
-                // be withheld for the staker treasury, which is what previous_staker_
-                // payment is measuring.
-                //
-
-	        //
-	        // limit previous block payout to avg income
-	        //
 	        let previous_staking_block_payout = staking_block.returnFeesTotal();
 	        if (
 	  	  previous_staking_block_payout > (staking_block.block.avg_income * 1.25) &&
@@ -626,41 +665,8 @@ class Block {
                 next_random_number = this.app.crypto.hash(next_random_number);
                 next_random_number = this.app.crypto.hash(next_random_number);
 
-                const staker_slip = this.app.staking.findWinningStaker(next_random_number);
-                if (staker_slip) {
-                  let slip_was_spent = 0;
+                cv.block_payouts.push(block_payout);
 
-                  //
-                  // check to see if block already pays out to this slip
-                  //
-                  for (let i = 0; i < cv.block_payouts.length; i++) {
-                    if (cv.block_payouts[i].staker_slip.returnKey() === staker_slip.returnKey()) {
-                      slip_was_spent = 1;
-                      break;
-                    }
-                  }
-
-                  //
-                  // check to see if staker slip already spent/withdrawn
-                  //
-                  if (this.slips_spent_this_block.includes(staker_slip.returnKey())) {
-                    slip_was_spent = 1;
-                  }
-
-                  //
-                  // add payout to staker if staker is new
-                  //
-                  if (slip_was_spent === 0) {
-                    block_payout.staker = staker_slip.returnPublicKey();
-                    block_payout.staker_payout =
-                      staker_slip.returnAmount() + staker_slip.returnPayout();
-                    block_payout.staker_slip = staker_slip.clone();
-                  }
-
-                  next_random_number = this.app.crypto.hash(next_random_number);
-
-                  cv.block_payouts.push(block_payout);
-                }
               }
             }
           }
@@ -694,17 +700,6 @@ class Block {
           transaction.addOutput(output.clone());
           slip_ordinal += 1;
         }
-        if (cv.block_payout[i].staker !== "") {
-          const output = new Slip();
-          output.add = cv.block_payout[i].staker;
-          output.amt = cv.block_payout[i].staker_payout;
-          output.type = SlipType.StakerOutput;
-          output.sid = slip_ordinal;
-          transaction.addOutput(output.clone());
-          slip_ordinal += 1;
-          cv.staking_treasury += cv.block_payout[i].staking_treasury;
-          cv.staking_treasury -= cv.block_payout[i].staker_payout;
-        }
       }
 
       cv.fee_transaction = transaction;
@@ -716,6 +711,11 @@ class Block {
     // if there is no golden ticket AND there is no golden ticket before the MAX
     // blocks we recurse to collect NOLAN we have to add the amount of the unpaid
     // block to the amount of NOLAN that is falling off our chain.
+    //
+    // this edge-case should be a statistical abnormality that we almost never
+    // run into, but it is good to collect the SAITO into a variable that we track
+    // so that we can confirm the soundness of monetary policy by monitoring the
+    // blockchain.
     //
     if (cv.gt_num === 0) {
       for (let i = 1; i <= MAX_STAKER_RECURSION; i++) {
@@ -851,6 +851,8 @@ class Block {
     //
     this.block.avg_income = cv.avg_income;
     this.block.avg_variance = cv.avg_variance;
+    this.block.avg_atr_income = cv.avg_atr_income;
+    this.block.avg_atr_variance = cv.avg_atr_variance;
 
 
     //
@@ -1397,6 +1399,8 @@ class Block {
 
     const avg_income = this.app.binary.u64AsBytes(this.block.avg_income.toString());
     const avg_variance = this.app.binary.u64AsBytes(this.block.avg_variance.toString());
+    const avg_atr_income = this.app.binary.u64AsBytes(this.block.avg_atr_income.toString());
+    const avg_atr_variance = this.app.binary.u64AsBytes(this.block.avg_atr_variance.toString());
 
     const block_header_data = new Uint8Array([
       ...transactions_length,
@@ -1412,6 +1416,8 @@ class Block {
       ...difficulty,
       ...avg_income,
       ...avg_variance,
+      ...avg_atr_income,
+      ...avg_atr_variance,
     ]);
 
     if (block_type === BlockType.Header) {
@@ -1455,6 +1461,8 @@ class Block {
       this.app.binary.u64AsBytes(this.block.difficulty),
       this.app.binary.u64AsBytes(this.block.avg_income),
       this.app.binary.u64AsBytes(this.block.avg_variance),
+      this.app.binary.u64AsBytes(this.block.avg_atr_income),
+      this.app.binary.u64AsBytes(this.block.avg_atr_variance),
     ]);
   }
 
@@ -1526,6 +1534,19 @@ class Block {
     }
     if (cv.avg_variance !== this.block.avg_variance) {
       console.log("ERROR 712923: block is mis-reporting its average variance");
+      return false;
+    }
+
+
+    //
+    // average atr income and average atr income variance
+    //
+    if (cv.avg_atr_income !== this.block.avg_atr_income) {
+      console.log("ERROR 712923: block is mis-reporting its average atr income");
+      return false;
+    }
+    if (cv.avg_atr_variance !== this.block.avg_atr_variance) {
+      console.log("ERROR 712923: block is mis-reporting its average atr variance");
       return false;
     }
 

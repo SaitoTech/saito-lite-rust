@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.123,
+    version: 4.131,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -637,13 +637,7 @@ console.log("---------------------");
             if (to_slips[m].isNonZeroAmount()) {
               if (!this.containsInput(to_slips[m])) {
                 if (!this.containsOutput(to_slips[m])) {
-                  if (
-                    to_slips[m].type != SlipType.StakerOutput ||
-                    (to_slips[m].type != SlipType.StakerWithdrawalPending &&
-                      to_slips[m].type != SlipType.StakerWithdrawalStaking)
-                  ) {
-                    this.addInput(to_slips[m]);
-                  }
+                  this.addInput(to_slips[m]);
                 }
               } else {
                 const key = to_slips[m].returnKey();
