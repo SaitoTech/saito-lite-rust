@@ -52,7 +52,7 @@ h1 {
 #board {
     max-width: 700px;
     margin: auto;
-    margin-left: -40px
+    //margin-left: -40px
 }
 
 .module_label {
@@ -380,11 +380,15 @@ transform: translate(-50%, -50%);
 	margin-right: auto;
     }*/
     #board {
-        max-width: 80%;
+        max-width: 60%;
         margin: 0px;
-        margin-left: 42.5%;
-        transform: translateX(-56%);
+        margin-left: 50%;
+        transform: translateX(-50%);
     }
+    .board-b72b1{
+        margin-left:  -25px;
+    }
+
     #status_display {
         font-size: 24px;
         margin: 0;
@@ -414,9 +418,13 @@ transform: translate(-50%, -50%);
     }
 
     .controls {    
-        width: 55%;
+        width: 99%;
         left: 50%;
         transform: translateX(-50%);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
     }
 
 
@@ -434,8 +442,9 @@ transform: translate(-50%, -50%);
         min-height: 57px;
         background: rgba(255,255,255,0.6);
         color: #444;
-        margin-top: 5px;
+        margin-top: 8px;
         border-radius: 8px;
+        width: 47%;
     }
 
     .tool-item {
@@ -487,11 +496,9 @@ transform: translate(-50%, -50%);
 
 @media only screen and (max-width: 500px) {
     #board {
-        max-width: 90vw;
+        max-width: 70%;
         margin: 0px;
         transform: none;
-        margin-left: 35%;
-        transform: translateX(-50%);
     }
 
     .alpha-d2270 {
@@ -504,10 +511,13 @@ transform: translate(-50%, -50%);
         top: 6px;
         left: -14px;
         font-size: 14px;
+        transform: none;
     }
 
     .board-b72b1 {
         border: 20px solid #222;
+        margin-left: 50%;
+        transform: translateX(-53%);
     }
 
     img.captured {
@@ -515,7 +525,7 @@ transform: translate(-50%, -50%);
     }
 
     .chessboard-63f37 {
-        width: 90vw;
+        width: 100vw;
     }
 
     .button_row {
@@ -542,20 +552,26 @@ transform: translate(-50%, -50%);
 
     .controls {
         width: 95%;
+        max-height: 230px;
+        overflow-y: scroll;
     }
 
     .button_row {
         margin-top: 20px;
         display: grid;
         grid-gap: 10px;
-        grid-template-columns: 69% 50%;
+        grid-template-columns: 50% 50%;
         visibility: hidden;
         transition: all 0.3s ease-in-out;
         margin-bottom: 10px;
         left: 0px;
-        width: 53%;
+        width: 85%;
         margin-left: 0px;
         transform: none;
+    }
+
+    #identicon-cont {
+        width: 98%;
     }
 }
 

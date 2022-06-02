@@ -500,7 +500,7 @@ var ChessBoard = function (containerElOrId, cfg) {
         // pad one pixel
         var boardWidth = containerWidth - 1;
 
-        if (screen.width < 1000) denominator = 6;
+        if (screen.width < 1000) denominator = 6.5;
 
         while (boardWidth % denominator !== 0 && boardWidth > 0) {
             boardWidth--;
