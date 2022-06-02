@@ -41,12 +41,7 @@ class Wuziqi extends GameTemplate {
         this.game.sides = ["black", "white"];
 
 
-        // Add the Saito Chat Manager for in-game Chat
-        this.app.modules.respondTo("chat-manager").forEach(mod => {
-            mod.respondTo('chat-manager').render(this.app, this);
-        });
-
-        // Add Menu Items to standard Menu
+         // Add Menu Items to standard Menu
         /*this.menu.addMenuOption({
             text: "Player: " + this.formatPlayer(),
             id: "playerno",
@@ -420,6 +415,7 @@ class Wuziqi extends GameTemplate {
                 return 1;
             }
         }
+        return 0;
     }
 
     // Add button to continue the game

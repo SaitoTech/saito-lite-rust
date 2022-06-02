@@ -135,45 +135,69 @@ module.exports = ArcadeGameDetails = {
           //
           // if crypto and stake selected, make sure creator has it
           //
-          if (options.crypto != "") {
-            if (options.stake > 0) {
-              let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(
-                options.crypto
-              ).ticker;
-              let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
-              if (selected_crypto_ticker === preferred_crypto_ticker) {
-                let my_address = app.wallet.returnPreferredCrypto().returnAddress();
-                let crypto_transfer_manager = new GameCryptoTransferManager(app);
-                crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () { });
-                let returnObj = await app.wallet.returnPreferredCryptoBalances(
-                  [my_address],
-                  null,
-                  options.crypto
-                );
+          try{
+            if (options.crypto != "") {
+              if (parseFloat(options.stake) > 0) {
+                let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(options.crypto).ticker; //is this really necessary?
+                let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
+                if (selected_crypto_ticker === preferred_crypto_ticker) {
+                  let my_address = app.wallet.returnPreferredCrypto().returnAddress();
+                  let crypto_transfer_manager = new GameCryptoTransferManager(app);
+                  crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () { });
+                  
+                  /*let returnObj = await app.wallet.returnPreferredCryptoBalances(
+                    [my_address],
+                    null,
+                    options.crypto
+                  );
 
-                let adequate_balance = 0;
-                for (let i = 0; i < returnObj.length; i++) {
-                  if (returnObj[i].address == my_address) {
-                    if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
-                      adequate_balance = 1;
+                  let adequate_balance = 0;
+                  for (let i = 0; i < returnObj.length; i++) {
+                    if (returnObj[i].address == my_address) {
+                      if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
+                        adequate_balance = 1;
+                      }
                     }
                   }
-                }
-                crypto_transfer_manager.hideOverlay();
+                  crypto_transfer_manager.hideOverlay();
+                  if (adequate_balance == 0) {
+                    salert("You don't have enough " + options.crypto + " to create this game!");
+                    return;
+                  }
+                  */
+                  let current_balance = await crypto_transfer_manager.returnBalance(
+                    app,
+                    mod,
+                    my_address,
+                    options.crypto,
+                    function () { }
+                  );
+                  console.log("Current balance", current_balance);
 
-                if (adequate_balance == 0) {
-                  salert("You don't have enough " + options.crypto + " to create this game!");
+                  try {
+                    if (BigInt(current_balance) < BigInt(options.stake)) {
+                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
+                      return;
+                    }
+                  } catch (err) {
+                    if (parseFloat(current_balance) < parseFloat(options.stake)) {
+                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
+                      return;
+                    }
+                  }
+                  
+                } else {
+                  salert(
+                    `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
+                  );
                   return;
                 }
-              } else {
-                salert(
-                  `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
-                );
-                return;
               }
             }
+          }catch(err){
+             console.log("ERROR checking crypto: " + err);
+            return;
           }
-
           let gamemod = app.modules.returnModule(options.gamename);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {

@@ -424,6 +424,7 @@ class Blockchain {
     if (block_id <= this.blockchain.last_callback_block_id) {
       already_processed_callbacks = 1;
     }
+
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
@@ -443,12 +444,12 @@ class Blockchain {
           block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
         }
 
-        //console.log(
-        //  "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
-        //);
-        //console.log(
-        //  "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
-        //);
+        console.log(
+          "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
+        );
+        console.log(
+          "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
+        );
 
         if (block_id_from_which_to_run_callbacks > 0) {
           for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {

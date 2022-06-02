@@ -66,14 +66,6 @@ class Poker extends GameTemplate {
     super.initializeHTML(app);
 
     //
-    // ADD CHAT
-    //
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(app, this);
-      mod.respondTo("chat-manager").attachEvents(app, this);
-    });
-
-    //
     // ADD MENU
     //
     this.menu.addMenuOption({
@@ -140,9 +132,56 @@ class Poker extends GameTemplate {
     this.playerbox.attachEvents(app, this); //empty function
     this.playerbox.addClassAll("poker-seat-", true);
     this.playerbox.addStatus(); //enable update Status to display in playerbox
+ 
+    if (this.game.crypto){
+      if (this.game.crypto == "TRX"){
+        try{
+          if (!document.querySelector(".crypto_logo")){
+            $(".gameboard").append(app.browser.htmlToElement(`
+            <div class="crypto_logo">
+            <?xml version="1.0" encoding="utf-8"?>
+            <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+               viewBox="0 0 3000 1131.5" style="enable-background:new 0 0 3000 1131.5;" xml:space="preserve">
+            <style type="text/css">
+              .st0{fill:#EBEBEC;}
+              .st1{fill:#EB0029;}
+            </style>
+            <g>
+              <g>
+                <rect x="1198.6" y="497.4" class="st0" width="44.4" height="289.9"/>
+                <rect x="1080" y="374.6" class="st0" width="361.9" height="44.4"/>
+                <rect x="1278.8" y="497.4" class="st0" width="44.4" height="289.9"/>
+              </g>
+              <g>
+                <polygon class="st0" points="2549.8,787.6 2594.6,787.6 2594.6,613 2549.8,563.2    "/>
+                <polygon class="st0" points="2785.7,374.6 2785.7,698.3 2468.8,346.1 2468.8,787.6 2513.5,787.6 2513.5,463.8 2830.6,816.1 
+                  2830.6,374.6    "/>
+              </g>
+              <g>
+                <path class="st0" d="M2178.7,374.4c-113.9,0-206.5,92.6-206.5,206.5s92.6,206.5,206.5,206.5s206.5-92.6,206.5-206.5
+                  C2385.2,467.1,2292.6,374.4,2178.7,374.4z M2178.7,742.9c-89.3,0-162-72.6-162-162s72.6-162,162-162c89.3,0,162,72.6,162,162
+                  C2340.7,670.2,2268,742.9,2178.7,742.9z"/>
+                <path class="st0" d="M2178.7,551.2c-16.4,0-29.7,13.3-29.7,29.7s13.3,29.7,29.7,29.7s29.7-13.3,29.7-29.7
+                  S2195.1,551.2,2178.7,551.2z"/>
+              </g>
+              <path class="st0" d="M1894.5,501.3c0-69.8-56.4-126.6-125.7-126.6h-236.2v413h44.1V419.5h192.1c44.5,0,80.7,36.7,80.7,81.8
+                c0,44.9-35.7,81.4-79.8,81.9l-156.7-0.1v204.6h44.1V627.9h103.3l84.4,159.7h51.3l-88.1-166C1858.9,604.7,1894.5,555.5,1894.5,501.3
+                z"/>
+            </g>
+            <path class="st1" d="M774.7,292.8L172.9,182.1l316.7,796.8l441.2-537.6L774.7,292.8z M765.1,341.6l92.1,87.5l-251.8,45.6
+              L765.1,341.6z M550.7,465.6L285.3,245.5L719,325.3L550.7,465.6z M531.7,504.6l-43.2,357.7L255.2,275.1L531.7,504.6z M571.7,523.5
+              L850.5,473L530.8,862.6L571.7,523.5z"/>
+            </svg></div>
+          `));  
+          }
+        }catch(err){
+
+        }
+      }
+    }
   }
 
-  initializeGame(game_id) {
+  initializeGame(game_id) { 
     /*if (this.game.status != "") {
       this.updateStatus(this.game.status);
     }*/
@@ -156,12 +195,15 @@ class Poker extends GameTemplate {
 
     //Parse game options
     this.game.crypto = (this.game.options.crypto)? this.game.options.crypto: "";
-    this.game.chipValue = (this.game.options.chip) ? parseFloat(this.game.options.chip) : 0;
+    this.game.stake =  (this.game.options.stake) ? parseFloat(this.game.options.stake) : 0;
+    this.game.chipValue = this.game.stake / parseInt(this.game.options.num_chips);
     this.game.tournamentBlinds = (this.game.options.blind_mode === "increase");
     this.useGraphics = (this.game.options.chip_graphics == 1);
-
+    let chipValueStr = this.game.chipValue.toString();
+    this.decimal_precision = (chipValueStr.includes(".")) ? chipValueStr.split(".")[1].length : chipValueStr.length;
+    console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
+    console.log(chipValueStr, this.decimal_precision);
     if (this.browser_active) {
-      console.log("INITIALIZE GAME WITH CRYPTO: " + this.game.crypto);
       this.displayBoard();
     }
   }
@@ -232,6 +274,7 @@ class Poker extends GameTemplate {
     if (alive_players == 1) {
       this.game.queue = [];
       this.game.queue.push("winner\t" + winner);
+      this.settleLastRound();
       return 1;
     }
 
@@ -327,7 +370,6 @@ class Poker extends GameTemplate {
 
     console.log("START ROUND");
     
-    this.displayBoard();  
     
     this.updateLog("Round: " + this.game.state.round);
     this.updateLog(`Table ${this.game.id.substring(0, 10)}, Player ${this.game.state.button_player} is the button`);
@@ -337,10 +379,12 @@ class Poker extends GameTemplate {
     }
     
     /*
+    //this.displayBoard();  
     document.querySelector(".round").innerHTML = `Round : ${this.game.state.round}`;
     document.querySelector(".dealer").innerHTML = `Button : Player ${this.game.state.button_player}`;
     */
     this.initializeQueue();
+
   }
 
    /*
@@ -348,13 +392,14 @@ class Poker extends GameTemplate {
   */
   initializeQueue() {
 
+    //console.log("old queue:" + JSON.stringify(this.game.queue));
     this.game.queue = [];
 
     this.game.queue.push("round");
     this.game.queue.push("READY");
-    this.game.queue.push("POOL\t1"); // pool for cards on table
+    this.game.queue.push("POOL\t1"); // CREATE pool for cards on table
 
-    //Deal two cards to everyone
+    /*Deal two cards to everyone
     for (let i = this.game.players.length; i>0; i--){
       this.game.queue.push(`DEAL\t1\t${i}\t2`);
     }
@@ -366,9 +411,12 @@ class Poker extends GameTemplate {
       this.game.queue.push(`DECKXOR\t1\t${i}`);
     }
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+    */
+    this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
 
-    // adds any outstanding settlement to queue
+    // adds any outstanding settlement to queue (if not already processed)
     this.settleLastRound();
+
 
   }
 
@@ -444,16 +492,19 @@ class Poker extends GameTemplate {
               if (i != player_left_idx) {
                 //Only losers
                 if (this.game.state.player_pot[i] > 0) {
+                  let amount_to_send = this.game.state.player_pot[i]*this.game.chipValue;
+                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                   let ts = new Date().getTime();
                   this.rollDice();
                   let uh = this.game.dice;
-                  if (this.game.player - 1 == player_left_idx) {
+                  //if (this.game.player - 1 == player_left_idx) {
               // do not reformat -- adding whitespace screws with API
-                    this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  } else {
-                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  }
+                  //  this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${this.game.state.player_pot[i]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  //} else {
+                     this.settlement.push(`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                     this.settlement.push(`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  //}
                 }
               }
             }
@@ -476,7 +527,7 @@ class Poker extends GameTemplate {
             this.game.state.player_cards = {};
             this.game.state.player_cards_reported = 0;
             this.game.state.player_cards_required = 0;
-
+            this.game.queue = [];
             let first_scorer = -1;
 
             for (let i = 0; i < this.game.state.passed.length; i++) {
@@ -503,12 +554,13 @@ class Poker extends GameTemplate {
             //We can't just push "announce", have to reset queue to clear out any remaining turns
             this.game.queue = ["round", "announce"];
             //this.game.queue.push("announce");
-            for (let z = 0; z < cards_to_flip; z++) {
+            this.game.queue.push(`POOLDEAL\t1\t${cards_to_flip}\t1`);
+            /*for (let z = 0; z < cards_to_flip; z++) {
               for (let i = this.game.players.length - 1; i >= 0; i--) {
                 this.game.queue.push("FLIPCARD\t1\t1\t1\t" + (i + 1));
               }
               this.game.queue.push("FLIPRESET\t1");
-            }
+            }*/
 
             //
             // observer mode
@@ -585,6 +637,8 @@ class Poker extends GameTemplate {
         let scorer = parseInt(mv[1]);
         let card1 = mv[2];
         let card2 = mv[3];
+
+        this.game.queue.splice(qe,1);
 
         //Pocket
         this.game.state.player_cards[scorer - 1].push(
@@ -673,26 +727,32 @@ class Poker extends GameTemplate {
 
           this.updateHTML = updateHTML;
 
-          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`);
-          
           if (winners.length > 1) {
             this.updateLog(`${winnerStr} split the pot for ${pot_size} each`);
 
             //
             // send wagers to winner
             let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
+            if (chips_to_send !== Math.round(chips_to_send)){
+              salert("Uneven pot split. House keeps difference");
+              chips_to_send = Math.floor(chips_to_send);
+            }
+
             for (let i = 0; i < winners.length; i++) {
               //
               // non-winners send wagers to winner
               if (this.game.crypto) {
                 for (let ii = 0; ii < this.game.players.length; ii++) {
                   if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+                    let amount_to_send = this.game.chipValue * this.game.state.player_pot[ii] / winners.length ;
+                    amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                     // do not reformat -- adding whitespace screws with API
                     let ts = new Date().getTime();
                     this.rollDice();
                     let uh = this.game.dice;
-                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
-                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${this.game.state.player_pot[ii] / winners.length}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                    this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                   }
                 }
               }
@@ -703,20 +763,27 @@ class Poker extends GameTemplate {
             if (this.game.crypto) {
               for (let ii = 0; ii < this.game.players.length; ii++) {
                 if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
+                  let amount_to_send = this.game.state.player_pot[ii] * this.game.chipValue;
+                  amount_to_send = amount_to_send.toFixed(this.decimal_precision+1);
+
                   let ts = new Date().getTime();
                   this.rollDice();
                   let uh = this.game.dice;
                   // do not reformat -- adding whitespace screws with API
-                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
-                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${this.game.state.player_pot[ii]}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  this.settlement.push(`RECEIVE\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
+                  this.settlement.push(`SEND\t${this.game.players[ii]}\t${this.game.players[winners[0]]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
                 }
               }
             }
           }
 
+          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
+            this.restartQueue();
+          });
+          this.game.halted = 1;
           this.startNextRound();
 
-          return 1;
+          return 0;
         }
 
         //If not everyone has reported there hand yet, find the next in sequence from this scorer
@@ -1321,12 +1388,13 @@ class Poker extends GameTemplate {
         for (let i = 0; i < this.game.state.player_pot.length; i++){
           html += this.returnPlayerStackHTML(i+1, this.game.state.player_pot[i]);
         }
+      }
         html += `<div class="tiptext">${this.game.state.pot} chips in the pot`;
         if (this.game.crypto){
           html += `, worth ${this.sizeNumber(this.game.state.pot * this.game.chipValue)} ${this.game.crypto}`;
         }
         html += "</div>";
-      }
+      
       document.querySelector(".pot").innerHTML = sanitize(html);
 
     } catch (err) { console.log("error displaying table",err);}
@@ -2483,10 +2551,10 @@ class Poker extends GameTemplate {
   /*Helper functions for display and options*/
 
   cardToHuman(card) {
-    console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
+    
     if (!this.game.deck[0].cards[card]){
       console.log("Deck error: " + card);
-      
+      console.log(JSON.parse(JSON.stringify(this.game.deck[0])));
       return "";
     }
     let h = this.game.deck[0].cards[card].name;
@@ -2575,7 +2643,7 @@ class Poker extends GameTemplate {
             </select>
           </div>
           <div class="overlay-input">
-            <input type="checkbox" name="chip_graphics" checked/>
+            <input type="checkbox" name="chip_graphics" />
             <label for="chip_graphics">Use visual chips</label>
           </div>
           <div class="overlay-input">
@@ -2601,9 +2669,9 @@ class Poker extends GameTemplate {
             </select>
           </div>
           <div id="chip_wrapper" class="overlay-input" style="display:none;">
-            <label for="chip">Chip Value:</label>
+            <label for="stake">Game stake:</label>
             
-            <input type="number" id="chip" list="suggestedChipValues" name="chip" min="0" value="0" step="0.001">
+            <input type="number" id="stake" list="suggestedChipValues" name="stake" min="0" value="0" step="1">
           </div>
           <datalist id="suggestedChipValues">
             <option value="0.01">
@@ -2620,11 +2688,11 @@ class Poker extends GameTemplate {
           <div class="overlay-input">
             <label for="observer_mode">Observer Mode:</label>
             <select name="observer">
-              <option value="enable" selected>enable</option>
-              <option value="disable">disable</option>
+              <option value="enable" >enable</option>
+              <option value="disable" selected>disable</option>
             </select>
           </div>
-          <input type="hidden" id="stake" name="stake" value="0">
+          <!--input type="hidden" id="stake" name="stake" value="0"-->
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
 
     `;
@@ -2637,28 +2705,27 @@ class Poker extends GameTemplate {
     let numChips = document.getElementById("num_chips");
     let blindDisplay = document.getElementById("blind_explainer");
     let crypto = document.getElementById("crypto");
-    let chipValue = document.getElementById("chip");
+    let stakeValue = document.getElementById("stake");
     let chipInput = document.getElementById("chip_wrapper");
     let chipDisplay = document.getElementById("stakesMsg");
-    let stake = document.getElementById("stake");
+    //let stake = document.getElementById("stake");
 
     const updateChips = function(){
-      if(crypto && chipDisplay && numChips && chipValue && chipInput && stake){
+      if(crypto && chipDisplay && numChips && stakeValue && chipInput /*&& stake*/){
         if (crypto.value == ""){
           chipDisplay.textContent = "The game is just for fun";
           chipInput.style.display = "none";
-          chipValue.value = "0";
           stake.value = "0";
         }else{
-          let nChips = numChips.value;
-          let chipAmt = chipValue.value;
-          let jsMath = parseFloat((chipAmt*nChips).toFixed(3));
-          chipDisplay.textContent = `You need ${jsMath} ${crypto.value} to play the game`;
+          let nChips = parseInt(numChips.value);
+          let stakeAmt = parseFloat(stakeValue.value);
+          let jsMath = stakeAmt/nChips;
+
+          chipDisplay.textContent = `You need ${stakeAmt} ${crypto.value} to play the game, with starting blinds of ${jsMath.toFixed(3)}/${(2*jsMath).toFixed(3)} ${crypto.value}`;
           chipInput.style.display = "block";
-          stake.value = jsMath; 
         }
       }
-      };
+    };
 
     if (blindModeInput && blindDisplay){
       blindModeInput.onchange = function(){
@@ -2673,8 +2740,8 @@ class Poker extends GameTemplate {
     if (crypto){
       crypto.onchange = updateChips;
     }
-    if (chipValue){
-      chipValue.onchange = updateChips;
+    if (stake){
+      stake.onchange = updateChips;
     }
     if (numChips){
       numChips.onchange = updateChips;
@@ -2692,6 +2759,9 @@ class Poker extends GameTemplate {
       }
       if (index == "chip") {
         new_options[index] = options[index];
+      }
+      if (index == "stake"){
+        new_options[index] = options[index]; 
       }
       if (index == "num_chips") {
         new_options[index] = options[index];
@@ -2711,20 +2781,21 @@ class Poker extends GameTemplate {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};
     let useGraphics = false;
+    let crypto = "";
     for (let i in sgoa) {
       if (sgoa[i] != "") {
         let okey = i;
         let oval = options[i];
 
         let output_me = 1;
-        if (i == "chip") {
+        if (okey == "chip") {
           if (oval !== "0"){
             okey = "small blind";  
           }else{
             output_me = 0;
           }
         }
-        if (i == "blind_mode") {
+        if (okey == "blind_mode") {
           if (oval == "increase") {
             okey = "mode";
             oval = "tournament";
@@ -2732,15 +2803,22 @@ class Poker extends GameTemplate {
             output_me = 0;
           }
         }
-        if (i == "num_chips"){
+        if (okey == "num_chips"){
           okey = "chips";
         }
-        if (i == "chip_graphics"){
+        if (okey == "chip_graphics"){
           if (oval == 1){
             useGraphics = true;
             okey = "show chips";
             oval = null;
           }
+        }
+        if (okey == "crypto"){
+          output_me = 0;
+          crypto = oval;
+        }
+        if (okey == "stake"){
+          oval += crypto;
         }
 
         if (output_me == 1) {

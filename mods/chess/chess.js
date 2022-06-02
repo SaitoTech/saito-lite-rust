@@ -56,18 +56,6 @@ class Chessgame extends GameTemplate {
     if (!this.browser_active) { return; }
     super.initializeHTML(app);
 
-    this.app.modules.respondTo("chat-manager").forEach(mod => {
-      mod.respondTo('chat-manager').render(this_chess.app, this_chess);
-    });
-
-        //
-    // ADD CHAT
-    //
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(app, this);
-      mod.respondTo("chat-manager").attachEvents(app, this);
-    });
-
     //
     // ADD MENU
     //
@@ -136,19 +124,13 @@ class Chessgame extends GameTemplate {
     console.log('######################         #######################');
     console.log('######################################################');
     console.log('######################################################');
+    console.log(game_id);
 
     if (this.browser_active == 1) {
-
-console.log("A");
       chess = require('./lib/chess.js');
-console.log("B");
       chessboard = require('./lib/chessboard');
-console.log("C");
-
       this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
-console.log("D");
       this.engine = new chess.Chess();
-console.log("E");
     }
 
     //
@@ -211,7 +193,6 @@ console.log("E");
 
 console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
 console.log(JSON.stringify(msg));
-//alert("LOOP");
 
     if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
       return;
@@ -352,9 +333,6 @@ console.log(JSON.stringify(msg));
 
     window.onresize = () => this.board.resize();
 
-    this.app.modules.respondTo('chat-manager').forEach(mod => {
-      mod.respondTo('chat-manager').attachEvents(this_chess.app, this_chess);
-    })
   }
 
   updateStatusMessage(str = "") {
@@ -700,21 +678,23 @@ console.log(JSON.stringify(msg));
         <option value="black" default>Black</option>
         <option value="white">White</option>
       </select>
-      </div>`;
+      </div>
 
-      /*`<div class="overlay-input">
+      <div class="overlay-input">
       <label for="clock">Time Limit:</label>
       <select name="clock">
         <option value="0" default>no limit</option>
+        <option value="1">1 minute</option>
         <option value="2">2 minutes</option>
         <option value="10">10 minutes</option>
         <option value="30">30 minutes</option>
         <option value="60">60 minutes</option>
         <option value="90">90 minutes</option>
+        <option value="120">120 minutes</option>
       </select>
-      </div>`*/
+      </div>
 
-      html += `<div class="overlay-input">
+      <div class="overlay-input">
       <label for="observer_mode">Observer Mode:</label>
       <select name="observer">
         <option value="enable" selected>enable</option>
@@ -723,7 +703,6 @@ console.log(JSON.stringify(msg));
       </div>
     
       <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-
         
     `;
 

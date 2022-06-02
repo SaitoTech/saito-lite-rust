@@ -18,7 +18,6 @@ import Storage from "../../lib/saito/storage";
 import NetworkAPI from "../../lib/saito/networkapi";
 import Network from "../../lib/saito/network";
 
-
 import hash_loader from "./hash-loader";
 import Handshake from "../../lib/saito/handshake";
 
@@ -49,7 +48,6 @@ class Saito {
   handshake: Handshake;
   hash: (data: string) => string;
   server: Server;
-
 
   constructor(config = {}) {
     this.BROWSER = 1;
@@ -85,8 +83,6 @@ class Saito {
     this.blockchain = new Blockchain(this);
     this.blockring = new Blockring(this, this.blockchain.returnGenesisPeriod());
     this.handshake = new Handshake(this);
-   
-  
   }
 
   async init() {
@@ -100,7 +96,7 @@ class Saito {
       //
       await hash_loader(this);
 
-      this.wallet.initialize();
+      await this.wallet.initialize();
       this.mempool.initialize();
       this.miner.initialize();
       this.keys.initialize();
@@ -129,6 +125,7 @@ class Saito {
       if (this.server) {
         this.server.initialize();
       }
+
     } catch (err) {
       console.log(
         "Error occured initializing your Saito install. The most likely cause of this is a module that is throwing an error on initialization. You can debug this by removing modules from your config file to test which ones are causing the problem and restarting."

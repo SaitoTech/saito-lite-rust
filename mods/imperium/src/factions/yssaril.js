@@ -225,8 +225,8 @@
 
         imperium_self.playerSelectPlayerWithFilter(
           "Select a player from which to take an action card (if possible): " ,
-          function(player) {
-            if (player != imperium_self.game.player) { return 1; } return 0;
+          function(p) {
+            if (p.player != imperium_self.game.player) { return 1; } return 0;
           },
           function(player) {
             imperium_self.addMove("faction6_choose_card_triggered\t"+imperium_self.game.player+"\t"+player);

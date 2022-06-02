@@ -27,7 +27,7 @@
       this.game.state.events.ourmanintehran = 1;
 
       if (this.game.player == 2) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for USSR to provide keys to examine deck</div>");
+        return 0;
       }
 
       if (this.game.player == 1) {

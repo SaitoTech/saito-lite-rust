@@ -67,10 +67,6 @@ class Wordblocks extends GameTemplate {
 
     super.initializeHTML(app);
 
-    this.app.modules.respondTo("chat-manager").forEach((mod) => {
-      mod.respondTo("chat-manager").render(this.app, this);
-    });
-
     this.menu.addMenuOption({
       text: "Game",
       id: "game-game",
@@ -117,6 +113,7 @@ class Wordblocks extends GameTemplate {
       id: "game-exit",
       class: "game-exit",
       callback: function (app, game_mod) {
+        game_mod.saveGame(game_mod.game.id);
         window.location.href = "/arcade";
       },
     });
@@ -300,6 +297,7 @@ class Wordblocks extends GameTemplate {
         xhr.responseType = "json"; //only in async
         xhr.send();
         this.loadingDictionary = true; //flag that the game module is processing xhr
+        //this.game.halted = 1;
         xhr.onload = ()=>{
            if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);
@@ -308,7 +306,7 @@ class Wordblocks extends GameTemplate {
             this.wordlist = xhr.response;//;Array.from(JSON.parse(xhr.response));
             //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
             console.log("My word list is a :",typeof this.wordlist);
-            this.startQueue();
+            this.restartQueue();
           }
         };
       } catch (err) {
@@ -2173,7 +2171,6 @@ class Wordblocks extends GameTemplate {
       wordblocks_self.saveGame(wordblocks_self.game.id);
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
 
       //
       // game over conditions
@@ -2295,7 +2292,8 @@ class Wordblocks extends GameTemplate {
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
         this.game.queue.splice(this.game.queue.length - 1, 1);
-        return 1; // remove word and wait for next
+        console.log("New Queue:",JSON.stringify(this.game.queue));
+        return 0; // remove word and wait for next
       }
 
       //Actually tile discarding action
@@ -2364,20 +2362,13 @@ class Wordblocks extends GameTemplate {
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
         this.game.queue.splice(this.game.queue.length - 1, 1);
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
+        console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0;
       }
-    }else{
-      console.log("No moves in queue");
+      
     }
 
-    return 1;
+    return 0;    
   }
 
   checkForEndGame() {

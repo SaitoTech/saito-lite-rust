@@ -775,8 +775,8 @@ ACTION CARD - types
 
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player and remove one token from their command pool: " ,
-              function(player) {
-	        if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+	        if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
 	      function(player) {
                 imperium_self.addMove("expend\t"+player+"\tcommand\t"+"1");
@@ -957,8 +957,8 @@ ACTION CARD - types
 
             imperium_self.playerSelectPlayerWithFilter(
 	      "Select a player. They give you one of their action cards: ",
-              function(player) {
-	        if (player != imperium_self.game.player) { return 1; } return 0;
+              function(p) {
+	        if (p.player != imperium_self.game.player) { return 1; } return 0;
               },
 	      function(player) {
                 imperium_self.addMove("pull\t"+imperium_self.game.player+"\t"+player+"\t"+"action"+"\t"+"random");
@@ -1037,7 +1037,7 @@ ACTION CARD - types
             	imperium_self.playerSelectPlayerWithFilter(
 	          "Select a player to signal jam in that sector: " ,
                   function(p) {
-	            if (p != imperium_self.game.player) { return 1; } return 0;
+	            if (p.player != imperium_self.game.player) { return 1; } return 0;
                   },
 	          function(p) {
                     imperium_self.addMove("activate\t"+p+"\t"+sector);
