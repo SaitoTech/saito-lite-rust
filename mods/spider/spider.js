@@ -144,7 +144,7 @@ class Spider extends GameTemplate {
     }
     html += "</div>";
     html += `<div class="spider-footer">
-              <div class="completed_stack_box"><span>Sorted Cards</span></div>
+              <div class="completed_stack_box"></div>
               <div class="undo"><i class="fas fa-undo fa-border"></i></div>
               <div class='draw-pile'>New Game</div>
             </div>
@@ -223,7 +223,7 @@ class Spider extends GameTemplate {
 
     this.game.state.moves = 0;
     this.game.state.completed_stacks = [];
-    this.game.state.score = 1000;
+    this.game.state.score = 100;
 
     //Reset/Increment State
     this.game.state.round++;
@@ -395,6 +395,10 @@ class Spider extends GameTemplate {
   updateScore(change = -1){
     this.game.state.score += change;
     this.scoreboard.update(`<div class="score">Score: ${this.game.state.score}</div>`);
+    if (this.game.state.score <= 0){
+      this.prependMove("lose");
+      this.endTurn();
+    }
   }
   
   returnState() {
@@ -404,7 +408,7 @@ class Spider extends GameTemplate {
     state.round = 0;
     state.wins = 0;
     state.moves = 0;
-    state.score = 1000;
+    state.score = 100;
     state.recycles_remaining = 5;
     state.completed_stacks = [];
     state.board = [];
@@ -416,7 +420,7 @@ class Spider extends GameTemplate {
   }
 
 
-  returnStatsHTML(title = "Game Statitics"){
+  returnStatsHTML(title = "Game Statistics"){
     let html = `<div class="rules-overlay">
     <h1>${title}</h1>
     <table>
@@ -645,7 +649,7 @@ class Spider extends GameTemplate {
         this.game.state.board[stackNum].push(card);
       }
     }else{
-      this.updateScore(100);
+      this.updateScore(50);
       await this.animateStackVictory(stackNum);
       this.game.state.completed_stacks.push(suit);
       console.log(this.game.state.completed_stacks);
@@ -798,6 +802,13 @@ class Spider extends GameTemplate {
 
       if (mv[0] === "round") {
         this.newRound();
+      }
+
+      if (mv[0] === "lose"){
+        this.game.queue.splice(qe, 1);
+        this.displayModal("You Lose!", "Too many moves");
+        this.newRound();
+        return 1;
       }
 
       if (mv[0] === "win"){
