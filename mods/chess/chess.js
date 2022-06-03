@@ -20,8 +20,6 @@ class Chessgame extends GameTemplate {
     this_chess = this;
     this.publickey = app.wallet.returnPublicKey();
 
-    this.useClock = 0;
-    this.log_length = 999;
     this.minPlayers = 2;
     this.maxPlayers = 2;
     this.type       = "Classic Boardgame";
@@ -133,10 +131,6 @@ class Chessgame extends GameTemplate {
       this.engine = new chess.Chess();
     }
 
-    //
-    // load this.game object
-    //
-    this.loadGame(game_id);
 
     //
     // finish initializing
@@ -156,7 +150,7 @@ class Chessgame extends GameTemplate {
       this.updateStatusMessage("White moves first");
       if (this.game.target == this.game.player) {
         this.setBoard(this.engine.fen());
-	if (this.useClock) { this.startClock(); }
+	      if (this.useClock) { this.startClock(); }
       } else {
         this.lockBoard(this.engine.fen());
       }
@@ -210,15 +204,16 @@ class Chessgame extends GameTemplate {
   ////////////////
   handleGameLoop(msg={}) {
 
-console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
-console.log(JSON.stringify(msg));
+    console.log("QUEUE IN CHESS: " + JSON.stringify(this.game.queue));
+    console.log(JSON.stringify(msg));
 
-    if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
-      return;
-    }
 
     msg = {};
     if (this.game.queue.length > 0) {
+      if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
+        return;
+      }
+
       msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length-1]));
     } else {
       msg.extra = {};
