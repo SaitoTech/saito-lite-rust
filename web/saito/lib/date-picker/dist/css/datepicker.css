@@ -209,7 +209,8 @@
 }
 
 .datepicker-grid {
-  width: 30rem;
+  width: 40rem;
+  height: 30rem;
 }
 
 @media (max-width: 22.5rem) {

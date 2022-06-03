@@ -6,18 +6,36 @@
     color: var(--saito-secondary);
 }
 
+
+
+
+/* ----------------------------------------------------------------
+Backgrounds
+-----------------------------------------------------------------*/
+
+
 .saito-primary-background {
     background-color: var(--saito-primary);
+    background: var(--saito-primary);
 }
 
 .saito-secondary-background {
     background-color: var(--saito-secondary);
+    background: var(--saito-secondary);
 }
 
 .saito-white-background {
     background-color: var(--saito-white);
+    background: var(--saito-white);
 }
 
-.saito-light-background {
+.saito-gray-background {
     background-color: var(--saito-background);
+    background: var(--saito-background);
+}
+
+.saito-gradient-background {
+    background: linear-gradient(77deg,
+            var(--saito-primary) 0%,
+            var(--saito-secondary) 69%);
 }

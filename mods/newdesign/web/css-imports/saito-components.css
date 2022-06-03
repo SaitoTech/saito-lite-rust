@@ -174,23 +174,50 @@ Saito Menu
 Saito User List and Saito User 
 -----------------------------------------------------------------*/
 
-.saito-user-list {
-    padding: 2rem;
-}
+.saito-user-list {}
 
 .saito-user {
     display: flex;
     align-items: center;
     cursor: pointer;
+    position: relative;
 }
+
+.saito-user-dropdown {
+    position: absolute;
+    right: 1rem;
+    top: 2rem;
+
+}
+
+.saito-user-dropdown i {
+    color: var(--saito-black);
+    top: 0;
+}
+
+.saito-user-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--saito-background);
+    left: -6rem;
+
+}
+
+.saito-user-dropdown i:target+.saito-user-dropdown-content {
+    display: block;
+
+}
+
+
+
 
 .saito-user:not(:last-child) {
     margin-bottom: 2rem;
 }
 
 .saito-user>img {
-    width: 6rem;
-    height: 6rem;
+    width: 8rem;
+    height: 8rem;
     border-radius: 8px;
     cursor: pointer;
     margin-right: 2rem;
@@ -213,6 +240,31 @@ Saito User List and Saito User
     color: var(--saito-primary);
 }
 
+
+
+
+.saito-user.saito-user-medium:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+
+.saito-user.saito-user-medium>img {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user.saito-user-medium p {
+    font-size: 1.8rem;
+}
+
+
+.saito-user.saito-user-medium span {
+    display: none;
+}
 
 
 
