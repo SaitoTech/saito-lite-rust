@@ -40,6 +40,8 @@ class Browser {
       return 0;
     }
 
+console.log("LANGUAGE: " + this.returnPreferredLanguage());
+
     try {
       if (!document.hidden) {
         this.setActiveTab(1);

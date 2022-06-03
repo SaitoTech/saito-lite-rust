@@ -406,12 +406,12 @@ class Twilight extends GameTemplate {
     super.initializeHTML(app);
 
     //
-    //
+    // check language preference
     //
     if (app.browser.returnPreferredLanguage() === "zh") {
       if (!app?.options?.gameprefs?.lang) {
         this.lang = "zh";
-        game_mod.saveGamePreference("lang", "zh");
+        this.saveGamePreference("lang", "zh");
       }
     }
 
