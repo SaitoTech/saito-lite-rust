@@ -302,7 +302,7 @@ transform: translate(-50%, -50%);
 .tool-cont {
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: space-between;
     font-size: 1.2vw;
     //border-bottom: 1px solid #f9f9f9;
     padding: 10px 25px;
@@ -316,12 +316,13 @@ transform: translate(-50%, -50%);
 
 .tool-item {
     line-height: 45px;
-    min-width: 9vw;
+    /*min-width: 9vw;*/
 }
 
 #status {
     line-height: 45px;
-    margin-left: 15px;
+    /*margin-left: 15px;*/
+    max-width: 200px;
 }
 .turn-shape {
     min-width: 45px;
@@ -343,8 +344,7 @@ transform: translate(-50%, -50%);
 
 .player-identicon {
     width: 40px;
-    margin-right: 20px;
-    margin-top: 5px;
+    margin: 5px 20px;
 }
 
 @media only screen and (max-width: 900px) {
@@ -436,7 +436,7 @@ transform: translate(-50%, -50%);
     .tool-cont {
         display: flex;
         flex-direction: row;
-        justify-content: start;
+        /*justify-content: start;*/
         font-size: 15px;
         padding: 5px 9px;
         text-align: left;
@@ -450,7 +450,7 @@ transform: translate(-50%, -50%);
 
     .tool-item {
         line-height: 45px;
-        min-width: 100px;
+        /*min-width: 100px;*/
     }
 
     .turn-shape {

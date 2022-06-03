@@ -39,13 +39,6 @@
 
             <div class="controls column player-data-hud">
 
-                <div class="tool-cont">
-                    <div class="tool-item item-name">TURN</div>
-                    <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
-                    <div class="item-detail" id="status">
-                    </div>
-                </div>
-
                 <div class="tool-cont" id="identicon-cont">
                     <div class="tool-item item-name">OPPONENT</div>
                     <div id="opponent_identicon"></div>
@@ -53,11 +46,18 @@
                     <i id="copy-btn" class="fas fa-copy fa-regular"></i>
                 </div>
 
-                <div class="tool-cont" id="resign-cont">
+                <div class="tool-cont">
+                    <div class="tool-item item-name">TURN</div>
+                    <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
                     <div class="tool-item item-name" >RESIGN</div>
                     <div class="tool-item item-detail">
                         <i id="resign_icon" class="fas fa-solid fa-flag"></i>
                     </div>
+                </div>
+                
+                <div class="tool-cont" id="status-cont">
+                    <div class="tool-item item-name">STATUS</div>
+                    <div class="tool-item item-detail" id="status"></div>
                 </div>
                 <div class="tool-cont" id="captured-cont">
                     <div class="tool-item item-name">CAPTURED</div>

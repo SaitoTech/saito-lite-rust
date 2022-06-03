@@ -900,8 +900,6 @@ no status atm, but this is to update the hud
       //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
-
-
   }
 
 }

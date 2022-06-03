@@ -3472,5 +3472,11 @@ displayDisease() {
 
     return html;
   }
+
+  resignGame(game_id = null, tiegame = 0, reason = "") {
+    this.loadGame(game_id);
+    super.resignGame(game_id, 1, `${this.game.players_info[this.game.player-1].role} is gone`);
+  }
+
 }
 module.exports = Pandemic;
