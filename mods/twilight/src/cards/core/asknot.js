@@ -15,9 +15,10 @@
         let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
         let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
+          let card_in_hand = this.game.deck[0].hand[i];
+          if (card_in_hand != "china" && card_in_hand != this.game.state.headline_opponent_card && card_in_hand != this.game.state.headline_card) {
             //html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-            cardList.push(this.game.deck[0].hand[i]);
+            cardList.push(card_in_hand);
           }
         }
 
@@ -81,8 +82,8 @@
                 twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
                 twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
                 twilight_self.addMove("DECKBACKUP\t1");
-                twilight_self.addMove("NOTIFY\Tcards remaining: " + twilight_self.game.deck[0].crypt.length);
-                twilight_self.addMove("NOTIFY\TShuffling discarded cards back into the deck...");
+                twilight_self.addMove("NOTIFY\tcards remaining: " + twilight_self.game.deck[0].crypt.length);
+                twilight_self.addMove("NOTIFY\tShuffling discarded cards back into the deck...");
 
               }
       	    }
@@ -91,10 +92,12 @@
             twilight_self.endTurn();
 
           } else {
-            cards_discarded++;
-            $("#"+action2).hide();
-            twilight_self.removeCardFromHand(action2);
-            twilight_self.addMove("discard\tus\t"+action2);
+            if (this.game.deck[0].hand.includes(action2)){
+              cards_discarded++;
+              $("#"+action2).hide();
+              twilight_self.removeCardFromHand(action2);
+              twilight_self.addMove("discard\tus\t"+action2);  
+            }
           }
         });
 

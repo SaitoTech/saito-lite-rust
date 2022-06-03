@@ -66,8 +66,8 @@ class Solitrio extends GameTemplate {
   }
 
 
-  /*
-  Single player games don't allow game-creation and options prior to join
+  
+  //Single player games don't allow game-creation and options prior to join
   returnGameOptionsHTML() {
     return `
         <div class="overlay-input">
@@ -79,7 +79,7 @@ class Solitrio extends GameTemplate {
             <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
     `;
-  }*/
+  }
 
 
   initializeGame(game_id) {

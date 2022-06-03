@@ -397,14 +397,12 @@ console.log("NEW WORLD PHASE!");
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.players == 2) {
-	    // reverse order as last added goes first
 	    this.game.queue.push("play\tprotestant");
 	    this.game.queue.push("play\tpapacy");
 	    return 1;
 	  }
 
 	  let io = this.returnImpulseOrder();
-	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }

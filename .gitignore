@@ -24,6 +24,7 @@ tests/config/env
 test/
 
 
+
 data/*.sq3
 data/*/*.blk
 data/blocks/*.blk
@@ -47,7 +48,6 @@ web/saito/saito.js
 web/saito/saito.js.map
 web/saito/*.wasm
 web/saito/saito.js.LICENSE.txt
-
 mods/covid/bundler/
 
 mods/popup
@@ -59,10 +59,10 @@ mods/appstore/modules
 mods/appstore/modules/*
 mods/chirp
 mods/chirp/*
-mods/citysim
-mods/citysim/*
 mods/forge
 mods/forge/*
+mods/citysim
+mods/citysim/*
 mods/mastersolitrio
 mods/mastersolitrio/*
 mods/appstore/mods/*.zip

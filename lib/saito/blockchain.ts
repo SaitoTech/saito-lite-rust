@@ -27,7 +27,6 @@ class Blockchain {
     last_callback_block_id: 0,
   };
   // public blockring: Blockring;
-  // public staking: Staking;
   public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
@@ -46,7 +45,6 @@ class Blockchain {
     // core components
     //
     // this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
-    // this.staking = new Staking(this.app);
     this.blocks = new Map<string, Block>(); // hashmap of block_hash => block
     // this.utxoset = new UtxoSet();
 
@@ -945,30 +943,8 @@ class Blockchain {
     block.onChainReorganization(false);
     // blockring update
     this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
-    // staking tables
-    let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
-      block,
-      false
-    );
     this.app.wallet.onChainReorganization(block, false);
     await this.onChainReorganization(block, false);
-
-    //
-    // we cannot pass the UTXOSet into the staking object to update as that would
-    // require multiple mutable borrows of the blockchain object, so we receive
-    // return vectors of the slips that need to be inserted, spent or deleted and
-    // handle this after-the-fact. this keeps the UTXOSet up-to-date with whatever
-    // is in the staking tables.
-    //
-    for (let i = 0; i < res_spend.length; i++) {
-      //res_spend[i].onChainReorganization(this.app, true, 1);
-    }
-    for (let i = 0; i < res_unspend.length; i++) {
-      //res_unspend[i].onChainReorganization(this.app, true, 0);
-    }
-    for (let i = 0; i < res_delete.length; i++) {
-      //res_spend[i].delete(this.app);
-    }
 
     if (current_unwind_index === old_chain.length - 1) {
       //
@@ -1204,37 +1180,12 @@ class Blockchain {
 
       // utxoset update
       //block.onChainReorganization(true);
-      let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
-        block,
-        true
-      );
       this.app.wallet.onChainReorganization(block, true);
 
       //
       // TODO - do we want async on this?
       //
       await this.onChainReorganization(block, true);
-
-      //
-      // we cannot pass the UTXOSet into the staking object to update as that would
-      // require multiple mutable borrows of the blockchain object, so we receive
-      // return vectors of the slips that need to be inserted, spent or deleted and
-      // handle this after-the-fact. this keeps the UTXOSet up-to-date with whatever
-      // is in the staking tables.
-      //
-      // this is actually not a problem in Javascript, but we are handling the same
-      // way as Rust in order to maintain consistency in approach across our two
-      // major codebases.
-      //
-      for (let i = 0; i < res_spend.length; i++) {
-        //res_spend[i].onChainReorganization(this.app, true, 1);
-      }
-      for (let i = 0; i < res_unspend.length; i++) {
-        //res_unspend[i].onChainReorganization(this.app, true, 0);
-      }
-      for (let i = 0; i < res_delete.length; i++) {
-        //res_spend[i].delete(this.app);
-      }
 
       //
       // we have received the first entry in new_blocks() which means we

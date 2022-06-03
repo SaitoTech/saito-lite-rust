@@ -34,8 +34,6 @@ import networkapi from "./networkapi";
 
 import peer0 from "./peer";
 
-import staking0 from "./staking";
-
 import storage0 from "./storage";
 
 import server0 from "./server";
@@ -68,7 +66,6 @@ export default class SaitoCommon {
   static network = network0;
   static networkApi = networkapi;
   static peer = peer0;
-  static staking = staking0;
   static storage = storage0;
   static server = server0;
   static utxoset = utxoset0;

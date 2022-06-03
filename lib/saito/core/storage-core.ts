@@ -379,9 +379,6 @@ console.log(JSON.stringify(entries));
     if (type === "VipOutput") {
       slip.type = SlipType.VipOutput;
     }
-    if (type === "StakerDeposit") {
-      slip.type = SlipType.StakerDeposit;
-    }
     if (type === "Normal") {
       slip.type = SlipType.Normal;
     }

@@ -38,48 +38,97 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: minmax(20%,max-content) 1fr;
+}
+
+.game-scoreboard{
+  font-size: 20px;
+  height: 40px;
+  padding: 5px 20px;
+}
+
+.game-scoreboard{
+  font-size: 20px;
+  height: 40px;
+  padding: 5px 20px;
 }
 
 /*arrange the cards in an array*/
 .card-stack-array{
-  width: calc(100% - 100px);
-  height: calc(100% - 100px);
-  margin: 50px;
+  width: calc(100vw - 100px);
+  height: calc(100vh - 200px);
+  margin: 50px auto;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-gap: 5px;
+  grid-template-columns: repeat(10, minmax(auto,130px));
+  justify-content: space-evenly;
+  grid-gap: 3px;
+  max-width: 1600px;
 }
+
 
 .card-stack{
   display: grid;
-  grid-template-rows: repeat(auto-fit, 30px);
+  grid-template-rows: repeat(auto-fit, min(0.7vw, 9px));
+}
+
+.spider-footer{
+  position: absolute;
+  bottom: 3px;
+  width: 100%;
+  height: min(15vh,140px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: whitesmoke;
+  font-size: 50px;
+}
+
+.completed_stack_box{
+  border-radius: 5px;
+  border: 1px dashed whitesmoke;
+  height: 100%;
+  position: relative;
+  display: flex;
+  max-width: 80%;
+  min-width: 50%;
+  width: 600px;
+  line-height: 300%;
+  text-align: center;
+  justify-content: flex-start;
+  flex: 2;
+}
+
+
+.completed_stack{
+  position: relative;
+  width: 95px;
+  height: 100%;
+}
+
+
+.completed_card{
+  transition: left 2s, top 2s;
 }
 
 .undo{
-  position: absolute;
-  bottom: 40px;
-  right: 12vw;
-  height: 50px;
-  width: 50px;
-  font-size: 50px;
-  color: whitesmoke;
-
+  height: 75px;
+  width: 75px;
 }
 
+
 .draw-pile{
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
+  position: relative;
   width: 7vw;
-  height: 11vw;
+  height: 100%;
   border-radius: 5px;
   border: 2px solid whitesmoke;
-  color: whitesmoke;
-  font-size: 2vw;
+  font-size: min(2vw, 32px);
   line-height: 3vw;
   text-align: center;
-  padding-top: 1vw;
+  margin: 6px;
+  margin-top: 0;
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .draw-pile img{
@@ -95,29 +144,16 @@ body {
   filter: brightness(0.75);
 }
 
-.logobox {
-position: relative;
-    margin-top: 50px;
-    font-size: 20px;
-    order: 1;
-    max-width: 200px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 80px;
-}
-.logobox div{
-  border-radius: 5px;
+.card.flipped{
+  grid-area: span 4;
 }
 
-.logobox img {
+.card.empty_slot{
+  grid-area: span 18;
+  border: 1px var(--saito-red) dashed;
   width: 100%;
-  margin-bottom: 15px;
 }
 
-.status-header{
-  padding: 10px 5px;
-  margin-top: 20px;
-}
 
 
 

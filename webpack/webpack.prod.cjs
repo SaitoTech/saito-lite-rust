@@ -27,7 +27,6 @@ webpack({
     {
       archiver: "archiver"
     },
-
     {
       child_process: "child_process"
     },
