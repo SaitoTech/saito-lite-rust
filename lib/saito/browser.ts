@@ -60,7 +60,7 @@ class Browser {
         }
 
         channel.onmessage = (e) => {
-console.log("document onmessage change");
+          console.log("document onmessage change");
           if (!document.hidden) {
             channel.postMessage({
               active: 1,
@@ -84,14 +84,14 @@ console.log("document onmessage change");
         document.addEventListener(
           "visibilitychange",
           () => {
-console.log("document event listener visibility change");
+            console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-console.log("document event listener visibility change");
+              console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -104,7 +104,7 @@ console.log("document event listener visibility change");
 
         window.addEventListener("storage", (e) => {
           if (this.active_tab == 0) {
-console.log("LOAD OPTIONS IN BROWSER");
+            console.log("LOAD OPTIONS IN BROWSER");
             this.app.storage.loadOptions();
           }
         });
@@ -130,7 +130,9 @@ console.log("LOAD OPTIONS IN BROWSER");
       this.protocol = myurl.protocol;
       const myurlpath = myurl.pathname.split("/");
       let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : "";
-      if (active_module == "") { active_module = "website"; }
+      if (active_module == "") {
+        active_module = "website";
+      }
       this.active_module = active_module;
 
       //
@@ -217,11 +219,7 @@ console.log("LOAD OPTIONS IN BROWSER");
         siteMessage("Websocket Connection Lost");
       });
     }
-
-
   }
-
-
 
   returnURLParameter(name) {
     try {
@@ -236,6 +234,17 @@ console.log("LOAD OPTIONS IN BROWSER");
       //console.log("error in urlparams: " + err);
     }
     return "";
+  }
+
+  returnPreferredLanguage() {
+    try {
+      let x = navigator.language;
+      if (x.length > 2) {
+        return x.substring(0, 2);
+      }
+      return x;
+    } catch (err) {}
+    return "en";
   }
 
   isMobileBrowser(user_agent) {
@@ -354,7 +363,7 @@ console.log("LOAD OPTIONS IN BROWSER");
   // functionality as needed.
   //
   setActiveTab(active) {
-console.log("SET ACTIVE TAB");
+    console.log("SET ACTIVE TAB");
     this.active_tab = active;
     this.app.blockchain.process_blocks = active;
     this.app.storage.save_options = active;
@@ -714,7 +723,6 @@ console.log("SET ACTIVE TAB");
    * @param {Array} keys
    */
   async addIdentifiersToDom(keys = []) {
-
     if (keys.length == 0) {
       const addresses = document.getElementsByClassName(`saito-address`);
       Array.from(addresses).forEach((add) => {

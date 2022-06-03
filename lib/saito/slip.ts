@@ -54,9 +54,9 @@ class Slip {
   // slip comparison function was originally created for managing the staking
   // tables since slip insertion / removal needed to be consistent across the
   // network which means a way of agreeing which slips are greater or less
-  // than other slips. 
+  // than other slips.
   //
-  // we are keeping this code as it may be useful in the future to have a 
+  // we are keeping this code as it may be useful in the future to have a
   // standard way to compare slips, although it is not currently used.
   //
   // 1 = self is bigger
@@ -64,7 +64,6 @@ class Slip {
   // 3 = same
   //
   compare(other_slip) {
-
     const x = BigInt("0x" + this.returnPublicKey());
     const y = BigInt("0x" + other_slip.returnPublicKey());
 
@@ -95,14 +94,7 @@ class Slip {
   }
 
   clone() {
-    return new Slip(
-      this.add,
-      BigInt(this.amt.toString()),
-      this.type,
-      this.uuid,
-      this.sid,
-      this.lc
-    );
+    return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.uuid, this.sid, this.lc);
   }
 
   deserialize(app, buffer) {

@@ -566,14 +566,16 @@ class Keychain {
   }
 
   fetchManyIdentifiers(publickeys = [], mycallback) {
-
     const found_keys = [];
     const missing_keys = [];
 
     publickeys.forEach((publickey) => {
       const identifier = this.returnIdentifierByPublicKey(publickey);
-      if (identifier.length > 0) { found_keys[publickey] = identifier; }
-      else { missing_keys.push(`'${publickey}'`); }
+      if (identifier.length > 0) {
+        found_keys[publickey] = identifier;
+      } else {
+        missing_keys.push(`'${publickey}'`);
+      }
     });
 
     if (missing_keys.length == 0) {
@@ -587,14 +589,12 @@ class Keychain {
                      where ${where_statement}`;
 
     this.modtemplate.sendPeerDatabaseRequestWithFilter(
-
       "Registry",
 
       sql,
 
       (res) => {
         try {
-
           let rows = [];
           if (typeof res.rows == "undefined") {
             mycallback(rows);
@@ -716,12 +716,11 @@ class Keychain {
         return name[0].substr(0, 12) + "...";
       }
     }
-    if (name){
-      return name;  
-    }else{
+    if (name) {
+      return name;
+    } else {
       return publickey;
     }
-    
   }
 
   returnWatchedPublicKeys() {

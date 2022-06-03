@@ -109,7 +109,7 @@ class Storage {
     }
     try {
       if (typeof Storage !== "undefined") {
-       localStorage.setItem("options", JSON.stringify(this.app.options));
+        localStorage.setItem("options", JSON.stringify(this.app.options));
       }
     } catch (err) {
       console.log(err);
@@ -195,7 +195,9 @@ class Storage {
 
   async returnBlockFilenameByHash(block_hash, mycallback) {}
 
-  returnTokenSupplySlipsFromDisk(): any { return []; }
+  returnTokenSupplySlipsFromDisk(): any {
+    return [];
+  }
 
   returnBlockFilenameByHashPromise(block_hash) {}
 
