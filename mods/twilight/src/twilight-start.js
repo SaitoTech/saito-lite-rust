@@ -405,6 +405,19 @@ class Twilight extends GameTemplate {
 
     super.initializeHTML(app);
 
+    //
+    //
+    //
+    if (app.browser.returnPreferredLanguage() === "zh") {
+      if (!app?.options?.gameprefs?.lang) {
+        this.lang = "zh";
+        game_mod.saveGamePreference("lang", "zh");
+      }
+    }
+
+
+
+
     // required here so menu will be proper
     try {
       if (this.app.options.gameprefs.twilight_expert_mode == 1) {
