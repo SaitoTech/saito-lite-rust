@@ -400,7 +400,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('luther', {
       type		:	"luther" ,
       name		: 	"Martin Luther",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"LutherDebater.svg",
       committed		: 	0,
@@ -409,7 +409,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('zwingli', {
       type		:	"zwingli" ,
       name		: 	"Ulrich Zwingli",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"ZwingliDebater.svg",
       committed		: 	0,
@@ -418,7 +418,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('cranmer', {
       type		:	"cranmer" ,
       name		: 	"Thomas Cranmer",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CranmerDebater.svg",
       committed		: 	0,
@@ -427,7 +427,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('calvin', {
       type		:	"calvin" ,
       name		: 	"John Calvin",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CalvinDebater.svg",
       committed		: 	0,
@@ -436,7 +436,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('aleander', {
       type		:	"aleander" ,
       name		: 	"Hieronymus Aleander",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:       "AleanderDebater.svg",
       committed		: 	0,
@@ -445,7 +445,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('bucer', {
       type		:	"bucer" ,
       name		: 	"Martin Bucer",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"BucerDebater.svg",
       committed		: 	0,
@@ -454,7 +454,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('bullinger', {
       type		:	"bullinger" ,
       name		: 	"Heinrich Bullinger",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"BullingerDebater.svg",
       committed		: 	0,
@@ -463,7 +463,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('cajetan', {
       type		:	"cajetan" ,
       name		: 	"Thomas Cajetan",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CajetanDebater.svg",
       committed		: 	0,
@@ -472,7 +472,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('campeggio', {
       type		:	"campeggio" ,
       name		: 	"Lorenzo Campeggio",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CampeggioDebater.svg",
       committed		: 	0,
@@ -481,7 +481,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('canisius', {
       type		:	"canisius" ,
       name		: 	"Peter Canisius",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CanisiusDebater.svg",
       committed		: 	0,
@@ -490,7 +490,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('carafa', {
       type		:	"carafa" ,
       name		: 	"Carlo Carafa",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CarafaDebater.svg",
       committed		: 	0,
@@ -499,7 +499,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('carlstadt', {
       type		:	"carlstadt" ,
       name		: 	"Andreas Carlstadt",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CarlstadtDebater.svg",
       committed		: 	0,
@@ -508,7 +508,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('contarini', {
       type		:	"contarini" ,
       name		: 	"Gasparo Contarini",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"ContariniDebater.svg",
       committed		: 	0,
@@ -517,7 +517,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('cop', {
       type		:	"cop" ,
       name		: 	"Nicolas Cop",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CopDebater.svg",
       committed		: 	0,
@@ -526,7 +526,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('coverdale', {
       type		:	"coverdale" ,
       name		: 	"Myles Coverdale",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CoverdaleDebater.svg",
       committed		: 	0,
@@ -535,7 +535,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('cranmer', {
       type		:	"cranmer" ,
       name		: 	"Thomas Cranmer",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"CranmerDebater.svg",
       committed		: 	0,
@@ -544,7 +544,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('faber', {
       type		:	"faber" ,
       name		: 	"Peter Faber",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"FaberDebater.svg",
       committed		: 	0,
@@ -553,7 +553,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('farel', {
       type		:	"farel" ,
       name		: 	"William Farel",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"FarelDebater.svg",
       committed		: 	0,
@@ -562,7 +562,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('gardiner', {
       type		:	"gardiner" ,
       name		: 	"Stephen Gardiner",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"GardinerDebater.svg",
       committed		: 	0,
@@ -571,7 +571,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('knox', {
       type		:	"knox" ,
       name		: 	"John Knox",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"KnoxDebater.svg",
       committed		: 	0,
@@ -580,7 +580,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('latimer', {
       type		:	"latimer" ,
       name		: 	"Hugh Latimer",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"LatimerDebater.svg",
       committed		: 	0,
@@ -589,7 +589,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('loyola', {
       type		:	"loyola" ,
       name		: 	"Ignatius Loyola",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"LoyolaDebater.svg",
       committed		: 	0,
@@ -598,7 +598,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('melanchthon', {
       type		:	"melanchthon" ,
       name		: 	"Philip Melanchthon",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"MelanchthonDebater.svg",
       committed		: 	0,
@@ -607,7 +607,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('oekolampadius', {
       type		:	"oekolampadius" ,
       name		: 	"Johannes Oekolampadius",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"OekolampadiusDebater.svg",
       committed		: 	0,
@@ -616,7 +616,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('olivetan', {
       type		:	"olivetan" ,
       name		: 	"Pierre Robert Olivetan",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"OlivetanDebater.svg",
       committed		: 	0,
@@ -625,7 +625,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('pole', {
       type		:	"pole" ,
       name		: 	"Reginald Pole",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"PoleDebater.svg",
       committed		: 	0,
@@ -634,7 +634,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('tetzel', {
       type		:	"tetzel" ,
       name		: 	"Johann Tetzel ",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"TetzelDebater.svg",
       committed		: 	0,
@@ -643,7 +643,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('tyndalex', {
       type		:	"tyndale" ,
       name		: 	"William Tyndale",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"TyndaleDebater.svg",
       committed		: 	0,
@@ -652,7 +652,7 @@ class HereIStand extends GameTemplate {
     this.importUnit('wishart', {
       type		:	"wishart" ,
       name		: 	"George Wishart",
-      personage		:	true,
+      personage		:	false,
       debater		:	true,
       img		:	"WishartDebater.svg",
       committed		: 	0,
@@ -3654,8 +3654,6 @@ console.log("adding stuff!");
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
-console.log("player is: " + player + " -- i am " + game_mod.game.player);
-
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -3680,6 +3678,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
 	      // launch reformation
 	      //
 	      function(spacekey) {
+	  	game_mod.updateStatus("Reformation attempt in "+spacekey);
 		game_mod.addMove("reformation\t"+spacekey);
 		game_mod.endTurn();
 	      },
@@ -4942,21 +4941,21 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("diplomacy_phase");
-//
-// The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
-//
-	  this.game.queue.push("card_draw_phase");
-
+	  this.game.queue.push("diplomacy_phase");
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-//	  if (this.game.state.round == 1) {
-//  	    this.game.queue.push("diet_of_worms");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
-//	  }
+	  if (this.game.state.round == 1) {
+  	    this.game.queue.push("diet_of_worms");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	  }
+
+	  //
+	  // must happen before the diet of worms
+	  //
+	  this.game.queue.push("card_draw_phase");
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -5092,6 +5091,9 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
         if (mv[0] === "diet_of_worms") {
 
 	  let game_self = this;
+
+console.log("HERE WE ARE: ");
+console.log
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
           this.attachCardboxEvents(function(card) {
@@ -5382,8 +5384,29 @@ console.log("NEW WORLD PHASE!");
             this.game.queue.push("DECKBACKUP\t1");
 	  }
 
+
+	  //
+	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
+	  //
+          this.game.queue.push("papacy_diplomacy_phase_special_turn");
+
+
 	  this.game.queue.splice(qe, 1);
           return 1;
+
+        }
+
+	if (mv[0] === "papacy_diplomacy_phase_special_turn") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
+	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn();
+	  } else {
+	    this.updateStatus("Papacy Considering Diplomatic Options");
+	  }
+
+          return 0;
 
         }
 
@@ -5821,9 +5844,7 @@ this.updateLog("Total Rolls: ");
 this.updateLog("Protestants: " + p_rolls);
 
 	  for (let i = 0; i < p_rolls; i++) {
-console.log("i: " + i);
 	    let x = this.rollDice(6);
-console.log("x is: " + x);
 	    this.updateLog("Protestants roll: " + x, 1);
 	    if (x > p_high) { p_high = x; }
 	  }
@@ -5831,9 +5852,7 @@ console.log("x is: " + x);
 this.updateLog("Catholics: " + c_rolls);
 
 	  for (let i = 0; i < c_rolls; i++) {
-console.log("i: " + i);
 	    let x = this.rollDice(6);
-console.log("x is: " + x);
 	    this.updateLog("Catholics roll: " + x, 1);
 	    if (x > c_high) { c_high = x; }
 	  }
@@ -6432,6 +6451,13 @@ console.log("playing event");
   async playerCounterReformationAttempt(player) {
 console.log("1");
 return;
+  }
+
+
+  playerPlayPapacyDiplomacyPhaseSpecialTurn() {
+this.updateLog("Papacy Diplomacy Phase Special Turn");
+    this.endTurn();
+    return;
   }
 
 
@@ -7554,7 +7580,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
         if (z === "england") {
           tile = "/his/img/tiles/england/";	  
 	  if (squadrons >= 2) {
-            tile += `England_squadron.svg`;
+            tile += `English_squadron.svg`;
 	    squadrons -= 2;
           }
         }
@@ -7584,6 +7610,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
           }
         }
         if (z === "venice") {
+          tile = "/his/img/tiles/venice/";	  
 	  if (squadrons >= 2) {
             tile += `Venice_squadron.svg`;
 	    squadrons -= 2;

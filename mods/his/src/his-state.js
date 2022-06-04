@@ -2450,8 +2450,6 @@
         if (mv[0] == "protestant_reformation") {
 
           let player = parseInt(mv[1]);
-console.log("player is: " + player + " -- i am " + game_mod.game.player);
-
           game_mod.game.queue.splice(qe, 1);
 
 	  if (game_mod.game.player == player) {
@@ -2476,6 +2474,7 @@ console.log("player is: " + player + " -- i am " + game_mod.game.player);
 	      // launch reformation
 	      //
 	      function(spacekey) {
+	  	game_mod.updateStatus("Reformation attempt in "+spacekey);
 		game_mod.addMove("reformation\t"+spacekey);
 		game_mod.endTurn();
 	      },

@@ -323,7 +323,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
         if (z === "england") {
           tile = "/his/img/tiles/england/";	  
 	  if (squadrons >= 2) {
-            tile += `England_squadron.svg`;
+            tile += `English_squadron.svg`;
 	    squadrons -= 2;
           }
         }
@@ -353,6 +353,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
           }
         }
         if (z === "venice") {
+          tile = "/his/img/tiles/venice/";	  
 	  if (squadrons >= 2) {
             tile += `Venice_squadron.svg`;
 	    squadrons -= 2;

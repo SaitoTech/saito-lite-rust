@@ -37,21 +37,21 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("diplomacy_phase");
-//
-// The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
-//
-	  this.game.queue.push("card_draw_phase");
-
+	  this.game.queue.push("diplomacy_phase");
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
-//	  if (this.game.state.round == 1) {
-//  	    this.game.queue.push("diet_of_worms");
-//	    this.updateLog("Luther's 95 Theses!");
-//	    this.game.queue.push("event\t1\t008");
-//	  }
+	  if (this.game.state.round == 1) {
+  	    this.game.queue.push("diet_of_worms");
+	    this.updateLog("Luther's 95 Theses!");
+	    this.game.queue.push("event\t1\t008");
+	  }
+
+	  //
+	  // must happen before the diet of worms
+	  //
+	  this.game.queue.push("card_draw_phase");
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -187,6 +187,9 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
         if (mv[0] === "diet_of_worms") {
 
 	  let game_self = this;
+
+console.log("HERE WE ARE: ");
+console.log
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
           this.attachCardboxEvents(function(card) {
@@ -477,8 +480,29 @@ console.log("NEW WORLD PHASE!");
             this.game.queue.push("DECKBACKUP\t1");
 	  }
 
+
+	  //
+	  // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase
+	  //
+          this.game.queue.push("papacy_diplomacy_phase_special_turn");
+
+
 	  this.game.queue.splice(qe, 1);
           return 1;
+
+        }
+
+	if (mv[0] === "papacy_diplomacy_phase_special_turn") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.player == this.returnPlayerOfFaction("papacy")) {
+	    this.playerPlayPapacyDiplomacyPhaseSpecialTurn();
+	  } else {
+	    this.updateStatus("Papacy Considering Diplomatic Options");
+	  }
+
+          return 0;
 
         }
 
@@ -916,9 +940,7 @@ this.updateLog("Total Rolls: ");
 this.updateLog("Protestants: " + p_rolls);
 
 	  for (let i = 0; i < p_rolls; i++) {
-console.log("i: " + i);
 	    let x = this.rollDice(6);
-console.log("x is: " + x);
 	    this.updateLog("Protestants roll: " + x, 1);
 	    if (x > p_high) { p_high = x; }
 	  }
@@ -926,9 +948,7 @@ console.log("x is: " + x);
 this.updateLog("Catholics: " + c_rolls);
 
 	  for (let i = 0; i < c_rolls; i++) {
-console.log("i: " + i);
 	    let x = this.rollDice(6);
-console.log("x is: " + x);
 	    this.updateLog("Catholics roll: " + x, 1);
 	    if (x > c_high) { c_high = x; }
 	  }

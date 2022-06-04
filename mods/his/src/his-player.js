@@ -548,6 +548,13 @@ return;
   }
 
 
+  playerPlayPapacyDiplomacyPhaseSpecialTurn() {
+this.updateLog("Papacy Diplomacy Phase Special Turn");
+    this.endTurn();
+    return;
+  }
+
+
   playerPlaySpringDeployment(faction, player) {
 
     let his_self = this;
