@@ -36,7 +36,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-//	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("spring_deployment_phase");
 //	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
@@ -429,10 +429,10 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "spring_deployment") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
-
-console.log("faction: " + faction + " player " + player);
 
 	  if (this.game.player == player) {
 	    this.playerPlaySpringDeployment(faction, player);
@@ -441,9 +441,6 @@ console.log("faction: " + faction + " player " + player);
 	  }
 
 	  return 0;
-
-	  this.game.queue.splice(qe, 1);
-	  return 1;
 
 	}
         if (mv[0] === "diplomacy_phase") {

@@ -348,24 +348,24 @@
     html += '<ul>';
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
       }
     }
     if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
+      html += '<li class="option" id="cancel">cancel</li>';
     }
     html += '</ul>';
 
     this.updateStatus(html);
 
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
+    $('.option').off();
+    $('.option').on('click', function () {
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
@@ -387,10 +387,10 @@
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
@@ -398,24 +398,24 @@
     }
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
       }
     }
     if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
+      html += '<li class="option" id="cancel">cancel</li>';
     }
     html += '</ul>';
 
     this.updateStatus(html);
 
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
+    $('.option').off();
+    $('.option').on('click', function () {
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
@@ -550,9 +550,14 @@ return;
 
   playerPlaySpringDeployment(faction, player) {
 
+    let his_self = this;
     let capitals = this.factions[faction].capitals;
     let viable_capitals = [];
     let can_deploy = 0;
+    let units_to_move = [];
+    let cancel_func = null;
+    let source_spacekey;
+
 
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
@@ -570,17 +575,20 @@ return;
       let msg = "Do you wish to Spring Deploy from: ";
      
       let opt = "";
-      for (let i = 0; i < viable_capitals.lengths; i++) {
-	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      for (let i = 0; i < viable_capitals.length; i++) {
+	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="textchoice" id="pass">skip</li>`;
+      opt += `<li class="option" id="pass">skip</li>`;
 
       this.updateStatusWithOptions(msg, opt);
-      $(".textchoice").off();
-      $(".textchoice").onclick = (e) => {
+
+      $(".option").off();
+      $(".option").on('click', function() {
 
         let id = $(this).attr('id');
-        $(".textchoice").off();
+        $(".option").off();
+
+	source_spacekey = id;
 
 	if (id === "pass") {
 	  this.updateStatus("passing...");
@@ -588,15 +596,77 @@ return;
 	  return;
         }
 
-	//
-	//
-	//
-	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
-	this.endTurn();
+        his_self.playerSelectSpaceWithFilter(
 
-      };
+          "Select Destination for Units from Capital: ",
+
+          function(space) {
+            if (his_self.isSpaceFriendly(space)) {
+              return 1;
+            }
+            return 0;
+          },
+
+          function(destination_spacekey) {
+
+	    // spacekey is destination, but space is our source == id from above
+            let space = his_self.spaces[id];
+
+            let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
+
+              let html = "<ul>";
+              for (let i = 0; i < space.units[faction].length; i++) {
+                if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+                  if (units_to_move.includes(parseInt(i))) {
+                    html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+                  } else {
+                    html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+                  }
+                }
+              }
+              html += `<li class="option" id="end">finish</li>`;
+              html += "</ul>";
+
+              his_self.updateStatus(html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                let id = $(this).attr("id");
+
+                if (id === "end") {
+		  // MOVE THE UNITS
+                  units_to_move.sort();
+                  //units_to_move.reverse();
+
+                  for (let i = 0; i < units_to_move.length; i++) {
+                    his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+                  }
+                  his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
+                  //his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+                  his_self.endTurn();
+                  return;
+
+                }
+
+                if (units_to_move.includes(id)) {
+                  let idx = units_to_move.indexOf(id);
+                  if (idx > -1) {
+                    units_to_move.splice(idx, 1);
+                  }
+                } else {
+                  units_to_move.push(parseInt(id));
+                  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+                }
+
+              });
+            }
+            selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+          }
+        );
+	his_self.updateLog("IMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+      });
     }
-
   }
 
 
@@ -673,19 +743,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 
@@ -779,19 +849,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 
@@ -909,19 +979,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 

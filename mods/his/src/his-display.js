@@ -152,11 +152,9 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displayElectorateDisplay() {
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
-console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-console.log("about to add electoral bonus");
       if (this.returnElectoralBonus(key)) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
       }
@@ -797,6 +795,12 @@ console.log("about to add electoral bonus");
       obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnMercenaries(space);
       obj.innerHTML += this.returnPersonages(space);
+
+    }
+
+    // add unrest if needed
+    if (this.isSpaceInUnrest(space)) {
+      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
     }
 
   }

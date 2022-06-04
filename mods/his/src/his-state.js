@@ -26,57 +26,57 @@
   }
 
   addUnit(faction, space, type) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
   }
 
   addRegular(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "regular"));
     }
   }
 
   addMercenary(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "mercenary"));
     }
   }
 
   addCavalry(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "cavalry"));
     }
   }
 
   addNavalSquadron(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
   }
 
   addCorsair(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
   }
 
   addDebater(faction, space, debater) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newDebater(faction, debater));
   }
 
   addPersonage(faction, space, personage) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newPersonage(faction, personage));
   }
 
   convertSpace(religion, space) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.religion = religion;
     this.displayBoard();
   }
@@ -105,14 +105,20 @@
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  isSpaceInUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.unrest == 1) { return true; }
+    return false;
+  }
+
   isSpaceFriendly() {
     return 1;
   }
 
   isSpaceAdjacentToReligion(space, religion) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.neighbours.length; i++) {
-      if (this.spaces[space.neighbours[i]].religion === religion) {
+      if (this.game.spaces[space.neighbours[i]].religion === religion) {
 	return true;
       }
     }
@@ -121,29 +127,29 @@
 
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
-    if (this.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['mainz'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['trier'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['cologne'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
     return controlled_keys;
   }
   returnNumberOfElectoratesControlledByProtestants() {
     let controlled_keys = 0;
-    if (this.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['mainz'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['trier'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['cologne'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
     return controlled_keys;
   }
   returnNumberOfKeysControlledByFaction(faction) {
     let controlled_keys = 0;
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
         }
       }
@@ -153,9 +159,9 @@
   returnNumberOfKeysControlledByPlayer(player_num) {
     let faction = this.game.players_info[player_num-1].faction;
     let controlled_keys = 0;
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
         }
       }
@@ -187,6 +193,8 @@
     state.cologne_electoral_bonus = 0;
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
+
+    state.events.schmalkaldic_league = 0;
 
     state.debaters = [];
 
@@ -2060,6 +2068,10 @@
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
+
+
+      spaces[key].unrest = 0;
+
     }
 
     return spaces;

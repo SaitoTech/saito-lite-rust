@@ -6,6 +6,23 @@
   margin-right: auto;
   max-width: 500px;
 }
+,hud-body {
+  overflow: scroll;
+}
+
+.unrest {
+  position: absolute;
+  display: block;
+  height: 130px;
+  width: 130px;
+  top: -10px;
+  left: -10px;
+  z-index: 999;
+}
+
+.option {
+  min-height: 40px;
+}
 
 .cardimg {
   width: 100%;

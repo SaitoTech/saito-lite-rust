@@ -1230,57 +1230,57 @@ console.log("adding stuff!");
   }
 
   addUnit(faction, space, type) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newUnit(faction, type));
   }
 
   addRegular(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "regular"));
     }
   }
 
   addMercenary(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "mercenary"));
     }
   }
 
   addCavalry(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "cavalry"));
     }
   }
 
   addNavalSquadron(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
   }
 
   addCorsair(faction, space, num=1) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
   }
 
   addDebater(faction, space, debater) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newDebater(faction, debater));
   }
 
   addPersonage(faction, space, personage) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.newPersonage(faction, personage));
   }
 
   convertSpace(religion, space) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.religion = religion;
     this.displayBoard();
   }
@@ -1309,14 +1309,20 @@ console.log("adding stuff!");
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  isSpaceInUnrest(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.unrest == 1) { return true; }
+    return false;
+  }
+
   isSpaceFriendly() {
     return 1;
   }
 
   isSpaceAdjacentToReligion(space, religion) {
-    try { if (this.spaces[space]) { space = this.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.neighbours.length; i++) {
-      if (this.spaces[space.neighbours[i]].religion === religion) {
+      if (this.game.spaces[space.neighbours[i]].religion === religion) {
 	return true;
       }
     }
@@ -1325,29 +1331,29 @@ console.log("adding stuff!");
 
   returnNumberOfElectoratesControlledByCatholics() {
     let controlled_keys = 0;
-    if (this.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['mainz'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['trier'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['cologne'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
-    if (this.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['augsburg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "catholic") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "catholic") { controlled_keys++; }
     return controlled_keys;
   }
   returnNumberOfElectoratesControlledByProtestants() {
     let controlled_keys = 0;
-    if (this.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['mainz'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['trier'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['cologne'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
-    if (this.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['augsburg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['mainz'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['trier'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['cologne'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['wittenberg'].religion === "protestant") { controlled_keys++; }
+    if (this.game.spaces['brandenburg'].religion === "protestant") { controlled_keys++; }
     return controlled_keys;
   }
   returnNumberOfKeysControlledByFaction(faction) {
     let controlled_keys = 0;
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
         }
       }
@@ -1357,9 +1363,9 @@ console.log("adding stuff!");
   returnNumberOfKeysControlledByPlayer(player_num) {
     let faction = this.game.players_info[player_num-1].faction;
     let controlled_keys = 0;
-    for (let key in this.spaces) {
-      if (this.spaces[key].type === "key") {
-        if (this.spaces[key].political === this.factions[faction].key || (this.spaces[key].political === "" && this.spaces[key].home === this.factions[faction].key)) {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].type === "key") {
+        if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
           controlled_keys++;
         }
       }
@@ -1391,6 +1397,8 @@ console.log("adding stuff!");
     state.cologne_electoral_bonus = 0;
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
+
+    state.events.schmalkaldic_league = 0;
 
     state.debaters = [];
 
@@ -3264,6 +3272,10 @@ console.log("adding stuff!");
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
+
+
+      spaces[key].unrest = 0;
+
     }
 
     return spaces;
@@ -4929,7 +4941,7 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
-//	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("spring_deployment_phase");
 //	  this.game.queue.push("diplomacy_phase");
 //
 // The Papacy may end a war they are fighting by playing Papal Bull or by suing for peace. -- start of diplomacy phase, so should go here
@@ -5290,14 +5302,12 @@ console.log("NEW WORLD PHASE!");
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.players == 2) {
-	    // reverse order as last added goes first
 	    this.game.queue.push("play\tprotestant");
 	    this.game.queue.push("play\tpapacy");
 	    return 1;
 	  }
 
 	  let io = this.returnImpulseOrder();
-	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }
@@ -5324,10 +5334,10 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "spring_deployment") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
-
-console.log("faction: " + faction + " player " + player);
 
 	  if (this.game.player == player) {
 	    this.playerPlaySpringDeployment(faction, player);
@@ -5336,9 +5346,6 @@ console.log("faction: " + faction + " player " + player);
 	  }
 
 	  return 0;
-
-	  this.game.queue.splice(qe, 1);
-	  return 1;
 
 	}
         if (mv[0] === "diplomacy_phase") {
@@ -6228,24 +6235,24 @@ console.log("x is: " + x);
     html += '<ul>';
     for (let key in this.spaces) {
       if (filter_func(this.spaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
       }
     }
     if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
+      html += '<li class="option" id="cancel">cancel</li>';
     }
     html += '</ul>';
 
     this.updateStatus(html);
 
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
+    $('.option').off();
+    $('.option').on('click', function () {
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
@@ -6267,10 +6274,10 @@ console.log("x is: " + x);
     html += '<ul>';
     for (let key in this.game.navalspaces) {
       if (filter_func(this.game.navalspaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
@@ -6278,24 +6285,24 @@ console.log("x is: " + x);
     }
     for (let key in this.game.spaces) {
       if (filter_func(this.game.spaces[key]) == 1) {
-        html += '<li class="textchoice" id="' + key + '">' + key + '</li>';
+        html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
-	    $('.textchoice').off();
+	    $('.option').off();
 	    mycallback(key);
 	  }
 	}
       }
     }
     if (cancel_func != null) {
-      html += '<li class="textchoice" id="cancel">cancel</li>';
+      html += '<li class="option" id="cancel">cancel</li>';
     }
     html += '</ul>';
 
     this.updateStatus(html);
 
-    $('.textchoice').off();
-    $('.textchoice').on('click', function () {
+    $('.option').off();
+    $('.option').on('click', function () {
       let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
@@ -6430,9 +6437,14 @@ return;
 
   playerPlaySpringDeployment(faction, player) {
 
+    let his_self = this;
     let capitals = this.factions[faction].capitals;
     let viable_capitals = [];
     let can_deploy = 0;
+    let units_to_move = [];
+    let cancel_func = null;
+    let source_spacekey;
+
 
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
@@ -6450,17 +6462,20 @@ return;
       let msg = "Do you wish to Spring Deploy from: ";
      
       let opt = "";
-      for (let i = 0; i < viable_capitals.lengths; i++) {
-	opt += `<li class="textchoice" id="${c}">${c}</li>`;
+      for (let i = 0; i < viable_capitals.length; i++) {
+	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="textchoice" id="pass">skip</li>`;
+      opt += `<li class="option" id="pass">skip</li>`;
 
       this.updateStatusWithOptions(msg, opt);
-      $(".textchoice").off();
-      $(".textchoice").onclick = (e) => {
+
+      $(".option").off();
+      $(".option").on('click', function() {
 
         let id = $(this).attr('id');
-        $(".textchoice").off();
+        $(".option").off();
+
+	source_spacekey = id;
 
 	if (id === "pass") {
 	  this.updateStatus("passing...");
@@ -6468,15 +6483,77 @@ return;
 	  return;
         }
 
-	//
-	//
-	//
-	this.updateLog("UNIMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
-	this.endTurn();
+        his_self.playerSelectSpaceWithFilter(
 
-      };
+          "Select Destination for Units from Capital: ",
+
+          function(space) {
+            if (his_self.isSpaceFriendly(space)) {
+              return 1;
+            }
+            return 0;
+          },
+
+          function(destination_spacekey) {
+
+	    // spacekey is destination, but space is our source == id from above
+            let space = his_self.spaces[id];
+
+            let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
+
+              let html = "<ul>";
+              for (let i = 0; i < space.units[faction].length; i++) {
+                if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+                  if (units_to_move.includes(parseInt(i))) {
+                    html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+                  } else {
+                    html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+                  }
+                }
+              }
+              html += `<li class="option" id="end">finish</li>`;
+              html += "</ul>";
+
+              his_self.updateStatus(html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                let id = $(this).attr("id");
+
+                if (id === "end") {
+		  // MOVE THE UNITS
+                  units_to_move.sort();
+                  //units_to_move.reverse();
+
+                  for (let i = 0; i < units_to_move.length; i++) {
+                    his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
+                  }
+                  his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
+                  //his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+                  his_self.endTurn();
+                  return;
+
+                }
+
+                if (units_to_move.includes(id)) {
+                  let idx = units_to_move.indexOf(id);
+                  if (idx > -1) {
+                    units_to_move.splice(idx, 1);
+                  }
+                } else {
+                  units_to_move.push(parseInt(id));
+                  selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+                }
+
+              });
+            }
+            selectUnitsInterface(his_self, units_to_move, selectUnitsInterface);
+          }
+        );
+	his_self.updateLog("IMPLEMENTED -- MOVEMENT IN SPRING DEPLOYMENT");
+      });
     }
-
   }
 
 
@@ -6553,19 +6630,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 
@@ -6659,19 +6736,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 
@@ -6789,19 +6866,19 @@ return;
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
 	      if (units_to_move.includes(parseInt(i))) {
-	        html += `<li class="textchoice" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
 	      } else {
-	        html += `<li class="textchoice" id="${i}">${space.units[faction][i].name}</li>`;
+	        html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
 	      }
 	    }
 	  }
-	  html += `<li class="textchoice" id="end">finish</li>`;
+	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
 	  his_self.updateStatus(html);
 
-          $('.textchoice').off();
-          $('.textchoice').on('click', function () {
+          $('.option').off();
+          $('.option').on('click', function () {
 
             let id = $(this).attr("id");
 
@@ -7306,11 +7383,9 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   displayElectorateDisplay() {
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
-console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
-console.log("about to add electoral bonus");
       if (this.returnElectoralBonus(key)) {
         obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
       }
@@ -7951,6 +8026,12 @@ console.log("about to add electoral bonus");
       obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnMercenaries(space);
       obj.innerHTML += this.returnPersonages(space);
+
+    }
+
+    // add unrest if needed
+    if (this.isSpaceInUnrest(space)) {
+      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
     }
 
   }
