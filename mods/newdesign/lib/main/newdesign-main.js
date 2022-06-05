@@ -1,17 +1,17 @@
 const NewDesignMainTemplate = require('./newdesign-main.template');
 
 
-module.exports = {
+class NewDesignMain {
+
+  constructor(app) {
+  };
 
   render(app) {
     if (!document.querySelector('.container')) {
       app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
-
     this.attachEvents()
-
-
-  },
+  };
 
   attachEvents() {
     const elem = document.querySelector('input[name="datepicker"]');
@@ -42,12 +42,10 @@ module.exports = {
         button.classList.add('active');
       })
 
-    })
+    });
 
-    // console.log(tabButtons)
-
-  }
-
-
-
+  };
 }
+
+module.exports = NewDesignMain;
+
