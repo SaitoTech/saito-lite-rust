@@ -13,6 +13,8 @@ class NewDesignMain {
   };
 
   attachEvents() {
+
+    // Date picker
     const elem = document.querySelector('input[name="datepicker"]');
     const datepicker = new Datepicker(elem, {});
 
@@ -42,6 +44,45 @@ class NewDesignMain {
       })
 
     });
+
+
+    // UserDrop Down
+    const icons = document.querySelectorAll('.saito-user > i');
+    const dropdowns = document.querySelectorAll('.saito-user-dropdown')
+
+    icons.forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        console.log(icon.nextElementSibling);
+        const dropdown = icon.nextElementSibling;
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+        } else {
+          dropdown.classList.add('show');
+        }
+
+      });
+    })
+    dropdowns.forEach(dropdown => {
+      dropdown.addEventListener('click', (e) => {
+        dropdown.classList.remove('show');
+      })
+    })
+
+    // functions
+
+    const salert_btn = document.querySelector('#salert_btn');
+    const sprompt_btn = document.querySelector('#sprompt_btn');
+    const sconfirm_btn = document.querySelector('#sconfirm_btn');
+
+    salert_btn.addEventListener('click', (e) => {
+      salert("Alert Button ");
+    })
+    sprompt_btn.addEventListener('click', (e) => {
+      sprompt("Alert Button ");
+    })
+    sconfirm_btn.addEventListener('click', (e) => {
+      sconfirm("Alert Button ");
+    })
 
   };
 }

@@ -11,7 +11,7 @@ Components
 Saito box
 -----------------------------------------------------------------*/
 .saito-box {
-    padding: var(--saito-box-padding);
+    /* padding: var(--saito-box-padding); */
     border: none;
     background-color: var(--saito-white);
 }
@@ -27,12 +27,18 @@ Saito box
 }
 
 
+.saito-box-padding {
+    padding: var(--saito-box-padding);
+}
+
+
+
 
 /* ----------------------------------------------------------------
 Saito Info box
 -----------------------------------------------------------------*/
 .saito-infobox {
-    padding: var(--saito-box-padding);
+    /* padding: var(--saito-box-padding); */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -97,7 +103,7 @@ Saito Content box
 
 .saito-contentbox {
     background-color: var(--saito-white);
-    padding: var(--saito-box-padding);
+    /* padding: var(--saito-box-padding); */
     border-radius: 1rem;
     height: 100%;
 }
@@ -113,14 +119,14 @@ Saito Menu
 -----------------------------------------------------------------*/
 
 .saito-menu-container {
-    background-color: var(--saito-white);
+    /* background-color: var(--saito-white); */
 }
 
 
 
 
 .saito-menu-container>ul>li {
-    padding: .8rem 2rem;
+    padding: .5rem;
     display: flex;
     align-items: center;
     list-style: none;
@@ -177,47 +183,27 @@ Saito User List and Saito User
 .saito-user-list {}
 
 .saito-user {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+    display: grid;
+    align-items: top;
     position: relative;
+    grid-template-columns: min-content 1fr;
+    justify-items: start;
+    margin-bottom: 1px;
 }
 
-.saito-user-dropdown {
-    position: absolute;
-    right: 1rem;
-    top: 2rem;
 
-}
 
-.saito-user-dropdown i {
-    color: var(--saito-black);
-    top: 0;
-}
-
-.saito-user-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: var(--saito-background);
-    left: -6rem;
-
-}
-
-.saito-user-dropdown i:target+.saito-user-dropdown-content {
-    display: block;
-
-}
 
 
 
 
 .saito-user:not(:last-child) {
-    margin-bottom: 2rem;
+    margin-bottom: 8px;
 }
 
 .saito-user>img {
-    width: 8rem;
-    height: 8rem;
+    width: 6.5rem;
+    height: 6.5rem;
     border-radius: 8px;
     cursor: pointer;
     margin-right: 2rem;
@@ -229,7 +215,7 @@ Saito User List and Saito User
 }
 
 .saito-user p {
-    width: 20rem;
+    width: 25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -244,13 +230,13 @@ Saito User List and Saito User
 
 
 .saito-user.saito-user-medium:not(:last-child) {
-    margin-bottom: 1rem;
+    margin-bottom: 5px;
 }
 
 
 .saito-user.saito-user-medium>img {
-    width: 6rem;
-    height: 6rem;
+    width: 5rem;
+    height: 5rem;
     border-radius: 3px;
     cursor: pointer;
     margin-right: 1rem;
@@ -262,7 +248,7 @@ Saito User List and Saito User
 }
 
 
-.saito-user.saito-user-medium span {
+.saito-user.saito-user-medium>div>span {
     display: none;
 }
 
@@ -287,8 +273,49 @@ Saito User List and Saito User
 }
 
 
-.saito-user.saito-user-dense span {
+.saito-user.saito-user-dense>div>span {
     display: none;
+}
+
+.saito-user>i {
+    color: var(--saito-primary);
+    top: 0;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    cursor: pointer;
+    font-size: 1.6rem;
+}
+
+.saito-user-dropdown {
+    position: absolute;
+    right: 2rem;
+    top: 1rem;
+    width: 20rem;
+    background-color: var(--saito-background);
+    z-index: 2;
+    display: none;
+
+}
+
+.saito-user-dropdown.show {
+    display: block;
+}
+
+
+.saito-user-dropdown>* {
+    /* color: white; */
+}
+
+
+@media screen and (max-width: 1200px) {
+    .saito-user p {
+        width: 15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.8rem;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -302,6 +329,8 @@ Saito User List and Saito User
 }
 
 @media screen and (max-width: 320px) {}
+
+
 
 
 /* ----------------------------------------------------------------

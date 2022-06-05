@@ -57,6 +57,7 @@
 .datepicker-view,
 .datepicker-controls {
   display: flex;
+  font-size: 1.7rem;
 }
 
 .datepicker-grid {
@@ -147,7 +148,7 @@
 .datepicker-header .datepicker-controls .button {
   border-color: transparent;
   font-weight: bold;
-  font-size: 1.6rem;
+  font-size: 1.9rem;
 }
 
 .datepicker-header .datepicker-controls .button:hover {
@@ -181,7 +182,8 @@
 .datepicker-controls .next-btn {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
-  width: 2.25rem;
+  width: 10rem;
+
 }
 
 .datepicker-controls .prev-btn.disabled,
@@ -192,7 +194,7 @@
 .datepicker-view .dow {
   height: 1.5rem;
   line-height: 1.5rem;
-  font-size: 0.875rem;
+  font-size: 1.7rem;
   font-weight: 700;
 }
 
@@ -209,8 +211,7 @@
 }
 
 .datepicker-grid {
-  width: 40rem;
-  height: 30rem;
+  width: 30rem;
 }
 
 @media (max-width: 22.5rem) {
