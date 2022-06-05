@@ -1,6 +1,5 @@
 const NewDesignMainTemplate = require('./newdesign-main.template');
 
-
 class NewDesignMain {
 
   constructor(app) {

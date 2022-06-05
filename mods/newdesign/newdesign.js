@@ -12,27 +12,18 @@ class NewDesign extends ModTemplate {
     this.description = "Saito Design Reference Module";
     this.categories = "Design Development";
 
-    this.header = null;
-//    this.body = null;
-//    this.overlay = null;
-    this.body = new NewDesignMain(app, this);
-    this.header = new SaitoHeader(app, this);
-
     this.styles = ['/newdesign/saito.css', '/saito/lib/date-picker/dist/css/datepicker.css'];
     this.scripts = ['/saito/lib/date-picker/dist/js/datepicker-full.js']
 
-  }
+    this.body = new NewDesignMain(app, this);
+    this.header = new SaitoHeader(app, this);
 
-
-  initializeHTML(app) {
   }
 
 
   render(app) {
 
     super.render(app)
-
-    //NewDesignMain.render(app, this);
 
     this.body.render(app, this);
     this.header.render(app, this);
