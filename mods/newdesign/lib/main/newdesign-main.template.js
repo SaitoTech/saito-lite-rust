@@ -85,34 +85,25 @@ module.exports = (app) => {
         <label>Select</label>
 
         <select class="saito-new-select saito-select-border">
-          <option value="0">Select car:</option>
-          <option value="1">Audi</option>
-          <option value="2">BMW</option>
-          <option value="3">Citroen</option>
-          <option value="4">Ford</option>
-          <option value="5">Honda</option>
-          <option value="6">Jaguar</option>
-          <option value="7">Land Rover</option>
-          <option value="8">Mercedes</option>
-          <option value="9">Mini</option>
-          <option value="10">Nissan</option>
-          <option value="11">Toyota</option>
-          <option value="12">Volvo</option>
+          <option value="0">Select option:</option>
+          <option value="1">Cobb</option>
+          <option value="2">Eames</option>
+          <option value="3">Ariadne</option>
+          <option value="4">Arthur</option>
+          <option value="5">Yusuf</option>
+          <option value="6">Mal</option>
+          <option value="7">Fishcer</option>
+          <option value="8">Saito</option>
         </select>
         <select class="saito-new-select ">
-          <option value="0">Select car:</option>
-          <option value="1">Audi</option>
-          <option value="2">BMW</option>
-          <option value="3">Citroen</option>
-          <option value="4">Ford</option>
-          <option value="5">Honda</option>
-          <option value="6">Jaguar</option>
-          <option value="7">Land Rover</option>
-          <option value="8">Mercedes</option>
-          <option value="9">Mini</option>
-          <option value="10">Nissan</option>
-          <option value="11">Toyota</option>
-          <option value="12">Volvo</option>
+          <option value="1">Cobb</option>
+          <option value="2">Eames</option>
+          <option value="3">Ariadne</option>
+          <option value="4">Arthur</option>
+          <option value="5">Yusuf</option>
+          <option value="6">Mal</option>
+          <option value="7">Fishcer</option>
+          <option value="8">Saito</option>
         </select>
 
 
