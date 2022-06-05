@@ -7,6 +7,25 @@
 
     let his_self = this;
 
+//
+// TODO remove
+//
+// keeping as reference until I'm used to it
+//
+//    let res = this.returnNearestSpaceWithFilter(
+//      "dijon", 
+//      function(spacekey) {
+//	if (his_self.game.spaces[spacekey].type === "fortress") { return 1; }
+//        return 0;
+//      },
+//      function(spacekey) {
+//	return 1;
+//      }
+//    );
+
+
+
+
     ///////////
     // QUEUE //
     ///////////
@@ -17,6 +36,7 @@
 	let z = this.returnEventObjects();
         let shd_continue = 1;
 
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
 
         //
@@ -44,14 +64,16 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  if (this.game.state.round == 1) {
   	    this.game.queue.push("diet_of_worms");
+	    //
+	    // must happen before the diet of worms
+	    //
+	    this.game.queue.push("card_draw_phase");
 	    this.updateLog("Luther's 95 Theses!");
 	    this.game.queue.push("event\t1\t008");
+	  } else {
+	    this.game.queue.push("card_draw_phase");
 	  }
 
-	  //
-	  // must happen before the diet of worms
-	  //
-	  this.game.queue.push("card_draw_phase");
 
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
 
@@ -121,11 +143,7 @@ console.log("MOVE: " + mv[0]);
 	  let destination = mv[4];
 	  let unitidx = parseInt(mv[5]);
 
-console.log("dest: " + destination);
-console.log("fact: " + faction);
-console.log("unitidx: " + unitidx);
-
-	  if (source === "sea") {
+	  if (movetype === "sea") {
 
 	    //
 	    // source = land, destination = sea
@@ -165,7 +183,7 @@ console.log("unitidx: " + unitidx);
 
 	  }
 
-	  if (source === "land") {
+	  if (movetype === "land") {
 
 	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
             this.game.spaces[destination].units[faction].push(unit_to_move);
@@ -188,8 +206,7 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 
 	  let game_self = this;
 
-console.log("HERE WE ARE: ");
-console.log
+          game_self.game.queue.push("resolve_diet_of_worms");
 
           this.updateStatusAndListCards("Pick your Card for the Diet of Worms", this.game.deck[0].fhand[0]);
           this.attachCardboxEvents(function(card) {
@@ -207,7 +224,6 @@ console.log
             game_self.game.spick_card = card;
             game_self.game.spick_hash = hash2;
 
-            game_self.addMove("resolve_diet_of_worms");
             game_self.addMove("SIMULTANEOUS_PICK\t"+game_self.game.player+"\t"+hash3+"\t"+hash3_sig);
             game_self.endTurn();
 
@@ -224,8 +240,8 @@ console.log
 	  let protestant = this.returnPlayerOfFaction("protestant");
 	  let papacy = this.returnPlayerOfFaction("papacy");
 
-	  let protestant_card = this.game.deck[this.game.state.sp[protestant-1]];
-	  let papacy_card = this.game.deck[this.game.state.sp[papacy-1]];
+	  let protestant_card = this.game.deck[0].cards[this.game.state.sp[protestant-1]];
+	  let papacy_card = this.game.deck[0].cards[this.game.state.sp[papacy-1]];
 
 /*
 3. roll protestant dice: The Protestant player adds 4 to the CP value of his card. This total represents the number of dice he now rolls. Each roll of a “5” or a “6” is considered to be a hit.
@@ -233,6 +249,7 @@ console.log
 5. protestant Victory: If the number of Protestant hits exceeds the number of Catholic hits, the Protestant power flips a number of spaces equal to the number of extra hits he rolled to Protestant influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Protestant space; spaces that were just flipped in this step can be used as the required adjacent Protestant space.
 6. Catholic Victory: If the number of Catholic hits exceeds the number of Protestant hits, the Papacy flips a number of spaces equal to the number of extra hits he rolled to Catholic influence. All spaces flipped must be in the German language zone. Spaces flipped must be adjacent to another Catholic space; spaces that were just flipped in this step can be used as the required adjacent Catholic space.
 */
+
 
 	  let protestant_rolls = protestant_card.ops + 4;
 	  let protestant_hits = 0;
@@ -254,13 +271,16 @@ console.log
 	  }
 
 	  //
-	  // do the hapsburgs get rolls in the 2P game?
+	  // TODO: do the hapsburgs get rolls in the 2P game?
 	  //
-	  //for (let i = 0; i < papacy_rolls; i++) {
-	  //  let x = this.rollDice(6);
-	  //  this.updateLog("Hapsburg rolls: " + x);
-	  //  if (x >= 5) { papacy_hits++; }
-	  //}
+	  // yes -- card pulled from top of deck, or 2 if mandatory event pulled
+	  // in which case the event is ignored.
+	  //
+	  for (let i = 0; i < 2; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Hapsburg rolls: " + x);
+	    if (x >= 5) { papacy_hits++; }
+	  }
 
 
 	  if (protestant_hits > papacy_hits) {
@@ -270,7 +290,7 @@ console.log
 	  } else {
 	    if (protestant_hits < papacy_hits) {
 	      for (let i = protestant_hits; i < papacy_hits; i++) {
-	        this.game.queue.push("select_for_catholic_conversion\tcatholic\tgerman");
+	        this.game.queue.push("select_for_catholic_conversion\tpapacy\tgerman");
 	      }
 	    } else {
 	      this.updateLog("Diet of Worms ends in tie.");
@@ -432,6 +452,8 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "spring_deployment") {
 
+console.log("FHAND STILL EXISTS 2? " + JSON.stringify(this.game.deck[0].fhand));
+
 	  this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
@@ -447,6 +469,8 @@ console.log("NEW WORLD PHASE!");
 
 	}
         if (mv[0] === "diplomacy_phase") {
+
+console.log("FHAND STILL EXISTS? " + JSON.stringify(this.game.deck[0].fhand));
 
 	  //
 	  // 2-player game? both players play a diplomacy card
@@ -464,20 +488,20 @@ console.log("NEW WORLD PHASE!");
 	  if (this.game.players.length == 2) {
 	    for (let i = this.game.players_info.length-1; i >= 0; i--) {
 	      for (let z = 0; z < this.game.players_info[i].factions.length; z++) {
-    	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t1");
+    	        this.game.queue.push("DEAL\t2\t"+(i+1)+"\t1");
 	      }
 	    }
-            this.game.queue.push("SHUFFLE\t1");
-            this.game.queue.push("DECKRESTORE\t1");
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
 	    for (let i = this.game.players_info.length; i > 0; i--) {
-    	      this.game.queue.push("DECKENCRYPT\t1\t"+(i));
+    	      this.game.queue.push("DECKENCRYPT\t2\t"+(i));
 	    }
 	    for (let i = this.game.players_info.length; i > 0; i--) {
-    	      this.game.queue.push("DECKXOR\t1\t"+(i));
+    	      this.game.queue.push("DECKXOR\t2\t"+(i));
 	    }
 	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
-    	    this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
-            this.game.queue.push("DECKBACKUP\t1");
+    	    this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t2");
 	  }
 
 
@@ -507,6 +531,8 @@ console.log("NEW WORLD PHASE!");
         }
 
         if (mv[0] === "card_draw_phase") {
+
+console.log("enter card draw phase");
 
 	  //
 	  // deal cards and add home card
@@ -721,7 +747,7 @@ console.log("----------------------------");
 	  let player = this.returnPlayerOfFaction(faction);
 	  if (this.game.player == player) {
 	    this.playerSelectSpaceWithFilter(
-              "Select Town to Convert Protestant",
+              "Select Town to Convert Catholic",
 
               //
               // catholic spaces adjacent to protestant
@@ -729,7 +755,7 @@ console.log("----------------------------");
               function(space) {
                 if (
                   space.religion === "protestant" &&
-                  game_mod.isSpaceAdjacentToReligion(space, "catholic")
+                  his_self.isSpaceAdjacentToReligion(space, "catholic")
                 ) {
                   return 1;
                 }
@@ -737,8 +763,8 @@ console.log("----------------------------");
               },
 
               function(spacekey) {
-                game_mod.addMove("convert\t"+spacekey+"\tcatholic");
-                game_mod.endTurn();
+                his_self.addMove("convert\t"+spacekey+"\tcatholic");
+                his_self.endTurn();
               },
 
               null
@@ -768,7 +794,7 @@ console.log("----------------------------");
               function(space) {
                 if (
                   space.religion === "catholic" &&
-                  game_mod.isSpaceAdjacentToReligion(space, "protestant")
+                  his_self.isSpaceAdjacentToReligion(space, "protestant")
                 ) {
                   return 1;
                 }
@@ -776,8 +802,8 @@ console.log("----------------------------");
               },
 
               function(spacekey) {
-                game_mod.addMove("convert\t"+spacekey+"\tprotestant");
-                game_mod.endTurn();
+                his_self.addMove("convert\t"+spacekey+"\tprotestant");
+                his_self.endTurn();
               },
 
               null
@@ -833,6 +859,8 @@ console.log("----------------------------");
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
+console.log("------- pDc -------");
+
 	  if (this.game.player == player) {
 	    this.playerPlayDiplomacyCard(faction);
 	  }
@@ -866,6 +894,8 @@ console.log(player + " -- " + faction + " -- " + fhand_idx);
 	      this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].hand[i]);
 	    }
 
+console.log("DECK PRINTED: " + JSON.stringify(this.game.deck[deckidx]));
+
 	    // and clear the hand we have dealt
 	    this.game.deck[deckidx].hand = [];
 	    this.updateLog("hand entries copied over to fhand");
@@ -884,6 +914,8 @@ console.log(this.game.deck[deckidx]);
 	  this.game.queue.splice(qe, 1);
 
 	  let space = mv[1];
+	  this.game.state.tmp_reformations_this_turn.push(space);
+
 	  let p_player = mv[2];
 	  let c_player = mv[3];
 

@@ -143,6 +143,9 @@
   }
 
   resetPlayerTurn(player_num) {
+    this.game.state.tmp_reformations_this_turn = [];
+    this.game.state.tmp_counter_reformations_this_turn = [];
+    this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_protestant_reformation_bonus = 0;
     this.game.state.tmp_catholic_reformation_bonus = 0;
     this.game.state.tmp_protestant_counter_reformation_bonus = 0;
@@ -346,8 +349,8 @@
     let html = '<div class="message">' + msg + '</div>';
 
     html += '<ul>';
-    for (let key in this.spaces) {
-      if (filter_func(this.spaces[key]) == 1) {
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) {
         html += '<li class="option" id="' + key + '">' + key + '</li>';
 	if (board_clickable) {
 	  document.getElementById(key).onclick = (e) => {
@@ -440,6 +443,8 @@
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
 
     this.resetPlayerTurn(this.game.player, faction);
+
+console.log("FACTION HAND IDX: " + faction_hand_idx);
 
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
     this.attachCardboxEvents(function(card) {
@@ -598,8 +603,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	source_spacekey = id;
 
 	if (id === "pass") {
-	  this.updateStatus("passing...");
-	  this.endTurn();
+	  his_self.updateStatus("passing...");
+	  his_self.endTurn();
 	  return;
         }
 
@@ -647,6 +652,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
                   //units_to_move.reverse();
 
                   for (let i = 0; i < units_to_move.length; i++) {
+console.log("---- MOVING UNITS -----");
                     his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
                   }
                   his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");

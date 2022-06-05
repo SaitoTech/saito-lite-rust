@@ -105,6 +105,93 @@
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  //
+  // find the nearest destination.
+  //
+  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+
+console.log("dijon TEST");
+
+    //
+    // return array with results + hops distance
+    //
+    let results = [];
+    let searched_spaces = {};
+    let pending_spaces = {};
+
+console.log("ORIGIN: " + JSON.stringify(this.game.spaces[sourcekey]));
+
+    //
+    // if the source matches our destination, return it
+    //
+    if (include_source == 1) {
+      if (destination_filter(sourcekey)) {
+console.log("destination filter matches: " + sourcekey);
+        results.push({ space : sourcekey , hops : 0 });
+        return results;
+      }
+    }
+
+console.log("boating...");
+
+    //
+    // put the neighbours into pending
+    //
+    for (let i = 0; i < this.game.spaces[sourcekey].neighbours.length; i++) {
+console.log("pushing neighbour to pending spaces: " + this.game.spaces[sourcekey].neighbours[i]);
+      pending_spaces[this.game.spaces[sourcekey].neighbours[i]] = { hops : 0 , key : this.game.spaces[sourcekey].neighbours[i] };
+    }
+
+    //
+    // otherwise propagate outwards searching pending
+    //
+    let continue_searching = 1;
+    while (continue_searching) {
+
+      let count = 0;
+      for (let key in pending_spaces) {
+
+	count++;
+	let hops = pending_spaces[key].hops;
+
+	if (destination_filter(key)) {
+	  // found results? this is last pass
+console.log("destination matches: " + key);
+	  results.push({ hops : (hops+1) , key : key });	
+	  continue_searching = 0;
+	} else {
+console.log("destination not match: " + key);
+	  if (propagation_filter(key)) {
+    	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
+	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
+		// don't add to pending as we've transversed before
+console.log("already traversed");
+	      } else {
+console.log("not already traversed");
+      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
+	      }
+    	    }
+	  }
+
+	  searched_spaces[key] = { hops : (hops+1) , key : key };
+	}
+	delete pending_spaces[key];
+
+      }
+      if (count == 0) { continue_searching = 0; }
+    }
+    
+
+    //
+    // at this point we have results or not 
+    //
+    return results;
+
+  }
+
+
+
+
   isSpaceInUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.unrest == 1) { return true; }
@@ -182,6 +269,8 @@
     state.round = 0;
     state.players = [];
     state.events = {};
+    state.tmp_reformations_this_turn = [];
+    state.tmp_counter_reformations_this_turn = [];
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
@@ -2155,7 +2244,7 @@
 
   }
 
-  returnNewDiplomaticCardsForThisTurn(turn = 1) {
+  returnNewDiplomacyCardsForThisTurn(turn = 1) {
 
     let deck = this.returnDiplomaticDeck();
     let new_deck = {};
@@ -2426,9 +2515,13 @@
       removeFromDeck : function(his_self, player) { return 1; } ,
       onEvent : function(game_mod, player) {
 
+	// set player to protestant
+	player = game_mod.returnPlayerOfFaction("protestant");
+
 	// protestant gets 2 roll bonus at start
 	game_mod.game.state.tmp_protestant_reformation_bonus = 2;
 	game_mod.game.state.tmp_catholic_reformation_bonus = 0;
+	game_mod.game.state.tmp_reformations_this_turn = [];
 
 	game_mod.game.queue.push("protestant_reformation\t"+player);
 	game_mod.game.queue.push("protestant_reformation\t"+player);
@@ -2463,6 +2556,7 @@
 	      function(space) {
 		if (
 		  space.religion === "catholic" &&
+		  !game_mod.game.state.tmp_reformations_this_turn.includes(space.key) &&
 		  game_mod.isSpaceAdjacentToReligion(space, "protestant")
 	        ) {
 		  return 1;
