@@ -15,11 +15,9 @@ export enum TransactionType {
   GoldenTicket = 2,
   ATR = 3,
   Vip = 4,
-  StakerDeposit = 5,
-  StakerWithdrawal = 6,
+  SPV = 5,
+  Issuance = 6,
   Other = 7,
-  Issuance = 8,
-  SPV = 9,
 }
 
 class Transaction {
@@ -87,7 +85,6 @@ class Transaction {
           fslip.type,
           fslip.uuid,
           fslip.sid,
-          fslip.payout,
           fslip.lc
         );
       }
@@ -99,7 +96,6 @@ class Transaction {
           fslip.type,
           fslip.uuid,
           fslip.sid,
-          fslip.payout,
           fslip.lc
         );
       }
@@ -240,12 +236,15 @@ class Transaction {
     }
   }
 
-  generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee) {
+  generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee, with_staking_subsidy) {
     const transaction = new Transaction();
 
     let output_payment = BigInt(0);
     if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
-      output_payment = BigInt(output_slip_to_rebroadcast.returnAmount()) - BigInt(with_fee);
+      output_payment =
+        BigInt(output_slip_to_rebroadcast.returnAmount()) -
+        BigInt(with_fee) +
+        BigInt(with_staking_subsidy);
     }
 
     transaction.transaction.type = TransactionType.ATR;
@@ -797,30 +796,6 @@ class Transaction {
     }
 
     //
-    // Staking Withdrawal Transactions
-    //
-    if (this.transaction.type === TransactionType.StakerWithdrawal) {
-      for (let i = 0; i < this.transaction.from.length; i++) {
-        if (this.transaction.from[i].type === SlipType.StakerWithdrawalPending) {
-          if (!app.staking.validateSlipInPending(this.transaction.from[i])) {
-            console.log(
-              "ERROR 089231: Staking Withdrawal Pending input slip is not in Pending thus transaction invalid!"
-            );
-            return false;
-          }
-        }
-        if (this.transaction.from[i].type === SlipType.StakerWithdrawalStaking) {
-          if (!app.staking.validateSlipInStakers(this.transaction.from[i])) {
-            console.log(
-              "ERROR 089231: Staking Withdrawal Staking input slip is not in Stakers thus transaction invalid!"
-            );
-            return false;
-          }
-        }
-      }
-    }
-
-    //
     // vip transactions
     //
     // a special class of transactions that do not pay rebroadcasting
@@ -869,7 +844,6 @@ class Transaction {
   }
 
   validateSignature(app) {
-
     //
     // validate signature
     //
@@ -885,7 +859,6 @@ class Transaction {
     }
 
     return true;
-
   }
 
   generateMetadata() {
