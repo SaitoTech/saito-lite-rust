@@ -41,7 +41,7 @@
     margin-right: 2.5rem
 }
 
-@media only screen and (max-width: 50.25em) {
+@media only screen and (max-width: 59.25em) {
     .row [class^="col-"]:not(:last-child) {
         margin-right: 0;
         margin-bottom: 6rem
