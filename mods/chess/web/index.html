@@ -31,29 +31,46 @@
     <div id="Chess_browser_active"></div>
 
     <div class="container" id="container">
-        <div class="module_container row">
+        <div class="module_container">
+
             <div class="board-space column">
                 <div id="board"></div>
-                <div id="buttons" class="button_row">
-                    <button id="move_accept" class="chess_button column" disabled>✔</button>
-                    <button id="move_reject" class="chess_button column" disabled>✘</button>
+            </div>
+
+            <div class="controls column player-data-hud">
+
+                <div class="tool-cont">
+                    <div class="tool-item item-name">TURN</div>
+                    <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
+                    <div class="item-detail" id="status">
+                    </div>
+                </div>
+
+                <div class="tool-cont" id="identicon-cont">
+                    <div class="tool-item item-name">OPPONENT</div>
+                    <div id="opponent_identicon"></div>
+                    <div class="tool-item item-detail" id="opponent_id"></div>
+                    <i id="copy-btn" class="fas fa-copy fa-regular"></i>
+                </div>
+
+                <div class="tool-cont" id="resign-cont">
+                    <div class="tool-item item-name" >RESIGN</div>
+                    <div class="tool-item item-detail">
+                        <i id="resign_icon" class="fas fa-solid fa-flag"></i>
+                    </div>
+                </div>
+                <div class="tool-cont" id="captured-cont">
+                    <div class="tool-item item-name">CAPTURED</div>
+                    <div class="tool-item item-detail" id="captured"></div>
                 </div>
                 <div id="promotion" class="promotion-holder">
                     <span id="promotion-choices"></span>
                 </div>
-            </div>
-
-            <div class="controls column">
-                <p id="status_display">Status: <span id="status"></span>
-                    <span id="home" class="home">
-                        <i id="resign_icon" class=""></i>
-                        <i id="chat_icon" class=""></i>
-                        <a href="/arcade">
-                            <i id="home_icon" class=""></i>
-                        </a>
-                    </span></p>
-                <p id="status_oponent">Opponent: <span id="opponent_id"></span></p>
-                <p id="status_captured">Captured: <span id="captured"></span></p>
+                <div id="buttons" class="button_row">
+                    <button id="move_reject" class="chess_button" disabled>✘</button>
+                    <button id="move_accept" class="chess_button " disabled>✔</button>
+                </div>
+                
             </div>
         </div>
     </div>
