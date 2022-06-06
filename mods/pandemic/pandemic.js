@@ -3473,9 +3473,14 @@ displayDisease() {
     return html;
   }
 
-  resignGame(game_id = null, tiegame = 0, reason = "") {
-    this.loadGame(game_id);
-    super.resignGame(game_id, 1, `${this.game.players_info[this.game.player-1].role} is gone`);
+  processResignation(resigning_player, reason){
+    this.updateLog(`Player ${resigning_player} quits the game, perhaps they fell ill?`);
+    if (this.game.step.game > this.grace_window){
+      this.endGame([], `${this.game.players_info[this.game.player-1].role} is gone`);
+    }else{
+      this.endGame([],"cancellation");
+    }
+    
   }
 
 }

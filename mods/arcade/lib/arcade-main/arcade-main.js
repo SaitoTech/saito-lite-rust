@@ -537,7 +537,7 @@ module.exports = ArcadeMain = {
           console.log("Send Resign Message");
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
-            gamemod.resignGame(game_id, 0, "forfeit");
+            gamemod.resignGame(game_id);
             this.removeGameFromList(game_id);
             //console.log(JSON.parse(JSON.stringify(gamemod.game)));
             return;

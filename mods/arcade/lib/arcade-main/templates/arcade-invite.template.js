@@ -112,7 +112,7 @@ let makeDescription = (app, invite) => {
 
   if (invite.msg) {
     let gameModule = app.modules.returnModule(invite.msg.game);
-    if (gameModule) {
+    if (gameModule && gameModule !== "Arcade") {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
         html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}`;

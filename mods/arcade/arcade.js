@@ -42,7 +42,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = false;
+    this.debug = true;
 
   }
 
@@ -157,7 +157,8 @@ class Arcade extends ModTemplate {
     if (this.app.options.games != null) {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
-        if (game.over == 0 && (game.players_set != 1 || game.players.includes(app.wallet.returnPublicKey()))) {
+        if (this.debug){console.log(JSON.parse(JSON.stringify(game)));}
+        if (game.over == 0 && (game.players_set != 1 || game.accepted.includes(app.wallet.returnPublicKey()))) {
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
       }
@@ -490,10 +491,9 @@ class Arcade extends ModTemplate {
       );
     }
        
-    let game_found = false;
     for (let i = 0; i < this.app.options.games.length; i++) {
       if (this.app.options.games[i].id == txmsg.game_id) {
-        game_found = true;
+        if (this.debug){console.log("game already created in wallet...");}
         
         if (this.app.options.games[i].initializing == 0) { //Is that right, I don't know if this condition can be true
           // is this old? exit
@@ -503,12 +503,9 @@ class Arcade extends ModTemplate {
             return;
           }
         }
-      }
-    }
 
-    if (game_found){
-      if (this.debug){console.log("game already accepted so returning...");}
-      return;
+       return;
+      }
     }
 
     let gamemod = this.app.modules.returnModule(tx.msg.game);
@@ -565,7 +562,7 @@ class Arcade extends ModTemplate {
       if (game_id) {
         if (this.debug) {console.log("... and launching the game");}
       
-        //Kick off game engine
+        //Kick off game loader
         this.launchGame(txmsg.game_id);
       
         if (this.debug) {console.log("... and done launching the game"); }
