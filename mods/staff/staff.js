@@ -20,10 +20,9 @@ class Staff extends ModTemplate {
   //this function will trigger when you are connected to a peer.
   //Use this to check if the key from the wallet is in the db.
     onPeerHandshakeComplete(app, peer) {
-
     // check if key in db
     // do something like
-    //document.getElementById("isRegistered").value = this.getRecord(this.app.wallet.returnPublicKey());
+        document.getElementById("isRegistered").value = this.getRecord(this.app.wallet.returnPublicKey());
 
     }
 
@@ -35,6 +34,7 @@ class Staff extends ModTemplate {
         document.querySelector('#add_staff').onclick = () => {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
+                this.sendRegisterTX(publicKey);
                 //this.registerToDatabase(publicKey);
                 // here you want to use sendRegisterTransaction with the wallet public key
             }
@@ -42,10 +42,11 @@ class Staff extends ModTemplate {
     }
 
     async getRecord(publicKey) {
+        sql = "SELECT * FROM staff WHERE publicKey = $publicKey";
         this.sendPeerDatabaseRequestWithFilter("Staff",  sql, 
         (publicKey)=>{
             //sql here to get key return true or false.
-            return false;
+            return true;
         });
     }
 
@@ -54,34 +55,42 @@ class Staff extends ModTemplate {
         let newtx = this.app.wallet.createUnsignedTransaction();
     
         newtx.msg.module = "Staff";
-        newtx.msg.type = "regoster";
+        newtx.msg.type = "register";
         newtx.msg.publicKey = publicKey;
     
         return this.app.wallet.signTransaction(newtx);
       }
 
-    sendRegisterTX(){
-        var registerTx = createRegisterTransaction(this.app.wallet.returnPublicKey());
-        this.app.network.propagateTransaction(registerTx);
+    sendRegisterTX(publicKey){
+        var registerTx = this.createRegisterTransaction(this.app.wallet.returnPublicKey());
+     //   this.app.network.propagateTransaction(registerTx);
     }
 
-    onConfirmation(blk, tx, conf, app) {
-        if (app.BROWSER == 0) {
-          if (conf == 0) {
-            let txmsg = tx.returnMessage();
+    //onConfirmation(blk, tx, conf, app) {
+    //    if (app.BROWSER == 0) {
+    //      if (conf == 0) {
+    //        let txmsg = tx.returnMessage();
     
-            if (txmsg.module === "Staff") {
-              let staff_self = app.modules.returnModule("Staff");
-              console.log("PROCESSING: "+txmsg.type);
-              if (txmsg.type == "register") {
-                staff_self.receiveRegisterTransaction(tx);
-              }
-            }
-          }
-        }
-      }
+    //        if (txmsg.module === "Staff") {
+    //          let staff_self = app.modules.returnModule("Staff");
+    //          console.log("PROCESSING: "+txmsg.type);
+    //          if (txmsg.type == "register") {
+    //              staff_self.receiveRegisterTransaction(tx);
+    //          }
+    //        }
+    //      }
+    //    }
+    //  }
 
-      receiveRegisterTransaction(tx) {
+    receiveRegisterTransaction(tx) {
+
+        let sql = `INSERT INTO staff (publicKey) VALUES ($publicKey)`;
+        let params = {
+            $publicKey: publicKey
+        }
+
+        this.app.storage.executeDatabase(sql, params, "staff");
+
           //unpack transaction
           // save into sql db.
       }
