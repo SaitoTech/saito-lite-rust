@@ -24,14 +24,14 @@ class Staff extends ModTemplate {
         }
     }
 
-    addRecord(publickey = "") {
+    async addRecord(publickey = "") {
 
         let sql = `INSERT INTO staff (publickey) VALUES ($publickey)`;
         let params = {
             $publickey: publickey
         }
 
-        this.app.storage.executeDatabase(sql, params, "staff");
+        await this.app.storage.executeDatabase(sql, params, "staff");
 
         sql = "SELECT * FROM staff WHERE publickey = $publickey";
 
@@ -40,16 +40,18 @@ class Staff extends ModTemplate {
             alert(rows);
             alert("not found in db");
             return 0;
-        } else {
+        } else if (rows.length > 0) {
             let text = "";
             alert(rows);
-          //  document.getElementById("#list_of_keys") = text;
+            //  document.getElementById("#list_of_keys") = text;
             for (let index = 0; index < rows.length; index++) {
-                alert("value: " + rows[index]);
-              //  text += (index + 1) + ":" + rows[index].publickey + "<br>";
+                alert("value: " + rows.length);
+                //  text += (index + 1) + ":" + rows[index].publickey + "<br>";
             }
             alert("found in db");
             return 1;
+        } else {
+            alert("db not called");
         }
 
     }
