@@ -19,7 +19,6 @@ class Staff extends ModTemplate {
         document.querySelector('#add_staff').onclick = () => {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
-                document.getElementById("publicKey").innerHTML = publicKey;
                 this.registerToDatabase(publicKey);
             }
         }
@@ -42,7 +41,13 @@ class Staff extends ModTemplate {
             alert("not found in db");
             return 0;
         } else {
+            let text = "";
             alert(rows);
+          //  document.getElementById("#list_of_keys") = text;
+            for (let index = 0; index < rows.length; index++) {
+                alert("value: " + rows[index]);
+              //  text += (index + 1) + ":" + rows[index].publickey + "<br>";
+            }
             alert("found in db");
             return 1;
         }
