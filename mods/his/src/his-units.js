@@ -9,6 +9,7 @@
     if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
+    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }

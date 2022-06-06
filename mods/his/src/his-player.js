@@ -1148,6 +1148,7 @@ console.log("12");
 return;
   }
   canPlayerInitiatePiracyInASea(his_self, player, faction) {
+    if (faction === "ottoman" && his_self.game.events.ottoman_piracy_enabled == 1) { return 1; }
     return 0;
   }
   async playerInitiatePiracyInASea(his_self, player, faction) {
@@ -1177,7 +1178,8 @@ return;
     );
   }
   canPlayerBuildCorsair(his_self, player, faction) {
-    return 1;
+    if (faction === "ottoman" && his_self.game.events.ottoman_corsairs_enabled == 1) { return 1; }
+    return 0;
   }
   async playerBuildCorsair(his_self, player, faction) {
 
@@ -1234,11 +1236,28 @@ console.log("20");
 return;
   }
   canPlayerFoundJesuitUniversity(his_self, player, faction) {
+    if (faction === "papacy" && his_self.game.state.events.papacy_may_found_jesuit_universities == 1) { return 1; }
     return 0;
   }
   async playerFoundJesuitUniversity(his_self, player, faction) {
-console.log("21 jesuit");
-return;
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Catholic-Controlled Space for Jesuit University",
+
+      function(space) {
+        if (space.religion === "catholic") { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	alert("JESUIT UNIVERSITY FOUNDED: " + destination_spacekey);
+      },
+
+    );
+  }
+  canPlayerTranslateScripture(his_self, player, faction) {
+    return 0;
   }
   canPlayerPublishTreatise(his_self, player, faction) {
     return 0;

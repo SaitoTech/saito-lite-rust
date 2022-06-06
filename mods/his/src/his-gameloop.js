@@ -825,6 +825,31 @@ console.log("----------------------------");
 
 	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
 
+	  if (space === "augsburg" && religiion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
+	    this.game.spaces['augsburg'].units['protestant'].push();
+    	    this.addRegular("augsburg", "protestant", 2);
+	  }
+	  if (space === "mainz" && religiion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
+	    this.game.spaces['mainz'].units['protestant'].push();
+    	    this.addRegular("mainz", "protestant", 2);
+	  }
+	  if (space === "trier" && religiion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
+	    this.game.spaces['trier'].units['protestant'].push();
+    	    this.addRegular("trier", "protestant", 2);
+	  }
+	  if (space === "cologne" && religiion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
+	    this.game.spaces['cologne'].units['protestant'].push();
+    	    this.addRegular("cologne", "protestant", 2);
+	  }
+	  if (space === "wittenberg" && religiion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
+	    this.game.spaces['wittenberg'].units['protestant'].push();
+    	    this.addRegular("wittenberg", "protestant", 2);
+	  }
+	  if (space === "brandenburg" && religiion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
+	    this.game.spaces['brandenburg'].units['protestant'].push();
+    	    this.addRegular("brandenburg", "protestant", 2);
+	  }
+
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
 
@@ -916,9 +941,6 @@ console.log(this.game.deck[deckidx]);
 	  let space = mv[1];
 	  this.game.state.tmp_reformations_this_turn.push(space);
 
-	  let p_player = mv[2];
-	  let c_player = mv[3];
-
 	  let p_rolls = 0;
 	  let c_rolls = 0;
 
@@ -1008,6 +1030,102 @@ this.updateLog("Catholics: " + c_rolls);
 
 
 
+	if (mv[0] === "counter_reformation") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let space = mv[1];
+	  this.game.state.tmp_reformations_this_turn.push(space);
+
+	  let p_rolls = 0;
+	  let c_rolls = 0;
+
+	  let p_neighbours = 0;
+	  let c_neighbours = 0;
+
+	  let p_bonus = 0;
+	  let c_bonus = 0;
+
+	  let p_high = 0;
+	  let c_high = 0;
+
+	  let catholics_win = 0;
+
+	  let ties_resolve = "protestant";
+
+	  //
+	  // neighbours
+	  //
+	  for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "catholic") {
+	      c_neighbours++;
+	    }
+	    if (this.game.spaces[ this.game.spaces[space].neighbours[i] ].religion === "protestant") {
+	      p_neighbours++;
+	    }  
+	  }
+
+	  //
+	  // language zone
+	  //
+	  if (this.game.spaces[space].language !== "german") {
+	    ties_resolve = "catholic";
+ 	  }
+
+	  //
+	  // temporary bonuses
+	  //
+	  p_bonus += this.game.state.tmp_protestant_reformation_bonus;
+	  c_bonus += this.game.state.tmp_catholic_reformation_bonus;
+
+	  //
+	  // calculate total rolls
+	  //
+	  p_rolls += p_neighbours;
+	  p_rolls += p_bonus;
+	  c_rolls += c_neighbours;
+	  c_rolls += c_bonus;
+
+this.updateLog("Total Rolls: ");
+this.updateLog("Protestants: " + p_rolls);
+
+	  for (let i = 0; i < p_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Protestants roll: " + x, 1);
+	    if (x > p_high) { p_high = x; }
+	  }
+
+this.updateLog("Catholics: " + c_rolls);
+
+	  for (let i = 0; i < c_rolls; i++) {
+	    let x = this.rollDice(6);
+	    this.updateLog("Catholics roll: " + x, 1);
+	    if (x > c_high) { c_high = x; }
+	  }
+
+	  //
+	  // do catholics win?
+	  //
+	  if (p_high < c_high) { catholics_win = 1; }
+	  if (p_high == c_high && ties_resolve === "catholic") { catholics_win = 1; }
+	
+	  //
+	  // handle victory
+	  //
+	  if (catholics_win == 1) {
+	    this.updateLog("Catholics win!");
+	    this.game.queue.push("convert\t"+space+"\tprotestant");
+	  } else {
+	    this.updateLog("Protestants win!");
+	  }
+
+	  return 1;
+
+	}
+
+
+
+
 
 	//
 	// objects and cards can add commands
@@ -1030,5 +1148,6 @@ this.updateLog("Catholics: " + c_rolls);
     return 1;
 
   }
+
 
 
