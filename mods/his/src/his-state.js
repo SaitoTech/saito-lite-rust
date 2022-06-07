@@ -2706,6 +2706,8 @@
 	  }
 	}
 
+	game_mod.displayVictoryTrack();
+
       }
     }
     deck['013'] = { 
@@ -2715,6 +2717,11 @@
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+        state.events.schmalkaldic_league = 1;
+
+      }
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
