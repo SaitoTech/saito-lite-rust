@@ -11,26 +11,30 @@ class Staff extends ModTemplate {
         this.name = "Staff";
         this.description = "Register as a Staff on Arcade";
         this.categories = "Utilities";
+        this.isThisRegistered = false;
 
         return this;
     }
    
-
-
   //this function will trigger when you are connected to a peer.
   //Use this to check if the key from the wallet is in the db.
     onPeerHandshakeComplete(app, peer) {
-    // check if key in db
-    // do something like
         let staff_self = app.modules.returnModule("Staff");
         console.log(staff_self);
-        staff_self.getRecord(this.app.wallet.returnPublicKey());
+        
+        //run on the node, rendering BROWSER on browser checking - don't do this on full node
+
+        this.app.isThisRegistered = staff_self.getRecord(this.app.wallet.returnPublicKey());
+        console.log(this.app.isThisRegistered);
+    // check if key in db
+    // do something like
  //   document.getElementById("isRegistered").value = this.getRecord(this.app.wallet.returnPublicKey());
 
     }
 
     render(app, mod) {
         document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
+        document.getElementById("isRegistered").value = this.isThisRegistered;
     }
 
     attachEvents(app, mod) {
@@ -44,13 +48,13 @@ class Staff extends ModTemplate {
         }
     }
 
-    async getRecord(publicKey) {
-        sql = "SELECT * FROM staff WHERE publickey = publicKey";
+    async getRecord(publickey) {
+        console.log("key:"+publickey);
+        sql = "SELECT publickey FROM staff WHERE publickey = $publickey";
         this.sendPeerDatabaseRequestWithFilter("Staff",  sql, 
         (publicKey)=>{
-            console.log(publicKey.length);
-            //sql here to get key return true or false.
-            return false;
+            console.log("sql value: " + publicKey.publickey);
+            return true;
         });
     }
 
@@ -71,20 +75,17 @@ class Staff extends ModTemplate {
     }
 
     onConfirmation(blk, tx, conf, app) {
-        console.log("went to onconfirmation!");
-        console.log(app.browser == 0);
-        console.log(conf == 0);
 
-        if (app.browser == 0) {
+        if (app.BROWSER == 0) {
           if (conf == 0) {
-            let txmsg = tx.returnmessage();
+              let txmsg = tx.returnMessage();
               console.log(txmsg.module == "Staff");
 
             if (txmsg.module == "Staff") {
-              let staff_self = app.modules.returnmodule("Staff");
+              let staff_self = app.modules.returnModule("Staff");
               console.log("processing: "+txmsg.type);
               if (txmsg.type == "register") {
-                  staff_self.receiveRegisterTransaction(tx);
+                  staff_self.receiveRegisterTransaction(txmsg);
               }
             }
           }
@@ -92,11 +93,11 @@ class Staff extends ModTemplate {
     }
 
     receiveRegisterTransaction(tx) {
-        let publicKey = tx.returnmessage().publicKey;
-        console.log("pubkey" + publicKey);
-        let sql = `INSERT INTO staff (publickey) VALUES (publicKey)`;
+        let publickey = tx.publicKey;
+        console.log("pubkey" + publickey);
+        let sql = `INSERT INTO staff (publickey) VALUES ($publickey)`;
         let params = {
-            $publickey: publicKey
+            $publickey: publickey
         }
 
         this.app.storage.executeDatabase(sql, params, "staff");
