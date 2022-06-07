@@ -159,6 +159,24 @@ Saito Menu
     margin-left: 2rem;
 }
 
+.saito-menu-container.saito-menu-dense>ul>li {
+    padding: .3rem .5rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li:not(:last-child) {
+    margin-bottom: .5rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li>i {
+    font-size: 1.6rem;
+    width: 1rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li>span {
+    font-size: 1.6rem;
+
+}
+
 .saito-menu-container.saito-menu-right>ul>li {
     flex-direction: row-reverse;
 }
@@ -258,6 +276,10 @@ Saito User List and Saito User
     margin-bottom: 1px;
 }
 
+.saito-user.saito-user-dense:not(:last-child) {
+    margin-bottom: 1px;
+}
+
 
 .saito-user.saito-user-dense>img {
     width: 4rem;
@@ -275,7 +297,7 @@ Saito User List and Saito User
 
 .saito-user.saito-user-dense>div>span {
     /* display: none; */
-    font-size: 1.2rem;
+    font-size: 1.6rem;
 }
 
 .saito-user>i {
@@ -285,7 +307,7 @@ Saito User List and Saito User
     right: 1rem;
     top: 1rem;
     cursor: pointer;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
 }
 
 .saito-user-dropdown {
@@ -342,6 +364,8 @@ Saito Tabs
     display: flex;
     justify-content: center;
     overflow: auto;
+    position: absolute;
+    top: 0;
 }
 
 .saito-tab-buttons>ul {
@@ -465,8 +489,8 @@ Saito site message
 
 #message-wrapper {
     position: fixed;
-    top: 0;
-    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: 20;
     min-width: 25em;
     cursor: pointer;
@@ -484,4 +508,53 @@ Saito site message
 .message-message {
     font-size: 2.4rem;
     color: var(--saito-white);
+}
+
+
+/* ----------------------------------------------------------------
+Saito module list /Saito module
+-----------------------------------------------------------------*/
+.saito-module-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    grid-gap: 3rem;
+
+}
+
+.saito-module {
+    padding: 1rem;
+    display: flex;
+    background-color: var(--saito-white);
+    cursor: pointer;
+
+}
+
+.saito-module img {
+    width: 10rem;
+    margin-right: 2rem;
+    height: 7rem;
+
+}
+
+.saito-module>div>p {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+
+}
+
+.saito-module>div>span {
+    display: block;
+    width: 20rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.8rem;
+}
+
+@media screen and (max-width: 1200px) {
+    .saito-module>div>span {
+        width: 9rem;
+    }
+
 }

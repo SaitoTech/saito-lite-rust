@@ -1,0 +1,10 @@
+#saito-left-sidebar {
+    width: 30rem;
+}
+
+
+@media screen and (max-width: 968px) {
+    #saito-left-sidebar {
+        display: none;
+    }
+}

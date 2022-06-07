@@ -30,7 +30,7 @@ button,
 
 
 button.saito-btn-secondary {
-  border: 2px solid var(--saito-primary);
+  border: 1px solid var(--saito-primary);
   display: inline-block;
   border-radius: 5rem;
   font-weight: 500;

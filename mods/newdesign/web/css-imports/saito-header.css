@@ -1,136 +1,262 @@
-.header {
-    height: var(--saito-header-height);
-    /* padding:  1em; */
-    background-image: url(/saito/img/dreamscape.png);
-    background-position: 0em;
-    background-size: cover;
-    /* sus and still out to jury */
+.saito-header {
     position: fixed;
-    width: 100%;
-    top: 0%;
-    z-index: 1;
-}
-
-.header-wrapper {
-    display: grid;
-    width: 100%;
-    max-width: var(--saito-width);
-    margin: auto;
-    grid-template-columns: 12em auto;
-    align-items: center;
-    height: 100%;
-    padding: 0 1.1em;
-}
-
-.header-balance {
-    font-weight: normal;
-    margin: 0 3px 0 0;
-}
-
-.header-token {
-    font-weight: normal;
-}
-
-.header-dropdown {
-    border: solid 1px;
-    padding: 0em 0.4em;
-    height: 1.35em;
-}
-
-.header-mini-wallet {
-    padding: 0.5em 0 0 0;
-    height: 1.7em;
-    color: white;
-    margin: 0 1em 0 0;
-    cursor: pointer;
-}
-
-.header-profile-photo {
-    height: 6rem;
-    width: 6rem;
-    border: 1px solid #ddd;
-    box-shadow: 0px 0px 1px 1px rgba(170, 170, 170, 0.75);
-}
-
-.header-token {
-    padding-left: 0em;
-    height: 1em;
-    font-size: 1.2em;
-    font-weight: bold;
-    overflow: hidden;
-}
-
-.header-balance {
-    padding-left: 0em;
-    height: 1em;
-    font-size: 1.2em;
-    font-weight: bold;
-    overflow: hidden;
-}
-
-.header-username {
-    width: 10em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-.header-icon {
-    color: white;
-    align-self: center;
-    justify-self: end;
-    text-shadow: #333 1px 0;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.header-icon-links {
     display: flex;
-    flex-flow: row;
-    justify-content: flex-end;
+    width: 100vw;
+    background: linear-gradient(77deg,
+            var(--saito-primary) 0%,
+            var(--saito-secondary) 69%);
+
+    backdrop-filter: blur(5px);
+    margin: 0;
+
     align-items: center;
+    padding: 1.3rem 3rem;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    height: var(--saito-header-height);
 }
 
-.header-icon-links i {
-    margin-left: 0px;
-    font-size: 1.7em;
+.saito-header>img {
+    width: 15rem;
 }
 
-.header-icon-disabled {
-    color: #ddd;
-    text-shadow: #444 1px 2px, #aaa 3px 2px;
+.saito-header nav {
+    display: flex;
+    align-items: center;
+
+    margin-left: auto;
+    justify-self: flex-end;
 }
 
-.header-dropdown {
+.saito-big-menu-container {
+    display: flex;
+    margin-right: 7rem;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+}
+
+
+
+
+
+
+#saito-menuToggle {
+    margin-right: auto;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+#saito-menuToggle:hover {
+    opacity: 0.9;
+    transform: scale(1.2);
+}
+
+#saito-menuToggle:active {
+    transform: scale(0.9);
+}
+
+/* #saito-menuToggle:hover + #hamburger-contents {
+    opacity: 1;
+    /* transform: translateX(-21rem); 
+  } */
+#saito-menuToggle span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+
+    background: var(--saito-white);
+    border-radius: 3px;
+
+    z-index: 1;
+
+    transform-origin: 4px 0px;
+
+    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+    background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+    margin-left: auto;
+}
+
+#saito-menuToggle span:first-child {
+    transform-origin: 0% 0%;
+}
+
+#saito-menuToggle span:nth-last-child(2) {
+    transform-origin: 0% 100%;
+}
+
+#saito-hamburger-contents {
+    display: block;
+    pointer-events: none;
+    color: var(--saito-default-font);
+
+    background-color: var(--saito-menu-background);
     position: absolute;
     right: 0;
-    right: -255px;
-    top: 83px;
-    color: var(--text-color-normal);
-    padding: 15px;
-    font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-    border: 1px solid var(--saito-cyber-black-wash);
-    border-radius: 5px 0 0 5px;
-    width: 250px;
-    font-size: 1.2em;
-    height: calc(100vh - 87px);
-    box-sizing: border-box;
-    box-shadow: 0px 0px 3px 1px rgba(170, 170, 170, 0.75);
-    background-color: #fcfcfc;
-    transition: all 500ms ease;
+    top: var(--saito-header-height);
+    border: 1px solid var(--saito-border);
+    border-top: none;
+    transition: all 0.2s;
+    opacity: 0;
+    z-index: 10;
+    padding: 2rem;
+    box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border),
+        1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
+        1px 1rem 1rem var(--saito-border);
+
+    /* -webkit-transform: translateX(20rem); */
+    /* transform: translateX(20rem); */
+    width: 20rem;
+    height: 100vh;
 }
 
-.header-dropdown ul li {
-    border: 1px solid var(--saito-cyber-black-cut);
-    border-radius: 5px;
-    background: var(--saito-skyline-grey);
-    margin: 0 0 1em 0;
-    text-align: center;
-    height: 2.25em;
-    padding: 11px 0 0 0;
+.saito-profile {
+    background-color: var(--saito-profile-background);
+    padding: 1.4rem 0.5rem;
+    display: flex;
+    justify-content: center;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid var(--saito-border);
 }
 
-.header-dropdown ul li:hover {
-    border-color: var(--saito-red);
-    color: var(--saito-red);
+.saito-profile>img {
+    width: 70px;
+    border-radius: 8px;
+    object-fit: contain;
+    background-color: white;
+    margin-right: 2rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.saito-profile>img:hover {
+    transform: scale(1.1);
+}
+
+.saito-profile-info>p {
+    color: var(--saito-default-font);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.saito-profile-info>div {
+    color: var(--saito-default-font);
+    font-weight: bold;
+    border: 1px solid white;
+    background-color: var(--saito-secondary);
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.saito-menu-section {
+    /* margin-bottom: 2rem; */
+
+    padding: 1.5rem 0;
+    font-size: 1.1rem;
+}
+
+.saito-menu-section:not(:last-child) {
+    border-bottom: 1px solid var(--saito-border);
+}
+
+
+.show-menu {
+    opacity: 1 !important;
+    width: 40rem !important;
+
+    -webkit-transform: translateX(0) !important;
+    transform: translateX(0) !important;
+    pointer-events: auto !important;
+}
+
+.saito-big-menu-container {
+    position: relative;
+}
+
+.saito-big-menu-container:hover .saito-big-menu {
+    display: block;
+}
+
+#saito-big-menu-toggle {
+    font-size: 1.8rem;
+    color: var(--saito-white);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.saito-big-menu {
+    background-color: var(--saito-white) !important;
+    position: absolute;
+    top: 2.5rem;
+    /* left: -1rem; */
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    display: none;
+    transition: all 0.2s;
+    z-index: 20;
+}
+
+.saito-big-menu a {
+    font-size: 1.8rem;
+    display: block;
+}
+
+
+.saito-big-menu a:not(:last-child) {
+    margin-bottom: 1.5rem;
+}
+
+.mega-menu:hover .saito-big-menu {
+    display: block;
+}
+
+.saito-big-menu-link {
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+
+.active {
+    color: var(--saito-primary);
+}
+
+/* Media Queries */
+
+@media screen and (min-width: 1800px) {
+    .saito-header {
+        padding: 1.3rem 9rem;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    #hamburger-contents {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #hamburger-contents {
+        width: 100vw;
+    }
+
+    .saito-header {
+        padding: 1.3rem 1rem;
+    }
+
+    .saito-header>img {
+        width: 7rem;
+    }
+
+    .shortcodes {
+        font-size: 12px;
+        position: absolute;
+        bottom: 0.15rem;
+        margin-left: 2rem;
+    }
 }
