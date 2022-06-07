@@ -16,7 +16,7 @@ class NewDesign extends ModTemplate {
     this.scripts = ['/saito/lib/date-picker/dist/js/datepicker-full.js'];
 
     this.body = new NewDesignMain(app, this);
-    // this.header = new SaitoHeader(app, this);
+    this.header = new SaitoHeader(app, this);
 
   }
 
@@ -26,7 +26,7 @@ class NewDesign extends ModTemplate {
     super.render(app)
 
     this.body.render(app, this);
-    // this.header.render(app, this);
+    this.header.render(app, this);
 
   }
 

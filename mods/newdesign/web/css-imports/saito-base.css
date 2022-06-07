@@ -30,6 +30,7 @@ body {
 
 .saito-container {
   padding: 3rem 8rem;
+  margin-top: var(--saito-header-height);
 }
 
 

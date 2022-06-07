@@ -73,15 +73,19 @@ class NewDesignMain {
     const salert_btn = document.querySelector('#salert_btn');
     const sprompt_btn = document.querySelector('#sprompt_btn');
     const sconfirm_btn = document.querySelector('#sconfirm_btn');
+    const sitemsg_btn = document.querySelector('#sitemsg_btn');
 
     salert_btn.addEventListener('click', (e) => {
-      salert("Alert Button ");
+      salert("salert clicked");
     })
     sprompt_btn.addEventListener('click', (e) => {
-      sprompt("Alert Button ");
+      sprompt("sprompt clicked");
     })
     sconfirm_btn.addEventListener('click', (e) => {
-      sconfirm("Alert Button ");
+      sconfirm("sconfirm clicked");
+    })
+    sitemsg_btn.addEventListener('click', (e) => {
+      siteMessage("New site message");
     })
 
   };

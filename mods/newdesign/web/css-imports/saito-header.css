@@ -1,0 +1,136 @@
+.header {
+    height: var(--saito-header-height);
+    /* padding:  1em; */
+    background-image: url(/saito/img/dreamscape.png);
+    background-position: 0em;
+    background-size: cover;
+    /* sus and still out to jury */
+    position: fixed;
+    width: 100%;
+    top: 0%;
+    z-index: 1;
+}
+
+.header-wrapper {
+    display: grid;
+    width: 100%;
+    max-width: var(--saito-width);
+    margin: auto;
+    grid-template-columns: 12em auto;
+    align-items: center;
+    height: 100%;
+    padding: 0 1.1em;
+}
+
+.header-balance {
+    font-weight: normal;
+    margin: 0 3px 0 0;
+}
+
+.header-token {
+    font-weight: normal;
+}
+
+.header-dropdown {
+    border: solid 1px;
+    padding: 0em 0.4em;
+    height: 1.35em;
+}
+
+.header-mini-wallet {
+    padding: 0.5em 0 0 0;
+    height: 1.7em;
+    color: white;
+    margin: 0 1em 0 0;
+    cursor: pointer;
+}
+
+.header-profile-photo {
+    height: 6rem;
+    width: 6rem;
+    border: 1px solid #ddd;
+    box-shadow: 0px 0px 1px 1px rgba(170, 170, 170, 0.75);
+}
+
+.header-token {
+    padding-left: 0em;
+    height: 1em;
+    font-size: 1.2em;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.header-balance {
+    padding-left: 0em;
+    height: 1em;
+    font-size: 1.2em;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.header-username {
+    width: 10em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.header-icon {
+    color: white;
+    align-self: center;
+    justify-self: end;
+    text-shadow: #333 1px 0;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.header-icon-links {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.header-icon-links i {
+    margin-left: 0px;
+    font-size: 1.7em;
+}
+
+.header-icon-disabled {
+    color: #ddd;
+    text-shadow: #444 1px 2px, #aaa 3px 2px;
+}
+
+.header-dropdown {
+    position: absolute;
+    right: 0;
+    right: -255px;
+    top: 83px;
+    color: var(--text-color-normal);
+    padding: 15px;
+    font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+    border: 1px solid var(--saito-cyber-black-wash);
+    border-radius: 5px 0 0 5px;
+    width: 250px;
+    font-size: 1.2em;
+    height: calc(100vh - 87px);
+    box-sizing: border-box;
+    box-shadow: 0px 0px 3px 1px rgba(170, 170, 170, 0.75);
+    background-color: #fcfcfc;
+    transition: all 500ms ease;
+}
+
+.header-dropdown ul li {
+    border: 1px solid var(--saito-cyber-black-cut);
+    border-radius: 5px;
+    background: var(--saito-skyline-grey);
+    margin: 0 0 1em 0;
+    text-align: center;
+    height: 2.25em;
+    padding: 11px 0 0 0;
+}
+
+.header-dropdown ul li:hover {
+    border-color: var(--saito-red);
+    color: var(--saito-red);
+}

@@ -126,7 +126,7 @@ Saito Menu
 
 
 .saito-menu-container>ul>li {
-    padding: .5rem;
+    padding: .5rem 1rem;
     display: flex;
     align-items: center;
     list-style: none;
@@ -249,7 +249,7 @@ Saito User List and Saito User
 
 
 .saito-user.saito-user-medium>div>span {
-    display: none;
+    /* display: none; */
 }
 
 
@@ -269,12 +269,13 @@ Saito User List and Saito User
 }
 
 .saito-user.saito-user-dense p {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
 }
 
 
 .saito-user.saito-user-dense>div>span {
-    display: none;
+    /* display: none; */
+    font-size: 1.2rem;
 }
 
 .saito-user>i {
@@ -391,3 +392,96 @@ Saito Tabs
 }
 
 @media screen and (max-width: 320px) {}
+
+
+
+
+
+/* ----------------------------------------------------------------
+Left sidebar chatbox
+-----------------------------------------------------------------*/
+
+.saito-leftsidebar-menu {
+    width: 25rem;
+}
+
+.saito-leftsidebar-chatbox {
+    width: 25rem;
+}
+
+
+/* ----------------------------------------------------------------
+Saito Alert
+-----------------------------------------------------------------*/
+
+#alert-wrapper {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: rgba(0, 0, 0, .1);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+}
+
+#alert-shim {
+    background-color: var(--saito-white);
+    position: absolute;
+    top: 0;
+    margin: auto;
+    height: 20rem;
+    min-width: 35em;
+    border-radius: 10px;
+
+
+}
+
+#alert-box {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    padding: 1rem;
+
+}
+
+.alert-message {
+    align-self: center;
+    justify-self: center;
+    font-size: 2.4rem;
+
+}
+
+#alert-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+/* ----------------------------------------------------------------
+Saito site message
+-----------------------------------------------------------------*/
+
+#message-wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 20;
+    min-width: 25em;
+    cursor: pointer;
+}
+
+#message-box {
+    background-color: var(--saito-primary);
+    height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.message-message {
+    font-size: 2.4rem;
+    color: var(--saito-white);
+}

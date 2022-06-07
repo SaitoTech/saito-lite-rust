@@ -19,11 +19,12 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--saito-default-font);
+  color: var(--saito-primary);
   font-weight: 600;
   line-height: 1.5;
   margin: 1rem 0;
   font-family: var(--saito-font);
+
 }
 
 h5,
