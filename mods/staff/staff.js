@@ -22,7 +22,10 @@ class Staff extends ModTemplate {
     onPeerHandshakeComplete(app, peer) {
     // check if key in db
     // do something like
-        document.getElementById("isRegistered").value = this.getRecord(this.app.wallet.returnPublicKey());
+        let staff_self = app.modules.returnModule("Staff");
+        console.log(staff_self);
+        staff_self.getRecord(this.app.wallet.returnPublicKey());
+ //   document.getElementById("isRegistered").value = this.getRecord(this.app.wallet.returnPublicKey());
 
     }
 
@@ -34,7 +37,7 @@ class Staff extends ModTemplate {
         document.querySelector('#add_staff').onclick = () => {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
-                this.sendRegisterTX(publicKey);
+                this.app.modules.returnModule("Staff").sendRegisterTX(publicKey);
                 //this.registerToDatabase(publicKey);
                 // here you want to use sendRegisterTransaction with the wallet public key
             }
@@ -42,11 +45,12 @@ class Staff extends ModTemplate {
     }
 
     async getRecord(publicKey) {
-        sql = "SELECT * FROM staff WHERE publicKey = $publicKey";
+        sql = "SELECT * FROM staff WHERE publickey = publicKey";
         this.sendPeerDatabaseRequestWithFilter("Staff",  sql, 
         (publicKey)=>{
+            console.log(publicKey.length);
             //sql here to get key return true or false.
-            return true;
+            return false;
         });
     }
 
@@ -58,35 +62,41 @@ class Staff extends ModTemplate {
         newtx.msg.type = "register";
         newtx.msg.publicKey = publicKey;
     
-        return this.app.wallet.signTransaction(newtx);
+        return this.app.wallet.signTransaction(newtx);  
       }
 
     sendRegisterTX(publicKey){
-        var registerTx = this.createRegisterTransaction(this.app.wallet.returnPublicKey());
-     //   this.app.network.propagateTransaction(registerTx);
+        var registerTx = this.app.modules.returnModule("Staff").createRegisterTransaction(this.app.wallet.returnPublicKey());
+        this.app.network.propagateTransaction(registerTx);
     }
 
-    //onConfirmation(blk, tx, conf, app) {
-    //    if (app.BROWSER == 0) {
-    //      if (conf == 0) {
-    //        let txmsg = tx.returnMessage();
-    
-    //        if (txmsg.module === "Staff") {
-    //          let staff_self = app.modules.returnModule("Staff");
-    //          console.log("PROCESSING: "+txmsg.type);
-    //          if (txmsg.type == "register") {
-    //              staff_self.receiveRegisterTransaction(tx);
-    //          }
-    //        }
-    //      }
-    //    }
-    //  }
+    onConfirmation(blk, tx, conf, app) {
+        console.log("went to onconfirmation!");
+        console.log(app.browser == 0);
+        console.log(conf == 0);
+
+        if (app.browser == 0) {
+          if (conf == 0) {
+            let txmsg = tx.returnmessage();
+              console.log(txmsg.module == "Staff");
+
+            if (txmsg.module == "Staff") {
+              let staff_self = app.modules.returnmodule("Staff");
+              console.log("processing: "+txmsg.type);
+              if (txmsg.type == "register") {
+                  staff_self.receiveRegisterTransaction(tx);
+              }
+            }
+          }
+        }
+    }
 
     receiveRegisterTransaction(tx) {
-
-        let sql = `INSERT INTO staff (publicKey) VALUES ($publicKey)`;
+        let publicKey = tx.returnmessage().publicKey;
+        console.log("pubkey" + publicKey);
+        let sql = `INSERT INTO staff (publickey) VALUES (publicKey)`;
         let params = {
-            $publicKey: publicKey
+            $publickey: publicKey
         }
 
         this.app.storage.executeDatabase(sql, params, "staff");
