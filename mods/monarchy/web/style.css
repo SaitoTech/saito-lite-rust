@@ -1,0 +1,59 @@
+
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden; 
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+.cardstacks{
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(30, minmax(auto, 20px));
+  width: fit-content;
+  margin: 80px auto;
+}
+
+.cardpile{
+  max-width: 120px;
+  grid-column: span 5;
+}
+
+.cardpile:nth-child(n+7){
+  grid-column: span 6;
+  /*margin-left: 10px;*/
+  max-width: 140px;
+}
+
+.cardpile .card{
+  width: 100%;
+}
+
+.cardpile .card.dim{
+  filter: brightness(0.35);  
+}
+
+
+.cardimg {
+      width: 100%;
+}
+
+.hud-long{
+  max-height: 310px;
+}
