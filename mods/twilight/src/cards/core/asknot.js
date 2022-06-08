@@ -94,7 +94,7 @@
           } else {
             if (this.game.deck[0].hand.includes(action2)){
               cards_discarded++;
-              $("#"+action2).hide();
+              $(`#${action2}.card`).hide();
               twilight_self.removeCardFromHand(action2);
               twilight_self.addMove("discard\tus\t"+action2);  
             }
