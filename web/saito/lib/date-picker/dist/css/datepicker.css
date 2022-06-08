@@ -62,6 +62,7 @@
 
 .datepicker-grid {
   flex-wrap: wrap;
+  width: 60rem;
 }
 
 .datepicker-view .days .datepicker-cell,

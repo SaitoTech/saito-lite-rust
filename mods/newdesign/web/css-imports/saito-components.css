@@ -126,7 +126,7 @@ Saito Menu
 
 
 .saito-menu-container>ul>li {
-    padding: .5rem 1rem;
+    padding: .7rem 1rem;
     display: flex;
     align-items: center;
     list-style: none;
@@ -136,7 +136,7 @@ Saito Menu
 }
 
 .saito-menu-container>ul>li:not(:last-child) {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 
