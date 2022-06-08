@@ -1474,7 +1474,7 @@ try {
 
               pos_to_discard.push(cardoptions.indexOf(action2));
               cards_discarded++;
-              $("#"+action2).hide();
+              $(`#${action2}.card`).hide();
               twilight_self.addMove("discard\tus\t"+action2);
               //twilight_self.addMove(`NOTIFY\tUS discards <span class="showcard" id="${tmpar[1]}">${twilight_self.game.deck[0].cards[tmpar[1]].name}</span>`);
 
@@ -2408,9 +2408,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          //this.game.deck[0].hand = ["asknot", "oas", "duckandcover", "koreanwar", "howilearned", "nasser", "comecon", "naziscientist"];
+          this.game.deck[0].hand = ["asknot", "oas", "duckandcover", "koreanwar", "howilearned", "asia", "europe", "naziscientist"];
         } else {
-          //this.game.deck[0].hand = ["cubanmissile", "onesmallstep", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          this.game.deck[0].hand = ["liberation", "junta", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
         }
       }
 
@@ -2667,7 +2667,7 @@ try {
               twilight_self.addMove("NOTIFY\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
               twilight_self.endTurn(1);
             } else {
-              $("#"+action2).hide(); 
+              $(`#${action2}.card`).hide(); 
               twilight_self.hideCard();
               twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding...</div>");
               twilight_self.removeCardFromHand(action2);
@@ -4050,7 +4050,7 @@ playerTurnHeadlineSelected(card, player) {
     
     //
     // modify ops
-    ops = this.modifyOps(ops, card);
+    ops = this.modifyOps(ops, card, player);
 
     let me = "ussr";
     if (this.game.player == 2) { me = "us"; }
@@ -4174,7 +4174,6 @@ playerTurnHeadlineSelected(card, player) {
 
             if (j <= 0) {
               if (twilight_self.isRegionBonus(card) == 1) {
-                twilight_self.updateStatus("<div class='status-message' id='status-message'>Place regional bonus</div>");
                 j++;
                 twilight_self.limitToRegionBonus();
                 twilight_self.endRegionBonus();
@@ -4334,7 +4333,7 @@ playerTurnHeadlineSelected(card, player) {
 
               if (alignment_rolls <= 0) {
                 if (twilight_self.isRegionBonus(card) == 1) {
-                  twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with bonus OP</div>");
+                  //twilight_self.updateStatus("<div class='status-message' id='status-message'>Realign with bonus OP</div>");
                   twilight_self.limitToRegionBonus(); //Turn off click events outside of regional bonus
                   twilight_self.endRegionBonus(); //Toggle flags about aplicability of regional bonuses
                   alignment_rolls++;
@@ -4625,63 +4624,39 @@ playerTurnHeadlineSelected(card, player) {
 
 
 
-
-
-
-
-
-
-
   /////////////////////
   // Place Influence //
+  // If China card or Vietnam revolts in effect, we hold off on clearing them, because we may have 2 bonus OPs which could break control.
   /////////////////////
   uneventOpponentControlledCountries(player, card) {
 
     let bonus_regions = this.returnArrayOfRegionBonuses(card);
 
     for (var i in this.countries) {
+        let bonus_region_applies = 0;
+        for (let z = 0; z < bonus_regions.length; z++) {
+          if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { 
+            bonus_region_applies = 1; 
+          }
+        }
+
       if (player == "us") {
-        if (this.isControlled("ussr", i) == 1) {
-
-          //
-          // allow bonus regions to break control with bonuses
-          //
-          let bonus_region_applies = 0;
-          for (let z = 0; z < bonus_regions.length; z++) {
-            if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { bonus_region_applies = 1; }
-          }
-
-          if (bonus_region_applies == 1) {
-          } else {
-            this.countries[i].place = 0;
-            let divname = '#'+i;
-            $(divname).off();
-          }
-
+        if (this.isControlled("ussr", i) == 1 && bonus_region_applies == 0) {
+          this.countries[i].place = 0;
+          let divname = '#'+i;
+          $(divname).off();
         }
       }
-
       if (player == "ussr") {
-        if (this.isControlled("us", i) == 1) {
-
-          //
-          // allow bonus regions to break control with bonuses
-          //
-          let bonus_region_applies = 0;
-          for (let z = 0; z < bonus_regions.length; z++) {
-            if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { bonus_region_applies = 1; }
-          }
-
-          if (bonus_region_applies == 1) {
-          } else {
-            this.countries[i].place = 0;
-            let divname = '#'+i;
-            $(divname).off();
-          }
-
+        if (this.isControlled("us", i) == 1 && bonus_region_applies == 0) {
+          this.countries[i].place = 0;
+          let divname = '#'+i;
+          $(divname).off();
         }
       }
     }
+
+
 
   }
 
@@ -6648,7 +6623,6 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
-
   returnArrayOfRegionBonuses(card="") {
 
     let regions = [];
@@ -6685,13 +6659,14 @@ playerTurnHeadlineSelected(card, player) {
 
 
 
+
+
   isRegionBonus(card="") {
 
     //
     // Vietnam Revolts
     //
     if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
-
       //
       // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
       // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
@@ -6722,7 +6697,7 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.events.vietnam_revolts_eligible = 0;
       return;
     }
-    if (this.game.state.events.china_card_eligible == 1) {
+    if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
       this.game.state.events.china_card_eligible = 0;
       return;
     }
@@ -6737,12 +6712,8 @@ playerTurnHeadlineSelected(card, player) {
         $(divname).off();
       } else {
 
-        let extra_bonus_available = 0;
-        if (this.game.state.events.region_bonus == "seasia" && this.game.state.events.china_card_eligible == 1) {
-          extra_bonus_available = 1;
-        }
-
-        if (extra_bonus_available == 0) {
+        //Go ahead an remove opponent controlled countries if we don't have both in favor        
+        if (this.game.state.events.region_bonus == "asia" || this.game.state.events.china_card_in_play == 0) {
           if (this.game.player == 1) {
             // prevent breaking control
             if (this.isControlled("us", i) == 1) {
@@ -6750,7 +6721,6 @@ playerTurnHeadlineSelected(card, player) {
               $(divname).off();
             }
           } else {
-
             // prevent breaking control
             if (this.isControlled("ussr", i) == 1) {
               let divname = '#'+i;
@@ -7589,13 +7559,6 @@ playerTurnHeadlineSelected(card, player) {
 
     this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
-    if (this.game.state.defcon == 2) {
-      if (this.game.state.events.norad == 1) {
-        if (this.game.state.headline != 1) {
-          this.game.state.us_defcon_bonus = 1;
-        }
-      }
-    }
 
 
     if (this.game.state.defcon <= 1) {
@@ -7623,6 +7586,14 @@ playerTurnHeadlineSelected(card, player) {
 
 
   updateDefcon() {
+
+    if (this.game.state.events.norad == 1) {
+      if (this.game.state.defcon == 2) {
+        if (this.game.state.headline != 1) {
+          this.game.state.us_defcon_bonus = 1;
+        }
+      }
+    }
 
     if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
 
@@ -8939,7 +8910,7 @@ playerTurnHeadlineSelected(card, player) {
           } else {
             if (this.game.deck[0].hand.includes(action2)){
               cards_discarded++;
-              $("#"+action2).hide();
+              $(`#${action2}.card`).hide();
               twilight_self.removeCardFromHand(action2);
               twilight_self.addMove("discard\tus\t"+action2);  
             }
@@ -10788,6 +10759,7 @@ playerTurnHeadlineSelected(card, player) {
               twilight_self.addMove("limit\tmilops");
               twilight_self.addMove("limit\tplacement");
               twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t2");
+              twilight_self.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();
             }
@@ -10995,7 +10967,7 @@ playerTurnHeadlineSelected(card, player) {
         for (var i in this.countries) {
           if (this.countries[i].region == "camerica"){
             this.countries[i].place = 1;
-            already_placed[countryname] = 0;
+            
             $("#"+i).addClass("easterneurope");
           }
         }
@@ -11004,9 +10976,10 @@ playerTurnHeadlineSelected(card, player) {
         $(".easterneurope").on('click', function() {
           let countryname = $(this).attr('id');
           if (twilight_self.countries[countryname].place == 1) {
-            already_placed[countryname]++;
-            if (already_placed[countryname] == 2) {
+            if (already_placed[countryname]) {
               twilight_self.countries[countryname].place = 0;
+            }else{
+              already_placed[countryname] = 1;  
             }
             twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
             twilight_self.placeInfluence(countryname, 1, "ussr");
