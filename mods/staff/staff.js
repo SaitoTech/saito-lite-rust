@@ -45,7 +45,15 @@ class Staff extends ModTemplate {
         document.querySelector('#add_staff').onclick = () => {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
-                this.app.modules.returnModule("Staff").sendRegisterTX(publicKey);
+                this.app.modules.returnModule("Staff").sendRegisterTX(publicKey, "register");
+                //this.registerToDatabase(publicKey);
+                // here you want to use sendRegisterTransaction with the wallet public key
+            }
+        }
+        document.querySelector('#remove_staff').onclick = () => {
+            var publicKey = this.app.wallet.returnPublicKey();
+            if (publicKey) {
+                this.app.modules.returnModule("Staff").sendRegisterTX(publicKey, "deregister");
                 //this.registerToDatabase(publicKey);
                 // here you want to use sendRegisterTransaction with the wallet public key
             }
@@ -71,18 +79,18 @@ class Staff extends ModTemplate {
     }
 
 
-    createRegisterTransaction(publicKey) {
+    createRegisterTransaction(publicKey, msgType) {
         let newtx = this.app.wallet.createUnsignedTransaction();
 
         newtx.msg.module = "Staff";
-        newtx.msg.type = "register";
+        newtx.msg.type = msgType;
         newtx.msg.publicKey = publicKey;
 
         return this.app.wallet.signTransaction(newtx);
     }
 
-    sendRegisterTX(publicKey) {
-        var registerTx = this.app.modules.returnModule("Staff").createRegisterTransaction(this.app.wallet.returnPublicKey());
+    sendRegisterTX(publicKey, msgType) {
+        var registerTx = this.app.modules.returnModule("Staff").createRegisterTransaction(this.app.wallet.returnPublicKey(), msgType);
         this.app.network.propagateTransaction(registerTx);
     }
 
@@ -97,17 +105,21 @@ class Staff extends ModTemplate {
                     let staff_self = app.modules.returnModule("Staff");
                     console.log("processing: " + txmsg.type);
                     if (txmsg.type == "register") {
-                        staff_self.receiveRegisterTransaction(txmsg);
+                        let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
+                        staff_self.receiveRegisterTransaction(txmsg,sql);
+                    } else if (txmsg.type == "deregister") {
+                        let publickey = txmsg.publicKey;
+                        let sql = 'DELETE FROM staff WHERE publickey = $publickey';
+                        staff_self.receiveRegisterTransaction(txmsg,sql);
                     }
                 }
             }
         }
     }
 
-    receiveRegisterTransaction(tx) {
+    receiveRegisterTransaction(tx, sql) {
         let publickey = tx.publicKey;
         console.log("pubkey" + publickey);
-        let sql = `INSERT INTO staff (publickey) VALUES ($publickey)`;
         let params = {
             $publickey: publickey
         }
