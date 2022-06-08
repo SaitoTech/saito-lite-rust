@@ -41,11 +41,11 @@ body {
   max-width: 140px;
 }
 
-.cardpile .card{
+.cardpile .showcard{
   width: 100%;
 }
 
-.cardpile .card.dim{
+.cardpile .showcard.dim{
   filter: brightness(0.35);  
 }
 

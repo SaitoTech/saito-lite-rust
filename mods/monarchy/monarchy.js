@@ -319,10 +319,15 @@ initializeGame(game_id) {
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
         let card_to_buy = mv[2];
+        let direct_to_hand = (mv[3]=="1");
         let code = Object.keys(this.game.deck[player-1].cards).length + 1;
         //Manuall insert card into players discard pile
         this.game.deck[player-1].cards[code.toString()] = card_to_buy;
-        this.game.deck[player-1].discards[code.toString()] = card_to_buy;
+        if (direct_to_hand){
+          this.game.deck[player-1].hand.push(code);
+        }else{
+          this.game.deck[player-1].discards[code.toString()] = card_to_buy;
+        }
 
         this.game.state.supply[card_to_buy]--; //Decrease supply in game
         return 1;
@@ -335,7 +340,7 @@ initializeGame(game_id) {
 
         this.updateLog(`Player ${player} played ${this.cardToText(card_to_play)}`);
         this.playCard(player, card_to_play);
-        return 1;
+        return 0;
       }
 
       if (mv[0] == "draw"){
@@ -353,9 +358,14 @@ initializeGame(game_id) {
         let player = parseInt(mv[1]);
         let number = parseInt(mv[2]);
         let target = mv[3];
+        let optional = (mv[4]=="1");
 
         if (this.game.player == player){
-          this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,null,true);
+          if (number <= 0){
+            this.endTurn();
+            return 0;
+          }
+          this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,null,optional);
           this.bindBackButtonFunction(we_self.endTurn);
           this.attachCardboxEvents(function(card){
             number--;
@@ -376,6 +386,7 @@ initializeGame(game_id) {
       //Specific card instructions
       if (mv[0] == "adventurer"){
         let player = parseInt(mv[1]);
+        if (player !== this.game.player){ return 0;}
 
         if (this.game.pool[player-1].hand.length > 0){
           let c = this.game.pool[player-1].hand.pop();
@@ -391,18 +402,19 @@ initializeGame(game_id) {
         if (this.game.state.adventurer == 0 || (this.game.state.shuffled && this.game.deck[player-1].crypt.length == 0)){
           this.game.queue.splice(qe, 1);
           for (let c of this.game.pool[player-1].hand){
-            this.game.queue.push(`DISCARD\t${mv[1]}\t${c}`);
+            this.addMove(`DISCARD\t${mv[1]}\t${c}`);
           }
-          return 1;
+          this.endTurn();
+          return 0;
         }
 
-        this.game.queue.push(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
+        this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
         if (this.game.deck[player-1].crypt.length == 0){
-          this.game.queue.push(`SHUFFLEDISCARDS\t${player}`);
+          this.addMove(`SHUFFLEDISCARDS\t${player}`);
           this.game.state.shuffled = true;
         }
-
-        return 1;
+        this.endTurn();
+        return 0;
       }
 
       //Bandit will auto select the least value treasure to discard
@@ -437,6 +449,130 @@ initializeGame(game_id) {
 
         return 1;
       }
+
+      if (mv[0] == "harbinger"){
+        let player = parseInt(mv[1]);
+        if (player == this.game.player){
+          //Read the discard pile
+          let my_keys = [];
+          let my_discards = [];
+          for (let c in this.game.deck[player-1].discards){
+            my_keys.push(c);
+            my_discards.push(this.game.deck[player-1].discards[c]);
+          }
+          this.updateStatusAndListCards(`Select a card to put on top of your deck:`,my_discards, false);
+          this.attachCardboxEvents(function(oldcard){
+            let index = my_discards.indexOf(oldcard);
+            let card = {};
+            card[my_keys[index]] = my_discards[index];
+            this.addMove(`PUSHONDECK\t${player}\t${JSON.stringify(card)}`);
+            this.endTurn();
+          });
+        }
+        return 0;
+      }
+
+      if (mv[0] == "library"){
+        let player = parseInt(mv[1]);
+
+        if (this.game.player !== player){
+          return 0;
+        }
+        if (this.game.pool[player-1].hand.length > 0){
+          let c = this.game.pool[player-1].hand.pop();
+          let cardname = this.game.pool[player-1].cards[c];
+          if (this.deck[cardname].includes("action")){
+            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<li class="card nocard" id="keep">keep</li><li class="card nocard" id="nope">set aside</li>`);
+            this.attachCardboxEvents(function (action){
+              if (action == "keep"){
+                this.game.deck[player-1].hand.push(c);  
+              }else{
+                this.game.pool[player-1].hand.push(c);  
+              }
+            });  
+          }else{
+            this.game.deck[player-1].hand.push(c);  
+          }
+        }
+
+        if (this.game.deck[player-1].hand.lenght == 7 || (this.game.state.shuffled && this.game.deck[player-1].crypt.length == 0)){
+          this.game.queue.splice(qe, 1);
+          for (let c of this.game.pool[player-1].hand){
+            this.addMove(`DISCARD\t${mv[1]}\t${c}`);
+          }
+          this.endTurn();
+          return 0;
+        }
+
+        this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
+        if (this.game.deck[player-1].crypt.length == 0){
+          this.addMove(`SHUFFLEDISCARDS\t${player}`);
+          this.game.state.shuffled = true;
+        }
+        this.endTurn();
+        return 0;
+      }
+
+      if (mv[0] == "sentry"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        if (this.game.player == player){
+          if (this.game.pool[player-1].hand.length == 0){
+            this.endTurn();
+            return;
+          }
+          this.menu_backup_callback = ()=>{this.endTurn();}
+          this.addMove(`sentry\t${player}`);
+          let html = `<li class="card nocard" id="deck">deck</li>
+                      <li class="card nocard" id="discards">discard</li>
+                      <li class="card nocard" id="trash">trash</li>`;
+          this.updateStatusAndListCards("The top cards from your deck:",this.game.pool[player-1].hand,false);
+          this.attachCardboxEvents(function(card){
+            we_self.updateStatusWithOptions(`Move ${card} to:`, html, true);
+            we_self.attachCardboxEvents(function(action){
+              we_self.removeCardFromPool(card);
+              if (action == "deck"){
+                we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`);
+              }else if (action == "trash"){
+                we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
+              }else{
+                we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+              }
+              we_self.endTurn();
+            });
+          });
+        }
+        return 0;
+      }
+
+
+      if (mv[0] == "vassal"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        if (this.game.player == player){
+          let c = this.game.pool[player-1].hand[0];
+          let cname = this.game.pool[player-1].cards[c];
+          if (this.deck[cname].type.include("action")){
+            let html = `<li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li>`;
+            we_self.updateStatusWithOptions(`Play ${card} instead of discarding it?`, html);
+            we_self.attachCardboxEvents(function (action){
+              we_self.removeCardFromPool(cname);
+              if (action == "play"){
+                we_self.addMove(`play\t${player}\t${cname}`);
+              }else{
+                we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+              }
+              we_self.endTurn();
+            });
+          }else{
+            we_self.removeCardFromPool(cname);
+            we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+            this.endTurn();
+          }
+        }
+        return 0;
+      }
+
     } // if cards in queue
     
     return 0;
@@ -465,8 +601,8 @@ initializeGame(game_id) {
           $(".dim").removeClass("dim");
         }
       });
-      $(".gameboard .card").off();
-      $(".gameboard .card").addClass('dim');
+      
+      $(".gameboard .showcard").addClass('dim');
       return;
     }
 
@@ -476,8 +612,8 @@ initializeGame(game_id) {
 
       let available_coins = this.game.state.coins + this.countMoney();
       this.updateStatus(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`);
-      this.attachCardboxEvents(function(newcard){
-
+      $(".gameboard .showcard").on("click", function(){
+        let newcard = $(this).attr("id");
         if (we_self.deck[newcard].cost <= available_coins){
           we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
           we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} bought a ${we_self.cardToText(newcard)}.`);
@@ -486,9 +622,10 @@ initializeGame(game_id) {
         }
 
         if (we_self.game.state.buys <= 0){
+          $(".gameboard .showcard").off();
           we_self.endTurn();
         }else{
-          we_self.updateStatus(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`);
+          we_self.updateStatus(`You have ${available_coins} coins and ${we_self.game.state.buys} card${(we_self.game.state.buys>0)?"s":""} to buy`);
         }
       });
       return;
@@ -502,8 +639,10 @@ initializeGame(game_id) {
   acquireCard(max_value){
     let we_self = this;
     this.updateStatus(`You may select a card worth up to ${max_value}`);
-    this.attachCardboxEvents(function(newcard){
+    $(".gameboard .showcard").on("click", function(){
+      let newcard = $(this).attr("id");
       if (we_self.deck[newcard].cost <= max_value){
+        $(".gameboard .showcard").off();
         we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
         we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} acquired a ${we_self.cardToText(newcard)}.`);
         we_self.endTurn();
@@ -517,9 +656,9 @@ initializeGame(game_id) {
       if (c !== "curse"){
         html += `<div class="cardpile">`;
         if (this.game.state.supply[c] > 0){
-          html += `<img class="card" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
+          html += `<img class="showcard" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
         }else{
-          html += `<img class="card" src="/monarchy/img/cards/blank.png">`;
+          html += `<img class="showcard" src="/monarchy/img/cards/blank.png">`;
         }
         html += "</div>";  
       }
@@ -560,6 +699,7 @@ initializeGame(game_id) {
   hasCardInHand(cardvalue){
     let pi = this.game.player-1;
     for (let c of this.game.deck[pi].hand){
+      console.log(cardvalue, this.game.deck[pi].cards[c]);
       if(this.game.deck[pi].cards[c] == cardvalue){
         return true;
       }
@@ -574,7 +714,7 @@ initializeGame(game_id) {
       let cardname = this.game.deck[pi].cards[c];
       if (this.deck[cardname].type == "treasure"){
         bank += parseInt(this.deck[cardname].text);
-        if (this.game.state.merchant && cardname == "silver"]){
+        if (this.game.state.merchant && cardname == "silver"){
           bank++;
           this.game.state.merchant = false;
         }
@@ -610,13 +750,26 @@ initializeGame(game_id) {
       }
     }
   }
-
+  removeCardFromPool(card) {
+    if (this.game.player == 0) { return; }
+    for (i = 0; i < this.game.pool[this.game.player-1].hand.length; i++) {
+      if (this.game.pool[this.game.player-1].cards[this.game.pool[this.game.player-1].hand[i]] == card) {
+        this.lastCardKey = this.game.pool[this.game.player-1].hand[i];
+        this.lastCardValue = card;
+        this.game.pool[this.game.player-1].hand.splice(i, 1);
+        return; //Only remove one copy
+      }
+    }
+  }
 
  playCard(player, card_to_play){
+    console.log("Playing card",player,card_to_play);
     console.log(JSON.parse(JSON.stringify(this.game.state)));
     we_self = this;
+    //**
     if (card_to_play == "adventurer"){
       //Reveal cards from your deck until you reveal 2 Treasure cards. Put those into your hand and discard the other revealed cards.
+      this.game.state.shuffled = false;
       this.game.state.adventurer = 2;
       this.game.queue.push(`adventurer\t${player}`);
       this.game.queue.push(`POOL\t${player}`);
@@ -630,6 +783,7 @@ initializeGame(game_id) {
       }
       return 0;
     }
+    //**
     if (card_to_play == "bandit"){
       //Gain a gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
       this.game.queue.push(`buy\t${player}\tgold`);
@@ -641,6 +795,7 @@ initializeGame(game_id) {
         }
       }
     }
+
     if (card_to_play == "bureaucrat"){
       //Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards)
       
@@ -666,6 +821,7 @@ initializeGame(game_id) {
       }
       return 0;
     }
+    //**
     if (card_to_play == "chancellor"){
       //+2 coin, You may immediately put your deck into your discard pile.
       this.game.state.coins += 2;
@@ -681,10 +837,12 @@ initializeGame(game_id) {
       }
       return 0;
     }
+    //**
     if (card_to_play == "chapel"){
       //Trash up to 4 cards from your hand.
-      this.game.queue.push(`hand\t${player}\t4\ttrash`);
+      this.game.queue.push(`hand\t${player}\t4\ttrash\t1`);
     }
+    //**
     if (card_to_play == "councilroom"){
       //+4 Cards +1 Buy, Each other player draws a card
       this.game.state.buys++;
@@ -695,34 +853,46 @@ initializeGame(game_id) {
       }
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t4`);
     }
+    //**
     if (card_to_play == "feast"){
       //Trash this card. Gain a card costing up to 5
-      this.addMove(`trash\t${player}\t${this.lastCardKey}\t${this.lastCardValue}`);
       if (this.game.player == player){
+        this.addMove(`trash\t${player}\t${this.lastCardKey}\t${this.lastCardValue}`);
         this.acquireCard(5);
       }
       return 0;
     }
+    //**
     if (card_to_play == "festival"){
       //+2 Actions, +1 Buy, +2 Coin
       this.game.state.actions += 2;
       this.game.state.buys    += 1;
       this.game.state.coins   += 2;
     }
+    //**
     if (card_to_play == "gardens"){
       //+1 VP for 10 cards in deck
     }
+    //**
     if (card_to_play == "harbinger"){
       //+1 Card, +1 Action, Look through your discard pile. You may put a card from it onto your deck.
+      this.game.state.actions++;
+      this.game.queue.push(`harbinger\t${player}`);
+      this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`);
     }
+    //**
     if (card_to_play == "laboratory"){
       //+2 Cards, +1 Action      
       this.game.state.actions++;
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t2`)
     }
+    //**
     if (card_to_play == "library"){
       //Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards
+      this.game.state.shuffled = false;
+      this.game.queue.push(`library\t${player}`);
     }
+    //**
     if (card_to_play == "market"){
       //+1 Card +1 Action +1 Buy +1 Coin
       this.game.state.actions++;
@@ -730,22 +900,59 @@ initializeGame(game_id) {
       this.game.state.coins++;
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`)
     }
+    //**
     if (card_to_play == "merchant"){
       //+1 Card +1 Action The first time you play a Silver this turn, +1 Coin
       this.game.state.merchant = true;
       this.game.state.actions++;
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`)
     }
+    //**
     if (card_to_play == "militia"){
       //+2 Coin, Each other play discards down to 3 cards in hand
+      this.game.state.coins += 2;
+      for (let i = 1; i <= this.game.players.length; i++){
+        if (i !== player){
+          this.game.queue.push(`hand\t${i}\t${this.game.deck[i-1].hand.length-3}\tdiscards`);  
+        }
+      }  
     }
+    //**
     if (card_to_play == "mine"){
       //You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it
+      if (player == this.game.player){
+        let tcards = [];
+        for (let c of this.game.deck[player-1].hand){
+          let cname = this.game.deck[player-1].cards[c];
+          if (this.deck[cname].type == "treasure"){
+            tcards.push(cname);
+          }
+        }
+        if (tcards.length == 0){
+          this.endTurn();
+        }else{
+          this.updateStatusAndListCards(`You may trash a treasure to acquire one costing 3 more than it.`, tcards, true);
+          this.bindBackButtonFunction(function(){we_self.endTurn();});
+          this.attachCardboxEvents(function(tc){
+            we_self.removeCardFromHand(tc);
+            if (tc == "copper"){
+              we_self.addMove(`buy\t${i}\tsilver\t1`);
+            }else{
+              we_self.addMove(`buy\t${i}\tgold\t1`);
+            }
+            we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
+            we_self.endTurn();
+          });
+        }
+      }
+      return 0;
     }
+    //**
     if (card_to_play == "moat"){
       //+2 Cards, When another player plays an Attack card, you may first reveal this from your hand to be unaffected by it
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t2`) 
     }
+    //**
     if (card_to_play == "moneylender"){
       //You may trash a Copper from your hand for +3 Coin
       if (player == this.game.player){
@@ -754,6 +961,7 @@ initializeGame(game_id) {
            this.updateStatusWithOptions("Would you like to trash a copper for +3 coin this turn?", html);
            this.attachCardboxEvents(function(card){
               if (card == "yes"){
+                this.game.state.coins += 3;
                 we_self.removeCardFromHand("copper");
                 we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
               }
@@ -765,37 +973,75 @@ initializeGame(game_id) {
       }
       return 0;
     }
+    //**
     if (card_to_play == "poacher"){
       //+1 Card, +1 Action, +1 Coin, Discard a card per empty Supply pile
+      this.game.state.actions++;
+      this.game.state.coins++;
+      let num = 0;
+      for (let s of this.game.state.supply){
+        if (this.game.state.supply[s]==0){
+          num++;
+        }
+      }
+      this.game.queue.push(`hand\t${player}\t${num}\tdiscards`);
+      this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`);
     }
+    //**
     if (card_to_play == "remodel"){
       //Trash a card from your hand. Gain a card costing up to 2 more than it
+      if (this.game.player == player){
+        this.updateStatusAndListCards(`Pick a card to trash in exchange for a new card worth up to 2 more`);
+        this.attachCardboxEvents(function(card){
+          we_self.removeCardFromHand(card);
+          we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
+          we_self.acquireCard(we_self.deck[card].value + 2);
+        });
+      }
+      return 0;
     }
+    //**
     if (card_to_play == "sentry"){
       //+1 Card +1 Action, Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order
+      this.game.queue.push(`sentry\t${player}`);
+      this.game.state.actions++;
+      this.game.queue.push(`POOLDEAL\t${player}\t2\t${player}`);
+      this.game.queue.push(`POOL\t${player}`);
+      this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`)
     }
+    //**
     if (card_to_play == "smithy"){
       //+3 Cards      
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t3`)
     }
     if (card_to_play == "spy"){
       //+1 Card +1 Action, Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice.
+      this.game.state.action++;
+      this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`) 
     }
     if (card_to_play == "thief"){
       //Each other player reveals the top 2 cards of their deck. If they revealed any Treasure cards, you choose one to trash. You may gain any and all of these trashed cards. Other revealed cards are discarded.      
     }
+    //**
     if (card_to_play == "throneroom"){
       //You may play an Action card from your hand twice  
       this.game.state.throneroom = true;
     }
+    //**
     if (card_to_play == "vassal"){
       //+2 Coin, Discard the top card of your deck. If it's an Action card, you may play it.
+      this.game.state.coins += 2;
+      this.game.queue.push(`vassal\t${player}`);
+      this.game.queue.push(`POOLDEAL\t${player}\t1\t${player}`);
+      this.game.queue.push(`POOL\t${player}`);
     }
+    //**
     if (card_to_play == "village"){
       //+1 Card, +2 Actions
       this.game.state.actions += 2;
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`)
     }
+    //**
     if (card_to_play == "witch"){
       //+2 Cards, each other player gains a curse
       for (let i = 1; i <= this.game.players.length; i++){
@@ -805,14 +1051,21 @@ initializeGame(game_id) {
       }
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t2`)
     }
+    //**
     if (card_to_play == "woodcutter"){
       //+1 Buy, +2 Coins
       this.game.state.buys++;
       this.game.state.coins+=2;
     }
+    //**
     if (card_to_play == "workshop"){
       //Gain a card costing up to 4
+      if (this.game.player == player){
+        this.acquireCard(4);
+      }      
+      return 0;
     }
+    console.log("Did I process "+ card_to_play + " ?");
     console.log(JSON.parse(JSON.stringify(this.game.state)));
     return 1;
  }
