@@ -105,10 +105,24 @@
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  returnNeighbours(space, transit_passes=1) {
+    if (transit_passes == 1) {
+      return this.game.spaces[space].neighbours;
+    }
+    let neighbours = [];
+    for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+      let x = this.game.spaces[space].neighbours[i];      
+      if (!this.game.spaces[space].pass.includes[x]) {
+	neighbours.push(x);
+      }
+    }
+    return neighbours;
+  }
+
   //
   // find the nearest destination.
   //
-  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0) {
 
     //
     // return array with results + hops distance
@@ -130,8 +144,10 @@
     //
     // put the neighbours into pending
     //
-    for (let i = 0; i < this.game.spaces[sourcekey].neighbours.length; i++) {
-      pending_spaces[this.game.spaces[sourcekey].neighbours[i]] = { hops : 0 , key : this.game.spaces[sourcekey].neighbours[i] };
+    let n = this.returnNeighbours(transit_passes);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
     //
@@ -156,7 +172,7 @@
 	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
 	      }
     	    }
 	  }
@@ -178,7 +194,6 @@
   }
 
 
-
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.home === faction && faction !== "protestant") { return true; }
@@ -193,7 +208,8 @@
     return false;
   }
 
-  isSpaceFriendly() {
+  isSpaceFriendly(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     return 1;
   }
 

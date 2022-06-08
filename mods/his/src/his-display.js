@@ -156,7 +156,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
       if (this.returnElectoralBonus(key)) {
-        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
+        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
   }
@@ -166,7 +166,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   returnElectoralBonus(space) {
 
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
       return 1;
@@ -178,7 +178,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       return 1;
     }
     if (space === "wittenberg" && this.game.state.wittenberg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "brandenburg" && this.game.state.brandenburg_electoral_bonus == 0) {
       return 1;

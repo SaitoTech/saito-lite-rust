@@ -1331,10 +1331,24 @@ console.log("adding stuff!");
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
   }
 
+  returnNeighbours(space, transit_passes=1) {
+    if (transit_passes == 1) {
+      return this.game.spaces[space].neighbours;
+    }
+    let neighbours = [];
+    for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
+      let x = this.game.spaces[space].neighbours[i];      
+      if (!this.game.spaces[space].pass.includes[x]) {
+	neighbours.push(x);
+      }
+    }
+    return neighbours;
+  }
+
   //
   // find the nearest destination.
   //
-  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1) {
+  returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0) {
 
     //
     // return array with results + hops distance
@@ -1356,8 +1370,10 @@ console.log("adding stuff!");
     //
     // put the neighbours into pending
     //
-    for (let i = 0; i < this.game.spaces[sourcekey].neighbours.length; i++) {
-      pending_spaces[this.game.spaces[sourcekey].neighbours[i]] = { hops : 0 , key : this.game.spaces[sourcekey].neighbours[i] };
+    let n = this.returnNeighbours(transit_passes);
+
+    for (let i = 0; i < n.length; i++) {
+      pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
     //
@@ -1382,7 +1398,7 @@ console.log("adding stuff!");
 	      if (!searched_spaces.hasOwnProperty[this.game.spaces[key].neighbours[i]]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[this.game.spaces[key].neighbours[i]] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] };
+      	        pending_spaces[n[i]] = { hops : (hops+1) , key : n[i] };
 	      }
     	    }
 	  }
@@ -1404,7 +1420,6 @@ console.log("adding stuff!");
   }
 
 
-
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.home === faction && faction !== "protestant") { return true; }
@@ -1419,7 +1434,8 @@ console.log("adding stuff!");
     return false;
   }
 
-  isSpaceFriendly() {
+  isSpaceFriendly(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     return 1;
   }
 
@@ -3932,6 +3948,8 @@ console.log("adding stuff!");
 	  }
 	}
 
+	game_mod.displayVictoryTrack();
+
       }
     }
     deck['013'] = { 
@@ -3941,6 +3959,11 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+
+        state.events.schmalkaldic_league = 1;
+
+      }
     }
     deck['014'] = { 
       img : "cards/HIS-014.svg" , 
@@ -5951,30 +5974,37 @@ console.log("----------------------------");
 	  if (space === "augsburg" && religiion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
 	    this.game.spaces['augsburg'].units['protestant'].push();
     	    this.addRegular("augsburg", "protestant", 2);
+	    this.game.state.augsburg_electoral_bonus = 1;
 	  }
 	  if (space === "mainz" && religiion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
 	    this.game.spaces['mainz'].units['protestant'].push();
-    	    this.addRegular("mainz", "protestant", 2);
+    	    this.addRegular("mainz", "protestant", 1);
+	    this.game.state.mainz_electoral_bonus = 1;
 	  }
 	  if (space === "trier" && religiion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
 	    this.game.spaces['trier'].units['protestant'].push();
-    	    this.addRegular("trier", "protestant", 2);
+    	    this.addRegular("trier", "protestant", 1);
+	    this.game.state.trier_electoral_bonus = 1;
 	  }
 	  if (space === "cologne" && religiion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
 	    this.game.spaces['cologne'].units['protestant'].push();
-    	    this.addRegular("cologne", "protestant", 2);
+    	    this.addRegular("cologne", "protestant", 1);
+	    this.game.state.cologne_electoral_bonus = 1;
 	  }
 	  if (space === "wittenberg" && religiion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
 	    this.game.spaces['wittenberg'].units['protestant'].push();
     	    this.addRegular("wittenberg", "protestant", 2);
+	    this.game.state.wittenberg_electoral_bonus = 1;
 	  }
 	  if (space === "brandenburg" && religiion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
 	    this.game.spaces['brandenburg'].units['protestant'].push();
-    	    this.addRegular("brandenburg", "protestant", 2);
+    	    this.addRegular("brandenburg", "protestant", 1);
+	    this.game.state.brandenburg_electoral_bonus = 1;
 	  }
 
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
+	  this.displayElectorateDisplay();
 
 	  return 1;
 
@@ -6884,12 +6914,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  return;
         }
 
-        his_self.playerSelectSpaceWithFilter(
+       his_self.playerSelectSpaceWithFilter(
 
           "Select Destination for Units from Capital: ",
 
           function(space) {
-            if (his_self.isSpaceFriendly(space)) {
+            if (his_self.isSpaceFriendly(space, faction)) {
               return 1;
             }
             return 0;
@@ -7819,7 +7849,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
       if (this.returnElectoralBonus(key)) {
-        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
+        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
       }
     }
   }
@@ -7829,7 +7859,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
   returnElectoralBonus(space) {
 
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
       return 1;
@@ -7841,7 +7871,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
       return 1;
     }
     if (space === "wittenberg" && this.game.state.wittenberg_electoral_bonus == 0) {
-      return 1;
+      return 2;
     }
     if (space === "brandenburg" && this.game.state.brandenburg_electoral_bonus == 0) {
       return 1;
@@ -8524,6 +8554,7 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
 
   displayVictoryTrack() {
+console.log("displayVictoryTrack requires implementation");
   }
 
 

@@ -608,12 +608,12 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  return;
         }
 
-        his_self.playerSelectSpaceWithFilter(
+       his_self.playerSelectSpaceWithFilter(
 
           "Select Destination for Units from Capital: ",
 
           function(space) {
-            if (his_self.isSpaceFriendly(space)) {
+            if (his_self.isSpaceFriendly(space, faction)) {
               return 1;
             }
             return 0;

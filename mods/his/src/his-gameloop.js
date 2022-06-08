@@ -825,33 +825,40 @@ console.log("----------------------------");
 
 	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
 
-	  if (space === "augsburg" && religiion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
+	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
 	    this.game.spaces['augsburg'].units['protestant'].push();
     	    this.addRegular("augsburg", "protestant", 2);
+	    this.game.state.augsburg_electoral_bonus = 1;
 	  }
-	  if (space === "mainz" && religiion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
+	  if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
 	    this.game.spaces['mainz'].units['protestant'].push();
-    	    this.addRegular("mainz", "protestant", 2);
+    	    this.addRegular("mainz", "protestant", 1);
+	    this.game.state.mainz_electoral_bonus = 1;
 	  }
-	  if (space === "trier" && religiion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
+	  if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
 	    this.game.spaces['trier'].units['protestant'].push();
-    	    this.addRegular("trier", "protestant", 2);
+    	    this.addRegular("trier", "protestant", 1);
+	    this.game.state.trier_electoral_bonus = 1;
 	  }
-	  if (space === "cologne" && religiion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
+	  if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
 	    this.game.spaces['cologne'].units['protestant'].push();
-    	    this.addRegular("cologne", "protestant", 2);
+    	    this.addRegular("cologne", "protestant", 1);
+	    this.game.state.cologne_electoral_bonus = 1;
 	  }
-	  if (space === "wittenberg" && religiion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
+	  if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
 	    this.game.spaces['wittenberg'].units['protestant'].push();
     	    this.addRegular("wittenberg", "protestant", 2);
+	    this.game.state.wittenberg_electoral_bonus = 1;
 	  }
-	  if (space === "brandenburg" && religiion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
+	  if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
 	    this.game.spaces['brandenburg'].units['protestant'].push();
-    	    this.addRegular("brandenburg", "protestant", 2);
+    	    this.addRegular("brandenburg", "protestant", 1);
+	    this.game.state.brandenburg_electoral_bonus = 1;
 	  }
 
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
+	  this.displayElectorateDisplay();
 
 	  return 1;
 
