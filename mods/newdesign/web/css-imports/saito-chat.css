@@ -17,7 +17,7 @@
     width: 0; */
     /* opacity: 0; */
     /* pointer-events: none; */
-    overflow: scroll;
+    overflow: hidden;
     z-index: 5;
     pointer-events: auto;
     width: 25em;
@@ -82,7 +82,7 @@
     display: flex;
     flex-direction: column;
     padding: .5em .5em;
-    overflow: scroll;
+    overflow: hidden;
     height: 35em;
 }
 

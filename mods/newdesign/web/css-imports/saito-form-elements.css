@@ -10,14 +10,16 @@ form label
 -----------------------------------------------------------------*/
 label {
   margin: 0.5rem 0;
-  color: var(--saito-default);
+
   display: inline-block;
   cursor: pointer;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  font-weight: 1000;
+
+
 }
 
-label:hover {
-  color: var(--saito-primary);
-}
 
 /* ----------------------------------------------------------------
 date inputs
@@ -33,18 +35,21 @@ text and password inputs
 
 input[type="text"],
 input[type="password"] {
-  border-radius: 1rem;
-  background: var(--saito-background);
+
+  /* background: var(--saito-background); */
+  border: 1px solid var(--saito-border);
   margin-right: 2rem;
   padding: 1.5rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
-  border: none;
+  color: var(--saito-default);
+  border-radius: .5rem;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
   outline: none;
+  /* border: 1px solid #f71f3d70; */
 }
 
 input[type="text"]::placeholder,
@@ -64,7 +69,7 @@ input[type="checkbox"] {
   width: 2rem;
   height: 2rem;
   margin: 0 0.5rem;
-  border-radius: 3px;
+  border-radius: .5rem;
   cursor: pointer;
   position: relative;
   display: inline-block;
@@ -104,7 +109,7 @@ input[type="radio"] {
   width: 2rem;
   height: 2rem;
   margin: 0 0.5rem;
-  border-radius: 50%;
+  border-radius: .5rem;
   position: relative;
 }
 
@@ -122,7 +127,7 @@ input[type="radio"]::after {
   margin: auto;
   font-size: 1rem;
   opacity: 0;
-  border-radius: 50%;
+  border-radius: .5rem;
 }
 
 input[type="radio"]:checked::after {
@@ -150,7 +155,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
-  border-radius: 1.3px;
+  border-radius: .5rempx;
   border: var(--saito-border);
 }
 
@@ -160,7 +165,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid #000000;
   height: 3rem;
   width: 2rem;
-  border-radius: 3px;
+  border-radius: .5rem;
   background: var(--saito-white);
   cursor: pointer;
   -webkit-appearance: none;
@@ -173,7 +178,7 @@ input[type="range"]::-moz-range-track {
   cursor: pointer;
   box-shadow: var(--saito-box-shadow);
   background: var(--saito-primary);
-  border-radius: 1.3px;
+  border-radius: .5rempx;
   border: var(--saito-border);
 }
 
@@ -183,7 +188,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid #000000;
   height: 3rem;
   width: 2rem;
-  border-radius: 3px;
+  border-radius: .5rem;
   background: var(--saito-white);
   cursor: pointer;
   appearance: none;
@@ -211,14 +216,14 @@ input[type="range"]::-ms-track {
 input[type="range"]::-ms-fill-lower {
   background: var(--saito-primary);
   border: var(--saito-border);
-  border-radius: 2.6px;
+  border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-fill-upper {
   background: #3071a9;
   border: var(--saito-border);
-  border-radius: 2.6px;
+  border-radius: .5rempx;
   box-shadow: var(--saito-box-shadow);
 }
 
@@ -227,7 +232,7 @@ input[type="range"]::-ms-thumb {
   border: 1px solid #000000;
   height: 3.6rem;
   width: 1.6rem;
-  border-radius: 3px;
+  border-radius: .5rem;
   background: #ffffff;
   cursor: pointer;
 }
@@ -252,15 +257,15 @@ Text area
 -----------------------------------------------------------------*/
 
 textarea {
-  background-color: #eaeaef;
+  background-color: white;
+  border: 1px solid var(--saito-border);
   display: block;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: .5rem;
   width: 100%;
   outline: none;
   padding: 1.5rem 1.5rem;
   height: 15rem;
-  border: none;
   font-size: 1.6rem;
 }
 
@@ -282,7 +287,7 @@ textarea::placeholder {
 
   padding: 1.2rem 1.6rem;
   z-index: 1;
-  border-radius: 0 0 2rem 2rem;
+  border-radius: .5rem 2rem 2rem;
   flex-direction: column;
   justify-content: center;
 }
@@ -307,59 +312,83 @@ Selects
 select {}
 
 .saito-select-wrapper {
-  width: 18rem;
   width: 100%;
-  border-radius: 8px;
+  /* border-radius: .5rem; */
   position: relative;
   cursor: pointer;
+  /* border: 1px solid var(--saito-white); */
+  /* background-color: var(--saito-primary); */
+
 }
 
 .saito-select-btn {
-  padding: 1rem 0;
   background-color: var(--saito-white);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  height: 5rem;
+  position: relative;
+  border: 1px solid var(--saito-border);
+  border-radius: .5rem;
+  border-bottom-left-radius: 0;
+
+
+
 }
 
 .saito-select-btn span {
-  font-size: 1.6rem;
   color: var(--saito-black);
+  width: calc(100% - 5rem);
+  display: flex;
+  justify-content: center;
+
 }
 
-.saito-select-btn i {
-  font-size: 1.4rem;
-  color: red;
+.saito-select-btn>div {
+
+
   cursor: pointer;
+  margin-left: auto;
+  background-color: var(--saito-primary);
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5rem;
+
+  border-left: 1px solid var(--saito-white);
+  border-top-right-radius: .5rem;
+  border-bottom-right-radius: .5rem;
+
+}
+
+.saito-select-btn>div>i {
+  font-size: 2rem;
+  color: var(--saito-white);
 }
 
 
 
 .saito-select-content {
-  margin-top: 1.5rem;
+
   position: absolute;
-  top: 3.5rem;
-  width: 100%;
-  background-color: var(--saito-background);
+  width: calc(100% - 5rem);
+  background-color: var(--saito-white);
   justify-content: start;
   display: none;
-  border-bottom-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+  border: 1px solid var(--saito-border);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
   border-top: none;
   z-index: 12;
-  border: 1px solid var(--saito-white);
+
 
 }
 
-.saito-select-content.saito-select-border {
+/* .saito-select-content.saito-select-border {
   border: 1px solid var(--saito-border);
-}
+} */
 
-
-
-.saito-select-wrapper i {
-  font-size: 1.8rem;
-}
 
 .saito-select-content li {
   list-style: none;
@@ -367,15 +396,33 @@ select {}
   width: 100%;
   padding: 1rem 1.5rem;
   color: var(--saito-black);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  align-items: center;
+  height: 5rem;
+  border-bottom: 1px solid #a5a5a545;
 }
 
 .saito-select-content li:hover {
   background-color: var(--saito-primary);
   color: white;
+
+}
+
+
+.saito-select-content li:last-child {
+  border-bottom-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
+}
+
+.saito-select-content li:last-child {
+  border-bottom-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
 }
 
 .saito-select-content li:not(:last-child) {
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .show-content {

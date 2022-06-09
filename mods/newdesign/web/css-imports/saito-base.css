@@ -29,7 +29,7 @@ body {
 }
 
 #saito-container {
-  padding: 3rem 10rem;
+  padding: 1rem 2rem;
   margin-top: var(--saito-header-height);
 }
 
@@ -51,13 +51,23 @@ pre {
 media queries
 -----------------------------------------------------------------*/
 
+@media screen and (min-width: 1600px) {
+  body {
+    font-size: 1.4rem;
+  }
+
+  #saito-container {
+    padding: 1rem calc((100vw - var(--saito-width)) / 2);
+  }
+}
+
 @media screen and (max-width: 1200px) {
   body {
     font-size: 1.4rem;
   }
 
   #saito-container {
-    padding: 3rem 2.6rem;
+    padding: 3rem 2rem;
   }
 }
 

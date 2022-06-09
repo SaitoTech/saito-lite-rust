@@ -2,19 +2,15 @@
 
 module.exports = (app) => {
 
-  return `
-  <div id="saito-container" id="container saito-marb-6">
-
-
-
-
-
+    return `
+  <div id="saito-container" id="container ">
   <div class="saito-tab-content">
 
       <div class="saito-tab show" id="general">
-          <h4 class="">Fieldset</h4>
+      <div class="saito-marb-3">
+          <h4 class="saito-marb-2">Fieldset</h4>
           <fieldset
-              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded saito-white-background saito-mart-2">
+              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded saito-white-background ">
 
               <h1>h1 Heading</h1>
               <h2>h2 Heading</h2>
@@ -23,7 +19,7 @@ module.exports = (app) => {
               <h5>h5 Sub Heading</h5>
               <h6>h6 Sub Heading</h4>
 
-                  <h6>Paragraph</p>
+          
                       <p>Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
                           mignon shank
                           chicken
@@ -38,12 +34,12 @@ module.exports = (app) => {
 
                       </p>
           </fieldset>
+    </div>
 
-
-
-          <h4>Pre</h4>
+        <div>
+          <h4 class=" saito-marb-2">Pre</h4>
           <div
-              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded  saito-white-background saito-mart-2">
+              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded  saito-white-background">
               <pre>
                   {
                       "bf": 1,
@@ -63,45 +59,65 @@ module.exports = (app) => {
         }
               </pre>
           </div>
+          </div>
       </div>
 
 
       <div class="saito-tab" id="forms">
 
-          <h4>Buttons </h4>
-          <div class="saito-mart-2">
+        <div class=" saito-marb-3">
+          <h4 class=" saito-marb-2">Buttons </h4>
+          <div>
               <button>Primary</button>
               <button class="saito-btn-secondary d">Secondary</button>
               <button class="saito-btn-gradient">Gradient</button>
               <button class="saito-btn-small">Small</button>
-              <button class="saito-btn-secondary saito-btn-large">Large</button>
+              <button class="saito-btn-secondary saito-btn-large">Large Secondary</button>
           </div>
+        </div>
 
-
-          <h4>Form Items</h4>
+        <div class=" saito-marb-3">
+          <h4 class=" saito-marb-2">Form Items</h4>
           <form
-              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded  saito-white-background saito-mart-2">
+              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded  saito-white-background">
 
 
 
               <h4>Title</h4>
-              <p>This is a row of plain text.</p>
+              <p class="saito-marb-2">This is a row of plain text.</p>
+
+              <div class="saito-marb-2">
               <label>Password</label>
-              <div><input id="password" type="password" placeholder="This is a password field" class="password" />
+              <div><input id="password" type="password" placeholder="Password" class="password" />
               </div>
+              </div>
+              <div>
+              <div class="saito-marb-2">
               <label>Text Input</label>
               <div><input placeholder="Text Field" type="text"></input></div>
+              </div>
+              </div>
+              <div class="saito-marb-2">
               <label>Date Input</label>
               <div><input type="text" name="datepicker"></input></div>
+              </div>
+              <div class="saito-marb-2">
               <label>Range Input</label>
               <div><input type="range" value="8"></input></div>
+              </div>
+              <div class="saito-marb-2">
               <label>Checkboxes</label>
               <div><input type="checkbox" checked></input><input type="checkbox"></input><input
                       type="checkbox"></input><input type="checkbox"></input></div>
+              </div>
+              <div>
               <label>Radio Buttons</label>
               <div><input name="radioId" type="radio" checked></input><input name="radioId"
                       type="radio"></input><input name="radioId" type="radio"></input><input name="radioId"
                       type="radio"></input></div>
+              </div>
+
+              <div class="saito-marb-2">
               <label>Select</label>
 
               <select class="saito-new-select saito-select-border">
@@ -115,36 +131,29 @@ module.exports = (app) => {
                   <option value="7">Fishcer</option>
                   <option value="8">Saito</option>
               </select>
-              <select class="saito-new-select ">
-                  <option value="0">Select:</option>
-                  <option value="1">Cobb</option>
-                  <option value="2">Eames</option>
-                  <option value="3">Ariadne</option>
-                  <option value="4">Arthur</option>
-                  <option value="5">Yusuf</option>
-                  <option value="6">Mal</option>
-                  <option value="7">Fishcer</option>
-                  <option value="8">Saito</option>
-              </select>
+             
+              </div>
 
-
+              <div class="saito-marb-2">
               <label>Text Area</label>
               <textarea placeholder="Text area">
                   Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
               </textarea>
+              </div>
           </form>
+          </div>
       </div>
       <div class="saito-tab " id="grids">
           <h4>Grid System</h4>
           <div class=" saito-mart-2 saito-pad-2">
               <div class="saito-grid-1-1 ">
-                  <div class=" saito-white-background  saito-padx-2"> 1/4 </div>
-                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/4 </div>
+                  <div class=" saito-white-background  saito-padx-2"> 1/2 </div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/2 </div>
               </div>
               <div class="saito-grid-1-1-1 ">
-                  <div class=" saito-white-background  saito-padx-2"> 1/4 </div>
-                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/4 </div>
-                  <div class="saito-secondary-background saito-white-color  saito-padx-2"> 2/4 </div>
+                  <div class=" saito-white-background  saito-padx-2"> 1/3 </div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/3 </div>
+                  <div class="saito-secondary-background saito-white-color  saito-padx-2"> 1/3</div>
               </div>
 
               <div class="saito-grid-1-2-1">
@@ -1145,7 +1154,7 @@ module.exports = (app) => {
 
 
 
-                  <div class=" saito-white-background saito-pad-2 ">
+                  <div class="">
 
                       <div class="saito-user saito-user-dense saito-marb-2">
                           <img src="/saito/img/background.png" />

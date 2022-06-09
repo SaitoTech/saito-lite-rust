@@ -5,23 +5,21 @@ buttons
 
 button,
 .saito-btn-primary {
-  min-width: 10.5rem;
 
-  background-color: var(--saito-primary);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  background: var(--saito-primary);
   text-align: center;
-
-  padding: 1.5rem 2rem;
+  padding: 1rem .6rem;
+  letter-spacing: 1px;
+  margin: 2rem 0;
   font-size: 1.8rem;
+  min-width: 18rem;
   color: #fff;
   font-weight: 500;
-  border: none;
-  border-radius: 3rem;
-  min-width: 22rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   margin: .5rem;
+  border: none;
+  border: 1px solid transparent;
 }
 
 
@@ -32,19 +30,18 @@ button,
 button.saito-btn-secondary {
   border: 1px solid var(--saito-primary);
   display: inline-block;
-  border-radius: 5rem;
   font-weight: 500;
   text-align: center;
   line-height: 1.2;
   color: var(--saito-primary);
   background: transparent;
-
 }
 
 button.saito-btn-gradient {
   background: linear-gradient(77deg,
       var(--saito-primary) 0%,
       var(--saito-secondary) 69%);
+
 }
 
 
@@ -66,12 +63,14 @@ button.saito-btn-secondary:hover {
 }
 
 .saito-btn-small {
-  min-width: 10rem;
-  padding: .7rem 1.9rem;
+  padding: .75rem .45rem;
+  font-size: 1.4rem;
+  min-width: 9rem;
+
 }
 
 .saito-btn-large {
+  padding: 1.5rem 0;
   min-width: 27rem;
-  padding: 2rem;
   font-size: 2.2rem;
 }

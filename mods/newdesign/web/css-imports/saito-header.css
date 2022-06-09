@@ -10,7 +10,7 @@
     margin: 0;
 
     align-items: center;
-    padding: 1.3rem 3rem;
+    padding: 0 calc((100vw - var(--saito-width)) / 2);
     top: 0;
     left: 0;
     z-index: 10;
@@ -120,8 +120,7 @@
     display: flex;
     justify-content: center;
     border-radius: 8px;
-    margin-bottom: 2rem;
-    border: 1px solid var(--saito-border);
+
 }
 
 .saito-profile>img {
@@ -222,17 +221,25 @@
 }
 
 
-.active {
+/* .active {
     color: var(--saito-primary);
-}
+} */
 
-/* Media Queries */
 
-@media screen and (min-width: 1800px) {
+@media screen and (max-width: 1600px) {
     .saito-header {
-        padding: 1.3rem 9rem;
+        padding: 1.3rem 10rem;
     }
 }
+
+@media screen and (max-width: 1200px) {
+    .saito-header {
+        padding: 1.3rem 2rem;
+    }
+}
+
+
+
 
 @media screen and (max-width: 700px) {
     #hamburger-contents {

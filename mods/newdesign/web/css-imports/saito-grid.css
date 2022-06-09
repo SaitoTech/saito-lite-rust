@@ -141,7 +141,7 @@
 }
 
 
-@media screen and (max-width: 968px) {
+@media screen and (max-width: 1200px) {
 
     .saito-grid-1-1-2,
     .saito-grid-1-2,
@@ -157,7 +157,7 @@
     .saito-grid-1-5,
     .saito-grid-5-1,
     .saito-grid-1-1-1-1 {
-        grid-template-columns: 80%;
+        grid-template-columns: 90%;
         justify-content: center;
     }
 }

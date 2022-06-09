@@ -12,25 +12,29 @@
   left: 0;
   z-index: 20;
   padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .datepicker-dropdown.datepicker-orient-top {
   padding-top: 0;
-  padding-bottom: 4px;
+
 }
 
 .datepicker-picker {
   display: inline-block;
-  border-radius: 4px;
+  border-radius: 0.5rem;
   background-color: white;
+
 }
 
 .datepicker-dropdown .datepicker-picker {
   box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+  padding-bottom: 1rem;
 }
 
 .datepicker-picker span {
   display: block;
+
   flex: 1;
   border: 0;
   border-radius: 4px;
@@ -41,6 +45,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  color: rgb(43, 57, 66);
 }
 
 .datepicker-main {
@@ -62,13 +67,14 @@
 
 .datepicker-grid {
   flex-wrap: wrap;
-  width: 60rem;
+  width: 30rem;
 }
 
 .datepicker-view .days .datepicker-cell,
 .datepicker-view .dow {
   flex-basis: 14.2857142857%;
   font-size: 1.8rem;
+
   /* padding: 1rem; */
 }
 
@@ -91,7 +97,9 @@
 }
 
 .datepicker-header .datepicker-controls {
-  padding: 2px 2px 0;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  rgb(209, 208, 209)
 }
 
 .datepicker-controls .button {
@@ -115,7 +123,7 @@
   font-size: 1rem;
   min-width: auto;
   background: none;
-  color: var(--saito-primary);
+  /* color: var(--saito-primary); */
 }
 
 .datepicker-controls .button:focus,
@@ -195,8 +203,12 @@
 .datepicker-view .dow {
   height: 1.5rem;
   line-height: 1.5rem;
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   font-weight: 700;
+  color: rgb(167, 166, 167);
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+
 }
 
 .datepicker-view .week {
@@ -243,7 +255,7 @@
 
 .datepicker-cell.prev:not(.disabled),
 .datepicker-cell.next:not(.disabled) {
-  color: #7a7a7a;
+  color: rgb(209, 208, 209);
 }
 
 .datepicker-cell.prev.selected,
