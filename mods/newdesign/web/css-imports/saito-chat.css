@@ -2,11 +2,11 @@
     font-size: 16px;
     position: fixed;
     bottom: 0;
-    color: var(--saito-default);
-    right: 0;
+    color: var(--saito-primary);
+    right: 1rem;
     border: 1px solid var(--saito-border);
 
-    background-color: var(--saito-chat-background);
+
     border-radius: 8px 8px 0 0;
     box-shadow: 4px 4px 12px var(--saito-border);
 
@@ -24,13 +24,15 @@
     min-height: 30em;
     height: 35em;
     opacity: 1;
+    background-color: none;
 }
 
 .saito-chat-header {
     border-bottom: 1px solid var(--saito-border);
+    /* padding: .5em; */
     padding: .5em;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 
 }
@@ -86,61 +88,49 @@
     height: 35em;
 }
 
-/* .saito-chat-bubble {
-    background-color: var(--saito-secondary);
 
-
-    color: var(--saito-white);
-    position: relative;
-    padding: 0.5em 1em 1.1em 0.5em;
-    border-radius: 16px;
-    margin-bottom: 1em;
-    max-width: 60%;
+.saito-chat-bubble {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: min-content minmax(35%, 1fr) min-content;
+    padding: 1rem .6rem;
     cursor: pointer;
-} */
-/* 
-.saito-chat-bubble.other {
-    align-self: flex-start;
+
 }
 
-.saito-chat-bubble.me {
-    align-self: flex-end;
-    justify-content: flex-end;
-    background-color: var(--saito-primary);
+.saito-chat-bubble:hover {
+    filter: opacity(.8);
 }
 
-.saito-chat-bubble p {
-    word-break: break-all;
-} */
+.saito-chat-bubble>img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: .5rem;
+}
 
-/* .chat-dialog {
+.saito-chat-bubble>div {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+
+    width: 100%;
+
 }
 
-.chat-dialog .saito-chat-address {
-    font-size: 0.8em;
-    cursor: pointer;
-    transition: all 0.3s;
+
+.saito-chat-bubble>div>p:first-child {
+    font-weight: 1000;
+    margin-bottom: .5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--saito-black);
+
+
+
 }
 
-.chat-dialog .saito-chat-address:hover {
-    transform: scale(1.1);
-}
+.saito-chat-bubble>p:nth-child() {}
 
-.chat-dialog>img {
-    width: 30px;
-    margin-right: 0.5em;
-    border-radius: 50%;
-}
-
-.chat-dialog>span {
-    font-size: 0.5em;
-    position: absolute;
-    right: 0;
-    bottom: 0.1em;
-    right: 0.5em;
-} */
 
 .display-chat {
     pointer-events: auto !important;

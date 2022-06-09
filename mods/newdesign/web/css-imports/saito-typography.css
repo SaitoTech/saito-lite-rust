@@ -105,10 +105,18 @@ Media Queries
 }
 
 
+.saito-large-p {
+  font-size: 1.9rem;
+}
 
-p {
+p,
+.saito-mid-p {
   color: var(--saito-black);
   font-size: 1.6rem;
+}
+
+.saito-small-p {
+  font-size: 1.3rem;
 }
 
 /* a {

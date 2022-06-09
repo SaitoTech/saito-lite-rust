@@ -20,7 +20,33 @@ module.exports = (app) => {
               <h6>h6 Sub Heading</h4>
 
           
-                      <p>Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
+                      <p class="saito-large-p saito-marb-2">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
+                          mignon shank
+                          chicken
+                          shankle
+                          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone
+                          drumstick turducken,
+                          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf.
+                          Pig tri-tip
+                          meatloaf
+                          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen
+                          bacon.
+
+                      </p>
+                      <p class="saito-marb-2">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
+                          mignon shank
+                          chicken
+                          shankle
+                          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone
+                          drumstick turducken,
+                          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf.
+                          Pig tri-tip
+                          meatloaf
+                          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen
+                          bacon.
+
+                      </p>
+                      <p class="saito-small-p">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
                           mignon shank
                           chicken
                           shankle
@@ -450,15 +476,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container  saito-white-background">
                           <ul>
                               <li class="no-icon">
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 2</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 3</span>
                               </li>
                           </ul>
@@ -468,15 +494,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container saito-menu-right  saito-white-background">
                           <ul>
                               <li>
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 2</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 3</span>
                               </li>
                           </ul>
@@ -486,15 +512,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container saito-menu-right  saito-white-background">
                           <ul>
                               <li>
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Really Long Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 2</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Really Long Menu 3</span>
                               </li>
                           </ul>
@@ -506,15 +532,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container  saito-menu-rounded  saito-white-background ">
                           <ul>
                               <li>
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 2</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 3</span>
                               </li>
                           </ul>
@@ -524,15 +550,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container saito-menu-right  saito-menu-rounded saito-white-background  ">
                           <ul>
                               <li>
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 3</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 3</span>
                               </li>
                           </ul>
@@ -542,15 +568,15 @@ module.exports = (app) => {
                       <div class="saito-menu-container  saito-menu-right  saito-menu-rounded saito-white-background">
                           <ul>
                               <li>
-                                  <i class="far fa-address-card saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Really Long Menu 1 </span>
                               </li>
                               <li>
-                                  <i class="fab fa-airbnb saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Menu 2</span>
                               </li>
                               <li>
-                                  <i class="fas fa-allergies saito-primary-color"> </i>
+                                  <i class="far fa-address-card "> </i>
                                   <span> Really Long Menu 3</span>
                               </li>
                           </ul>
@@ -624,7 +650,7 @@ module.exports = (app) => {
                       <div class="saito-user-list saito-pad-2 saito-pad-2 saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -633,15 +659,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -650,8 +676,9 @@ module.exports = (app) => {
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
+                                  <span> Active at 9.00am </span>
 
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
@@ -659,15 +686,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -676,7 +703,7 @@ module.exports = (app) => {
                           </div>
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>davikstone@satio.io </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -685,15 +712,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -706,7 +733,7 @@ module.exports = (app) => {
                       <div class="saito-user-list saito-pad-2 saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -715,15 +742,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -732,7 +759,7 @@ module.exports = (app) => {
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -741,15 +768,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -758,24 +785,24 @@ module.exports = (app) => {
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
+                                  <span> Active at 9.00am </span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -787,10 +814,10 @@ module.exports = (app) => {
               </div>
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-pad-2 saito-white-background ">
-                          <div class="saito-user saito-user-medium ">
+                      <div class="saito-user-list saito-user-medium saito-pad-2 saito-white-background ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -799,50 +826,50 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-medium ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
+                                  <span> Active at 9.00am </span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-medium ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>davikstone@satio.io </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -851,15 +878,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -869,10 +896,10 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-padx-3">
-                      <div class="saito-user-list   saito-pad-2 saito-white-background  ">
-                          <div class="saito-user saito-user-medium ">
+                      <div class="saito-user-list saito-user-medium   saito-pad-2 saito-white-background  ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -881,24 +908,24 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-medium ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
@@ -907,41 +934,41 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-medium ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
+                                  <span> Active at 9.00am </span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -953,10 +980,10 @@ module.exports = (app) => {
               </div>
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-pad-2 saito-white-background ">
-                          <div class="saito-user saito-user-dense ">
+                      <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background ">
+                          <div class="saito-user  ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>davikstone@satio.io </p>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
@@ -964,24 +991,24 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-dense ">
+                          <div class="saito-user  ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
 
                               </div>
@@ -990,24 +1017,24 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-dense ">
+                          <div class="saito-user  ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
 
                               </div>
@@ -1016,15 +1043,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -1034,10 +1061,10 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-pad-2  saito-white-background   ">
-                          <div class="saito-user saito-user-dense">
+                      <div class="saito-user-list saito-user-dense saito-pad-2  saito-white-background   ">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>davikstone@satio.io </p>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
@@ -1045,24 +1072,24 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-dense">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
 
                               </div>
@@ -1071,24 +1098,24 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user saito-user-dense">
+                          <div class="saito-user ">
                               <img src="/saito/img/background.png" />
-                              <div>
+                              <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
 
                               </div>
@@ -1097,15 +1124,15 @@ module.exports = (app) => {
                                   <div class="saito-menu-container">
                                       <ul>
                                           <li>
-                                              <i class="far fa-address-card saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 1 </span>
                                           </li>
                                           <li>
-                                              <i class="fab fa-airbnb saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 2</span>
                                           </li>
                                           <li>
-                                              <i class="fas fa-allergies saito-primary-color"> </i>
+                                              <i class="far fa-address-card "> </i>
                                               <span> Menu 3</span>
                                           </li>
                                       </ul>
@@ -1124,8 +1151,12 @@ module.exports = (app) => {
 
           <div class="saito-grid-1-5">
               <div id="saito-left-sidebar">
-
-                  <div class="saito-white-background  saito-marb-3">
+                <div class="saito-left-menu saito-marb-1">
+                   <div class="saito-left-menu-header">
+                        <h5> Games </h5>
+                     
+                   </div>
+                  <div class="saito-left-menu-body  ">
                       <div class="saito-menu-container ">
                           <ul>
                               <li>
@@ -1151,29 +1182,34 @@ module.exports = (app) => {
                           </ul>
                       </div>
                   </div>
+                  </div>
 
 
-
-                  <div class="">
-
-                      <div class="saito-user saito-user-dense saito-marb-2">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>Saito Community Chat </p>
-                              <span> New chat</span>
-                          </div>
-
-                      </div>
-                      <div class="saito-user saito-user-dense">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>Saito Community Chat </p>
-                              <span> New chat</span>
-                          </div>
-
-                      </div>
-
-
+                <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                        <h5> Chat </h5>
+                        <i class="fas fa-plus"></i>
+                   </div>
+                  <div class="saito-left-menu-body">
+                        <div class="saito-chat-room-list">
+                                <div class="saito-chat-room">
+                                    <img src="/saito/img/background.png" />
+                                        <div >
+                                            <p class="saito-small-p"> Saito Community Chat</p>
+                                            <p class="saito-small-p"> New chat</p>
+                                        </div>
+                                        <p class="saito-small-p">22.23</p>
+                                </div>
+                                <div class="saito-chat-room">
+                                    <img src="/saito/img/background.png" />
+                                        <div >
+                                            <p class="saito-small-p"> DavikStone</p>
+                                            <p class="saito-small-p"> New chat</p>
+                                        </div>
+                                        <p class="saito-small-p">22.23</p>
+                                </div>
+                        </div>
+                  </div>
                   </div>
 
 
@@ -1221,90 +1257,28 @@ module.exports = (app) => {
 
           <div class="saito-chat-container">
               <div class="saito-chat-header">
-                  <h4>Community Chat</h4>
-                  <i id="chat-container-close" class="fa-solid fa-xmark"></i>
+                  <h6 >Community Chat</h6>
+                  <i id="chat-container-close" class="fas fa-times"></i>
               </div>
               <div class="saito-chat-body">
-                  <div class="saito-user-list saito-pad-2 saito-white-background ">
-                      <div class="saito-user saito-user-dense saito-marb-3 ">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                              <span> Saito rules </span>
-                          </div>
-                          <i class="fas fa-ellipsis-v"></i>
-                          <div class="saito-user-dropdown">
-                              <div class="saito-menu-container saito-menu-dense">
-                                  <ul>
-                                      <li>
-                                          <i class="far fa-address-card saito-primary-color"> </i>
-                                          <span> Menu 1 </span>
-                                      </li>
-                                      <li>
-                                          <i class="fab fa-airbnb saito-primary-color"> </i>
-                                          <span> Menu 2</span>
-                                      </li>
-                                      <li>
-                                          <i class="fas fa-allergies saito-primary-color"> </i>
-                                          <span> Menu 3</span>
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="saito-user saito-user-dense saito-marb-3 ">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                              <span> !!! </span>
-                          </div>
-                          <i class="fas fa-ellipsis-v"></i>
-                          <div class="saito-user-dropdown">
-                              <div class="saito-menu-container saito-menu-dense">
-                                  <ul>
-                                      <li>
-                                          <i class="far fa-address-card saito-primary-color"> </i>
-                                          <span> Menu 1 </span>
-                                      </li>
-                                      <li>
-                                          <i class="fab fa-airbnb saito-primary-color"> </i>
-                                          <span> Menu 2</span>
-                                      </li>
-                                      <li>
-                                          <i class="fas fa-allergies saito-primary-color"> </i>
-                                          <span> Menu 3</span>
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="saito-user saito-user-dense saito-marb-3 ">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>davikstone@satio.io </p>
-                              <span> What's happening </span>
-                          </div>
-                          <i class="fas fa-ellipsis-v"></i>
-                          <div class="saito-user-dropdown">
-                              <div class="saito-menu-container saito-menu-dense">
-                                  <ul>
-                                      <li>
-                                          <i class="far fa-address-card saito-primary-color"> </i>
-                                          <span> Menu 1 </span>
-                                      </li>
-                                      <li>
-                                          <i class="fab fa-airbnb saito-primary-color"> </i>
-                                          <span> Menu 2</span>
-                                      </li>
-                                      <li>
-                                          <i class="fas fa-allergies saito-primary-color"> </i>
-                                          <span> Menu 3</span>
-                                      </li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                   <div class="saito-chat-dialog"> 
+                        <div class="saito-chat-bubble">
+                        <img src="/saito/img/background.png" />
+                        <div >
+                            <p class="saito-small-p"> dLadj1dXEDAfDaYtz1idaf3DZTAvA3eKGSRdSZo3WgQ11E</p>
+                            <p class="saito-small-p"> Hi</p>
+                        </div>
+                        <p class="saito-small-p">22.23</p>
+                        </div>
+                        <div class="saito-chat-bubble">
+                        <img src="/saito/img/background.png" />
+                        <div >
+                            <p class="saito-small-p"> gLWj1XEDAfDaYtz1ifpf3DZTAvA3eKGSRdSZo3WgQ11E</p>
+                            <p class="saito-small-p"> Hey</p>
+                        </div>
+                        <p class="saito-small-p">22.23</p>
+                        </div>
+                   </div>
               </div>
               <div class="saito-chat-input-container">
 

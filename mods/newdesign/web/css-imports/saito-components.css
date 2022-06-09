@@ -132,8 +132,7 @@ Saito Menu
     list-style: none;
     cursor: pointer;
     transition: all .2s;
-    font-size: 2.08rem;
-
+    font-size: 1.92rem
 }
 
 .saito-menu-container>ul>li:not(:last-child) {
@@ -153,7 +152,7 @@ Saito Menu
 }
 
 .saito-menu-container>ul>li>span {
-    font-size: 2rem;
+    font-size: 1.92rem;
 }
 
 .saito-menu-container>ul>li>i+span {
@@ -202,16 +201,17 @@ Saito User List and Saito User
 .saito-user-list {}
 
 .saito-user {
-    display: grid;
-    align-items: top;
+    display: flex;
     position: relative;
-    grid-template-columns: min-content 1fr;
     justify-items: start;
     margin-bottom: 1px;
+    height: 6rem;
+    width: 100%;
+    /* overflow: hidden; */
 }
 
 
-.saito-user>div:first-child {
+.saito-user div:first-child {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -227,80 +227,103 @@ Saito User List and Saito User
 }
 
 .saito-user>img {
-    width: 6.5rem;
-    height: 6.5rem;
-    border-radius: 8px;
-    margin-right: 2rem;
+    max-width: 6rem;
+    height: 100%;
+    border-radius: .5rem;
+    margin-right: 1rem;
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
 
-.saito-user p {
-    width: 25rem;
+.saito-user-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.saito-user-info p {
+    max-width: 70%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 1.8rem;
+
 }
 
-.saito-user p:hover {
+.saito-user-info span {
+    font-size: 1.3rem;
+}
+
+/* .saito-user-info p:hover {
     color: var(--saito-primary);
+} */
+
+
+
+.saito-user-list.saito-user-medium .saito-user {
+    height: 5rem;
 }
 
-
-
-
-.saito-user.saito-user-medium:not(:last-child) {
+.saito-user-list.saito-user-medium .saito-user:not(:last-child) {
     margin-bottom: 5px;
 }
 
 
-.saito-user.saito-user-medium>img {
+.saito-user-list.saito-user-medium .saito-user>img {
     width: 5rem;
     height: 5rem;
-    border-radius: 3px;
+    border-radius: .5rem;
     cursor: pointer;
     margin-right: 1rem;
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
-.saito-user.saito-user-medium p {
-    font-size: 1.8rem;
-}
-
-
-.saito-user.saito-user-medium>div>span {
-    /* display: none; */
-}
-
-
-
-.saito-user.saito-user-dense:not(:last-child) {
-    margin-bottom: 1px;
-}
-
-.saito-user.saito-user-dense:not(:last-child) {
-    margin-bottom: 1px;
-}
-
-
-.saito-user.saito-user-dense>img {
-    width: 3.2rem;
-    height: 3.2rem;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-right: 1rem;
-    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
-}
-
-.saito-user.saito-user-dense p {
-    font-size: 1.5rem;
-}
-
-
-.saito-user.saito-user-dense>div>span {
-    /* display: none; */
+.saito-user-list.saito-user-medium .saito-user p {
     font-size: 1.6rem;
+}
+
+
+.saito-user-list.saito-user-medium .saito-user>div>span {
+    /* display: none; */
+}
+
+
+
+
+
+.saito-user-list.saito-user-dense .saito-user {
+    height: 4rem;
+
+}
+
+.saito-user-list.saito-user-dense .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+.saito-user-list.saito-user-dense .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+
+.saito-user-list.saito-user-dense .saito-user>img {
+    height: 100%;
+    width: 4rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user-list.saito-user-dense .saito-user p {
+    font-size: 1.6rem;
+}
+
+
+.saito-user-list.saito-user-dense .saito-user-info {
+    display: flex;
+    justify-content: center;
 }
 
 .saito-user>i {
@@ -333,7 +356,7 @@ Saito User List and Saito User
     /* color: white; */
 }
 
-
+/* 
 @media screen and (max-width: 1200px) {
     .saito-user p {
         width: 15rem;
@@ -352,7 +375,7 @@ Saito User List and Saito User
         text-overflow: ellipsis;
         font-size: 1.8rem;
     }
-}
+} */
 
 @media screen and (max-width: 320px) {}
 
@@ -525,6 +548,7 @@ Saito module list /Saito module
 
 .saito-module {
     padding: 1rem;
+
     display: flex;
     background-color: var(--saito-white);
     cursor: pointer;
@@ -533,30 +557,30 @@ Saito module list /Saito module
 
 .saito-module img {
     width: 10rem;
-    margin-right: 2rem;
-    height: 7rem;
+    margin-right: 1rem;
+    height: 6rem;
+    width: 6rem;
+    border-radius: .5rem;
 
 }
 
+.saito-module>div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
 .saito-module>div>p {
+    font-weight: 1000;
     font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
 
 }
 
 .saito-module>div>span {
-    display: block;
-    width: 20rem;
+    max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.8rem;
-}
-
-@media screen and (max-width: 1200px) {
-    .saito-module>div>span {
-        width: 9rem;
-    }
-
 }
