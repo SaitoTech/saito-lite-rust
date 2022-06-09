@@ -120,10 +120,10 @@ class Staff extends ModTemplate {
                 }
             }
         } else {
-            if (conf==0) {
+            if (conf == 0) {
+                let txmsg = tx.returnMessage();
                 if (txmsg.module == "Staff") {
                     console.log("went here on DOM onconfirmation");
-                  let txmsg = tx.returnMessage();
                     if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
                         console.log("went here on DOM onconfirmation check record");
                       this.checkRecord(this.app.wallet.returnPublicKey());
