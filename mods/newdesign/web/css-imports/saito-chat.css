@@ -24,13 +24,13 @@
     min-height: 30em;
     height: 35em;
     opacity: 1;
-    background-color: none;
+    background-color: white;
 }
 
 .saito-chat-header {
     border-bottom: 1px solid var(--saito-border);
     /* padding: .5em; */
-    padding: .5em;
+    padding: .5em 0.9rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
