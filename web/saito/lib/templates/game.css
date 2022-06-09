@@ -441,9 +441,18 @@ ul li a {
   min-height: 40px;
   margin-bottom: 10px;
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-  /*padding: 10px 0;*/ 
-  font-size: 0.9em;
-  line-height: 40px;
+  position: relative;
+  font-size: 16px;
+  /*padding: 10px 0 0 0;
+  line-height: 40px;*/
+}
+
+.status-header > #status-content, .status-message > #status-content{
+  position: absolute;
+  width: 94%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .status-header i {

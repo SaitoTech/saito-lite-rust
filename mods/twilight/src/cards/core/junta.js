@@ -46,6 +46,7 @@
               twilight_self.addMove("limit\tmilops");
               twilight_self.addMove("limit\tplacement");
               twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t2");
+              twilight_self.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.endTurn();
             }
