@@ -305,7 +305,8 @@ class Chessgame extends GameTemplate {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
         	this.resignGame(this.game.id);
-        	window.location.href = '/arcade';
+          this.lockBoard(this.game.position);
+        	//window.location.href = '/arcade';
         	return;
         }
       }
@@ -678,6 +679,23 @@ class Chessgame extends GameTemplate {
     return html;
   }
 
+  returnSingularGameOption(){
+    return `<div class="overlay-input">
+      <label for="clock">Time Limit:</label>
+      <select name="clock">
+        <option value="0" default>no limit</option>
+        <option value="1">1 minute</option>
+        <option value="2">2 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="60">60 minutes</option>
+        <option value="90">90 minutes</option>
+        <option value="120">120 minutes</option>
+      </select>
+      </div>
+      `;
+  }
+
   returnGameOptionsHTML() {
 
 
@@ -691,20 +709,7 @@ class Chessgame extends GameTemplate {
       </select>
       </div>
 
-      <div class="overlay-input">
-      <label for="clock">Time Limit:</label>
-      <select name="clock">
-        <option value="0" default>no limit</option>
-        <option value="1">1 minute</option>
-        <option value="2">2 minutes</option>
-        <option value="10">10 minutes</option>
-        <option value="30">30 minutes</option>
-        <option value="60">60 minutes</option>
-        <option value="90">90 minutes</option>
-        <option value="120">120 minutes</option>
-      </select>
-      </div>
-
+      
       <div class="overlay-input">
       <label for="observer_mode">Observer Mode:</label>
       <select name="observer">

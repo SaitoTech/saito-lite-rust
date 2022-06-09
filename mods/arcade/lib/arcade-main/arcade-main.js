@@ -536,8 +536,8 @@ module.exports = ArcadeMain = {
         if (testsig == game_id) { //If the game has been initialized
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
-            gamemod.resignGame(game_id);
             this.removeGameFromList(game_id);
+            gamemod.resignGame(game_id);
             //console.log(JSON.parse(JSON.stringify(gamemod.game)));
             return;
           }

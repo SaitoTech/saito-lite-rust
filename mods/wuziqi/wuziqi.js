@@ -564,11 +564,8 @@ class Wuziqi extends GameTemplate {
         }
     }
 
-    // Add options to the game start wizard for different game parameters
-    returnGameOptionsHTML() {
-        return `
-        <h1 class="overlay-title">Wuziqi Options</h1>
-        <div class="overlay-input">
+    returnSingularGameOption(){
+        return `<div class="overlay-input">
         <label for="best_of">Best of:</label>
         <select name="best_of">
           <option value="1">1</>
@@ -579,7 +576,13 @@ class Wuziqi extends GameTemplate {
           <option value="11">11</>
           <option value="13">13</>
           <option value="15">15</>
-        </select></div>
+        </select></div>`;
+    }
+    // Add options to the game start wizard for different game parameters
+    returnGameOptionsHTML() {
+        return `
+        <h1 class="overlay-title">Wuziqi Options</h1>
+        
         <div class="overlay-input">
         <label for="board_size">Board Size:</label>
         <select name="board_size">

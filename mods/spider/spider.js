@@ -75,20 +75,19 @@ class Spider extends GameTemplate {
   }
 
 
-  
-  //Single player games don't allow game-creation and options prior to join
-  returnGameOptionsHTML() {
-    return `
-        <div class="overlay-input">
-            <label for="difficulty">Difficulty:</label>
-            <select name="difficulty">
+  returnSingularGameOption(){
+    return `<select name="difficulty">
               <option value="easy">Easy (1 suit) </option>
               <option value="medium" selected>Medium (2 suits) </option>
               <option value="hard" >Hard (4 suits) </option>
-            </select>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-        </div>
-    `;
+            </select>`;
+  }
+    
+  //Single player games don't allow game-creation and options prior to join
+  returnGameOptionsHTML() {
+
+    //`    <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+    //`;
 
     /* to do -- add auto play mode
             <p>Play Mode:</p>
@@ -97,6 +96,7 @@ class Spider extends GameTemplate {
             <div><input type="radio" id="manual" value="manual" name="play_mode">
             <label for="manual">Click empty slot to move card</label></div>
     */
+    return "";
   }
 
 

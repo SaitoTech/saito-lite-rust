@@ -8159,7 +8159,15 @@ playerTurnHeadlineSelected(card, player) {
   }
 
 
-
+  returnSingularGameOption(){
+    return `<div><label for="player1">Play as:</label>
+            <select name="player1">
+              <option value="random" selected>random</option>
+              <option value="ussr">USSR</option>
+              <option value="us">US</option>
+            </select></div>
+          `;
+  }
 
   returnGameOptionsHTML() {
 
@@ -8169,12 +8177,7 @@ playerTurnHeadlineSelected(card, player) {
 
 	<div style="top:0;left:0;">
 
-            <label for="player1">Play as:</label>
-            <select name="player1">
-              <option value="random" selected>random</option>
-              <option value="ussr">USSR</option>
-              <option value="us">US</option>
-            </select>
+            
 
             <label for="deck">Deck:</label>
             <select name="deck" id="deckselect" onchange='
