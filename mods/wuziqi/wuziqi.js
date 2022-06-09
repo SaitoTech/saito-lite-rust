@@ -324,6 +324,9 @@ class Wuziqi extends GameTemplate {
         });
     }
 
+    removeEvents(){
+        this.drawBoard(this.game.board);
+    }
     
     // Bundle moves and send them off.
     endTurn() {
@@ -358,14 +361,11 @@ class Wuziqi extends GameTemplate {
                 // Remove this item from the queue.
                 this.game.queue = [];
 
-                //Winner sent the move
-                this.game.winner = parseInt(mv[1]); 
-
                 //Not duplicated in board events, so both players run these
                 this.updateScore();
                 this.drawBoard(this.game.board);
 
-                this.resignGame(); //<- throws a 567567 error                
+                this.endGame(this.game.players[parseInt(mv[1])-1]);
                 return 0; //end queue cycling
             }
             // Round over

@@ -28,7 +28,7 @@ class Settlers extends GameTemplate {
 
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
-
+    this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
   }
@@ -448,6 +448,9 @@ class Settlers extends GameTemplate {
           JSON.stringify(this.skin.returnDeck())
       );
     }
+    if (this.game.players.length > 2){
+      this.grace_window = this.game.players.length * 12;
+    }
   }
 
   returnStatsOverlay(){
@@ -648,19 +651,18 @@ class Settlers extends GameTemplate {
 
       if (mv[0] == "winner") {
         
-        this.game.winner = parseInt(mv[1]);
+        let winner = parseInt(mv[1]);
         this.game.queue = [];
 
         this.updateLog(
-          `Player ${this.game.winner} is ${this.skin.winState} of Saitoa! The game is over.`
+          `Player ${winner + 1} is ${this.skin.winState} of Saitoa! The game is over.`
         );
 
         this.overlay.show(this.app, this, this.returnStatsOverlay());
-        $(".rules-overlay h1").text(`Game Over: Player ${this.game.winner} wins!`);
+        $(".rules-overlay h1").text(`Game Over: Player ${winner + 1 } wins!`);
         
-        if (this.game.player == this.game.winner){
-          this.resignGame(this.game.id); 
-        }
+        this.endGame(this.game.players[winner]); 
+        
         return 0;
       }
 
@@ -2147,7 +2149,7 @@ class Settlers extends GameTemplate {
 
       //Check for winner
       if (score >= this.game.options.game_length) {
-        this.game.queue.push(`winner\t${i + 1}`);
+        this.game.queue.push(`winner\t${i}`);
       }
     }
   }
@@ -2284,6 +2286,11 @@ class Settlers extends GameTemplate {
     });
   }
 
+  removeEvents(){
+    this.displayBoard();
+    $(".cardselector").off();
+    $(".trade").off();
+  }
   /*
     Functions for Player interacting with the board
   */

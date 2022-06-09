@@ -527,14 +527,13 @@ module.exports = ArcadeMain = {
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];
-    console.log("Cancel Game");
+    console.log("Click to Cancel Game");
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
         testsig = app.options.games[i].transaction?.sig || app.options.games[i].id;
         if (testsig == game_id) { //If the game has been initialized
-          console.log("Send Resign Message");
           let gamemod = app.modules.returnModule(app.options.games[i].module);
           if (gamemod) {
             gamemod.resignGame(game_id);

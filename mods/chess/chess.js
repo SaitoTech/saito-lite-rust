@@ -248,7 +248,8 @@ class Chessgame extends GameTemplate {
         this.setBoard(this.game.position);
         if (this.useClock) { this.startClock(); }
         if (this.engine.in_checkmate() === true) {
-          this.endGame(3-this.game.player, "checkmate");
+          this.game.over = 1;
+          this.resignGame(this.game.id, "checkmate");
           this.lockBoard(this.game.position);
           return 0;
         }else if (this.engine.in_draw() === true) {
@@ -271,6 +272,10 @@ class Chessgame extends GameTemplate {
 
   }
 
+  removeEvents(){
+    this.lockBoard(this.game.position);
+  }
+
   endTurn(data) {
 
     let extra = {};
@@ -287,35 +292,23 @@ class Chessgame extends GameTemplate {
 
   attachEvents() {
 
-    let chat_icon = document.getElementById('chat_icon');
     let resign_icon = document.getElementById('resign_icon');
     let move_accept = document.getElementById('move_accept');
     let move_reject = document.getElementById('move_reject');
     let copy_btn = document.getElementById('copy-btn');
     if (!move_accept) return;
 
-    let chatmod = this.app.modules.returnModule("Chat");
-    if (!chatmod) { chat_icon.style.display = "none"; }
 
 
     if (resign_icon) {
       resign_icon.onclick = async () => {
         let c = await sconfirm("Do you really want to resign?");
         if (c) {
-        	this.resignGame();
+        	this.resignGame(this.game.id);
         	window.location.href = '/arcade';
         	return;
         }
       }
-    }
-
-    if (chatmod && chat_icon) {
-    chat_icon.onclick = () => {
-      if (chatmod) {
-	chatmod.openChatBox();
-	return;
-      }
-    }
     }
 
 
@@ -715,8 +708,8 @@ class Chessgame extends GameTemplate {
       <div class="overlay-input">
       <label for="observer_mode">Observer Mode:</label>
       <select name="observer">
-        <option value="enable" selected>enable</option>
-        <option value="disable">disable</option>
+        <option value="enable" >enable</option>
+        <option value="disable" selected>disable</option>
       </select>
       </div>
     

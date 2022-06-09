@@ -22,6 +22,8 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       game_initialized = 1;
     }
   }
+  console.log("Arcade invite template");
+  console.log(JSON.parse(JSON.stringify(invite.msg)));
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load

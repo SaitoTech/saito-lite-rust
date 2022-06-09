@@ -59,7 +59,7 @@ class Twilight extends GameTemplate {
     this.hud.card_width = 120;
     this.playerRoles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
-
+    this.grace_window = 25;
   }
 
 
@@ -1124,10 +1124,10 @@ try {
         }
         this.updateVictoryPoints();
         if (this.game.state.vp > 0) {
-          this.endGame(2,"Wargames");
+          this.endGame(this.game.players[1],"Wargames");
         }
         if (this.game.state.vp < 0) {
-          this.endGame(1,"Wargames");
+          this.endGame(this.game.players[0],"Wargames");
         }
         if (this.game.state.vp == 0) {
           this.tieGame();
@@ -2703,7 +2703,8 @@ try {
         this.updateLog("End of Round");
       }
 
-      this.endRound(); //Increment state.round and resets state variables for next round
+      //Increment state.round and resets state variables for next round
+      if (!this.endRound()){return 0;} 
 
       //
       // END GAME IF WE MAKE IT !
@@ -5128,6 +5129,9 @@ playerTurnHeadlineSelected(card, player) {
 
   }
 
+  removeEvents(){
+    $(".country").off();
+  }
 
   playerFinishedPlacingInfluence(player, mycallback=null) {
     
@@ -5338,11 +5342,11 @@ playerTurnHeadlineSelected(card, player) {
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
-      this.endGame(2,"Cuban Missile Crisis");
+      this.endGame(this.game.players[1],"Cuban Missile Crisis");
       return;
     }
     if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
-      this.endGame(1,"Cuban Missile Crisis");
+      this.endGame(this.game.players[0],"Cuban Missile Crisis");
       return;
     }
 
@@ -5690,8 +5694,10 @@ playerTurnHeadlineSelected(card, player) {
       for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
-            this.endGame(3 - this.game.player, "scoring card held");
-            return;
+            this.game.over = 1;
+            //There may be an issue if both players simulataneously resign...
+            this.resignGame(this.game.id, "scoring card held");
+            return 0;
           }
 	      }
       }
@@ -5793,7 +5799,7 @@ playerTurnHeadlineSelected(card, player) {
     this.game.state.events.china_card = 0;
     this.game.state.events.china_card_eligible = 0;
 
-
+    return 1;
   }
 
 
@@ -6758,14 +6764,14 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.vp--;
       this.updateLog("USSR receives 1 VP for the China Card");
       if (this.game.state.vp <= -20) {
-        this.endGame(1, "victory points");
+        this.endGame(this.game.players[0], "victory points");
         return;
       }
     } else {
       this.game.state.vp++;
       this.updateLog("US receives 1 VP for the China Card");
       if (this.game.state.vp >= 20) {
-        this.endGame(2, "victory points");
+        this.endGame(this.game.players[1], "victory points");
         return;
       }
     }
@@ -6811,9 +6817,9 @@ playerTurnHeadlineSelected(card, player) {
       return 1;
     }
     if (this.game.state.vp < 0) {
-      this.endGame(1, "final scoring");
+      this.endGame(this.game.players[0], "final scoring");
     } else {
-      this.endGame(2, "final scoring");
+      this.endGame(this.game.players[1], "final scoring");
     }
 
     return 1;
@@ -7522,9 +7528,9 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.state.defcon <= 1) {
       if (this.game.state.headline == 1) {
         // phasing player in headline loses
-        this.endGame(3 - this.game.state.player_to_go, "thermonuclear war");
+        this.endGame(this.game.players[2 - this.game.state.player_to_go], "thermonuclear war");
       }else{
-        this.endGame(3 - this.game.state.turn, "thermonuclear war");  
+        this.endGame(this.game.players[2 - this.game.state.turn], "thermonuclear war");  
       }
       return;
     }
@@ -8021,10 +8027,10 @@ playerTurnHeadlineSelected(card, player) {
     }
 
     if (this.game.state.vp > 19) {
-        this.endGame(2, "victory point track");
+        this.endGame(this.game.players[1], "victory point track");
     }
     if (this.game.state.vp < -19) {
-      this.endGame(1, "victory point track");
+      this.endGame(this.game.players[0], "victory point track");
     }
 
   }

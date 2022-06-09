@@ -480,32 +480,6 @@ class Blackjack extends GameTemplate {
         return 1;
       }
 
-      if (mv[0] === "resign"){
-        this.game.queue.splice(qe, 1);
-        let player = parseInt(mv[1]);
-        if (player != this.game.state.dealer){ //Player, not dealer
-          let wager = this.game.state.player[player-1].wager; 
-          if (wager > 0 ){
-            this.game.state.player[this.game.state.dealer-1].wager += wager;
-            this.game.state.player[player-1].wager = 0;  
-            this.game.state.player[player-1].credit = 0;
-          }
-
-          this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></h3>`;
-          this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
-    
-          if (this.game.crypto){
-            let ts = new Date().getTime();
-            this.rollDice();
-            let uh = this.game.dice;
-            this.game.queue.push(`SEND\t${this.game.players[player-1]}\t${this.game.players[this.game.state.dealer-1]}\t${wager.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
-          }
-
-        }
-
-        return 1;
-      }
-
       if (mv[0] === "bust") {
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
@@ -685,9 +659,8 @@ class Blackjack extends GameTemplate {
       if (mv[0] === "winner") { //copied from poker
         this.game.queue = [];
         //Notably not keyed to game.player, but by the index
-        this.game.winner = parseInt(mv[1]) + 1;
-        if (this.game.player == this.game.winner){
-          this.resignGame(this.game.id); 
+        if (this.game.player == parseInt(mv[1]) + 1){
+          this.endGame(this.app.wallet.returnPublicKey()); 
         }
         return 0;
 
@@ -978,16 +951,7 @@ class Blackjack extends GameTemplate {
   }
 
 
-  resignGame(game_id = null, tiegame = 0, reason = "") {
-    if (game_id && this.game.id != game_id) {
-      this.loadGame(game_id);
-    }else{
-      game_id = this.game.id;
-    }
-    this.addMove(`resign\t${this.game.player}`);
-    this.endTurn();
-  }
-
+  
 
   /*
   Sends a message to restart the queue
@@ -1322,6 +1286,33 @@ class Blackjack extends GameTemplate {
       }
     }
     return new_options;
+  }
+
+  processResignation(resigning_player, txmsg){
+    //if (this.game.players.length == 2){
+      super.processResignation(resigning_player, txmsg);
+      return;
+   // }
+
+    let player = parseInt(txmsg.loser);
+    if (player != this.game.state.dealer){ //Player, not dealer
+      let wager = this.game.state.player[player-1].wager; 
+      if (wager > 0 ){
+        this.game.state.player[this.game.state.dealer-1].wager += wager;
+        this.game.state.player[player-1].wager = 0;  
+        this.game.state.player[player-1].credit = 0;
+      }
+
+      this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></h3>`;
+      this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
+
+      if (this.game.crypto){
+        let ts = new Date().getTime();
+        this.rollDice();
+        let uh = this.game.dice;
+        this.game.queue.push(`SEND\t${this.game.players[player-1]}\t${this.game.players[this.game.state.dealer-1]}\t${wager.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
+      }
+    }
   }
 
 

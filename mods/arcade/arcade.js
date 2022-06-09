@@ -157,8 +157,8 @@ class Arcade extends ModTemplate {
     if (this.app.options.games != null) {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
-        if (this.debug){console.log(JSON.parse(JSON.stringify(game)));}
-        if (game.over == 0 && (game.players_set != 1 || game.accepted.includes(app.wallet.returnPublicKey()))) {
+        if (this.debug){console.log("My game:",JSON.parse(JSON.stringify(game)));}
+        if (game.over == 0 && (game.players_set != 1 || game.players.includes(app.wallet.returnPublicKey()) || game.accepted.includes(app.wallet.returnPublicKey()))) {
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
       }
@@ -1024,10 +1024,10 @@ class Arcade extends ModTemplate {
 
 
   async receiveCloseRequest(blk, tx, conf, app) {
-    //let txmsg = tx.returnMessage();
-    if (this.debug) {console.log("Close game " + tx.msg.sig);}
+    let txmsg = tx.returnMessage();
+    if (this.debug) {console.log("Close game " + txmsg.sig);}
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
-    let params = { $status: "close", $game_id: tx.msg.sig };
+    let params = { $status: "close", $game_id: txmsg.sig };
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 

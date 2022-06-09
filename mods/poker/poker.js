@@ -393,6 +393,9 @@ class Poker extends GameTemplate {
 
     // adds any outstanding settlement to queue (if not already processed)
     this.settleLastRound();
+    let msg = "Clearing the table";
+        msg += (this.game.crypto)? " and settling bets..." : "...";
+    this.updateStatus(msg);
 
 
   }
@@ -433,7 +436,7 @@ class Poker extends GameTemplate {
       //Player's turn to fold,check,call,raise
       if (mv[0] === "turn") {
         let player_to_go = parseInt(mv[1]);
-        //this.game.target = player_to_go;
+        this.game.target = player_to_go;
         //
         // if everyone except 1 player has folded...
         //
@@ -1119,7 +1122,7 @@ class Poker extends GameTemplate {
           if (raise === "0") {
             poker_self.playerTurn();
           } else {
-            console.log("Player chocie: "+raise);
+            console.log("Player choice: "+raise);
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();
           }
@@ -1477,8 +1480,15 @@ class Poker extends GameTemplate {
     }
   }
 
-  processResignation(resigning_player, player_key, reason){
-    if (resigning_player == 0){ //Player already not an active player
+  processResignation(resigning_player, txmsg){
+    //if (this.game.players.length == 2){
+      super.processResignation(resigning_player, txmsg);
+      return;
+   // }
+   
+    if (!this.game.players.includes(resigning_player)){ 
+      console.log(resigning_player+" not in "+ JSON.stringify(this.game.players));
+    //Player already not an active player, make sure they are also removed from accepted to stop receiving messages
       for (let i = this.game.accepted.length; i>=0; i--){
         if (this.game.accepted[i] == player_key){
           this.game.accepted.splice(i,1);
@@ -1486,20 +1496,24 @@ class Poker extends GameTemplate {
       }
       return;
     }
+    
     if (this.browser_active){
-      if (this.game.player !== resigning_player) {
-        this.refreshPlayerStack(resigning_player, false); //Here we want to hide cards
-        this.playerbox.refreshLog(`<div class="plog-update">leaves the table</div>`, resigning_player);
-      }else{
-        this.displayHand();
+      if (this.app.wallet.returnPublicKey() !== resigning_player) {
+        this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards
+        this.playerbox.refreshLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
       } 
     }
-    this.updateLog(this.game.state.player_names[resigning_player - 1] + " left the table");
 
-    this.game.stats[this.game.players[resigning_player-1]].handsFolded++;
-    this.game.state.passed[resigning_player - 1] = 1;
-    this.game.state.player_credit[resigning_player - 1] = 0;
+    this.updateLog(this.game.state.player_names[txmsg.loser - 1] + " left the table");
+
+    this.game.stats[resigning_player].handsFolded++;
+    this.game.state.passed[txmsg.loser - 1] = 1;
+    this.game.state.player_credit[txmsg.loser - 1] = 0;
     
+    if (this.game.target == txmsg.loser){
+      this.game.state.plays_since_last_raise--;
+      this.startQueue();
+    }
   }
 
 
