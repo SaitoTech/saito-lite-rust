@@ -5,7 +5,6 @@ import { Saito } from "./apps/core";
 import fs from "fs-extra";
 import * as JSON from "json-bigint";
 
-
 import mods_config from "./config/modules.config";
 import { readBlockUsers } from "mixin-node-sdk";
 
@@ -26,39 +25,38 @@ async function initCLI() {
   app.BROWSER = 0;
   app.SPVMODE = 0;
 
-  console.log ("npm run cli help - for help");
+  console.log("npm run cli help - for help");
 
   switch (process.argv[2]) {
-    case 'block':
+    case "block":
       readBlock(process.argv[3]);
       break;
-    case 'block.tx':
+    case "block.tx":
       readBlockTransactions(process.argv[3]);
       break;
-    case 'blocks':
+    case "blocks":
       readBlocks(process.argv[3]);
       break;
-      case 'blocks.tx':
-        readBlocksTransactions(process.argv[3]);
-        break;
-      case 'help':
-        printHelp();
-        break;
-      case 'h':
-        printHelp();
-        break;
+    case "blocks.tx":
+      readBlocksTransactions(process.argv[3]);
+      break;
+    case "help":
+      printHelp();
+      break;
+    case "h":
+      printHelp();
+      break;
     default:
-      console.log("Argument not recognised.")
+      console.log("Argument not recognised.");
   }
 
-
-  function readBlocks(dir){
+  function readBlocks(dir) {
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
       try {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((blk) => {
-            console.log(blk);         
+            console.log(blk);
           });
         }
       } catch (err) {
@@ -67,13 +65,13 @@ async function initCLI() {
     });
   }
 
-  function readBlocksTransactions(dir){
+  function readBlocksTransactions(dir) {
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
       try {
         if (file !== "empty") {
           app.storage.loadBlockByFilename(dir + file).then((blk) => {
-            console.log(blk.transactions);         
+            console.log(blk.transactions);
           });
         }
       } catch (err) {
@@ -86,12 +84,12 @@ async function initCLI() {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       console.log(block);
     });
-  };
+  }
   function readBlockTransactions(filename) {
     app.storage.loadBlockFromDisk(filename).then((block) => {
       console.log(block.transactions);
     });
-  };
+  }
 
   function printHelp() {
     var help = `
@@ -104,7 +102,6 @@ async function initCLI() {
     `;
     console.log(help);
   }
-
 
   /////////////////////
   // Cntl-C to Close //
