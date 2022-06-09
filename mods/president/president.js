@@ -98,18 +98,13 @@ class President extends GameTemplate {
     
     this.log.render(app,this);
     this.log.attachEvents(app,this);
-    this.restoreLog();
+    
   }
 
 
 
 
   initializeGame(game_id) {
-
-    //
-    // game engine needs this to start
-    //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
 
     //
     // initialize

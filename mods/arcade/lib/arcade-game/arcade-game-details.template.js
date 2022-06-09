@@ -3,6 +3,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
     let selection = "";
     if (min === max) {
       selection = `<div class="game-wizard-players-no-select" style="display:none" data-player="${min}">${min} player</div>`;
+      selection += mod.returnSingularGameOption();
     } else {
       selection = `<select class="game-wizard-players-select" name="game-wizard-players-select">`;
       for (let p = min; p <= max; p++) {
