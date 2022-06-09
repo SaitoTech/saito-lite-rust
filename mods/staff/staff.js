@@ -24,7 +24,7 @@ class Staff extends ModTemplate {
 
         //run on the node, rendering BROWSER on browser checking - don't do this on full node
         if (app.BROWSER == 1) {
-            this.getRecord(this.app.wallet.returnPublicKey());
+            this.checkRecord(this.app.wallet.returnPublicKey());
         }
 
         // check if key in db
@@ -60,7 +60,7 @@ class Staff extends ModTemplate {
         }
     }
 
-    async getRecord(publickey) {
+    async checkRecord(publickey) {
         console.log("key:" + publickey);
         sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
         console.log(sql);
@@ -95,22 +95,21 @@ class Staff extends ModTemplate {
     }
 
     onConfirmation(blk, tx, conf, app) {
-
         if (app.BROWSER == 0) {
             if (conf == 0) {
                 let txmsg = tx.returnMessage();
                 console.log(txmsg.module == "Staff");
-
                 if (txmsg.module == "Staff") {
                     let staff_self = app.modules.returnModule("Staff");
                     console.log("processing: " + txmsg.type);
                     if (txmsg.type == "register") {
                         let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
-                        staff_self.receiveRegisterTransaction(txmsg,sql);
+                        staff_self.receiveRegisterTransaction(txmsg, sql);
                     } else if (txmsg.type == "deregister") {
                         let publickey = txmsg.publicKey;
                         let sql = 'DELETE FROM staff WHERE publickey = $publickey';
-                        staff_self.receiveRegisterTransaction(txmsg,sql);
+                        staff_self.receiveRegisterTransaction(txmsg, sql);
+                        this.isThisRegistered = false;
                     }
                 }
             }
@@ -124,10 +123,17 @@ class Staff extends ModTemplate {
             $publickey: publickey
         }
 
-        this.app.storage.executeDatabase(sql, params, "staff");
+        this.app.storage.executeDatabase(sql, params, "staff").then(() => {
+            this.render();
+        });
 
         //unpack transaction
         // save into sql db.
+    }
+
+
+    sampleCallBack() {
+        console.log("callback called");
     }
 
     /* 
