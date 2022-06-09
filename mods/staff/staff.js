@@ -20,8 +20,6 @@ class Staff extends ModTemplate {
     //Use this to check if the key from the wallet is in the db.
     onPeerHandshakeComplete(app, peer) {
         let staff_self = app.modules.returnModule("Staff");
-        console.log(staff_self);
-
         //run on the node, rendering BROWSER on browser checking - don't do this on full node
         if (app.BROWSER == 1) {
             this.checkRecord(this.app.wallet.returnPublicKey());
@@ -33,11 +31,16 @@ class Staff extends ModTemplate {
 
     }
 
-    render(app, mod) {    
+    render(app, mod) {
         document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
         document.getElementById("isRegistered").checked = this.isThisRegistered;
+        console.log("registered state"+ this.isThisRegistered);
         if (this.isThisRegistered) {
-            document.getElementById("add_staff").disabled = true;
+            document.getElementById("add_staff").style.display = "none";
+            document.getElementById("remove_staff").style.display = "block";
+        } else {
+            document.getElementById("add_staff").style.display = "block";
+            document.getElementById("remove_staff").style.display = "none";
         }
     }
 
@@ -71,8 +74,11 @@ class Staff extends ModTemplate {
                         if (res.rows.length > 0) {
                             console.log(res.rows[0].publickey);
                             this.isThisRegistered = true;
-                            this.render();
+                        } else {
+                            this.isThisRegistered = false;
                         }
+                        console.log("check record isthis registered" + this.isThisRegistered);
+                        this.render();
                     }
                 }
             });
@@ -116,8 +122,10 @@ class Staff extends ModTemplate {
         } else {
             if (conf==0) {
                 if (txmsg.module == "Staff") {
+                    console.log("went here on DOM onconfirmation");
                   let txmsg = tx.returnMessage();
-                  if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
+                    if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
+                        console.log("went here on DOM onconfirmation check record");
                       this.checkRecord(this.app.wallet.returnPublicKey());
                   }
                 }
@@ -132,19 +140,11 @@ class Staff extends ModTemplate {
             $publickey: publickey
         }
 
-        this.app.storage.executeDatabase(sql, params, "staff").then(() => {
-            this.render();
-        });
+        this.app.storage.executeDatabase(sql, params, "staff");
 
         //unpack transaction
         // save into sql db.
     }
-
-
-    sampleCallBack() {
-        console.log("callback called");
-    }
-
     /* 
 
     async addRecord(publicKey = "") {
