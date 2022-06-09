@@ -54,10 +54,11 @@ module.exports = ChatBoxMessageBlockTemplate = (app, mod, group, message_block) 
 	type = "myself";
       }
     }
-    let txmsg = tx.returnMessage();
 
+    let txmsg = mod.parseMsg(tx);
+    
     if (!document.getElementById(tx.transaction.sig) && !sigs.includes(tx.transaction.sig)) {
-      messages_html += ChatBoxMessageTemplate(app, mod, txmsg.message, tx.transaction.sig, type);
+      messages_html += ChatBoxMessageTemplate(app, mod, txmsg, tx.transaction.sig, type);
       last_message_timestamp = tx.transaction.ts;
       publickey = tx.transaction.from[0].add;
       identicon = app.keys.returnIdenticon(publickey);

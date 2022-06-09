@@ -62,7 +62,7 @@ class Arcade extends ModTemplate {
             this.app.options.auto_open_chat_box
           ) {
             this.chat_open = 1;
-            chat_mod.openChatBox();
+            chat_mod.openChats();
           }
         } catch (err) {
           console.log("Err: " + err);

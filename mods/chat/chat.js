@@ -340,14 +340,14 @@ class Chat extends ModTemplate {
         for (let i = 0; i < this.groups.length; i++) {
             if (this.renderMode == "email") {
                 if (this.groups[i].txs.length > 0) {
-                    this.updateLastMessage(this.groups[i].id, this.groups[i].txs[this.groups[i].txs.length - 1].returnMessage().message, this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
+                    this.updateLastMessage(this.groups[i].id, this.parseMsg(this.groups[i].txs[this.groups[i].txs.length - 1]), this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
                 } else {
                     this.updateLastMessage(this.groups[i].id, "new chat");
                 }
             }
             if (this.renderMode == "main") {
                 if (this.groups[i].txs.length > 0) {
-                    this.updateLastMessage(this.groups[i].id, this.groups[i].txs[this.groups[i].txs.length - 1].returnMessage().message, this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
+                    this.updateLastMessage(this.groups[i].id, this.parseMsg(this.groups[i].txs[this.groups[i].txs.length - 1]), this.groups[i].txs[this.groups[i].txs.length - 1].transaction.ts);
                 }
             }
         }
@@ -363,6 +363,18 @@ class Chat extends ModTemplate {
 
     }
 
+
+    parseMsg(txs){
+        let msg = {};
+        msg.message = "";
+        try {
+          const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
+          msg = JSON.parse(reconstruct);
+        } catch (err) {
+          console.error(err);
+        }
+        return msg.message;
+    }
 
     updateLastMessage(group_id, msg, ts = null) {
 
@@ -536,6 +548,10 @@ class Chat extends ModTemplate {
             salert("Connection to chat server lost");
         }
 
+        console.log('saving chats on sendMessage');
+        this.saveChat();
+        console.log('chats saved');
+        console.log(localStorage);
     }
 
 
@@ -584,6 +600,18 @@ class Chat extends ModTemplate {
 
     }
 
+    msgIsFrom(txs, publickey) {
+        const x = [];
+        if (txs.transaction.from != null) {
+          for (let v = 0; v < txs.transaction.from.length; v++) {
+            if (txs.transaction.from[v].add === publickey) {
+              x.push(txs.transaction.from[v]);
+            }
+          }
+        }
+        return (x.length !==0);
+    }
+
 
     createMessageBlocks(group) {
 
@@ -598,7 +626,7 @@ class Chat extends ModTemplate {
                 if (last_message_sender == "") {
                     block.push(txs[idx]);
                 } else {
-                    if (txs[idx].isFrom(last_message_sender)) {
+                    if (this.msgIsFrom(txs[idx], last_message_sender)) {
                         block.push(txs[idx]);
                     } else {
                         blocks.push(block);
@@ -608,7 +636,7 @@ class Chat extends ModTemplate {
                 }
                 last_message_sender = txs[idx].transaction.from[0].add;
             } else {
-                if (txs[idx].isFrom(last_message_sender)) {
+                if (this.msgIsFrom(txs[idx], last_message_sender)) {
                     block.push(txs[idx]);
                 } else {
                     blocks.push(block);
@@ -654,6 +682,10 @@ class Chat extends ModTemplate {
 
 
     receiveMessage(app, tx, renderMode = "") {
+
+        console.log('receing msgs');
+        console.log(tx);
+        console.log(tx.returnMessage());
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
@@ -778,6 +810,11 @@ class Chat extends ModTemplate {
         this.render(this.app, renderMode);
 
 
+        console.log('saving chat on receive');
+        this.saveChat();
+        console.log('chats saved');
+        console.log(localStorage);
+
         //
         // maybe try to find out who this is...
         //
@@ -788,13 +825,25 @@ class Chat extends ModTemplate {
 
     }
 
+    getChatGroups() {
+        let options = this.app.storage.getOptions();
+        let groups = [];
+
+        if (options != null && options != "") {
+            options = JSON.parse(options);
+            groups = options.chat.groups;
+        }
+
+        return groups;
+    }
+
 
     saveChat() {
 
         this.app.options.chat = Object.assign({}, this.app.options.chat);
         this.app.options.chat.groups = this.groups.map(group => {
-            let { id, name, members, is_encrypted } = group;
-            return { id, name, members, is_encrypted };
+            let { id, name, members, is_encrypted, txs } = group;
+            return { id, name, members, is_encrypted, txs};
         });
         this.app.storage.saveOptions();
     }
@@ -803,6 +852,25 @@ class Chat extends ModTemplate {
     //////////////////
     // UI Functions //
     //////////////////
+
+    openChats() {
+        let groups = this.getChatGroups();
+
+        console.log('available chat groups');
+        console.log(groups);
+
+        if (groups.length > 0) {
+            for (let i=0; i < groups.length; i++) {
+                console.log('opening this group chat');
+                console.log(groups[i]);
+                this.groups = groups;
+                this.openChatBox(groups[i].id);
+            }
+        } else {
+           this.openChatBox();
+        }
+    }
+
     openChatBox(group_id = null) {
 
         if (this.renderMode != "email" && this.renderMode != "none") {
@@ -859,7 +927,6 @@ class Chat extends ModTemplate {
 
     }
 
-
     ///////////////////
     // CHAT SPECIFIC //
     ///////////////////
@@ -893,7 +960,6 @@ class Chat extends ModTemplate {
             name: name,
             txs: [],
         });
-
     }
 
 
