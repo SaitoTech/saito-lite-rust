@@ -124,6 +124,7 @@ class Monarchy extends GameTemplate {
     // add card events -- text shown and callback run if there
     //
     this.cardbox.addCardType("showcard", "", null);
+    this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
     
     this.hud.render(app, this);
@@ -267,6 +268,7 @@ initializeGame(game_id) {
       }
 
       if (mv[0] == "trash"){
+        this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
         let ckey = mv[2];
         let cvalue = mv[3];
@@ -279,7 +281,7 @@ initializeGame(game_id) {
       if (mv[0] == "cleanup"){
         let player = parseInt(mv[1]);
         //Functions like resolve + end round
-        this.game.queue.splice(qe-1, 2);
+        this.game.queue.splice(qe-1, 2); //Get rid of turn
         this.game.state.buys = 1;
         this.game.state.actions = 1;
         this.game.state.coins = 0;
@@ -339,8 +341,7 @@ initializeGame(game_id) {
         let card_to_play = mv[2];
 
         this.updateLog(`Player ${player} played ${this.cardToText(card_to_play)}`);
-        this.playCard(player, card_to_play);
-        return 0;
+        return this.playCard(player, card_to_play);
       }
 
       if (mv[0] == "draw"){
@@ -365,11 +366,16 @@ initializeGame(game_id) {
             this.endTurn();
             return 0;
           }
-          this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,null,optional);
-          this.bindBackButtonFunction(we_self.endTurn);
+          this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
+          this.bindBackButtonFunction(()=>{
+            we_self.endTurn();
+            we_self.updateStatusAndListCards(`Finished moving cards to ${target}...`);
+          });
           this.attachCardboxEvents(function(card){
             number--;
             we_self.removeCardFromHand(card);
+            let div = document.querySelector("#status #"+card);
+            if (div){ div.remove(); }
             switch(target){
               case "deck": we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`); break;
               case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`); break;
@@ -421,7 +427,7 @@ initializeGame(game_id) {
       if (mv[0] == "bandit"){
         let card_player = parseInt(mv[1]);
         let victim  = parseInt(mv[2]);
-
+        this.game.queue.splice(qe, 1);
         let trash = [];
         let discard = [];
         for (let c of this.game.pool[victim-1].hand){
@@ -451,6 +457,7 @@ initializeGame(game_id) {
       }
 
       if (mv[0] == "harbinger"){
+        this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
         if (player == this.game.player){
           //Read the discard pile
@@ -481,8 +488,8 @@ initializeGame(game_id) {
         if (this.game.pool[player-1].hand.length > 0){
           let c = this.game.pool[player-1].hand.pop();
           let cardname = this.game.pool[player-1].cards[c];
-          if (this.deck[cardname].includes("action")){
-            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<li class="card nocard" id="keep">keep</li><li class="card nocard" id="nope">set aside</li>`);
+          if (this.deck[cardname].type.includes("action")){
+            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<ul><li class="card nocard" id="keep">keep</li><li class="card nocard" id="nope">set aside</li></ul>`);
             this.attachCardboxEvents(function (action){
               if (action == "keep"){
                 this.game.deck[player-1].hand.push(c);  
@@ -523,9 +530,11 @@ initializeGame(game_id) {
           }
           this.menu_backup_callback = ()=>{this.endTurn();}
           this.addMove(`sentry\t${player}`);
-          let html = `<li class="card nocard" id="deck">deck</li>
-                      <li class="card nocard" id="discards">discard</li>
-                      <li class="card nocard" id="trash">trash</li>`;
+          let html = `<ul>
+                        <li class="card nocard" id="deck">deck</li>
+                        <li class="card nocard" id="discards">discard</li>
+                        <li class="card nocard" id="trash">trash</li>
+                      </ul>`;
           this.updateStatusAndListCards("The top cards from your deck:",this.game.pool[player-1].hand,false);
           this.attachCardboxEvents(function(card){
             we_self.updateStatusWithOptions(`Move ${card} to:`, html, true);
@@ -553,7 +562,7 @@ initializeGame(game_id) {
           let c = this.game.pool[player-1].hand[0];
           let cname = this.game.pool[player-1].cards[c];
           if (this.deck[cname].type.include("action")){
-            let html = `<li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li>`;
+            let html = `<ul><li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li></ul>`;
             we_self.updateStatusWithOptions(`Play ${card} instead of discarding it?`, html);
             we_self.attachCardboxEvents(function (action){
               we_self.removeCardFromPool(cname);
@@ -587,6 +596,7 @@ initializeGame(game_id) {
       this.attachCardboxEvents(function(action){
         if (we_self.deck[action].type.includes("action")){
           we_self.removeCardFromHand(action); 
+          we_self.updateStatusAndListCards(`Playing ${we_self.cardToText(action)}...`);
           we_self.addMove(`DISCARD\t${we_self.game.player}\t${we_self.lastCardKey}`);
           we_self.addMove(`play\t${we_self.game.player}\t${action}`);
 
@@ -596,13 +606,13 @@ initializeGame(game_id) {
           }else{
             we_self.game.state.actions--;            
           }
-        
           we_self.endTurn();
+
           $(".dim").removeClass("dim");
         }
       });
       
-      $(".gameboard .showcard").addClass('dim');
+      $(".gameboard .cardpile").addClass('dim');
       return;
     }
 
@@ -611,9 +621,14 @@ initializeGame(game_id) {
     if (this.game.state.buys > 0){
 
       let available_coins = this.game.state.coins + this.countMoney();
-      this.updateStatus(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`);
-      $(".gameboard .showcard").on("click", function(){
+      this.updateStatusAndListCards(`You have ${available_coins} coins and ${this.game.state.buys} card${(this.game.state.buys>0)?"s":""} to buy`);
+      this.filterBoardDisplay(available_coins);
+      $(".gameboard .cardpile").on("click", function(){
         let newcard = $(this).attr("id");
+        if (we_self.game.state.supply[newcard] <= 0){
+          we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
+          return;
+        }
         if (we_self.deck[newcard].cost <= available_coins){
           we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
           we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} bought a ${we_self.cardToText(newcard)}.`);
@@ -622,10 +637,11 @@ initializeGame(game_id) {
         }
 
         if (we_self.game.state.buys <= 0){
-          $(".gameboard .showcard").off();
+          $(".gameboard .cardpile").off();
           we_self.endTurn();
         }else{
-          we_self.updateStatus(`You have ${available_coins} coins and ${we_self.game.state.buys} card${(we_self.game.state.buys>0)?"s":""} to buy`);
+          we_self.updateStatusAndListCards(`You have ${available_coins} coins and ${we_self.game.state.buys} card${(we_self.game.state.buys>0)?"s":""} to buy`);
+          we_self.filterBoardDisplay(available_coins);
         }
       });
       return;
@@ -639,10 +655,15 @@ initializeGame(game_id) {
   acquireCard(max_value){
     let we_self = this;
     this.updateStatus(`You may select a card worth up to ${max_value}`);
-    $(".gameboard .showcard").on("click", function(){
+    this.filterBoardDisplay(max_value);
+    $(".gameboard .cardpile").on("click", function(){
       let newcard = $(this).attr("id");
+      if (we_self.game.state.supply[newcard] <= 0){
+          we_self.displayModal(`No ${we_self.cardToText(newcard)} available!`);
+          return;
+        }
       if (we_self.deck[newcard].cost <= max_value){
-        $(".gameboard .showcard").off();
+        $(".gameboard .cardpile").off();
         we_self.addMove(`buy\t${we_self.game.player}\t${newcard}`);
         we_self.addMove(`NOTIFY\tPlayer ${we_self.game.player} acquired a ${we_self.cardToText(newcard)}.`);
         we_self.endTurn();
@@ -652,13 +673,16 @@ initializeGame(game_id) {
 
   displayBoard(){
     let html = `<div class="cardstacks">`;
+    let cardClass = ($("#zoom").hasClass("active"))?"showcard":"passivecard";
     for (let c in this.game.state.supply){
       if (c !== "curse"){
-        html += `<div class="cardpile">`;
+        html += `<div class="cardpile tip" id="${c}">`;
         if (this.game.state.supply[c] > 0){
-          html += `<img class="showcard" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
+          html += `<img class="${cardClass}" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
+          html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          html += `<img class="showcard" src="/monarchy/img/cards/blank.png">`;
+          html += `<img class="${cardClass}" src="/monarchy/img/cards/blank.png">`;
+          html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
       }
@@ -667,8 +691,40 @@ initializeGame(game_id) {
 
     $(".gameboard").html(html);
     this.attachCardboxEvents();
+    this.attachBoardEvents();
   }
 
+  filterBoardDisplay(max){
+    for (let c in this.game.state.supply){
+      if (c !== "curse"){
+        if (this.deck[c].cost > max){
+          $(`#${c}.cardpile`).css("filter","brightness(0.15)");
+        }else{
+          $(`#${c}.cardpile`).css("filter","brightness(0.95)");
+        }
+      }
+    }
+  }
+
+  attachBoardEvents(){
+    let we_self = this;
+    $("#zoom").off();
+    $("#zoom").on("click",function(){
+      $("#zoom").toggleClass("active");
+      if ($("#zoom").hasClass("active")){
+        $(".passivecard").addClass("showcard");
+        $(".passivecard").removeClass("passivecard");
+        $(".cardpile").removeClass("tip");
+      }else{
+        $(".showcard").off();
+        $(".showcard").addClass("passivecard");
+        $(".showcard").removeClass("showcard");
+        $(".cardpile").addClass("tip");
+      }
+      we_self.cardbox.detachCardEvents();
+      we_self.attachCardboxEvents();
+    });
+  }
 
   gameOver(){
     if (this.game.state.supply.province == 0){
@@ -728,7 +784,7 @@ initializeGame(game_id) {
       if (textonly){
         return this.deck[card].name;
       }else{
-        return `<span class="showcard" id="${card}">${this.deck[card].name}</span>`;
+        return `<span class="logcard" id="${card}">${this.deck[card].name}</span>`;
       }
     }catch(err){
       console.log(err);
@@ -740,19 +796,22 @@ initializeGame(game_id) {
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
   removeCardFromHand(card) {
+    console.log("Should remove: " + card);
     if (this.game.player == 0) { return; }
-    for (i = 0; i < this.game.deck[this.game.player-1].hand.length; i++) {
-      if (this.game.deck[this.game.player-1].cards[this.game.deck[this.game.player-1].hand[i]] == card) {
-        this.lastCardKey = this.game.deck[this.game.player-1].hand[i];
+    let pi = this.game.player-1;
+    for (let i = 0; i < this.game.deck[pi].hand.length; i++) {
+      if (this.game.deck[pi].cards[this.game.deck[pi].hand[i]] == card) {
+        this.lastCardKey = this.game.deck[pi].hand[i];
         this.lastCardValue = card;
-        this.game.deck[this.game.player-1].hand.splice(i, 1);
+        this.game.deck[pi].hand.splice(i, 1);
         return; //Only remove one copy
       }
     }
+    console.log("Card not found");
   }
   removeCardFromPool(card) {
     if (this.game.player == 0) { return; }
-    for (i = 0; i < this.game.pool[this.game.player-1].hand.length; i++) {
+    for (let i = 0; i < this.game.pool[this.game.player-1].hand.length; i++) {
       if (this.game.pool[this.game.player-1].cards[this.game.pool[this.game.player-1].hand[i]] == card) {
         this.lastCardKey = this.game.pool[this.game.player-1].hand[i];
         this.lastCardValue = card;
@@ -806,17 +865,22 @@ initializeGame(game_id) {
       this.game.state.actions++;
       if (this.game.player == player){
         let number = 0;
-        this.updateStatusAndListCards(`Select cards to discard:`,null,true);
+        this.updateStatusAndListCards(`Select cards to discard:`,[],true);
         this.bindBackButtonFunction(()=>{
           if (number > 0){
             we_self.prependMove(`SAFEDEAL\t${player}\t${player}\t${number}`);  
           }
           we_self.endTurn();
+          we_self.updateStatusAndListCards(`Dealing ${number} cards...`);
         });
         this.attachCardboxEvents(function(card){
           number++;
           we_self.removeCardFromHand(card);
-          we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+          let div = document.querySelector("#status #"+card);
+          if (div){
+            div.remove();
+          }
+          we_self.addMove(`DISCARD\t${player}\t${we_self.lastCardKey}`);
         });
       }
       return 0;
@@ -826,7 +890,7 @@ initializeGame(game_id) {
       //+2 coin, You may immediately put your deck into your discard pile.
       this.game.state.coins += 2;
       if (this.game.player == player){
-        let html = `<li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li>`;
+        let html = `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`;
         this.updateStatusWithOptions("Would you like to discard your deck (for a reshuffle before next draw)?", html);
         this.attachCardboxEvents(function(card){
           if (card == "yes"){
@@ -936,9 +1000,9 @@ initializeGame(game_id) {
           this.attachCardboxEvents(function(tc){
             we_self.removeCardFromHand(tc);
             if (tc == "copper"){
-              we_self.addMove(`buy\t${i}\tsilver\t1`);
+              we_self.addMove(`buy\t${player}\tsilver\t1`);
             }else{
-              we_self.addMove(`buy\t${i}\tgold\t1`);
+              we_self.addMove(`buy\t${player}\tgold\t1`);
             }
             we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
             we_self.endTurn();
@@ -957,11 +1021,11 @@ initializeGame(game_id) {
       //You may trash a Copper from your hand for +3 Coin
       if (player == this.game.player){
         if (this.hasCardInHand("copper")){
-           let html = `<li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li>`;
+           let html = `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`;
            this.updateStatusWithOptions("Would you like to trash a copper for +3 coin this turn?", html);
            this.attachCardboxEvents(function(card){
               if (card == "yes"){
-                this.game.state.coins += 3;
+                we_self.game.state.coins += 3;
                 we_self.removeCardFromHand("copper");
                 we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
               }
@@ -995,7 +1059,7 @@ initializeGame(game_id) {
         this.attachCardboxEvents(function(card){
           we_self.removeCardFromHand(card);
           we_self.addMove(`trash\t${player}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`);
-          we_self.acquireCard(we_self.deck[card].value + 2);
+          we_self.acquireCard(we_self.deck[card].cost + 2);
         });
       }
       return 0;
@@ -1083,7 +1147,12 @@ initializeGame(game_id) {
 
   returnCardImage(cardname){
     //let cardname = this.game.deck[this.game.player-1].cards[card];
-    return `<img class="cardimg" src="/monarchy/img/cards/${this.deck[cardname].img}" />`;
+    if (this.deck[cardname]?.img){
+      return `<img class="cardimg" src="/monarchy/img/cards/${this.deck[cardname].img}" />`;
+    }else{
+      return ""; 
+    }
+    
   }
 
   ////////////////////
@@ -1218,7 +1287,7 @@ initializeGame(game_id) {
           <label for"second">Use Second Edition Cards</label>
         </div>
     `;
-
+    return html;
   }
 
 
