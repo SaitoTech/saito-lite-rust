@@ -95,6 +95,7 @@ class Staff extends ModTemplate {
     }
 
     onConfirmation(blk, tx, conf, app) {
+        console.log("running on: " + app.BROWSER);
         if (app.BROWSER == 0) {
             if (conf == 0) {
                 let txmsg = tx.returnMessage();
@@ -109,8 +110,16 @@ class Staff extends ModTemplate {
                         let publickey = txmsg.publicKey;
                         let sql = 'DELETE FROM staff WHERE publickey = $publickey';
                         staff_self.receiveRegisterTransaction(txmsg, sql);
-                        this.isThisRegistered = false;
                     }
+                }
+            }
+        } else {
+            if (conf==0) {
+                if (txmsg.module == "Staff") {
+                  let txmsg = tx.returnMessage();
+                  if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
+                      this.checkRecord(this.app.wallet.returnPublicKey());
+                  }
                 }
             }
         }
