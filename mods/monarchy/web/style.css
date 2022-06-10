@@ -60,14 +60,14 @@ body {
 }
 
 .cardpile{
-  max-width: 120px;
+  max-width: 100px;
   grid-column: span 5;
 }
 
 .cardpile:nth-child(n+7){
   grid-column: span 6;
   /*margin-left: 10px;*/
-  max-width: 140px;
+  max-width: 120px;
 }
 
 .cardpile .showcard, .cardpile .passivecard{
@@ -78,12 +78,17 @@ body {
   filter: brightness(0.35);  
 }
 
+.logcard{
+  font-weight: bold;
+}
+
 .showcard + .tiptext{
   display: none;
 }
 
 .tiptext{
-  width: 100%;
+  width: calc(100% + 30px);
+  min-width: unset;
 }
 
 .cardimg {
@@ -92,4 +97,29 @@ body {
 
 .hud-long{
   max-height: 310px;
+}
+
+.game-scoreboard{
+  background-color: tan;
+}
+.game-scoreboard .score{
+  font-size: 16px;
+  font-family: "Papyrus";
+  font-weight: bold;
+  margin: 0 8px;
+}
+
+#mydecks{
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 140px;
+  height: 180px;
+  border-radius: 5px;
+  border: 2px dashed whitesmoke;
+  display: flex;
+  flex-direction: column;
+  color: whitesmoke;
+  font-size: 20px;
+  justify-content: space-evenly;
 }
