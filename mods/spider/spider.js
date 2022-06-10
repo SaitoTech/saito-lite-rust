@@ -75,12 +75,15 @@ class Spider extends GameTemplate {
   }
 
 
-  returnSingularGameOption(){
-    return `<select name="difficulty">
+  returnSingularGameOption(app){
+    let saved_dif = app?.options?.gameprefs?.spider_difficulty || "medium";
+    console.log(saved_dif);
+    let html = `<select name="difficulty">
               <option value="easy">Easy (1 suit) </option>
-              <option value="medium" selected>Medium (2 suits) </option>
-              <option value="hard" >Hard (4 suits) </option>
+              <option value="medium">Medium (2 suits) </option>
+              <option value="hard">Hard (4 suits) </option>
             </select>`;
+    return html.replace(`${saved_dif}"`,`${saved_dif}" selected`);
   }
     
   //Single player games don't allow game-creation and options prior to join
@@ -108,28 +111,45 @@ class Spider extends GameTemplate {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
       this.game.queue = [];
-      this.game.queue.push("round");
-      this.game.queue.push("READY");
     }
 
     console.log(JSON.parse(JSON.stringify(this.game)));
     
-    //Set difficulty
-    if (this.game.options?.difficulty){
-      if (this.game.options?.difficulty == "easy"){
-        this.difficulty = 1;
-      }else if (this.game.options?.difficulty == "hard"){
-        this.difficulty = 4;
-      }else{
-        this.difficulty = 2;
-      }
+    if (this.game.queue.length == 0){
+        this.game.queue.push("play");
     }
-    console.log("Difficulty = "+this.difficulty);
+    
+    //Set difficulty
+    let input_dif = this.game.options?.difficulty || "medium";
+    this.changeDifficulty(input_dif);
+      
+    this.game.queue.push("READY");
+
     if (this.browser_active){
       // Insert game board
       $(".gameboard").html(this.returnBoard());
     }
   }
+
+
+  changeDifficulty(dif){
+    let saved_dif = this.app.options?.gameprefs["spider_difficulty"] || "none";
+    this.game.options["difficulty"] = dif;
+    if (dif == "easy"){
+      this.difficulty = 1;
+    }else if (dif == "hard"){
+      this.difficulty = 4;
+    }else{
+      this.difficulty = 2;
+    }
+    if (saved_dif !== dif || this.game.deck.length == 0 || this.game.deck[0].length == 0){
+      console.log("Original Difficulty = "+saved_dif + ", new difficulty: " +dif);
+
+      this.saveGamePreference("spider_difficulty", dif);
+      this.newRound();  
+    }
+  }
+
 
 
   returnBoard(){
@@ -177,7 +197,7 @@ class Spider extends GameTemplate {
     let html = "";
 
     for (let i = 0; i < this.game.state.draws_remaining; i++){
-      html += `<img style="bottom:${5*i}px; right:${5*i}px;" src="/spider/img/cards/red_back.png" />`;
+      html += `<img style="bottom:${0.5*i}vh; right:${0.5*i}vh;" src="/spider/img/cards/red_back.png" />`;
     }
     if (!html){
       html = "Start New Game";
@@ -311,9 +331,7 @@ class Spider extends GameTemplate {
       id:"game-confirm-easy",
       class:"game-confirm-easy",
       callback: function(app,game_mod){
-        game_mod.game.options["difficulty"] = "easy";
-        game_mod.difficulty = 1;
-        game_mod.newRound(); //load new game
+        game_mod.changeDifficulty("easy");
         game_mod.endTurn();
       }
     });
@@ -323,10 +341,8 @@ class Spider extends GameTemplate {
       id:"game-confirm-medium",
       class:"game-confirm-medium",
       callback: function(app,game_mod){
-       game_mod.game.options["difficulty"] = "medium";
-       game_mod.difficulty = 2;
-       game_mod.newRound(); //load new game
-       game_mod.endTurn();
+         game_mod.changeDifficulty("medium");
+         game_mod.endTurn();   
       }
     });
 
@@ -335,9 +351,7 @@ class Spider extends GameTemplate {
       id:"game-confirm-hard",
       class:"game-confirm-hard",
       callback: function(app,game_mod){
-       game_mod.game.options["difficulty"] = "hard";
-       game_mod.difficulty = 4;
-       game_mod.newRound(); //load new game
+       game_mod.changeDifficulty("hard");
        game_mod.endTurn();
       }
     });
@@ -794,10 +808,6 @@ class Spider extends GameTemplate {
       let shd_continue = 1;
 
       console.log(JSON.stringify(mv));
-
-      if (mv[0] === "round") {
-        this.newRound();
-      }
 
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
