@@ -122,7 +122,7 @@ module.exports = ArcadeMain = {
       ArcadeForums.render(app, mod);
     }
 
-    //ArcadeInfobox.render(app, mod); //Not doing anything right now
+    ArcadeInfobox.render(app, mod);
 
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);

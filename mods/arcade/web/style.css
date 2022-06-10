@@ -475,7 +475,7 @@ body {
 }
 
 .arcade-infobox {
-  display: none;
+  //display: none;
   border: 1px solid var(--saito-red);
   padding: 1em;
   overflow-y: auto;
