@@ -193,6 +193,14 @@ Saito Menu
     border-radius: .8rem;
 }
 
+.saito-menu-container.saito-menu-rounded>ul>li:first-child:hover {
+    border-radius: .8rem .8rem 0 0;
+}
+
+.saito-menu-container.saito-menu-rounded>ul>li:last-child:hover {
+    border-radius: 0 0 .8rem .8rem;
+}
+
 
 /* ----------------------------------------------------------------
 Saito User List and Saito User 

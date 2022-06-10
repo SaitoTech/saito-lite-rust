@@ -17,46 +17,16 @@ module.exports = (app) => {
               <h3>h3 Heading</h3>
               <h4>h4 Sub Heading</h4>
               <h5>h5 Sub Heading</h5>
-              <h6>h6 Sub Heading</h4>
+              <h6 >h6 Sub Heading</h4>
 
           
-                      <p class="saito-large-p saito-marb-2">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
-                          mignon shank
-                          chicken
-                          shankle
-                          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone
-                          drumstick turducken,
-                          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf.
-                          Pig tri-tip
-                          meatloaf
-                          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen
-                          bacon.
+                      <p class="saito-large-p ">Large Paragraph
 
                       </p>
-                      <p class="saito-marb-2">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
-                          mignon shank
-                          chicken
-                          shankle
-                          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone
-                          drumstick turducken,
-                          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf.
-                          Pig tri-tip
-                          meatloaf
-                          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen
-                          bacon.
+                      <p class="saito-marb-2">Medium Paragraph
 
                       </p>
-                      <p class="saito-small-p">Paragraph Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet
-                          mignon shank
-                          chicken
-                          shankle
-                          cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone
-                          drumstick turducken,
-                          boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf.
-                          Pig tri-tip
-                          meatloaf
-                          picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen
-                          bacon.
+                      <p class="saito-small-p">Small Paragraph
 
                       </p>
           </fieldset>
@@ -64,27 +34,25 @@ module.exports = (app) => {
 
         <div>
           <h4 class=" saito-marb-2">Pre</h4>
-          <div
-              class="saito-box saito-box-padding saito-box-shadow  saito-box-rounded  saito-white-background">
+        
               <pre>
-                  {
-                      "bf": 1,
-                  "coinbase": "478016666.66666667",
-                  "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
-                  "difficulty": 0,
-                  "id": 2,
-                  "merkle": "",
-                  "paysplit": 0.5,
-                  "powsplit": 0.5,
-                  "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
-                  "reclaimed": "0.0",
-                  "sr": 0,
-                  "stakepool": "0",
-                  "treasury": "2390083333.33333333",
-                  "ts": 1572407380711
-        }
-              </pre>
-          </div>
+    {
+    "bf": 1,
+    "coinbase": "478016666.66666667",
+    "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
+    "difficulty": 0,
+    "id": 2,
+    "merkle": "",
+    "paysplit": 0.5,
+    "powsplit": 0.5,
+    "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
+    "reclaimed": "0.0",
+    "sr": 0,
+    "stakepool": "0",
+    "treasury": "2390083333.33333333",
+    "ts": 1572407380711
+    }
+                    </pre>
           </div>
       </div>
 
@@ -162,8 +130,7 @@ module.exports = (app) => {
 
               <div class="saito-marb-2">
               <label>Text Area</label>
-              <textarea placeholder="Text area">
-                  Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
+              <textarea placeholder="Text area">Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
               </textarea>
               </div>
           </form>
