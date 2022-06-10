@@ -213,9 +213,19 @@ Saito User List and Saito User
     position: relative;
     justify-items: start;
     margin-bottom: 1px;
-    height: 6rem;
+    height: 5rem;
     width: 100%;
     /* overflow: hidden; */
+}
+
+.saito-user>i {
+    color: var(--saito-primary);
+    top: 0;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    cursor: pointer;
+    font-size: 1.4rem;
 }
 
 
@@ -228,14 +238,12 @@ Saito User List and Saito User
 
 
 
-
-
 .saito-user:not(:last-child) {
     margin-bottom: 8px;
 }
 
 .saito-user>img {
-    max-width: 6rem;
+    width: 5rem;
     height: 100%;
     border-radius: .5rem;
     margin-right: 1rem;
@@ -247,7 +255,7 @@ Saito User List and Saito User
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
 }
 
@@ -264,13 +272,25 @@ Saito User List and Saito User
     font-size: 1.3rem;
 }
 
-/* .saito-user-info p:hover {
-    color: var(--saito-primary);
-} */
 
 
+/* rectangular image */
 
-.saito-user-list.saito-user-medium .saito-user {
+.saito-user-list.saito-user-rectangle .saito-user>img {
+    width: 7rem;
+}
+
+.saito-user-list.saito-user-rectangle .saito-user-info span {
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* rectangular image */
+
+
+/* .saito-user-list.saito-user-medium .saito-user {
     height: 5rem;
 }
 
@@ -290,16 +310,10 @@ Saito User List and Saito User
 
 .saito-user-list.saito-user-medium .saito-user p {
     font-size: 1.6rem;
-}
+} */
 
 
-.saito-user-list.saito-user-medium .saito-user>div>span {
-    /* display: none; */
-}
-
-
-
-
+/*  Regular Dense */
 
 .saito-user-list.saito-user-dense .saito-user {
     height: 4rem;
@@ -316,33 +330,71 @@ Saito User List and Saito User
 
 
 .saito-user-list.saito-user-dense .saito-user>img {
-    height: 100%;
-    width: 4rem;
-    border-radius: .5rem;
+    height: 3.4rem;
+    width: 3.4rem;
+    border-radius: 0;
     cursor: pointer;
     margin-right: 1rem;
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
 .saito-user-list.saito-user-dense .saito-user p {
-    font-size: 1.6rem;
+    font-size: 1.32rem;
+    font-weight: bold;
 }
 
-
 .saito-user-list.saito-user-dense .saito-user-info {
-    display: flex;
     justify-content: center;
 }
 
-.saito-user>i {
-    color: var(--saito-primary);
-    top: 0;
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    cursor: pointer;
-    font-size: 1.4rem;
+.saito-user-list.saito-user-dense .saito-user-info span {
+    font-size: 1.18rem;
+
 }
+
+/* -----> Regular Dense */
+
+
+/*  Rectangular  Dense */
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user {
+    height: 4rem;
+
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user>img {
+    height: 3.4rem;
+    width: 5rem;
+    border-radius: 0;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user p {
+    font-size: 1.32rem;
+    font-weight: bold;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user-info {
+    justify-content: flex-start;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user-info span {
+    font-size: 1.18rem;
+
+}
+
+/*  ----> Rectangle  Dense */
+
 
 .saito-user-dropdown {
     position: absolute;

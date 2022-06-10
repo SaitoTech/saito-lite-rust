@@ -614,12 +614,12 @@ module.exports = (app) => {
           <div class="saito-mart-2">
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-pad-2 saito-pad-2 saito-white-background ">
+                      <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Saitolicious</p>
+                                  <span>Tacos, the Saito Network and Saito Consensus</span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
@@ -644,8 +644,9 @@ module.exports = (app) => {
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Blackjack </p>
+                                  <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                                  
 
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
@@ -671,8 +672,8 @@ module.exports = (app) => {
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>davikstone@satio.io </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Chess </p>
+                                  <span> An implementation of the Chess for the Saito Blockchain </span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
@@ -702,27 +703,9 @@ module.exports = (app) => {
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                    
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+          
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
@@ -730,63 +713,29 @@ module.exports = (app) => {
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+                            
+                              
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
+
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+                               <p> Report </p>
                           </div>
                       </div>
                   </div>
               </div>
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-user-medium saito-pad-2 saito-white-background ">
-                          <div class="saito-user ">
+                      <div class="saito-user-list saito-user-rectangle saito-user-dense saito-pad-2 saito-pad-2 saito-white-background ">
+                          <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Saitolicious</p>
+                                  <span>Tacos, the Saito Network and Saito Consensus</span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
@@ -811,8 +760,10 @@ module.exports = (app) => {
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Blackjack </p>
+                                  <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                                  
+
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
@@ -834,11 +785,11 @@ module.exports = (app) => {
                                   </div>
                               </div>
                           </div>
-                          <div class="saito-user ">
+                          <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
-                                  <p>davikstone@satio.io </p>
-                                  <span> Active at 9.00am </span>
+                                  <p>Chess </p>
+                                  <span> An implementation of the Chess for the Saito Blockchain </span>
                               </div>
                               <i class="fas fa-ellipsis-v"></i>
                               <div class="saito-user-dropdown">
@@ -863,32 +814,14 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-user-medium   saito-pad-2 saito-white-background  ">
+                      <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                  <span> Active at 9.00am </span>
+                    
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+          
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
@@ -896,219 +829,23 @@ module.exports = (app) => {
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+                            
+                              
                           </div>
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
                                   <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
                                   <span> Active at 9.00am </span>
+
                               </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
+                               <p> Report </p>
                           </div>
                       </div>
                   </div>
               </div>
-              <div class="saito-grid-1-1">
-                  <div class="saito-padx-3">
-                      <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background ">
-                          <div class="saito-user  ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>davikstone@satio.io </p>
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="saito-user  ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="saito-user  ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="saito-padx-3">
-                      <div class="saito-user-list saito-user-dense saito-pad-2  saito-white-background   ">
-                          <div class="saito-user ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>davikstone@satio.io </p>
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="saito-user ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="saito-user ">
-                              <img src="/saito/img/background.png" />
-                              <div class="saito-user-info">
-                                  <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-
-                              </div>
-                              <i class="fas fa-ellipsis-v"></i>
-                              <div class="saito-user-dropdown">
-                                  <div class="saito-menu-container">
-                                      <ul>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 1 </span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 2</span>
-                                          </li>
-                                          <li>
-                                              <i class="far fa-address-card "> </i>
-                                              <span> Menu 3</span>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+           
+              
           </div>
       </div>
 

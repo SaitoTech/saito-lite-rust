@@ -328,6 +328,7 @@ select {}
   border: 1px solid var(--saito-border);
   border-radius: .5rem;
   border-bottom-left-radius: 0;
+  font-size: 1.6rem;
 
 
 
@@ -392,13 +393,14 @@ select {}
   list-style: none;
   cursor: pointer;
   width: 100%;
-  padding: 1rem 1.5rem;
+  /* padding: .5rem 1.5rem; */
   color: var(--saito-black);
   display: flex;
   justify-content: center;
   overflow: hidden;
   align-items: center;
-  height: 5rem;
+  height: 4rem;
+  font-size: 1.6rem;
   border-bottom: 1px solid #a5a5a545;
 }
 
