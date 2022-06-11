@@ -237,12 +237,14 @@ class Transaction {
   }
 
   generateRebroadcastTransaction(app, output_slip_to_rebroadcast, with_fee, with_staking_subsidy) {
-
     const transaction = new Transaction();
 
     let output_payment = BigInt(0);
     if (output_slip_to_rebroadcast.returnAmount() > with_fee) {
-      output_payment = BigInt(output_slip_to_rebroadcast.returnAmount()) - BigInt(with_fee) + BigInt(with_staking_subsidy);
+      output_payment =
+        BigInt(output_slip_to_rebroadcast.returnAmount()) -
+        BigInt(with_fee) +
+        BigInt(with_staking_subsidy);
     }
 
     transaction.transaction.type = TransactionType.ATR;
@@ -793,7 +795,6 @@ class Transaction {
       // TODO
     }
 
-
     //
     // vip transactions
     //
@@ -843,7 +844,6 @@ class Transaction {
   }
 
   validateSignature(app) {
-
     //
     // validate signature
     //
@@ -859,7 +859,6 @@ class Transaction {
     }
 
     return true;
-
   }
 
   generateMetadata() {

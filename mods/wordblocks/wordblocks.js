@@ -26,6 +26,7 @@ class Wordblocks extends GameTemplate {
     this.tileHeight = 163;
     this.tileWidth = 148;
     this.letters = {};
+    this.grace_window = 10;
 
     this.tilesToHighlight = [];
     this.moves = [];
@@ -362,6 +363,9 @@ class Wordblocks extends GameTemplate {
       );
     }
 
+    if (this.game.players.length > 2){
+      this.grace_window = this.game.players.length * 8;
+    }
   }
 
   /*
@@ -510,6 +514,19 @@ class Wordblocks extends GameTemplate {
           }
         });
       }
+    }
+  }
+
+  removeEvents(){
+    if (this.browser_active == 1){
+        $("#skipturn").off();
+        $("#shuffle").off(); //Don't want to shuffle when manually placing tiles or deleting
+        $(".slot").off(); //Reset clicking on board
+        $(".tosstiles").off();
+        $("#rack .tile").off();
+        $("#delete").off();
+        $("#canceldelete").off();
+        $(".tile").off();
     }
   }
 
@@ -2173,60 +2190,41 @@ class Wordblocks extends GameTemplate {
       let mv = this.game.queue[qe].split("\t");
 
       //
-      // game over conditions
+      // game over -- pick the winner
       //
 
       if (mv[0] === "gameover") {
-        //
-        // pick the winner
-        //
+        this.game.queue = [];
+        
         let x = 0;
-        let idx = 0;
+        let idx = -1;
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (wordblocks_self.game.score[i] > x) {
-            x = wordblocks_self.game.score[i];
+        //Find Highest Score
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (this.game.score[i] > x) {
+            x = this.game.score[i];
             idx = i;
           }
         }
+        if (idx < 0){
+          this.endGame([], "no winners");
+        }
+        let winners = [this.game.players[idx]];
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (
-            i != idx &&
-            wordblocks_self.game.score[i] == wordblocks_self.game.score[idx]
-          ) {
-            idx = -1;
+        //Check for ties -- will need to improve the logic for multi winners
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (i != idx && this.game.score[i] == this.game.score[idx]) {
+            winners.push(this.game.players[i]);
           }
         }
 
-        wordblocks_self.game.winner = idx + 1;
-        //wordblocks_self.game.over = 1;
-        wordblocks_self.saveGame(wordblocks_self.game.id);
-
-        if (wordblocks_self.browser_active == 1) {
-          var result = `Game Over -- Player ${wordblocks_self.game.winner} Wins!`;
-
-          if (idx < 0) {
-            result = "It's a tie! Well done everyone!";
-          }
-
-          wordblocks_self.updateStatusWithTiles(result);
-          wordblocks_self.updateLog(result);
-
-          if (this.game.winner == this.game.player) {
-            //not resigning as game.winner is set.
-            this.resignGame();
-          }
+        if (winners.length == this.game.players.length){
+          this.tieGame();
+        }else{
+          this.endGame(winners, "high score");
         }
 
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         return 0;
-      }
-
-      if (mv[0] === "endgame") {
-        this.game.queue.splice(this.game.queue.length - 1, 1);
-        this.addMove("gameover");
-        return 1;
       }
 
       //
@@ -2379,9 +2377,8 @@ class Wordblocks extends GameTemplate {
       this.game.deck[0].hand.length == 0 &&
       this.game.deck[0].crypt.length == 0
     ) {
-      this.addMove("endgame");
+      this.addMove("gameover");
       this.endTurn();
-      return 1;
     }
 
     return 0;
@@ -2429,8 +2426,8 @@ class Wordblocks extends GameTemplate {
           <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
-            <option value="enable" selected>enable</option>
-            <option value="disable">disable</option>
+            <option value="enable">enable</option>
+            <option value="disable" selected>disable</option>
           </select>
           </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
@@ -2447,7 +2444,7 @@ class Wordblocks extends GameTemplate {
       await new Promise(resolve => setTimeout(resolve, 250));
     }
   } 
-
+  
 }
 
 module.exports = Wordblocks;

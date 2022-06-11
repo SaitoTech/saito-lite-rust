@@ -15,7 +15,9 @@ body {
   margin-left: 25px;
 }
 
-
+.status-header{
+  height: 120px;
+}
 .rules-overlay table{
   font-size: 1.5em;
   margin: 0 auto;

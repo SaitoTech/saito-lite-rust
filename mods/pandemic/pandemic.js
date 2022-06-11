@@ -144,6 +144,7 @@ class Pandemic extends GameTemplate {
 
       this.handleGameLoop();
     }
+    this.grace_window = this.game.players.length * 4;
   }
 
   initializeHTML(app) {
@@ -328,6 +329,7 @@ class Pandemic extends GameTemplate {
 
 
   removeEvents() {
+    console.log("Disabling dom events");
     try {
       $(".card").off();
       $(".city").off();
@@ -3472,5 +3474,17 @@ displayDisease() {
 
     return html;
   }
+
+  processResignation(resigning_player, player_key, reason){
+    this.updateLog(`Player ${resigning_player} quits the game, perhaps they fell ill?`);
+    this.removeEvents();
+    if (this.game.step.game > this.grace_window){
+      this.endGame([], `${this.game.players_info[this.game.player-1].role} is gone`);
+    }else{
+      this.endGame([],"cancellation");
+    }
+    
+  }
+
 }
 module.exports = Pandemic;
