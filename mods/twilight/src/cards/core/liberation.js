@@ -18,7 +18,7 @@
         for (var i in this.countries) {
           if (this.countries[i].region == "camerica"){
             this.countries[i].place = 1;
-            already_placed[countryname] = 0;
+            
             $("#"+i).addClass("easterneurope");
           }
         }
@@ -27,9 +27,10 @@
         $(".easterneurope").on('click', function() {
           let countryname = $(this).attr('id');
           if (twilight_self.countries[countryname].place == 1) {
-            already_placed[countryname]++;
-            if (already_placed[countryname] == 2) {
+            if (already_placed[countryname]) {
               twilight_self.countries[countryname].place = 0;
+            }else{
+              already_placed[countryname] = 1;  
             }
             twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
             twilight_self.placeInfluence(countryname, 1, "ussr");

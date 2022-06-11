@@ -143,28 +143,7 @@ module.exports = ArcadeGameDetails = {
                 if (selected_crypto_ticker === preferred_crypto_ticker) {
                   let my_address = app.wallet.returnPreferredCrypto().returnAddress();
                   let crypto_transfer_manager = new GameCryptoTransferManager(app);
-                  crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () { });
-                  
-                  /*let returnObj = await app.wallet.returnPreferredCryptoBalances(
-                    [my_address],
-                    null,
-                    options.crypto
-                  );
-
-                  let adequate_balance = 0;
-                  for (let i = 0; i < returnObj.length; i++) {
-                    if (returnObj[i].address == my_address) {
-                      if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
-                        adequate_balance = 1;
-                      }
-                    }
-                  }
-                  crypto_transfer_manager.hideOverlay();
-                  if (adequate_balance == 0) {
-                    salert("You don't have enough " + options.crypto + " to create this game!");
-                    return;
-                  }
-                  */
+        
                   let current_balance = await crypto_transfer_manager.returnBalance(
                     app,
                     mod,
@@ -211,7 +190,6 @@ module.exports = ArcadeGameDetails = {
             name: gamemod.name,
             slug: gamemod.returnSlug(),
             options: gamemod.returnFormattedGameOptions(options),
-            /*options_html: gamemod.returnGameRowOptionsHTML(options),*/
             players_needed: players_needed,
             invitation_type: "public",
           };

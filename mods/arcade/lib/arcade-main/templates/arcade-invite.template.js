@@ -22,6 +22,8 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       game_initialized = 1;
     }
   }
+  console.log("Arcade invite template");
+  console.log(JSON.parse(JSON.stringify(invite.msg)));
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load
@@ -112,7 +114,7 @@ let makeDescription = (app, invite) => {
 
   if (invite.msg) {
     let gameModule = app.modules.returnModule(invite.msg.game);
-    if (gameModule) {
+    if (gameModule && gameModule !== "Arcade") {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
         html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}`;

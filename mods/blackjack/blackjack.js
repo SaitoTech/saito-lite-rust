@@ -129,11 +129,6 @@ class Blackjack extends GameTemplate {
 
 
   initializeGame(game_id) {
-
-    //
-    // game engine needs this to start
-    //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
     
     //
     // initialize
@@ -280,6 +275,7 @@ class Blackjack extends GameTemplate {
     let solventPlayers = this.countActivePlayers(); 
     if (solventPlayers === 1 ){ //Clear winner 
       this.game.queue.push(`winner\t${this.firstActivePlayer()}`);
+      this.settleLastRound();
       return 1;
     }else if (this.game.state.player.length > 2){ //if more than 2, remove extras
         for (let i = 0; i < this.game.state.player.length; i++){
@@ -352,6 +348,10 @@ class Blackjack extends GameTemplate {
         let status = null;
         $(".player-box.active").removeClass("active");
         this.playerbox.addClass("active",player);
+
+        if (this.game.state.player[player-1].wager == 0 && player != this.game.state.dealer){
+          return 1;
+        }
 
         //Blackjack
         if (this.game.state.player[player-1].total === 21 && this.game.state.player[player-1].hand.length ===2){
@@ -650,23 +650,20 @@ class Blackjack extends GameTemplate {
 
 
       if (mv[0] === "pickwinner") {
-        this.game.queue.push("newround"); // move to next round when done
         this.game.queue.splice(qe, 1);
+        this.game.queue.push("newround"); // move to next round when done
+        
         return this.pickWinner();       
       }
 
       if (mv[0] === "winner") { //copied from poker
-        let winner = parseInt(mv[1]);
-        let winnerName = this.game.state.player[winner].name + " wins!";
-        this.updateLog("Game Over: " + winnerName);
-        let status = "<h2>Game Over: </h2><p>";
-        status += (winner+1 == this.game.player)? "You win!" : winnerName;
-        status += "</p>";
-        this.updateStatus(status);
-        this.settleLastRound();  
-        this.game.winner = this.game.players[winner];
-        //this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
+        this.game.queue = [];
+        //Notably not keyed to game.player, but by the index
+        if (this.game.player == parseInt(mv[1]) + 1){
+          this.endGame(this.app.wallet.returnPublicKey()); 
+        }
         return 0;
+
       }
 
 
@@ -954,6 +951,7 @@ class Blackjack extends GameTemplate {
   }
 
 
+  
 
   /*
   Sends a message to restart the queue
@@ -1226,7 +1224,6 @@ class Blackjack extends GameTemplate {
           <option value="5000" >5000</option>
         </select>
       </div>
-      <div class="options_notice" id="stakesMsg">The game is just for fun</div>
       <div class="overlay-input">
         <label for="crypto">Crypto:</label>
         <select id="crypto" name="crypto">
@@ -1253,7 +1250,6 @@ class Blackjack extends GameTemplate {
 
   attachAdvancedOptionsEventListeners(){
     let crypto = document.getElementById("crypto");
-    let chipDisplay = document.getElementById("stakesMsg");
     let stakeValue = document.getElementById("stake");
   
     const updateChips = function(){
@@ -1263,7 +1259,6 @@ class Blackjack extends GameTemplate {
           chipDisplay.textContent = "The game is just for fun";
         }else{
           let amt = parseFloat(stakeValue.value);
-          chipDisplay.textContent = `You need ${stakeValue.value} ${crypto.value} to play the game. The minimum bet per hand is ${amt/100} and maximum bet per hand is ${amt/10}. Note: players can double down, split, and pull blackjacks, meaning the payout can exceed the listed stake.`;
         }
       }
     };
@@ -1288,6 +1283,33 @@ class Blackjack extends GameTemplate {
       }
     }
     return new_options;
+  }
+
+  processResignation(resigning_player, txmsg){
+    //if (this.game.players.length == 2){
+      super.processResignation(resigning_player, txmsg);
+      return;
+   // }
+
+    let player = parseInt(txmsg.loser);
+    if (player != this.game.state.dealer){ //Player, not dealer
+      let wager = this.game.state.player[player-1].wager; 
+      if (wager > 0 ){
+        this.game.state.player[this.game.state.dealer-1].wager += wager;
+        this.game.state.player[player-1].wager = 0;  
+        this.game.state.player[player-1].credit = 0;
+      }
+
+      this.updateHTML += `<h3 class="justify"><span>${this.game.state.player[player-1].name}: Quit the game!</span><span>Loss:${wager}</span></h3>`;
+      this.updateHTML += this.handToHTML(this.game.state.player[player-1].hand);
+
+      if (this.game.crypto){
+        let ts = new Date().getTime();
+        this.rollDice();
+        let uh = this.game.dice;
+        this.game.queue.push(`SEND\t${this.game.players[player-1]}\t${this.game.players[this.game.state.dealer-1]}\t${wager.toFixed(this.decimal_precision)}\t${ts}\t${uh}\t${this.game.crypto}`);  
+      }
+    }
   }
 
 

@@ -225,8 +225,6 @@ class Thirteen extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
 
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-
     //
     // initialize
     //
@@ -739,11 +737,11 @@ class Thirteen extends GameTemplate {
 	  return 0;
 	}
 	if (us_loses == 1) {
-	  this.endGame("ussr", "US DEFCON too high");
+	  this.endGame(this.game.players[0], "US DEFCON too high");
 	  return 0;
 	}
 	if (ussr_loses == 1) {
-	  this.endGame("us", "US DEFCON too high");
+	  this.endGame(this.game.players[1], "US DEFCON too high");
 	  return 0;
 	}
 
@@ -1025,13 +1023,13 @@ console.log("tallying alliances before scoring");
 	//
         if (this.game.state.round == 4) {
 	  if (this.game.state.prestige > 7) {
-	    this.endGame("ussr", "prestige track");
+	    this.endGame(this.game.players[0], "prestige track");
 	  }
 	  if (this.game.state.prestige < 7) {
-	    this.endGame("us", "prestige track");
+	    this.endGame(this.game.players[1], "prestige track");
 	  }
 	  if (this.game.state.prestige == 7) {
-	    this.endGame("us/ussr", "tie game");
+	    this.tieGame("tie game");
 	  }
 	  return 0;
 	}
@@ -4447,34 +4445,6 @@ console.log("SHOULD PLACE: " + player);
     }
     return new_options;
   }
-
-
-
-    
-
-  //
-  // OVERWRITE -- to take "us" and "ussr" instead of player_id
-  //
-  endGame(winner, method) {
-
-    this.game.over = 1;
-    if (winner == "us") { this.game.winner = 2; }
-    if (winner == "ussr") { this.game.winner = 1; }
-
-    if (this.game.winner == this.game.player) {
-      //
-      // share wonderful news
-      //
-      this.game.over = 0;
-      this.resignGame();
-    }
-
-    if (this.browser_active == 1) {
-      this.displayModal("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
-      this.updateStatus("<div class='status-message' id='status-message'><span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span></div>");
-    }
-  }
-
 
 
 
