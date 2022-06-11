@@ -562,6 +562,7 @@ Saito Alert
 
 #alert-box i {
     font-size: 3.3rem;
+    margin-top: 1rem;
     color: var(--saito-primary);
 }
 
@@ -570,6 +571,7 @@ Saito Alert
     justify-self: center;
     font-size: 2.5rem;
     margin-top: 2rem;
+
 
 }
 
@@ -587,7 +589,7 @@ Saito Alert
 #alert-buttons {
     display: flex;
     justify-content: center;
-    margin-top: auto;
+    margin-top: 2rem;
 }
 
 /* ----------------------------------------------------------------
