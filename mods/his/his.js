@@ -1439,6 +1439,35 @@ console.log("adding stuff!");
     return 1;
   }
 
+  isSpaceConnectedToCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = [];
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through.includes(spacekey)) { return 0; }
+        already_routed_through.push(spacekey);
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return 1;
+  }
+
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.neighbours.length; i++) {
@@ -5971,34 +6000,34 @@ console.log("----------------------------");
 
 	  this.updateLog(this.game.spaces[space].name + " converts to the " + religion + " religion");
 
-	  if (space === "augsburg" && religiion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
+	  if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0) {
 	    this.game.spaces['augsburg'].units['protestant'].push();
-    	    this.addRegular("augsburg", "protestant", 2);
+    	    this.addRegular("protestant", "augsburg", 2);
 	    this.game.state.augsburg_electoral_bonus = 1;
 	  }
-	  if (space === "mainz" && religiion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
+	  if (space === "mainz" && religion === "protestant" && this.game.state.mainz_electoral_bonus == 0) {
 	    this.game.spaces['mainz'].units['protestant'].push();
-    	    this.addRegular("mainz", "protestant", 1);
+    	    this.addRegular("protestant", "mainz", 1);
 	    this.game.state.mainz_electoral_bonus = 1;
 	  }
-	  if (space === "trier" && religiion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
+	  if (space === "trier" && religion === "protestant" && this.game.state.trier_electoral_bonus == 0) {
 	    this.game.spaces['trier'].units['protestant'].push();
-    	    this.addRegular("trier", "protestant", 1);
+    	    this.addRegular("protestant", "trier", 1);
 	    this.game.state.trier_electoral_bonus = 1;
 	  }
-	  if (space === "cologne" && religiion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
+	  if (space === "cologne" && religion === "protestant" && this.game.state.cologne_electoral_bonus == 0) {
 	    this.game.spaces['cologne'].units['protestant'].push();
-    	    this.addRegular("cologne", "protestant", 1);
+    	    this.addRegular("protestant", "cologne", 1);
 	    this.game.state.cologne_electoral_bonus = 1;
 	  }
-	  if (space === "wittenberg" && religiion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
+	  if (space === "wittenberg" && religion === "protestant" && this.game.state.wittenberg_electoral_bonus == 0) {
 	    this.game.spaces['wittenberg'].units['protestant'].push();
-    	    this.addRegular("wittenberg", "protestant", 2);
+    	    this.addRegular("protestant", "wittenberg", 2);
 	    this.game.state.wittenberg_electoral_bonus = 1;
 	  }
-	  if (space === "brandenburg" && religiion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
+	  if (space === "brandenburg" && religion === "protestant" && this.game.state.brandenburg_electoral_bonus == 0) {
 	    this.game.spaces['brandenburg'].units['protestant'].push();
-    	    this.addRegular("brandenburg", "protestant", 1);
+    	    this.addRegular("protestant", "brandenburg", 1);
 	    this.game.state.brandenburg_electoral_bonus = 1;
 	  }
 
@@ -6920,7 +6949,9 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
-              return 1;
+              if (his_self.isSpaceConnectedToCapital(space, faction)) {
+                return 1;
+              }
             }
             return 0;
           },
@@ -7617,6 +7648,17 @@ return;
     return -1;
   }
 
+  returnCapitals(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+	if (faction === this.game.players_info[i].factions[ii].key) {
+          return this.game.players_info[i].factions[ii].capitals;
+        }
+      }
+    }
+    return [];
+  }
+
   returnPlayerOfFaction(faction) {
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].factions.includes(faction)) {
@@ -7675,6 +7717,7 @@ return;
       if (this.units[key].type === debater) {
 	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
 	new_unit.owner = faction;
+	new_unit.committed = 0;
 	return new_unit;
       }
     }

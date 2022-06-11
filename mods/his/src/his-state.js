@@ -213,6 +213,35 @@
     return 1;
   }
 
+  isSpaceConnectedToCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let already_routed_through = [];
+
+    let res = this.returnNearestSpaceWithFilter(
+
+      space.key,
+
+      // capitals are good destinations
+      function(spacekey) {
+        if (capitals.includes(spacekey)) { return 1; }
+        return 0;
+      },
+
+      // route through this?
+      function(spacekey) {
+	if (already_routed_through.includes(spacekey)) { return 0; }
+        already_routed_through.push(spacekey);
+	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
+	return 0;
+      }
+    );
+
+    return 1;
+  }
+
   isSpaceAdjacentToReligion(space, religion) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.neighbours.length; i++) {

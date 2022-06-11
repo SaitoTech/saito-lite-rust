@@ -36,6 +36,7 @@
       if (this.units[key].type === debater) {
 	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
 	new_unit.owner = faction;
+	new_unit.committed = 0;
 	return new_unit;
       }
     }

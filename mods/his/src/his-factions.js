@@ -41,6 +41,17 @@
     return -1;
   }
 
+  returnCapitals(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+	if (faction === this.game.players_info[i].factions[ii].key) {
+          return this.game.players_info[i].factions[ii].capitals;
+        }
+      }
+    }
+    return [];
+  }
+
   returnPlayerOfFaction(faction) {
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].factions.includes(faction)) {
