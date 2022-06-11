@@ -182,9 +182,6 @@ class Poker extends GameTemplate {
   }
 
   initializeGame(game_id) { 
-    /*if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }*/
   
     // initialize game state
     if (this.game.deck.length == 0) {
@@ -288,7 +285,7 @@ class Poker extends GameTemplate {
     if (alive_players < this.game.state.player_credit.length) {
       console.log("Need to remove a player");
       console.log(JSON.parse(JSON.stringify(this.game.players)));
-      for (let i = 0; i < this.game.state.player_credit.length; i++) {
+      for (let i = this.game.state.player_credit.length-1; i >= 0 ; i--) {
         if (this.game.state.player_credit[i] <= 0) {
           this.updateLog(`Player ${i+1} has been removed from the game.`);
           removal = true;
@@ -304,19 +301,12 @@ class Poker extends GameTemplate {
           if (i < this.game.state.button_player){
             this.game.state.button_player--;
           }
-          i--;
         }
       }
     }
+
     if (removal){
       this.cardfan.hide(); //hide everyone's cards at first
-      //Reassign id's
-      this.game.player = 0;
-      for (let i = 0; i < this.game.players.length; i++) {
-        if (this.game.players[i] === this.app.wallet.returnPublicKey()) {
-          this.game.player = (i + 1);
-        }
-      }
       
       //Update DOM -- re-render the playerboxes
       try{
@@ -392,30 +382,20 @@ class Poker extends GameTemplate {
   */
   initializeQueue() {
 
-    //console.log("old queue:" + JSON.stringify(this.game.queue));
     this.game.queue = [];
 
     this.game.queue.push("round");
     this.game.queue.push("READY");
     this.game.queue.push("POOL\t1"); // CREATE pool for cards on table
 
-    /*Deal two cards to everyone
-    for (let i = this.game.players.length; i>0; i--){
-      this.game.queue.push(`DEAL\t1\t${i}\t2`);
-    }
-
-    for (let i = this.game.players.length; i>0; i--){
-      this.game.queue.push(`DECKENCRYPT\t1\t${i}`);
-    }
-    for (let i = this.game.players.length; i>0; i--){
-      this.game.queue.push(`DECKXOR\t1\t${i}`);
-    }
-    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
-    */
+    //Deal two cards to everyone
     this.game.queue.push(`SIMPLEDEAL\t2\t1\t`+ JSON.stringify(this.returnDeck()));
 
     // adds any outstanding settlement to queue (if not already processed)
     this.settleLastRound();
+    let msg = "Clearing the table";
+        msg += (this.game.crypto)? " and settling bets..." : "...";
+    this.updateStatus(msg);
 
 
   }
@@ -441,14 +421,7 @@ class Poker extends GameTemplate {
 
       if (mv[0] === "winner") {
         this.game.queue = [];
-        let winner = parseInt(mv[1]); //Notably not keyed to game.player, but by the index
-        this.updateStatus("Game Over: " + this.game.state.player_names[winner] + " wins!");
-        this.updateLog("Game Over: " + this.game.state.player_names[winner] + " wins!");
-        this.overlay.show(this.app, this, `<div class="shim-notice"><h1>Game Over: ${this.game.state.player_names[winner]} wins!</h1>${this.updateHTML}</div>`);
-        this.game.winner = this.game.players[winner];
-        if (this.game.player == this.game.winner){
-          this.resignGame(this.game.id); //post to leaderboard - ignore 'resign'
-        }
+        this.endGame(this.game.players[parseInt(mv[1])]); 
         return 0;
       }
 
@@ -463,7 +436,7 @@ class Poker extends GameTemplate {
       //Player's turn to fold,check,call,raise
       if (mv[0] === "turn") {
         let player_to_go = parseInt(mv[1]);
-
+        this.game.target = player_to_go;
         //
         // if everyone except 1 player has folded...
         //
@@ -565,9 +538,9 @@ class Poker extends GameTemplate {
             //
             // observer mode
             //
-            if (this.game.player == 0) {
-              this.game.queue.push("OBSERVER_CHECKPOINT");
-            }
+            //if (this.game.player == 0) {
+              //this.game.queue.push("OBSERVER_CHECKPOINT");
+            //}
 
             this.game.state.plays_since_last_raise = 0;
             return 1;
@@ -632,7 +605,6 @@ class Poker extends GameTemplate {
       }
 
       if (mv[0] === "reveal") {
-        var _this = this;
 
         let scorer = parseInt(mv[1]);
         let card1 = mv[2];
@@ -677,14 +649,14 @@ class Poker extends GameTemplate {
               let winlist_length = winlist.length;
               let place = 0;
               for (let k = 0; k < winlist_length; k++) {
-                let w = _this.pickWinner(winlist[k].player_hand, _this.scoreHand(deck));
+                let w = this.pickWinner(winlist[k].player_hand, this.scoreHand(deck));
                 if (w > 1) {
                   place = k + 1;
                 }
               }
               winlist.splice(place, 0, {
                 player: parseInt(key) + 1,
-                player_hand: _this.scoreHand(deck),
+                player_hand: this.scoreHand(deck),
               });
             }
 
@@ -693,7 +665,7 @@ class Poker extends GameTemplate {
           // Populate winners with winning players
           winners.push(winlist[winlist.length - 1].player - 1);
           for (let p = winlist.length - 1; p > 0; p--) {
-            if (_this.pickWinner(winlist[winlist.length - 1].player_hand, winlist[p - 1].player_hand) == 3) {
+            if (this.pickWinner(winlist[winlist.length - 1].player_hand, winlist[p - 1].player_hand) == 3) {
               winners.push(winlist[p - 1].player - 1);
             }
           }
@@ -720,9 +692,9 @@ class Poker extends GameTemplate {
           }
 
           winlist.forEach((pl) => {
-            _this.updateLog(`${_this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ _this.toHuman(pl.player_hand.cards_to_score)}`);
+            this.updateLog(`${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description} <br>${ this.toHuman(pl.player_hand.cards_to_score)}`);
             updateHTML = this.handToHTML(pl.player_hand.cards_to_score) + updateHTML;
-            updateHTML = `<h3>${_this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</h3>${updateHTML}`;
+            updateHTML = `<h3>${this.game.state.player_names[pl.player - 1]}: ${pl.player_hand.hand_description}</h3>${updateHTML}`;
           });
 
           this.updateHTML = updateHTML;
@@ -777,10 +749,12 @@ class Poker extends GameTemplate {
             }
           }
 
-          this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
-            this.restartQueue();
-          });
-          this.game.halted = 1;
+          if (this.browser_active){
+            this.overlay.show(this.app, this, `<div class="shim-notice">${winner_html}${updateHTML}</div>`, ()=>{
+              this.restartQueue();
+            });
+            this.game.halted = 1;
+          }
           this.startNextRound();
 
           return 0;
@@ -1148,14 +1122,14 @@ class Poker extends GameTemplate {
           if (raise === "0") {
             poker_self.playerTurn();
           } else {
-            console.log("Player chocie: "+raise);
+            console.log("Player choice: "+raise);
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();
           }
         });
       }else{
         /* choice = fold, check or call, so just directly insert in Move*/
-        console.log("Player chocie: "+choice);
+        console.log("Player choice: "+choice);
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         poker_self.endTurn();
       }
@@ -1506,9 +1480,47 @@ class Poker extends GameTemplate {
     }
   }
 
+  processResignation(resigning_player, txmsg){
+    //if (this.game.players.length == 2){
+      super.processResignation(resigning_player, txmsg);
+      return;
+   // }
+   
+    if (!this.game.players.includes(resigning_player)){ 
+      console.log(resigning_player+" not in "+ JSON.stringify(this.game.players));
+    //Player already not an active player, make sure they are also removed from accepted to stop receiving messages
+      for (let i = this.game.accepted.length; i>=0; i--){
+        if (this.game.accepted[i] == player_key){
+          this.game.accepted.splice(i,1);
+        }
+      }
+      return;
+    }
+    
+    if (this.browser_active){
+      if (this.app.wallet.returnPublicKey() !== resigning_player) {
+        this.refreshPlayerStack(txmsg.loser, false); //Here we want to hide cards
+        this.playerbox.refreshLog(`<div class="plog-update">leaves the table</div>`, txmsg.loser);
+      } 
+    }
+
+    this.updateLog(this.game.state.player_names[txmsg.loser - 1] + " left the table");
+
+    this.game.stats[resigning_player].handsFolded++;
+    this.game.state.passed[txmsg.loser - 1] = 1;
+    this.game.state.player_credit[txmsg.loser - 1] = 0;
+    
+    if (this.game.target == txmsg.loser){
+      this.game.state.plays_since_last_raise--;
+      this.startQueue();
+    }
+  }
+
 
   endTurn(nextTarget = 0) {
-    this.updateStatus("Waiting for information from peers....");
+    if (this.browser_active){
+      this.updateStatus("Waiting for information from peers....");  
+    }
 
     try {
       $(".menu_option").off();
@@ -2683,8 +2695,6 @@ class Poker extends GameTemplate {
             <option value="100">
           </datalist>
    
-          <div class="options_notice" id="stakesMsg">The game is just for fun</div>
-   
           <div class="overlay-input">
             <label for="observer_mode">Observer Mode:</label>
             <select name="observer">
@@ -2707,21 +2717,17 @@ class Poker extends GameTemplate {
     let crypto = document.getElementById("crypto");
     let stakeValue = document.getElementById("stake");
     let chipInput = document.getElementById("chip_wrapper");
-    let chipDisplay = document.getElementById("stakesMsg");
     //let stake = document.getElementById("stake");
 
     const updateChips = function(){
-      if(crypto && chipDisplay && numChips && stakeValue && chipInput /*&& stake*/){
+      if(numChips && stakeValue && chipInput /*&& stake*/){
         if (crypto.value == ""){
-          chipDisplay.textContent = "The game is just for fun";
           chipInput.style.display = "none";
           stake.value = "0";
         }else{
           let nChips = parseInt(numChips.value);
           let stakeAmt = parseFloat(stakeValue.value);
           let jsMath = stakeAmt/nChips;
-
-          chipDisplay.textContent = `You need ${stakeAmt} ${crypto.value} to play the game, with starting blinds of ${jsMath.toFixed(3)}/${(2*jsMath).toFixed(3)} ${crypto.value}`;
           chipInput.style.display = "block";
         }
       }

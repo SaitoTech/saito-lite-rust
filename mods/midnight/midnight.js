@@ -108,11 +108,7 @@ class Midnight extends GameTemplate {
   }
 
   initializeGame(game_id) {
-    if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }
-    this.loadGame(game_id);
-    
+  
     if (!this.game.state) {
       this.updateStatus("Generating the Game");
       this.game.queue.push("page\t0");
