@@ -46,11 +46,6 @@ body {
   padding: 5px 20px;
 }
 
-.game-scoreboard{
-  font-size: 20px;
-  height: 40px;
-  padding: 5px 20px;
-}
 
 /*arrange the cards in an array*/
 .card-stack-array{
@@ -155,23 +150,26 @@ body {
 }
 
 
-
-
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .logobox{
-    order: 1;
-    max-width: 150px;
+  .draw-pile{
+    min-width: unset;
   }
-  .logobox img{
-    display: none;
+  .undo{
+    font-size: 40px;
+    height: unset;
+    width: unset;
   }
-  .hidable{
-    display: none;
+
+ .game-scoreboard{
+    font-size: 16px;
+    height: 30px;
+    padding: 5px 20px;
+    top: unset;
+    bottom: 0;
   }
-  .rowbox{
-    margin-top: 0;
-    padding: 15px;
-    order: 2;
+  .card-stack-array{
+    margin-top: 10px;
+    margin-left: 70px;
   }
 
 }

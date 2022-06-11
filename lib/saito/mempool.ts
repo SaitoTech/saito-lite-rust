@@ -98,7 +98,6 @@ class Mempool {
   }
 
   addBlock(block) {
-
     console.debug("Mempool : adding block... : " + block.returnHash());
     if (!block) {
       console.warn("ERROR 529384: mempool add.block is not provided");
@@ -199,7 +198,6 @@ class Mempool {
   }
 
   async bundleBlock() {
-
     //
     // nope out if inadequate golden ticket support
     //
@@ -269,7 +267,6 @@ class Mempool {
       // and add to mempool
       //
       this.addBlock(block);
-
     } catch (err) {
       console.error("ERROR 781029: unexpected problem bundling block in mempool: ", err);
     }
@@ -279,8 +276,6 @@ class Mempool {
     //
     this.bundling_active = false;
   }
-
-
 
   canBundleBlock(): boolean {
     if (this.app.mempool.mempool.golden_tickets.length === 0) {

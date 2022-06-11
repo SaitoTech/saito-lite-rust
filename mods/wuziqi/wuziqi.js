@@ -324,6 +324,9 @@ class Wuziqi extends GameTemplate {
         });
     }
 
+    removeEvents(){
+        this.drawBoard(this.game.board);
+    }
     
     // Bundle moves and send them off.
     endTurn() {
@@ -356,15 +359,13 @@ class Wuziqi extends GameTemplate {
             // Game over conditions
             if (mv[0] === "gameover") {
                 // Remove this item from the queue.
-                this.game.queue.splice(this.game.queue.length - 1, 1);
+                this.game.queue = [];
 
-                //Winner sent the move
-                if (mv[1]!=this.game.player) salert("You lose.");
                 //Not duplicated in board events, so both players run these
                 this.updateScore();
-                this.updateStatus("<span class='playertitle'>" + this.game.sides[mv[1] - 1] + "</span> wins!")
                 this.drawBoard(this.game.board);
-                //this.resignGame(); //<- throws a 567567 error                
+
+                this.endGame(this.game.players[parseInt(mv[1])-1]);
                 return 0; //end queue cycling
             }
             // Round over
@@ -563,11 +564,8 @@ class Wuziqi extends GameTemplate {
         }
     }
 
-    // Add options to the game start wizard for different game parameters
-    returnGameOptionsHTML() {
-        return `
-        <h1 class="overlay-title">Wuziqi Options</h1>
-        <div class="overlay-input">
+    returnSingularGameOption(){
+        return `<div class="overlay-input">
         <label for="best_of">Best of:</label>
         <select name="best_of">
           <option value="1">1</>
@@ -578,7 +576,13 @@ class Wuziqi extends GameTemplate {
           <option value="11">11</>
           <option value="13">13</>
           <option value="15">15</>
-        </select></div>
+        </select></div>`;
+    }
+    // Add options to the game start wizard for different game parameters
+    returnGameOptionsHTML() {
+        return `
+        <h1 class="overlay-title">Wuziqi Options</h1>
+        
         <div class="overlay-input">
         <label for="board_size">Board Size:</label>
         <select name="board_size">

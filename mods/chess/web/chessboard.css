@@ -15,10 +15,11 @@
 
 /* board */
 .board-b72b1 {
-  border: 2px solid #404040;
+  border: 30px solid #222;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
+  box-shadow: 10px 10px 20px #222;
 }
 
 /* square */
@@ -37,13 +38,13 @@
 
 /* white square */
 .white-1e1d7 {
-  background-color: #eeeeee;
+  background-color: #F0D9B5;
   color: #b58863;
 }
 
 /* black square */
 .black-3c85d {
-  background-color: #404040;
+  background-color: #B58863;
   color: #f0d9b5;
 }
 
@@ -62,10 +63,27 @@
   position: absolute;
 }
 .alpha-d2270 {
-  bottom: 1px;
-  right: 3px;
+  bottom: -24px;
+  right: 27px;
+  color: #fff;
+  font-size: 16px;
 }
 .numeric-fc462 {
-  top: 2px;
-  left: 2px;
+  top: 30px;
+  left: -20px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.chessboard-63f37::before {
+  content: "";
+  width: 587px;
+  height: 587px;
+  /* border: 1px solid red; */
+  background-color: #333;
+  position: absolute;
+  top: -4px;
+  left: 9px;
+  z-index: -1;
+  display: none;
 }

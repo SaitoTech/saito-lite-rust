@@ -527,21 +527,20 @@ module.exports = ArcadeMain = {
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];
-
+    console.log("Click to Cancel Game");
+    console.log(JSON.parse(JSON.stringify(mod.games)));
+    console.log(JSON.parse(JSON.stringify(app.options.games)));
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-        if (typeof app.options.games[i].transaction != "undefined") {
-          testsig = app.options.games[i].transaction.sig;
-        } else if (typeof app.options.games[i].id != "undefined") {
-          testsig = app.options.games[i].id;
-        }
-        if (testsig == game_id) {
-          app.options.games[i].over = 1;
-          app.options.games[i].status = "I Resigned";
-    
-          players = app.options.games[i].players;
-          //app.options.games.splice(i, 1);
-          app.storage.saveOptions();
+        testsig = app.options.games[i].transaction?.sig || app.options.games[i].id;
+        if (testsig == game_id) { //If the game has been initialized
+          let gamemod = app.modules.returnModule(app.options.games[i].module);
+          if (gamemod) {
+            this.removeGameFromList(game_id);
+            gamemod.resignGame(game_id);
+            //console.log(JSON.parse(JSON.stringify(gamemod.game)));
+            return;
+          }
         }
       }
     }
@@ -687,8 +686,10 @@ module.exports = ArcadeMain = {
   },
 
   removeGameFromList(game_id) {
-    document
+    try{
+      document
       .getElementById(`arcade-hero`)
       .removeChild(document.getElementById(`invite-${game_id}`));
+    }catch(err){console.log(err);};
   },
 };
