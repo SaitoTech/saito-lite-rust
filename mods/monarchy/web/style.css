@@ -1,3 +1,6 @@
+:root{
+  --dominion-parchment: tan;
+}
 
 body {
   font-family: arial, helvetica, sans-serif;
@@ -9,6 +12,7 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
 
 
 .gameboard{
@@ -57,6 +61,9 @@ body {
   width: fit-content;
   max-width: 70vw;
   margin: 60px auto;
+  box-shadow: 0 0 10px 5px black;
+  background-color: #f5f5f555;
+  padding: 0.5em;
 }
 
 .cardpile{
@@ -89,6 +96,8 @@ body {
 .tiptext{
   width: calc(100% + 30px);
   min-width: unset;
+  color: black;
+  background-color: var(--dominion-parchment);
 }
 
 .cardimg {
@@ -100,7 +109,7 @@ body {
 }
 
 .game-scoreboard{
-  background-color: tan;
+  background-color: var(--dominion-parchment);
 }
 .game-scoreboard .score{
   font-size: 16px;
@@ -115,11 +124,18 @@ body {
   right: 1rem;
   width: 140px;
   height: 180px;
+  background-color: var(--dominion-parchment);
   border-radius: 5px;
-  border: 2px dashed whitesmoke;
+  box-shadow: 0 0 5px 2px black;
+  padding-left: 4px;
+  font-family: "Papyrus";
   display: flex;
   flex-direction: column;
-  color: whitesmoke;
-  font-size: 20px;
+  color: black;
+  font-size: 18px;
   justify-content: space-evenly;
+}
+
+.rules-overlay{
+  background-color: var(--dominion-parchment);
 }

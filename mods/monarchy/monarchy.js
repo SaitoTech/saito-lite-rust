@@ -15,7 +15,7 @@ class Monarchy extends GameTemplate {
     this.name  		       = "Monarchy";
     this.gamename        = "Monarchy";
     this.slug		         = "monarchy";
-    this.description     = `Monarch is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
+    this.description     = `Monarchy is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
     this.categories      = "Games Arcade Entertainment";
 
     this.card_height_ratio = 1.6; // height is 1.6x width
@@ -33,7 +33,7 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = false;
+    this.is_testing = true;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -216,8 +216,8 @@ initializeGame(game_id) {
       if (this.browser_active){
          this.displayBoard();
       }
-      console.log(JSON.parse(JSON.stringify(this.game.deck)));
-      console.log(JSON.parse(JSON.stringify(this.game.pool)));
+      //console.log(JSON.parse(JSON.stringify(this.game.deck)));
+      //console.log(JSON.parse(JSON.stringify(this.game.pool)));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
@@ -247,7 +247,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["adventurer", "artisan", "chancellor", "bureaucrat", "councilroom", "harbinger", "library", "moat", "remodel", "sentry", "bandit", "vassal", "witch", "spy", "thief"];
+          supply = ["adventurer", "chancellor", "bureaucrat", "harbinger", "library", "bandit", "vassal", "witch", "spy", "thief"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -279,6 +279,7 @@ initializeGame(game_id) {
         let winner = [];
         let highScore = -1;
         let reason = "high score";
+        
         //Find High Score
         for (let i = 1; i <= this.game.players.length; i++){
           let score = this.returnPlayerVP(i);
@@ -295,7 +296,7 @@ initializeGame(game_id) {
         //Filter for least number of turns
         if (winner.length > 1){
           let leastMoves = 10000;
-          reason += " and least moves";
+          reason += " and fewest moves";
           for (let j = 0; j < winner.length; j++){
             if (this.game.state.players[winner[j]-1].turns < leastMoves){
               leastMoves = this.game.state.players[winner[j]-1].turns;
@@ -307,7 +308,12 @@ initializeGame(game_id) {
             }
           }
         }
-        this.endGame(winner, reason);
+        if (winner.length == 1){
+          this.endGame(this.game.players[winner[0]-1], reason);
+        }else{
+          this.endGame(winner.map(x=>this.game.players[x-1]), reason);  
+        }
+        
         return 0;
       }
 
@@ -382,12 +388,13 @@ initializeGame(game_id) {
         if (this.gameOver()){
           this.game.queue.push("gameover");
           for (let p = 1; p <= this.game.players.length; p++){
-            this.game.queue.push(`SAFEDEAL\t${p}\t${p}\t${this.game.deck[p-1].discards.length + this.game.deck[p-1].crypt.length}`);
+            this.game.queue.push(`SAFEDEAL\t${p}\t${p}\t${Object.keys(this.game.deck[p-1].discards).length + this.game.deck[p-1].crypt.length}`);
           }
+          this.updateStatus("Game over, determining winner...");
           return 1;
         }else{
           if (this.game.player == player){
-            this.updateStatus("Discarding hand and drawing new cards...");
+            this.updateStatus(this.formatStatusHeader("Discarding hand and drawing new cards..."));
             this.addMove("turn\t"+this.returnNextPlayer(player));
             //Deal 5 New Cards
             this.addMove(`SAFEDEAL\t${player}\t${player}\t5`);
@@ -406,6 +413,12 @@ initializeGame(game_id) {
           
         }
 
+      }
+
+      if (mv[0] == "create"){
+        this.game.state.supply[mv[1]]++; //Increase supply in game
+        this.game.queue.splice(qe, 1);
+        return 1;        
       }
 
       if (mv[0] == "buy"){
@@ -510,8 +523,8 @@ initializeGame(game_id) {
 
         if (this.game.player == victim){
           if (card_to_play == "spy"){
-            this.addMove(`spy\t${player}\t${victim}`);
-            this.addMove(`POOLDEAL\t${victim}\t1\t${victim}`);
+            this.addMove(`spy\t${victim}`);
+            this.addMove(`SAFEPOOLDEAL\t${victim}\t1\t${victim}`);
             this.addMove(`POOL\t${victim}`);   
             this.endTurn();
             return 0;
@@ -525,7 +538,7 @@ initializeGame(game_id) {
               switch(card_to_play){
                 case "bandit":
                   this.addMove(`bandit\t${player}\t${victim}`);
-                  this.addMove(`POOLDEAL\t${victim}\t2\t${victim}`);
+                  this.addMove(`SAFEPOOLDEAL\t${victim}\t2\t${victim}`);
                   this.addMove(`POOL\t${victim}`);   
                   break;
                 case "bureaucrat":
@@ -535,6 +548,9 @@ initializeGame(game_id) {
                   this.addMove(`hand\t${victim}\t${this.game.deck[victim-1].hand.length-3}\tdiscards`);  
                   break;
                 case "thief":
+                  this.addMove(`thief\t${player}\t${victim}\t`);
+                  this.addMove(`SAFEPOOLDEAL\t${victim}\t2\t${victim}`);
+                  this.addMove(`POOL\t${victim}`);
                   break;
                 case "witch":
                   this.addMove(`buy\t${victim}\tcurse`);
@@ -730,7 +746,7 @@ initializeGame(game_id) {
           this.attachCardboxEvents(function(card){
             we_self.updateStatusWithOptions(`Move ${we_self.cardToText(card)} to:`, html, true);
             we_self.attachCardboxEvents(function(action){
-              we_self.removeCardFromPool(card);
+              we_self.removeCardFromPool(card, player);
               if (action == "deck"){
                 we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`);
               }else if (action == "trash"){
@@ -760,7 +776,7 @@ initializeGame(game_id) {
           let card = this.game.pool[player-1].cards[this.game.pool[player-1].hand[0]];
           we_self.updateStatusWithOptions(`Move top card of your deck (${we_self.cardToText(card)}):`, html, false);
           we_self.attachCardboxEvents(function(action){
-            we_self.removeCardFromPool(card);
+            we_self.removeCardFromPool(card, player);
             if (action == "deck"){
               we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`);
               we_self.addMove(`NOTIFY\t${we_self.cardToText("spy")}: Player ${player} reveals a ${we_self.cardToText(card)} and puts it back on the deck.`);
@@ -771,9 +787,105 @@ initializeGame(game_id) {
 
             we_self.endTurn();
           });
+        }else{
+          this.updateStatusAndListCards(`Player ${player} revealing top card for ${this.cardToText("spy")}`);
         }
         return 0;
       }
+
+      if (mv[0] == "thief"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        let victim  = parseInt(mv[2]);
+        
+        let cards = [];
+        if (this.game.player !== victim){ return 0;}
+
+        for (let c of this.game.pool[victim-1].hand){
+          let cardname = this.game.pool[victim-1].cards[c];
+          //if (this.deck[cardname].type == "treasure"){
+            cards.push(cardname);
+        }
+        this.addMove(`thief2\t${mv[1]}\t${mv[2]}\t${cards[0]}\t${cards[1]}`);
+        this.addMove(`NOTIFY\t${this.cardToText("thief")}: Player ${victim} reveals ${this.cardToText(cards[0])} and ${this.cardToText(cards[1])}`);
+        this.endTurn();
+        this.updateStatusAndListCards(`A ${this.cardToText("thief")} is rummaging through your deck...`);
+        return 0;
+      }
+
+      if (mv[0] == "thief2"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        let victim  = parseInt(mv[2]);
+        let card1 = mv[3];
+        let card2 = mv[4];
+        
+        if (this.game.player !== player){ return 0;}
+        let tcards = [];
+        if (this.deck[card1].type == "treasure"){
+          tcards.push(card1);
+        }
+        if (this.deck[card2].type == "treasure"){
+          tcards.push(card2);
+        }
+        if (tcards.length == 0){
+          //Tell victim to discard both
+          this.removeCardFromPool(card1, victim);
+          this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
+          this.removeCardFromPool(card2, victim);
+          this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
+          this.endTurn();
+        }else if (tcards.length == 1){
+          //Tell victim to discard one and trash one
+          this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${tcards[0]}`);
+          this.removeCardFromPool(tcards[0], victim);
+          this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+          if (tcards[0] == card1){
+            this.removeCardFromPool(card2, victim);
+          }else{
+            this.removeCardFromPool(card1, victim);
+          }
+          this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
+          this.endTurn();
+        }else{
+          this.updateStatusAndListCards(`Choose a card from Player ${victim} to trash:`,tcards);
+          this.attachCardboxEvents(function(card){
+            this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${card}`);
+            this.removeCardFromPool(card, victim);
+            this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+            if (card == card1){
+              this.removeCardFromPool(card2, victim);
+            }else{
+              this.removeCardFromPool(card1, victim);
+            }
+            this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
+            this.endTurn();
+          });
+        }
+
+        return 0;
+      }
+
+      if (mv[0] == "thief3"){
+        this.game.queue.splice(qe, 1);
+        let player = parseInt(mv[1]);
+        let victim  = parseInt(mv[2]);
+        let card = mv[3];
+        if (this.game.player == player){
+
+          this.updateStatusWithOptions(`Would you like to keep the ${this.cardToText(card)} from Player ${victim}}?`,
+              `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`);
+          this.attachCardboxEvents(function (action){
+            if (action == "yes"){
+              we_self.addMove(`buy\t${player}\t${card}`);
+              we_self.addMove(`create\t${card}`); //A hack to tell players to increment supply
+            }
+            we_self.endTurn();
+          });
+        }
+        return 0;
+      }
+
 
       if (mv[0] == "vassal"){
         this.game.queue.splice(qe, 1);
@@ -785,7 +897,7 @@ initializeGame(game_id) {
             let html = `<ul><li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li></ul>`;
             we_self.updateStatusWithOptions(`Play ${card} instead of discarding it?`, html);
             we_self.attachCardboxEvents(function (action){
-              we_self.removeCardFromPool(cname);
+              we_self.removeCardFromPool(cname, player);
               if (action == "play"){
                 we_self.addMove(`play\t${player}\t${cname}`);
               }else{
@@ -794,7 +906,7 @@ initializeGame(game_id) {
               we_self.endTurn();
             });
           }else{
-            we_self.removeCardFromPool(cname);
+            we_self.removeCardFromPool(cname, player);
             we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
             we_self.addMove(`NOTIFY\tPlayer ${mv[1]} discards a ${we_self.cardToText(cname)}`);
             this.endTurn();
@@ -887,7 +999,7 @@ initializeGame(game_id) {
 
   acquireCard(max_value, target = ""){
     let we_self = this;
-    this.updateStatus(`You may select a card worth up to ${max_value}`);
+    this.updateStatus(this.formatStatusHeader(`You may select a card worth up to ${max_value}`));
     this.filterBoardDisplay(max_value);
     $(".gameboard .cardpile").on("click", function(){
       let newcard = $(this).attr("id");
@@ -932,7 +1044,7 @@ initializeGame(game_id) {
     html += `<div id="mydecks">
              <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
              <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
-             <div class="drawdeck">Playing: ${this.cards_in_play.length + pooled_cards}</div>
+             <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
              <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
              <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
     if (this.last_discard){
@@ -949,9 +1061,9 @@ initializeGame(game_id) {
     for (let c in this.game.state.supply){
       if (c !== "curse"){
         if (this.deck[c].cost > max){
-          $(`#${c}.cardpile`).css("filter","brightness(0.15)");
+          $(`#${c}.cardpile img`).css("filter","brightness(0.15)");
         }else{
-          $(`#${c}.cardpile`).css("filter","brightness(0.95)");
+          $(`#${c}.cardpile img`).css("filter","brightness(0.95)");
         }
       }
     }
@@ -975,6 +1087,9 @@ initializeGame(game_id) {
       
       we_self.attachCardboxEvents();
     });
+
+    $(".cardstacks").draggable();
+
   }
 
   returnPlayerVP(player){
@@ -1100,13 +1215,13 @@ initializeGame(game_id) {
     }
     console.log("Card not found");
   }
-  removeCardFromPool(card) {
+  removeCardFromPool(card, pool) {
     if (this.game.player == 0) { return; }
-    for (let i = 0; i < this.game.pool[this.game.player-1].hand.length; i++) {
-      if (this.game.pool[this.game.player-1].cards[this.game.pool[this.game.player-1].hand[i]] == card) {
-        this.lastCardKey = this.game.pool[this.game.player-1].hand[i];
+    for (let i = 0; i < this.game.pool[pool-1].hand.length; i++) {
+      if (this.game.pool[pool-1].cards[this.game.pool[pool-1].hand[i]] == card) {
+        this.lastCardKey = this.game.pool[pool-1].hand[i];
         this.lastCardValue = card;
-        this.game.pool[this.game.player-1].hand.splice(i, 1);
+        this.game.pool[pool-1].hand.splice(i, 1);
         return; //Only remove one copy
       }
     }
@@ -1142,7 +1257,7 @@ initializeGame(game_id) {
     //**
     if (card_to_play == "spy"){
       //+1 Card +1 Action, Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice.
-      this.game.state.action++;
+      this.game.state.actions++;
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`) 
     }
     if (card_to_play == "thief"){
@@ -1169,7 +1284,7 @@ initializeGame(game_id) {
       //Gain a card to your hand costing up to 5. Put a card from your hand onto your deck.
       this.game.queue.push(`hand\t${player}\t1\tdeck`);
       if (this.game.player == player){
-        this.acquireCard(5, hand);
+        this.acquireCard(5, "hand");
       }
       return 0;
     }
@@ -1372,7 +1487,7 @@ initializeGame(game_id) {
       //+1 Card +1 Action, Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order
       this.game.queue.push(`sentry\t${player}`);
       this.game.state.actions++;
-      this.game.queue.push(`POOLDEAL\t${player}\t2\t${player}`);
+      this.game.queue.push(`SAFEPOOLDEAL\t${player}\t2\t${player}`);
       this.game.queue.push(`POOL\t${player}`);
       this.game.queue.push(`SAFEDEAL\t${player}\t${player}\t1`)
     }
@@ -1391,7 +1506,7 @@ initializeGame(game_id) {
       //+2 Coin, Discard the top card of your deck. If it's an Action card, you may play it.
       this.game.state.coins += 2;
       this.game.queue.push(`vassal\t${player}`);
-      this.game.queue.push(`POOLDEAL\t${player}\t1\t${player}`);
+      this.game.queue.push(`SAFEPOOLDEAL\t${player}\t1\t${player}`);
       this.game.queue.push(`POOL\t${player}`);
     }
     //**
@@ -1550,8 +1665,7 @@ initializeGame(game_id) {
   }
 
   sortHand(){
-    console.log("Sort hand");
-    console.log(JSON.stringify(this.game.deck[this.game.player-1].hand));
+    
     this.game.deck[this.game.player-1].hand.sort((a,b) =>{
       let c_a = this.deck[this.game.deck[this.game.player-1].cards[a]];
       let c_b = this.deck[this.game.deck[this.game.player-1].cards[b]];
@@ -1569,14 +1683,20 @@ initializeGame(game_id) {
       }
       return 0;
     });
-    console.log(JSON.stringify(this.game.deck[this.game.player-1].hand));
+    
   }
 
 
   returnGameRulesHTML(){
     let html = `<div class="rules-overlay">
-    <h1>Monarchy</h1>
-    <p>You are the ruler of a small kingdom with grand hopes and dreams. In all directions lie small tracts of land on the verge of a nervous breakdown. Pacify these lands under your banner and expand your kingdom, and do it quickly as other principalities are looking to expand. Hire minions, construct buildings, and fill the coffers of your treasury.</p>`;
+    <h1>Monarchy (Dominion)</h1>
+    <p>You are the ruler of a small kingdom with grand hopes and dreams. In all directions lie small tracts of land on the verge of a nervous breakdown. Pacify these lands under your banner and expand your kingdom, and do it quickly as other principalities are looking to expand. Hire minions, construct buildings, and fill the coffers of your treasury.</p>
+    <h2>How to Play</h2>
+    <p>Players take turns, playing an <em>action</em> card from their hand, then buying a card from the supply pile with their <em>treasure</em>. Each player begins with seven COPPER and 3 ESTATES, so in the first two turns the player will not have any ACTION cards to play. Playing an action card or buying a card is optional, but each player is guaranteed one play or purchase per turn. Some action cards give players additional actions, purchases, or temporary treasure to spend that turn. All cards in the players hand are discarded at the end of the turn. </p>
+    <h2>How to Win</h2>
+    <p>The game ends when all the PROVINCE cards are purchased or any three supply stacks are emptied. (The game begins with 10 copies of each playing card). Players go through their deck summing up their total number of VICTORY POINTS to determine the winner. There are 3 TREASURE cards and 3 VICTORY cards also in the supply. All cards are put on top of your discards and shuffled back into your deck, even VICTORY cards which have no associated value for playing or purchasing.</p>
+    `;
+    
     return html;
   }
 
