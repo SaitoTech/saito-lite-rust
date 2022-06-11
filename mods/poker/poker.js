@@ -2695,8 +2695,6 @@ class Poker extends GameTemplate {
             <option value="100">
           </datalist>
    
-          <div class="options_notice" id="stakesMsg">The game is just for fun</div>
-   
           <div class="overlay-input">
             <label for="observer_mode">Observer Mode:</label>
             <select name="observer">
@@ -2719,21 +2717,17 @@ class Poker extends GameTemplate {
     let crypto = document.getElementById("crypto");
     let stakeValue = document.getElementById("stake");
     let chipInput = document.getElementById("chip_wrapper");
-    let chipDisplay = document.getElementById("stakesMsg");
     //let stake = document.getElementById("stake");
 
     const updateChips = function(){
-      if(crypto && chipDisplay && numChips && stakeValue && chipInput /*&& stake*/){
+      if(numChips && stakeValue && chipInput /*&& stake*/){
         if (crypto.value == ""){
-          chipDisplay.textContent = "The game is just for fun";
           chipInput.style.display = "none";
           stake.value = "0";
         }else{
           let nChips = parseInt(numChips.value);
           let stakeAmt = parseFloat(stakeValue.value);
           let jsMath = stakeAmt/nChips;
-
-          chipDisplay.textContent = `You need ${stakeAmt} ${crypto.value} to play the game, with starting blinds of ${jsMath.toFixed(3)}/${(2*jsMath).toFixed(3)} ${crypto.value}`;
           chipInput.style.display = "block";
         }
       }

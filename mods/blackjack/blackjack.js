@@ -1224,7 +1224,6 @@ class Blackjack extends GameTemplate {
           <option value="5000" >5000</option>
         </select>
       </div>
-      <div class="options_notice" id="stakesMsg">The game is just for fun</div>
       <div class="overlay-input">
         <label for="crypto">Crypto:</label>
         <select id="crypto" name="crypto">
@@ -1251,7 +1250,6 @@ class Blackjack extends GameTemplate {
 
   attachAdvancedOptionsEventListeners(){
     let crypto = document.getElementById("crypto");
-    let chipDisplay = document.getElementById("stakesMsg");
     let stakeValue = document.getElementById("stake");
   
     const updateChips = function(){
@@ -1261,7 +1259,6 @@ class Blackjack extends GameTemplate {
           chipDisplay.textContent = "The game is just for fun";
         }else{
           let amt = parseFloat(stakeValue.value);
-          chipDisplay.textContent = `You need ${stakeValue.value} ${crypto.value} to play the game. The minimum bet per hand is ${amt/100} and maximum bet per hand is ${amt/10}. Note: players can double down, split, and pull blackjacks, meaning the payout can exceed the listed stake.`;
         }
       }
     };
