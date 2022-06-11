@@ -28,7 +28,7 @@ class Settlers extends GameTemplate {
 
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
-
+    this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
   }
@@ -448,6 +448,9 @@ class Settlers extends GameTemplate {
           JSON.stringify(this.skin.returnDeck())
       );
     }
+    if (this.game.players.length > 2){
+      this.grace_window = this.game.players.length * 12;
+    }
   }
 
   returnStatsOverlay(){
@@ -649,24 +652,17 @@ class Settlers extends GameTemplate {
       if (mv[0] == "winner") {
         
         let winner = parseInt(mv[1]);
-        this.game.queue.splice(qe, 1);
+        this.game.queue = [];
 
         this.updateLog(
-          `Player ${winner} is ${this.skin.winState} of Saitoa! The game is over.`
+          `Player ${winner + 1} is ${this.skin.winState} of Saitoa! The game is over.`
         );
-        if (this.game.player == winner) {
-          this.updateStatus(
-            `<div class="tbd">You are the winner! Congratulations!</div>`
-          );
-        } else {
-          this.updateStatus(
-            `<div class="tbd">Player ${winner} wins! Better luck next time.</div>`
-          );
-        }
+
         this.overlay.show(this.app, this, this.returnStatsOverlay());
-        $(".rules-overlay h1").text(`Game Over: Player ${winner} wins!`);
-        this.game.winner = this.game.players[winner - 1];
-        this.resignGame(this.game.id); //? post to leaderboard - ignore 'resign'
+        $(".rules-overlay h1").text(`Game Over: Player ${winner + 1 } wins!`);
+        
+        this.endGame(this.game.players[winner]); 
+        
         return 0;
       }
 
@@ -2153,7 +2149,7 @@ class Settlers extends GameTemplate {
 
       //Check for winner
       if (score >= this.game.options.game_length) {
-        this.game.queue.push(`winner\t${i + 1}`);
+        this.game.queue.push(`winner\t${i}`);
       }
     }
   }
@@ -2290,6 +2286,11 @@ class Settlers extends GameTemplate {
     });
   }
 
+  removeEvents(){
+    this.displayBoard();
+    $(".cardselector").off();
+    $(".trade").off();
+  }
   /*
     Functions for Player interacting with the board
   */

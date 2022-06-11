@@ -235,9 +235,6 @@ class Scotland extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
-    if (this.game.status != "") {
-      this.updateStatus(this.game.status);
-    }
 
     //
     // initialize

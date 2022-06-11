@@ -18,6 +18,15 @@ body {
   scrollbar-shadow-color: #868686;
 }
 
+
+/* Undo HUD styling for Acknowledge */
+ .status-header,  .status-text-menu,  .status-text-menu ul,  .status-text-menu ul li,  .textchoice{
+  background: unset;
+}
+ .textchoice:hover{
+  color: black;
+}
+
 /*
   Format Player Boxes for score keeping
 */
