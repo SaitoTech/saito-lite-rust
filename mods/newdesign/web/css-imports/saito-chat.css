@@ -64,7 +64,7 @@
     background-color: transparent;
     border: none;
     width: 100%;
-    color: var(--saito-default-font);
+    color: var(--saito-default-font-color);
 }
 
 .saito-chat-input-container>i {
@@ -103,8 +103,8 @@
 }
 
 .saito-chat-bubble>img {
-    width: 5rem;
-    height: 5rem;
+    width: 4.5rem;
+    height: 4.5rem;
     border-radius: .5rem;
 }
 
@@ -124,6 +124,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--saito-black);
+    font-size: 1.44rem;
+
 
 
 

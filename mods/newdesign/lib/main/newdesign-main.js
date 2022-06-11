@@ -51,13 +51,13 @@ class NewDesignMain {
     const sitemsg_btn = document.querySelector('#sitemsg_btn');
 
     salert_btn.addEventListener('click', (e) => {
-      salert("salert clicked");
+      salert("Clicked Successfully");
     })
     sprompt_btn.addEventListener('click', (e) => {
-      sprompt("sprompt clicked");
+      sprompt("Please insert something");
     })
     sconfirm_btn.addEventListener('click', (e) => {
-      sconfirm("sconfirm clicked");
+      sconfirm("Activity Confirmed");
     })
     sitemsg_btn.addEventListener('click', (e) => {
       siteMessage("New site message");

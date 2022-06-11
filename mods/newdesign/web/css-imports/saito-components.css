@@ -330,8 +330,8 @@ Saito User List and Saito User
 
 
 .saito-user-list.saito-user-dense .saito-user>img {
-    height: 3.4rem;
-    width: 3.4rem;
+    height: 3.6rem;
+    width: 3.6rem;
     border-radius: 0;
     cursor: pointer;
     margin-right: 1rem;
@@ -537,29 +537,50 @@ Saito Alert
 }
 
 #alert-shim {
-    background-color: var(--saito-white);
+
 
     margin: auto;
-    height: 20rem;
-    min-width: 35em;
-    border-radius: 10px;
+    min-height: 20rem;
+    width: 40rem;
 
 
 }
 
 #alert-box {
     height: 100%;
-    display: grid;
-    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     padding: 1rem;
+    background-color: var(--saito-white);
+    min-height: 20rem;
+    border-radius: .5rem;
 
+
+}
+
+#alert-box i {
+    font-size: 3.3rem;
+    color: var(--saito-primary);
 }
 
 .alert-message {
     align-self: center;
     justify-self: center;
-    font-size: 2.4rem;
+    font-size: 2.5rem;
+    margin-top: 2rem;
+
+}
+
+.alert-message.prompt {
+    font-size: 2.5rem;
+    margin: 2rem 0;
+}
+
+.alert-prompt {
+    margin-bottom: 1.5rem;
+    align-self: stretch;
 
 }
 
@@ -576,24 +597,37 @@ Saito site message
 #message-wrapper {
     position: fixed;
     bottom: 1.5rem;
-    left: 1.5rem;
+    right: 1.5rem;
     z-index: 20;
-    min-width: 25em;
+    min-width: 30em;
     cursor: pointer;
 }
 
 #message-box {
-    background-color: var(--saito-primary);
+    background-color: var(--saito-white);
     height: 10rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: .5rem;
+    display: flex;
+    padding: 1rem;
 }
 
+
 .message-message {
-    font-size: 2.4rem;
-    color: var(--saito-white);
+    color: var(--saito-primary);
+    font-size: 2.5rem;
 }
+
+#message-box i {
+    font-size: 3.3rem;
+    color: var(--saito-primary);
+    margin-right: 1rem;
+
+}
+
+
 
 
 /* ----------------------------------------------------------------

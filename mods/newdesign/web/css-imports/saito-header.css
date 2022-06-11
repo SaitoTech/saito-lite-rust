@@ -92,7 +92,7 @@
 #saito-hamburger-contents {
     display: block;
     pointer-events: none;
-    color: var(--saito-default-font);
+    color: var(--saito-default-font-color);
 
     background-color: var(--saito-menu-background);
     position: absolute;
@@ -112,40 +112,69 @@
     /* transform: translateX(20rem); */
     width: 20rem;
     height: 100vh;
+    overflow: auto;
 }
 
 .saito-profile {
     background-color: var(--saito-profile-background);
     padding: 1.4rem 0.5rem;
-    display: flex;
     justify-content: center;
     border-radius: 8px;
+    display: grid;
+    justify-items: center;
+    grid-row-gap: 1rem;
+    grid-template-rows: min-content min-content;
 
 }
 
 .saito-profile>img {
     width: 70px;
-    border-radius: 8px;
-    object-fit: contain;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
     background-color: white;
     margin-right: 2rem;
     transition: all 0.2s;
     cursor: pointer;
+    display: block;
 }
 
-.saito-profile>img:hover {
-    transform: scale(1.1);
+.saito-profile>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.saito-profile>div p {
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin-right: .5rem;
+}
+
+.saito-profile>div i {
+    cursor: pointer;
+
+}
+
+.saito-profile>div i:hover {
+    transform: scale(1.05);
+    color: var(--saito-primary);
 }
 
 .saito-profile-info>p {
-    color: var(--saito-default-font);
+    color: var(--saito-default-font-color);
     font-weight: bold;
     margin-bottom: 0.5rem;
     cursor: pointer;
 }
 
 .saito-profile-info>div {
-    color: var(--saito-default-font);
+    color: var(--saito-default-font-color);
     font-weight: bold;
     border: 1px solid white;
     background-color: var(--saito-secondary);
@@ -158,6 +187,8 @@
 
     padding: 1.5rem 0;
     font-size: 1.1rem;
+    overflow: scroll;
+
 }
 
 .saito-menu-section:not(:last-child) {

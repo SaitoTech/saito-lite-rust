@@ -39,7 +39,7 @@ input[type="password"] {
   /* background: var(--saito-background); */
   border: 1px solid var(--saito-border);
   margin-right: 2rem;
-  padding: 1.5rem 1.5rem;
+  padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
   color: var(--saito-default);
@@ -323,12 +323,14 @@ select {}
   background-color: var(--saito-white);
   display: flex;
   align-items: center;
-  height: 5rem;
+  height: 4.5rem;
   position: relative;
   border: 1px solid var(--saito-border);
   border-radius: .5rem;
   border-bottom-left-radius: 0;
   font-size: 1.6rem;
+  padding: 0 0 0 1.5rem;
+
 
 
 
@@ -338,7 +340,7 @@ select {}
   color: var(--saito-black);
   width: calc(100% - 5rem);
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
 }
 

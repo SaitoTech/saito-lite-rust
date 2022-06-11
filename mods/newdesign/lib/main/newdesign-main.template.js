@@ -861,7 +861,7 @@ module.exports = (app) => {
                      
                    </div>
                   <div class="saito-left-menu-body  ">
-                      <div class="saito-menu-container ">
+                      <div class="saito-menu-container saito-menu-dense ">
                           <ul>
                               <li>
 
@@ -895,24 +895,26 @@ module.exports = (app) => {
                         <i class="fas fa-plus"></i>
                    </div>
                   <div class="saito-left-menu-body">
-                        <div class="saito-chat-room-list">
-                                <div class="saito-chat-room">
-                                    <img src="/saito/img/background.png" />
-                                        <div >
-                                            <p class="saito-small-p"> Saito Community Chat</p>
-                                            <p class="saito-small-p"> New chat</p>
-                                        </div>
-                                        <p class="saito-small-p">22.23</p>
-                                </div>
-                                <div class="saito-chat-room">
-                                    <img src="/saito/img/background.png" />
-                                        <div >
-                                            <p class="saito-small-p"> DavikStone</p>
-                                            <p class="saito-small-p"> New chat</p>
-                                        </div>
-                                        <p class="saito-small-p">22.23</p>
-                                </div>
-                        </div>
+                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+                  <div class="saito-user  saito-marb-2">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat </p>
+                          <span> new chat</span>
+                      </div>
+  
+                  </div>
+                  <div class="saito-user ">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat</p>
+                          <span>new chat</span>
+                      </div>
+                    
+                      
+                  </div>
+                
+              </div>
                   </div>
                   </div>
 
@@ -922,36 +924,38 @@ module.exports = (app) => {
               </div>
 
               <div id="saito-main-content">
-                  <div class="saito-module-list">
-                      <div class="saito-module">
-                          <img src="/saito/img/doom.jpg" />
-                          <div>
-                              <p>Doom</p>
-                              <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </span>
-                          </div>
-                      </div>
-                      <div class="saito-module">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p>Design</p>
-                              <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </span>
-                          </div>
-                      </div>
-                      <div class="saito-module">
-                          <img src="/saito/img/doom.jpg" />
-                          <div>
-                              <p>Design</p>
-                              <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </span>
-                          </div>
-                      </div>
-                      <div class="saito-module">
-                          <img src="/saito/img/doom.jpg" />
-                          <div>
-                              <p>Design</p>
-                              <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </span>
-                          </div>
-                      </div>
-                  </div>
+                <div class="saito-grid-1">
+                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user">
+                    <img src="/saito/img/doom.jpg" />
+                    <div class="saito-user-info">
+                        <p>Doom</p>
+                        <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                    </div>
+                   
+                </div>
+                <div class="saito-user ">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Blackjack </p>
+                        <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                        
+
+                    </div>
+               
+                
+                </div>
+                <div class="saito-user">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Chess </p>
+                        <span> An implementation of the Chess for the Saito Blockchain </span>
+                    </div>
+                 
+                </div>
+            </div>
+                </div>
+                
               </div>
 
           </div>
@@ -994,7 +998,7 @@ module.exports = (app) => {
       </div>
 
       <div class="saito-tab" id="components">
-          <h4> Components </h4>
+          <h4 class="saito-marb-2"> Components </h4>
           <div>
               <button id="salert_btn"> salert </button>
               <button id="sprompt_btn"> sprompt </button>
