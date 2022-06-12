@@ -819,6 +819,38 @@ console.log("----------------------------");
 
         }
 
+
+
+	if (mv[0] === "assault") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let space = mv[2];
+
+alert("ASSAULT UNIMPLEMENTED");
+
+	  return 1;
+
+	}
+	if (mv[0] === "pacify") {
+
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let space = mv[2];
+
+	  this.game.spaces[space].unrest = 0;
+	  this.game.spaces[space].political = faction;
+
+	  this.displaySpace(space);
+
+	  return 1;
+
+	}
+
+
+
+
 	if (mv[0] === "convert") {
 
 	  this.game.queue.splice(qe, 1);

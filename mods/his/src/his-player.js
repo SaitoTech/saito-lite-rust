@@ -444,8 +444,6 @@
 
     this.resetPlayerTurn(this.game.player, faction);
 
-console.log("FACTION HAND IDX: " + faction_hand_idx);
-
     this.updateStatusAndListCards("Select a Card: ", this.game.deck[0].fhand[faction_hand_idx]);
     this.attachCardboxEvents(function(card) {
       this.playerPlayCard(card, this.game.player, faction);
@@ -806,7 +804,11 @@ console.log("spring deploy");
 
   }
   canPlayerMoveFormationOverPass(his_self, player, faction) {
-    return 1;
+    let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_with_units.length; i++) {
+      if (this.game.spaces[spaces_with_units[i]].pass.length > 0) { return 1; }
+    }
+    return 0;
   }
   async playerMoveFormationOverPass(his_self, player, faction) {
 
@@ -1113,23 +1115,73 @@ console.log("spring deploy");
       },
 
     );
-console.log("7");
-return;
   }
 
   canPlayerAssault(his_self, player, faction) {
+    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      if (!this.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
+        if (this.game.spaces[conquerable_spaces[i]].type === "fortress") {
+	  return 1;
+	}
+      }
+    }
     return 0;
   }
   async playerAssault(his_self, player, faction) {
-console.log("8");
-return;
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Space for Siege/Assault: ",
+
+      function(space) {
+        if (!this.isSpaceControlledByFaction(space, faction)) {
+          if (this.game.spaces[space.key].type === "fortress") {
+  	    return 1;
+	  }
+        }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
+    let spaces_in_unrest = this.returnSpacesInUnrest();
+    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
+      if (this.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+    }
+    for (let i = 0; i < conquerable_spaces.length; i++) {
+      if (!this.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
+    }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
-console.log("9");
-return;
+    let spaces_in_unrest = this.returnSpacesInUnrest();
+    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+
+    his_self.playerSelectSpaceWithFilter(
+
+      "Select Space to Pacify:",
+
+      function(space) {
+        if (spaces_in_unrest.includes(space.key)) { return 1; }
+        if (conquerable_spaces.includes(space.key)) { return 1; }
+	return 0;
+      },
+
+      function(destination_spacekey) {
+	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
+	his_self.endTurn();
+      },
+
+    );
+    return 0;
   }
   canPlayerExplore(his_self, player, faction) {
     return 0;

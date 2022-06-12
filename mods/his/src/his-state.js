@@ -760,6 +760,24 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
     return seas;
   }
 
+  returnSpacesInUnrest() {
+    let spaces_in_unrest = [];
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].unrest == 1) { spaces_in_unrest.push(key); }
+    }
+    return spaces_in_unrest;
+  }
+
+  returnSpacesWithFactionInfantry(faction) {
+    let spaces_with_infantry = [];
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction].length > 0) {
+        spaces_with_infantry,push(key);
+      }
+    }
+    return spaces_with_infantry;
+  }
+
   returnSpaces() {
 
     let spaces = {};
