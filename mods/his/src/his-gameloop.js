@@ -459,9 +459,12 @@ console.log("FHAND STILL EXISTS 2? " + JSON.stringify(this.game.deck[0].fhand));
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
+
 	  if (this.game.player == player) {
+console.log(" i get to play spring deployment...");
 	    this.playerPlaySpringDeployment(faction, player);
 	  } else {
+console.log(" the other player plays spring deployment...");
 	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
 	  }
 

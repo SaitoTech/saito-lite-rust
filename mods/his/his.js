@@ -231,6 +231,7 @@ class HereIStand extends GameTemplate {
 
 
     this.importFaction('faction4', {
+
       id		:	"faction4" ,
       key		: 	"papacy",
       name		: 	"Papacy",
@@ -1332,13 +1333,14 @@ console.log("adding stuff!");
   }
 
   returnNeighbours(space, transit_passes=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (transit_passes == 1) {
-      return this.game.spaces[space].neighbours;
+      return space.neighbours;
     }
     let neighbours = [];
-    for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-      let x = this.game.spaces[space].neighbours[i];      
-      if (!this.game.spaces[space].pass.includes[x]) {
+    for (let i = 0; i < space.neighbours.length; i++) {
+      let x = space.neighbours[i];      
+      if (!space.pass.includes[x]) {
 	neighbours.push(x);
       }
     }
@@ -1370,7 +1372,9 @@ console.log("adding stuff!");
     //
     // put the neighbours into pending
     //
-    let n = this.returnNeighbours(transit_passes);
+    let n = this.returnNeighbours(sourcekey, transit_passes);
+
+
 
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
@@ -1428,6 +1432,15 @@ console.log("adding stuff!");
     return false;
   }
 
+  isSpaceFactionCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let capitals = this.returnCapitals(faction);
+    for (let i = 0; i < capitals.length; i++) {
+      if (capitals[i] === space.key) { return true; }
+    }
+    return false;
+  }
+
   isSpaceInUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.unrest == 1) { return true; }
@@ -1436,7 +1449,18 @@ console.log("adding stuff!");
 
   isSpaceFriendly(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    return 1;
+    // friendly if i control it
+    if (space.owner === faction) { return 1; }
+    if (space.political === faction) { return 1; }
+    if (space.political === "" && space.home === faction) { return 1; }
+    if (space.religion === "protestant" && faction === "protestant") { return 1; }
+    // friendly if ally controls it
+    if (space.political === "") {
+      if (this.areAllies(faction, space.home)) { return 1; }
+    } else {
+      if (this.areAllies(faction, space.political)) { return 1; }
+    }
+    return 0;
   }
 
   isSpaceConnectedToCapital(space, faction) {
@@ -1444,7 +1468,8 @@ console.log("adding stuff!");
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
-    let already_routed_through = [];
+console.log("CAPITALS: " + JSON.stringify(capitals));
+    let already_routed_through = {};
 
     let res = this.returnNearestSpaceWithFilter(
 
@@ -1458,8 +1483,8 @@ console.log("adding stuff!");
 
       // route through this?
       function(spacekey) {
-	if (already_routed_through.includes(spacekey)) { return 0; }
-        already_routed_through.push(spacekey);
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	return 0;
       }
@@ -3427,10 +3452,8 @@ console.log("adding stuff!");
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
-
-
       spaces[key].unrest = 0;
-
+      if (!spaces[key].pass) { spaces[key].pass = []; }
     }
 
     return spaces;
@@ -5634,9 +5657,12 @@ console.log("FHAND STILL EXISTS 2? " + JSON.stringify(this.game.deck[0].fhand));
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
+
 	  if (this.game.player == player) {
+console.log(" i get to play spring deployment...");
 	    this.playerPlaySpringDeployment(faction, player);
 	  } else {
+console.log(" the other player plays spring deployment...");
 	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
 	  }
 
@@ -6929,6 +6955,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       this.updateStatusWithOptions(msg, opt);
 
+console.log("spring deploy");
+
       $(".option").off();
       $(".option").on('click', function() {
 
@@ -6950,7 +6978,9 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
               if (his_self.isSpaceConnectedToCapital(space, faction)) {
-                return 1;
+                if (!his_self.isSpaceFactionCapital(space, faction)) {
+                  return 1;
+		}
               }
             }
             return 0;
@@ -6989,7 +7019,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
                   //units_to_move.reverse();
 
                   for (let i = 0; i < units_to_move.length; i++) {
-console.log("---- MOVING UNITS -----");
                     his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
                   }
                   his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
@@ -7639,7 +7668,7 @@ return;
   gainVP(faction, points) {
     for (let i = 0; i < this.game.players_info.length; i++) {
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii].key) {
+	if (faction === this.game.players_info[i].factions[ii]) {
           this.game.players_info[i].factions[ii].vp += points;
 	  break;
         }
@@ -7649,10 +7678,13 @@ return;
   }
 
   returnCapitals(faction) {
+console.log("returning capitals of " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
+console.log("checking faction: " + JSON.stringify(this.game.players_info[i].factions));
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii].key) {
-          return this.game.players_info[i].factions[ii].capitals;
+	if (faction === this.game.players_info[i].factions[ii]) {
+console.log("found");
+          return this.factions[this.game.players_info[i].factions[ii]].capitals;
         }
       }
     }

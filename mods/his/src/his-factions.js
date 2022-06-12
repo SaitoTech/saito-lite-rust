@@ -32,7 +32,7 @@
   gainVP(faction, points) {
     for (let i = 0; i < this.game.players_info.length; i++) {
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii].key) {
+	if (faction === this.game.players_info[i].factions[ii]) {
           this.game.players_info[i].factions[ii].vp += points;
 	  break;
         }
@@ -42,10 +42,13 @@
   }
 
   returnCapitals(faction) {
+console.log("returning capitals of " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
+console.log("checking faction: " + JSON.stringify(this.game.players_info[i].factions));
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii].key) {
-          return this.game.players_info[i].factions[ii].capitals;
+	if (faction === this.game.players_info[i].factions[ii]) {
+console.log("found");
+          return this.factions[this.game.players_info[i].factions[ii]].capitals;
         }
       }
     }

@@ -106,13 +106,14 @@
   }
 
   returnNeighbours(space, transit_passes=1) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (transit_passes == 1) {
-      return this.game.spaces[space].neighbours;
+      return space.neighbours;
     }
     let neighbours = [];
-    for (let i = 0; i < this.game.spaces[space].neighbours.length; i++) {
-      let x = this.game.spaces[space].neighbours[i];      
-      if (!this.game.spaces[space].pass.includes[x]) {
+    for (let i = 0; i < space.neighbours.length; i++) {
+      let x = space.neighbours[i];      
+      if (!space.pass.includes[x]) {
 	neighbours.push(x);
       }
     }
@@ -144,7 +145,9 @@
     //
     // put the neighbours into pending
     //
-    let n = this.returnNeighbours(transit_passes);
+    let n = this.returnNeighbours(sourcekey, transit_passes);
+
+
 
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
@@ -202,6 +205,15 @@
     return false;
   }
 
+  isSpaceFactionCapital(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let capitals = this.returnCapitals(faction);
+    for (let i = 0; i < capitals.length; i++) {
+      if (capitals[i] === space.key) { return true; }
+    }
+    return false;
+  }
+
   isSpaceInUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.unrest == 1) { return true; }
@@ -210,7 +222,18 @@
 
   isSpaceFriendly(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    return 1;
+    // friendly if i control it
+    if (space.owner === faction) { return 1; }
+    if (space.political === faction) { return 1; }
+    if (space.political === "" && space.home === faction) { return 1; }
+    if (space.religion === "protestant" && faction === "protestant") { return 1; }
+    // friendly if ally controls it
+    if (space.political === "") {
+      if (this.areAllies(faction, space.home)) { return 1; }
+    } else {
+      if (this.areAllies(faction, space.political)) { return 1; }
+    }
+    return 0;
   }
 
   isSpaceConnectedToCapital(space, faction) {
@@ -218,7 +241,8 @@
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
-    let already_routed_through = [];
+console.log("CAPITALS: " + JSON.stringify(capitals));
+    let already_routed_through = {};
 
     let res = this.returnNearestSpaceWithFilter(
 
@@ -232,8 +256,8 @@
 
       // route through this?
       function(spacekey) {
-	if (already_routed_through.includes(spacekey)) { return 0; }
-        already_routed_through.push(spacekey);
+	if (already_routed_through[spacekey] == 1) { return 0; }
+        already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	return 0;
       }
@@ -2201,10 +2225,8 @@
       spaces[key].units['hungary'] = [];
       spaces[key].units['scotland'] = [];
       spaces[key].units['independent'] = [];
-
-
       spaces[key].unrest = 0;
-
+      if (!spaces[key].pass) { spaces[key].pass = []; }
     }
 
     return spaces;

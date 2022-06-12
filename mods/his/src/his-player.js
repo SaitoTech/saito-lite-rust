@@ -594,6 +594,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       this.updateStatusWithOptions(msg, opt);
 
+console.log("spring deploy");
+
       $(".option").off();
       $(".option").on('click', function() {
 
@@ -615,7 +617,9 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
               if (his_self.isSpaceConnectedToCapital(space, faction)) {
-                return 1;
+                if (!his_self.isSpaceFactionCapital(space, faction)) {
+                  return 1;
+		}
               }
             }
             return 0;
@@ -654,7 +658,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
                   //units_to_move.reverse();
 
                   for (let i = 0; i < units_to_move.length; i++) {
-console.log("---- MOVING UNITS -----");
                     his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
                   }
                   his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
