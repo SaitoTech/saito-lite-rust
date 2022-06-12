@@ -326,12 +326,14 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
     	  html += '<li class="option" id="ok">acknowledge</li>';
 
           let z = this.returnEventObjects();
-          if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
-            let x = z[i].menuOption(this, stage, this.game.player);
-            html += x.html;
-	    menu_index.push(i);
-	    menu_triggers.push(x.event);
-	    attach_menu_events = 1;
+	  for (let i = 0; i < z.length; z++) {
+            if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+              let x = z[i].menuOption(this, stage, this.game.player);
+              html += x.html;
+	      menu_index.push(i);
+	      menu_triggers.push(x.event);
+	      attach_menu_events = 1;
+	    }
 	  }
 
 	  this.updateStatusWithOptions(msg, html);
@@ -695,11 +697,12 @@ console.log("----------------------------");
 	  let card = mv[3];
 	  let ops = mv[4];
 
-	  if (this.game.player == player) {
-            this.playerPlayOps(card, ops);
-	  }
+//	  if (this.game.player == player) {
+//            this.playerPlayOps(card, faction, ops);
+//	  }
 
 	  this.game.queue.splice(qe, 1);
+
 	  let player_turn = -1;
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
@@ -715,7 +718,8 @@ console.log("----------------------------");
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-            this.playerTurn(faction);
+	    this.playerPlayOps(card, faction, ops);
+            //this.playerTurn(faction);//
 	  }
 
           return 0;

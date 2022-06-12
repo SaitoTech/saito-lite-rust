@@ -771,8 +771,9 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
   returnSpacesWithFactionInfantry(faction) {
     let spaces_with_infantry = [];
     for (let key in this.game.spaces) {
+console.log("trying: " + key + " -- " + faction);
       if (this.game.spaces[key].units[faction].length > 0) {
-        spaces_with_infantry,push(key);
+        spaces_with_infantry.push(key);
       }
     }
     return spaces_with_infantry;

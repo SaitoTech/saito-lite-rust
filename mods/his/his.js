@@ -1998,8 +1998,9 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
   returnSpacesWithFactionInfantry(faction) {
     let spaces_with_infantry = [];
     for (let key in this.game.spaces) {
+console.log("trying: " + key + " -- " + faction);
       if (this.game.spaces[key].units[faction].length > 0) {
-        spaces_with_infantry,push(key);
+        spaces_with_infantry.push(key);
       }
     }
     return spaces_with_infantry;
@@ -5911,11 +5912,12 @@ console.log("----------------------------");
 	  let card = mv[3];
 	  let ops = mv[4];
 
-	  if (this.game.player == player) {
-            this.playerPlayOps(card, ops);
-	  }
+//	  if (this.game.player == player) {
+//            this.playerPlayOps(card, faction, ops);
+//	  }
 
 	  this.game.queue.splice(qe, 1);
+
 	  let player_turn = -1;
 
 	  for (let i = 0; i < this.game.players_info.length; i++) {
@@ -5931,7 +5933,8 @@ console.log("----------------------------");
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-            this.playerTurn(faction);
+	    this.playerPlayOps(card, faction, ops);
+            //this.playerTurn(faction);//
 	  }
 
           return 0;
@@ -7529,10 +7532,11 @@ console.log("spring deploy");
   }
 
   canPlayerAssault(his_self, player, faction) {
-    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+console.log("can player assault: " + faction);
+    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!this.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
-        if (this.game.spaces[conquerable_spaces[i]].type === "fortress") {
+      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) {
+        if (his_self.game.spaces[conquerable_spaces[i]].type === "fortress") {
 	  return 1;
 	}
       }
@@ -7546,8 +7550,8 @@ console.log("spring deploy");
       "Select Space for Siege/Assault: ",
 
       function(space) {
-        if (!this.isSpaceControlledByFaction(space, faction)) {
-          if (this.game.spaces[space.key].type === "fortress") {
+        if (!his_self.isSpaceControlledByFaction(space, faction)) {
+          if (his_self.game.spaces[space.key].type === "fortress") {
   	    return 1;
 	  }
         }
@@ -7562,19 +7566,19 @@ console.log("spring deploy");
     );
   }
   canPlayerControlUnfortifiedSpace(his_self, player, faction) {
-    let spaces_in_unrest = this.returnSpacesInUnrest();
-    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+    let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_in_unrest.length; i++) {
-      if (this.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
+      if (his_self.isSpaceControlledByFaction(spaces_in_unrest[i]), faction) { return 1; }
     }
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!this.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
+      if (!his_self.isSpaceControlledByFaction(conquerable_spaces[i]), faction) { return 1; }
     }
     return 0;
   }
   async playerControlUnfortifiedSpace(his_self, player, faction) {
-    let spaces_in_unrest = this.returnSpacesInUnrest();
-    let conquerable_spaces = this.returnSpacesWithInfantry(faction);
+    let spaces_in_unrest = his_self.returnSpacesInUnrest();
+    let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
     his_self.playerSelectSpaceWithFilter(
 
