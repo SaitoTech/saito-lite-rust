@@ -81,6 +81,12 @@
     this.displayBoard();
   }
 
+  controlSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
+    space.political = faction;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {

@@ -1308,6 +1308,12 @@ console.log("adding stuff!");
     this.displayBoard();
   }
 
+  controlSpace(faction, space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
+    space.political = faction;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -5410,10 +5416,17 @@ console.log("MOVE: " + mv[0]);
 	    this.displaySpace(source);
 	    this.displaySpace(destination);
 
-	  }
-console.log("source: " + JSON.stringify(this.game.spaces[source]));
-console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
+	    //
+	    // if this space contains two non-allies, field-battle or siege must occur
+	    //
+	    let space = this.game.spaces[destination];
+	    for (let f in space.units) {
+	      if (f !== faction && !this.areAllies(f, faction)) {
+	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
+	      }
+	    }
 
+	  }
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -5543,12 +5556,14 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
     	  html += '<li class="option" id="ok">acknowledge</li>';
 
           let z = this.returnEventObjects();
-          if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
-            let x = z[i].menuOption(this, stage, this.game.player);
-            html += x.html;
-	    menu_index.push(i);
-	    menu_triggers.push(x.event);
-	    attach_menu_events = 1;
+	  for (let i = 0; i < z.length; z++) {
+            if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+              let x = z[i].menuOption(this, stage, this.game.player);
+              html += x.html;
+	      menu_index.push(i);
+	      menu_triggers.push(x.event);
+	      attach_menu_events = 1;
+	    }
 	  }
 
 	  this.updateStatusWithOptions(msg, html);
@@ -5588,6 +5603,150 @@ console.log("dest: " + JSON.stringify(this.game.spaces[destination]));
 	  return 0;
 
 	}
+
+
+	if (mv[0] === "field_battle") {
+
+          this.game.queue.splice(qe, 1);
+
+	  //
+	  // this is run when a field battle starts. players have by now 
+	  // interceded or played cards that allow them to respond to the 
+	  // movement, including retreat into a fortress if available. as
+	  // such, this handles the conflict.
+	  //
+	  let his_self = this;
+	  let space = this.game.space[mv[1]];
+	  let attacker = mv[2];
+	  let stage = "field_battle";
+
+	  let msg = "A field battle commences in " + space.name;
+	  let html = '';
+
+	  let menu_index = [];
+	  let menu_triggers = [];
+	  let attach_menu_events = 0;
+
+    	  html += '<li class="option" id="ok">acknowledge</li>';
+
+          let z = this.returnEventObjects();
+	  for (let i = 0; i < z.length; z++) {
+            if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
+              let x = z[i].menuOption(this, stage, this.game.player);
+              html += x.html;
+	      menu_index.push(i);
+	      menu_triggers.push(x.event);
+	      attach_menu_events = 1;
+	    }
+	  }
+
+	  this.updateStatusWithOptions(msg, html);
+
+	  $('.option').off();
+          $('.option').on('click', function () {
+
+            let action2 = $(this).attr("id");
+
+	    //
+	    // have the field battle
+	    //
+	    let factions_involved = [];
+            for (let f in space.units) {
+	      if (space.units[f].length > 0) {
+		factions_involved.push(f);
+	      }
+	    }
+
+	    let attackers = [];
+	    let defenders = [];
+
+	    for (let i = 0; i < factions_involved.length; i++) {
+	      if (factions_involved[i] === attacker || his_self.areAllies(factions_involved[i], attacker)) {
+	        attackers.push(factions_involved[i]);
+	      } else {
+		defenders.push(factions_involved[i]);
+	      }
+	    }
+
+	    //
+	    // now have a round of battle
+	    //
+	    let attacker_rolls = 0;
+	    let defender_rolls = 0;
+	    let attacker_hits = 0;
+	    let defender_hits = 0;
+
+	    console.log("just assuming each faction has 3 dice... for now.");
+	    
+	    attacker_rolls = 3;
+	    defender_rolls = 3;
+
+	    for (let i = 0; i < attacker_rolls; i++) {
+	      if (his_self.rollDice(6) >= 5) { attacker_hits++; }
+	    }
+	    for (let i = 0; i < defender_rolls; i++) {
+	      if (his_self.rollDice(6) >= 5) { defender_hits++; }
+	    }
+
+	    his_self.updateLog("Attacker: " + attacker_hits + " hits");
+	    his_self.updateLog("Defender: " + defender_hits + " hits");
+
+	    //
+	    // auto-eliminate
+	    //
+	    for (let i = 0; i < factions_involved.length; i++) {
+	      if (factions_involved[i] === attacker || his_self.areAllies(factions_involved[i], attacker)) {
+		for (let ii = 0; ii < defender_hits && space.units[factions_involved[i]].length > 0; ii++) {
+		  if (
+		    space.units[factions_involved[i]][ii].type == "regular" || 
+		    space.units[factions_involved[i]][ii].type == "mercenary" || 
+		    space.units[factions_involved[i]][ii].type == "cavalry"
+		  ) {
+		    space.units[factions_involved[i]].splice(ii, 1);
+		    ii--;
+		  } 
+	        }
+	      } else {
+		for (let ii = 0; ii < attacker_hits && space.units[factions_involved[i]].length > 0; i++) {
+		  if (
+		    space.units[factions_involved[i]][ii].type == "regular" || 
+		    space.units[factions_involved[i]][ii].type == "mercenary" || 
+		    space.units[factions_involved[i]][ii].type == "cavalry"
+		  ) {
+		    space.units[factions_involved[i]].splice(ii, 1);
+		    ii--;
+		  } 
+	        }
+	      }
+	    }
+
+
+	    //
+	    // who is left?
+	    //
+	    let winner = "attacker";
+	    if (attacker_hits > defender_hits) {
+	    
+	    }
+	    if (defender_hits >= defender_hits) {
+	      winner = "defender";
+	    }
+
+	    //
+	    // murder defender all for now
+	    //
+	    for (let i = 0; i < defenders.length; i++) {
+	      space.units[defenders[i]] = [];
+	    }
+
+	    his_self.controlSpace(space, attacker);
+	    his_self.displaySpace(space.key);
+
+	  });
+
+          return 1;
+        }
+
 
 
         if (mv[0] === "victory_determination_phase") {
