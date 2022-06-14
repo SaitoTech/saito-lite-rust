@@ -35,6 +35,65 @@
     align-items: center;
     justify-content: center;
     list-style: none;
+
+
+}
+
+
+.saito-big-menu-container {
+    position: relative;
+}
+
+.saito-big-menu-container:hover .saito-big-menu {
+    display: block;
+}
+
+#saito-big-menu-toggle {
+    font-size: 1.8rem;
+    color: var(--saito-white);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.saito-big-menu {
+    background-color: var(--saito-white) !important;
+    position: absolute;
+    top: 2.5rem;
+    padding: 1rem 0;
+    border-radius: 8px;
+    display: none;
+    transition: all 0.2s;
+    z-index: 20;
+    border: 1px solid var(--saito-border);
+}
+
+.saito-big-menu a {
+    font-size: 1.8rem;
+    display: block;
+    padding: .5rem .3rem;
+}
+
+.saito-big-menu a.active {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-big-menu a:hover {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+
+
+.saito-big-menu a:not(:last-child) {}
+
+.mega-menu:hover .saito-big-menu {
+    display: block;
+}
+
+.saito-big-menu-link {
+    margin-bottom: 1rem;
+    display: inline-block;
 }
 
 
@@ -58,10 +117,7 @@
     transform: scale(0.9);
 }
 
-/* #saito-menuToggle:hover + #hamburger-contents {
-    opacity: 1;
-    /* transform: translateX(-21rem); 
-  } */
+
 #saito-menuToggle span {
     display: block;
     width: 33px;
@@ -203,63 +259,6 @@
     pointer-events: auto !important;
 }
 
-.saito-big-menu-container {
-    position: relative;
-}
-
-.saito-big-menu-container:hover .saito-big-menu {
-    display: block;
-}
-
-#saito-big-menu-toggle {
-    font-size: 1.8rem;
-    color: var(--saito-white);
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.saito-big-menu {
-    background-color: var(--saito-white) !important;
-    position: absolute;
-    top: 2.5rem;
-    /* left: -1rem; */
-    padding: 1rem 0;
-    border-radius: 8px;
-    display: none;
-    transition: all 0.2s;
-    z-index: 20;
-}
-
-.saito-big-menu a {
-    font-size: 1.8rem;
-    display: block;
-    padding: .5rem .3rem;
-}
-
-.saito-big-menu a.active {
-    background-color: var(--saito-primary);
-    color: var(--saito-white);
-}
-
-.saito-big-menu a:hover {
-    background-color: var(--saito-primary);
-    color: var(--saito-white);
-}
-
-
-
-.saito-big-menu a:not(:last-child) {
-    /* margin-bottom: 1.5rem; */
-}
-
-.mega-menu:hover .saito-big-menu {
-    display: block;
-}
-
-.saito-big-menu-link {
-    margin-bottom: 1rem;
-    display: inline-block;
-}
 
 
 /* .active {

@@ -172,6 +172,26 @@ module.exports = (app) => {
                   <div class="saito-padx-2 saito-white-background "> 1/4 </div>
 
               </div>
+              <div class="saito-grid-1-4">
+                  <div class="saito-white-background  saito-padx-2"> 1/5</div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 4/5 </div>
+                
+              </div>
+              <div class="saito-grid-4-1">
+                  <div class="saito-white-background  saito-padx-2"> 1/5</div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 4/5 </div>
+                
+              </div>
+              <div class="saito-grid-1-5">
+                  <div class="saito-white-background  saito-padx-2"> 1/6</div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 5/6 </div>
+                
+              </div>
+              <div class="saito-grid-5-1">
+                  <div class="saito-white-background  saito-padx-2"> 5/6</div>
+                  <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/6 </div>
+                
+              </div>
           </div>
       </div>
       <div class="saito-tab" id="boxes">
