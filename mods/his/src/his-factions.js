@@ -42,12 +42,9 @@
   }
 
   returnCapitals(faction) {
-console.log("returning capitals of " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
-console.log("checking faction: " + JSON.stringify(this.game.players_info[i].factions));
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
 	if (faction === this.game.players_info[i].factions[ii]) {
-console.log("found");
           return this.factions[this.game.players_info[i].factions[ii]].capitals;
         }
       }
@@ -73,5 +70,15 @@ console.log("found");
     return -1;
   }
 
+  returnFactionName(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+        if (faction === this.game.players_info[i].factions[ii]) {
+	  return this.factions[this.game.players_info[i].factions[ii]].name;
+	}
+      }
+    }
+    return faction.toUpperCase();
+  }
 
 

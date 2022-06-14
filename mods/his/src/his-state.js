@@ -247,7 +247,6 @@
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
-console.log("CAPITALS: " + JSON.stringify(capitals));
     let already_routed_through = {};
 
     let res = this.returnNearestSpaceWithFilter(
@@ -777,7 +776,6 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
   returnSpacesWithFactionInfantry(faction) {
     let spaces_with_infantry = [];
     for (let key in this.game.spaces) {
-console.log("trying: " + key + " -- " + faction);
       if (this.game.spaces[key].units[faction].length > 0) {
         spaces_with_infantry.push(key);
       }
@@ -2252,6 +2250,7 @@ console.log("trying: " + key + " -- " + faction);
       spaces[key].units['independent'] = [];
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
+      if (!spaces[key].name) { spaces[key].name = key.toUpperCase(); }
     }
 
     return spaces;

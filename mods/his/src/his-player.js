@@ -492,6 +492,9 @@
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
+    if (ops == 0) {
+console.log("OPS ARE ZERO!");
+    }
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
@@ -658,8 +661,8 @@ console.log("spring deploy");
                   for (let i = 0; i < units_to_move.length; i++) {
                     his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
                   }
-                  his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
-                  //his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+                  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+                  //his_self.addMove("RESETCONFIRMSNEEDED\tall");
                   his_self.endTurn();
                   return;
 
@@ -740,8 +743,8 @@ console.log("spring deploy");
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
-	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
-	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
 
 	    },

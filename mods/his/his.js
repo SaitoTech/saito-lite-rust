@@ -1474,7 +1474,6 @@ console.log("adding stuff!");
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
-console.log("CAPITALS: " + JSON.stringify(capitals));
     let already_routed_through = {};
 
     let res = this.returnNearestSpaceWithFilter(
@@ -2004,7 +2003,6 @@ console.log("CAPITALS: " + JSON.stringify(capitals));
   returnSpacesWithFactionInfantry(faction) {
     let spaces_with_infantry = [];
     for (let key in this.game.spaces) {
-console.log("trying: " + key + " -- " + faction);
       if (this.game.spaces[key].units[faction].length > 0) {
         spaces_with_infantry.push(key);
       }
@@ -3479,6 +3477,7 @@ console.log("trying: " + key + " -- " + faction);
       spaces[key].units['independent'] = [];
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
+      if (!spaces[key].name) { spaces[key].name = key.toUpperCase(); }
     }
 
     return spaces;
@@ -5308,6 +5307,10 @@ console.log("MOVE: " + mv[0]);
           return 1;
         }
 
+	if (mv[0] === "halt") {
+	  return 0;
+	}
+
 
 	if (mv[0] === "build") {
 
@@ -5366,6 +5369,8 @@ console.log("MOVE: " + mv[0]);
 	  let destination = mv[4];
 	  let unitidx = parseInt(mv[5]);
 
+	  this.game.queue.splice(qe, 1);
+
 	  if (movetype === "sea") {
 
 	    //
@@ -5421,14 +5426,16 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    let space = this.game.spaces[destination];
 	    for (let f in space.units) {
-	      if (f !== faction && !this.areAllies(f, faction)) {
+	      if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
+	        this.game.queue.push("halt");
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
+                this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+		return 1;;
 	      }
 	    }
 
 	  }
 
-	  this.game.queue.splice(qe, 1);
           return 1;
 	}
 
@@ -5607,6 +5614,9 @@ console.log("MOVE: " + mv[0]);
 
 	if (mv[0] === "field_battle") {
 
+	  //
+	  // RESOLVE will remove "halt" next
+	  //
           this.game.queue.splice(qe, 1);
 
 	  //
@@ -5616,7 +5626,7 @@ console.log("MOVE: " + mv[0]);
 	  // such, this handles the conflict.
 	  //
 	  let his_self = this;
-	  let space = this.game.space[mv[1]];
+	  let space = this.game.spaces[mv[1]];
 	  let attacker = mv[2];
 	  let stage = "field_battle";
 
@@ -5646,6 +5656,8 @@ console.log("MOVE: " + mv[0]);
           $('.option').on('click', function () {
 
             let action2 = $(this).attr("id");
+
+            his_self.addMove("RESOLVE\t"+his_self.app.wallet.returnPublicKey());
 
 	    //
 	    // have the field battle
@@ -5707,7 +5719,7 @@ console.log("MOVE: " + mv[0]);
 		  } 
 	        }
 	      } else {
-		for (let ii = 0; ii < attacker_hits && space.units[factions_involved[i]].length > 0; i++) {
+		for (let ii = 0; ii < attacker_hits && space.units[factions_involved[i]].length > 0; ii++) {
 		  if (
 		    space.units[factions_involved[i]][ii].type == "regular" || 
 		    space.units[factions_involved[i]][ii].type == "mercenary" || 
@@ -5724,12 +5736,12 @@ console.log("MOVE: " + mv[0]);
 	    //
 	    // who is left?
 	    //
-	    let winner = "attacker";
+	    let winner = attacker;
 	    if (attacker_hits > defender_hits) {
-	    
+	      winner = attacker;
 	    }
 	    if (defender_hits >= defender_hits) {
-	      winner = "defender";
+	      winner = defenders;
 	    }
 
 	    //
@@ -5741,10 +5753,15 @@ console.log("MOVE: " + mv[0]);
 
 	    his_self.controlSpace(space, attacker);
 	    his_self.displaySpace(space.key);
+	    his_self.endTurn();
 
 	  });
 
-          return 1;
+	  //
+	  // cannot auto-end
+	  //
+          return 0;
+
         }
 
 
@@ -5828,8 +5845,6 @@ console.log("NEW WORLD PHASE!");
         }
         if (mv[0] === "spring_deployment") {
 
-console.log("FHAND STILL EXISTS 2? " + JSON.stringify(this.game.deck[0].fhand));
-
 	  this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
@@ -5837,10 +5852,8 @@ console.log("FHAND STILL EXISTS 2? " + JSON.stringify(this.game.deck[0].fhand));
 
 
 	  if (this.game.player == player) {
-console.log(" i get to play spring deployment...");
 	    this.playerPlaySpringDeployment(faction, player);
 	  } else {
-console.log(" the other player plays spring deployment...");
 	    this.updateStatus(faction.charAt(0).toUpperCase() + faction.slice(1) + " Spring Deployment");
 	  }
 
@@ -5848,8 +5861,6 @@ console.log(" the other player plays spring deployment...");
 
 	}
         if (mv[0] === "diplomacy_phase") {
-
-console.log("FHAND STILL EXISTS? " + JSON.stringify(this.game.deck[0].fhand));
 
 	  //
 	  // 2-player game? both players play a diplomacy card
@@ -5910,8 +5921,6 @@ console.log("FHAND STILL EXISTS? " + JSON.stringify(this.game.deck[0].fhand));
         }
 
         if (mv[0] === "card_draw_phase") {
-
-console.log("enter card draw phase");
 
 	  //
 	  // deal cards and add home card
@@ -6085,17 +6094,25 @@ console.log("----------------------------");
 	    }
 	  }
 
+console.log("which player's turn: " + player_turn);
+
           this.displayBoard();
 
 	  // no-one controls this faction, so skip
-	  if (player_turn === -1) { return 1; }
+	  if (player_turn === -1) { 
+console.log("no-one's turn so skipping...");
+	    return 1; 
+	  }
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
+console.log("A");
 	    this.playerPlayOps(card, faction, ops);
-            //this.playerTurn(faction);//
+	  } else {
+console.log("B");
+	    this.updateStatusAndListCards("Opponent Turn");
 	  }
-
+console.log("C");
           return 0;
         }
 
@@ -6304,8 +6321,6 @@ alert("ASSAULT UNIMPLEMENTED");
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-console.log("------- pDc -------");
-
 	  if (this.game.player == player) {
 	    this.playerPlayDiplomacyCard(faction);
 	  }
@@ -6326,12 +6341,6 @@ console.log("------- pDc -------");
 
 	  if (this.game.player == player) {
 
-console.log("!!!!!!!!!!!!!!!!!!!!!");
-console.log("!!! HAND TO FHAND !!!");
-console.log("!!!!!!!!!!!!!!!!!!!!!");
-console.log("deckidx: " + deckidx);
-console.log(player + " -- " + faction + " -- " + fhand_idx);
-
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
 
@@ -6339,16 +6348,10 @@ console.log(player + " -- " + faction + " -- " + fhand_idx);
 	      this.game.deck[deckidx].fhand[fhand_idx].push(this.game.deck[deckidx].hand[i]);
 	    }
 
-console.log("DECK PRINTED: " + JSON.stringify(this.game.deck[deckidx]));
-
 	    // and clear the hand we have dealt
 	    this.game.deck[deckidx].hand = [];
 	    this.updateLog("hand entries copied over to fhand");
 	  }
-
-
-
-console.log(this.game.deck[deckidx]);
 
 	  return 1;
 
@@ -7065,6 +7068,9 @@ this.updateLog("Catholics: " + c_rolls);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
+    if (ops == 0) {
+console.log("OPS ARE ZERO!");
+    }
 
     let html = `<ul>`;
     for (let i = 0; i < menu.length; i++) {
@@ -7231,8 +7237,8 @@ console.log("spring deploy");
                   for (let i = 0; i < units_to_move.length; i++) {
                     his_self.addMove("move\t"+faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
                   }
-                  his_self.addMove("ACKNOWLEDGE\tPLAYER spring deploys to DESTINATION");
-                  //his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+                  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+                  //his_self.addMove("RESETCONFIRMSNEEDED\tall");
                   his_self.endTurn();
                   return;
 
@@ -7313,8 +7319,8 @@ console.log("spring deploy");
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
-	      his_self.addMove("counter_or_acknowledge\tPLAYER moving to DESTINATION\tmove");
-	      his_self.addMove("RESETCONFIRMSNEEDED\t" + his_self.game.players.length);
+              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      his_self.endTurn();
 
 	    },
@@ -7943,12 +7949,9 @@ return;
   }
 
   returnCapitals(faction) {
-console.log("returning capitals of " + faction);
     for (let i = 0; i < this.game.players_info.length; i++) {
-console.log("checking faction: " + JSON.stringify(this.game.players_info[i].factions));
       for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
 	if (faction === this.game.players_info[i].factions[ii]) {
-console.log("found");
           return this.factions[this.game.players_info[i].factions[ii]].capitals;
         }
       }
@@ -7974,6 +7977,16 @@ console.log("found");
     return -1;
   }
 
+  returnFactionName(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+        if (faction === this.game.players_info[i].factions[ii]) {
+	  return this.factions[this.game.players_info[i].factions[ii]].name;
+	}
+      }
+    }
+    return faction.toUpperCase();
+  }
 
 
 
