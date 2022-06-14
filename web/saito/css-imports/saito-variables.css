@@ -40,24 +40,26 @@ font imports
 }
 
 :root {
-  --saito-font: visuelt-light;
+  --saito-font: 'visuelt-light';
   --saito-background: #EAEAEF;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   --saito-tetiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
-  --saito-default-font: #555;
+  --saito-default-font-color: #555;
   --saito-paper: #f2f0f0;
   --saito-white: #fff;
   --saito-black: #1c1c23;
   --saito-black-faded: #1c1c23b5;
   --saito-box-shadow: 4px 4px 20px #a5a5a5f5;
-  --saito-header-height: 92.2344px;
   --saito-menu-background: #fff;
   --saito-profile-background: #fff;
   --saito-border: #a5a5a5bb;
   --saito-chat-background: #fff;
-  --saito-box-padding: 3rem 4rem;
+  --saito-box-padding: 3rem 2rem;
+  --saito-header-height: 5em;
+  --saito-width: 1500px;
+  --saito-default-border-radius: .5rem;
 }
 
 
@@ -71,7 +73,7 @@ To be implemented later
   --saito-secondary: #693e23;
   --saito-tetiary: rgb(234, 234, 239);
   --saito-blue: #3c6177;
-  --saito-default-font: #555;
+  --saito-default-font-color: #555;
   --saito-paper: #2e2e2e4f;
   --saito-white: #ffffff;
   --saito-black: #1c1c23;

@@ -19,11 +19,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--saito-default-font);
-  font-weight: 600;
-  line-height: 1.5;
-  margin: 1rem 0;
-  font-family: var(--saito-font);
+  color: var(--saito-primary);
 }
 
 h5,
@@ -38,18 +34,12 @@ h2 {
 }
 
 h3 {
-  position: relative;
   font-size: 4rem;
-  margin: 2rem 0;
-  line-height: 1.33;
 }
 
 h4 {
   font-size: 3.5rem;
-  font-weight: 500;
-  margin: 1rem 0;
-  line-height: 1.33;
-  color: var(--saito-primary);
+
 }
 
 h5 {
@@ -61,10 +51,7 @@ h6 {
 }
 
 
-h5,
-h6 {
-  font-weight: bold;
-}
+
 
 
 /* ----------------------------------------------------------------
@@ -72,7 +59,7 @@ h6 {
 -----------------------------------------------------------------*/
 
 p {
-  /* font-size: 1.8rem; */
+  font-size: 1.8rem;
 
 }
 
@@ -118,18 +105,22 @@ Media Queries
 }
 
 
+.saito-large-p {
+  font-size: 2rem;
+}
 
-p {
+p,
+.saito-mid-p {
   color: var(--saito-black);
+  font-size: 1.6rem;
 }
 
-a {
-  color: var(--saito-white);
-  transition: 0.2s;
-  color: var(--saito-white);
+.saito-small-p {
+  font-size: 1.3rem;
 }
+
 
 a:hover {
   opacity: 0.8;
-  transform: scale(1.1);
+
 }
