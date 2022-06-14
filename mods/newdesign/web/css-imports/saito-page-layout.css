@@ -8,7 +8,6 @@
     width: 35rem;
     height: 30vh;
     margin-right: 1.5rem;
-
     margin-bottom: 1.5rem;
     position: sticky;
     top: calc(var(--saito-header-height) + 1rem);

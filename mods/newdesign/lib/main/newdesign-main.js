@@ -15,8 +15,12 @@ class NewDesignMain {
   attachEvents() {
 
     // Date picker
-    const elem = document.querySelector('input[name="datepicker"]');
-    const datepicker = new Datepicker(elem, {});
+    const elems = document.querySelectorAll('input[name="datepicker"]');
+
+    elems.forEach(elem => {
+      let datepicker = new Datepicker(elem, {});
+    })
+
 
 
 

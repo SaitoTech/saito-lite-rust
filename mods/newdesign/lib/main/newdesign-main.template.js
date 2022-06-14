@@ -178,21 +178,98 @@ module.exports = (app) => {
           <h4>Boxes</h4>
           <div class="saito-mart-2">
               <div class="saito-gray-background">
-                  <div class="saito-grid-1-1-2">
+              <h5 class="saito-marb-2">Saito InfoBox with border-radius </h5>
+                  <div class="saito-grid-1-1-1">
                       <div class=" saito-padx-2">
+                    
                           <div class="saito-infobox saito-box-padding saito-box-rounded saito-box-shadow">
                               <div class="saito-infobox-title">
                                   <h4> h4 Sub Heading </h4>
                                   <h3> h3 Sub Heading </h3>
                               </div>
                               <div class="saito-infobox-body">
-                                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo.
-                                      Nisi tempora
-                                      numquam
-                                      accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio
-                                      ipsum iure
-                                      dolores
-                                      alias hic! </p>
+                              <div class="saito-user-list saito-user-rectangle  saito-white-background ">
+                              <div class="saito-user">
+                                  <img src="/saito/img/background.png" />
+                                  <div class="saito-user-info">
+                                      <p>Saitolicious</p>
+                                      <span>Tacos, the Saito Network and Saito Consensus</span>
+                                  </div>
+                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-user-dropdown">
+                                      <div class="saito-menu-container">
+                                          <ul>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 1 </span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 2</span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 3</span>
+                                              </li>
+                                          </ul>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="saito-user ">
+                                  <img src="/saito/img/background.png" />
+                                  <div class="saito-user-info">
+                                      <p>Blackjack </p>
+                                      <span>Classic casino game with home rules</span>
+                                      
+    
+                                  </div>
+                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-user-dropdown">
+                                      <div class="saito-menu-container">
+                                          <ul>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 1 </span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 2</span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 3</span>
+                                              </li>
+                                          </ul>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="saito-user">
+                                  <img src="/saito/img/background.png" />
+                                  <div class="saito-user-info">
+                                      <p>Chess </p>
+                                      <span> An implementation of the Chess for the Saito ... </span>
+                                  </div>
+                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-user-dropdown">
+                                      <div class="saito-menu-container">
+                                          <ul>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 1 </span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 2</span>
+                                              </li>
+                                              <li>
+                                                  <i class="far fa-address-card "> </i>
+                                                  <span> Menu 3</span>
+                                              </li>
+                                          </ul>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
                               </div>
                               <div class="saito-infobox-footer">
                                   <button class="saito-btn-secondary"> Button </button>
@@ -207,13 +284,22 @@ module.exports = (app) => {
                                   <h3> h3 Sub Heading </h3>
                               </div>
                               <div class="saito-infobox-body">
-                                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo.
-                                      Nisi tempora
-                                      numquam
-                                      accusamus nam iste reiciendis tempore consequatur incidunt, dignissimos sit odio
-                                      ipsum iure
-                                      dolores
-                                      alias hic! </p>
+                              <div class="saito-menu-container">
+                              <ul>
+                                  <li>
+                                      <i class="far fa-address-card "> </i>
+                                      <span> Menu 1 </span>
+                                  </li>
+                                  <li>
+                                      <i class="far fa-address-card "> </i>
+                                      <span> Menu 2</span>
+                                  </li>
+                                  <li>
+                                      <i class="far fa-address-card "> </i>
+                                      <span> Menu 3</span>
+                                  </li>
+                              </ul>
+                          </div>
 
                               </div>
 
@@ -229,10 +315,19 @@ module.exports = (app) => {
                                   <h3> h3 Sub Heading </h3>
                               </div>
                               <div class="saito-infobox-body">
-                                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo
-                                  </p>
-                                  <br />
-                                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. </p>
+                              <div class="saito-marb-2">
+                              <label>Text Input</label>
+                              <div><input placeholder="Text Field" type="text"></input></div>
+                              </div>
+                              <div class="saito-marb-2">
+                              <label>Date Input</label>
+                              <div><input type="text" name="datepicker"></input></div>
+                              </div>
+                              <div class="saito-marb-2">
+                              <label>Range Input</label>
+                              <div><input type="range" value="8"></input></div>
+                              </div>
+                             
 
                               </div>
 
@@ -242,6 +337,7 @@ module.exports = (app) => {
                           </div>
                       </div>
                   </div>
+                  <h5 class="saito-marb-2">Saito InfoBox with border-radius </h5>
                   <div class="saito-grid-1-1">
                       <div class=" saito-padx-2">
                           <div class="saito-infobox saito-box-padding saito-box-rounded saito-box-shadow">
@@ -285,7 +381,7 @@ module.exports = (app) => {
                           </div>
                       </div>
                   </div>
-
+                  <h5 class="saito-marb-2">Saito InfoBox without border-radius </h5>
                   <div class="saito-grid-1-1-1">
                       <div class=" saito-padx-2">
                           <div class="saito-infobox  saito-box-padding saito-box-shadow">
@@ -349,6 +445,7 @@ module.exports = (app) => {
 
                       </div>
                   </div>
+                  <h5 class="saito-marb-2">Saito ContentBox without border-radius </h5>
                   <div class="saito-grid-1-1">
                       <div class="saito-padx-2">
                           <div class="saito-contentbox saito-box-padding saito-box-shadow">
@@ -376,7 +473,9 @@ module.exports = (app) => {
                       </div>
                   </div>
               </div>
+              <h5 class="saito-marb-2">Saito InfoBox with gray background  </h5>
               <div class="saito-white-background saito-pad-2 ">
+              
                   <div class="saito-grid-1-1">
                       <div class="">
                           <div class="saito-infobox saito-box-secondary ">
@@ -438,11 +537,12 @@ module.exports = (app) => {
       <div class="saito-tab" id="menus">
           <h4>Menus</h4>
           <div class="saito-mart-2">
+          <h5> Saito Menu : Left Aligned | Right Aligned | With icon | Without Border Radius </h5>
               <div class="saito-grid-1-1-1">
                   <div class=" saito-padx-3">
                       <div class="saito-menu-container  saito-white-background">
                           <ul>
-                              <li class="no-icon">
+                              <li>
                                   <i class="far fa-address-card "> </i>
                                   <span> Menu 1 </span>
                               </li>
@@ -494,6 +594,7 @@ module.exports = (app) => {
                       </div>
                   </div>
               </div>
+              <h5> Saito Menu : Default Size | Left Aligned | Right Aligned | With icon | With Border Radius </h5>
               <div class="saito-grid-1-1-1">
                   <div class="saito-padx-3">
                       <div class="saito-menu-container  saito-menu-rounded  saito-white-background ">
@@ -550,7 +651,9 @@ module.exports = (app) => {
                       </div>
                   </div>
               </div>
-              <div class="saito-grid-1-1-1">
+
+              <h5> Saito Menu : Default Size | Left Aligned | Right Aligned | Without icon | With Border Radius </h5>
+              <div class="saito-grid-1-1-1-1">
                   <div class="saito-padx-3">
                       <div class="saito-menu-container  saito-menu-rounded  saito-white-background">
                           <ul>
@@ -606,15 +709,98 @@ module.exports = (app) => {
                       </div>
                   </div>
               </div>
+              <h5> Saito Menu : Small Size | Left Aligned | Right Aligned | Without icon | Without Border Radius </h5>
+              <div class="saito-grid-1-1-1">
+                  <div class="saito-padx-3 ">
+                  <div class="saito-menu-container saito-menu-dense saito-white-background ">
+                  <ul>
+                      <li>
+
+                          <span> BlackJack </span>
+                      </li>
+                      <li>
+
+                          <span> Chess</span>
+                      </li>
+                      <li>
+                          <span> Red Imperium</span>
+                      </li>
+                      <li>
+                          <span> Poker</span>
+                      </li>
+                      <li>
+                          <span> Settlers of Saitoa</span>
+                      </li>
+                      <li>
+                          <span> Solitrio</span>
+                      </li>
+                  </ul>
+              </div>
+                  </div>
+                  <div class="saito-padx-3">
+                  <div class="saito-menu-container saito-menu-right saito-menu-dense saito-white-background ">
+                  <ul>
+                      <li>
+
+                          <span> BlackJack </span>
+                      </li>
+                      <li>
+
+                          <span> Chess</span>
+                      </li>
+                      <li>
+                          <span> Red Imperium</span>
+                      </li>
+                      <li>
+                          <span> Poker</span>
+                      </li>
+                      <li>
+                          <span> Settlers of Saitoa</span>
+                      </li>
+                      <li>
+                          <span> Solitrio</span>
+                      </li>
+                  </ul>
+              </div>
+                  </div>
+                  <div class="saito-padx-3 ">
+                  <div class="saito-menu-container saito-menu-right saito-menu-dense saito-white-background ">
+                  <ul>
+                      <li>
+
+                          <span> BlackJack </span>
+                      </li>
+                      <li>
+
+                          <span> Chess</span>
+                      </li>
+                      <li>
+                          <span> Red Imperium</span>
+                      </li>
+                      <li>
+                          <span> Poker</span>
+                      </li>
+                      <li>
+                          <span> Settlers of Saitoa</span>
+                      </li>
+                      <li>
+                          <span> Solitrio</span>
+                      </li>
+                  </ul>
+              </div>
+                  </div>
+              </div>
           </div>
       </div>
 
       <div class="saito-tab" id="user_lists">
           <h4> User Lists </h4>
           <div class="saito-mart-2">
+         
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
-                      <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                  <h5> Saito UserList:  Default Size | Rectangular </h5>
+                      <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
@@ -698,6 +884,7 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-padx-3">
+                  <h5> Saito UserList: Default Size |  Square </h5>
                       <div class="saito-user-list saito-pad-2 saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
@@ -730,6 +917,7 @@ module.exports = (app) => {
               </div>
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
+                  <h5> Saito UserList:  Small Size | Rectangular  </h5>
                       <div class="saito-user-list saito-user-rectangle saito-user-dense saito-pad-2 saito-pad-2 saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
@@ -814,6 +1002,7 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-padx-3">
+                  <h5> Saito UserList:  Small Size | Square </h5>
                       <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
@@ -995,7 +1184,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
             
-                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1213,7 +1402,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
             
-                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1404,7 +1593,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
    
-                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1449,7 +1638,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
    
-                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
