@@ -1,0 +1,10 @@
+module.exports = LeagueCreateBtnTemplate = () => {
+
+  let html = `
+    <a href="#" id="league-create-btn" class="league-create-btn">Create League</a>
+  `;
+
+  return html;
+
+}
+
