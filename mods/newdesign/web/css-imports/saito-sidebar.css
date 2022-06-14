@@ -1,6 +1,7 @@
-#saito-left-sidebar {
-    width: 30rem;
-}
+/* ----------------------------------------------------------------
+Left Sidebar
+-----------------------------------------------------------------*/
+
 
 .saito-left-menu-header {
     background-color: var(--saito-primary);
@@ -78,8 +79,34 @@
 }
 
 
-@media screen and (max-width: 1200px) {
-    #saito-left-sidebar {
-        display: none;
-    }
+
+
+/* ----------------------------------------------------------------
+Right sidebar 
+-----------------------------------------------------------------*/
+
+.saito-right-sidebar-content {
+    min-height: 30vh;
+    background-color: var(--saito-white);
+    padding: 1rem 1rem;
+}
+
+.saito-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--saito-border);
+    border-radius: .5rem;
+    padding: 0 .8rem
+}
+
+.saito-search-bar input {
+    border: none;
+    padding-left: 1rem;
+
+}
+
+.saito-search-bar i {
+    font-size: 1.8rem;
+    color: var(--saito-border);
 }

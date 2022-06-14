@@ -38,7 +38,6 @@ input[type="password"] {
 
   /* background: var(--saito-background); */
   border: 1px solid var(--saito-border);
-  margin-right: 2rem;
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
@@ -49,7 +48,6 @@ input[type="password"] {
 input[type="text"]:focus,
 input[type="password"]:focus {
   outline: none;
-  /* border: 1px solid #f71f3d70; */
 }
 
 input[type="text"]::placeholder,
@@ -311,11 +309,9 @@ select {}
 
 .saito-select-wrapper {
   width: 100%;
-  /* border-radius: .5rem; */
   position: relative;
   cursor: pointer;
-  /* border: 1px solid var(--saito-white); */
-  /* background-color: var(--saito-primary); */
+
 
 }
 
@@ -386,10 +382,6 @@ select {}
 
 }
 
-/* .saito-select-content.saito-select-border {
-  border: 1px solid var(--saito-border);
-} */
-
 
 .saito-select-content li {
   list-style: none;
@@ -423,9 +415,7 @@ select {}
   border-bottom-right-radius: .5rem;
 }
 
-.saito-select-content li:not(:last-child) {
-  /* margin-bottom: 1rem; */
-}
+
 
 .show-content {
   display: block;

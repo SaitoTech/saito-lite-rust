@@ -119,12 +119,8 @@ p,
   font-size: 1.3rem;
 }
 
-/* a {
-  color: var(--saito-white);
-  transition: 0.2s;
-} */
 
 a:hover {
   opacity: 0.8;
-  transform: scale(1.1);
+
 }

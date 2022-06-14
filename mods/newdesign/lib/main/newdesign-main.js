@@ -9,7 +9,7 @@ class NewDesignMain {
     if (!document.querySelector('.container')) {
       app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
-    this.attachEvents()
+    this.attachEvents();
   };
 
   attachEvents() {
@@ -44,7 +44,6 @@ class NewDesignMain {
     })
 
     // functions
-
     const salert_btn = document.querySelector('#salert_btn');
     const sprompt_btn = document.querySelector('#sprompt_btn');
     const sconfirm_btn = document.querySelector('#sconfirm_btn');
@@ -61,6 +60,16 @@ class NewDesignMain {
     })
     sitemsg_btn.addEventListener('click', (e) => {
       siteMessage("New site message");
+    })
+
+    // hamburger menu
+    const mobileHamburger = document.querySelectorAll('.saito-left-sidebar-hamburger')
+    mobileHamburger.forEach(item => {
+      item.addEventListener('click', (e) => {
+        console.log(item.parentElement);
+        const mobileSidebar = item.parentElement.querySelector('.saito-left-sidebar-mobile');
+        mobileSidebar.classList.contains('show-left-sidebar-mobile') ? mobileSidebar.classList.remove('show-left-sidebar-mobile') : mobileSidebar.classList.add('show-left-sidebar-mobile');
+      })
     })
 
   };

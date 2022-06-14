@@ -461,23 +461,14 @@ Saito Tabs
 }
 
 
-.saito-tab-buttons li {
-    list-style: none;
-    cursor: pointer;
-    font-size: 1.8rem;
-    padding: .5rem 1rem;
-    min-width: 10rem;
-    display: flex;
-    justify-content: center;
-    border: 1px solid var(--saito-white);
-}
 
-.saito-tab-buttons li.active {
+
+.saito-tab-buttons a.active {
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
 
-.saito-tab-buttons li:hover {
+.saito-tab-buttons a:hover {
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }

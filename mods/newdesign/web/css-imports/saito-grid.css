@@ -157,7 +157,7 @@
     .saito-grid-1-5,
     .saito-grid-5-1,
     .saito-grid-1-1-1-1 {
-        grid-template-columns: 90%;
+        grid-template-columns: 100%;
         justify-content: center;
     }
 }

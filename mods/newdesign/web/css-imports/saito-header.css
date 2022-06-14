@@ -187,7 +187,7 @@
 
     padding: 1.5rem 0;
     font-size: 1.1rem;
-    overflow: scroll;
+    overflow: auto;
 
 }
 
@@ -225,7 +225,7 @@
     position: absolute;
     top: 2.5rem;
     /* left: -1rem; */
-    padding: 1rem 2rem;
+    padding: 1rem 0;
     border-radius: 8px;
     display: none;
     transition: all 0.2s;
@@ -235,11 +235,23 @@
 .saito-big-menu a {
     font-size: 1.8rem;
     display: block;
+    padding: .5rem .3rem;
+}
+
+.saito-big-menu a.active {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-big-menu a:hover {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
 }
 
 
+
 .saito-big-menu a:not(:last-child) {
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
 }
 
 .mega-menu:hover .saito-big-menu {
@@ -259,7 +271,13 @@
 
 @media screen and (max-width: 1600px) {
     .saito-header {
-        padding: 1.3rem 10rem;
+        padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    .saito-header {
+        padding: 1.3rem 2rem;
     }
 }
 

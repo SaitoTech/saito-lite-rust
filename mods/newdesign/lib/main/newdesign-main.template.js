@@ -850,11 +850,81 @@ module.exports = (app) => {
       </div>
 
 
-      <div class="saito-tab" id="examples">
+      <div class="saito-tab" id="example1">
+
+          <div class="saito-page-content">
+             <div class="saito-left-sidebar-hamburger">
+             <i class="fas fa-bars"></i>
+             </div>
+              <div class="saito-left-sidebar-mobile">
+                <div class="saito-left-menu saito-marb-1">
+                   <div class="saito-left-menu-header">
+                        <h5> Games </h5>
+                     
+                   </div>
+                  <div class="saito-left-menu-body  ">
+                      <div class="saito-menu-container saito-menu-dense ">
+                          <ul>
+                              <li>
+
+                                  <span> BlackJack </span>
+                              </li>
+                              <li>
+
+                                  <span> Chess</span>
+                              </li>
+                              <li>
+                                  <span> Red Imperium</span>
+                              </li>
+                              <li>
+                                  <span> Poker</span>
+                              </li>
+                              <li>
+                                  <span> Settlers of Saitoa</span>
+                              </li>
+                              <li>
+                                  <span> Solitrio</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+                  </div>
 
 
-          <div class="saito-grid-1-5">
-              <div id="saito-left-sidebar">
+                <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                        <h5> Chat </h5>
+                        <i class="fas fa-plus"></i>
+                   </div>
+                  <div class="saito-left-menu-body">
+                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+                  <div class="saito-user  saito-marb-2">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat </p>
+                          <span> new chat</span>
+                      </div>
+  
+                  </div>
+                  <div class="saito-user ">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat</p>
+                          <span>new chat</span>
+                      </div>
+                    
+                      
+                  </div>
+                
+              </div>
+                  </div>
+                  </div>
+
+
+
+
+              </div>
+              <div class="saito-left-sidebar">
                 <div class="saito-left-menu saito-marb-1">
                    <div class="saito-left-menu-header">
                         <h5> Games </h5>
@@ -923,8 +993,8 @@ module.exports = (app) => {
 
               </div>
 
-              <div id="saito-main-content">
-                <div class="saito-grid-1">
+              <div class="saito-main-content">
+            
                 <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
@@ -954,7 +1024,7 @@ module.exports = (app) => {
                  
                 </div>
             </div>
-                </div>
+            
                 
               </div>
 
@@ -994,6 +1064,427 @@ module.exports = (app) => {
                   <i id="saito-sendmsg-btn" class="fas fa-paper-plane"></i>
               </div>
           </div>
+
+      </div>
+
+      <div class="saito-tab" id="example2">
+
+      <h4 class="saito-marb-2"> With Left and Right Sidebars </h4>
+          <div class="saito-page-content">
+          <div class="saito-left-sidebar-hamburger">
+          <i class="fas fa-bars"></i>
+          </div>
+           <div class="saito-left-sidebar-mobile">
+             <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                     <h5> Games </h5>
+                  
+                </div>
+               <div class="saito-left-menu-body  ">
+                   <div class="saito-menu-container saito-menu-dense ">
+                       <ul>
+                           <li>
+
+                               <span> BlackJack </span>
+                           </li>
+                           <li>
+
+                               <span> Chess</span>
+                           </li>
+                           <li>
+                               <span> Red Imperium</span>
+                           </li>
+                           <li>
+                               <span> Poker</span>
+                           </li>
+                           <li>
+                               <span> Settlers of Saitoa</span>
+                           </li>
+                           <li>
+                               <span> Solitrio</span>
+                           </li>
+                       </ul>
+                   </div>
+               </div>
+               </div>
+
+
+             <div class="saito-left-menu saito-marb-1">
+             <div class="saito-left-menu-header">
+                     <h5> Chat </h5>
+                     <i class="fas fa-plus"></i>
+                </div>
+               <div class="saito-left-menu-body">
+               <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+               <div class="saito-user  saito-marb-2">
+                   <img src="/saito/img/background.png" />
+                   <div class="saito-user-info">
+                       <p>Saito Community Chat </p>
+                       <span> new chat</span>
+                   </div>
+
+               </div>
+               <div class="saito-user ">
+                   <img src="/saito/img/background.png" />
+                   <div class="saito-user-info">
+                       <p>Saito Community Chat</p>
+                       <span>new chat</span>
+                   </div>
+                 
+                   
+               </div>
+             
+           </div>
+               </div>
+               </div>
+
+
+
+
+           </div>
+              <div class="saito-left-sidebar">
+                <div class="saito-left-menu saito-marb-1">
+                   <div class="saito-left-menu-header">
+                        <h5> Games </h5>
+                     
+                   </div>
+                  <div class="saito-left-menu-body  ">
+                      <div class="saito-menu-container saito-menu-dense ">
+                          <ul>
+                              <li>
+
+                                  <span> BlackJack </span>
+                              </li>
+                              <li>
+
+                                  <span> Chess</span>
+                              </li>
+                              <li>
+                                  <span> Red Imperium</span>
+                              </li>
+                              <li>
+                                  <span> Poker</span>
+                              </li>
+                              <li>
+                                  <span> Settlers of Saitoa</span>
+                              </li>
+                              <li>
+                                  <span> Solitrio</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+                  </div>
+
+
+                <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                        <h5> Chat </h5>
+                        <i class="fas fa-plus"></i>
+                   </div>
+                  <div class="saito-left-menu-body">
+                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+                  <div class="saito-user  saito-marb-2">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat </p>
+                          <span> new chat</span>
+                      </div>
+  
+                  </div>
+                  <div class="saito-user ">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat</p>
+                          <span>new chat</span>
+                      </div>
+                    
+                      
+                  </div>
+                
+              </div>
+                  </div>
+                  </div>
+
+
+
+
+              </div>
+
+              <div class="saito-main-content">
+            
+                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user">
+                    <img src="/saito/img/doom.jpg" />
+                    <div class="saito-user-info">
+                        <p>Doom</p>
+                        <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                    </div>
+                   
+                </div>
+                <div class="saito-user ">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Blackjack </p>
+                        <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                        
+
+                    </div>
+               
+                
+                </div>
+                <div class="saito-user">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Chess </p>
+                        <span> An implementation of the Chess for the Saito Blockchain </span>
+                    </div>
+                 
+                </div>
+            </div>
+               
+              </div>
+              <div class="saito-right-sidebar">
+                    <div class="saito-right-sidebar-content">
+                    <div class="saito-search-bar">
+                    <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
+                    </div>
+                    </div>
+                   
+              </div>
+
+          </div>
+        
+
+      </div>
+
+      <div class="saito-tab" id="example3">
+
+            <h4 class="saito-marb-2"> With only Left Sidebar </h4>
+          <div class="saito-page-content">
+          <div class="saito-left-sidebar-hamburger">
+          <i class="fas fa-bars"></i>
+          </div>
+           <div class="saito-left-sidebar-mobile">
+             <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                     <h5> Games </h5>
+                  
+                </div>
+               <div class="saito-left-menu-body  ">
+                   <div class="saito-menu-container saito-menu-dense ">
+                       <ul>
+                           <li>
+
+                               <span> BlackJack </span>
+                           </li>
+                           <li>
+
+                               <span> Chess</span>
+                           </li>
+                           <li>
+                               <span> Red Imperium</span>
+                           </li>
+                           <li>
+                               <span> Poker</span>
+                           </li>
+                           <li>
+                               <span> Settlers of Saitoa</span>
+                           </li>
+                           <li>
+                               <span> Solitrio</span>
+                           </li>
+                       </ul>
+                   </div>
+               </div>
+               </div>
+
+
+             <div class="saito-left-menu saito-marb-1">
+             <div class="saito-left-menu-header">
+                     <h5> Chat </h5>
+                     <i class="fas fa-plus"></i>
+                </div>
+               <div class="saito-left-menu-body">
+               <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+               <div class="saito-user  saito-marb-2">
+                   <img src="/saito/img/background.png" />
+                   <div class="saito-user-info">
+                       <p>Saito Community Chat </p>
+                       <span> new chat</span>
+                   </div>
+
+               </div>
+               <div class="saito-user ">
+                   <img src="/saito/img/background.png" />
+                   <div class="saito-user-info">
+                       <p>Saito Community Chat</p>
+                       <span>new chat</span>
+                   </div>
+                 
+                   
+               </div>
+             
+           </div>
+               </div>
+               </div>
+
+
+
+
+           </div>
+              <div class="saito-left-sidebar">
+                <div class="saito-left-menu saito-marb-1">
+                   <div class="saito-left-menu-header">
+                        <h5> Games </h5>
+                     
+                   </div>
+                  <div class="saito-left-menu-body  ">
+                      <div class="saito-menu-container saito-menu-dense ">
+                          <ul>
+                              <li>
+
+                                  <span> BlackJack </span>
+                              </li>
+                              <li>
+
+                                  <span> Chess</span>
+                              </li>
+                              <li>
+                                  <span> Red Imperium</span>
+                              </li>
+                              <li>
+                                  <span> Poker</span>
+                              </li>
+                              <li>
+                                  <span> Settlers of Saitoa</span>
+                              </li>
+                              <li>
+                                  <span> Solitrio</span>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+                  </div>
+
+
+                <div class="saito-left-menu saito-marb-1">
+                <div class="saito-left-menu-header">
+                        <h5> Chat </h5>
+                        <i class="fas fa-plus"></i>
+                   </div>
+                  <div class="saito-left-menu-body">
+                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+                  <div class="saito-user  saito-marb-2">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat </p>
+                          <span> new chat</span>
+                      </div>
+  
+                  </div>
+                  <div class="saito-user ">
+                      <img src="/saito/img/background.png" />
+                      <div class="saito-user-info">
+                          <p>Saito Community Chat</p>
+                          <span>new chat</span>
+                      </div>
+                    
+                      
+                  </div>
+                
+              </div>
+                  </div>
+                  </div>
+
+
+
+
+              </div>
+
+              <div class="saito-main-content">
+   
+                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user">
+                    <img src="/saito/img/doom.jpg" />
+                    <div class="saito-user-info">
+                        <p>Doom</p>
+                        <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                    </div>
+                   
+                </div>
+                <div class="saito-user ">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Blackjack </p>
+                        <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                        
+
+                    </div>
+               
+                
+                </div>
+                <div class="saito-user">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Chess </p>
+                        <span> An implementation of the Chess for the Saito Blockchain </span>
+                    </div>
+                 
+                </div>
+            </div>
+              
+                
+              </div>
+              
+
+          </div>
+        
+
+      </div>
+      <div class="saito-tab" id="example4">
+
+      <h4 class="saito-marb-2"> With no Sidebar </h4>
+          <div class="saito-page-content">
+
+              <div class="saito-main-content">
+   
+                <div class="saito-user-list saito-user-rectangle saito-pad-2 saito-pad-2 saito-white-background ">
+                <div class="saito-user">
+                    <img src="/saito/img/doom.jpg" />
+                    <div class="saito-user-info">
+                        <p>Doom</p>
+                        <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                    </div>
+                   
+                </div>
+                <div class="saito-user ">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Blackjack </p>
+                        <span>Classic casino game with home rules. Try to get closest to 21 without busting, b... </span>
+                        
+
+                    </div>
+               
+                
+                </div>
+                <div class="saito-user">
+                    <img src="/saito/img/background.png" />
+                    <div class="saito-user-info">
+                        <p>Chess </p>
+                        <span> An implementation of the Chess for the Saito Blockchain </span>
+                    </div>
+                 
+                </div>
+            </div>
+              
+                
+              </div>
+              
+
+          </div>
+        
 
       </div>
 
