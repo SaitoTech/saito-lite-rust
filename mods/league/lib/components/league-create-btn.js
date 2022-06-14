@@ -11,6 +11,8 @@ module.exports = LeagueCreateBtn = {
     },
 
     attachEvents(app, mod) {
-
+      document.getElementById("league-create-btn").onclick = (e) => {
+        alert("Creating league");
+      }
     }
 }
