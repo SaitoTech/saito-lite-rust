@@ -1,6 +1,5 @@
 const NewDesignMainTemplate = require('./newdesign-main.template');
 
-
 module.exports = {
 
   render(app) {
@@ -16,11 +15,7 @@ module.exports = {
   attachEvents() {
     const elem = document.querySelector('input[name="datepicker"]');
     const datepicker = new Datepicker(elem, {
-
     })
-
   }
-
-
 
 }

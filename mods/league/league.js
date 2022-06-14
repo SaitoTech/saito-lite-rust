@@ -1,40 +1,32 @@
-const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueMain = require('./lib/main/league-main');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
 class League extends ModTemplate {
 
   constructor(app) {
+
     super(app);
 
     this.name = "League";
     this.slug = "league";
-    this.description = "Create leagues for installed games, both public and private. Players rankings of each league.";
+    this.description = "Leaderboards and leagues for Saito Games";
     this.categories = "Games Entertainment";
 
-    this.affix_callbacks_to = [];
     this.leagues = {};
-    this.renderMode = null;
+
+    this.header = new SaitoHeader(app);
+    this.main = new LeagueMain(app);
+
   }
 
-  initialize(app) {
-    super.initialize(app);
 
-    console.log('inside league initialize');
-    this.sendEvent('league-create-btn-render-request', {});
+  render(app) {
+    this.header.render(app, this);
+    this.main.render(app, this);
   }
 
-  render(app, renderMode = "") {
-    if (renderMode != "") {
-      this.renderMode = renderMode;
-    }
-
-    console.log('inside league render');
-    console.log('renderMode');
-    console.log(renderMode);
-
-    LeagueMain.render(app, this);
-  }
 }
 
 module.exports = League;
+

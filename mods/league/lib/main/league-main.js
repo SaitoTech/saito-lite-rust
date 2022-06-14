@@ -1,18 +1,20 @@
-const LeagueCreateBtn = require('./../components/league-create-btn');
+const LeagueMainTemplate = require("./league-main.template");
 
-module.exports = LeagueMain = {
-    render(app, mod) {
-      if (app.BROWSER == 0) { 
-        return; 
-      }
 
-      console.log('inside league main render');
+class LeagueMain {
 
-      if (mod.renderMode == "league-create-btn") {
-      	
-        console.log('inside league main if');
-        LeagueCreateBtn.render(app, mod);
-      	LeagueCreateBtn.attachEvents(app, mod);
-      }
-    },
+  constructor(app) {
+  }
+
+  render(app, mod) {
+
+    if (!document.getElementById("league-main")) {
+      app.browser.addElementToDom(LeagueMainTemplate(app));
+    }
+
+  }
+
 }
+
+module.exports = LeagueMain;
+
