@@ -33,7 +33,7 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = true;
+    this.is_testing = false;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
