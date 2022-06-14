@@ -69,6 +69,18 @@ class Arcade extends ModTemplate {
         }
       }
     }
+
+    console.log('inside arcade receiveEvent');
+    console.log(type);
+
+    if (type == "league-create-btn-render-request") {
+      try {
+        let league_mod = this.app.modules.returnModule("League");
+        league_mod.render(this.app, "league-create-btn");
+      } catch (err) {
+        console.log("Err: " + err);
+      }
+    }
   }
 
   handleUrlParams(urlParams) {
