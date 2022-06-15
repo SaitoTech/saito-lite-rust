@@ -4,8 +4,8 @@ module.exports = (app, mod) => {
   let html = `
     <div class="league-main-wrapper">
       <div id="league-main-header" class="saito-contentbox saito-box-shadow mb-2">
-        <h2>Create a tournament</h2>
-        <p>Create a tournament to compete against other players, through rankings, and win prizes</p>
+        <h2>Create a league</h2>
+        <p>Create leagues to compete against other players, through rankings, and win prizes</p>
       </div>
       
       <div class="league-avl-games-container">
@@ -18,8 +18,22 @@ module.exports = (app, mod) => {
         html += `
             <div class="league-avl-game-item">
               <img src="${game.img}">
-              <h4>${game.modname}</h4>
-              <a href="#"> Create Tournament</a>
+              <h2>${game.modname}</h2>
+              
+              <form type="POST" action="" class="league-main-create-form" id="create-form">
+                <input type="hidden" value="${game.modname}" name="game" id="game">
+                <select id="type">
+                  <option value="public">Public</option>
+                  <option value="private">Private</option>
+                </select>
+                <select id="players">
+                    <option value="1">1 Player</option>
+                    <option value="2">2 Player</option>
+                    <option value="3">3 Player</option>
+                    <option value="4">4 Player</option>
+                </select>
+                <button type="submit">Create League</button>
+              </form>
             </div>
         `;
     }
