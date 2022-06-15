@@ -280,19 +280,14 @@
 	  return options;
         },
 	preAgendaStageTriggers : function(imperium_self, player, agenda) {
-console.log("CF: preagenda stage triggers.");
 	  if (imperium_self.game.state.committee_formation == 1 && imperium_self.game.state.committee_formation_player == player) {
-console.log("CF: 1");
 	    if (imperium_self.agenda_cards[agenda].elect == "player") {
-console.log("CF: 2");
 	      return 1;
 	    }
 	  }
 	  return 0;
 	},
 	preAgendaStageEvent : function(imperium_self, player, agenda) {
-
-console.log("PASE: +CF");
 
 	  if (player != imperium_self.game.player) {
 	    let html = imperium_self.returnFaction(imperium_self.game.player) + " is deciding whether to Form a Committee";
@@ -339,12 +334,9 @@ console.log("PASE: +CF");
 	    }
 	  }
 
-
 	  let law_to_push = {};
 	      law_to_push.agenda = "committee-formation";
 	      law_to_push.option = winning_choice;
-
-console.log("pushing onto law: " + JSON.stringify(law_to_push));
 
 	  imperium_self.game.state.laws.push(law_to_push);
 
@@ -412,7 +404,7 @@ console.log("pushing onto law: " + JSON.stringify(law_to_push));
         },
   });
 ****/
-/***
+
 
   this.importAgendaCard('shard-of-the-throne', {
   	name : "Shard of the Throne" ,
@@ -2287,6 +2279,4 @@ imperium_self.updateLog("Ixthian Artifact rolls " + roll);
       }
   });
 
-
-******************/
 
