@@ -1,5 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
+const RegisterStaffTemplate = require('./register-staff.template');
+
 
 
 class Staff extends ModTemplate {
@@ -25,6 +27,8 @@ class Staff extends ModTemplate {
     }
 
     render(app, mod) {
+        document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
+        console.log(RegisterStaffTemplate());
         document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
         document.getElementById("isRegistered").checked = this.isThisRegistered;
         if (this.isThisRegistered) {
