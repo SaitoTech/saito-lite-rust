@@ -11,6 +11,8 @@
     return 0;
   }
 
+  
+
   setAllies(faction1, faction2) {
     try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
@@ -200,6 +202,18 @@
 
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
+  }
+
+  returnHomeSpaces(faction) {
+
+    let spaces = [];
+
+    for (let i in this.game.spaces) {
+      if (this.game.spaces[i].home === faction) { spaces.push(i); }
+    }
+
+    return spaces;
+
   }
 
   returnNeighbours(space, transit_passes=1) {
@@ -458,6 +472,21 @@
     state.autowin_papacy_keys_controlled = 7;
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
+
+    state.leaders.francis_i = 1;
+    state.leaders.henry_viii = 1;
+    state.leaders.charles_v = 1;
+    state.leaders.suleiman = 1;
+    state.leaders.leo_x = 1;
+    state.leaders.martin_luther = 1
+
+    state.leaders_clement_vii = 0;
+    state.leaders_paul_iii = 0;
+    state.leaders_edward_vi = 0;
+    state.leaders_henry_ii = 0;
+    state.leaders_mary_i = 0;
+    state.leaders_julius_iii = 0;
+    state.leaders_elizabeth_i = 0;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -2623,6 +2652,13 @@
 
   }
 
+
+  removeCardFromGame(card) {
+    try { delete this.game.deck[0].cards[card]; } catch (err) {}
+    try { delete this.game.deck[0].discards[card]; } catch (err) {}
+  }
+
+
   returnDeck() {
 
     var deck = {};
@@ -2852,6 +2888,12 @@
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 1;
+	return 1;
+      },
+
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -2929,6 +2971,14 @@
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 0;
+	game_mod.removeCardFromGame('010'); // remove clement vii
+	game_mod.game.state.leaders_paul_iii = 1;
+	return 1;
+      },
+
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
@@ -2981,6 +3031,10 @@
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_edward_vi = 1;
+	return 1;
+      },
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
@@ -2989,6 +3043,11 @@
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_francis_i = 0;
+	game_mod.game.state.leaders_henry_ii = 1;
+	return 1;
+      },
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
@@ -2997,6 +3056,13 @@
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_henry_viii = 0;
+	game_mod.game.state.leaders_edward_vi = 0;
+	game_mod.game.state.leaders_mary_i = 1;
+	game_mod.removeCardFromGame('021');
+	return 1;
+      },
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
@@ -3005,6 +3071,15 @@
       turn : 7 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 0;
+	game_mod.game.state.leaders_paul_iii = 0;
+	game_mod.game.state.leaders_julius_iii = 1;
+	game_mod.removeCardFromGame('010');
+	game_mod.removeCardFromGame('014');
+	return 1;
+      },
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
@@ -3013,6 +3088,15 @@
       turn : 0 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_henry_viii = 0;
+	game_mod.game.state.leaders_edward_vi = 0;
+	game_mod.game.state.leaders_mary_i = 0;
+	game_mod.game.state.leaders_elizabeth_i = 1;
+	game_mod.removeCardFromGame('019');
+	game_mod.removeCardFromGame('021');
+	return 1;
+      },
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 

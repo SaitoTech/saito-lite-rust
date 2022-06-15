@@ -82,7 +82,6 @@
     if (this.factions[faction].key === "hapsburg") {
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
-console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + controlled_keys);
       for (let i = 1; i <= 14; i++) {
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;

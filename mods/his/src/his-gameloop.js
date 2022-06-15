@@ -7,24 +7,6 @@
 
     let his_self = this;
 
-//
-// TODO remove
-//
-// keeping as reference until I'm used to it
-//
-//    let res = this.returnNearestSpaceWithFilter(
-//      "dijon", 
-//      function(spacekey) {
-//	if (his_self.game.spaces[spacekey].type === "fortress") { return 1; }
-//        return 0;
-//      },
-//      function(spacekey) {
-//	return 1;
-//      }
-//    );
-
-
-
 
     ///////////
     // QUEUE //
@@ -74,9 +56,7 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("card_draw_phase");
 	  }
 
-
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
-
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");
@@ -545,7 +525,28 @@ console.log("MOVE: " + mv[0]);
 
 
         if (mv[0] === "victory_determination_phase") {
+
+
 	  this.game.queue.splice(qe, 1);
+
+	  let f = this.calculateVictoryPoints();
+
+/****
+//          faction : this.game.players_info[i].factions[ii] ,
+//          vp : 0 ,
+//          keys : 0 ,
+//          religious : 0 ,
+//          victory : 0,
+//          details : "",
+****/
+
+	  for (let faction in f) {
+	    if (f.victory == 1) {
+	      let player = this.returnPlayerOfFaction(faction);
+	      this.endGame([this.game.players[player-1]], f.details);
+	    }
+	  }
+
           return 1;
         }
         if (mv[0] === "new_world_phase") {
@@ -858,10 +859,6 @@ console.log("----------------------------");
 	  let card = mv[3];
 	  let ops = mv[4];
 
-//	  if (this.game.player == player) {
-//            this.playerPlayOps(card, faction, ops);
-//	  }
-
 	  this.game.queue.splice(qe, 1);
 
 	  let player_turn = -1;
@@ -872,25 +869,19 @@ console.log("----------------------------");
 	    }
 	  }
 
-console.log("which player's turn: " + player_turn);
-
           this.displayBoard();
 
 	  // no-one controls this faction, so skip
 	  if (player_turn === -1) { 
-console.log("no-one's turn so skipping...");
 	    return 1; 
 	  }
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-console.log("A");
 	    this.playerPlayOps(card, faction, ops);
 	  } else {
-console.log("B");
 	    this.updateStatusAndListCards("Opponent Turn");
 	  }
-console.log("C");
           return 0;
         }
 
@@ -948,6 +939,7 @@ console.log("C");
             );
           }
 
+	  this.displayVictoryTrack();
 	  this.game.queue.splice(qe, 1);
 	  return 0;
 
@@ -987,6 +979,7 @@ console.log("C");
             );
           }
 
+	  this.displayVictoryTrack();
 	  this.game.queue.splice(qe, 1);
 	  return 0;
 
@@ -1002,6 +995,7 @@ console.log("C");
 	  let space = mv[2];
 
 alert("ASSAULT UNIMPLEMENTED");
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -1016,6 +1010,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	  this.game.spaces[space].political = faction;
 
 	  this.displaySpace(space);
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -1067,6 +1062,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
 	  this.displayElectorateDisplay();
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -1324,10 +1320,6 @@ this.updateLog("Catholics: " + c_rolls);
 
 	}
 
-
-
-
-
 	//
 	// objects and cards can add commands
 	//
@@ -1335,7 +1327,6 @@ this.updateLog("Catholics: " + c_rolls);
         for (let i in z) {
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
-
 
         //
         // avoid infinite loops

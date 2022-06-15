@@ -87,6 +87,18 @@ class HereIStand extends GameTemplate {
       capitals		:	["london"],
       cards_bonus	:	1,
       marital_status    :       0,
+      returnCardsSaved  :       function(game_mod) {
+
+        let base = 0;
+
+        if (state.leaders_henry_viii == 1) { base += 1; }
+        if (state.leaders_edward_vi == 1) { base += 1; }
+        if (state.leaders_mary_i == 1) { base += 1; }
+        if (state.leaders_elizabeth_i == 1) { base += 2; }
+
+        return base;
+
+      },
       returnCardsDealt  :	function(game_mod) {
 
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
@@ -108,6 +120,12 @@ class HereIStand extends GameTemplate {
 	  default: { base = 1; break; }
 	}
 
+	// bonuses based on leaders
+	if (state.leaders_henry_viii == 1) { base += 1; }
+	if (state.leaders_edward_vi == 1) { base += 0; }
+	if (state.leaders_mary_i == 1) { base += 0; }
+	if (state.leaders_elizabeth_i == 1) { base += 2; }
+
 	// TODO - bonus for home spaces under protestant control
 	return base;
 
@@ -115,22 +133,22 @@ class HereIStand extends GameTemplate {
       calculateVictoryPoints  :	function(game_mod) {
 
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
-        let base = 0;
+        let base = this.vp;
 
 	switch (kc) {
-	  case 1: { base = 2; break; }
-	  case 2: { base = 3; break; }
-	  case 3: { base = 4; break; }
-	  case 4: { base = 5; break; }
-	  case 5: { base = 6; break; }
-	  case 6: { base = 7; break; }
-	  case 7: { base = 8; break; }
-	  case 8: { base = 9; break; }
-	  case 9: { base = 10; break; }
-	  case 10: { base = 11; break; }
-	  case 11: { base = 12; break; }
-	  case 12: { base = 13; break; }
-	  default: { base = 14; break; }
+	  case 1: { base += 2; break; }
+	  case 2: { base += 3; break; }
+	  case 3: { base += 4; break; }
+	  case 4: { base += 5; break; }
+	  case 5: { base += 6; break; }
+	  case 6: { base += 7; break; }
+	  case 7: { base += 8; break; }
+	  case 8: { base += 9; break; }
+	  case 9: { base += 10; break; }
+	  case 10: { base += 11; break; }
+	  case 11: { base += 12; break; }
+	  case 12: { base += 13; break; }
+	  default: { base += 14; break; }
 	}
 
 	if (game_mod.game.state.schmalkaldic_league == 1) {
@@ -152,11 +170,21 @@ class HereIStand extends GameTemplate {
       capitals          :       ["paris"],
       img		:	"france.png",
       cards_bonus	:	1,
+      returnCardsSaved  :       function(game_mod) {
+
+        let base = 0;
+
+        if (state.leaders_francis_i == 1) { base += 1; }
+        if (state.leaders_henry_ii == 1) { base += 1; }
+
+        return base;
+
+      },
       returnCardsDealt  :       function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("france");
-        let base = 0;
-        
+        let base = this.vp; 
+       
         switch (kc) {
           case 1: { base = 1; break; }
           case 2: { base = 1; break; }
@@ -172,7 +200,11 @@ class HereIStand extends GameTemplate {
           case 12: { base = 6; break; }
           default: { base = 0; break; }
         }
-        
+
+        // bonuses based on leaders
+        if (state.leaders_francis_i == 1) { base += 1; }        
+        if (state.leaders_henry_ii == 1) { base += 0; }        
+
         // TODO - bonus for home spaces under protestant control
         return base;
 
@@ -183,16 +215,16 @@ class HereIStand extends GameTemplate {
         let base = 0;
         
         switch (kc) {
-          case 1: { base = 2; break; }
-          case 2: { base = 4; break; }
-          case 3: { base = 6; break; }
-          case 4: { base = 8; break; }
-          case 5: { base = 10; break; }
-          case 6: { base = 12; break; }
-          case 7: { base = 14; break; }
-          case 8: { base = 16; break; }
-          case 9: { base = 18; break; }
-          case 10: { base = 20; break; }
+          case 1: { base += 2; break; }
+          case 2: { base += 4; break; }
+          case 3: { base += 6; break; }
+          case 4: { base += 8; break; }
+          case 5: { base += 10; break; }
+          case 6: { base += 12; break; }
+          case 7: { base += 14; break; }
+          case 8: { base += 16; break; }
+          case 9: { base += 18; break; }
+          case 10: { base += 20; break; }
         } 
         
         return base;
@@ -211,6 +243,12 @@ class HereIStand extends GameTemplate {
       capitals          :       ["valladolid","vienna"],
       img		:	"hapsburgs.png",
       cards_bonus	:	0,
+      returnCardsSaved  :       function(game_mod) {
+ 
+        let base = 2;
+        return base; 
+
+      },
       returnCardsDealt  :       function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("hapsburg");
@@ -232,7 +270,9 @@ class HereIStand extends GameTemplate {
           case 13: { base = 7; break; }
           default: { base = 0; break; }
         }
-        
+
+        if (state.leaders_charles_v == 1) { base += 0; }
+       
         // TODO - bonus for home spaces under protestant control
         return base;
 
@@ -240,22 +280,22 @@ class HereIStand extends GameTemplate {
       calculateVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("hapsburg");
-        let base = 0;
+        let base = this.vp;
         
         switch (kc) {
-          case 1: { base = 2; break; }
-          case 2: { base = 3; break; }
-          case 3: { base = 4; break; }
-          case 4: { base = 5; break; }
-          case 5: { base = 6; break; }
-          case 6: { base = 7; break; }
-          case 7: { base = 8; break; }
-          case 8: { base = 9; break; }
-          case 9: { base = 10; break; }
-          case 10: { base = 11; break; }
-          case 11: { base = 12; break; }
-          case 12: { base = 13; break; }
-          case 13: { base = 14; break; }
+          case 1: { base += 2; break; }
+          case 2: { base += 3; break; }
+          case 3: { base += 4; break; }
+          case 4: { base += 5; break; }
+          case 5: { base += 6; break; }
+          case 6: { base += 7; break; }
+          case 7: { base += 8; break; }
+          case 8: { base += 9; break; }
+          case 9: { base += 10; break; }
+          case 10: { base += 11; break; }
+          case 11: { base += 12; break; }
+          case 12: { base += 13; break; }
+          case 13: { base += 14; break; }
         } 
         
         return base;
@@ -274,6 +314,15 @@ class HereIStand extends GameTemplate {
       capitals          :       ["istanbul"],
       img		:	"ottoman.png",
       cards_bonus	:	0,
+      returnCardsSaved  :       function(game_mod) {
+
+        let base = 0;
+
+        if (state.leaders_suleiman == 1) { base += 2; }
+
+        return base;
+
+      },
       returnCardsDealt  :       function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
@@ -292,7 +341,9 @@ class HereIStand extends GameTemplate {
           case 10: { base = 6; break; }
           default: { base = 0; break; }
         }
-        
+
+        if (state.leaders_suleiman == 1) { base += 0; }        
+       
         // TODO - bonus for home spaces under protestant control
         return base;
 
@@ -300,19 +351,19 @@ class HereIStand extends GameTemplate {
       calculateVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("ottoman");
-        let base = 0;
+        let base = this.vp;
         
         switch (kc) {
-          case 1: { base = 2; break; }
-          case 2: { base = 4; break; }
-          case 3: { base = 6; break; }
-          case 4: { base = 8; break; }
-          case 5: { base = 10; break; }
-          case 6: { base = 12; break; }
-          case 7: { base = 14; break; }
-          case 8: { base = 16; break; }
-          case 9: { base = 18; break; }
-          case 10: { base = 20; break; }
+          case 1: { base += 2; break; }
+          case 2: { base += 4; break; }
+          case 3: { base += 6; break; }
+          case 4: { base += 8; break; }
+          case 5: { base += 10; break; }
+          case 6: { base += 12; break; }
+          case 7: { base += 14; break; }
+          case 8: { base += 16; break; }
+          case 9: { base += 18; break; }
+          case 10: { base += 20; break; }
         } 
         
         return base;
@@ -333,6 +384,18 @@ class HereIStand extends GameTemplate {
       capitals          :       ["rome"],
       img		:	"papacy.png",
       cards_bonus	:	0,
+      returnCardsSaved  :       function(game_mod) {
+ 
+        let base = 0;
+
+        if (state.leaders_leo_x == 1) { base += 0; }
+        if (state.leaders_clement_vii == 1) { base += 1; }
+        if (state.leaders_paul_iii == 1) { base += 1; }
+        if (state.leaders_julius_iii == 1) { base += 0; }
+
+        return base; 
+
+      },
       returnCardsDealt  :       function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
@@ -347,7 +410,12 @@ class HereIStand extends GameTemplate {
           case 6: { base = 4; break; }
           default: { base = 0; break; }
         }
-        
+
+        if (state.leaders_leo_x == 1) { base += 0; }
+        if (state.leaders_clement_vii == 1) { base += 0; }
+        if (state.leaders_paul_iii == 1) { base += 1; }
+        if (state.leaders_julius_iii == 1) { base += 1; }       
+
         // TODO - bonus for home spaces under protestant control
         return base;
 
@@ -355,15 +423,15 @@ class HereIStand extends GameTemplate {
       calculateVictoryPoints  : function(game_mod) {
         
         let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
-        let base = 0;
+        let base = this.vp;
         
         switch (kc) {
-          case 1: { base = 2; break; }
-          case 2: { base = 4; break; }
-          case 3: { base = 6; break; }
-          case 4: { base = 8; break; }
-          case 5: { base = 10; break; }
-          case 6: { base = 12; break; }
+          case 1: { base += 2; break; }
+          case 2: { base += 4; break; }
+          case 3: { base += 6; break; }
+          case 4: { base += 8; break; }
+          case 5: { base += 10; break; }
+          case 6: { base += 12; break; }
         } 
         
         return base;
@@ -384,15 +452,25 @@ class HereIStand extends GameTemplate {
       cards_bonus	:	0,
       returnCardsDealt  :       function(game_mod) {
         
-        let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
-        if (kc > 4) { return 5; }
+	let base = 4; 
 
-	return 4;
-        
+        let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
+        if (kc > 4) { base += 1; }
+
+        if (state.leaders_martin_luther == 1) { base += 0; }
+
+	return base;        
+
+      },
+      returnCardsSaved  :       function(game_mod) {
+
+	let base = 2;
+	return base; 
+      
       },
       calculateVictoryPoints  : function(game_mod) {
         
-        let base = 0;
+        let base = this.vp;
 
 	// 2 VP for every electorate that is under Protesant religious + political control
         base += (2 * game_mod.returnNumberOfElectoratesControlledByProtestants());        
@@ -1358,6 +1436,8 @@ console.log("adding stuff!");
     return 0;
   }
 
+  
+
   setAllies(faction1, faction2) {
     try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
@@ -1547,6 +1627,18 @@ console.log("adding stuff!");
 
   returnImpulseOrder() {
     return ["ottoman","hapsburg","england","france","papacy","protestant"];
+  }
+
+  returnHomeSpaces(faction) {
+
+    let spaces = [];
+
+    for (let i in this.game.spaces) {
+      if (this.game.spaces[i].home === faction) { spaces.push(i); }
+    }
+
+    return spaces;
+
   }
 
   returnNeighbours(space, transit_passes=1) {
@@ -1805,6 +1897,21 @@ console.log("adding stuff!");
     state.autowin_papacy_keys_controlled = 7;
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
+
+    state.leaders.francis_i = 1;
+    state.leaders.henry_viii = 1;
+    state.leaders.charles_v = 1;
+    state.leaders.suleiman = 1;
+    state.leaders.leo_x = 1;
+    state.leaders.martin_luther = 1
+
+    state.leaders_clement_vii = 0;
+    state.leaders_paul_iii = 0;
+    state.leaders_edward_vi = 0;
+    state.leaders_henry_ii = 0;
+    state.leaders_mary_i = 0;
+    state.leaders_julius_iii = 0;
+    state.leaders_elizabeth_i = 0;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -3970,6 +4077,13 @@ console.log("adding stuff!");
 
   }
 
+
+  removeCardFromGame(card) {
+    try { delete this.game.deck[0].cards[card]; } catch (err) {}
+    try { delete this.game.deck[0].discards[card]; } catch (err) {}
+  }
+
+
   returnDeck() {
 
     var deck = {};
@@ -4199,6 +4313,12 @@ console.log("adding stuff!");
       turn : 1 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 1;
+	return 1;
+      },
+
     }
     deck['011'] = { 
       img : "cards/HIS-011.svg" , 
@@ -4276,6 +4396,14 @@ console.log("adding stuff!");
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 0;
+	game_mod.removeCardFromGame('010'); // remove clement vii
+	game_mod.game.state.leaders_paul_iii = 1;
+	return 1;
+      },
+
     }
     deck['015'] = { 
       img : "cards/HIS-015.svg" , 
@@ -4328,6 +4456,10 @@ console.log("adding stuff!");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_edward_vi = 1;
+	return 1;
+      },
     }
     deck['020'] = { 
       img : "cards/HIS-020.svg" , 
@@ -4336,6 +4468,11 @@ console.log("adding stuff!");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_francis_i = 0;
+	game_mod.game.state.leaders_henry_ii = 1;
+	return 1;
+      },
     }
     deck['021'] = { 
       img : "cards/HIS-021.svg" , 
@@ -4344,6 +4481,13 @@ console.log("adding stuff!");
       turn : 6 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_henry_viii = 0;
+	game_mod.game.state.leaders_edward_vi = 0;
+	game_mod.game.state.leaders_mary_i = 1;
+	game_mod.removeCardFromGame('021');
+	return 1;
+      },
     }
     deck['022'] = { 
       img : "cards/HIS-022.svg" , 
@@ -4352,6 +4496,15 @@ console.log("adding stuff!");
       turn : 7 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_leo_x = 0;
+	game_mod.game.state.leaders_clement_vii = 0;
+	game_mod.game.state.leaders_paul_iii = 0;
+	game_mod.game.state.leaders_julius_iii = 1;
+	game_mod.removeCardFromGame('010');
+	game_mod.removeCardFromGame('014');
+	return 1;
+      },
     }
     deck['023'] = { 
       img : "cards/HIS-023.svg" , 
@@ -4360,6 +4513,15 @@ console.log("adding stuff!");
       turn : 0 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(game_mod, player) {
+	game_mod.game.state.leaders_henry_viii = 0;
+	game_mod.game.state.leaders_edward_vi = 0;
+	game_mod.game.state.leaders_mary_i = 0;
+	game_mod.game.state.leaders_elizabeth_i = 1;
+	game_mod.removeCardFromGame('019');
+	game_mod.removeCardFromGame('021');
+	return 1;
+      },
     }
     deck['024'] = { 
       img : "cards/HIS-024.svg" , 
@@ -5457,24 +5619,6 @@ alert("WE PLAYED GOUT");
 
     let his_self = this;
 
-//
-// TODO remove
-//
-// keeping as reference until I'm used to it
-//
-//    let res = this.returnNearestSpaceWithFilter(
-//      "dijon", 
-//      function(spacekey) {
-//	if (his_self.game.spaces[spacekey].type === "fortress") { return 1; }
-//        return 0;
-//      },
-//      function(spacekey) {
-//	return 1;
-//      }
-//    );
-
-
-
 
     ///////////
     // QUEUE //
@@ -5524,9 +5668,7 @@ console.log("MOVE: " + mv[0]);
 	    this.game.queue.push("card_draw_phase");
 	  }
 
-
 	  this.game.queue.push("ACKNOWLEDGE\tFACTION: "+JSON.stringify(this.returnPlayerFactions(this.game.player)));
-
 
 	  if (this.game.state.round > 1) {
 	    this.updateStatus("Game Over");
@@ -5995,7 +6137,28 @@ console.log("MOVE: " + mv[0]);
 
 
         if (mv[0] === "victory_determination_phase") {
+
+
 	  this.game.queue.splice(qe, 1);
+
+	  let f = this.calculateVictoryPoints();
+
+/****
+//          faction : this.game.players_info[i].factions[ii] ,
+//          vp : 0 ,
+//          keys : 0 ,
+//          religious : 0 ,
+//          victory : 0,
+//          details : "",
+****/
+
+	  for (let faction in f) {
+	    if (f.victory == 1) {
+	      let player = this.returnPlayerOfFaction(faction);
+	      this.endGame([this.game.players[player-1]], f.details);
+	    }
+	  }
+
           return 1;
         }
         if (mv[0] === "new_world_phase") {
@@ -6308,10 +6471,6 @@ console.log("----------------------------");
 	  let card = mv[3];
 	  let ops = mv[4];
 
-//	  if (this.game.player == player) {
-//            this.playerPlayOps(card, faction, ops);
-//	  }
-
 	  this.game.queue.splice(qe, 1);
 
 	  let player_turn = -1;
@@ -6322,25 +6481,19 @@ console.log("----------------------------");
 	    }
 	  }
 
-console.log("which player's turn: " + player_turn);
-
           this.displayBoard();
 
 	  // no-one controls this faction, so skip
 	  if (player_turn === -1) { 
-console.log("no-one's turn so skipping...");
 	    return 1; 
 	  }
 
 	  // let the player who controls play turn
 	  if (this.game.player === player_turn) {
-console.log("A");
 	    this.playerPlayOps(card, faction, ops);
 	  } else {
-console.log("B");
 	    this.updateStatusAndListCards("Opponent Turn");
 	  }
-console.log("C");
           return 0;
         }
 
@@ -6398,6 +6551,7 @@ console.log("C");
             );
           }
 
+	  this.displayVictoryTrack();
 	  this.game.queue.splice(qe, 1);
 	  return 0;
 
@@ -6437,6 +6591,7 @@ console.log("C");
             );
           }
 
+	  this.displayVictoryTrack();
 	  this.game.queue.splice(qe, 1);
 	  return 0;
 
@@ -6452,6 +6607,7 @@ console.log("C");
 	  let space = mv[2];
 
 alert("ASSAULT UNIMPLEMENTED");
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -6466,6 +6622,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	  this.game.spaces[space].political = faction;
 
 	  this.displaySpace(space);
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -6517,6 +6674,7 @@ alert("ASSAULT UNIMPLEMENTED");
 	  this.game.spaces[space].religion = religion;
 	  this.displaySpace(space);
 	  this.displayElectorateDisplay();
+	  this.displayVictoryTrack();
 
 	  return 1;
 
@@ -6774,10 +6932,6 @@ this.updateLog("Catholics: " + c_rolls);
 
 	}
 
-
-
-
-
 	//
 	// objects and cards can add commands
 	//
@@ -6785,7 +6939,6 @@ this.updateLog("Catholics: " + c_rolls);
         for (let i in z) {
           if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
         }
-
 
         //
         // avoid infinite loops
@@ -7277,7 +7430,8 @@ this.updateLog("Catholics: " + c_rolls);
       });
       this.attachCardboxEvents(function(user_choice) {
         if (user_choice === "ops") {
-          this.playerPlayOps(card, faction);
+	  let ops = this.game.deck[0].cards[card].ops;
+          this.playerPlayOps(card, faction, ops);
           return;
         }
         if (user_choice === "event") {
@@ -8356,7 +8510,6 @@ return;
     if (this.factions[faction].key === "hapsburg") {
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
-console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + controlled_keys);
       for (let i = 1; i <= 14; i++) {
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;

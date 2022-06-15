@@ -473,7 +473,8 @@
       });
       this.attachCardboxEvents(function(user_choice) {
         if (user_choice === "ops") {
-          this.playerPlayOps(card, faction);
+	  let ops = this.game.deck[0].cards[card].ops;
+          this.playerPlayOps(card, faction, ops);
           return;
         }
         if (user_choice === "event") {
