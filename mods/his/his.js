@@ -1,3 +1,4 @@
+
 const GameTemplate = require('../../lib/templates/gametemplate');
 const JSON = require('json-bigint');
 
