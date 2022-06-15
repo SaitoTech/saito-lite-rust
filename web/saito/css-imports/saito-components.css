@@ -263,7 +263,7 @@ Saito User List and Saito User
 }
 
 .saito-user-info p {
-    max-width: 50%;
+    max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -445,7 +445,7 @@ Saito User List and Saito User
     }
 
     .saito-user-list.saito-user-rectangle .saito-user-info span {
-        max-width: 100%;
+        max-width: 80%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
