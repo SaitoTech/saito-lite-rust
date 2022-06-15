@@ -136,7 +136,7 @@ class Blockchain {
     block.generateHashes();
 
     if (this.debugging) {
-      console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
+      //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
       //console.debug(this);
     }
     //

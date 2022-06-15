@@ -36,12 +36,16 @@
       }
     }
 
+console.log("LAWS IN PLAY: " + JSON.stringify(this.game.state.laws));
+
     //
     // laws-in-play
     //
     for (let i = 0; i < this.game.state.laws.length; i++) {
       if (this.game.state.laws[i].agenda) {
+console.log("LIP2 ");
         if (this.agenda_cards[this.game.state.laws[i].agenda].name) {
+console.log("laws in play 3: agenda is: " +  this.agenda_cards[this.game.state.laws[i].agenda] );
           z.push(this.agenda_cards[this.game.state.laws[i].agenda]);
         }
       }

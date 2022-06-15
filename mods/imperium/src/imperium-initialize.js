@@ -284,6 +284,7 @@ console.log("error initing chat: " + err);
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.hud.auto_sizing = 0;
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
@@ -522,8 +523,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
