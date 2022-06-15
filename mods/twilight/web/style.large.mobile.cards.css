@@ -6,15 +6,19 @@
 .china_card_status_us_faceup {
   background-color: #3277de;
 }
+
 .china_card_status_us_facedown {
   background-color: #063b8a;
 }
+
 .china_card_status_ussr_faceup {
   background-color: #8a0612;
 }
+
 .china_card_status_ussr_facedown {
   background-color: #ea3041;
 }
+
 .china_card_status {
   position: absolute;
   width: 130px;
@@ -33,33 +37,37 @@
   background-image: url("img/Formosan.png");
   background-size: cover;
 }
+
 .removecards li {
   float: left;
   min-width: 300px;
   font-size: 15px;
   list-style-type: none;
 }
+
 .game_details_select {
   max-width: 300px;
 }
+
 .game_details {
   max-width: 100%;
 }
 
 .zoom_button {
- border: 1px solid #707070;
- background-color: #646464;
- -webkit-border-radius: 4px;
- -moz-border-radius: 4px;
- border-radius: 4px;
- font-size:2em;
- color: #FFFFFF;
- height: 40px;
- width: 40px;
- text-align: center;
- vertical-align: middle;
- line-height: 20px;
+  border: 1px solid #707070;
+  background-color: #646464;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  font-size: 2em;
+  color: #FFFFFF;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 20px;
 }
+
 .action_round_cover {
   position: absolute;
   background-color: black;
@@ -76,7 +84,7 @@ body {
   display: grid;
   width: 100vw;
   height: 100vh;
-  overflow: scroll;
+  overflow: auto;
 
   margin-top: unset;
 }
@@ -96,16 +104,24 @@ body {
 
 /** Modal **/
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
 }
 
 /* The Close Button */
@@ -130,7 +146,10 @@ body {
 }
 
 /* Modal Body */
-.modal_body {padding: 2px 16px; color: white;}
+.modal_body {
+  padding: 2px 16px;
+  color: white;
+}
 
 #modal_header_text {
   margin-top: 1em;
@@ -138,7 +157,9 @@ body {
   text-decoration: center;
 }
 
-#modal_body_text { margin: 1em 0 1em 0; }
+#modal_body_text {
+  margin: 1em 0 1em 0;
+}
 
 /* Modal Footer */
 .modal_footer {
@@ -158,7 +179,7 @@ body {
   font-size: 1em;
   color: white;
   border: unset;
-  color:white;
+  color: white;
   width: 125px;
   background-color: rgb(0, 190, 10);
 }
@@ -173,14 +194,14 @@ body {
   width: 33%;
   min-width: 250px;
   max-width: 600px;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   animation-name: animatetop;
   animation-duration: 0.4s;
   background: #4e4e4e;
   border-radius: 5px;
   top: 30%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
 }
 
 /** **/
@@ -214,7 +235,7 @@ body {
   height: 1650px;
 
 
-/*   3D Perspective
+  /*   3D Perspective
   -webkit-transform: perspective(200px) rotateX(5deg);
   -moz-transform: perspective(200px) rotateX(5deg);
   -ms-transform: perspective(200px) rotateX(5deg);
@@ -226,9 +247,9 @@ body {
 #back_button {
   font-size: 1.2em;
   /* position: absolute; */
-  cursor:pointer;
-  width:30px;
-  height:30px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
 }
 
 /* .status > span > ul {
@@ -451,9 +472,9 @@ body {
 .hud-card {
   display: block;
 
-/* PREVIOUS - works but too small? */
-/*  width: calc(8.7em * 0.7211); */
-/*  height: 8.7em; */
+  /* PREVIOUS - works but too small? */
+  /*  width: calc(8.7em * 0.7211); */
+  /*  height: 8.7em; */
   width: calc(9em * 0.811);
   height: 10em;
 
@@ -524,6 +545,7 @@ body {
   top: 100%;
   z-index: 900009;
 }
+
 .us {
   display: inline;
   float: left;
@@ -572,8 +594,8 @@ body {
 }
 
 .event_tile {
-  display:none;
-  float:right;
+  display: none;
+  float: right;
 }
 
 .card-exit {
@@ -590,6 +612,7 @@ body {
     /* float: none;
     z-index: 40000; */
   }
+
   .cardbox {
     position: fixed;
     float: none;
@@ -602,7 +625,7 @@ body {
     font-size: 0.8em;
   }
 
-  .status > ul {
+  .status>ul {
     margin: 0;
   }
 
@@ -620,19 +643,19 @@ body {
     font-size: 0.8em;
   }
 
-  .status > ul > li {
+  .status>ul>li {
     padding: 20px;
   }
 
-  .status > span > ul > li {
+  .status>span>ul>li {
     padding: 3vh;
   }
 
-  .hud_menu_overlay > div > ul > li {
+  .hud_menu_overlay>div>ul>li {
     padding: 20px;
   }
 
-  
+
   .cardbox {
     position: fixed;
     z-index: 90000;
@@ -660,7 +683,7 @@ body {
   .display-cards-status {
     padding: 0;
     margin: 0;
-    overflow: scroll;
+    overflow: auto;
   }
 
   .hud-card {
@@ -707,23 +730,23 @@ body {
 }
 
 @media only screen and (orientation: landscape) and (max-height: 700px) {
-  .status > ul {
+  .status>ul {
     margin: 0;
   }
 
-  .status > ul > li {
+  .status>ul>li {
     padding: 20px;
   }
 
-  .status > span > ul > li {
+  .status>span>ul>li {
     padding: 3vh;
   }
 
-  .hud_menu_overlay > div > ul > li {
+  .hud_menu_overlay>div>ul>li {
     padding: 20px;
   }
 
-  
+
   .cardbox {
     /* position: fixed;
     height: 95vh;
@@ -739,8 +762,8 @@ body {
   }
 
   .display-cards {
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     overflow-y: scroll;
     height: 97%;

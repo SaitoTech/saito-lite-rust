@@ -284,6 +284,7 @@ console.log("error initing chat: " + err);
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.hud.auto_sizing = 0;
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
