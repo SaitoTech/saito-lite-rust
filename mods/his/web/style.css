@@ -1,4 +1,40 @@
 
+.vp_tile {
+  position: absolute;
+  z-index: 200;
+  height: 100px;
+  width: 100px;
+  top: 100px;
+  left: 100px;
+  display: none;
+}
+
+#hapsburg_vp_tile {
+  background-image: url('/his/img/vp/VP_Hapsburg.svg');
+  background-size: cover;
+}
+#protestant_vp_tile {
+  background-image: url('/his/img/vp/VP_Hapsburg.svg');
+  background-size: cover;
+}
+#france_vp_tile {
+  background-image: url('/his/img/vp/VP_France.svg');
+  background-size: cover;
+}
+#england_vp_tile {
+  background-image: url('/his/img/vp/VP_England.svg');
+  background-size: cover;
+}
+#ottoman_vp_tile {
+  background-image: url('/his/img/vp/VP_Ottoman.svg');
+  background-size: cover;
+}
+#papacy_vp_tile {
+  background-image: url('/his/img/vp/VP_Papacy.svg');
+  background-size: cover;
+}
+
+
 .hud-header {
   opacity: 0.5;
   background-color: #0005;

@@ -112,6 +112,34 @@ class HereIStand extends GameTemplate {
 	return base;
 
       },
+      calculateVictoryPoints  :	function(game_mod) {
+
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let base = 0;
+
+	switch (kc) {
+	  case 1: { base = 2; break; }
+	  case 2: { base = 3; break; }
+	  case 3: { base = 4; break; }
+	  case 4: { base = 5; break; }
+	  case 5: { base = 6; break; }
+	  case 6: { base = 7; break; }
+	  case 7: { base = 8; break; }
+	  case 8: { base = 9; break; }
+	  case 9: { base = 10; break; }
+	  case 10: { base = 11; break; }
+	  case 11: { base = 12; break; }
+	  case 12: { base = 13; break; }
+	  default: { base = 14; break; }
+	}
+
+	if (game_mod.game.state.schmalkaldic_league == 1) {
+          base += game_mod.returnNumberOfElectoratesControlledByCatholics();
+	}
+
+	return base;
+
+      },
     });
  
 
@@ -148,6 +176,27 @@ class HereIStand extends GameTemplate {
         // TODO - bonus for home spaces under protestant control
         return base;
 
+      },
+      calculateVictoryPoints  : function(game_mod) {
+
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("france");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 4; break; }
+          case 3: { base = 6; break; }
+          case 4: { base = 8; break; }
+          case 5: { base = 10; break; }
+          case 6: { base = 12; break; }
+          case 7: { base = 14; break; }
+          case 8: { base = 16; break; }
+          case 9: { base = 18; break; }
+          case 10: { base = 20; break; }
+        } 
+        
+        return base;
+        
       },
     });
  
@@ -188,6 +237,30 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
+      calculateVictoryPoints  : function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("hapsburg");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 3; break; }
+          case 3: { base = 4; break; }
+          case 4: { base = 5; break; }
+          case 5: { base = 6; break; }
+          case 6: { base = 7; break; }
+          case 7: { base = 8; break; }
+          case 8: { base = 9; break; }
+          case 9: { base = 10; break; }
+          case 10: { base = 11; break; }
+          case 11: { base = 12; break; }
+          case 12: { base = 13; break; }
+          case 13: { base = 14; break; }
+        } 
+        
+        return base;
+
+      },
     });
  
 
@@ -221,6 +294,27 @@ class HereIStand extends GameTemplate {
         }
         
         // TODO - bonus for home spaces under protestant control
+        return base;
+
+      },
+      calculateVictoryPoints  : function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("ottoman");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 4; break; }
+          case 3: { base = 6; break; }
+          case 4: { base = 8; break; }
+          case 5: { base = 10; break; }
+          case 6: { base = 12; break; }
+          case 7: { base = 14; break; }
+          case 8: { base = 16; break; }
+          case 9: { base = 18; break; }
+          case 10: { base = 20; break; }
+        } 
+        
         return base;
 
       },
@@ -258,6 +352,23 @@ class HereIStand extends GameTemplate {
         return base;
 
       },
+      calculateVictoryPoints  : function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 4; break; }
+          case 3: { base = 6; break; }
+          case 4: { base = 8; break; }
+          case 5: { base = 10; break; }
+          case 6: { base = 12; break; }
+        } 
+        
+        return base;
+
+      },
     });
  
 
@@ -279,7 +390,16 @@ class HereIStand extends GameTemplate {
 	return 4;
         
       },
+      calculateVictoryPoints  : function(game_mod) {
+        
+        let base = 0;
 
+	// 2 VP for every electorate that is under Protesant religious + political control
+        base += (2 * game_mod.returnNumberOfElectoratesControlledByProtestants());        
+
+        return base;
+
+      },
     });
  
 
@@ -1302,6 +1422,97 @@ console.log("adding stuff!");
     space.units[faction].push(this.newPersonage(faction, personage));
   }
 
+  // figure out how many points people have
+  calculateVictoryPoints() {
+
+    let factions = {};
+
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
+        factions[this.game.players_info[i].factions[ii]] = {
+	  faction : this.game.players_info[i].factions[ii] ,
+	  vp : 0 ,
+	  keys : 0 ,
+	  religious : 0 ,
+	  victory : 0,	  
+	  details : "",
+	};
+      }
+    }
+
+    // let factions calculate their VP
+    for (let f in factions) {
+      factions[f].vp = this.factions[f].calculateVictoryPoints(this);
+    }
+
+    // calculate keys controlled
+    for (let f in factions) {
+      factions[f].keys = this.returnNumberOfKeysControlledByFaction(f);
+      if (f === "protestant") {
+	factions[f].religious = this.returnNumberOfSpacesControlledByProtestants();
+      }
+    }
+
+    // military victory
+    if (factions['hapsburg']) {
+    if (factions['hapsburg'].keys >= this.game.state.autowin_hapsburg_keys_controlled) {
+      factions['hapsburg'].victory = 1;
+      factions['hapsburg'].details = "military victory";
+    }
+    }
+    if (factions['ottoman']) {
+    if (factions['ottoman'].keys >= this.game.state.autowin_ottoman_keys_controlled) {
+      factions['ottoman'].victory = 1;
+      factions['ottoman'].details = "military victory";
+    }
+    }
+    if (factions['france']) {
+    if (factions['france'].keys >= this.game.state.autowin_france_keys_controlled) {
+      factions['france'].victory = 1;
+      factions['france'].details = "military victory";
+    }
+    }
+    if (factions['england']) {
+    if (factions['england'].keys >= this.game.state.autowin_england_keys_controlled) {
+      factions['england'].victory = 1;
+      factions['england'].details = "military victory";
+    }
+    }
+    if (factions['papacy']) {
+    if (factions['papacy'].keys >= this.game.state.autowin_papacy_keys_controlled) {
+      factions['papacy'].victory = 1;
+      factions['papacy'].details = "military victory";
+    }
+    }
+
+    // religious victory
+    if (factions['protestant']) {
+    if (factions['protestant'].religious >= 50) {
+      factions['papacy'].victory = 1;
+      factions['papacy'].details = "religious victory";
+    }
+    }
+
+    // base
+
+    // protestant spaces
+
+    // bonus vp
+//• Protestant debater burned (1 per debate rating)
+//• Papal debater disgraced (1 per debate rating)
+//• Successful voyage of exploration
+//• Successful voyage of conquest
+//• Copernicus (2 VP) or Michael Servetus (1 VP) event
+//• JuliaGonzaga(1VP)followed by successful Ottoman piracy in Tyrrhenian Sea
+//• War Winner marker received during Peace Segment
+//• Master of Italy VP marker received during Action Phase
+//• Bible translation completed (1 VP for each language)
+
+    return factions;
+
+  }
+
+
   convertSpace(religion, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.religion = religion;
@@ -1551,6 +1762,16 @@ console.log("adding stuff!");
     }
     return controlled_keys;
   }
+  returnNumberOfSpacesControlledByProtestants() {
+    let controlled_spaces = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+	controlled_spaces++;
+      }
+    }
+    return controlled_spaces;
+  }
+
 
 
   /////////////////////
@@ -1578,6 +1799,12 @@ console.log("adding stuff!");
     state.cologne_electoral_bonus = 0;
     state.wittenberg_electoral_bonus = 0;
     state.brandenburg_electoral_bonus = 0;
+
+    state.autowin_hapsburg_keys_controlled = 14;
+    state.autowin_ottoman_keys_controlled = 11;
+    state.autowin_papacy_keys_controlled = 7;
+    state.autowin_france_keys_controlled = 11;
+    state.autowin_england_keys_controlled = 9;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -1882,6 +2109,7 @@ console.log("adding stuff!");
       left : 3050
     }
 
+    return track;
   }
 
 
@@ -8907,7 +9135,19 @@ console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + cont
 
 
   displayVictoryTrack() {
-console.log("displayVictoryTrack requires implementation");
+
+    let factions_and_scores = this.calculateVictoryPoints();
+    let x = this.returnVictoryPointTrack();
+
+    for (f in factions_and_scores) {
+      let total_vp = factions_and_scores[f].vp
+      let ftile = f + "_vp_tile";
+      obj = document.getElementById(ftile);
+      obj.style.left = x[total_vp].left + "px";
+      obj.style.top = x[total_vp].top + "px";
+      obj.style.display = "block";
+    }
+
   }
 
 

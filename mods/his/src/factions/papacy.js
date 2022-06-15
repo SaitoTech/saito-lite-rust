@@ -27,6 +27,23 @@
         return base;
 
       },
+      calculateVictoryPoints  : function(game_mod) {
+        
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
+        let base = 0;
+        
+        switch (kc) {
+          case 1: { base = 2; break; }
+          case 2: { base = 4; break; }
+          case 3: { base = 6; break; }
+          case 4: { base = 8; break; }
+          case 5: { base = 10; break; }
+          case 6: { base = 12; break; }
+        } 
+        
+        return base;
+
+      },
     });
  
 
