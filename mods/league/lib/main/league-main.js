@@ -9,7 +9,7 @@ class LeagueMain {
   render(app, mod) {
 
     if (!document.getElementById("league-main")) {
-      app.browser.addElementToDom(LeagueMainTemplate(app));
+      app.browser.addElementToDom(LeagueMainTemplate(app, mod));
     }
 
   }

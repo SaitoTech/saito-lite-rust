@@ -1,0 +1,35 @@
+body {
+	background-color: #343542;
+	color: #fff;
+}
+
+.league-main-wrapper {
+	position: relative;
+    width: 90%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 15vh;
+}
+
+.league-avl-games-container{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5vh;
+    flex-wrap: wrap;
+}
+
+.league-avl-game-item {
+	width: 26%;
+    margin-bottom: 5vh;
+    border-radius: 5px;
+    background-color: #3b4458;
+    padding: 10px;
+}
+
+.league-avl-game-item img {
+	width: 150px;
+}
+
+.league-avl-game-item h3 {
+
+} 

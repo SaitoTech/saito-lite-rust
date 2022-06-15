@@ -14,7 +14,7 @@ class League extends ModTemplate {
     this.categories = "Games Entertainment";
 
     this.leagues = {};
-
+    this.games = [];
     this.header = new SaitoHeader(app);
     this.main = new LeagueMain(app);
 
@@ -22,6 +22,12 @@ class League extends ModTemplate {
 
 
   render(app) {
+
+    // get all game modules that responds to arcade
+    app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
+        this.games.push(mod);
+    });
+
     this.header.render(app, this);
     this.main.render(app, this);
   }
