@@ -260,7 +260,6 @@ Saito User List and Saito User
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    margin-right: 2rem;
 }
 
 .saito-user-info p {
@@ -411,26 +410,58 @@ Saito User List and Saito User
     /* color: white; */
 }
 
-/* 
-@media screen and (max-width: 1200px) {
-    .saito-user p {
-        width: 15rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1.8rem;
-    }
-}
+
+@media screen and (max-width: 1200px) {}
 
 @media screen and (max-width: 768px) {
-    .saito-user p {
-        width: 15rem;
+
+
+
+
+    .saito-user-info {
+        width: 70%;
+
+
+    }
+
+    .saito-user-info span {
+        max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 1.8rem;
+
     }
-} */
+
+
+    .saito-user-list .saito-user>img {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+
+    .saito-user-list.saito-user-rectangle .saito-user-info {
+        width: 70%;
+
+    }
+
+    .saito-user-list.saito-user-rectangle .saito-user-info span {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+    }
+
+
+    .saito-user-list.saito-user-rectangle .saito-user>img {
+        width: 5rem;
+        height: 3.5rem;
+    }
+
+
+
+
+}
 
 @media screen and (max-width: 320px) {}
 
