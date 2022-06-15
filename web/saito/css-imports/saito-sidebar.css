@@ -4,25 +4,29 @@ Left Sidebar
 
 
 .saito-left-menu-header {
-    background-color: var(--saito-primary);
-    padding: 1rem .6rem;
-    border-bottom: 1px solid var(--saito-white);
+    background-color: var(--saito-white);
+    border: 1px solid var(--saito-primary);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: .9rem;
+    padding-right: 1rem;
     display: flex;
     align-items: center;
+    border-right: none;
+    border-left: none;
 
 
 }
 
 .saito-left-menu-header h5 {
-    color: white;
     font-size: 1.92rem
 }
 
 .saito-left-menu-header i {
-    color: var(--saito-white);
     font-size: 1.92rem;
     margin-left: auto;
     cursor: pointer;
+    color: var(--saito-default-font-color);
 }
 
 
@@ -39,7 +43,7 @@ Left Sidebar
     display: grid;
     grid-gap: 1rem;
     grid-template-columns: min-content minmax(35%, 1fr) min-content;
-    padding: 1rem .6rem;
+    padding: 1rem 0;
     cursor: pointer;
 
 }
@@ -109,4 +113,29 @@ Right sidebar
 .saito-search-bar i {
     font-size: 1.8rem;
     color: var(--saito-border);
+}
+
+
+@media screen and (max-width: 1200px) {
+
+    .saito-left-menu-header {
+        padding-left: 1.9rem;
+
+    }
+
+    .saito-left-menu-body {
+        padding-left: 1rem;
+    }
+}
+
+@media screen and (max-width: 503px) {
+
+    .saito-left-menu-header {
+        padding-left: 1rem;
+
+    }
+
+    .saito-left-menu-body {
+        padding-left: 0rem;
+    }
 }
