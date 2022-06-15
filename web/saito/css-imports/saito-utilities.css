@@ -1,0 +1,243 @@
+/* ----------------------------------------------------------------
+Saito Utility Classes
+-----------------------------------------------------------------*/
+
+/* ----------------------------------------------------------------
+Paddings
+-----------------------------------------------------------------*/
+
+
+.saito-pad-1 {
+    padding: .5rem;
+}
+
+.saito-padr-1 {
+    padding-right: .5rem;
+}
+
+.saito-padl-1 {
+    padding-left: .5rem;
+}
+
+.saito-padt-1 {
+    padding-top: .5rem;
+}
+
+.saito-padb-1 {
+    padding-bottom: .5rem;
+}
+
+.saito-pad-2 {
+    padding: 1rem;
+}
+
+.saito-padr-2 {
+    padding-right: 1rem;
+}
+
+.saito-padl-2 {
+    padding-left: 1rem;
+}
+
+.saito-padt-2 {
+    padding-top: 1rem;
+}
+
+.saito-padb-2 {
+    padding-bottom: 1rem;
+}
+
+.saito-pad-3 {
+    padding: 2rem;
+}
+
+.saito-padr-3 {
+    padding-right: 2rem;
+}
+
+.saito-padl-3 {
+    padding-left: 2rem;
+}
+
+.saito-padt-3 {
+    padding-top: 2rem;
+}
+
+.saito-padb-3 {
+    padding-bottom: 2rem;
+}
+
+
+
+/* Vertical Paddings */
+.saito-pady-1 {
+    padding: .5rem 0;
+}
+
+.saito-pady-2 {
+    padding: 1rem 0;
+}
+
+.saito-pady-3 {
+    padding: 2rem 0;
+}
+
+
+/* Vertical Paddings */
+
+.saito-padx-1 {
+    padding: 0 .5rem;
+}
+
+.saito-padx-2 {
+    padding: 0 1rem;
+}
+
+.saito-padx-3 {
+    padding: 0 2rem;
+}
+
+
+/*  Remove  padding */
+.saito-pad-0 {
+    padding: 0 !important;
+}
+
+
+/* ----------------------------------------------------------------
+Margins
+-----------------------------------------------------------------*/
+
+.saito-mar-1 {
+    margin: .5rem !important;
+}
+
+.saito-marr-1 {
+    margin-right: .5rem !important;
+}
+
+.saito-marl-1 {
+    margin-left: .5rem !important;
+}
+
+.saito-mart-1 {
+    margin-top: .5rem !important;
+}
+
+.saito-marb-1 {
+    margin-bottom: .5rem !important;
+}
+
+.saito-mar-2 {
+    margin: 1rem !important;
+}
+
+.saito-marr-2 {
+    margin-right: 1rem !important;
+}
+
+.saito-marl-2 {
+    margin-left: 1rem !important;
+}
+
+.saito-mart-2 {
+    margin-top: 1rem !important;
+}
+
+.saito-marb-2 {
+    margin-bottom: 1rem !important;
+}
+
+.saito-mar-3 {
+    margin: 2rem !important;
+}
+
+.saito-marr-3 {
+    margin-right: 2rem !important;
+}
+
+.saito-marl-3 {
+    margin-left: 2rem !important;
+}
+
+.saito-mart-3 {
+    margin-top: 2rem !important;
+}
+
+
+.saito-marb-3 {
+    margin-bottom: 2rem !important;
+}
+
+
+.saito-marr-6 {
+    margin-right: 6rem !important;
+}
+
+.saito-marl-6 {
+    margin-left: 6rem !important;
+}
+
+.saito-mart-6 {
+    margin-top: 6rem !important;
+}
+
+.saito-marb-6 {
+    margin-bottom: 6rem !important;
+}
+
+
+
+/* Vertical Margins */
+
+.saito-mary-1 {
+    margin: .5rem 0 !important;
+}
+
+.saito-mary-2 {
+    margin: 1rem 0 !important;
+}
+
+.saito-mary-3 {
+    margin: 2rem 0 !important;
+}
+
+
+/* Vertical Horizontal Margins */
+
+.saito-marx-1 {
+    margin: 0 .5rem !important;
+}
+
+.saito-marx-2 {
+    margin: 0 1rem !important;
+}
+
+.saito-marx-3 {
+    margin: 0 2rem !important;
+}
+
+/* Remove margin */
+.saito-mar-0 {
+    margin: 0 !important;
+}
+
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Borders
+-----------------------------------------------------------------*/
+.saito-primary-border {
+    border: 1px solid var(--saito-primary);
+}
+
+.saito-gray-border {
+    border: 1px solid var(--saito-border);
+}
+
+.saito-border-gradient {}
