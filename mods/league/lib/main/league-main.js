@@ -25,7 +25,6 @@ class LeagueMain {
 
           let formData = {};
           formData.game = e.target.game.value;
-          formData.players = e.target.players.value;
           formData.type = e.target.type.value;
 
           this.mod.createLeagueTransaction(formData);  

@@ -26,12 +26,6 @@ module.exports = (app, mod) => {
                   <option value="public">Public</option>
                   <option value="private">Private</option>
                 </select>
-                <select id="players">
-                    <option value="1">1 Player</option>
-                    <option value="2">2 Player</option>
-                    <option value="3">3 Player</option>
-                    <option value="4">4 Player</option>
-                </select>
                 <button type="submit">Create League</button>
               </form>
             </div>

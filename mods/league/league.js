@@ -5,7 +5,6 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 class League extends ModTemplate {
 
   constructor(app) {
-
     super(app);
 
     this.name = "League";
@@ -17,16 +16,18 @@ class League extends ModTemplate {
     this.games = [];
     this.header = new SaitoHeader(app);
     this.main = new LeagueMain(app, this);
-
   }
 
-  render(app) {
+  initialize(app) {
+    super.initialize(app);
 
     // get all game modules that responds to arcade
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
     });
+  }
 
+  render(app) {
     this.header.render(app, this);
     this.main.render(app, this);
   }
@@ -34,13 +35,10 @@ class League extends ModTemplate {
   createLeagueTransaction(data) {
     try {
       if (this.app.BROWSER === 0) {
-          // browser instance's public key
-          const instance_pubkey = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
-
           let newtx = this.app.wallet.createUnsignedTransaction();
-          console.log('instance ', instance_pubkey);
 
-          newtx.league = {
+          newtx.msg = {
+              module: "League"
               game: data.game,
               request: "create_league",
               players: data.players,
@@ -48,18 +46,13 @@ class League extends ModTemplate {
               timestamp: new Date().getTime()
           };
 
-          console.log(newtx);
-
           newtx = this.app.wallet.signTransaction(newtx);
           this.app.network.propagateTransaction(newtx);
-
-          let relay_mod = this.app.modules.returnModule('Relay');
-          relay_mod.sendRelayMessage(instance_pubkey, 'create_league', newtx);
 
           return true;
       }
     } catch(err){
-      console.log('error in creating league txn', err);
+      console.log('error in create txn', err);
     }
   } 
 
