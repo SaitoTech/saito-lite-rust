@@ -1,4 +1,6 @@
-const LeagueMainTemplate = require("./league-main.template");
+const LeagueMainTemplate    = require("./league-main.template");
+const LeagueCreateLeagueBox = require("./../components/league-create-league-box");
+
 
 
 class LeagueMain {
@@ -14,24 +16,7 @@ class LeagueMain {
       app.browser.addElementToDom(LeagueMainTemplate(app, mod));
     }
 
-    this.attachEvents(app, mod);
-  }
-
-
-  attachEvents(app, mod) {
-    if (document.getElementById('create-form')) {
-      document.getElementById('create-form').addEventListener('submit', function(e){
-          e.preventDefault();
-
-          let formData = {};
-          formData.game = e.target.game.value;
-          formData.type = e.target.type.value;
-
-          this.mod.createLeagueTransaction(formData);  
-          alert("Creating league...");
-        
-      });
-    }
+    LeagueCreateLeagueBox.render(app, mod);
   }
 }
 
