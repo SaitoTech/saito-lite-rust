@@ -27,32 +27,44 @@ class Staff extends ModTemplate {
     }
 
     render(app, mod) {
+        console.log("value length: " + document.getElementById('staff_register').innerHTML);
         document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
-        console.log(RegisterStaffTemplate());
+        if (document.getElementById('staff_register').innerHTML.length == 0) {
+            this.clearEvents();
+        }
+        this.addEvents(this.app);
         document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
         document.getElementById("isRegistered").checked = this.isThisRegistered;
+        console.log(this.isThisRegistered);
         if (this.isThisRegistered) {
+            console.log("went here to hide add staff");
             document.getElementById("add_staff").style.display = "none";
             document.getElementById("remove_staff").style.display = "block";
         } else {
+            console.log("went here to hide remove staff");
             document.getElementById("add_staff").style.display = "block";
             document.getElementById("remove_staff").style.display = "none";
         }
     }
 
+    clearEvents() {
+        document.querySelector('#add_staff').removeEventListener('click', this.addstaff);
+    }
 
-    attachEvents(app, mod) {
-        document.querySelector('#add_staff').onclick = () => {
-            var publicKey = this.app.wallet.returnPublicKey();
-            if (publicKey) {
-                this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
-            }
-        }
+    addEvents(app) {
+        document.querySelector('#add_staff').onclick = this.addstaff(app);
         document.querySelector('#remove_staff').onclick = () => {
             var publicKey = this.app.wallet.returnPublicKey();
             if (publicKey) {
                 this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "deregister");
             }
+        }
+    }
+
+    addstaff(app) {
+    var publicKey = app.wallet.returnPublicKey();
+    if (publicKey) {
+        this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
         }
     }
 
@@ -94,11 +106,11 @@ class Staff extends ModTemplate {
             if (conf == 0) {
                 if (txmsg.module == this.name) {
                     let staff_self = app.modules.returnModule(this.name);
+                    let publickey = txmsg.publicKey;
                     if (txmsg.type == "register") {
                         let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
                         staff_self.receiveRegisterTransaction(txmsg, sql);
                     } else if (txmsg.type == "deregister") {
-                        let publickey = txmsg.publicKey;
                         let sql = 'DELETE FROM staff WHERE publickey = $publickey';
                         staff_self.receiveRegisterTransaction(txmsg, sql);
                     }
