@@ -133,7 +133,6 @@ Saito Menu
 .saito-menu-container>ul>li {
     padding: 1rem;
     display: flex;
-    align-items: center;
     list-style: none;
     cursor: pointer;
     transition: all .2s;

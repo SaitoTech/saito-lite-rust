@@ -1455,9 +1455,13 @@ module.exports = (app) => {
               </div>
               <div class="saito-right-sidebar">
                     <div class="saito-right-sidebar-content">
-                    <div class="saito-search-bar">
+                    <div class="saito-search-bar saito-marb-2">
                     <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
                     </div>
+                    <div class="saito-calendar-small">
+                   
+                    </div>
+  
                     </div>
                    
               </div>

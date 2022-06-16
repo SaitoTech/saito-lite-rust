@@ -91,6 +91,7 @@ Right sidebar
 
 .saito-right-sidebar-content {
     min-height: 30vh;
+    width: 26rem;
     background-color: var(--saito-white);
     padding: 1rem 1rem;
 }
