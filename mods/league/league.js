@@ -38,7 +38,7 @@ class League extends ModTemplate {
           let newtx = this.app.wallet.createUnsignedTransaction();
 
           newtx.msg = {
-              module: "League"
+              module: "League",
               game: data.game,
               request: "create_league",
               players: data.players,

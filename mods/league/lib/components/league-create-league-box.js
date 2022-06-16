@@ -9,11 +9,16 @@ class LeagueCreateLeagueBox {
   }
 
   render(app, mod) {
+
+    alert('inside league box');
+    console.log('league box');
+    console.log(mod.games);
+
     // check if any games exist in arcade
     if (typeof mod.games != 'undefined' && mod.games.length > 0) {
       for (var i=0; i<mod.games.length; i++){
         let game = mod.games[i];
-        document.getElementById("league-avl-games-container").append(LeagueCreateLeagueBoxTemplate(game));
+        app.browser.addElementToDom(LeagueCreateLeagueBoxTemplate(game), "league-avl-games-container");
       }
     
       this.attachEvents(app, mod);

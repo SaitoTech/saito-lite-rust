@@ -8,6 +8,8 @@ class LeagueMain {
   constructor(app, mod) {
     this.app = app;
     this.mod = mod;
+
+    this.LeagueCreateLeagueBox = new LeagueCreateLeagueBox(app, mod);
   }
 
   render(app, mod) {
@@ -16,7 +18,7 @@ class LeagueMain {
       app.browser.addElementToDom(LeagueMainTemplate(app, mod));
     }
 
-    LeagueCreateLeagueBox.render(app, mod);
+    this.LeagueCreateLeagueBox.render(app, mod);
   }
 }
 
