@@ -550,8 +550,7 @@ class Chat extends ModTemplate {
 
         console.log('saving chats on sendMessage');
         this.saveChat();
-        console.log('chats saved');
-        console.log(localStorage);
+
     }
 
 
@@ -683,10 +682,6 @@ class Chat extends ModTemplate {
 
     receiveMessage(app, tx, renderMode = "") {
 
-        console.log('receing msgs');
-        console.log(tx);
-        console.log(tx.returnMessage());
-
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -809,11 +804,8 @@ class Chat extends ModTemplate {
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-
         console.log('saving chat on receive');
         this.saveChat();
-        console.log('chats saved');
-        console.log(localStorage);
 
         //
         // maybe try to find out who this is...
@@ -853,7 +845,9 @@ class Chat extends ModTemplate {
     // UI Functions //
     //////////////////
 
+    
     openChats() {
+
         let groups = this.getChatGroups();
 
         console.log('available chat groups');
