@@ -12,7 +12,7 @@ class Chirp extends ModTemplate {
         this.description = "Chirp Twitter clone";
         this.categories = "Design Development";
 
-        this.styles = ['/saito/saito.css', '/chirp/style.css'];
+        this.styles = ['/saito/saito.css', '/chirp/style.css', '/saito/lib/saito-date-picker/style.css'];
         this.scripts = ['/saito/lib/saito-date-picker/script.js'];
 
         this.body = new ChirpMain(app, this);
