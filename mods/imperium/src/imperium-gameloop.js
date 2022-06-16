@@ -2416,15 +2416,27 @@ this.game.state.end_round_scoring = 0;
   
         if (type == "command") {
   	  this.game.players_info[player-1].command_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].command_tokens < 0) { 
+  	    this.game.players_info[player-1].command_tokens = 0;
+	  };
   	}
         if (type == "strategy") {
   	  this.game.players_info[player-1].strategy_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].strategy_tokens < 0) { 
+  	    this.game.players_info[player-1].strategy_tokens = 0;
+	  };
   	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "trade") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "planet") {
   	  this.game.planets[details].exhausted = 1;

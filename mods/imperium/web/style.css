@@ -1715,6 +1715,9 @@ body {
   text-transform: uppercase;
   padding: 15px;
 }
+.buildchoice {
+  padding: 15px;
+}
 .option {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;

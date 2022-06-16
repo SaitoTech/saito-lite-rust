@@ -5265,7 +5265,7 @@ console.log("STRAT SEC: " + player + " -- " + strategy_card_player);
         let techlist = imperium_self.game.players_info[player-1].tech;
         let factiontech = 0;
         for (let i = 0; i < techlist.length; i++) {
-          if (imperium_self.tech[techlist[i]].type == "special" && techlist[i].indexOf("faction") == 0) { factiontech++; }
+          if (imperium_self.tech[techlist[i]].prereqs.length > 0 && imperium_self.tech[techlist[i]].type == "special" && techlist[i].indexOf("faction") == 0) { factiontech++; }
         }
         if (factiontech >= 2) { return 1; }
 	return 0;
@@ -9384,14 +9384,13 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
   	text : "Return invading infantry to space if player ships exist in the sector" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 	
+	  let sector = imperium_self.game.state.ground_combat_sector;
+	  let planet_idx = imperium_self.game.state.ground_combat_planet_idx;
+	  let attacker = imperium_self.game.state.ground_combat_attacker;
+
 	  if (player == action_card_player) {
 
-	    let sector = imperium_self.game.state.ground_combat_sector;
-	    let planet_idx = imperium_self.game.state.ground_combat_planet_idx;
-	    let attacker = imperium_self.game.state.ground_combat_attacker;
-
 	    let sys = imperium_self.returnSectorAndPlanets(sector);
-
 	    let attacker_infantry = sys.p[planet_idx].units[attacker-1];
 	    sys.p[planet_idx].units[attacker-1] = [];;
 
@@ -9401,7 +9400,6 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 	        attacker_infantry.splice(0, 1);
 	      }
 	    }
-
 	  }
 
 	  imperium_self.updateSectorGraphics(sector);
@@ -11192,8 +11190,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -11331,11 +11329,9 @@ console.log("error initing chat: " + err);
     // if this is a new game, gainTechnology that we start with
     //
     if (is_this_a_new_game == 1) {
-      for (let i = 0; i < z.length; i++) {
-        for (let k = 0; k < this.game.players_info.length; k++) {
-          for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
-            z[i].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
-          }
+      for (let k = 0; k < this.game.players_info.length; k++) {
+        for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
+          this.tech[this.game.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
         }
       }
       for (let k = 0; k < this.game.players_info.length; k++) {
@@ -15281,15 +15277,27 @@ this.game.state.end_round_scoring = 0;
   
         if (type == "command") {
   	  this.game.players_info[player-1].command_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].command_tokens < 0) { 
+  	    this.game.players_info[player-1].command_tokens = 0;
+	  };
   	}
         if (type == "strategy") {
   	  this.game.players_info[player-1].strategy_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].strategy_tokens < 0) { 
+  	    this.game.players_info[player-1].strategy_tokens = 0;
+	  };
   	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "trade") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "planet") {
   	  this.game.planets[details].exhausted = 1;
@@ -21744,6 +21752,19 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
             if (imperium_self.game.planets[planet].units[imperium_self.game.player - 1][i].type == id) {
               existing_units++;
             }
+          }
+          for (let i = 0; i < imperium_self.moves.length; i++) {
+	    let tmpmv = imperium_self.moves[i].split("\t");
+	    if (tmpmv.length > 5) {
+console.log("DOUBLE_GUARD 1");
+	      if (tmpmv[0] === "produce" && tmpmv[4] === "pds") {
+console.log("DOUBLE_GUARD 2: " + tmpmv[3] + ' --- ' + imperium_self.game.planets[planet].idx);
+	        if (imperium_self.game.planets[planet].idx === parseInt(tmpmv[3])) {
+console.log("DOUBLE_GUARD 3");
+		  existing_units++;
+	        }
+	      }
+	    }
           }
           if (id === "pds") {
             if (existing_units >= imperium_self.game.state.pds_limit_per_planet) { return 0; }
@@ -30231,15 +30252,15 @@ returnFactionSheet(imperium_self, player=null) {
 	  `;
 	}
       }
-      //html += `</div>`;
+      html += `</div>`;
     }
 
     //
     // PLANET CARDS
     //
-    //html += `
-    //  <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
-    //`;
+    html += `
+      <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
+    `;
   
     let pc = imperium_self.returnPlayerPlanetCards(player);
     for (let b = 0; b < pc.length; b++) {

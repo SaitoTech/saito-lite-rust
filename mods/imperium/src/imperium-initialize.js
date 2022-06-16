@@ -523,8 +523,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -662,11 +662,9 @@ console.log("error initing chat: " + err);
     // if this is a new game, gainTechnology that we start with
     //
     if (is_this_a_new_game == 1) {
-      for (let i = 0; i < z.length; i++) {
-        for (let k = 0; k < this.game.players_info.length; k++) {
-          for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
-            z[i].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
-          }
+      for (let k = 0; k < this.game.players_info.length; k++) {
+        for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
+          this.tech[this.game.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
         }
       }
       for (let k = 0; k < this.game.players_info.length; k++) {
