@@ -136,7 +136,7 @@ class Blockchain {
     block.generateHashes();
 
     if (this.debugging) {
-      console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
+      //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
       //console.debug(this);
     }
     //
@@ -451,13 +451,6 @@ class Blockchain {
         if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
           block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
         }
-
-        console.log(
-          "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
-        );
-        console.log(
-          "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
-        );
 
         if (block_id_from_which_to_run_callbacks > 0) {
           for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {

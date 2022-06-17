@@ -1,0 +1,678 @@
+/* ----------------------------------------------------------------
+Components
+-----------------------------------------------------------------*/
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito box
+-----------------------------------------------------------------*/
+.saito-box {
+    border: none;
+    background-color: var(--saito-white);
+}
+
+.saito-box-shadow {
+    box-shadow: 2px 2px 20px rgb(0 0 0 / 10%);
+}
+
+
+
+.saito-box-rounded {
+    border-radius: 1rem;
+}
+
+
+.saito-box-padding {
+    padding: var(--saito-box-padding);
+}
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Info box
+-----------------------------------------------------------------*/
+.saito-infobox {
+    /* padding: var(--saito-box-padding); */
+    display: flex;
+    flex-direction: column;
+    background-color: var(--saito-white);
+    height: 100%;
+    position: relative;
+
+}
+
+.saito-infobox-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.saito-infobox-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin-bottom: 2rem;
+}
+
+
+
+
+.saito-infobox-title h3 {
+    position: relative;
+    font-weight: bold;
+    bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+
+}
+
+
+.saito-infobox-title h3::after {
+    position: absolute;
+    content: "";
+    height: .5rem;
+    width: 10rem;
+    bottom: -.4rem;
+    background-color: var(--saito-primary);
+
+
+}
+
+
+.saito-infobox-footer {
+    margin-top: auto;
+    text-align: center;
+}
+
+
+.saito-box.saito-box-secondary,
+.saito-infobox.saito-box-secondary {
+    background-color: var(--saito-background);
+
+}
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Content box
+-----------------------------------------------------------------*/
+
+.saito-contentbox {
+    background-color: var(--saito-white);
+    height: 100%;
+}
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Menu
+-----------------------------------------------------------------*/
+
+.saito-menu-container {}
+
+
+
+
+.saito-menu-container>ul>li {
+    padding: 0.6rem;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 1.92rem
+}
+
+.saito-menu-container>ul>li:not(:last-child) {
+    /* margin-bottom: 1rem; */
+}
+
+
+.saito-menu-container>ul>li:hover,
+.saito-menu-container>ul>li:hover>i {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-menu-container>ul>li>i {
+    font-size: 2rem;
+    width: 2rem;
+}
+
+.saito-menu-container>ul>li>span {
+    font-size: 1.92rem;
+}
+
+.saito-menu-container>ul>li>i+span {
+    margin-left: 2rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li {
+    padding: .3rem .5rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li:not(:last-child) {
+    margin-bottom: .5rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li>i {
+    font-size: 1.6rem;
+    width: 1rem;
+}
+
+.saito-menu-container.saito-menu-dense>ul>li>span {
+    font-size: 1.6rem;
+
+}
+
+.saito-menu-container.saito-menu-right>ul>li {
+    flex-direction: row-reverse;
+}
+
+.saito-menu-container.saito-menu-right>ul>li>span {
+    margin-left: 0;
+}
+
+.saito-menu-container.saito-menu-right>ul>li>i+span {
+    margin-right: 2rem;
+}
+
+.saito-menu-rounded {
+    border-radius: .8rem;
+}
+
+.saito-menu-container.saito-menu-rounded>ul>li:first-child:hover {
+    border-radius: .8rem .8rem 0 0;
+}
+
+.saito-menu-container.saito-menu-rounded>ul>li:last-child:hover {
+    border-radius: 0 0 .8rem .8rem;
+}
+
+
+/* ----------------------------------------------------------------
+Saito User List and Saito User 
+-----------------------------------------------------------------*/
+
+.saito-user-list {}
+
+.saito-user {
+    display: flex;
+    position: relative;
+    justify-items: start;
+    margin-bottom: 1px;
+    min-height: 5rem;
+    width: 100%;
+}
+
+.saito-user>i {
+    color: var(--saito-primary);
+    top: 0;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    cursor: pointer;
+    font-size: 1.4rem;
+}
+
+
+.saito-user div:first-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+
+
+.saito-user:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.saito-user>img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: .5rem;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+
+.saito-user-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 2rem;
+}
+
+.saito-user-info p {
+    max-width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.saito-user-info span {
+    font-size: 1.3rem;
+}
+
+
+
+/* rectangular image */
+
+.saito-user-list.saito-user-rectangle .saito-user>img {
+    width: 7rem;
+    height: 5rem;
+}
+
+
+.saito-user-list.saito-user-rectangle .saito-user-info p {}
+
+.saito-user-list.saito-user-rectangle .saito-user-info span {
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+/* rectangular image */
+
+
+/* .saito-user-list.saito-user-medium .saito-user {
+    height: 5rem;
+}
+
+.saito-user-list.saito-user-medium .saito-user:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+
+.saito-user-list.saito-user-medium .saito-user>img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user-list.saito-user-medium .saito-user p {
+    font-size: 1.6rem;
+} */
+
+
+/*  Regular Dense */
+
+.saito-user-list.saito-user-dense .saito-user {
+    height: 4rem;
+
+}
+
+.saito-user-list.saito-user-dense .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+.saito-user-list.saito-user-dense .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+
+.saito-user-list.saito-user-dense .saito-user>img {
+    height: 3.6rem;
+    width: 3.6rem;
+    border-radius: 0;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user-list.saito-user-dense .saito-user p {
+    font-size: 1.32rem;
+    font-weight: bold;
+}
+
+.saito-user-list.saito-user-dense .saito-user-info {}
+
+.saito-user-list.saito-user-dense .saito-user-info span {
+    font-size: 1.18rem;
+
+}
+
+/* -----> Regular Dense */
+
+
+/*  Rectangular  Dense */
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user {
+    height: 4rem;
+
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
+    margin-bottom: 1px;
+}
+
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user>img {
+    height: 3.4rem;
+    width: 5rem;
+    border-radius: 0;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user p {
+    font-size: 1.32rem;
+    font-weight: bold;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user-info {
+    justify-content: flex-start;
+}
+
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user-info span {
+    font-size: 1.18rem;
+
+}
+
+/*  ----> Rectangle  Dense */
+
+
+.saito-user-dropdown {
+    position: absolute;
+    right: 2rem;
+    top: 1rem;
+    width: 20rem;
+    background-color: var(--saito-background);
+    z-index: 2;
+    display: none;
+
+}
+
+.saito-user-dropdown.show {
+    display: block;
+}
+
+
+.saito-user-dropdown>* {
+    /* color: white; */
+}
+
+/* 
+@media screen and (max-width: 1200px) {
+    .saito-user p {
+        width: 15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.8rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .saito-user p {
+        width: 15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.8rem;
+    }
+} */
+
+@media screen and (max-width: 320px) {}
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Tabs
+-----------------------------------------------------------------*/
+
+.saito-tab-buttons {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+
+
+}
+
+.saito-tab-buttons>ul {
+    display: flex;
+    justify-content: center;
+
+
+}
+
+
+
+
+.saito-tab-buttons a.active {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-tab-buttons a:hover {
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
+}
+
+.saito-tab-content>* {
+    display: none;
+}
+
+.saito-tab-content>*.show {
+    display: block;
+}
+
+@media screen and (max-width: 768px) {
+    .saito-tab-buttons {
+        display: block;
+    }
+
+    .saito-tab-buttons>ul {
+        display: block;
+    }
+
+}
+
+@media screen and (max-width: 320px) {}
+
+
+
+
+
+/* ----------------------------------------------------------------
+Left sidebar chatbox
+-----------------------------------------------------------------*/
+
+.saito-leftsidebar-menu {
+    width: 25rem;
+}
+
+.saito-leftsidebar-chatbox {
+    width: 25rem;
+}
+
+
+/* ----------------------------------------------------------------
+Saito Alert
+-----------------------------------------------------------------*/
+
+#alert-wrapper {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: rgba(0, 0, 0, .1);
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#alert-shim {
+
+
+    margin: auto;
+    min-height: 20rem;
+    width: 40rem;
+
+
+}
+
+#alert-box {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--saito-white);
+    min-height: 20rem;
+    border-radius: .5rem;
+
+
+}
+
+#alert-box i {
+    font-size: 3.3rem;
+    margin-top: 1rem;
+    color: var(--saito-primary);
+}
+
+.alert-message {
+    align-self: center;
+    justify-self: center;
+    font-size: 2.5rem;
+    margin-top: 2rem;
+
+
+}
+
+.alert-message.prompt {
+    font-size: 2.5rem;
+    margin: 2rem 0;
+}
+
+.alert-prompt {
+    margin-bottom: 1.5rem;
+    align-self: stretch;
+
+}
+
+#alert-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ----------------------------------------------------------------
+Saito site message
+-----------------------------------------------------------------*/
+
+#message-wrapper {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 20;
+    min-width: 30em;
+    cursor: pointer;
+}
+
+#message-box {
+    background-color: var(--saito-white);
+    height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: .5rem;
+    display: flex;
+    padding: 1rem;
+}
+
+
+.message-message {
+    color: var(--saito-primary);
+    font-size: 2.5rem;
+}
+
+#message-box i {
+    font-size: 3.3rem;
+    color: var(--saito-primary);
+    margin-right: 1rem;
+
+}
+
+
+
+
+/* ----------------------------------------------------------------
+Saito module list /Saito module
+-----------------------------------------------------------------*/
+.saito-module-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    grid-gap: 3rem;
+
+}
+
+.saito-module {
+    padding: 1rem;
+
+    display: flex;
+    background-color: var(--saito-white);
+    cursor: pointer;
+
+}
+
+.saito-module img {
+    width: 10rem;
+    margin-right: 1rem;
+    height: 6rem;
+    width: 6rem;
+    border-radius: .5rem;
+
+}
+
+.saito-module>div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.saito-module>div>p {
+    font-weight: 1000;
+    font-size: 1.8rem;
+
+}
+
+.saito-module>div>span {
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

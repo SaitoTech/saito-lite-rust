@@ -16,9 +16,6 @@
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-console.log("QUEUE: " + JSON.stringify(this.game.queue));
-console.log("MV: " + mv[0]);
-
       if (mv[0] === "gameover") {
   	if (imperium_self.browser_active == 1) {
   	  salert("Game Over");
@@ -490,10 +487,6 @@ console.log("MV: " + mv[0]);
 
 
       if (mv[0] === "post_production") {
-
-console.log("----------------------------");
-console.log("---------- X X X -----------");
-console.log("----------------------------");
 
 	let player = mv[1];
 	let sector = mv[2];
@@ -1054,15 +1047,11 @@ console.log("----------------------------");
 	let vote = mv[3];
 	let votes = parseInt(mv[4]);
 
-console.log("GAME STATE PRE_ERROR: " + JSON.stringify(this.game.state));
-
 	this.game.state.votes_cast[player-1] = votes;
 	this.game.state.votes_available[player-1] -= votes;
 	this.game.state.voted_on_agenda[player-1][this.game.state.voting_on_agenda] = 1;
 
 	this.game.state.how_voted_on_agenda[player-1] = vote;
-
-console.log("GAME STATE PRE_ERROR");
 
         if (vote == "abstain") {
           this.updateLog(this.returnFactionNickname(player) + " abstains");
@@ -2416,15 +2405,27 @@ this.game.state.end_round_scoring = 0;
   
         if (type == "command") {
   	  this.game.players_info[player-1].command_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].command_tokens < 0) { 
+  	    this.game.players_info[player-1].command_tokens = 0;
+	  };
   	}
         if (type == "strategy") {
   	  this.game.players_info[player-1].strategy_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].strategy_tokens < 0) { 
+  	    this.game.players_info[player-1].strategy_tokens = 0;
+	  };
   	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "trade") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "planet") {
   	  this.game.planets[details].exhausted = 1;
@@ -2931,6 +2932,9 @@ this.game.state.end_round_scoring = 0;
         let sector_to    = mv[4];
         let shipjson     = mv[5];
         let hazard 	 = mv[6];
+
+
+
 
 	//
 	// "already_moved"
