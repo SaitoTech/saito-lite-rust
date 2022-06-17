@@ -16,7 +16,8 @@
 }
 
 body {
-  line-height: 1.5;
+
+  line-height: 1.2;
   color: var(--saito-default-font-color);
   font-family: var(--saito-font);
   margin: 0;
