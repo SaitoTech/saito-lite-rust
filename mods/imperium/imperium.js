@@ -11190,8 +11190,8 @@ console.log("error initing chat: " + err);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      let sys = this.returnSectorAndPlanets("4_4");
-      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //
@@ -12093,14 +12093,14 @@ handleSystemsMenuItem() {
     return array_of_stored_units;
   }
 
-  
-  
   addPlanetaryUnit(player, sector, planet_idx, unitname) {
     return this.loadUnitOntoPlanet(player, sector, planet_idx, unitname);
   };
+
   addPlanetaryUnitByJSON(player, sector, planet_idx, unitjson) {
     return this.loadUnitByJSONOntoPlanet(player, sector, planet_idx, unitname);
   };
+
   addSpaceUnit(player, sector, unitname) {
     let sys = this.returnSectorAndPlanets(sector);
     let unit_to_add = this.returnUnit(unitname, player);
@@ -12355,7 +12355,7 @@ handleSystemsMenuItem() {
   	          let pds = {};
   	              pds.range = sys.p[j].units[k][z].range;
   	              pds.combat = sys.p[j].units[k][z].combat;
-  		      pds.owner = (k+1);
+  		      pds.owner = parseInt((k+1));
   		      pds.sector = sectors[i];
   		      pds.unit = sys.p[j].units[k][z];
   
@@ -12569,15 +12569,14 @@ handleSystemsMenuItem() {
   
   returnUnit(type = "", player, upgrade_unit=1) {
     let unit = JSON.parse(JSON.stringify(this.units[type]));
-    unit.owner = player;
+    // json unit comparisons can fail if owner is sometimes a string sometimes an int
+    unit.owner = parseInt(player);
     // optional as otherwise we can have a loop
     if (upgrade_unit == 1) {
       unit = this.upgradeUnit(unit, player);
     }
     return unit;
   };
-  
-  
   
   upgradePlayerUnitsOnBoard(player) {
 
@@ -12876,9 +12875,6 @@ handleSystemsMenuItem() {
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
-
-console.log("QUEUE: " + JSON.stringify(this.game.queue));
-console.log("MV: " + mv[0]);
 
       if (mv[0] === "gameover") {
   	if (imperium_self.browser_active == 1) {
@@ -13351,10 +13347,6 @@ console.log("MV: " + mv[0]);
 
 
       if (mv[0] === "post_production") {
-
-console.log("----------------------------");
-console.log("---------- X X X -----------");
-console.log("----------------------------");
 
 	let player = mv[1];
 	let sector = mv[2];
@@ -13915,15 +13907,11 @@ console.log("----------------------------");
 	let vote = mv[3];
 	let votes = parseInt(mv[4]);
 
-console.log("GAME STATE PRE_ERROR: " + JSON.stringify(this.game.state));
-
 	this.game.state.votes_cast[player-1] = votes;
 	this.game.state.votes_available[player-1] -= votes;
 	this.game.state.voted_on_agenda[player-1][this.game.state.voting_on_agenda] = 1;
 
 	this.game.state.how_voted_on_agenda[player-1] = vote;
-
-console.log("GAME STATE PRE_ERROR");
 
         if (vote == "abstain") {
           this.updateLog(this.returnFactionNickname(player) + " abstains");
@@ -15804,6 +15792,9 @@ this.game.state.end_round_scoring = 0;
         let sector_to    = mv[4];
         let shipjson     = mv[5];
         let hazard 	 = mv[6];
+
+
+
 
 	//
 	// "already_moved"
@@ -23062,6 +23053,7 @@ playerSelectUnitsToMove(destination) {
 
   obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
 
+
   let updateInterface = function (imperium_self, obj, updateInterface) {
 
     let subjective_distance_adjustment = 0;
@@ -23154,6 +23146,12 @@ playerSelectUnitsToMove(destination) {
         // source should be OK as moving out does not add units
         imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
         imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+console.log("-------------------------");
+console.log("-----STUFF TO MOVE-------");
+console.log("-------------------------");
+console.log(JSON.stringify(obj.stuff_to_move));
+
         for (let y = 0; y < obj.stuff_to_move.length; y++) {
 
 	  let this_ship_i = obj.stuff_to_move[y].i;
@@ -25318,16 +25316,12 @@ playerDiscardActionCards(num, mycallback=null) {
       }
     }
 
-console.log("LAWS IN PLAY: " + JSON.stringify(this.game.state.laws));
-
     //
     // laws-in-play
     //
     for (let i = 0; i < this.game.state.laws.length; i++) {
       if (this.game.state.laws[i].agenda) {
-console.log("LIP2 ");
         if (this.agenda_cards[this.game.state.laws[i].agenda].name) {
-console.log("laws in play 3: agenda is: " +  this.agenda_cards[this.game.state.laws[i].agenda] );
           z.push(this.agenda_cards[this.game.state.laws[i].agenda]);
         }
       }

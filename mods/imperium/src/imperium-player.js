@@ -4286,6 +4286,7 @@ playerSelectUnitsToMove(destination) {
 
   obj.ships_and_sectors = imperium_self.returnShipsMovableToDestinationFromSectors(destination, sectors, distance, hazards, hoppable);
 
+
   let updateInterface = function (imperium_self, obj, updateInterface) {
 
     let subjective_distance_adjustment = 0;
@@ -4378,6 +4379,12 @@ playerSelectUnitsToMove(destination) {
         // source should be OK as moving out does not add units
         imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
         imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
+
+console.log("-------------------------");
+console.log("-----STUFF TO MOVE-------");
+console.log("-------------------------");
+console.log(JSON.stringify(obj.stuff_to_move));
+
         for (let y = 0; y < obj.stuff_to_move.length; y++) {
 
 	  let this_ship_i = obj.stuff_to_move[y].i;
