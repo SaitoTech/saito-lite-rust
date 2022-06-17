@@ -10,9 +10,7 @@ class LeagueCreateLeagueBox {
 
   render(app, mod) {
 
-    alert('inside league box');
-    console.log('league box');
-    console.log(mod.games);
+    
 
     // check if any games exist in arcade
     if (typeof mod.games != 'undefined' && mod.games.length > 0) {
@@ -34,9 +32,8 @@ class LeagueCreateLeagueBox {
         formData.game = e.target.game.value;
         formData.type = e.target.type.value;
 
-        alert("Creating league...");
-        this.mod.createLeagueTransaction(formData);  
-      
+        
+        mod.createMatchTransaction(formData);
       });
     }
   }

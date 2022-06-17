@@ -32,29 +32,64 @@ class League extends ModTemplate {
     this.main.render(app, this);
   }
 
-  createLeagueTransaction(data) {
+  async onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    
     try {
-      if (this.app.BROWSER === 0) {
-          let newtx = this.app.wallet.createUnsignedTransaction();
+      if (conf == 0) {
 
-          newtx.msg = {
-              module: "League",
-              game: data.game,
-              request: "create_league",
-              players: data.players,
-              type: data.type, // private or public
-              timestamp: new Date().getTime()
-          };
-
-          newtx = this.app.wallet.signTransaction(newtx);
-          this.app.network.propagateTransaction(newtx);
-
-          return true;
+        if (txmsg.module === "League" && txmsg.request == "create_league") {
+          this.receiveMatchTransaction(blk, tx, conf, app);
+        }
       }
+
+    } catch (err) {
+      console.log("ERROR in league onConfirmation: " + err);
+    }
+  }
+
+  createMatchTransaction(data) {
+    try {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+
+        newtx.msg = {
+            module: "League",
+            game: data.game,
+            request: "create_league",
+            type: data.type, // private or public
+            timestamp: new Date().getTime()
+        };
+
+        newtx = this.app.wallet.signTransaction(newtx);
+        let result = this.app.network.propagateTransaction(newtx);
+
+        return true;
+    
     } catch(err){
       console.log('error in create txn', err);
     }
   } 
+
+  async receiveMatchTransaction(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    let game  = txmsg.game;
+    let type  = txmsg.type;
+
+    let sql = `INSERT INTO leagues (
+                game,
+                type
+              ) VALUES (
+                $game,
+                $type
+              )`;
+
+    let params = {
+      $game: game,
+      $type: type
+    };
+    await app.storage.executeDatabase(sql, params, "league");
+    return;
+  }
 
 }
 
