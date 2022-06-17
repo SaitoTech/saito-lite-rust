@@ -2050,8 +2050,8 @@ try {
         //
         // reason is that modify ops is run before submitting coups sometimes and sometimes now
         //
-        if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), card, 2); }
-        if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), card, 1); }
+        if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), card, "us"); }
+        if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), card, "ussr"); }
 
         this.updateMilitaryOperations();
       }
@@ -2396,9 +2396,9 @@ try {
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["asknot", "oas", "duckandcover", "koreanwar", "howilearned", "asia", "europe", "naziscientist"];
+          this.game.deck[0].hand = ["asknot", "containment", "oas", "duckandcover", "koreanwar", "howilearned", "asia", "europe", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["liberation", "junta", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          this.game.deck[0].hand = ["liberation", "junta", "norad", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
         }
       }
 
@@ -3554,7 +3554,7 @@ playerTurnHeadlineSelected(card, player) {
       user_message = `Select a card for ${(this.game.player == 1)? "Bear Trap": "Quagmire"}: `;
 
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
-        if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
+        if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
           playable_cards.push(this.game.deck[0].hand[i]);
           cards_available++;
         }
@@ -3569,7 +3569,7 @@ playerTurnHeadlineSelected(card, player) {
       let playable_cards_handled = 1;
       if (this.game.state.events.missile_envy == this.game.player) {
         playable_cards_handled = 0;
-        if (this.modifyOps(2, "missileenvy", this.game.player, 0) >= 2) {
+        if (this.modifyOps(2, "missileenvy", player, 0) >= 2) {
           // reset here, since will not trigger elsewhere
           playable_cards_handled = 1;
           this.game.state.events.missile_envy = 0;
@@ -3597,7 +3597,7 @@ playerTurnHeadlineSelected(card, player) {
           playable_cards = [];
           for (i = 0; i < this.game.deck[0].hand.length; i++) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-              if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
+              if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
                 playable_cards.push(this.game.deck[0].hand[i]);
               }
             }
@@ -3789,7 +3789,7 @@ playerTurnHeadlineSelected(card, player) {
         twilight_self.updateStatusWithOptions(status_header, html, (this.game.state.back_button_cancelled != 1));
       } else {
 
-        let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, twilight_self.game.player, 0);
+        let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, player, 0);
 
 
     
@@ -6714,39 +6714,37 @@ playerTurnHeadlineSelected(card, player) {
   /*
    Check various states that affect player's operation points values
   */
-  modifyOps(ops,card="",playernum=0, updatelog=1) {
-
-    if (playernum == 0) { playernum = this.game.player; }
+  modifyOps(ops,card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
     if (card == "olympic" && ops == 4) {} else {
       if (card != "") { ops = this.returnOpsOfCard(card); }
     }
 
-    if (this.game.state.events.brezhnev == 1 && playernum == 1) {
+    if (this.game.state.events.brezhnev == 1 && player === "ussr") {
       if (updatelog == 1) { this.updateLog("USSR gets Brezhnev bonus +1");  }
       ops++;
     }
 
-    if (this.game.state.events.containment == 1 && playernum == 2) {
+    if (this.game.state.events.containment == 1 && player === "us") {
       if (updatelog == 1) { this.updateLog("US gets Containment bonus +1");  }
       ops++;
     }
 
-    if (this.game.state.events.redscare_player1 >= 1 && playernum == 1) {
+    if (this.game.state.events.redscare_player1 >= 1 && player === "ussr") {
       if (updatelog == 1) {
-	       if (this.game.state.events.redscare_player1 == 1) {
-           this.updateLog("USSR is affected by Red Purge");
-	       } else {
-           this.updateLog("USSR is really affected by Red Purge");
-	       }
+        if (this.game.state.events.redscare_player1 == 1) {
+          this.updateLog("USSR is affected by Red Purge");
+        } else {
+          this.updateLog("USSR is really affected by Red Purge");
+        }
       }
       ops -= this.game.state.events.redscare_player1;
     }
 
-    if (this.game.state.events.redscare_player2 >= 1 && playernum == 2) {
+    if (this.game.state.events.redscare_player2 >= 1 && player === "us") {
       if (updatelog == 1) {
-	      if (this.game.state.events.redscare_player2 == 1) {
+        if (this.game.state.events.redscare_player2 == 1) {
           this.updateLog("US is affected by Red Scare");
         } else {
           this.updateLog("US is really affected by Red Scare");
@@ -6756,7 +6754,7 @@ playerTurnHeadlineSelected(card, player) {
     }
     
     if (ops <= 0) { return 1; }
-    if (ops >= 4) { return 4; } //Cap at 4 ops
+    if (ops >= 4) { return 4; }
     
     return ops;
   }
@@ -7536,7 +7534,13 @@ playerTurnHeadlineSelected(card, player) {
 
     this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
-
+    if (this.game.state.events.norad == 1) {
+      if (this.game.state.defcon == 2) {
+        if (this.game.state.headline != 1) {
+          this.game.state.us_defcon_bonus = 1;
+        }
+      }
+    }
 
     if (this.game.state.defcon <= 1) {
       if (this.game.state.headline == 1) {
@@ -7552,14 +7556,6 @@ playerTurnHeadlineSelected(card, player) {
 
 
   updateDefcon() {
-
-    if (this.game.state.events.norad == 1) {
-      if (this.game.state.defcon == 2) {
-        if (this.game.state.headline != 1) {
-          this.game.state.us_defcon_bonus = 1;
-        }
-      }
-    }
 
     if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
 
@@ -9532,10 +9528,16 @@ playerTurnHeadlineSelected(card, player) {
     // Cuban Missile Crisis
     //
     if (card == "cubanmissile") {
+
+      if (this.game.state.events.norad == 1 && this.game.state.defcon != 2 && this.game.state.headline != 1) {
+        this.game.state.us_defcon_bonus = 1;
+      }
+
       this.game.state.defcon = 2;
       this.updateDefcon();
       if (player == "ussr") { this.game.state.events.cubanmissilecrisis = 2; }
       if (player == "us") { this.game.state.events.cubanmissilecrisis = 1; }
+
       
       if (!i_played_the_card){
         this.game.queue.push(`ACKNOWLEDGE\t${player.toUpperCase()} plays ${this.cardToText(card)}.`);
