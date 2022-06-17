@@ -134,20 +134,6 @@ Media Queries
     font-size: 2rem;
   }
 
-.saito-large-p {
-  font-size: 2rem;
-}
-
-p,
-.saito-mid-p {
-  color: var(--saito-black);
-  font-size: 1.6rem;
-}
-
-.saito-small-p {
-  font-size: 1.3rem;
-}
-
   .saito-large-p {
     font-size: 1.8rem;
   }
@@ -162,3 +148,4 @@ p,
     font-size: 1.1rem;
   }
 
+}

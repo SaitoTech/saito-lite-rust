@@ -30,7 +30,6 @@
 .saito-chat-header {
     border-bottom: 1px solid var(--saito-border);
     /* padding: .5em; */
-
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -84,11 +83,7 @@
 .saito-chat-body {
     display: flex;
     flex-direction: column;
-<<<<<<< HEAD
-    padding: .5em .5em;
-=======
     padding: 1rem;
->>>>>>> newdesign-module
     overflow: hidden;
     height: 35em;
 }
@@ -98,11 +93,7 @@
     display: grid;
     grid-gap: 1rem;
     grid-template-columns: min-content minmax(35%, 1fr) min-content;
-<<<<<<< HEAD
-    padding: 1rem .6rem;
-=======
     margin-bottom: 1.5rem;
->>>>>>> newdesign-module
     cursor: pointer;
 
 }

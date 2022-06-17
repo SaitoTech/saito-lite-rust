@@ -27,7 +27,6 @@ Left Sidebar
     margin-left: auto;
     cursor: pointer;
     color: var(--saito-default-font-color);
-
 }
 
 
@@ -45,7 +44,6 @@ Left Sidebar
     grid-gap: 1rem;
     grid-template-columns: min-content minmax(35%, 1fr) min-content;
     padding: 1rem 0;
-
     cursor: pointer;
 
 }
