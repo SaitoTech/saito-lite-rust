@@ -6714,7 +6714,7 @@ playerTurnHeadlineSelected(card, player) {
   /*
    Check various states that affect player's operation points values
   */
-  modifyOps(ops,card="",player="", updatelog=1) {
+  modifyOps(ops, card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
     if (card == "olympic" && ops == 4) {} else {
@@ -6729,6 +6729,11 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.state.events.containment == 1 && player === "us") {
       if (updatelog == 1) { this.updateLog("US gets Containment bonus +1");  }
       ops++;
+    }
+
+    if (player === "") {
+      if (this.game.player = 1) { player = "ussr"; }
+      if (this.game.player = 2) { player = "us"; }
     }
 
     if (this.game.state.events.redscare_player1 >= 1 && player === "ussr") {
