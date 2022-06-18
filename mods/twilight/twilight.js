@@ -415,9 +415,6 @@ class Twilight extends GameTemplate {
       }
     }
 
-
-
-
     // required here so menu will be proper
     try {
       if (this.app.options.gameprefs.twilight_expert_mode == 1) {
@@ -2072,10 +2069,11 @@ try {
     }
 
     if (mv[0] === "defcon") {
-      if (mv[1] == "lower") {
+      if (mv[1] === "lower") {
+console.log("MONITORING DEFCON: in defcon instruction in gameloop");
         this.lowerDefcon();
       }
-      if (mv[1] == "raise") {
+      if (mv[1] === "raise") {
         this.game.state.defcon++;
         if (this.game.state.defcon > 5) { this.game.state.defcon = 5; }
         this.updateDefcon();
@@ -2371,8 +2369,7 @@ try {
     if (mv[0] === "clear"){
       this.game.queue.splice(qe, 1);
       if (mv[1] == "headline"){
-      //
-      // it is no longer the headline
+        // it is no longer the headline
         this.game.state.headline = 0;
         this.game.state.headline_card = "";
         this.game.state.headline_xor = "";
@@ -2482,15 +2479,15 @@ try {
 
     if (mv[0] === "round") {
 
-  	  //
-  	  // china card is face-up
-  	  //
+      //
+      // china card is face-up
+      //
       this.game.state.events.china_card_facedown = 0;
 
-  	  //
-  	  // reset / disable aldrich
-  	  //
-  	  this.game.state.events.aldrich = 0;
+      //
+      // reset / disable aldrich
+      //
+      this.game.state.events.aldrich = 0;
 
       //
       // END OF HISTORY
@@ -2500,19 +2497,23 @@ try {
       //
       // NORAD -- we check here in case the final move of the round triggers it
       //
+console.log("CHECKING US DEFCON BONUS 1");
       if (this.game.state.us_defcon_bonus == 1) {
         //
         // prevent DEFCON bonus from repeating when we bounce back to "round"
         //
         this.game.state.us_defcon_bonus = 0;
 
+console.log("CHECKING CANADA CONTROLLED 1");
         if (this.isControlled("us", "canada") == 1) {
+
+console.log("EXECUTING NORAD");
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
 
           if (this.game.player == 1) {
             this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");
             return 0;
-          }else{
+          } else {
 
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
@@ -2833,9 +2834,12 @@ try {
       //
       // NORAD -- NEEDS TESTING
       //
+console.log("CHECKING US DEFCON BONUS 2");
       if (this.game.state.us_defcon_bonus == 1) {
         this.game.state.us_defcon_bonus = 0;
+console.log("CHECKING CANADA CONTROLLED 2");
         if (this.isControlled("us", "canada") == 1) {
+console.log("YES, RUNNING DEFCON 2");
 
           let twilight_self = this;
           
@@ -3113,7 +3117,7 @@ try {
       let statusMsg = "";
       if (this.game.state.player_to_go == 1){
         statusMsg = `<div class='status-message' id='status-message'>Resolving USSR headline: ${this.cardToText(ussrcard)}</div>`;
-      }else{
+      } else {
         statusMsg = `<div class='status-message' id='status-message'>Resolving US headline: ${this.cardToText(uscard)}</div>`;
       }
       
@@ -3231,7 +3235,13 @@ playerTurnHeadlineSelected(card, player) {
 
 
 
-  playMove(){
+  playMove() {
+
+    //
+    // this is never run in headline - we set the headline to 0 here automatically
+    // to avoid DEFCON error that can happen with NORAD if this is not done.
+    //
+    this.game.state.headline = 0;
 
     //
     // how many turns left?
@@ -5257,10 +5267,9 @@ playerTurnHeadlineSelected(card, player) {
       let coupHeader = `Cannot Coup ${twilight_self.countries[countryname].name}`;
       let failureReason = ""; //Also tells us if it is a valid target
 
-       //
+      //
       // Coup Restrictions
       //
-      
       if (twilight_self.game.state.limit_ignoredefcon == 0) {
         if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
           failureReason = "Invalid Region for this Coup";
@@ -5280,10 +5289,9 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-      /* Though DEFCON is sufficient reason to stop a coup, it may be more interesting to the player to fail in more specific ways, if possible*/
-
+      // US / Japan Restrictions
       if (twilight_self.game.state.events.usjapan == 1 && countryname == "japan" && player == "ussr") {
-        failureReason = "US / Japan Alliance prevents coups in Japan";
+        failureReason = "US/Japan Alliance prevents coups in Japan";
       }
 
       /*
@@ -5312,10 +5320,8 @@ playerTurnHeadlineSelected(card, player) {
 
 
       if (failureReason.length > 0) { 
-      
         twilight_self.displayModal(coupHeader, failureReason);
-      
-      }else{ //No reason to fail, go ahead and launch coup
+      } else {
         //
         // china card regional bonuses
         //
@@ -5348,18 +5354,15 @@ playerTurnHeadlineSelected(card, player) {
     let roll    = this.rollDice(6);
     let modifier = 0;
 
-    //this.displayModal("Coup Launched", `${player.toUpperCase()} launches a coup in ${this.game.countries[countryname].name}`);
-
-
     //
     // Cuban Missile Crisis
     //
     if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
-      this.endGame(this.game.players[1],"Cuban Missile Crisis");
+      this.endGame(this.game.players[1], "Cuban Missile Crisis");
       return;
     }
     if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
-      this.endGame(this.game.players[0],"Cuban Missile Crisis");
+      this.endGame(this.game.players[0], "Cuban Missile Crisis");
       return;
     }
 
@@ -5390,9 +5393,8 @@ playerTurnHeadlineSelected(card, player) {
     // Latin American Death Squads
     //
     if (this.game.state.events.deathsquads != 0) {
-
       if (this.game.state.events.deathsquads <= -1) {
-	      let roll_modifier = Math.abs(this.game.state.events.deathsquads);
+	let roll_modifier = Math.abs(this.game.state.events.deathsquads);
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
             this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +"+roll_modifier+" modifier`);
@@ -5421,8 +5423,6 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
-
-
     //
     // END OF HISTORY (INF Treaty and CMC)
     //
@@ -5431,34 +5431,28 @@ playerTurnHeadlineSelected(card, player) {
         modifier--;
     }
 
-    /*
-      Why change the state if the game ends...
-      if ((player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) || (player == "us" && this.game.state.events.cubanmissilecrisis == 2)) {
-	     this.game.state.events.cubanmissilecrisis = 0;
-    }*/
+console.log("DEFCON MONITOR: about to lower defcon in coup logic 1...");
 
-    //Lower Defcon in BG countries unless US has nuclear subs or special condition flagged
+    // Lower Defcon in BG countries unless US has nuclear subs or special condition flagged
     if (this.countries[countryname].bg == 1 && this.game.state.lower_defcon_on_coup == 1) {
-      if (player !== "us" || this.game.state.events.nuclearsubs == 0){
+      if (player !== "us" || this.game.state.events.nuclearsubs == 0 ){
+console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
         this.lowerDefcon();
       }
     }
-
-
 
     let stability = parseInt(this.countries[countryname].control); //Just for some reason
 
     if (modifier != 0) {
       roll = (roll+modifier);
       this.updateLog(`COUP: ${player.toUpperCase()} modified roll: ${roll}`);
-    }else{
+    } else {
       this.updateLog(`COUP: ${player.toUpperCase()} rolls ${roll}`);
     }
 
     let winning = roll + ops - (stability * 2);
 
  
-
     if (winning > 0) {
 
       if (this.browser_active == 1) {
@@ -6714,7 +6708,7 @@ playerTurnHeadlineSelected(card, player) {
   /*
    Check various states that affect player's operation points values
   */
-  modifyOps(ops,card="",player="", updatelog=1) {
+  modifyOps(ops, card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
     if (card == "olympic" && ops == 4) {} else {
@@ -6729,6 +6723,11 @@ playerTurnHeadlineSelected(card, player) {
     if (this.game.state.events.containment == 1 && player === "us") {
       if (updatelog == 1) { this.updateLog("US gets Containment bonus +1");  }
       ops++;
+    }
+
+    if (player === "") {
+      if (this.game.player = 1) { player = "ussr"; }
+      if (this.game.player = 2) { player = "us"; }
     }
 
     if (this.game.state.events.redscare_player1 >= 1 && player === "ussr") {
@@ -7534,9 +7533,13 @@ playerTurnHeadlineSelected(card, player) {
 
     this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
+console.log("MONITORING DEFCON: in lowerDefcon() A ");
     if (this.game.state.events.norad == 1) {
+console.log("MONITORING DEFCON: in lowerDefcon() B ");
       if (this.game.state.defcon == 2) {
+console.log("MONITORING DEFCON: in lowerDefcon() C ");
         if (this.game.state.headline != 1) {
+console.log("MONITORING DEFCON: in lowerDefcon() D ");
           this.game.state.us_defcon_bonus = 1;
         }
       }
@@ -8958,7 +8961,7 @@ playerTurnHeadlineSelected(card, player) {
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].hand[i] != "china") {
-            let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0);
+            let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], "us", 0);
             if (avops >= 3) { 
               cards_to_discard.push(this.game.deck[0].hand[i]);
             }
@@ -9257,9 +9260,9 @@ playerTurnHeadlineSelected(card, player) {
       let valid_targets = 0;
       let couppower = 3;
       
-      if (player == "us") { couppower = this.modifyOps(3,"che",2); }
-      if (player == "ussr") { couppower = this.modifyOps(3,"che",1); }
-        
+      if (player == "us") { couppower = this.modifyOps(3,"che","us"); }
+      if (player == "ussr") { couppower = this.modifyOps(3,"che","ussr"); } 
+       
       for (var c in this.countries) {
         
         if ( twilight_self.countries[c].bg == 0 && (twilight_self.countries[c].region == "africa" || twilight_self.countries[c].region == "camerica" || twilight_self.countries[c].region == "samerica") && twilight_self.countries[c].us > 0 ) {
@@ -9656,6 +9659,7 @@ playerTurnHeadlineSelected(card, player) {
 
 
     if (card == "debtcrisis") {
+
       if (this.game.player == 1) {
         //this.updateStatus("<div class='status-message' id='status-message'>US playing Latin American Debt Crisis</div>");
         return 0;
@@ -9663,6 +9667,8 @@ playerTurnHeadlineSelected(card, player) {
 
       
       let twilight_self = this;
+      let player = "ussr";
+      if (this.game.player == 2) { player = "us"; }
 
       let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
       
@@ -9670,7 +9676,7 @@ playerTurnHeadlineSelected(card, player) {
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
-          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0);
+          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0);
           if (avops >= 3) { 
             cards_to_discard.push(this.game.deck[0].hand[i]);
           }
@@ -14185,7 +14191,7 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.updateStatusWithOptions(user_message,html,false);
             twilight_self.attachCardboxEvents(function(action2) {
 
-              let modified_ops = twilight_self.modifyOps(1,"peronism");
+              let modified_ops = twilight_self.modifyOps(1, "peronism", me);
 
               if (action2 == "coup") {
                 twilight_self.addMove("resolve\tperonism");
