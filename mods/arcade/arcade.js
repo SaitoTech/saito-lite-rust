@@ -618,7 +618,6 @@ class Arcade extends ModTemplate {
         if (txmsg.module == "Arcade" && txmsg.request == "close") {
           if (this.debug) {console.log("onConfirmation: close request received");}
           this.closeGameInvite(blk, tx, conf, app);
-         
         }
 
         //
@@ -981,6 +980,7 @@ class Arcade extends ModTemplate {
         if (this.debug) {console.log("Canceling invitation for an uninitialized game");}
         this.receiveCloseRequest(blk, tx, conf, app); //Update SQL to mark game as closed
         this.removeGameFromOpenList(game_id);
+        this.removeGameFromOptions(game_id);
       }else{
         if (this.debug) {console.log("Changed mind about joining the game");}
         this.leaveGameOnOpenList(tx);

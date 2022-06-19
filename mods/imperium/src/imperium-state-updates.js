@@ -73,6 +73,10 @@
       this.saveSystemAndPlanets(sys);
     }
 
+    //
+    // avoid ghosts-on-display
+    //
+    this.updateSectorGraphics(sector);
 
     return 1;
   }
@@ -185,8 +189,8 @@
 
     let planetname = "";
     let sys = this.returnSectorAndPlanets(sector);
-    let owner = new_owner;
-    let existing_owner = sys.p[planet_idx].owner;
+    let owner = parseInt(new_owner);
+    let existing_owner = parseInt(sys.p[planet_idx].owner);
 
     //
     // first-to-the-post New Byzantium bonus

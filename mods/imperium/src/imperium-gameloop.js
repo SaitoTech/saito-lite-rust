@@ -26,18 +26,6 @@
       }
   
 
-      //
-      // start of status phase, players must exhaust
-      //
-      if (mv[0] === "exhaust_at_round_start") { 
-
-	let player = mv[1]; // state or players
-        this.game.queue.splice(qe, 1);
-
-  	return 0;
-
-      }
-  
 
       if (mv[0] === "setvar") { 
 
@@ -1557,18 +1545,6 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	//
-	//
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
-	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
-	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
-	    }
-	  }
-	}
-
-
-	//
 	// REFRESH PLANETS
 	//
 	for (let i = 0; i < this.game.players_info.length; i++) {
@@ -1577,6 +1553,28 @@ this.game.state.end_round_scoring = 0;
 	  }
 	}
 
+  	//
+  	// REPAIR UNITS
+  	//
+  	this.repairUnits();
+
+  
+  	//
+  	// SET INITIATIVE ORDER
+  	//
+        this.game.queue.push("setinitiativeorder");
+
+
+	//
+	// EXHAUST ANYTHING REQUIRED (before setinitiative order -- which starts play)
+	//
+	for (let i = 0; i < this.game.players_info.length; i++) {
+	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
+	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
+	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
+	    }
+	  }
+	}
 
   	//
   	// RESET USER ACCOUNTS
@@ -1589,17 +1587,6 @@ this.game.state.end_round_scoring = 0;
   	  this.game.players_info[i].objectives_scored_this_round = [];
         }
 
-
-  	//
-  	// REPAIR UNITS
-  	//
-  	this.repairUnits();
-
-  
-  	//
-  	// SET INITIATIVE ORDER
-  	//
-        this.game.queue.push("setinitiativeorder");
 
 
 	//
@@ -2016,6 +2003,9 @@ this.game.state.end_round_scoring = 0;
 
       if (mv[0] === "must_exhaust_at_round_start") {
 
+console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
+
+	let imperium_self = this;
 	let player = parseInt(mv[1]);
 	let type = mv[2];
 	let number = "all"; if (mv[2]) { number = mv[2]; }
@@ -2023,9 +2013,36 @@ this.game.state.end_round_scoring = 0;
 
 	let exhausted = 0;
 
+	if (type === "planet") {
+	  if (player != this.game.player) {
+	    this.updateStatus(this.returnFactionName(this, player) + " is selecting planets to exhaust.");
+	    return 0;
+	  } else {
+	
+            this.playerSelectPlanetWithFilter(
+
+      	      "Select a planet to exhaust at start of turn: ",
+
+	      function (planet) {
+                if (imperium_self.game.planets[planet].owner == imperium_self.game.player) { return 1; }
+		return 0;
+	      },
+
+              function (planet) {
+                imperium_self.addMove("exhaust\t" + imperium_self.game.player + "\t" + "planet" + "\t" + planet);
+                imperium_self.endTurn();
+		return;
+              }
+
+	    );
+	    return 0;
+	  }
+
+	  return 0;
+	}
 	if (type == "cultural") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "cultural") {
+	    if (this.game.planets[i].type == "cultural" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2034,7 +2051,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "industrial") {	
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "industrial") {
+	    if (this.game.planets[i].type == "industrial" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2043,7 +2060,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "hazardous") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "hazardous") {
+	    if (this.game.planets[i].type == "hazardous" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2052,7 +2069,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "homeworld") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "homeworld") {
+	    if (this.game.planets[i].type == "homeworld" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2061,10 +2078,9 @@ this.game.state.end_round_scoring = 0;
 	}
 
 	if (exhausted == 0) {
-	  this.game.planets[type] = exhausted;
+	  this.game.planets[type].exhausted = 1;
 	  this.updateSectorGraphics(i);
 	}
-
 
 	return 1;
 
@@ -2442,6 +2458,20 @@ this.game.state.end_round_scoring = 0;
       }
 
 
+
+      if (mv[0] === "exhaust") {
+  
+  	let player       = parseInt(mv[1]);
+        let type	 = mv[2];
+        let name	 = mv[3];
+  
+  	if (type == "planet") { this.exhaustPlanet(name); }
+	this.displayFactionDashboard();
+
+  	this.game.queue.splice(qe, 1);
+  	return 1;
+  
+      }
 
       if (mv[0] === "unexhaust") {
   
@@ -2933,9 +2963,6 @@ this.game.state.end_round_scoring = 0;
         let shipjson     = mv[5];
         let hazard 	 = mv[6];
 
-
-
-
 	//
 	// "already_moved"
 	//
@@ -2946,7 +2973,7 @@ this.game.state.end_round_scoring = 0;
 	}
 
         //
-	//
+	// deal with rift loss-probability
 	// 
 	if (hazard === "rift") {
 
@@ -5587,11 +5614,6 @@ this.game.state.end_round_scoring = 0;
             }
           }
           this.game.queue.push("simultaneous_action_card_player_menu\t"+player+"\t"+card);
-  	  //for (let i = 0; i < speaker_order.length; i++) {
-	    //if (speaker_order[i] != player) {
-              //this.game.queue.push("action_card_player_menu\t"+speaker_order[i]+"\t"+player+"\t"+card);
-            //}
-          //}
 
 	  //
 	  // sabotage is a response to another card, which has its own simultaneous

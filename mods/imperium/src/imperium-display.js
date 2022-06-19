@@ -1374,7 +1374,6 @@ updateLeaderboard() {
 
 updateSectorGraphics(sector) {
 
-
   //
   // handle both 'sector41' and '2_1'
   //
