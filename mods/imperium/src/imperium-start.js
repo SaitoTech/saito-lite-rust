@@ -58,7 +58,6 @@ class Imperium extends GameTemplate {
     this.tutorial_move_clicked = 0;
     this.tutorial_produce_clicked = 0;
 
-  
     //
     // game-related
     //
@@ -70,7 +69,6 @@ class Imperium extends GameTemplate {
   
   }
   
-
   //
   // this function is CLOSED in imperium-initialize
   //
@@ -86,6 +84,4 @@ class Imperium extends GameTemplate {
 
     this.log.render(this.app, this);
     this.log.attachEvents(this.app, this);
-
-console.log("INITIALIZE GAME OBJECTS");
 

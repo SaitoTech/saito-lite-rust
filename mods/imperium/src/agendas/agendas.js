@@ -1,4 +1,60 @@
 
+  this.importAgendaCard('structures-not-shackles', {
+  	name : "Structures not Shackles" ,
+  	type : "Law" ,
+	elect : "player" ,
+  	text : "Players play action cards in initiative order, not simultaneously" ,
+        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
+        onPass : function(imperium_self, winning_choice) {
+          //
+          // switch to initiative order
+          //
+          if (winning_choice === "for") {
+	    imperium_self.game.state.action_card_order = "initiative";
+	  } else {
+	    imperium_self.game.state.action_card_order = "simultaneous";
+	  }
+
+        },
+  });
+
+
+
+  this.importAgendaCard('new-constitution', {
+  	name : "New Constitution" ,
+  	type : "Directive" ,
+  	text : "FOR: remove all laws in play and exhaust all homeworlds at the start of the next round" ,
+        returnAgendaOptions : function(imperium_self) {
+	  return ["for","against"];
+	},
+	onPass : function(imperium_self, winning_choice) {
+
+	  imperium_self.game.state.new_constitution = 1;
+
+	  //
+	  // repeal any laws in plan
+	  //
+	  for (let i = imperium_self.game.state.laws.length-1; i >= 0; i--) {
+	    let saved_agenda = imperium_self.game.state.laws[i].agenda;
+	    imperium_self.agenda_cards[saved_agenda].repealAgenda(imperium_self);
+	  }
+
+	  let players_to_research_tech = [];
+
+          if (winning_choice === "for") {
+	    imperium_self.game.state.laws = [];
+	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	      imperium_self.game.players_info[i].must_exhaust_at_round_start.push("homeworld");
+            }
+          }
+
+	  return 1;
+
+
+	},
+  });
+
+
   this.importAgendaCard('space-cadet', {
   	name : "Space Cadet" ,
   	type : "Law" ,
@@ -188,6 +244,8 @@
 
 
 
+
+
   this.importAgendaCard('executive-sanctions', {
   	name : "Executive Sanctions" ,
   	type : "Law" ,
@@ -228,6 +286,8 @@
         }
 
   });
+
+
 
   this.importAgendaCard('fleet-limitations', {
   	name : "Fleet Limitations" ,
@@ -382,28 +442,6 @@
         },
   });
 
-
-/****
-  this.importAgendaCard('structures-not-shackles', {
-  	name : "Structures not Shackles" ,
-  	type : "Law" ,
-	elect : "player" ,
-  	text : "Players play action cards in initiative order, not simultaneously" ,
-        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
-        onPass : function(imperium_self, winning_choice) {
-
-          //
-          // switch to initiative order
-          //
-          if (winning_choice === "for") {
-	    imperium_self.game.state.action_card_order = "initiative";
-	  } else {
-	    imperium_self.game.state.action_card_order = "simultaneous";
-	  }
-
-        },
-  });
-****/
 
 
   this.importAgendaCard('shard-of-the-throne', {
@@ -1542,6 +1580,9 @@
 
 	  imperium_self.game.state.swords_to_ploughshares = 1;
 
+	  //
+	  // everyone gains infantry
+	  //
           if (winning_choice === "against") {
             for (let i in imperium_self.game.planets) {
 	      if (imperium_self.game.planets[i].owner != -1) {
@@ -1552,48 +1593,38 @@
 
 
           //
-          // everyone who votes against discards action cards
+          // for destroys half infantry on planets (rounded up)
           //
-
           if (winning_choice === "for") {
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
 
-	      let total_infantry_destroyed = 0;
+            for (let k in imperium_self.game.planets) {
 
-              for (let k in imperium_self.game.planets) {
-	        if (imperium_self.game.planets[k].owner == (i+1)) {
+	      if (imperium_self.game.planets[k].owner > 0) {
 
-		  let destroy_this_infantry = 0;
+		let owner = parseInt(imperium_self.game.planets[k].owner);
+	        let total_infantry_destroyed = 0;
 
-		  for (let m = 0; m < imperium_self.game.planets[k].units[i].length; m++) {
-		    if (imperium_self.game.planets[k].units[i][m].type == "infantry") {
-		      if (destroy_this_infantry == 1) {
-			destroy_this_infantry = 0;
-			total_infantry_destroyed++;
-		      } else {
-			destroy_this_infantry = 1;
-		      }
+		let destroy_this_infantry = 1;
+
+		for (let m = 0; m < imperium_self.game.planets[k].units[owner-1].length; m++) {
+		  if (imperium_self.game.planets[k].units[i][m].type == "infantry") {
+		    if (destroy_this_infantry == 1) {
+		      total_infantry_destroyed++;
+		      destroy_this_infantry = 0;
+		    } else {
+		      destroy_this_infantry = 1;
 		    }
 		  }
+		}
 
-		  for (let m = 0, n = 0; n < total_infantry_destroyed && m < imperium_self.game.planets[k].units[i].length; m++) {
-		    if (imperium_self.game.planets[k].units[i][m].type == "infantry") {
-		      imperium_self.game.planets[k].units[i].splice(m, 1);
-		      m--;
-		      n++;
-		    }
+		for (let m = 0, n = 0; n < total_infantry_destroyed && m < imperium_self.game.planets[k].units[i].length; m++) {
+		  if (imperium_self.game.planets[k].units[i][m].type == "infantry") {
+		    imperium_self.game.planets[k].units[i].splice(m, 1);
+		    m--;
+		    n++;
 		  }
-
-
-	        }
+		}
 	      }
-
-	      if (total_infantry_destroyed == 1) {
-  	        imperium_self.updateLog(imperium_self.returnFaction((i+1)) + " gains " + total_infantry_destroyed + " trade good");
-	      } else {
-  	        imperium_self.updateLog(imperium_self.returnFaction((i+1)) + " gains " + total_infantry_destroyed + " trade goods");
-	      }
-
 	    }
 	  }
 
@@ -1662,44 +1693,6 @@
   });
 
 
-
-
-
-
-
-  this.importAgendaCard('new-constitution', {
-  	name : "New Constitution" ,
-  	type : "Directive" ,
-  	text : "FOR: remove all laws in play and exhaust all homeworld at the start of the next round" ,
-        returnAgendaOptions : function(imperium_self) {
-	  return ["for","against"];
-	},
-	onPass : function(imperium_self, winning_choice) {
-
-	  imperium_self.game.state.new_constitution = 1;
-
-	  //
-	  // repeal any laws in plan
-	  //
-	  for (let i = imperium_self.game.state.laws.length-1; i >= 0; i--) {
-	    let saved_agenda = imperium_self.game.state.laws[i].agenda;
-	    imperium_self.agenda_cards[saved_agenda].repealAgenda(imperium_self);
-	  }
-
-	  let players_to_research_tech = [];
-
-          if (winning_choice === "for") {
-	    imperium_self.game.state.laws = [];
-	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
-	      imperium_self.game.players_info[i].must_exhaust_at_round_start.push("homeworld");
-            }
-          }
-
-	  return 1;
-
-
-	},
-  });
 
 
 
@@ -2278,5 +2271,4 @@ imperium_self.updateLog("Ixthian Artifact rolls " + roll);
         return 1;
       }
   });
-
 

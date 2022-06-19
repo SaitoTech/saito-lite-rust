@@ -29,6 +29,17 @@
 
         if (imperium_self.game.player == player && imperium_self.game.player != strategy_card_player) { 
 
+	  //
+	  // auto-submit response if we cannot produce
+	  //
+	  if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.players_info[player-1].goods == 0 && imperium_self.game.players_info[player-1].sarween_tools != 1)) {
+	    imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Warfare secondary"); 
+            imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+            imperium_self.endTurn();
+	    return 0;
+	  }
+
           let html = '<p>Do you wish to spend 1 strategy token to produce in your home sector? </p><ul>';
           if (imperium_self.game.state.round == 1) {
             html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has played the Warfare strategy card. You may spend 1 strategy token to produce in your Homeworld without activating the sector. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
