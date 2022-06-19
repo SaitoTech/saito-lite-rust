@@ -28,12 +28,11 @@
  
 	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_secondary;
 ;
-
           //
           // auto-submit response if we lack resources and tokens to produce (speed up game);
           //
-          if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 0 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 0)) {
-            imperium_self.updateLog(imperium_self.returnFactionName(player) + " unable to play Technology secondary");
+          if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources != 1 && imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources != 1)) {
+            imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Technology secondary");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
             imperium_self.endTurn();

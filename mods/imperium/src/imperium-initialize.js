@@ -263,9 +263,8 @@
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(app, this, nickname, fullname);
-
     } catch (err) {
-console.log("error initing chat: " + err);
+      console.log("error initing chat: " + err);
     }
 
     //

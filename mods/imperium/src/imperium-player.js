@@ -1206,6 +1206,7 @@ playerDestroyShips(player, total, sector, capital = 0) {
   let hits_assigned = 0;
   let maximum_assignable_hits = 0;
   let sys = imperium_self.returnSectorAndPlanets(sector);
+  let total_targetted_units_hits = 0;
 
   html = '<div class="sf-readable">You must destroy ' + total + ' ships in your fleet:</div><ul>';
 
@@ -1226,8 +1227,22 @@ playerDestroyShips(player, total, sector, capital = 0) {
   for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
     let unit = sys.s.units[imperium_self.game.player - 1][i];
     maximum_assignable_hits++;
-    if (targetted_units.includes(unit.type)) { total_targetted_units++; }
-    html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+    if (targetted_units.includes(unit.type)) { 
+      total_targetted_units_hits++;
+      total_targetted_units++;
+      if (unit.type === "warsun") { total_targetted_units_hits += 2; }
+      if (unit.type === "flagship") { total_targetted_units_hits += 1; }
+      if (unit.type === "dreadnaught") { total_targetted_units_hits += 1; }
+    }
+  }
+  for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
+    if (targetted_units.includes(unit.type)) {
+      html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+    } else {
+      if (capital == 0 || total_targetted_units_hits < total_hits) {
+        html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+      }
+    }
   }
   html += '</ul>';
 

@@ -58,7 +58,6 @@ class Imperium extends GameTemplate {
     this.tutorial_move_clicked = 0;
     this.tutorial_produce_clicked = 0;
 
-  
     //
     // game-related
     //
@@ -70,7 +69,6 @@ class Imperium extends GameTemplate {
   
   }
   
-
   //
   // this function is CLOSED in imperium-initialize
   //
@@ -86,8 +84,6 @@ class Imperium extends GameTemplate {
 
     this.log.render(this.app, this);
     this.log.attachEvents(this.app, this);
-
-console.log("INITIALIZE GAME OBJECTS");
 
 
     this.importTech("antimass-deflectors", {
@@ -4227,8 +4223,8 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 	  //
 	  // auto-submit response if we cannot produce
 	  //
-	  if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.players_info[player-1].goods == 0 && imperium_self.game.players_info[player-1].sarween_tools == 1)) {
-	    imperium_self.updateLog(imperium_self.returnFactionName(player) + " unable to play Warfare secondary"); 
+	  if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || (imperium_self.returnAvailableResources(player) == 0 && imperium_self.game.players_info[player-1].goods == 0 && imperium_self.game.players_info[player-1].sarween_tools != 1)) {
+	    imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Warfare secondary"); 
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
             imperium_self.endTurn();
@@ -4305,12 +4301,11 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
  
 	  resources_to_spend = imperium_self.game.players_info[imperium_self.game.player-1].cost_of_technology_secondary;
 ;
-
           //
           // auto-submit response if we lack resources and tokens to produce (speed up game);
           //
-          if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 0 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources == 0)) {
-            imperium_self.updateLog(imperium_self.returnFactionName(player) + " unable to play Technology secondary");
+          if (imperium_self.game.players_info[player-1].strategy_tokens == 0 || ( (imperium_self.game.players_info[player-1].goods + imperium_self.returnAvailableResources(player)) < 4 && imperium_self.game.players_info[player-1].temporary_research_technology_card_must_not_spend_resources != 1 && imperium_self.game.players_info[player-1].permanent_research_technology_card_must_not_spend_resources != 1)) {
+            imperium_self.updateLog(imperium_self.returnFactionName(imperium_self, player) + " unable to play Technology secondary");
             imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
             imperium_self.endTurn();
@@ -10943,9 +10938,8 @@ console.log("Active Agenda: " + active_agenda);
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(app, this, nickname, fullname);
-
     } catch (err) {
-console.log("error initing chat: " + err);
+      console.log("error initing chat: " + err);
     }
 
     //
@@ -12899,18 +12893,6 @@ handleSystemsMenuItem() {
       }
   
 
-      //
-      // start of status phase, players must exhaust
-      //
-      if (mv[0] === "exhaust_at_round_start") { 
-
-	let player = mv[1]; // state or players
-        this.game.queue.splice(qe, 1);
-
-  	return 0;
-
-      }
-  
 
       if (mv[0] === "setvar") { 
 
@@ -14430,18 +14412,6 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	// EXHAUST ANYTHING REQUIRED
-	//
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
-	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
-	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
-	    }
-	  }
-	}
-
-
-	//
 	// REFRESH PLANETS
 	//
 	for (let i = 0; i < this.game.players_info.length; i++) {
@@ -14450,6 +14420,28 @@ this.game.state.end_round_scoring = 0;
 	  }
 	}
 
+  	//
+  	// REPAIR UNITS
+  	//
+  	this.repairUnits();
+
+  
+  	//
+  	// SET INITIATIVE ORDER
+  	//
+        this.game.queue.push("setinitiativeorder");
+
+
+	//
+	// EXHAUST ANYTHING REQUIRED (before setinitiative order -- which starts play)
+	//
+	for (let i = 0; i < this.game.players_info.length; i++) {
+	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
+	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
+	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
+	    }
+	  }
+	}
 
   	//
   	// RESET USER ACCOUNTS
@@ -14462,17 +14454,6 @@ this.game.state.end_round_scoring = 0;
   	  this.game.players_info[i].objectives_scored_this_round = [];
         }
 
-
-  	//
-  	// REPAIR UNITS
-  	//
-  	this.repairUnits();
-
-  
-  	//
-  	// SET INITIATIVE ORDER
-  	//
-        this.game.queue.push("setinitiativeorder");
 
 
 	//
@@ -14891,6 +14872,7 @@ this.game.state.end_round_scoring = 0;
 
 console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
+	let imperium_self = this;
 	let player = parseInt(mv[1]);
 	let type = mv[2];
 	let number = "all"; if (mv[2]) { number = mv[2]; }
@@ -14898,6 +14880,33 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
 	let exhausted = 0;
 
+	if (type === "planet") {
+	  if (player != this.game.player) {
+	    this.updateStatus(this.returnFactionName(this, player) + " is selecting planets to exhaust.");
+	    return 0;
+	  } else {
+	
+            this.playerSelectPlanetWithFilter(
+
+      	      "Select a planet to exhaust at start of turn: ",
+
+	      function (planet) {
+                if (imperium_self.game.planets[planet].owner == imperium_self.game.player) { return 1; }
+		return 0;
+	      },
+
+              function (planet) {
+                imperium_self.addMove("exhaust\t" + imperium_self.game.player + "\t" + "planet" + "\t" + planet);
+                imperium_self.endTurn();
+		return;
+              }
+
+	    );
+	    return 0;
+	  }
+
+	  return 0;
+	}
 	if (type == "cultural") {
 	  for (let i in this.game.planets) {
 	    if (this.game.planets[i].type == "cultural" && this.game.planets[i].owner == player) {
@@ -15316,6 +15325,20 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
       }
 
 
+
+      if (mv[0] === "exhaust") {
+  
+  	let player       = parseInt(mv[1]);
+        let type	 = mv[2];
+        let name	 = mv[3];
+  
+  	if (type == "planet") { this.exhaustPlanet(name); }
+	this.displayFactionDashboard();
+
+  	this.game.queue.splice(qe, 1);
+  	return 1;
+  
+      }
 
       if (mv[0] === "unexhaust") {
   
@@ -19984,6 +20007,7 @@ playerDestroyShips(player, total, sector, capital = 0) {
   let hits_assigned = 0;
   let maximum_assignable_hits = 0;
   let sys = imperium_self.returnSectorAndPlanets(sector);
+  let total_targetted_units_hits = 0;
 
   html = '<div class="sf-readable">You must destroy ' + total + ' ships in your fleet:</div><ul>';
 
@@ -20004,8 +20028,22 @@ playerDestroyShips(player, total, sector, capital = 0) {
   for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
     let unit = sys.s.units[imperium_self.game.player - 1][i];
     maximum_assignable_hits++;
-    if (targetted_units.includes(unit.type)) { total_targetted_units++; }
-    html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+    if (targetted_units.includes(unit.type)) { 
+      total_targetted_units_hits++;
+      total_targetted_units++;
+      if (unit.type === "warsun") { total_targetted_units_hits += 2; }
+      if (unit.type === "flagship") { total_targetted_units_hits += 1; }
+      if (unit.type === "dreadnaught") { total_targetted_units_hits += 1; }
+    }
+  }
+  for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
+    if (targetted_units.includes(unit.type)) {
+      html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+    } else {
+      if (capital == 0 || total_targetted_units_hits < total_hits) {
+        html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
+      }
+    }
   }
   html += '</ul>';
 
