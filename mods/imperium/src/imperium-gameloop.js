@@ -1557,7 +1557,7 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	//
+	// EXHAUST ANYTHING REQUIRED
 	//
 	for (let i = 0; i < this.game.players_info.length; i++) {
 	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
@@ -2016,6 +2016,8 @@ this.game.state.end_round_scoring = 0;
 
       if (mv[0] === "must_exhaust_at_round_start") {
 
+console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
+
 	let player = parseInt(mv[1]);
 	let type = mv[2];
 	let number = "all"; if (mv[2]) { number = mv[2]; }
@@ -2025,7 +2027,7 @@ this.game.state.end_round_scoring = 0;
 
 	if (type == "cultural") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "cultural") {
+	    if (this.game.planets[i].type == "cultural" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2034,7 +2036,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "industrial") {	
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "industrial") {
+	    if (this.game.planets[i].type == "industrial" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2043,7 +2045,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "hazardous") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "hazardous") {
+	    if (this.game.planets[i].type == "hazardous" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2052,7 +2054,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "homeworld") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "homeworld") {
+	    if (this.game.planets[i].type == "homeworld" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2061,10 +2063,9 @@ this.game.state.end_round_scoring = 0;
 	}
 
 	if (exhausted == 0) {
-	  this.game.planets[type] = exhausted;
+	  this.game.planets[type].exhausted = 1;
 	  this.updateSectorGraphics(i);
 	}
-
 
 	return 1;
 
@@ -2933,9 +2934,6 @@ this.game.state.end_round_scoring = 0;
         let shipjson     = mv[5];
         let hazard 	 = mv[6];
 
-
-
-
 	//
 	// "already_moved"
 	//
@@ -2946,7 +2944,7 @@ this.game.state.end_round_scoring = 0;
 	}
 
         //
-	//
+	// deal with rift loss-probability
 	// 
 	if (hazard === "rift") {
 

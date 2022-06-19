@@ -571,21 +571,42 @@ playerPlayBombardment(attacker, sector, planet_idx) {
 
   let sys = imperium_self.returnSectorAndPlanets(sector);
 
-
   //
   // some laws prohibit bombardment against
   //
   if (this.game.state.bombardment_against_cultural_planets == 0 && sys.p[planet_idx].type == "cultural") {
     this.updateLog("Bombardment not possible against cultural planets. Skipping.");
     this.endTurn();
+    return 0;
   }
   if (this.game.state.bombardment_against_industrial_planets == 0 && sys.p[planet_idx].type == "industrial") {
     this.updateLog("Bombardment not possible against industrial planets. Skipping.");
     this.endTurn();
+    return 0;
   }
   if (this.game.state.bombardment_against_hazardous_planets == 0 && sys.p[planet_idx].type == "hazardous") {
     this.updateLog("Bombardment not possible against hazardous planets. Skipping.");
     this.endTurn();
+    return 0;
+  }
+
+  //
+  // no infantry? do not bombard
+  //
+  let anything_to_kill = 0;
+  for (let i = 0; i < sys.p[planet_idx].units.length; i++) {
+    if (i != (attacker-1)) {
+      for (let k = 0; k < sys.p[planet_idx].units[i].length; k++) {
+	if (sys.p[planet_idx].units[i][ii].type === "infantry") {
+	  anything_to_kill = 1;
+	}
+      }
+    }
+  }
+  if (anything_to_kill == 0) {
+    this.updateLog("Bombardment not possible against planets without infantry. Skipping.");
+    this.endTurn();
+    return 0;
   }
   //
   // no bombardment of my own planets (i.e. if parlay ends invasion)
@@ -2980,11 +3001,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
           for (let i = 0; i < imperium_self.moves.length; i++) {
 	    let tmpmv = imperium_self.moves[i].split("\t");
 	    if (tmpmv.length > 5) {
-console.log("DOUBLE_GUARD 1");
 	      if (tmpmv[0] === "produce" && tmpmv[4] === "pds") {
-console.log("DOUBLE_GUARD 2: " + tmpmv[3] + ' --- ' + imperium_self.game.planets[planet].idx);
 	        if (imperium_self.game.planets[planet].idx === parseInt(tmpmv[3])) {
-console.log("DOUBLE_GUARD 3");
 		  existing_units++;
 	        }
 	      }
@@ -4100,10 +4118,6 @@ playerSelectStrategyCards(mycallback, selection = 0) {
     });
 
   }
-
-
-
-
 }
 
 
@@ -4238,6 +4252,9 @@ playerAddInfantryToPlanets(player, total = 1, mycallback) {
 //////////////////////////
 // Select Units to Move //
 //////////////////////////
+//
+// MoveShips // MoveUnits // playerMove ... (grep keywords)
+//
 playerSelectUnitsToMove(destination) {
 
   let imperium_self = this;
@@ -4528,9 +4545,11 @@ console.log(JSON.stringify(obj.stuff_to_move));
           }
         }
 
+	let are_there_fighters = 0;
         let fighters_available_to_move = 0;
         for (let iii = 0; iii < sys.s.units[imperium_self.game.player - 1].length; iii++) {
           if (sys.s.units[imperium_self.game.player - 1][iii].type == "fighter") {
+	    are_there_fighters = 1;
             let fighter_already_moved = 0;
             for (let z = 0; z < obj.stuff_to_move.length; z++) {
               if (obj.stuff_to_move[z].sector == sector) {
@@ -4544,7 +4563,10 @@ console.log(JSON.stringify(obj.stuff_to_move));
             }
           }
         }
-        user_message += '<li class="option textchoice" id="addfighter_s_s">add fighter - <span class="add_fighters_remaining">' + fighters_available_to_move + '</span></li>';
+	if (are_there_fighters == 1) {
+          user_message += '<li class="option textchoice" id="addfighter_s_s">add fighter - <span class="add_fighters_remaining">' + fighters_available_to_move + '</span></li>';
+	}
+
         user_message += '<li class="option textchoice" id="skip">finish</li>';
         user_message += '</ul></div>';
 
@@ -5714,8 +5736,6 @@ playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = nu
 
     let rp = this.game.board[i].tile;
 
-console.log(i + " -- " + rp);
-
     let sys = this.returnSectorAndPlanets(rp);
     if (sys != null) {
 
@@ -5726,8 +5746,6 @@ console.log(i + " -- " + rp);
         planet_array.push(-1);
         unit_idx.push(k);
         exists_unit = 1;
-console.log("k: " + k);
-console.log(JSON.stringify(unit_array));
         html += '<li class="textchoice" id="' + (unit_array.length - 1) + '">' + sys.s.name + ' - ' + unit_array[unit_array.length - 1].name + '</li>';
       }
     }
@@ -5740,7 +5758,6 @@ console.log(JSON.stringify(unit_array));
           planet_array.push(p);
           unit_idx.push(k);
           exists_unit = 1;
-console.log("p k: " + p + " - " + k);
           html += '<li class="textchoice" id="' + (unit_array.length - 1) + '">' + sys.s.sector + ' / ' + sys.p[p].name + " - " + unit_array[unit_array.length - 1].name + '</li>';
         }
       }
