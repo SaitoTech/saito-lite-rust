@@ -20032,6 +20032,7 @@ playerDestroyShips(player, total, sector, capital = 0) {
     }
   }
   for (let i = 0; i < sys.s.units[imperium_self.game.player - 1].length; i++) {
+    let unit = sys.s.units[imperium_self.game.player - 1][i];
     if (targetted_units.includes(unit.type)) {
       html += '<li class="textchoice player_ship_' + i + '" id="' + i + '">' + unit.name + '</li>';
     } else {
