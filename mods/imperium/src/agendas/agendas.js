@@ -1,4 +1,25 @@
 
+  this.importAgendaCard('structures-not-shackles', {
+  	name : "Structures not Shackles" ,
+  	type : "Law" ,
+	elect : "player" ,
+  	text : "Players play action cards in initiative order, not simultaneously" ,
+        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
+        onPass : function(imperium_self, winning_choice) {
+          //
+          // switch to initiative order
+          //
+          if (winning_choice === "for") {
+	    imperium_self.game.state.action_card_order = "initiative";
+	  } else {
+	    imperium_self.game.state.action_card_order = "simultaneous";
+	  }
+
+        },
+  });
+
+
+
   this.importAgendaCard('new-constitution', {
   	name : "New Constitution" ,
   	type : "Directive" ,
@@ -266,6 +287,8 @@
 
   });
 
+
+
   this.importAgendaCard('fleet-limitations', {
   	name : "Fleet Limitations" ,
   	type : "Law" ,
@@ -303,7 +326,6 @@
 
   });
 
-/******
 
   this.importAgendaCard('committee-formation', {
   	name : "Committee Formation" ,
@@ -421,27 +443,6 @@
   });
 
 
-//
-//  this.importAgendaCard('structures-not-shackles', {
-//  	name : "Structures not Shackles" ,
-//  	type : "Law" ,
-//	elect : "player" ,
-//  	text : "Players play action cards in initiative order, not simultaneously" ,
-//        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
-//        onPass : function(imperium_self, winning_choice) {
-//
-//          //
-//          // switch to initiative order
-//          //
-//          if (winning_choice === "for") {
-//	    imperium_self.game.state.action_card_order = "initiative";
-//	  } else {
-//	    imperium_self.game.state.action_card_order = "simultaneous";
-//	  }
-//
-//        },
-//  });
-//
 
   this.importAgendaCard('shard-of-the-throne', {
   	name : "Shard of the Throne" ,
@@ -2271,4 +2272,3 @@ imperium_self.updateLog("Ixthian Artifact rolls " + roll);
       }
   });
 
-****/

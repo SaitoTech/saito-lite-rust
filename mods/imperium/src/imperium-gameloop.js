@@ -5614,11 +5614,6 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
             }
           }
           this.game.queue.push("simultaneous_action_card_player_menu\t"+player+"\t"+card);
-  	  //for (let i = 0; i < speaker_order.length; i++) {
-	    //if (speaker_order[i] != player) {
-              //this.game.queue.push("action_card_player_menu\t"+speaker_order[i]+"\t"+player+"\t"+card);
-            //}
-          //}
 
 	  //
 	  // sabotage is a response to another card, which has its own simultaneous

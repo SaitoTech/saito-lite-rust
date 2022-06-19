@@ -5794,6 +5794,27 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   
   
 
+  this.importAgendaCard('structures-not-shackles', {
+  	name : "Structures not Shackles" ,
+  	type : "Law" ,
+	elect : "player" ,
+  	text : "Players play action cards in initiative order, not simultaneously" ,
+        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
+        onPass : function(imperium_self, winning_choice) {
+          //
+          // switch to initiative order
+          //
+          if (winning_choice === "for") {
+	    imperium_self.game.state.action_card_order = "initiative";
+	  } else {
+	    imperium_self.game.state.action_card_order = "simultaneous";
+	  }
+
+        },
+  });
+
+
+
   this.importAgendaCard('new-constitution', {
   	name : "New Constitution" ,
   	type : "Directive" ,
@@ -6061,6 +6082,8 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
   });
 
+
+
   this.importAgendaCard('fleet-limitations', {
   	name : "Fleet Limitations" ,
   	type : "Law" ,
@@ -6098,7 +6121,6 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
 
   });
 
-/******
 
   this.importAgendaCard('committee-formation', {
   	name : "Committee Formation" ,
@@ -6216,27 +6238,6 @@ if (imperium_self.game.state.agenda_voting_order === "simultaneous") {
   });
 
 
-//
-//  this.importAgendaCard('structures-not-shackles', {
-//  	name : "Structures not Shackles" ,
-//  	type : "Law" ,
-//	elect : "player" ,
-//  	text : "Players play action cards in initiative order, not simultaneously" ,
-//        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
-//        onPass : function(imperium_self, winning_choice) {
-//
-//          //
-//          // switch to initiative order
-//          //
-//          if (winning_choice === "for") {
-//	    imperium_self.game.state.action_card_order = "initiative";
-//	  } else {
-//	    imperium_self.game.state.action_card_order = "simultaneous";
-//	  }
-//
-//        },
-//  });
-//
 
   this.importAgendaCard('shard-of-the-throne', {
   	name : "Shard of the Throne" ,
@@ -8066,7 +8067,6 @@ imperium_self.updateLog("Ixthian Artifact rolls " + roll);
       }
   });
 
-****/
 /************************************
   
 ACTION CARD - types
@@ -11197,8 +11197,8 @@ console.log("Active Agenda: " + active_agenda);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      let sys = this.returnSectorAndPlanets("4_4");
-      sys.p[0].owner = 1;
+      //let sys = this.returnSectorAndPlanets("4_4");
+      //sys.p[0].owner = 1;
 
 
       //
@@ -18481,11 +18481,6 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
             }
           }
           this.game.queue.push("simultaneous_action_card_player_menu\t"+player+"\t"+card);
-  	  //for (let i = 0; i < speaker_order.length; i++) {
-	    //if (speaker_order[i] != player) {
-              //this.game.queue.push("action_card_player_menu\t"+speaker_order[i]+"\t"+player+"\t"+card);
-            //}
-          //}
 
 	  //
 	  // sabotage is a response to another card, which has its own simultaneous
