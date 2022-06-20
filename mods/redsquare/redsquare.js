@@ -13,15 +13,20 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-    this.header = new SaitoHeader(app);
+    this.styles = ['/saito/saito.css', '/chirp/style.css', '/saito/lib/saito-date-picker/style.css'];
+    this.scripts = ['/saito/lib/saito-date-picker/script.js'];
     this.main = new RedSquareMain(app);
+    this.header = new SaitoHeader(app);
 
   }
 
 
   render(app) {
-    this.header.render(app, this);
+    super.render(app);
     this.main.render(app, this);
+    this.header.render(app, this);
+
+
   }
 
 }
