@@ -8,8 +8,9 @@
       let twilight_self = this;
 
       let instigator = 1;
+      let respondant = 2;
       let opponent = "us";
-      if (player == "us") { instigator = 2; opponent = "ussr"; }
+      if (player == "us") { respondant = 1; instigator = 2; opponent = "ussr"; }
       this.game.state.events.missileenvy = 1;
 
       //
@@ -18,9 +19,7 @@
       if (this.game.player == instigator) {
         this.updateStatus("<div class='status-message' id='status-message'>Opponent is returning card for Missile Envy</div>");
         return 0;
-
       }
-
 
       //
       // targeted player provided list if multiple options available
@@ -74,7 +73,7 @@
           //
           // offer highest card
           //
-          this.addMove("missileenvy\t"+this.game.player+"\t"+selected_card);
+          this.addMove("missileenvy\t" + respondant + "\t"+selected_card);
           this.endTurn();
 
         } else {
@@ -95,7 +94,7 @@
             //
             // offer card
             //
-            twilight_self.addMove("missileenvy\t"+twilight_self.game.player+"\t"+action2);
+            twilight_self.addMove("missileenvy\t" + respondant + "\t"+action2);
             twilight_self.endTurn();
 
           });

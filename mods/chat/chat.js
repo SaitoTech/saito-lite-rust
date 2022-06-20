@@ -247,7 +247,6 @@ class Chat extends ModTemplate {
                             // check identifiers
                             //
                             if (this.added_identifiers_post_load == 0) {
-                                console.log("ADD IDENTIFIERS POST LOAD: chat.js");
                                 try {
                                     setTimeout(() => {
                                         this.app.browser.addIdentifiersToDom();
@@ -548,7 +547,6 @@ class Chat extends ModTemplate {
             salert("Connection to chat server lost");
         }
 
-        console.log('saving chats on sendMessage');
         this.saveChat();
 
     }
@@ -575,8 +573,6 @@ class Chat extends ModTemplate {
             members.splice(0, 1);
             members.push(this.app.wallet.returnPublicKey());
         }
-
-        console.log("MEMBERS ZERO: " + members[0]);
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
@@ -804,7 +800,6 @@ class Chat extends ModTemplate {
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-        console.log('saving chat on receive');
         this.saveChat();
 
         //
@@ -844,14 +839,9 @@ class Chat extends ModTemplate {
     //////////////////
     // UI Functions //
     //////////////////
-
-    
     openChats() {
 
         let groups = this.getChatGroups();
-
-        console.log('available chat groups');
-        console.log(groups);
 
         if (groups.length > 0) {
             for (let i=0; i < groups.length; i++) {

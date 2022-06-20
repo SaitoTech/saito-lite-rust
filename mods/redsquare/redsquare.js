@@ -13,7 +13,6 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-
     this.header = new SaitoHeader(app);
     this.main = new RedSquareMain(app);
 
