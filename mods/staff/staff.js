@@ -1,6 +1,10 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const RegisterStaffTemplate = require('./register-staff.template');
+const ArcadeGameSidebar = require("../../mods/arcade/lib/arcade-sidebar/arcade-game-sidebar");
+const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+
+
 
 
 
@@ -28,11 +32,15 @@ class Staff extends ModTemplate {
 
     render(app, mod) {
         console.log("value length: " + document.getElementById('staff_register').innerHTML);
+        if (app.BROWSER == 1) {
+            this.header = new SaitoHeader(app, this);
+        }
         document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
         if (document.getElementById('staff_register').innerHTML.length == 0) {
             this.clearEvents();
         }
         this.addEvents(this.app);
+        this.renderSidebar();
         document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
         document.getElementById("isRegistered").checked = this.isThisRegistered;
         console.log(this.isThisRegistered);
@@ -67,6 +75,17 @@ class Staff extends ModTemplate {
         this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
         }
     }
+
+    renderSidebar() {
+        if (this.viewing_game_homepage) {
+            ArcadeGameSidebar.render(this.app, this);
+            ArcadeGameSidebar.attachEvents(this.app, this);
+        } else {
+            ArcadeSidebar.render(this.app, this);
+            ArcadeSidebar.attachEvents(this.app, this);
+        }
+    }
+
 
     async checkRecord(publickey) {
         sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
