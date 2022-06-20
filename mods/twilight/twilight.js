@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -1328,6 +1328,8 @@ try {
       let discarder = "ussr";
       if (sender == 2) { receiver = "ussr"; discarder = "us"; }
 
+console.log(`missileenvy ${sender} ${card}`);
+
       this.game.state.events.missile_envy = sender;
 
       let opponent_card = 0;
@@ -1952,23 +1954,23 @@ try {
       this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);
 
       // stats
-      if (mv[1] == "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
-      if (mv[1] == "ussr") { this.game.state.stats.ussr_ops += parseInt(mv[3]); }
+      if (mv[1] === "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
+      if (mv[1] === "ussr") { this.game.state.stats.ussr_ops += parseInt(mv[3]); }
       
   	  if (this.game.deck[0].cards[mv[2]] != undefined) {
-  	    if (this.game.deck[0].cards[mv[2]].player == "us") {
-  	      if (mv[1] == "ussr") {
+  	    if (this.game.deck[0].cards[mv[2]].player === "us") {
+  	      if (mv[1] === "ussr") {
   	        this.game.state.stats.ussr_us_ops += parseInt(mv[3]);
   	      }
-  	      if (mv[1] == "us") {
+  	      if (mv[1] === "us") {
   	        this.game.state.stats.us_us_ops += parseInt(mv[3]);
   	      }
   	    }
-  	    if (this.game.deck[0].cards[mv[2]].player == "ussr") {
-  	      if (mv[1] == "ussr") {
+  	    if (this.game.deck[0].cards[mv[2]].player === "ussr") {
+  	      if (mv[1] === "ussr") {
   	        this.game.state.stats.ussr_ussr_ops += parseInt(mv[3]);
   	      }
-  	      if (mv[1] == "us") {
+  	      if (mv[1] === "us") {
   	        this.game.state.stats.us_ussr_ops += parseInt(mv[3]);
   	      }
   	    }
@@ -2090,6 +2092,8 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
 
     if (mv[0] === "event") {
+
+console.log("received event: " + JSON.stringify(mv));
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
@@ -2393,9 +2397,9 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["asknot", "containment", "oas", "duckandcover", "abmtreaty", "howilearned", "asia", "europe", "naziscientist"];
+          this.game.deck[0].hand = ["asknot", "missileenvy", "oas", "duckandcover", "abmtreaty", "howilearned", "asia", "europe", "naziscientist"];
         } else {
-          this.game.deck[0].hand = ["liberation", "junta", "norad", "che", "vietnamrevolts", "marine", "debtcrisis", "arabisraeli", "china"];
+          this.game.deck[0].hand = ["culturalrev", "junta", "culturalrev", "culturalrev", "culturalrev", "culturalrev", "culturalrev", "china"];
         }
       }
 
@@ -6726,8 +6730,8 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
     }
 
     if (player === "") {
-      if (this.game.player = 1) { player = "ussr"; }
-      if (this.game.player = 2) { player = "us"; }
+      if (this.game.player == 1) { player = "ussr"; }
+      if (this.game.player == 2) { player = "us"; }
     }
 
     if (this.game.state.events.redscare_player1 >= 1 && player === "ussr") {
@@ -11178,8 +11182,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       let twilight_self = this;
 
       let instigator = 1;
+      let respondant = 2;
       let opponent = "us";
-      if (player == "us") { instigator = 2; opponent = "ussr"; }
+      if (player == "us") { respondant = 1; instigator = 2; opponent = "ussr"; }
       this.game.state.events.missileenvy = 1;
 
       //
@@ -11188,9 +11193,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       if (this.game.player == instigator) {
         this.updateStatus("<div class='status-message' id='status-message'>Opponent is returning card for Missile Envy</div>");
         return 0;
-
       }
-
 
       //
       // targeted player provided list if multiple options available
@@ -11244,7 +11247,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
           //
           // offer highest card
           //
-          this.addMove("missileenvy\t"+this.game.player+"\t"+selected_card);
+          this.addMove("missileenvy\t" + respondant + "\t"+selected_card);
           this.endTurn();
 
         } else {
@@ -11265,7 +11268,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
             //
             // offer card
             //
-            twilight_self.addMove("missileenvy\t"+twilight_self.game.player+"\t"+action2);
+            twilight_self.addMove("missileenvy\t" + respondant + "\t"+action2);
             twilight_self.endTurn();
 
           });
