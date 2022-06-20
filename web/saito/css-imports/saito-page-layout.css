@@ -5,7 +5,7 @@
 }
 
 .saito-left-sidebar {
-    width: 35rem;
+    min-width: 26rem;
     height: 30vh;
     margin-right: 1.5rem;
     margin-bottom: 1.5rem;
@@ -18,7 +18,6 @@
     position: fixed;
     top: calc(var(--saito-header-height));
     z-index: 2;
-    border: 1px solid var(--saito-primary);
     width: 35rem;
     height: 100vh;
     background-color: var(--saito-white);
@@ -30,17 +29,29 @@
 }
 
 .saito-left-sidebar-hamburger {
+    content: "";
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background-color: red;
     display: none;
     position: fixed;
     bottom: 3rem;
     z-index: 4;
     left: 4rem;
-    bottom: 4rem;
-    font-size: 3rem;
-    color: var(--saito-primary);
+    bottom: 6rem;
     cursor: pointer;
     transition: all .2s;
+
 }
+
+.saito-left-sidebar-hamburger i {
+    font-size: 3rem;
+    color: var(--saito-white);
+
+}
+
+
 
 .saito-left-sidebar-hamburger:hover {
     transform: scale(1.05);
@@ -49,14 +60,15 @@
 
 .saito-main-content {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     margin-right: 1.5rem;
     margin-bottom: 1.5rem;
     background-color: var(--saito-white);
+    padding: 1rem;
 }
 
 .saito-right-sidebar {
-    width: 35rem;
+    min-width: 26rem;
     height: 100%;
     position: sticky;
     top: calc(var(--saito-header-height) + 1rem);
@@ -68,9 +80,9 @@
     .saito-left-sidebar-mobile {
         display: none;
     }
-
-
 }
+
+
 
 @media screen and (max-width: 1200px) {
     .saito-left-sidebar {
@@ -78,17 +90,37 @@
     }
 
     .saito-left-sidebar-hamburger {
-        display: block;
+        left: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        bottom: 7rem;
+
     }
 
+    .saito-left-sidebar-mobile {
+        left: 0;
+        border-right: 1px solid var(--saito-primary);
+
+    }
+
+
+
+}
+
+@media screen and (max-width: 876px) {
+    .saito-right-sidebar {
+        min-width: auto;
+
+    }
 }
 
 @media screen and (max-width: 768px) {
 
 
     .saito-left-sidebar-mobile {
-        left: 1.5rem;
-        width: 35rem;
+        left: 0;
+        width: 100%;
 
     }
 
@@ -99,6 +131,11 @@
 
 
     .saito-right-sidebar {
-        width: 100%;
+        display: none;
     }
+
+
+
+
+
 }

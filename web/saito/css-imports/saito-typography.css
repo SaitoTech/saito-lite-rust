@@ -82,27 +82,6 @@ hr {
 
 
 
-/* ----------------------------------------------------------------
-Media Queries
------------------------------------------------------------------*/
-
-@media (max-width: 767.98px) {
-  h1 {
-    font-size: 4rem;
-  }
-
-  h2 {
-    font-size: 3.5rem;
-  }
-
-  h3 {
-    font-size: 3rem;
-  }
-
-  h4 {
-    font-size: 2.5rem;
-  }
-}
 
 
 .saito-large-p {
@@ -122,5 +101,51 @@ p,
 
 a:hover {
   opacity: 0.8;
+
+}
+
+
+/* ----------------------------------------------------------------
+Media Queries
+-----------------------------------------------------------------*/
+
+@media (max-width: 767.98px) {
+  h1 {
+    font-size: 4.5rem;
+  }
+
+  h2 {
+    font-size: 4rem;
+  }
+
+  h3 {
+    font-size: 3.5rem;
+  }
+
+  h4 {
+    font-size: 3rem;
+  }
+
+  h5 {
+    font-size: 2.5rem;
+  }
+
+  h6 {
+    font-size: 2rem;
+  }
+
+  .saito-large-p {
+    font-size: 1.8rem;
+  }
+
+  p,
+  .saito-mid-p {
+    color: var(--saito-black);
+    font-size: 1.4rem;
+  }
+
+  .saito-small-p {
+    font-size: 1.1rem;
+  }
 
 }

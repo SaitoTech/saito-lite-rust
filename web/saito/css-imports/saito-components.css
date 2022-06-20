@@ -124,16 +124,19 @@ Saito Menu
 .saito-menu-container {}
 
 
+.saito-menu-container>ul {
+    padding: 0;
+    list-style-type: none;
 
+}
 
 .saito-menu-container>ul>li {
-    padding: 0.6rem;
+    padding: 1rem;
     display: flex;
-    align-items: center;
     list-style: none;
     cursor: pointer;
     transition: all .2s;
-    font-size: 1.92rem
+    font-size: 1.92rem;
 }
 
 .saito-menu-container>ul>li:not(:last-child) {
@@ -161,12 +164,10 @@ Saito Menu
 }
 
 .saito-menu-container.saito-menu-dense>ul>li {
-    padding: .3rem .5rem;
+    padding: 1rem 1rem;
 }
 
-.saito-menu-container.saito-menu-dense>ul>li:not(:last-child) {
-    margin-bottom: .5rem;
-}
+.saito-menu-container.saito-menu-dense>ul>li:not(:last-child) {}
 
 .saito-menu-container.saito-menu-dense>ul>li>i {
     font-size: 1.6rem;
@@ -207,14 +208,15 @@ Saito Menu
 Saito User List and Saito User 
 -----------------------------------------------------------------*/
 
-.saito-user-list {}
+.saito-user-list {
+    padding: 1rem;
+}
 
 .saito-user {
     display: flex;
     position: relative;
     justify-items: start;
     margin-bottom: 1px;
-    min-height: 5rem;
     width: 100%;
 }
 
@@ -239,7 +241,7 @@ Saito User List and Saito User
 
 
 .saito-user:not(:last-child) {
-    margin-bottom: 8px;
+    margin-bottom: 1rem;
 }
 
 .saito-user>img {
@@ -256,11 +258,11 @@ Saito User List and Saito User
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-right: 2rem;
+    justify-content: center;
 }
 
 .saito-user-info p {
-    max-width: 50%;
+    max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -319,23 +321,17 @@ Saito User List and Saito User
 
 /*  Regular Dense */
 
-.saito-user-list.saito-user-dense .saito-user {
-    height: 4rem;
 
-}
 
 .saito-user-list.saito-user-dense .saito-user:not(:last-child) {
-    margin-bottom: 1px;
+    margin-bottom: 1rem
 }
 
-.saito-user-list.saito-user-dense .saito-user:not(:last-child) {
-    margin-bottom: 1px;
-}
 
 
 .saito-user-list.saito-user-dense .saito-user>img {
-    height: 3.6rem;
-    width: 3.6rem;
+    height: 3.4rem;
+    width: 3.4rem;
     border-radius: 0;
     cursor: pointer;
     margin-right: 1rem;
@@ -358,18 +354,13 @@ Saito User List and Saito User
 
 
 /*  Rectangular  Dense */
-.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user {
-    height: 4rem;
-
-}
+.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user {}
 
 .saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
-    margin-bottom: 1px;
+    margin-bottom: 1rem
 }
 
-.saito-user-list.saito-user-dense.saito-user-rectangle .saito-user:not(:last-child) {
-    margin-bottom: 1px;
-}
+
 
 
 .saito-user-list.saito-user-dense.saito-user-rectangle .saito-user>img {
@@ -418,26 +409,58 @@ Saito User List and Saito User
     /* color: white; */
 }
 
-/* 
-@media screen and (max-width: 1200px) {
-    .saito-user p {
-        width: 15rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1.8rem;
-    }
-}
+
+@media screen and (max-width: 1200px) {}
 
 @media screen and (max-width: 768px) {
-    .saito-user p {
-        width: 15rem;
+
+
+
+
+    .saito-user-info {
+        width: 70%;
+
+
+    }
+
+    .saito-user-info span {
+        max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 1.8rem;
+
     }
-} */
+
+
+    .saito-user-list .saito-user>img {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+
+    .saito-user-list.saito-user-rectangle .saito-user-info {
+        width: 70%;
+
+    }
+
+    .saito-user-list.saito-user-rectangle .saito-user-info span {
+        max-width: 80%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+    }
+
+
+    .saito-user-list.saito-user-rectangle .saito-user>img {
+        width: 5rem;
+        height: 3.5rem;
+    }
+
+
+
+
+}
 
 @media screen and (max-width: 320px) {}
 
@@ -520,7 +543,7 @@ Left sidebar chatbox
 Saito Alert
 -----------------------------------------------------------------*/
 
-#alert-wrapper {
+#alert-wrapper-new {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -532,7 +555,7 @@ Saito Alert
     align-items: center;
 }
 
-#alert-shim {
+#alert-shim-new {
 
 
     margin: auto;
@@ -542,7 +565,7 @@ Saito Alert
 
 }
 
-#alert-box {
+#alert-box-new {
     height: 100%;
     width: 100%;
     display: flex;
@@ -556,13 +579,13 @@ Saito Alert
 
 }
 
-#alert-box i {
+#alert-box-new i {
     font-size: 3.3rem;
     margin-top: 1rem;
     color: var(--saito-primary);
 }
 
-.alert-message {
+.alert-message-new {
     align-self: center;
     justify-self: center;
     font-size: 2.5rem;
@@ -571,18 +594,18 @@ Saito Alert
 
 }
 
-.alert-message.prompt {
+.alert-message-new.prompt {
     font-size: 2.5rem;
     margin: 2rem 0;
 }
 
-.alert-prompt {
+.alert-prompt-new {
     margin-bottom: 1.5rem;
     align-self: stretch;
 
 }
 
-#alert-buttons {
+#alert-buttons-new {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
@@ -592,7 +615,7 @@ Saito Alert
 Saito site message
 -----------------------------------------------------------------*/
 
-#message-wrapper {
+#message-wrapper-new {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
@@ -601,7 +624,7 @@ Saito site message
     cursor: pointer;
 }
 
-#message-box {
+#message-box-new {
     background-color: var(--saito-white);
     height: 10rem;
     display: flex;
@@ -613,12 +636,12 @@ Saito site message
 }
 
 
-.message-message {
+.message-message-new {
     color: var(--saito-primary);
     font-size: 2.5rem;
 }
 
-#message-box i {
+#message-box-new i {
     font-size: 3.3rem;
     color: var(--saito-primary);
     margin-right: 1rem;

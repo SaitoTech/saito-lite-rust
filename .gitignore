@@ -57,8 +57,7 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-mods/chirp
-mods/chirp/*
+
 mods/forge
 mods/forge/*
 mods/citysim

@@ -14302,6 +14302,8 @@ handleSystemsMenuItem() {
 
   	this.game.queue.push("resolve\tsetinitiativeorder");
 
+console.log("SET INITIATIVE ORDER: " + JSON.stringify(initiative_order));
+
   	for (let i = initiative_order.length-1; i >= 0; i--) {
   	  if (this.game.players_info[initiative_order[i]-1].passed == 0) {
   	    this.game.queue.push("play\t"+initiative_order[i]);
