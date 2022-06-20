@@ -54,16 +54,16 @@ class NewDesignMain {
     const sitemsg_btn = document.querySelector('#sitemsg_btn');
 
     salert_btn.addEventListener('click', (e) => {
-      salert("Clicked Successfully");
+      salertNew("Clicked Successfully");
     })
     sprompt_btn.addEventListener('click', (e) => {
-      sprompt("Please insert something");
+      spromptNew("Please insert something");
     })
     sconfirm_btn.addEventListener('click', (e) => {
-      sconfirm("Activity Confirmed");
+      sconfirmNew("Activity Confirmed");
     })
     sitemsg_btn.addEventListener('click', (e) => {
-      siteMessage("New site message");
+      siteMessageNew("New site message");
     })
 
     // hamburger menu

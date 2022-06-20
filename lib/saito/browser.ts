@@ -40,8 +40,6 @@ class Browser {
       return 0;
     }
 
-console.log("LANGUAGE: " + this.returnPreferredLanguage());
-
     try {
       if (!document.hidden) {
         this.setActiveTab(1);
@@ -120,10 +118,10 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        console.log("Initializing Saito Node");
+        //console.log("Initializing Saito Node");
         return;
       } else {
-        console.info("Initializing Saito Light Client");
+        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -602,12 +600,9 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
         mouse_down_top = e.clientY;
 
         element_moved = false;
-        //console.log("Element Start Left: " + element_start_left);
-        //console.log("Element Start Top: " + element_start_top);
-        //console.log("Mouse Down Left: " + mouse_down_left);
-        //console.log("Mouse Down Top: " + mouse_down_top);
 
         document.onmouseup = function (e) {
+
           document.onmouseup = null;
           document.onmousemove = null;
 
@@ -715,7 +710,6 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
       };
     } catch (err) {
       console.error("error: " + err);
-      console.log(element_to_move, element_to_drag);
     }
   }
 
@@ -772,7 +766,7 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        console.log("Matomo module not present, cannot push event");
+        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -888,7 +882,6 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
   async captureScreenshot(callback = null) {
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
-      console.log("img: " + img);
       if (callback != null) {
         callback(img);
       }

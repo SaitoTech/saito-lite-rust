@@ -16,8 +16,7 @@ class Arcade extends ModTemplate {
     super(app);
 
     this.name = "Arcade";
-    this.description =
-      "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
+    this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
 
     this.events = ["chat-render-request"];
@@ -27,6 +26,7 @@ class Arcade extends ModTemplate {
     this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.initialization_timer = null;
+    this.services = [{ service: "arcade", domain: "saito" }];
 
     this.viewing_arcade_initialization_page = 0;
     this.viewing_game_homepage = ""; //// this.app.browser.returnURLParameter("game");
@@ -69,18 +69,6 @@ class Arcade extends ModTemplate {
         }
       }
     }
-
-    console.log('inside arcade receiveEvent');
-    console.log(type);
-
-    if (type == "league-create-btn-render-request") {
-      try {
-        let league_mod = this.app.modules.returnModule("League");
-        league_mod.render(this.app, "league-create-btn");
-      } catch (err) {
-        console.log("Err: " + err);
-      }
-    }
   }
 
   handleUrlParams(urlParams) {
@@ -94,17 +82,9 @@ class Arcade extends ModTemplate {
   renderArcadeMain() {
     if (this.browser_active == 1) {
       if (this.viewing_arcade_initialization_page == 0) {
-        //console.log("Rendering arcade");
-        //console.log(this.games);
         ArcadeMain.render(this.app, this);
         ArcadeMain.attachEvents(this.app, this);
-        
         if (this.viewing_game_homepage){
-          /*
-            The game page has browser/mobile dual funcationality attached to buttons in the sidebar and in the main
-            Buttons have same names and funcitonal attached through arcadegamesidebar
-            but since arcademain tends to get repeatedly rendered we need to keep reattaching events
-          */
           ArcadeGameSidebar.attachEvents(this.app, this);    
         }
       }      
@@ -119,12 +99,6 @@ class Arcade extends ModTemplate {
       ArcadeSidebar.render(this.app, this);
       ArcadeSidebar.attachEvents(this.app, this);
     }
-  }
-
-  returnServices() {
-    let services = [];
-    services.push({ service: "arcade", domain: "saito" });
-    return services;
   }
 
   respondTo(type = "") {
@@ -169,7 +143,6 @@ class Arcade extends ModTemplate {
     if (this.app.options.games != null) {
       for (let z = 0; z < this.app.options.games.length; z++) {
         let game = this.app.options.games[z];
-        if (this.debug){console.log("My game:",JSON.parse(JSON.stringify(game)));}
         if (game.over == 0 && (game.players_set != 1 || game.players.includes(app.wallet.returnPublicKey()) || game.accepted.includes(app.wallet.returnPublicKey()))) {
           this.addGameToOpenList(this.createGameTXFromOptionsGame(game));
         }
@@ -197,8 +170,6 @@ class Arcade extends ModTemplate {
   }
 
   checkGameDatabase(){
-    //For debugging
-    console.log("Querying all recent games regardless of status");
     let cutoff = new Date().getTime() - this.old_game_removal_delay;
     let sql = `SELECT * FROM games WHERE created_at > ${cutoff}`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql, (res) => {
@@ -211,7 +182,6 @@ class Arcade extends ModTemplate {
         }
       }
     ); 
-    
   }
 
   //
@@ -503,19 +473,15 @@ class Arcade extends ModTemplate {
       );
     }
        
+    // do not re-accept if game is really old (sanity check)
     for (let i = 0; i < this.app.options.games.length; i++) {
       if (this.app.options.games[i].id == txmsg.game_id) {
-        if (this.debug){console.log("game already created in wallet...");}
-        
         if (this.app.options.games[i].initializing == 0) { //Is that right, I don't know if this condition can be true
-          // is this old? exit
           let currentTime = new Date().getTime();
           if (currentTime - this.app.options.games[i].ts > 5000) {
-            console.log("TIME LIMIT: " + currentTime + " --- " + this.app.options.games[i].ts);
             return;
           }
         }
-
        return;
       }
     }
@@ -652,7 +618,6 @@ class Arcade extends ModTemplate {
         if (txmsg.module == "Arcade" && txmsg.request == "close") {
           if (this.debug) {console.log("onConfirmation: close request received");}
           this.closeGameInvite(blk, tx, conf, app);
-         
         }
 
         //
@@ -1029,7 +994,6 @@ class Arcade extends ModTemplate {
       this.renderArcadeMain();
     }
     if (this.debug) {
-      console.log("Is game state now either close or over?");
       this.checkGameDatabase();
     }
   }
@@ -1241,7 +1205,6 @@ class Arcade extends ModTemplate {
       console.info(err);
     }
     if (this.debug){ 
-      console.log("Is game status now active?");
       this.checkGameDatabase();
     }
   }

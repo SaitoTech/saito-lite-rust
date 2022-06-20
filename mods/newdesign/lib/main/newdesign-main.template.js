@@ -498,7 +498,7 @@ module.exports = (app) => {
               
                   <div class="saito-grid-1-1">
                       <div class="">
-                          <div class="saito-infobox saito-box-secondary ">
+                          <div class="saito-infobox saito-box-padding saito-box-secondary ">
                               <div class="saito-infobox-title">
                                   <h4> h4 Sub Heading </h4>
                                   <h3> h3 Sub Heading </h3>
@@ -521,7 +521,7 @@ module.exports = (app) => {
                           </div>
                       </div>
                       <div class="saito-padx-2">
-                          <div class="saito-infobox  saito-box-secondary ">
+                          <div class="saito-infobox saito-box-padding saito-box-secondary ">
                               <div class="saito-infobox-title">
                                   <h4> h4 Sub Heading </h4>
                                   <h3> h2 Sub Heading </h3>
@@ -820,7 +820,7 @@ module.exports = (app) => {
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
                   <h5> Saito UserList:  Default Size | Rectangular </h5>
-                      <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
+                      <div class="saito-user-list saito-user-rectangle saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
@@ -905,7 +905,7 @@ module.exports = (app) => {
                   </div>
                   <div class="saito-padx-3">
                   <h5> Saito UserList: Default Size |  Square </h5>
-                      <div class="saito-user-list saito-pad-2 saito-white-background  ">
+                      <div class="saito-user-list  saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
@@ -938,7 +938,7 @@ module.exports = (app) => {
               <div class="saito-grid-1-1">
                   <div class="saito-padx-3">
                   <h5> Saito UserList:  Small Size | Rectangular  </h5>
-                      <div class="saito-user-list saito-user-rectangle saito-user-dense saito-pad-2 saito-pad-2 saito-white-background ">
+                      <div class="saito-user-list saito-user-rectangle saito-user-dense saito-white-background ">
                           <div class="saito-user">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
@@ -1023,7 +1023,7 @@ module.exports = (app) => {
                   </div>
                   <div class="saito-padx-3">
                   <h5> Saito UserList:  Small Size | Square </h5>
-                      <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
+                      <div class="saito-user-list saito-user-dense saito-white-background  ">
                           <div class="saito-user ">
                               <img src="/saito/img/background.png" />
                               <div class="saito-user-info">
@@ -1103,11 +1103,11 @@ module.exports = (app) => {
                 <div class="saito-left-menu saito-marb-1">
                 <div class="saito-left-menu-header">
                         <h5> Chat </h5>
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                    </div>
                   <div class="saito-left-menu-body">
-                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-                  <div class="saito-user  saito-marb-2">
+                  <div class="saito-user-list saito-user-dense saito-white-background  ">
+                  <div class="saito-user ">
                       <img src="/saito/img/background.png" />
                       <div class="saito-user-info">
                           <p>Saito Community Chat </p>
@@ -1171,11 +1171,11 @@ module.exports = (app) => {
                 <div class="saito-left-menu saito-marb-1">
                 <div class="saito-left-menu-header">
                         <h5> Chat </h5>
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                    </div>
                   <div class="saito-left-menu-body">
-                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-                  <div class="saito-user  saito-marb-2">
+                  <div class="saito-user-list saito-user-dense  saito-white-background  ">
+                  <div class="saito-user">
                       <img src="/saito/img/background.png" />
                       <div class="saito-user-info">
                           <p>Saito Community Chat </p>
@@ -1204,7 +1204,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
             
-                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1321,11 +1321,11 @@ module.exports = (app) => {
              <div class="saito-left-menu saito-marb-1">
              <div class="saito-left-menu-header">
                      <h5> Chat </h5>
-                     <i class="fas fa-plus"></i>
+                     <i class="fas fa-ellipsis-v"></i>
                 </div>
                <div class="saito-left-menu-body">
-               <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-               <div class="saito-user  saito-marb-2">
+               <div class="saito-user-list saito-user-dense saito-white-background  ">
+               <div class="saito-user ">
                    <img src="/saito/img/background.png" />
                    <div class="saito-user-info">
                        <p>Saito Community Chat </p>
@@ -1389,11 +1389,11 @@ module.exports = (app) => {
                 <div class="saito-left-menu saito-marb-1">
                 <div class="saito-left-menu-header">
                         <h5> Chat </h5>
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                    </div>
                   <div class="saito-left-menu-body">
-                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-                  <div class="saito-user  saito-marb-2">
+                  <div class="saito-user-list saito-user-dense saito-white-background  ">
+                  <div class="saito-user ">
                       <img src="/saito/img/background.png" />
                       <div class="saito-user-info">
                           <p>Saito Community Chat </p>
@@ -1422,7 +1422,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
             
-                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1455,9 +1455,13 @@ module.exports = (app) => {
               </div>
               <div class="saito-right-sidebar">
                     <div class="saito-right-sidebar-content">
-                    <div class="saito-search-bar">
+                    <div class="saito-search-bar saito-marb-2">
                     <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
                     </div>
+                    <div class="saito-calendar-small">
+                   
+                    </div>
+  
                     </div>
                    
               </div>
@@ -1512,11 +1516,11 @@ module.exports = (app) => {
              <div class="saito-left-menu saito-marb-1">
              <div class="saito-left-menu-header">
                      <h5> Chat </h5>
-                     <i class="fas fa-plus"></i>
+                     <i class="fas fa-ellipsis-v"></i>
                 </div>
                <div class="saito-left-menu-body">
-               <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-               <div class="saito-user  saito-marb-2">
+               <div class="saito-user-list saito-user-dense saito-white-background  ">
+               <div class="saito-user ">
                    <img src="/saito/img/background.png" />
                    <div class="saito-user-info">
                        <p>Saito Community Chat </p>
@@ -1580,11 +1584,11 @@ module.exports = (app) => {
                 <div class="saito-left-menu saito-marb-1">
                 <div class="saito-left-menu-header">
                         <h5> Chat </h5>
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                    </div>
                   <div class="saito-left-menu-body">
-                  <div class="saito-user-list saito-user-dense saito-pad-2 saito-white-background  ">
-                  <div class="saito-user  saito-marb-2">
+                  <div class="saito-user-list saito-user-dense saito-white-background  ">
+                  <div class="saito-user ">
                       <img src="/saito/img/background.png" />
                       <div class="saito-user-info">
                           <p>Saito Community Chat </p>
@@ -1613,7 +1617,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
    
-                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">
@@ -1658,7 +1662,7 @@ module.exports = (app) => {
 
               <div class="saito-main-content">
    
-                <div class="saito-user-list saito-user-rectangle  saito-pad-2 saito-white-background ">
+                <div class="saito-user-list saito-user-rectangle saito-white-background ">
                 <div class="saito-user">
                     <img src="/saito/img/doom.jpg" />
                     <div class="saito-user-info">

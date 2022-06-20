@@ -1188,15 +1188,15 @@ returnFactionSheet(imperium_self, player=null) {
 	  `;
 	}
       }
-      //html += `</div>`;
+      html += `</div>`;
     }
 
     //
     // PLANET CARDS
     //
-    //html += `
-    //  <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
-    //`;
+    html += `
+      <div class="faction_sheet_planet_card_box" id="faction_sheet_planet_card_box">
+    `;
   
     let pc = imperium_self.returnPlayerPlanetCards(player);
     for (let b = 0; b < pc.length; b++) {
@@ -1373,7 +1373,6 @@ updateLeaderboard() {
 
 
 updateSectorGraphics(sector) {
-
 
   //
   // handle both 'sector41' and '2_1'

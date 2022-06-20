@@ -263,9 +263,8 @@
         nickname.push(imperium_self.returnFactionNickname((ii+1)));
       }
       this.menu.addChatMenu(app, this, nickname, fullname);
-
     } catch (err) {
-console.log("error initing chat: " + err);
+      console.log("error initing chat: " + err);
     }
 
     //
@@ -284,6 +283,7 @@ console.log("error initing chat: " + err);
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
+    this.hud.auto_sizing = 0;
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
@@ -661,11 +661,9 @@ console.log("error initing chat: " + err);
     // if this is a new game, gainTechnology that we start with
     //
     if (is_this_a_new_game == 1) {
-      for (let i = 0; i < z.length; i++) {
-        for (let k = 0; k < this.game.players_info.length; k++) {
-          for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
-            z[i].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
-          }
+      for (let k = 0; k < this.game.players_info.length; k++) {
+        for (let kk = 0; kk < this.game.players_info[k].tech.length; kk++) {
+          this.tech[this.game.players_info[k].tech[kk]].gainTechnology(this, (k+1), this.game.players_info[k].tech[kk]);
         }
       }
       for (let k = 0; k < this.game.players_info.length; k++) {
