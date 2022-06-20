@@ -8,7 +8,7 @@ module.exports = (app, mod) => {
 
     <div class="saito-page-content">
       <div class="saito-left-sidebar-hamburger">
-        <i class="fas fa-bars"></i>
+        <i id='icon' class="fas fa-bars"></i>
       </div>
       <div class="saito-left-sidebar-mobile">
         <div class="saito-left-menu saito-marb-1">
@@ -159,7 +159,7 @@ module.exports = (app, mod) => {
 
         <div id="chirp-input-container">
           <div class="chirp-input-profile">
-            <img src="/chirp/images/david.jpeg" />
+            <img src="/redsquare/images/david.jpeg" />
           </div>
           <div class="">
             <textarea placeholder="What's happening"></textarea>
@@ -169,7 +169,7 @@ module.exports = (app, mod) => {
         <div id="chirp-list">
           <div class="chirp-item">
             <div class="chirp-item-profile">
-              <img src="/chirp/images/david.jpeg" />
+              <img src="/redsquare/images/david.jpeg" />
             </div>
             <div class="chirp-item-contents">
               <div class="chirp-user">
@@ -188,14 +188,14 @@ module.exports = (app, mod) => {
                 <p> Saito x Tesla . A sneak peak of the conversation between David Lancashire and Elon Musk</p>
               </div>
               <div class="chirp-image-container">
-                <img src="/chirp/images/nice-car.jpg" />
+                <img src="/redsquare/images/nice-car.jpg" />
               </div>
             </div>
           </div>
 
           <div class="chirp-item">
             <div class="chirp-item-profile">
-              <img src="/chirp/images/richard.jpeg" />
+              <img src="/redsquare/images/richard.jpeg" />
             </div>
             <div class="chirp-item-contents">
               <div class="chirp-user">
@@ -214,7 +214,7 @@ module.exports = (app, mod) => {
                 <p> Saito is the future!</p>
               </div>
               <div class="chirp-image-container">
-                <img src="/chirp/images/field.jpg" />
+                <img src="/redsquare/images/field.jpg" />
               </div>
             </div>
           </div>

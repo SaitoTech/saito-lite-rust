@@ -543,7 +543,7 @@ Left sidebar chatbox
 Saito Alert
 -----------------------------------------------------------------*/
 
-#alert-wrapper {
+#alert-wrapper-new {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -555,7 +555,7 @@ Saito Alert
     align-items: center;
 }
 
-#alert-shim {
+#alert-shim-new {
 
 
     margin: auto;
@@ -565,7 +565,7 @@ Saito Alert
 
 }
 
-#alert-box {
+#alert-box-new {
     height: 100%;
     width: 100%;
     display: flex;
@@ -579,13 +579,13 @@ Saito Alert
 
 }
 
-#alert-box i {
+#alert-box-new i {
     font-size: 3.3rem;
     margin-top: 1rem;
     color: var(--saito-primary);
 }
 
-.alert-message {
+.alert-message-new {
     align-self: center;
     justify-self: center;
     font-size: 2.5rem;
@@ -594,18 +594,18 @@ Saito Alert
 
 }
 
-.alert-message.prompt {
+.alert-message-new.prompt {
     font-size: 2.5rem;
     margin: 2rem 0;
 }
 
-.alert-prompt {
+.alert-prompt-new {
     margin-bottom: 1.5rem;
     align-self: stretch;
 
 }
 
-#alert-buttons {
+#alert-buttons-new {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
@@ -615,7 +615,7 @@ Saito Alert
 Saito site message
 -----------------------------------------------------------------*/
 
-#message-wrapper {
+#message-wrapper-new {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
@@ -624,7 +624,7 @@ Saito site message
     cursor: pointer;
 }
 
-#message-box {
+#message-box-new {
     background-color: var(--saito-white);
     height: 10rem;
     display: flex;
@@ -636,12 +636,12 @@ Saito site message
 }
 
 
-.message-message {
+.message-message-new {
     color: var(--saito-primary);
     font-size: 2.5rem;
 }
 
-#message-box i {
+#message-box-new i {
     font-size: 3.3rem;
     color: var(--saito-primary);
     margin-right: 1rem;
