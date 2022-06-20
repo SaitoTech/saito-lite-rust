@@ -1,5 +1,5 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const LeagueMain = require('./lib/main/league-main');
+const LeagueMainContainer = require('./lib/main/container');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
 class League extends ModTemplate {
@@ -12,16 +12,19 @@ class League extends ModTemplate {
     this.description = "Leaderboards and leagues for Saito Games";
     this.categories = "Games Entertainment";
 
-    this.leagues = {};
     this.games = [];
     this.header = new SaitoHeader(app);
-    this.main = new LeagueMain(app, this);
+    this.main = new LeagueMainContainer(app, this);
+
   }
 
   initialize(app) {
+
     super.initialize(app);
 
-    // get all game modules that responds to arcade
+    //
+    // all games that responds to arcade
+    //
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
     });
@@ -32,17 +35,29 @@ class League extends ModTemplate {
     this.main.render(app, this);
   }
 
+
   async onConfirmation(blk, tx, conf, app) {
+
     let txmsg = tx.returnMessage();
     
     try {
       if (conf == 0) {
-
-        if (txmsg.module === "League" && txmsg.request == "create_league") {
+        if (txmsg.request == "create_league") {
+          this.receiveMatchTransaction(blk, tx, conf, app);
+        }
+        if (txmsg.request == "create_ranked_game") {
+          this.receiveMatchTransaction(blk, tx, conf, app);
+        }
+        if (txmsg.request == "create_player_join") {
+          this.receiveMatchTransaction(blk, tx, conf, app);
+        }
+        if (txmsg.request == "create_league") {
+          this.receiveMatchTransaction(blk, tx, conf, app);
+        }
+        if (txmsg.request == "create_league") {
           this.receiveMatchTransaction(blk, tx, conf, app);
         }
       }
-
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }

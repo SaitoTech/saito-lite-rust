@@ -1,4 +1,4 @@
-module.exports = (game) => {
+module.exports = (app, mod, game) => {
 
   let html = `
       <div class="league-avl-game-item">
