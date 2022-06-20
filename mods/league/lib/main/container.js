@@ -10,9 +10,10 @@ class Container {
     this.mod = mod;
 
     this.leagues = [];
-    for (let i = 0; i < this.mod.games.length; i++) { 
-      this.leagues.push(new LeagueComponentAdminBox(app, mod, this.mod.games[i])); 
-    }
+
+    this.mod.games.forEach((game, i) => {
+        this.leagues.push(new LeagueComponentAdminBox(app, mod, game));
+    });
   }
 
   render(app, mod) {

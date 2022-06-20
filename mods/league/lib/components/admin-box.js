@@ -25,7 +25,7 @@ class AdminBox {
         formData.game = e.target.game.value;
         formData.type = e.target.type.value;
 
-        mod.createMatchTransaction(formData);
+        mod.createTransaction(formData);
       });
     }
   }

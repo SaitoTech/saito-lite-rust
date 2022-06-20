@@ -14,8 +14,6 @@ class League extends ModTemplate {
 
     this.games = [];
     this.header = new SaitoHeader(app);
-    this.main = new LeagueMainContainer(app, this);
-
   }
 
   initialize(app) {
@@ -26,8 +24,11 @@ class League extends ModTemplate {
     // all games that responds to arcade
     //
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
-        this.games.push(mod);
+        this.games[i] = mod;
     });
+
+    // initalizing container here, constructor of container depends on this.games
+    this.main = new LeagueMainContainer(app, this)
   }
 
   render(app) {
@@ -43,19 +44,19 @@ class League extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request == "create_league") {
-          this.receiveMatchTransaction(blk, tx, conf, app);
+          this.receiveTransaction(blk, tx, conf, app);
         }
         if (txmsg.request == "create_ranked_game") {
-          this.receiveMatchTransaction(blk, tx, conf, app);
+          this.receiveTransaction(blk, tx, conf, app);
         }
         if (txmsg.request == "create_player_join") {
-          this.receiveMatchTransaction(blk, tx, conf, app);
+          this.receiveTransaction(blk, tx, conf, app);
         }
         if (txmsg.request == "create_league") {
-          this.receiveMatchTransaction(blk, tx, conf, app);
+          this.receiveTransaction(blk, tx, conf, app);
         }
         if (txmsg.request == "create_league") {
-          this.receiveMatchTransaction(blk, tx, conf, app);
+          this.receiveTransaction(blk, tx, conf, app);
         }
       }
     } catch (err) {
@@ -63,7 +64,7 @@ class League extends ModTemplate {
     }
   }
 
-  createMatchTransaction(data) {
+  createTransaction(data) {
     try {
         let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -85,7 +86,7 @@ class League extends ModTemplate {
     }
   } 
 
-  async receiveMatchTransaction(blk, tx, conf, app) {
+  async receiveTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
     let game  = txmsg.game;
     let type  = txmsg.type;
