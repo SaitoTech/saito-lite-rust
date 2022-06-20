@@ -32,28 +32,38 @@ class Staff extends ModTemplate {
 
     render(app, mod) {
         console.log("value length: " + document.getElementById('staff_register').innerHTML);
-        if (app.BROWSER == 1) {
+        if (this.header == null) {
             this.header = new SaitoHeader(app, this);
         }
-        document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
-        if (document.getElementById('staff_register').innerHTML.length == 0) {
-            this.clearEvents();
-        }
-        this.addEvents(this.app);
-        this.renderSidebar();
-        document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
-        document.getElementById("isRegistered").checked = this.isThisRegistered;
-        console.log(this.isThisRegistered);
-        if (this.isThisRegistered) {
-            console.log("went here to hide add staff");
-            document.getElementById("add_staff").style.display = "none";
-            document.getElementById("remove_staff").style.display = "block";
-        } else {
-            console.log("went here to hide remove staff");
-            document.getElementById("add_staff").style.display = "block";
-            document.getElementById("remove_staff").style.display = "none";
+        if (typeof app != "undefined") {
+            this.header.render(app, this);
+            this.header.attachEvents(app, this);
+    
+            document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
+            if (document.getElementById('staff_register').innerHTML.length == 0) {
+                this.clearEvents();
+            }
+            this.addEvents(this.app);
+            //this.renderSidebar();
+            document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
+            document.getElementById("isRegistered").checked = this.isThisRegistered;
+            console.log(this.isThisRegistered);
+            if (this.isThisRegistered) {
+                console.log("went here to hide add staff");
+                document.getElementById("add_staff").style.display = "none";
+                document.getElementById("remove_staff").style.display = "block";
+            } else {
+                console.log("went here to hide remove staff");
+                document.getElementById("add_staff").style.display = "block";
+                document.getElementById("remove_staff").style.display = "none";
+            }
+    
         }
     }
+
+    // you don't need these functions.
+    // just add the events to the buttons and leave them on the hidden buttons. 
+    // hidden buttons are not clickable - there is no issue.
 
     clearEvents() {
         document.querySelector('#add_staff').removeEventListener('click', this.addstaff);
@@ -70,12 +80,13 @@ class Staff extends ModTemplate {
     }
 
     addstaff(app) {
-    var publicKey = app.wallet.returnPublicKey();
-    if (publicKey) {
-        this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
+        var publicKey = app.wallet.returnPublicKey();
+        if (publicKey) {
+            this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
         }
     }
 
+    /*
     renderSidebar() {
         if (this.viewing_game_homepage) {
             ArcadeGameSidebar.render(this.app, this);
@@ -85,14 +96,14 @@ class Staff extends ModTemplate {
             ArcadeSidebar.attachEvents(this.app, this);
         }
     }
-
+    */
 
     async checkRecord(publickey) {
         sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
         this.sendPeerDatabaseRequestWithFilter(this.name, sql,
             (res) => {
                 if (res) {
-                    if (res.rows) { 
+                    if (res.rows) {
                         if (res.rows.length > 0) {
                             this.isThisRegistered = true;
                         } else {
@@ -139,8 +150,8 @@ class Staff extends ModTemplate {
             if (conf == 0) {
                 if (txmsg.module == this.name) {
                     if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
-                      this.checkRecord(this.app.wallet.returnPublicKey());
-                  }
+                        this.checkRecord(this.app.wallet.returnPublicKey());
+                    }
                 }
             }
         }
