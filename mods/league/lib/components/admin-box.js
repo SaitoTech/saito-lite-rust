@@ -16,9 +16,8 @@ class AdminBox {
 
 
   attachEvents(app, mod) {
-
-    if (document.getElementById('create-form')) {
-        document.getElementById('create-form').addEventListener('submit', function(e){
+    Array.from(document.getElementsByClassName('league-main-create-form')).forEach(box => {
+      box.onsubmit = (e) => {
         e.preventDefault();
 
         let formData = {};
@@ -26,8 +25,8 @@ class AdminBox {
         formData.type = e.target.type.value;
 
         mod.createTransaction(formData);
-      });
-    }
+      }
+    });
   }
 }
 

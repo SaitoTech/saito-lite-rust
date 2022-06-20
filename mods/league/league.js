@@ -24,7 +24,7 @@ class League extends ModTemplate {
     // all games that responds to arcade
     //
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
-        this.games[i] = mod;
+        this.games.push(mod);
     });
 
     // initalizing container here, constructor of container depends on this.games
@@ -41,6 +41,9 @@ class League extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     
+    console.log('inside onConfirmation');
+    console.log(txmsg);
+
     try {
       if (conf == 0) {
         if (txmsg.request == "create_league") {
