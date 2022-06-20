@@ -36,6 +36,40 @@ class League extends ModTemplate {
     this.main.render(app, this);
   }
 
+  onPeerHandshakeComplete(app, peer) {
+
+    app.modules.returnModule("League").sendPeerDatabaseRequestWithFilter(
+      "League" ,
+      `SELECT * FROM leagues desc LIMIT 100` ,
+      (res) => {
+        if (res.rows) {
+            res.rows.forEach(row => {
+
+              console.log('row from database');
+              console.log(row);
+
+              // let player = "other";
+              // if (row.publickey == app.wallet.returnPublicKey()) { player = "me"; }
+              // let player_identifier = app.keys.returnIdentifierByPublicKey(row.publickey, true);
+              // if (app.crypto.isPublicKey(player_identifier)) { this.identifiers_to_fetch.push(player_identifier); }
+
+              // leaderboard_self.rankings[row.module].push({
+              //   "address": row.publickey ,
+              //   "publickey": app.keys.returnIdentifierByPublicKey(row.publickey, true),
+              //   "player": player,
+              //   "games": row.games,
+              //   "ranking": row.ranking,
+              // });
+
+            });
+          } else {
+          console.log('No leagues exists');
+        }
+      }
+    );
+
+  }
+
 
   async onConfirmation(blk, tx, conf, app) {
 
@@ -53,12 +87,6 @@ class League extends ModTemplate {
           this.receiveTransaction(blk, tx, conf, app);
         }
         if (txmsg.request == "create_player_join") {
-          this.receiveTransaction(blk, tx, conf, app);
-        }
-        if (txmsg.request == "create_league") {
-          this.receiveTransaction(blk, tx, conf, app);
-        }
-        if (txmsg.request == "create_league") {
           this.receiveTransaction(blk, tx, conf, app);
         }
       }
@@ -107,6 +135,7 @@ class League extends ModTemplate {
       $type: type
     };
     await app.storage.executeDatabase(sql, params, "league");
+    console.log('league created');
     return;
   }
 
