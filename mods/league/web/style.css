@@ -1,0 +1,45 @@
+body {
+	background-color: #343542;
+	color: #fff;
+    overflow-y: scroll;
+    padding-bottom: 50px;
+}
+
+.league-main-container {
+	position: relative;
+    width: 90%;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 15vh;
+}
+
+.league-main-container-games, .league-component-existing-league-box{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5vh;
+    flex-wrap: wrap;
+}
+
+.league-component-admin-box {
+	width: 26%;
+    margin-bottom: 5vh;
+    border-radius: 5px;
+    background-color: #3b4458;
+    padding: 10px;
+}
+
+.league-component-admin-box img {
+	width: 150px;
+}
+
+.league-component-admin-box h3 {
+
+} 
+
+.league-component-existing-league .para{
+    margin-bottom: 5vh;
+}
+
+.league-component-existing-league-box {
+    border-bottom: 1px solid #fff;
+}

@@ -385,6 +385,8 @@ class Browser {
 
   addElementToDom(html, id = null) {
     const el = document.createElement("div");
+      el.classList.add(classname);
+    }
     if (id == null) {
       document.body.appendChild(el);
     } else {
@@ -602,7 +604,6 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
-
           document.onmouseup = null;
           document.onmousemove = null;
 

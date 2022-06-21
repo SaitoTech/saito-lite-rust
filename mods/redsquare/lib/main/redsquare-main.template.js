@@ -3,8 +3,7 @@ module.exports = (app, mod) => {
 
   return `
 
-    <div id="redsquare-main">
-    <div id="saito-container" id="container ">
+    <div class="saito-container">
 
     <div class="saito-page-content">
       <div class="saito-left-sidebar-hamburger">
@@ -239,7 +238,6 @@ module.exports = (app, mod) => {
     </div>
 
   </div>
-    </div>
 
   `;
 
