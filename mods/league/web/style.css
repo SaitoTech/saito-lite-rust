@@ -1,6 +1,8 @@
 body {
 	background-color: #343542;
 	color: #fff;
+    overflow-y: scroll;
+    padding-bottom: 50px;
 }
 
 .league-main-wrapper {
@@ -33,3 +35,7 @@ body {
 .league-avl-game-item h3 {
 
 } 
+
+.league-component-existing-league .para{
+    margin-bottom: 5vh;
+}

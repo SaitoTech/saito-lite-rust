@@ -20,11 +20,17 @@ class AdminBox {
       box.onsubmit = (e) => {
         e.preventDefault();
 
-        let formData = {};
-        formData.game = e.target.game.value;
-        formData.type = e.target.type.value;
+        let formData = {
+          module: "League",
+          game: e.target.game.value,
+          request: "create_league",
+          type: e.target.type.value, // private or public
+          timestamp: new Date().getTime()
+        };
 
         mod.createTransaction(formData);
+        alert('League created');
+        location.reload();
       }
     });
   }

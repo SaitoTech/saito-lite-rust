@@ -1,5 +1,6 @@
 const LeagueMainContainerTemplate    = require("./container.template");
 const LeagueComponentAdminBox = require("./../components/admin-box");
+const LeagueComponentExistingLeague = require("./../components/existing-league");
 
 
 class Container {
@@ -10,28 +11,41 @@ class Container {
     this.mod = mod;
 
     this.leagues = [];
+    this.existingLeaguesComponents = [];
 
     this.mod.games.forEach((game, i) => {
         this.leagues.push(new LeagueComponentAdminBox(app, mod, game));
     });
   }
 
-  render(app, mod) {
+  render(app, mod, template=null) {
 
     //
     // render main template
     //
-    if (!document.getElementById("league-main")) {
+    if (!document.getElementById("league-main-wrapper")) {
       app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
     }
 
     //
     // render league boxes
     //
-    for (let i = 0; i < this.leagues.length; i++) {
-      this.leagues[i].render(app, mod);
+    if (template == "container") {
+      for (let i = 0; i < this.leagues.length; i++) {
+        this.leagues[i].render(app, mod);
+      }
     }
 
+    //
+    // render existing league componenets
+    //
+    if (template == "existing_leagues") { 
+      this.mod.existingLeaguesDb.forEach((game, i) => {
+
+        this.existingLeaguesComponents.push(new LeagueComponentExistingLeague(app, mod, game));
+        this.existingLeaguesComponents[i].render(app, mod);
+      });
+    }
   }
 }
 
