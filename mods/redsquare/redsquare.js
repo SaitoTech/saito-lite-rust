@@ -25,8 +25,6 @@ class RedSquare extends ModTemplate {
     super.render(app);
     this.main.render(app, this);
     this.header.render(app, this);
-
-
   }
 
 }

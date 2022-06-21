@@ -602,7 +602,6 @@ class Browser {
         element_moved = false;
 
         document.onmouseup = function (e) {
-
           document.onmouseup = null;
           document.onmousemove = null;
 
