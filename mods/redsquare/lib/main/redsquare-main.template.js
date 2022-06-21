@@ -3,8 +3,6 @@ module.exports = (app, mod) => {
 
   return `
 
-    <div class="saito-container">
-
     <div class="saito-page-content">
       <div class="saito-left-sidebar-hamburger">
         <i id='icon' class="fas fa-bars"></i>
@@ -228,7 +226,6 @@ module.exports = (app, mod) => {
             <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
           </div>
           <div class="saito-calendar-small">
-
           </div>
 
         </div>
@@ -236,8 +233,6 @@ module.exports = (app, mod) => {
       </div>
 
     </div>
-
-  </div>
 
   `;
 

@@ -385,8 +385,6 @@ class Browser {
 
   addElementToDom(html, id = null) {
     const el = document.createElement("div");
-      el.classList.add(classname);
-    }
     if (id == null) {
       document.body.appendChild(el);
     } else {
