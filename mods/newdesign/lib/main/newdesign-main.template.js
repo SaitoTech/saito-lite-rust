@@ -573,7 +573,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3">
-              <div class="saito-menu-list saito-menu-right  saito-white-background">
+              <div class="saito-menu-list right  saito-white-background">
                 <ul>
                   <li>
                     <i class="far fa-address-card "> </i>
@@ -591,7 +591,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3 ">
-              <div class="saito-menu-list saito-menu-right  saito-white-background">
+              <div class="saito-menu-list right  saito-white-background">
                 <ul>
                   <li>
                     <i class="far fa-address-card "> </i>
@@ -630,7 +630,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3">
-              <div class="saito-menu-list saito-menu-right  rounded saito-white-background  ">
+              <div class="saito-menu-list right  rounded saito-white-background  ">
                 <ul>
                   <li>
                     <i class="far fa-address-card "> </i>
@@ -648,7 +648,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3 ">
-              <div class="saito-menu-list  saito-menu-right  rounded saito-white-background">
+              <div class="saito-menu-list  right  rounded saito-white-background">
                 <ul>
                   <li>
                     <i class="far fa-address-card "> </i>
@@ -688,7 +688,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3">
-              <div class="saito-menu-list saito-menu-right rounded   saito-white-background">
+              <div class="saito-menu-list right rounded   saito-white-background">
                 <ul>
                   <li>
 
@@ -706,7 +706,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3 ">
-              <div class="saito-menu-list  saito-menu-right rounded  saito-white-background">
+              <div class="saito-menu-list  right rounded  saito-white-background">
                 <ul>
                   <li>
 
@@ -727,7 +727,7 @@ module.exports = (app) => {
           <h5> Saito Menu : Small Size | Left Aligned | Right Aligned | Without icon | Without Border Radius </h5>
           <div class="saito-grid-1-1-1">
             <div class="saito-padx-3 ">
-              <div class="saito-menu-list saito-menu-dense saito-white-background ">
+              <div class="saito-menu-list dense saito-white-background ">
                 <ul>
                   <li>
 
@@ -753,7 +753,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3">
-              <div class="saito-menu-list saito-menu-right saito-menu-dense saito-white-background ">
+              <div class="saito-menu-list right dense saito-white-background ">
                 <ul>
                   <li>
 
@@ -779,7 +779,7 @@ module.exports = (app) => {
               </div>
             </div>
             <div class="saito-padx-3 ">
-              <div class="saito-menu-list saito-menu-right saito-menu-dense saito-white-background ">
+              <div class="saito-menu-list right dense saito-white-background ">
                 <ul>
                   <li>
 
@@ -1067,7 +1067,7 @@ module.exports = (app) => {
 
               </div>
               <div>
-                <div class="saito-menu-list saito-menu-dense ">
+                <div class="saito-menu-list dense ">
                   <ul>
                     <li>
 
@@ -1209,7 +1209,7 @@ module.exports = (app) => {
 
           </div>
           <div>
-            <div class="saito-menu-list saito-menu-dense ">
+            <div class="saito-menu-list dense ">
               <ul>
                 <li>
 
@@ -1378,7 +1378,7 @@ module.exports = (app) => {
 
           </div>
           <div>
-            <div class="saito-menu-list saito-menu-dense ">
+            <div class="saito-menu-list dense ">
               <ul>
                 <li>
 

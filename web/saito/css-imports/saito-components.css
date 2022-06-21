@@ -187,15 +187,15 @@ Saito Menu
 
 }
 
-.saito-menu-list.saito-menu-right>ul>li {
+.saito-menu-list.right>ul>li {
     flex-direction: row-reverse;
 }
 
-.saito-menu-list.saito-menu-right>ul>li>span {
+.saito-menu-list.right>ul>li>span {
     margin-left: 0;
 }
 
-.saito-menu-list.saito-menu-right>ul>li>i+span {
+.saito-menu-list.right>ul>li>i+span {
     margin-right: 2rem;
 }
 

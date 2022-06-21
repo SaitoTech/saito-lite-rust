@@ -29,9 +29,6 @@ class RedSquare extends ModTemplate {
 
     // saito-container added and all rendered
     super.render(app);
-
-    this.main.render(app, this);
-    this.header.render(app, this);
   }
 
 }
