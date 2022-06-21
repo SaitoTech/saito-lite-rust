@@ -40,7 +40,7 @@ class Container {
     // render existing league componenets
     //
     if (template == "existing_leagues") { 
-      this.mod.existingLeaguesDb.forEach((game, i) => {
+      this.mod.leagues.forEach((game, i) => {
 
         this.existingLeaguesComponents.push(new LeagueComponentExistingLeague(app, mod, game));
         this.existingLeaguesComponents[i].render(app, mod);

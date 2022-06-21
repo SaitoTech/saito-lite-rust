@@ -18,17 +18,8 @@ class ExistingLeague {
     Array.from(document.getElementsByClassName('league-component-existing-league-join')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-
         let league_id = btn.getAttribute('data-league-id');
-
-        let data = {
-          module: "League",
-          league_id: league_id,
-          request: "join_league",
-          timestamp: new Date().getTime()
-        };
-
-        mod.createTransaction(data);
+	mod.sendJoinLeagueTransaction(league_id);
         alert('League joined');
         location.reload();
       }

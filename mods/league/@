@@ -19,7 +19,7 @@ class League extends ModTemplate {
     this.leagues = [];
 
     //
-    // used in onPeerHandshakeComplete
+    // used in onPeerHandshakeComplete -- WithFilter to control 
     //
     this.services = [{ service : "leagues" , domain : "saito" }];
 
@@ -78,7 +78,7 @@ class League extends ModTemplate {
 	  //
           // re-render component
 	  //
-          this.renderComponent(app, "existing-leagues");
+          this.render(app, this, "existing-leagues");
 
         } else {
 	}
@@ -125,9 +125,8 @@ class League extends ModTemplate {
 
   //
   // TODO -- consistency in variable names -- game_id not game in DB etc.
-  // -- game should be game_module, i imagine
   //
-  sendCreateLeagueTransaction(game_id="", type="public") {
+  async sendCreateLeagueTransaction(game_id="", type="public") {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -170,7 +169,7 @@ class League extends ModTemplate {
 
 
 
-  sendJoinLeagueTransaction(league_id="") {
+  async sendJoinLeagueTransaction(league_id="") {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 

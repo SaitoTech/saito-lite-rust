@@ -17,20 +17,13 @@ class AdminBox {
 
   attachEvents(app, mod) {
     Array.from(document.getElementsByClassName('league-component-admin-box-form')).forEach(box => {
-      box.onsubmit = (e) => {
-        e.preventDefault();
-
-        let formData = {
-          module: "League",
-          game: e.target.game.value,
-          request: "create_league",
-          type: e.target.type.value, // private or public
-          timestamp: new Date().getTime()
-        };
-
-        mod.createTransaction(formData);
-        alert('League created');
-        location.reload();
+      async () => {
+        box.onsubmit = (e) => {
+          e.preventDefault();
+   	  mod.sendCreateLeagueTransaction(e.target.game.value, e.target.type.value);
+          alert('League created');
+          location.reload();
+        }
       }
     });
   }
