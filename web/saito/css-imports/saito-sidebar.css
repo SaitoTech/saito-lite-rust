@@ -2,8 +2,17 @@
 Left Sidebar
 -----------------------------------------------------------------*/
 
+.saito-sidebar.right>div:not(:last-child) {
+    margin-bottom: 1rem;
+}
 
-.saito-left-menu-header {
+.saito-sidebar .section {}
+
+.saito-sidebar .section:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.saito-sidebar .section>div:nth-child(1) {
     background-color: var(--saito-white);
     border: 1px solid var(--saito-primary);
     padding-top: 1rem;
@@ -14,15 +23,20 @@ Left Sidebar
     align-items: center;
     border-right: none;
     border-left: none;
-
-
 }
 
-.saito-left-menu-header h5 {
+/* header */
+.saito-sidebar .section>div:nth-child(1) h5 {
     font-size: 1.92rem
 }
 
-.saito-left-menu-header i {
+.saito-sidebar .section>div:nth-child(1) h5 {
+    font-size: 1.92rem
+}
+
+
+
+.saito-sidebar .section>div:nth-child(1) i {
     font-size: 1.92rem;
     margin-left: auto;
     cursor: pointer;
@@ -30,56 +44,9 @@ Left Sidebar
 }
 
 
-.saito-left-menu-body {
+/* body */
+.saito-sidebar .section>div:nth-child(2) {
     background-color: var(--saito-white);
-}
-
-
-
-
-.saito-chat-room-list {}
-
-.saito-chat-room {
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: min-content minmax(35%, 1fr) min-content;
-    padding: 1rem 0;
-    cursor: pointer;
-
-}
-
-.saito-chat-room:hover {
-    filter: opacity(.8);
-}
-
-.saito-chat-room>img {
-    width: 5rem;
-    height: 5rem;
-    border-radius: .5rem;
-}
-
-.saito-chat-room>div {
-    display: flex;
-    flex-direction: column;
-
-    width: 100%;
-
-}
-
-
-.saito-chat-room>div>p:first-child {
-    font-weight: 1000;
-    margin-bottom: .5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-
-
-}
-
-.saito-chat-room>p {
-    font-weight: 1000;
 }
 
 
@@ -88,13 +55,6 @@ Left Sidebar
 /* ----------------------------------------------------------------
 Right sidebar 
 -----------------------------------------------------------------*/
-
-.saito-right-sidebar-content {
-    min-height: 30vh;
-    width: 26rem;
-    background-color: var(--saito-white);
-    padding: 1rem 1rem;
-}
 
 .saito-search-bar {
     display: flex;

@@ -8,7 +8,7 @@ class RedSquareMain {
 
   render(app, mod) {
 
-    if (!document.getElementById("redsquare-main")) {
+    if (!document.getElementById("saito-container")) {
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
     }
 

@@ -10,6 +10,11 @@
     color: var(--saito-white);
 }
 
+.saito-gray-color {
+    color: var(--saito-background);
+}
+
+.saito-gradient-color {}
 
 
 

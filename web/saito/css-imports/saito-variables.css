@@ -41,9 +41,12 @@ font imports
 
 :root {
   --saito-font: 'visuelt-light';
-  --saito-background: #EAEAEF;
+  --saito-background: #eaeaef45;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
+  /* background: rgb(203, 46, 73); */
+  --dreamscape: linear-gradient(90deg, rgba(203, 46, 73, 1) 12%, rgba(226, 59, 68, 1) 45%, rgba(226, 59, 68, 1) 69%, rgba(255, 200, 91, 1) 89%);
+
   --saito-tetiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
   --saito-default-font-color: #555;
