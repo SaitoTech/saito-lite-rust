@@ -23,7 +23,7 @@ class NewDesign extends ModTemplate {
 
   render(app) {
     this.addComponent(this.main);
-    // this.addComponent(this.header);
+    this.addComponent(this.header);
 
     super.render(app);
 

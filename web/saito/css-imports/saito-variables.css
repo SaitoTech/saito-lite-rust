@@ -45,7 +45,9 @@ font imports
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   /* background: rgb(203, 46, 73); */
-  --dreamscape: linear-gradient(90deg, rgba(203, 46, 73, 1) 12%, rgba(226, 59, 68, 1) 45%, rgba(226, 59, 68, 1) 69%, rgba(255, 200, 91, 1) 89%);
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
+    linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
+    linear-gradient(180deg, #e9ce93, #f71f3d);
 
   --saito-tetiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
