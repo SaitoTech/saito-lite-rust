@@ -3,9 +3,6 @@ module.exports = (app, mod) => {
 
   return `
 
-  
-    <div id="saito-container" id="container ">
-
     <div class="saito-page-content">
     
       <div class="saito-sidebar left">
@@ -55,10 +52,10 @@ module.exports = (app, mod) => {
             <i class="fas fa-ellipsis-v"></i>
           </div>
           <div class="">
-            <div class="saito-user-list dense saito-white-background  ">
-              <div class="saito-user">
+            <div class="saito-item-list dense saito-white-background  ">
+              <div>
                 <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
+                <div class="item-info">
                   <p>Saito Community Chat </p>
                   <span> new chat</span>
                 </div>
@@ -66,7 +63,7 @@ module.exports = (app, mod) => {
               </div>
               <div class="saito-user ">
                 <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
+                <div class="item-info">
                   <p>Saito Community Chat</p>
                   <span>new chat</span>
                 </div>
@@ -160,10 +157,6 @@ module.exports = (app, mod) => {
       </div>
 
     </div>
-
-  </div>
-  
-
   `;
 
 }

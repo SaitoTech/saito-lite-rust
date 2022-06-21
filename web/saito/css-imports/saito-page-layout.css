@@ -1,8 +1,6 @@
 .saito-page-content {
     display: flex;
     position: relative;
-    background-color: red;
-
 }
 
 .saito-sidebar {
@@ -71,7 +69,7 @@
 }
 
 
-.saito-main-content {
+.saito-main {
     width: 100%;
     min-height: 100vh;
     margin-right: 1.5rem;

@@ -3,9 +3,7 @@
 module.exports = (app) => {
 
   return `
-    <div id="saito-container" id="container ">
     <div class="saito-tab-content">
-
       <div class="saito-tab show" id="general">
         <div class="saito-marb-3">
           <h4 class="saito-marb-2">Fieldset</h4>
@@ -1128,7 +1126,7 @@ module.exports = (app) => {
 
           </div>
 
-          <div class="saito-main-content">
+          <div class="saito-main">
 
             <div class="saito-item-list rectangle saito-white-background ">
               <div>
@@ -1270,7 +1268,7 @@ module.exports = (app) => {
 
       </div>
 
-      <div class="saito-main-content">
+      <div class="saito-main">
 
         <div class="saito-item-list rectangle saito-white-background ">
           <div>
@@ -1323,7 +1321,7 @@ module.exports = (app) => {
         <h4 class="saito-marb-2"> With only Left Sidebar </h4>
         <div class="saito-page-content">
           
-        <div class="saito-main-content">
+        <div class="saito-main">
 
         <div class="saito-item-list rectangle saito-white-background ">
           <div>
@@ -1438,7 +1436,7 @@ module.exports = (app) => {
         </div>
 
       </div>
-          <div class="saito-main-content">
+          <div class="saito-main">
 
             <div class="saito-item-list rectangle saito-white-background ">
               <div class="saito-user">
@@ -1491,7 +1489,6 @@ module.exports = (app) => {
         </div>
       </div>
     </div>
-  </div>
   `;
 
 }
