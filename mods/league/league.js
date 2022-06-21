@@ -76,9 +76,9 @@ class League extends ModTemplate {
           });
 
 	  //
-          // re-render component
+          // re-render
 	  //
-          this.renderComponent(app, "existing-leagues");
+          this.render(app, this);
 
         } else {
 	}

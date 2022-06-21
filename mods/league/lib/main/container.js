@@ -18,6 +18,7 @@ class Container {
     });
   }
 
+
   render(app, mod, template=null) {
 
     //
@@ -30,22 +31,21 @@ class Container {
     //
     // render league boxes
     //
-    if (template == "container") {
-      for (let i = 0; i < this.leagues.length; i++) {
-        this.leagues[i].render(app, mod);
-      }
+    //if (template == "container") {
+    for (let i = 0; i < this.leagues.length; i++) {
+      this.leagues[i].render(app, mod);
     }
+    //}
 
     //
     // render existing league componenets
     //
-    if (template == "existing_leagues") { 
+    //if (template == "existing_leagues") { 
       this.mod.leagues.forEach((game, i) => {
-
         this.existingLeaguesComponents.push(new LeagueComponentExistingLeague(app, mod, game));
         this.existingLeaguesComponents[i].render(app, mod);
       });
-    }
+    //}
   }
 }
 
