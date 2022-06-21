@@ -4,14 +4,23 @@ const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 class AdminBox {
 
   constructor(app, mod, game_mod=null) {
+
     this.app = app;
     this.mod = mod;
     this.game_mod = game_mod;
+
+    app.connection.on("league-update", (league) => {
+      console.log("ADMIN BOX RECEIVES EVENT -- re-renders?");
+    });
+
   }
 
   render(app, mod) {
+
     app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, this.game_mod), "league-main-container-games");
     this.attachEvents(app, mod);
+
+
   }
 
 

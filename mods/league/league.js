@@ -69,16 +69,23 @@ class League extends ModTemplate {
       `SELECT * FROM leagues DESC LIMIT 100` ,
 
       (res) => {
+console.log("RECEIVED LEAGUES!");
+	    this.app.connection.emit('league-update', {});
+
         if (res.rows) {
           res.rows.forEach(row => {
+
             row.admin = (row.publickey == app.wallet.returnPublicKey()) ? true : false;
+
+	    //
+	    // update components
+	    //
+	    this.app.connection.emit('league-update', row);
+
             this.leagues.push(row);
           });
 
-	  //
-          // re-render
-	  //
-          this.render(app, this);
+          //this.render(app, this);
 
         } else {
 	}
