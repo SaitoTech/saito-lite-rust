@@ -13,6 +13,7 @@ class League extends ModTemplate {
     this.categories = "Games Entertainment";
 
     this.games = [];
+
     //
     // i like simpler names, but /lib contains this.leagues[] as well
     //
@@ -115,19 +116,6 @@ console.log("RECEIVED LEAGUES!");
       console.log("ERROR in league onConfirmation: " + err);
     }
   }
-
-  sendTransaction(data) {
-    try {
-        newtx.msg = data;
-        newtx = this.app.wallet.signTransaction(newtx);
-        let result = this.app.network.propagateTransaction(newtx);
-
-        return true;
-    
-    } catch(err){
-      console.log('error in create txn', err);
-    }
-  } 
 
 
   //
