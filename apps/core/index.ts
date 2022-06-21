@@ -90,6 +90,17 @@ class Saito {
 
   async init() {
     try {
+      if (typeof window === "undefined") {
+        console.log("server loading saito-wasm");
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        let SaitoWasm = require("saito-wasm/pkg/node");
+        console.log("SaitoWasm : ", SaitoWasm);
+        let result = SaitoWasm.initialize_sync();
+        console.log("result : ", result);
+        // await SaitoInst.initialize();
+        // await SaitoWasm.initialize();
+      }
+
       await this.storage.initialize();
 
       //

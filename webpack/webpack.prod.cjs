@@ -83,7 +83,9 @@ webpack({
       "stream": require.resolve("stream-browserify"),
       "buffer": require.resolve("buffer"),
       "crypto": require.resolve("crypto-browserify"),
-      "crypto-browserify": require.resolve("crypto-browserify")
+      "crypto-browserify": require.resolve("crypto-browserify"),
+      "util":require.resolve("util/"),
+      "url":require.resolve("url/")
     }
   },
   module: {
@@ -138,18 +140,18 @@ webpack({
       },
       // wasm files should not be processed but just be emitted and we want
       // to have their public URL.
-      {
-        test: /\.wasm$/,
-        type: "javascript/auto",
-        loader: "file-loader",
-        options: {
-          publicPath: "dist/"
-        }
-      },
       // {
       //   test: /\.wasm$/,
-      //   type: "asset/inline",
+      //   type: "javascript/auto",
+      //   loader: "file-loader",
+      //   options: {
+      //     publicPath: "dist/"
+      //   }
       // },
+      {
+        test: /\.wasm$/,
+        type: "asset/inline",
+      },
       {
         test: /\.zip$/,
         exclude: [
@@ -157,7 +159,12 @@ webpack({
           path.resolve(__dirname, "../mods/appstore/mods")
         ]
       }
-    ]
+    ],
+    parser: {
+      javascript: {
+        dynamicImportMode: 'eager'
+      }
+    }
   },
   plugins: [
     // Work around for Buffer is undefined:
@@ -184,7 +191,7 @@ webpack({
   ],
   experiments: {
     asyncWebAssembly: true,
-    // syncWebAssembly: true
+    syncWebAssembly: true
   },
   mode: "production",
   devtool: devtool
