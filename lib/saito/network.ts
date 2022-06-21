@@ -632,7 +632,7 @@ class Network {
           } else {
             // ghost block
             if (this.debugging) {
-//              console.log("adding ghostchain blcok! " + block_hash);
+              //              console.log("adding ghostchain blcok! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
               syncobj.block_ids[i],
