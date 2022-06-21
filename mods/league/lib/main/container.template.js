@@ -2,13 +2,13 @@
 module.exports = (app, mod) => {
 
   let html = `
-    <div class="league-main-wrapper" id="league-main-wrapper">
-      <div id="league-main-header" class="saito-contentbox saito-box-shadow mb-2">
+    <div class="league-main-container" id="league-main-container">
+      <div id="league-main-container-header" class="">
         <h2>Saito League</h2>
         <p>Create leagues to compete against other players, through rankings, and win prizes</p>
       </div>
       
-      <div class="league-avl-games-container" id="league-avl-games-container">
+      <div class="league-main-container-games" id="league-main-container-games">
       </div>
       <div class="league-component-existing-league" id="league-component-existing-league">
         <h2>Current Leagues</h2>

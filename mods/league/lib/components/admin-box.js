@@ -10,13 +10,13 @@ class AdminBox {
   }
 
   render(app, mod) {
-    app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, this.game_mod), "league-avl-games-container");
+    app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, this.game_mod), "league-main-container-games");
     this.attachEvents(app, mod);
   }
 
 
   attachEvents(app, mod) {
-    Array.from(document.getElementsByClassName('league-main-create-form')).forEach(box => {
+    Array.from(document.getElementsByClassName('league-component-admin-box-form')).forEach(box => {
       box.onsubmit = (e) => {
         e.preventDefault();
 

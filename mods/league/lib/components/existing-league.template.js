@@ -10,9 +10,9 @@ module.exports = (app, mod, game) => {
     `;
 
     if (!game.admin) { 
-        html +=`<button type="submit">Join League</button>`;
+        html +=`<button class="league-component-existing-league-join" data-league-id="${game.id}">Join League</button>`;
     } else {
-        html += '<a href="#">Invite</a>';
+        html += '<a href="#" class="league-component-existing-league-invite">Invite</a>';
     }
 
   html += `

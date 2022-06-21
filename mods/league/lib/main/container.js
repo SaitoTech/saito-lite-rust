@@ -23,7 +23,7 @@ class Container {
     //
     // render main template
     //
-    if (!document.getElementById("league-main-wrapper")) {
+    if (!document.getElementById("league-main-container")) {
       app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
     }
 

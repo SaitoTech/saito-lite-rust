@@ -5,7 +5,7 @@ body {
     padding-bottom: 50px;
 }
 
-.league-main-wrapper {
+.league-main-container {
 	position: relative;
     width: 90%;
     margin-left: 50%;
@@ -13,14 +13,14 @@ body {
     margin-top: 15vh;
 }
 
-.league-avl-games-container{
+.league-main-container-games, .league-component-existing-league-box{
     display: flex;
     justify-content: space-between;
     margin-top: 5vh;
     flex-wrap: wrap;
 }
 
-.league-avl-game-item {
+.league-component-admin-box {
 	width: 26%;
     margin-bottom: 5vh;
     border-radius: 5px;
@@ -28,14 +28,18 @@ body {
     padding: 10px;
 }
 
-.league-avl-game-item img {
+.league-component-admin-box img {
 	width: 150px;
 }
 
-.league-avl-game-item h3 {
+.league-component-admin-box h3 {
 
 } 
 
 .league-component-existing-league .para{
     margin-bottom: 5vh;
+}
+
+.league-component-existing-league-box {
+    border-bottom: 1px solid #fff;
 }

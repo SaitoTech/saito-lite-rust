@@ -70,6 +70,10 @@ class League extends ModTemplate {
         if (txmsg.request == "create_league") {
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
         }
+
+        if (txmsg.request == "join_league") {
+          this.receiveJoinLeagueTransaction(blk, tx, conf, app);
+        }
       }
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
@@ -110,6 +114,27 @@ class League extends ModTemplate {
     let params = {
       $game: game,
       $type: type,
+      $publickey: publickey
+    };
+    await app.storage.executeDatabase(sql, params, "league");
+    return;
+  }
+
+  async receiveJoinLeagueTransaction(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+    let league_id  = txmsg.league_id;
+    let publickey  = app.wallet.returnPublicKey();
+
+    let sql = `INSERT INTO players (
+                league_id,
+                publickey
+              ) VALUES (
+                $league_id,
+                $publickey
+              )`;
+
+    let params = {
+      $league_id: league_id,
       $publickey: publickey
     };
     await app.storage.executeDatabase(sql, params, "league");
