@@ -1,6 +1,6 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunUI = require('./lib/stun-ui');
+const StunMainContainer = require('./lib/main/container');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 
@@ -57,7 +57,7 @@ class Stun extends ModTemplate {
         }, ]
 
         this.peer_connections = {};
-        this.stunUI = new StunUI(app, this)
+        this.main = new StunMainContainer(app, this)
     }
 
     async initialize(app) {
@@ -339,7 +339,7 @@ class Stun extends ModTemplate {
                 pc.dc.onmessage = (e) => {
                     console.log('new message from client : ', e.data);
                     stun_mod.receiveMesssage(e);
-                    // StunUI.displayMessage(peer_key, e.data);
+                    // main.displayMessage(peer_key, e.data);
                 };
                 pc.dc.onopen = (e) => {
                     console.log('connection opened');
@@ -590,7 +590,7 @@ class Stun extends ModTemplate {
     respondTo(type) {
         if (type == 'email-appspace') {
             let obj = {};
-            obj.render = this.stunUI.render(app, mod);
+            obj.render = this.main.render(app, mod);
             return obj;
         }
         return null;

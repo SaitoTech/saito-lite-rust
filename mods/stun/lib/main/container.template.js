@@ -1,8 +1,6 @@
-
-
 module.exports = (app, mod) => {
 
-  return `
+  let html = `
      <div class="stun-container">
      <div class="stun-container__bar container">
        <button id="my-stun-btn" data-id="my-stun" class="menu button-active">
@@ -17,13 +15,5 @@ module.exports = (app, mod) => {
        </div>
      </div>`;
 
-
+  return html;
 }
-
-{/* <button id="peer-stun-btn" data-id="peer-stun" class="menu">
-Peer Stun
-</button> */}
-
-// <button id="listeners-btn" data-id="listeners" class="menu">
-// Listeners
-// </button>

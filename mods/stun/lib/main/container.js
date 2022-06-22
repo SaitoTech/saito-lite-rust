@@ -1,13 +1,17 @@
-const StunUITemplate = require("./stun-ui-template");
-const MyStunTemplate = require("./MyStunTemplate");
-const ListenersTemplate = require("./ListenersTemplate");
-const PeersTemplate = require("./PeersTemplate");
+//main
+const StunMainContainer = require("./container.template");
+
+// components
+const MyStunTemplate = require("./../components/my-stun.template");
+const ListenersTemplate = require("./../components/listeners.template");
+const PeersTemplate = require("./../components/peers.template");
+
 const Stun = require("../stun");
 const {vanillaToast} = require("vanilla-toast");
 const VideoChat = require('../../../lib/saito/ui/video-chat/video-chat');
 
 
-const StunUI = {
+const Container = {
     constructor(app, mod) {
         this.selectedTab: "my-stun";
         this.videoChat: "";
@@ -36,7 +40,7 @@ const StunUI = {
 
     render(app, mod) {
         const Tab = this.mapTabToTemplate[this.selectedTab];
-        if (!document.querySelector('.stun-container')) document.querySelector('.email-appspace').innerHTML = sanitize(StunUITemplate(app, mod));
+        if (!document.querySelector('.stun-container')) document.querySelector('.email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
         document.querySelector(".stun-information").innerHTML = sanitize(Tab(app, mod));
         if (this.localStream && document.querySelector('#localStream')) {
             document.querySelector('#localStream').srcObject = this.localStream;
@@ -60,10 +64,10 @@ const StunUI = {
             let localStream, remoteStream;
             // localStream = document.querySelector('#localStream');
             // remoteStream = document.querySelector('#remoteStream1');
-            StunUI.render(app, mod);
+            Container.render(app, mod);
             // document.querySelector('#localStream') = localStream;
             // document.querySelector('#remoteStream1') = remoteStream;
-            // StunUI.attachEvents(app, mod);
+            // Container.attachEvents(app, mod);
         });
 
         app.connection.on('listeners-update', (app, listeners) => {
@@ -137,7 +141,7 @@ const StunUI = {
                                 break;
 
                             case "disconnected":
-                                StunUI.displayConnectionClosed();
+                                Container.displayConnectionClosed();
                                 vanillaToast.error('Disconnected', {
                                     duration: 3000,
                                     fadeDuration: 500
@@ -156,7 +160,7 @@ const StunUI = {
                     pc.dc.onmessage = (e) => {
 
                         console.log('new message from client : ', e.data);
-                        StunUI.displayMessage(peer_key, e.data);
+                        Container.displayMessage(peer_key, e.data);
                     };
                     pc.dc.open = (e) => {
                         console.log('connection opened');
@@ -254,7 +258,7 @@ const StunUI = {
                             break;
 
                         case "disconnected":
-                            StunUI.displayConnectionClosed()
+                            Container.displayConnectionClosed()
                             break;
 
                         default:
@@ -268,7 +272,7 @@ const StunUI = {
                 this.peer_connection.dc.onmessage = (e) => {
 
                     console.log('new message from client : ', e.data);
-                    StunUI.displayMessage(peer_b, e.data);
+                    Container.displayMessage(peer_b, e.data);
                 };
                 this.peer_connection.dc.onopen = (e) => {
                     $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
@@ -282,11 +286,11 @@ const StunUI = {
                         this.peer_connection.dc = e.channel;
                         this.peer_connection.dc.onmessage = e => {
                             console.log('new message from client:', e.data);
-                            StunUI.displayMessage(peer_a, e.data);
+                            Container.displayMessage(peer_a, e.data);
                         };
                         this.peer_connection.dc.onopen = e => console.log('connection open');
                         this.peer_connection.dc.send("Connected", my_key);
-                        StunUI.displayMessage(peer_a, "Connected");
+                        Container.displayMessage(peer_a, "Connected");
 
                     }
                     if (reply.iceCandidates.length > 0) {
@@ -331,7 +335,7 @@ const StunUI = {
             $(this).addClass('button-active');
             this.selectedTab = $(this).attr('data-id');
 
-            StunUI.render(app, mod);
+            Container.render(app, mod);
 
 
         });
@@ -348,7 +352,7 @@ const StunUI = {
             if (this.peer_connection && this.peer_connection.connectionState === "connected") {
                 console.log("Closing connection");
                 this.peer_connection.close();
-                StunUI.displayConnectionClosed();
+                Container.displayConnectionClosed();
                 this.localStream = "";
                 this.remoteStream = "";
                 // this.peer_connection = "";
@@ -467,7 +471,7 @@ const StunUI = {
                         pc.dc.onmessage = (e) => {
 
                             console.log('new message from client : ', e.data);
-                            StunUI.displayMessage(peer_key, e.data);
+                            Container.displayMessage(peer_key, e.data);
                         };
                         pc.dc.open = (e) => console.log("connection opened");
 
@@ -552,4 +556,4 @@ const StunUI = {
 
 
 
-module.exports = StunUI;
+module.exports = Container;

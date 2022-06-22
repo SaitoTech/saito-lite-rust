@@ -22,14 +22,3 @@ module.exports = (app, mod) => {
     </ul>
     </div>`;
 }
-
-
-{/* <label class="" for="listeners-input"
->Input Keys (Insert Keys separated by a comma)</label
->
-<div class="input-container">
-<textarea id="listeners-input" class="p-2" rows="4" cols="20"></textarea>
-<button id="add-to-listeners-btn" class="btn btn-primary">
-  Add To Listeners
-</button>
-</div> */}
