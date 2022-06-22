@@ -649,7 +649,6 @@ Saito site message
     font-size: 3.3rem;
     color: var(--saito-primary);
     margin-right: 1rem;
-
 }
 
 
@@ -662,7 +661,6 @@ Saito module list /Saito module
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
     grid-gap: 3rem;
-
 }
 
 .saito-module {
@@ -678,7 +676,6 @@ Saito module list /Saito module
     height: 6rem;
     width: 6rem;
     border-radius: .5rem;
-
 }
 
 .saito-module>div {

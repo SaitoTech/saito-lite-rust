@@ -15,8 +15,6 @@ label {
   font-size: 1.2rem;
   text-transform: uppercase;
   font-weight: 1000;
-
-
 }
 
 
@@ -350,11 +348,9 @@ select {}
   justify-content: center;
   align-items: center;
   width: 5rem;
-
   border-left: 1px solid var(--saito-white);
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
-
 }
 
 .saito-select-btn>div>i {
@@ -365,7 +361,6 @@ select {}
 
 
 .saito-select-content {
-
   position: absolute;
   width: calc(100% - 5rem);
   background-color: var(--saito-white);
@@ -377,8 +372,6 @@ select {}
   border-bottom-right-radius: .5rem;
   border-top: none;
   z-index: 12;
-
-
 }
 
 
@@ -400,7 +393,6 @@ select {}
 .saito-select-content li:hover {
   background-color: var(--saito-primary);
   color: white;
-
 }
 
 

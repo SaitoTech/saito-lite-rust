@@ -10,7 +10,6 @@
 
 .saito-sidebar.left {
     margin-right: 1.5rem;
-
 }
 
 
@@ -20,11 +19,6 @@
     background-color: var(--saito-white);
 }
 
-/* 
-.saito-left-sidebar-mobile {
-  
-
-} */
 
 .saito-sidebar.left.mobile {
     transform: translateX(0);
@@ -46,15 +40,12 @@
     bottom: 3rem;
     z-index: 4;
     left: 4rem;
-
     cursor: pointer;
-
 }
 
 .saito-sidebar.left .hamburger i {
     font-size: 3rem;
     color: var(--saito-white);
-
 }
 
 
@@ -74,8 +65,6 @@
 }
 
 
-
-
 @media screen and (max-width: 1200px) {
     .saito-sidebar.left {
         position: fixed;
@@ -87,8 +76,6 @@
         background-color: var(--saito-white);
         left: 0;
         border-right: 1px solid var(--saito-primary);
-
-
     }
 
     .saito-sidebar.left .hamburger {
@@ -99,13 +86,7 @@
         justify-content: center;
         align-items: center;
         bottom: 12rem;
-
     }
-
-
-
-
-
 }
 
 @media screen and (max-width: 876px) {
@@ -115,25 +96,14 @@
 }
 
 @media screen and (max-width: 854px) {
-
     .saito-sidebar.right {
         display: none;
     }
 }
 
 @media screen and (max-width: 768px) {
-
-
     .saito-sidebar.left {
         left: 0;
         width: 100%;
-
     }
-
-
-
-
-
-
-
 }

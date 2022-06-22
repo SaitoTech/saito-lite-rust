@@ -20,7 +20,6 @@
 #saito-header nav {
     display: flex;
     align-items: center;
-
     margin-left: auto;
     justify-self: flex-end;
 }
@@ -118,14 +117,10 @@
     height: 4px;
     margin-bottom: 5px;
     position: relative;
-
     background: var(--saito-white);
     border-radius: 3px;
-
     z-index: 1;
-
     transform-origin: 4px 0px;
-
     transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
     background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
     margin-left: auto;
@@ -143,7 +138,6 @@
     display: block;
     pointer-events: none;
     color: var(--saito-default-font-color);
-
     background-color: var(--saito-menu-background);
     position: absolute;
     right: 0;
@@ -157,7 +151,6 @@
     box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border),
         1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
         1px 1rem 1rem var(--saito-border);
-
     /* -webkit-transform: translateX(20rem); */
     /* transform: translateX(20rem); */
     width: 20rem;
@@ -174,7 +167,6 @@
     justify-items: center;
     grid-row-gap: 1rem;
     grid-template-rows: min-content min-content;
-
 }
 
 .header-profile>img {
@@ -193,7 +185,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .header-profile>div p {
@@ -208,7 +199,6 @@
 
 .header-profile>div i {
     cursor: pointer;
-
 }
 
 .header-profile>div i:hover {

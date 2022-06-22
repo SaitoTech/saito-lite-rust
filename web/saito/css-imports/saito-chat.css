@@ -91,7 +91,6 @@
     grid-template-columns: min-content minmax(35%, 1fr) min-content;
     margin-bottom: 1.5rem;
     cursor: pointer;
-
 }
 
 .chat-bubble:hover {
@@ -107,9 +106,7 @@
 .chat-bubble>div {
     display: flex;
     flex-direction: column;
-
     width: 100%;
-
 }
 
 
@@ -121,19 +118,6 @@
     text-overflow: ellipsis;
     color: var(--saito-black);
     font-size: 1.44rem;
-
-
-
-
 }
 
 .chat-bubble>p:nth-child() {}
-
-
-/* .display-chat {
-    pointer-events: auto !important;
-    width: 25em !important;
-    min-height: 30em !important;
-    height: 35em;
-    opacity: 1 !important;
-} */

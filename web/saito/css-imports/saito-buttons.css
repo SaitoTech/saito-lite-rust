@@ -6,7 +6,6 @@ buttons
 div.saito-btn-primary,
 button,
 .saito-btn-primary {
-
   background: var(--saito-primary);
   text-align: center;
   padding: 1rem 1.5rem;
