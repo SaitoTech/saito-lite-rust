@@ -31,14 +31,15 @@ body {
 #saito-container {
   padding: 1rem 2rem;
   margin-top: var(--saito-header-height);
-  display: flex;
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
   position: relative;
 }
 
 .saito-container {
   padding: 1rem 2rem;
   margin-top: var(--saito-header-height);
-  display: flex;
+  display: grid;
   position: relative;
 }
 

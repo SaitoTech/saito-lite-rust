@@ -6,10 +6,13 @@
     max-height: 100vh;
     background-color: var(--saito-white);
     top: calc(var(--saito-header-height) + 1rem);
+
 }
 
 .saito-sidebar.left {
     margin-right: 1.5rem;
+    grid-column: 1/2;
+    grid-row: 1/2;
 }
 
 
@@ -17,6 +20,8 @@
     width: 26rem;
     padding: 1rem;
     background-color: var(--saito-white);
+    grid-column: 3/4;
+    grid-row: 1/2;
 }
 
 
@@ -62,6 +67,8 @@
     margin-bottom: 1.5rem;
     background-color: var(--saito-white);
     padding: 1rem;
+    grid-column: 2/3;
+    grid-row: 1/2;
 }
 
 
