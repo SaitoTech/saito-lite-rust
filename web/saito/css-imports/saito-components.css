@@ -98,7 +98,7 @@ Saito Info box
 
 
 .saito-infobox.box-secondary {
-    background-color: var(--saito-background);
+    background-color: var(--saito-gray);
 }
 
 .saito-infobox.rounded {
@@ -400,7 +400,7 @@ Saito User List and Saito User
     right: 2rem;
     top: 1rem;
     width: 20rem;
-    background-color: var(--saito-background);
+    background-color: var(--saito-gray);
     z-index: 2;
     display: none;
 

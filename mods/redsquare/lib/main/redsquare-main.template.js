@@ -69,17 +69,6 @@ module.exports = (app, mod) => {
         </div>
       </div>
 
-
-
-      <div class="saito-sidebar right">
-          <div class="saito-search-bar">
-            <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
-          </div>
-          <div class="saito-calendar-small"></div>
-
-      </div>
-
-
   `;
 
 }

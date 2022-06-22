@@ -6,10 +6,13 @@
     max-height: 100vh;
     background-color: var(--saito-white);
     top: calc(var(--saito-header-height) + 1rem);
+
 }
 
 .saito-sidebar.left {
     margin-right: 1.5rem;
+    grid-column: 1/2;
+    grid-row: 1/2;
 }
 
 
@@ -17,6 +20,8 @@
     width: 26rem;
     padding: 1rem;
     background-color: var(--saito-white);
+    grid-column: 3/4;
+    grid-row: 1/2;
 }
 
 
@@ -62,6 +67,8 @@
     margin-bottom: 1.5rem;
     background-color: var(--saito-white);
     padding: 1rem;
+    grid-column: 2/3;
+    grid-row: 1/2;
 }
 
 
@@ -105,5 +112,111 @@
     .saito-sidebar.left {
         left: 0;
         width: 100%;
+    }
+}
+
+
+
+
+
+
+/* ----------------------------------------------------------------
+Left Sidebar
+-----------------------------------------------------------------*/
+
+.saito-sidebar.right>div:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.saito-sidebar .section {}
+
+.saito-sidebar .section:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.saito-sidebar .section>div:nth-child(1) {
+    background-color: var(--saito-white);
+    border: 1px solid var(--saito-primary);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: .9rem;
+    padding-right: 1rem;
+    display: flex;
+    align-items: center;
+    border-right: none;
+    border-left: none;
+}
+
+/* header */
+.saito-sidebar .section>div:nth-child(1) h5 {
+    font-size: 1.92rem
+}
+
+.saito-sidebar .section>div:nth-child(1) h5 {
+    font-size: 1.92rem
+}
+
+.saito-sidebar .section>div:nth-child(1) i {
+    font-size: 1.92rem;
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--saito-default-font-color);
+}
+
+
+/* body */
+.saito-sidebar .section>div:nth-child(2) {
+    background-color: var(--saito-white);
+}
+
+
+
+
+/* ----------------------------------------------------------------
+Right sidebar 
+-----------------------------------------------------------------*/
+
+.saito-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--saito-border);
+    border-radius: .5rem;
+    padding: 0 .8rem
+}
+
+.saito-search-bar input {
+    border: none;
+    padding-left: 1rem;
+
+}
+
+.saito-search-bar i {
+    font-size: 1.8rem;
+    color: var(--saito-border);
+}
+
+
+@media screen and (max-width: 1200px) {
+
+    .saito-sidebar .section>div:nth-child(1) {
+        padding-left: 1.9rem;
+
+    }
+
+    .saito-sidebar .section>div:nth-child(2) {
+        padding-left: 1rem;
+    }
+}
+
+@media screen and (max-width: 503px) {
+
+    .saito-sidebar .section>div:nth-child(1) {
+        padding-left: 1rem;
+
+    }
+
+    .saito-sidebar .section>div:nth-child(2) {
+        padding-left: 0rem;
     }
 }
