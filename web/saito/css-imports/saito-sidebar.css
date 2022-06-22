@@ -34,8 +34,6 @@ Left Sidebar
     font-size: 1.92rem
 }
 
-
-
 .saito-sidebar .section>div:nth-child(1) i {
     font-size: 1.92rem;
     margin-left: auto;
@@ -79,24 +77,24 @@ Right sidebar
 
 @media screen and (max-width: 1200px) {
 
-    .saito-left-menu-header {
+    .saito-sidebar .section>div:nth-child(1) {
         padding-left: 1.9rem;
 
     }
 
-    .saito-left-menu-body {
+    .saito-sidebar .section>div:nth-child(2) {
         padding-left: 1rem;
     }
 }
 
 @media screen and (max-width: 503px) {
 
-    .saito-left-menu-header {
+    .saito-sidebar .section>div:nth-child(1) {
         padding-left: 1rem;
 
     }
 
-    .saito-left-menu-body {
+    .saito-sidebar .section>div:nth-child(2) {
         padding-left: 0rem;
     }
 }

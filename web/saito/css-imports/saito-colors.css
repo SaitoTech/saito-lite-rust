@@ -11,7 +11,7 @@
 }
 
 .saito-gray-color {
-    color: var(--saito-background);
+    color: var(--saito-gray);
 }
 
 .saito-gradient-color {
@@ -41,8 +41,8 @@ Backgrounds
 }
 
 .saito-gray-background {
-    background-color: var(--saito-background);
-    background: var(--saito-background);
+    background-color: var(--saito-gray);
+    background: var(--saito-gray);
 }
 
 .saito-gradient-background {
