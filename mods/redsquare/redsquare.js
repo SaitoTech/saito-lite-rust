@@ -1,6 +1,7 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
+const SaitoCalendar = require('../../lib/saito/new-ui/saito-calendar/saito-calendar');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/components/menu');
 
@@ -26,7 +27,14 @@ class RedSquare extends ModTemplate {
 
     this.main = new RedSquareMain(app);
     this.header = new SaitoHeader(app);
-    this.sidebar = new SaitoSidebar(app);
+
+    this.lsidebar = new SaitoSidebar(app);
+    this.lsidebar.align = "left";
+
+    this.rsidebar = new SaitoSidebar(app);
+    this.rsidebar.align = "right";
+
+    this.calendar = new SaitoCalendar(app);
     this.menu = new RedSquareMenu(app);
 
 
@@ -35,13 +43,15 @@ class RedSquare extends ModTemplate {
 
   render(app, mod) {
 
-    this.addComponent(this.sidebar);
+    this.addComponent(this.lsidebar);
     this.addComponent(this.main);
+    this.addComponent(this.rsidebar);
     this.addComponent(this.header);
 
-    this.sidebar.addComponent(this.menu);
+    this.lsidebar.addComponent(this.menu);
+    this.rsidebar.addComponent(this.calendar);
 
-    super.render(app);
+    super.render(app, this);
 
   }
 
