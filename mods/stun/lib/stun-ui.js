@@ -9,48 +9,42 @@ const VideoChat = require('../../../lib/saito/ui/video-chat/video-chat');
 
 
 const StunUI = {
+      constructor(app, mod) {
+            this.selectedTab: "my-stun";
+            this.videoChat: "";
+            this.peer_connection: "";
+            this.localStream: "";
+            this.remoteStream: "";
 
-      selectedTab: "my-stun",
+            this.stun: {
+                  ip_address: "",
+                  port: "",
+                  offer_sdp: "",
+                  pc: "",
+                  listeners: [],
+                  iceCandidates: []
+            };
 
-      videoChat: "",
-
-      peer_connection: "",
-
-      localStream: "",
-      remoteStream: "",
-
-
-
-      stun: {
-            ip_address: "",
-            port: "",
-            offer_sdp: "",
-            pc: "",
-            listeners: [],
-            iceCandidates: []
-      },
-
-
-      mapTabToTemplate: {
-            "my-stun": MyStunTemplate,
-            "listeners": ListenersTemplate,
-            "peer-stun": PeersTemplate
-      },
-
+            this.mapTabToTemplate: {
+                  "my-stun": MyStunTemplate,
+                  "listeners": ListenersTemplate,
+                  "peer-stun": PeersTemplate
+            };
+      }
 
 
       render(app, mod) {
             const Tab = this.mapTabToTemplate[this.selectedTab];
             if (!document.querySelector('.stun-container')) document.querySelector('.email-appspace').innerHTML = sanitize(StunUITemplate(app, mod));
             document.querySelector(".stun-information").innerHTML = sanitize(Tab(app, mod));
-            if (StunUI.localStream && document.querySelector('#localStream')) {
-                  document.querySelector('#localStream').srcObject = StunUI.localStream;
+            if (this.localStream && document.querySelector('#localStream')) {
+                  document.querySelector('#localStream').srcObject = this.localStream;
             }
-            if (StunUI.remoteStream && document.querySelector('#remoteStream1')) {
-                  document.querySelector('#remoteStream1').srcObject = StunUI.remoteStream;
+            if (this.remoteStream && document.querySelector('#remoteStream1')) {
+                  document.querySelector('#remoteStream1').srcObject = this.remoteStream;
             }
 
-            StunUI.videoChat = new VideoChat(app);
+            this.videoChat = new VideoChat(app);
             
             attachEvents(app, mod);
       },
@@ -184,8 +178,8 @@ const StunUI = {
 
 
 
-                              StunUI.videoChat.show(pc);
-                              StunUI.videoChat.addLocalStream(localStream);
+                              this.videoChat.show(pc);
+                              this.videoChat.addLocalStream(localStream);
 
 
                               const remoteStream = new MediaStream();
@@ -196,7 +190,7 @@ const StunUI = {
                                     event.streams[0].getTracks().forEach(track => {
                                           remoteStream.addTrack(track);
                                     });
-                                    StunUI.videoChat.addRemoteStream(remoteStream, "remote");
+                                    this.videoChat.addRemoteStream(remoteStream, "remote");
 
 
                               });
@@ -226,7 +220,7 @@ const StunUI = {
 
 
                               pc.setLocalDescription(reply.answer);
-                              StunUI.peer_connection = pc;
+                              this.peer_connection = pc;
 
 
 
@@ -248,9 +242,9 @@ const StunUI = {
                   if (peer_b === my_key) {
                         // console.log('my key', reply, my_key);
 
-                        StunUI.peer_connection.onconnectionstatechange = e => {
-                              console.log("connection state ", StunUI.peer_connection.connectionState)
-                              switch (StunUI.peer_connection.connectionState) {
+                        this.peer_connection.onconnectionstatechange = e => {
+                              console.log("connection state ", this.peer_connection.connectionState)
+                              switch (this.peer_connection.connectionState) {
 
 
                                     case "connected":
@@ -268,36 +262,36 @@ const StunUI = {
                               }
                         }
 
-                        const data_channel = StunUI.peer_connection.createDataChannel('channel');
-                        StunUI.peer_connection.dc = data_channel;
-                        StunUI.peer_connection.dc.onmessage = (e) => {
+                        const data_channel = this.peer_connection.createDataChannel('channel');
+                        this.peer_connection.dc = data_channel;
+                        this.peer_connection.dc.onmessage = (e) => {
 
                               console.log('new message from client : ', e.data);
                               StunUI.displayMessage(peer_b, e.data);
                         };
-                        StunUI.peer_connection.dc.onopen = (e) => {
+                        this.peer_connection.dc.onopen = (e) => {
                               $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
                               console.log("connection opened");
                         };
 
 
-                        StunUI.peer_connection.setRemoteDescription(reply.answer).then(e => {
+                        this.peer_connection.setRemoteDescription(reply.answer).then(e => {
                               console.log('answer has been set');
-                              StunUI.peer_connection.ondatachannel = e => {
-                                    StunUI.peer_connection.dc = e.channel;
-                                    StunUI.peer_connection.dc.onmessage = e => {
+                              this.peer_connection.ondatachannel = e => {
+                                    this.peer_connection.dc = e.channel;
+                                    this.peer_connection.dc.onmessage = e => {
                                           console.log('new message from client:', e.data);
                                           StunUI.displayMessage(peer_a, e.data);
                                     };
-                                    StunUI.peer_connection.dc.onopen = e => console.log('connection open');
-                                    StunUI.peer_connection.dc.send("Connected", my_key);
+                                    this.peer_connection.dc.onopen = e => console.log('connection open');
+                                    this.peer_connection.dc.send("Connected", my_key);
                                     StunUI.displayMessage(peer_a, "Connected");
 
                               }
                               if (reply.iceCandidates.length > 0) {
                                     console.log("Adding answer candidates");
                                     for (let i = 0; i < reply.iceCandidates.length; i++) {
-                                          StunUI.peer_connection.addIceCandidate(reply.iceCandidates[i]);
+                                          this.peer_connection.addIceCandidate(reply.iceCandidates[i]);
                                     }
                               }
 
@@ -330,11 +324,11 @@ const StunUI = {
             // change selected tab
             $('.menu').on('click', function (e) {
 
-                  if ($(this).attr('data-id') === StunUI.selectedTab) return;
+                  if ($(this).attr('data-id') === this.selectedTab) return;
                   // add ui class to button
                   $('.menu').removeClass('button-active');
                   $(this).addClass('button-active');
-                  StunUI.selectedTab = $(this).attr('data-id');
+                  this.selectedTab = $(this).attr('data-id');
 
                   StunUI.render(app, mod);
 
@@ -350,13 +344,13 @@ const StunUI = {
                   let selected_option = $('#connectSelect option:selected');
                   const stun_mod = app.modules.returnModule("Stun");
 
-                  if (StunUI.peer_connection && StunUI.peer_connection.connectionState === "connected") {
+                  if (this.peer_connection && this.peer_connection.connectionState === "connected") {
                         console.log("Closing connection");
-                        StunUI.peer_connection.close();
+                        this.peer_connection.close();
                         StunUI.displayConnectionClosed();
-                        StunUI.localStream = "";
-                        StunUI.remoteStream = "";
-                        // StunUI.peer_connection = "";
+                        this.localStream = "";
+                        this.remoteStream = "";
+                        // this.peer_connection = "";
                         vanillaToast.error('Disconnected', { duration: 4000, fadeDuration: 500 });
 
                         return;
@@ -398,8 +392,8 @@ const StunUI = {
 
 
                                                 stun.pc = pc;
-                                                StunUI.stun = stun;
-                                                StunUI.peer_connection = stun.pc;
+                                                this.stun = stun;
+                                                this.peer_connection = stun.pc;
                                                 console.log("ice candidates", stun.iceCandidates);
 
                                                 resolve({ offer_sdp: stun.offer_sdp, iceCandidates: stun.iceCandidates });
@@ -429,10 +423,10 @@ const StunUI = {
                                           pc.addTrack(track, localStream);
 
                                     });
-                                    StunUI.localStream = localStream;
+                                    this.localStream = localStream;
 
-                                    StunUI.videoChat.show(pc)
-                                    StunUI.videoChat.addLocalStream(localStream);
+                                    this.videoChat.show(pc)
+                                    this.videoChat.addLocalStream(localStream);
 
 
 
@@ -450,9 +444,9 @@ const StunUI = {
                                                 remoteStream.addTrack(track);
                                           });
 
-                                          StunUI.remoteStream = remoteStream;
+                                          this.remoteStream = remoteStream;
 
-                                          StunUI.videoChat.addRemoteStream(remoteStream, "remote");
+                                          this.videoChat.addRemoteStream(remoteStream, "remote");
                                     });
 
                                     const data_channel = pc.createDataChannel('channel');
@@ -508,10 +502,10 @@ const StunUI = {
 
             $('.stun-container').on('click', '#sendv-message-btn', (e) => {
 
-                  if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");
+                  if (!this.peer_connection) return console.log("Peer connection instance has not been created");
                   const text = $('#message-text').val();
                   // console.log('text message', text);
-                  StunUI.peer_connection.dc.send(text);
+                  this.peer_connection.dc.send(text);
 
             })
 

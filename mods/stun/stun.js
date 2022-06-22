@@ -68,6 +68,7 @@ class Stun extends ModTemplate {
     ]
 
     this.peer_connections = {};
+    this.stunUI = new StunUI(app, this)
   }
 
   async initialize(app) {
@@ -596,7 +597,7 @@ class Stun extends ModTemplate {
   respondTo(type) {
     if (type == 'email-appspace') {
       let obj = {};
-      obj.render = StunUI.render(app, mod);
+      obj.render = this.stunUI.render(app, mod);
       return obj;
     }
     return null;
