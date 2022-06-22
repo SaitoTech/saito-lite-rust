@@ -4,7 +4,8 @@ module.exports = (app) => {
 
   return `
     <div class="saito-tab-content">
-      <div class="saito-tab show" id="general">
+      <div class="saito-tab" id="general">
+       <div class="saito-main"> 
         <div class="saito-marb-3">
           <h4 class="saito-marb-2">Fieldset</h4>
           <fieldset class="saito-box padding box-shadow  rounded saito-white-background ">
@@ -52,10 +53,11 @@ module.exports = (app) => {
                       </pre>
         </div>
       </div>
+      </div>
 
 
       <div class="saito-tab" id="forms">
-
+      <div class="saito-main"> 
         <div class=" saito-marb-3">
           <h4 class=" saito-marb-2">Buttons </h4>
           <div>
@@ -130,8 +132,10 @@ module.exports = (app) => {
             </div>
           </form>
         </div>
+        </div>
       </div>
       <div class="saito-tab " id="grids">
+      <div class="saito-main"> 
         <h4>Grid System</h4>
         <div class=" saito-mart-2 saito-pad-2">
           <div class="saito-grid-1-1 ">
@@ -188,8 +192,10 @@ module.exports = (app) => {
 
           </div>
         </div>
+        </div>
       </div>
       <div class="saito-tab" id="boxes">
+      <div class="saito-main"> 
         <h4>Boxes</h4>
         <div class="saito-mart-2">
           <div class="saito-gray-background">
@@ -543,6 +549,7 @@ module.exports = (app) => {
           </div>
 
         </div>
+        </div>
       </div>
 
 
@@ -550,6 +557,7 @@ module.exports = (app) => {
 
 
       <div class="saito-tab" id="menus">
+      <div class="saito-main"> 
         <h4>Menus</h4>
         <div class="saito-mart-2">
           <h5> Saito Menu : Left Aligned | Right Aligned | With icon | Without Border Radius </h5>
@@ -806,9 +814,12 @@ module.exports = (app) => {
             </div>
           </div>
         </div>
+        </div>
       </div>
+      
 
       <div class="saito-tab" id="user_lists">
+      <div class="saito-main"> 
         <h4> User Lists </h4>
         <div class="saito-mart-2">
 
@@ -1051,12 +1062,13 @@ module.exports = (app) => {
 
 
         </div>
+        </div>
       </div>
 
 
-      <div class="saito-tab" id="example1">
+      <div class="saito-tab " id="example1">
 
-        <div class="saito-page-content">
+       
           <div class="saito-sidebar left">
             <div class="hamburger">
               <i class="fas fa-bars"></i>
@@ -1189,15 +1201,14 @@ module.exports = (app) => {
               <i id="saito-sendmsg-btn" class="fas fa-paper-plane"></i>
             </div>
           </div>
-        </div>
+
       </div>
 
 
 
-      <div class="saito-tab" id="example2">
+      <div class="saito-tab " id="example2">
 
-        <h4 class="saito-marb-2"> With Left and Right Sidebars </h4>
-        <div class="saito-page-content">
+
          
         <div class="saito-sidebar left">
         <div class="hamburger">
@@ -1308,7 +1319,7 @@ module.exports = (app) => {
       <div class="saito-calendar-small"></div>
 
   </div>
-        </div>
+        
 
       </div>
 
@@ -1316,10 +1327,10 @@ module.exports = (app) => {
 
       
 
-      <div class="saito-tab" id="example3">
+      <div class="saito-tab " id="example3">
 
-        <h4 class="saito-marb-2"> With only Left Sidebar </h4>
-        <div class="saito-page-content">
+
+      
           
         <div class="saito-main">
 
@@ -1362,12 +1373,12 @@ module.exports = (app) => {
 
   </div>
 
-        </div>
+        
       </div>
-      <div class="saito-tab" id="example4">
+      <div class="saito-tab " id="example4">
 
-        <h4 class="saito-marb-2"> With no Sidebar </h4>
-        <div class="saito-page-content">
+
+       
         <div class="saito-sidebar left">
         <div class="hamburger">
           <i class="fas fa-bars"></i>
@@ -1469,15 +1480,12 @@ module.exports = (app) => {
             </div>
 
 
-          </div>
-
-
-        </div>
-
+        
 
       </div>
 
       <div class="saito-tab" id="components">
+      <div class="saito-main"> 
         <h4 class="saito-marb-2"> Components </h4>
         <div>
           <button id="salert_btn"> salert </button>
@@ -1486,6 +1494,7 @@ module.exports = (app) => {
 
           <button id="sitemsg_btn"> siteMessage </button>
           <button id="changetheme_btn"> Change theme </button>
+        </div>
         </div>
       </div>
     </div>

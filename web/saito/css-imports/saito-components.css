@@ -472,6 +472,12 @@ Saito User List and Saito User
 Saito Tabs
 -----------------------------------------------------------------*/
 
+.saito-tab {
+    display: none;
+    position: relative;
+}
+
+
 .saito-tab-buttons {
     display: flex;
     justify-content: center;
@@ -498,13 +504,20 @@ Saito Tabs
     color: var(--saito-white);
 }
 
+.saito-tab-content {
+    flex: 1;
+}
+
 .saito-tab-content>* {
     display: none;
+
 }
 
 .saito-tab-content>*.show {
     display: block;
 }
+
+
 
 @media screen and (max-width: 768px) {
     .saito-tab-buttons {

@@ -8,7 +8,7 @@ class NewDesignMain {
 
   render(app) {
     if (document.querySelector('#saito-container')) {
-      app.browser.addElementToDom(NewDesignMainTemplate(app), 'saito-container');
+      app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
     this.attachEvents();
   };

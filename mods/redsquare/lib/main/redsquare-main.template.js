@@ -3,7 +3,7 @@ module.exports = (app, mod) => {
 
   return `
 
-    <div class="saito-page-content">
+
     
       <div class="saito-sidebar left">
        <div class="hamburger">
@@ -156,7 +156,7 @@ module.exports = (app, mod) => {
 
       </div>
 
-    </div>
+
   `;
 
 }

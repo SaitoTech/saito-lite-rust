@@ -31,6 +31,15 @@ body {
 #saito-container {
   padding: 1rem 2rem;
   margin-top: var(--saito-header-height);
+  display: flex;
+  position: relative;
+}
+
+.saito-container {
+  padding: 1rem 2rem;
+  margin-top: var(--saito-header-height);
+  display: flex;
+  position: relative;
 }
 
 
@@ -172,6 +181,10 @@ media queries
   #saito-container {
     padding: 1rem calc((100vw - var(--saito-width)) / 2);
   }
+
+  .saito-container {
+    padding: 1rem calc((100vw - var(--saito-width)) / 2);
+  }
 }
 
 @media screen and (max-width: 1200px) {
@@ -182,6 +195,17 @@ media queries
   #saito-container {
     padding: 1rem 2rem;
   }
+
+  .saito-container {
+    padding: 1rem 2rem;
+  }
+}
+
+@media screen and (max-width: 854px) {
+
+  #saito-container {
+    flex-direction: column;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -190,6 +214,11 @@ media queries
   }
 
   #saito-container {
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+  }
+
+  .saito-container {
     padding: 1rem 1.5rem;
   }
 }
