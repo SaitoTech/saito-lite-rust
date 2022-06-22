@@ -3,19 +3,11 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const StunUI = require('./lib/stun-ui');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
-const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 
-
-
-
-
-console.log(ModTemplate, Slip, saito);
 
 class Stun extends ModTemplate {
 
-
   constructor(app) {
-    console.log(serialize)
     super(app);
     this.appname = "Stun";
     this.name = "Stun";
@@ -30,7 +22,6 @@ class Stun extends ModTemplate {
     this.stun.pc = "";
     this.stun.iceCandidates = [];
     this.stun.counter = 0;
-    this.videoChat = new VideoChat(app);
     this.servers = [
       {
         urls: "stun:stun.l.google.com:19302",
@@ -77,24 +68,26 @@ class Stun extends ModTemplate {
     ]
 
     this.peer_connections = {};
+  }
 
+  async initialize(app) {
+    let publickey = this.app.wallet.returnPublicKey();
+    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
-
-
-
-
+    // save key if it doesnt exist
+    if (key_index === -1) {
+      this.app.keys.addKey(publickey);
+      this.app.keys.saveKeys();
+    }
+    if (!this.app.keys.keys[key_index].data.stun) {
+      this.app.keys.keys[key_index].data.stun = this.stun;
+      this.app.keys.saveKeys();
+    }
   }
 
 
   onConfirmation(blk, tx, conf, app) {
-
-
-    console.log("testing ...");
-
-
-
     if (conf == 0) {
-      console.log("stun testing ...");
       let txmsg = tx.returnMessage();
       let my_pubkey = app.wallet.returnPublicKey();
       if (txmsg.module === 'Stun') {
@@ -217,12 +210,6 @@ class Stun extends ModTemplate {
         if (tx.msg.listeners) {
           stun_self.addListenersFromPeers(tx.msg.listeners.listeners);
         }
-
-
-
-
-
-
       }
     }
   }
@@ -244,8 +231,6 @@ class Stun extends ModTemplate {
       console.log('instance ', instance_pubkey, ' pubkeys ', pubKeys)
       // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
 
-
-
       newtx.msg.module = "Stun";
       newtx.msg.pubKeys = {
         pubKeys
@@ -256,8 +241,6 @@ class Stun extends ModTemplate {
       };
       newtx = this.app.wallet.signTransaction(newtx);
       this.app.network.propagateTransaction(newtx);
-
-
 
       let relay_mod = this.app.modules.returnModule('Relay');
 
@@ -558,8 +541,6 @@ class Stun extends ModTemplate {
 
     return createPeerConnection;
 
-
-
   }
 
 
@@ -615,84 +596,11 @@ class Stun extends ModTemplate {
   respondTo(type) {
     if (type == 'email-appspace') {
       let obj = {};
-      obj.render = this.renderStunUI;
-      obj.attachEvents = this.attachEvents;
+      obj.render = StunUI.render(app, mod);
       return obj;
     }
     return null;
   }
-
-
-  renderStunUI(app, mod) {
-    StunUI.render(app, mod);
-  }
-
-  attachEvents(app, mod) {
-    StunUI.attachEvents(app, mod);
-  }
-
-
-
-
-
-
-
-
-
-
-
-  async initialize(app) {
-
-    let publickey = this.app.wallet.returnPublicKey();
-    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-
-    // save key if it doesnt exist
-    if (key_index === -1) {
-      this.app.keys.addKey(publickey);
-      this.app.keys.saveKeys();
-    }
-    if (!this.app.keys.keys[key_index].data.stun) {
-      this.app.keys.keys[key_index].data.stun = this.stun;
-      this.app.keys.saveKeys();
-
-    }
-
-
-  }
-
-
-  // onPeerHandshakeComplete() {
-  //   // lite clients not allowed to run this
-  //   if (this.app.BROWSER == 0) {
-  //     const peers = [];
-  //     let newtx = this.app.wallet.createUnsignedTransaction();
-  //     for (let i = 0; i < this.app.network.peers.length; i++) {
-  //       if (this.app.network.peers[i].returnPublicKey() != this.app.wallet.returnPublicKey()) {
-  //         peers.push(this.app.network.peers[i].returnPublicKey());
-  //         newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
-  //       }
-  //     }
-
-  //     newtx.msg.module = "Stun";
-  //     newtx.msg.listeners = {
-  //       listeners: peers
-  //     };
-  //     newtx = this.app.wallet.signTransaction(newtx);
-  //     this.app.network.propagateTransaction(newtx);
-
-
-
-  //   }
-
-
-
-
-
-
-  // }
-
-
-
 
   broadcastOffer(my_key, peer_key, offer) {
     let newtx = this.app.wallet.createUnsignedTransaction();
@@ -711,10 +619,6 @@ class Stun extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
   }
 
-
-
-
-
   broadcastAnswer(answer_creator, offer_creator, reply) {
     let newtx = this.app.wallet.createUnsignedTransaction();
     console.log('broadcasting answer to ', offer_creator);
@@ -730,8 +634,6 @@ class Stun extends ModTemplate {
 
     this.app.network.propagateTransaction(newtx);
   }
-
-
 
 
   addListenersFromPeers(peers) {
@@ -774,16 +676,7 @@ class Stun extends ModTemplate {
     this.app.keys.keys[key_index].data.stun.listeners = filteredPeers;
     this.app.keys.saveKeys();
     // this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
-
-
-
   }
-
-
-
-
-
-
 
 
   addListeners(listeners) {
@@ -819,11 +712,6 @@ class Stun extends ModTemplate {
     // add listeners to existing listeners
     this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
     this.app.keys.saveKeys();
-
-
-
-
-
     this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
   }
 
@@ -837,8 +725,6 @@ class Stun extends ModTemplate {
       newtx.transaction.to.push(new saito.default.slip(listeners[i]));
     }
 
-
-
     newtx.msg.module = "Stun";
     newtx.msg.broadcast_details = {
       listeners,
@@ -849,11 +735,6 @@ class Stun extends ModTemplate {
     this.app.network.propagateTransaction(newtx);
 
   }
-
-
-
-
-
 }
 
 module.exports = Stun;

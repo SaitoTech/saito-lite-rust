@@ -51,11 +51,8 @@ const StunUI = {
             }
 
             StunUI.videoChat = new VideoChat(app);
-
-
-
-
-
+            
+            attachEvents(app, mod);
       },
 
 
