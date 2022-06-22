@@ -44,20 +44,14 @@ class Staff extends ModTemplate {
             document.getElementById("isRegistered").checked = this.isThisRegistered;
 
             if (this.isThisRegistered) {
-               // document.getElementById("add_staff").style.display = "none";
-               // document.getElementById("remove_staff").style.display = "block";
-                this.example("none", "block")
+               document.getElementById("add_staff").style.display = "none";
+                document.getElementById("remove_staff").style.display = "block";
             } else {
                 document.getElementById("add_staff").style.display = "block";
                 document.getElementById("remove_staff").style.display = "none";
             }
     
         }
-    }
-
-    example(add_state, remove_state) {
-        document.getElementById("add_staff").style.display = this.add_state;
-        document.getElementById("remove_staff").style.display = this.remove_state;
     }
 
     addEvents(app) {
