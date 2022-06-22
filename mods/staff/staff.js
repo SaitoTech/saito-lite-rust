@@ -31,7 +31,6 @@ class Staff extends ModTemplate {
     }
 
     render(app, mod) {
-        console.log("value length: " + document.getElementById('staff_register').innerHTML);
         if (this.header == null) {
             this.header = new SaitoHeader(app, this);
         }
@@ -40,20 +39,15 @@ class Staff extends ModTemplate {
             this.header.attachEvents(app, this);
     
             document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
-            if (document.getElementById('staff_register').innerHTML.length == 0) {
-                this.clearEvents();
-            }
             this.addEvents(this.app);
-            //this.renderSidebar();
             document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
             document.getElementById("isRegistered").checked = this.isThisRegistered;
-            console.log(this.isThisRegistered);
+
             if (this.isThisRegistered) {
-                console.log("went here to hide add staff");
-                document.getElementById("add_staff").style.display = "none";
-                document.getElementById("remove_staff").style.display = "block";
+               // document.getElementById("add_staff").style.display = "none";
+               // document.getElementById("remove_staff").style.display = "block";
+                this.example("none", "block")
             } else {
-                console.log("went here to hide remove staff");
                 document.getElementById("add_staff").style.display = "block";
                 document.getElementById("remove_staff").style.display = "none";
             }
@@ -61,21 +55,21 @@ class Staff extends ModTemplate {
         }
     }
 
-    // you don't need these functions.
-    // just add the events to the buttons and leave them on the hidden buttons. 
-    // hidden buttons are not clickable - there is no issue.
-
-    clearEvents() {
-        document.querySelector('#add_staff').removeEventListener('click', this.addstaff);
+    example(add_state, remove_state) {
+        document.getElementById("add_staff").style.display = this.add_state;
+        document.getElementById("remove_staff").style.display = this.remove_state;
     }
 
     addEvents(app) {
         document.querySelector('#add_staff').onclick = this.addstaff(app);
-        document.querySelector('#remove_staff').onclick = () => {
-            var publicKey = this.app.wallet.returnPublicKey();
-            if (publicKey) {
-                this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "deregister");
-            }
+        document.querySelector('#remove_staff').onclick = this.removestaff(app);
+    
+    }
+
+    removestaff(app) {
+        var publicKey = this.app.wallet.returnPublicKey();
+        if (publicKey) {
+            this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "deregister");
         }
     }
 
