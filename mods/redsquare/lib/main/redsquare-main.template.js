@@ -3,90 +3,18 @@ module.exports = (app, mod) => {
 
   return `
 
-    <div class="saito-page-content">
-      <div class="saito-left-sidebar-hamburger">
+
+    
+      <div class="saito-sidebar left">
+       <div class="hamburger">
         <i id='icon' class="fas fa-bars"></i>
-      </div>
-      <div class="saito-left-sidebar-mobile">
-        <div class="saito-left-menu saito-marb-1">
-          <div class="saito-left-menu-header">
-            <h5> Item </h5>
-
-          </div>
-          <div class="saito-left-menu-body  ">
-            <div class="saito-menu-container saito-menu-dense ">
-              <ul>
-                <li>
-                  <i class="fas fa-home"></i>
-                  <span> Home </span>
-                </li>
-                <li>
-                  <i class="fas fa-calendar"></i>
-                  <span> Events</span>
-                </li>
-                <li>
-                  <i class="far fa-id-card"></i>
-                  <span> Invites</span>
-                </li>
-                <li>
-                  <i class="fas fa-user"></i>
-                  <span> Profile</span>
-                </li>
-                <li>
-                  <i class="fas fa-gamepad"></i>
-                  <span> Games</span>
-                </li>
-                <li>
-                  <i class="fas fa-address-book"></i>
-                  <span>Contacts</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="saito-left-menu saito-marb-1">
-          <div class="saito-left-menu-header">
-            <h5> Chat </h5>
-            <i class="fas fa-ellipsis-v"></i>
-          </div>
-          <div class="saito-left-menu-body">
-            <div class="saito-user-list saito-user-dense saito-white-background  ">
-              <div class="saito-user ">
-                <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
-                  <p>Saito Community Chat </p>
-                  <span> new chat</span>
-                </div>
-
-              </div>
-              <div class="saito-user ">
-                <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
-                  <p>Saito Community Chat</p>
-                  <span>new chat</span>
-                </div>
-
-
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-
-
-
-      </div>
-      <div class="saito-left-sidebar">
-        <div class="saito-left-menu saito-marb-1">
-          <div class="saito-left-menu-header">
+       </div>
+        <div class="section">
+          <div>
             <h5> Menu </h5>
-
           </div>
-          <div class="saito-left-menu-body  ">
-            <div class="saito-menu-container saito-menu-dense ">
+          <div>
+            <div class="saito-menu-list dense ">
               <ul>
                 <li>
                   <i class="fas fa-home"></i>
@@ -118,16 +46,16 @@ module.exports = (app, mod) => {
         </div>
 
 
-        <div class="saito-left-menu saito-marb-1">
-          <div class="saito-left-menu-header">
+        <div class="section">
+          <div>
             <h5> Chat </h5>
             <i class="fas fa-ellipsis-v"></i>
           </div>
-          <div class="saito-left-menu-body">
-            <div class="saito-user-list saito-user-dense saito-white-background  ">
-              <div class="saito-user ">
+          <div class="">
+            <div class="saito-item-list dense saito-white-background  ">
+              <div>
                 <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
+                <div class="item-info">
                   <p>Saito Community Chat </p>
                   <span> new chat</span>
                 </div>
@@ -135,7 +63,7 @@ module.exports = (app, mod) => {
               </div>
               <div class="saito-user ">
                 <img src="/saito/img/background.png" />
-                <div class="saito-user-info">
+                <div class="item-info">
                   <p>Saito Community Chat</p>
                   <span>new chat</span>
                 </div>
@@ -152,7 +80,7 @@ module.exports = (app, mod) => {
 
       </div>
 
-      <div class="saito-main-content">
+      <div class="saito-main">
 
         <div id="chirp-input-container">
           <div class="chirp-input-profile">
@@ -220,19 +148,14 @@ module.exports = (app, mod) => {
 
 
 
-      <div class="saito-right-sidebar">
-        <div class="saito-right-sidebar-content">
-          <div class="saito-search-bar saito-marb-2">
+      <div class="saito-sidebar right">
+          <div class="saito-search-bar">
             <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
           </div>
-          <div class="saito-calendar-small">
-          </div>
-
-        </div>
+          <div class="saito-calendar-small"></div>
 
       </div>
 
-    </div>
 
   `;
 

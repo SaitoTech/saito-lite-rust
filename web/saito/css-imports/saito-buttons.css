@@ -3,9 +3,9 @@ buttons
 -----------------------------------------------------------------*/
 @import url("./saito-colors.css");
 
+div.saito-btn-primary,
 button,
 .saito-btn-primary {
-
   background: var(--saito-primary);
   text-align: center;
   padding: 1rem 1.5rem;
@@ -40,10 +40,7 @@ button.saito-btn-secondary {
 }
 
 button.saito-btn-gradient {
-  background: linear-gradient(77deg,
-      var(--saito-primary) 0%,
-      var(--saito-secondary) 69%);
-
+  background: var(--dreamscape)
 }
 
 
@@ -64,14 +61,14 @@ button.saito-btn-secondary:hover {
 
 }
 
-.saito-btn-small {
+.small {
   padding: .75rem .7rem;
   font-size: 1.4rem;
   min-width: 9rem;
 
 }
 
-.saito-btn-large {
+.large {
   padding: 1.5rem 2rem;
   min-width: 27rem;
   font-size: 2.2rem;

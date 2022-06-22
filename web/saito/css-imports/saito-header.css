@@ -1,14 +1,10 @@
-.saito-header {
+#saito-header {
     position: fixed;
     display: flex;
     width: 100vw;
-    background: linear-gradient(77deg,
-            var(--saito-primary) 0%,
-            var(--saito-secondary) 69%);
-
+    background: var(--dreamscape);
     backdrop-filter: blur(5px);
     margin: 0;
-
     align-items: center;
     padding: 0 calc((100vw - var(--saito-width)) / 2);
     top: 0;
@@ -17,46 +13,43 @@
     height: var(--saito-header-height);
 }
 
-.saito-header>img {
+#saito-header>img {
     width: 15rem;
 }
 
-.saito-header nav {
+#saito-header nav {
     display: flex;
     align-items: center;
-
     margin-left: auto;
     justify-self: flex-end;
 }
 
-.saito-big-menu-container {
+.header-link-container {
     display: flex;
     margin-right: 7rem;
     align-items: center;
     justify-content: center;
     list-style: none;
-
-
 }
 
 
-.saito-big-menu-container {
+.header-link-container {
     position: relative;
 }
 
-.saito-big-menu-container:hover .saito-big-menu {
+.header-link-container:hover .header-link-list {
     display: block;
 }
 
-#saito-big-menu-toggle {
+#header-link-toggle {
     font-size: 1.8rem;
     color: var(--saito-white);
     cursor: pointer;
     font-weight: bold;
 }
 
-.saito-big-menu {
-    background-color: var(--saito-white) !important;
+.header-link-list {
+    background-color: var(--saito-white);
     position: absolute;
     top: 2.3rem;
     padding: 1rem 0;
@@ -67,31 +60,31 @@
     border: 1px solid var(--saito-border);
 }
 
-.saito-big-menu a {
+.header-link-list a {
     font-size: 1.8rem;
     display: block;
     padding: .5rem .3rem;
 }
 
-.saito-big-menu a.active {
+.header-link-list a.active {
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
 
-.saito-big-menu a:hover {
+.header-link-list a:hover {
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
 
 
 
-.saito-big-menu a:not(:last-child) {}
+.header-link-list a:not(:last-child) {}
 
-.mega-menu:hover .saito-big-menu {
+.mega-menu:hover .header-link-list {
     display: block;
 }
 
-.saito-big-menu-link {
+.header-menu-link {
     margin-bottom: 1rem;
     display: inline-block;
 }
@@ -101,55 +94,50 @@
 
 
 
-#saito-menuToggle {
+#header-menu-toggle {
     margin-right: auto;
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
 }
 
-#saito-menuToggle:hover {
+#header-menu-toggle:hover {
     opacity: 0.9;
     transform: scale(1.2);
 }
 
-#saito-menuToggle:active {
+#header-menu-toggle:active {
     transform: scale(0.9);
 }
 
 
-#saito-menuToggle span {
+#header-menu-toggle span {
     display: block;
     width: 33px;
     height: 4px;
     margin-bottom: 5px;
     position: relative;
-
     background: var(--saito-white);
     border-radius: 3px;
-
     z-index: 1;
-
     transform-origin: 4px 0px;
-
     transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
     background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
     margin-left: auto;
 }
 
-#saito-menuToggle span:first-child {
+#header-menu-toggle span:first-child {
     transform-origin: 0% 0%;
 }
 
-#saito-menuToggle span:nth-last-child(2) {
+#header-menu-toggle span:nth-last-child(2) {
     transform-origin: 0% 100%;
 }
 
-#saito-hamburger-contents {
+.header-hamburger-contents {
     display: block;
     pointer-events: none;
     color: var(--saito-default-font-color);
-
     background-color: var(--saito-menu-background);
     position: absolute;
     right: 0;
@@ -163,7 +151,6 @@
     box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border),
         1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
         1px 1rem 1rem var(--saito-border);
-
     /* -webkit-transform: translateX(20rem); */
     /* transform: translateX(20rem); */
     width: 20rem;
@@ -171,8 +158,8 @@
     overflow: auto;
 }
 
-.saito-profile {
-    background-color: var(--saito-profile-background);
+.header-profile {
+    background-color: var(--header-profile-background);
     padding: 1.4rem 0.5rem;
     justify-content: center;
     border-radius: 8px;
@@ -180,10 +167,9 @@
     justify-items: center;
     grid-row-gap: 1rem;
     grid-template-rows: min-content min-content;
-
 }
 
-.saito-profile>img {
+.header-profile>img {
     width: 70px;
     height: 70px;
     border-radius: 50%;
@@ -195,14 +181,13 @@
     display: block;
 }
 
-.saito-profile>div {
+.header-profile>div {
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
-.saito-profile>div p {
+.header-profile>div p {
     width: 70%;
     white-space: nowrap;
     overflow: hidden;
@@ -212,24 +197,23 @@
     margin-right: .5rem;
 }
 
-.saito-profile>div i {
+.header-profile>div i {
     cursor: pointer;
-
 }
 
-.saito-profile>div i:hover {
+.header-profile>div i:hover {
     transform: scale(1.05);
     color: var(--saito-primary);
 }
 
-.saito-profile-info>p {
+.header-profile-info>p {
     color: var(--saito-default-font-color);
     font-weight: bold;
     margin-bottom: 0.5rem;
     cursor: pointer;
 }
 
-.saito-profile-info>div {
+.header-profile-info>div {
     color: var(--saito-default-font-color);
     font-weight: bold;
     border: 1px solid white;
@@ -238,25 +222,23 @@
     border-radius: 8px;
 }
 
-.saito-menu-section {
+.header-menu-section {
     padding: 1.5rem 0;
     font-size: 1.1rem;
     overflow: auto;
-
 }
 
-.saito-menu-section:not(:last-child) {
+.header-menu-section:not(:last-child) {
     border-bottom: 1px solid var(--saito-border);
 }
 
 
 .show-menu {
-    opacity: 1 !important;
-    width: 40rem !important;
-
-    -webkit-transform: translateX(0) !important;
-    transform: translateX(0) !important;
-    pointer-events: auto !important;
+    opacity: 1;
+    width: 40rem;
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 
@@ -267,19 +249,19 @@
 
 
 @media screen and (max-width: 1600px) {
-    .saito-header {
+    #saito-header {
         padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
     }
 }
 
 @media screen and (max-width: 1500px) {
-    .saito-header {
+    #saito-header {
         padding: 1.3rem 2rem;
     }
 }
 
 @media screen and (max-width: 1200px) {
-    .saito-header {
+    #saito-header {
         padding: 1.3rem 2rem;
     }
 }
@@ -288,21 +270,21 @@
 
 
 @media screen and (max-width: 700px) {
-    #hamburger-contents {
+    .header-hamburger-contents {
         width: 80vw;
     }
 }
 
 @media screen and (max-width: 500px) {
-    #hamburger-contents {
+    .header-hamburger-contents {
         width: 100vw;
     }
 
-    .saito-header {
+    #saito-header {
         padding: 1.3rem 1rem;
     }
 
-    .saito-header>img {
+    #saito-header>img {
         width: 10rem;
     }
 
