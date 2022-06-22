@@ -6,9 +6,11 @@ module.exports = (app, mod) => {
 
     
       <div class="saito-sidebar left">
-       <div class="hamburger">
-        <i id='icon' class="fas fa-bars"></i>
-       </div>
+
+        <div class="hamburger">
+         <i id='icon' class="fas fa-bars"></i>
+        </div>
+
         <div class="section">
           <div>
             <h5> Menu </h5>
