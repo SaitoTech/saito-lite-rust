@@ -3,10 +3,6 @@ module.exports = (app, mod) => {
 
   return `
 
-
-    
-    
-
       <div class="saito-main">
 
         <div id="chirp-input-container">
@@ -72,11 +68,6 @@ module.exports = (app, mod) => {
           </div>
         </div>
       </div>
-
-
-
-   
-
 
   `;
 
