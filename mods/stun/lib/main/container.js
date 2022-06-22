@@ -2,9 +2,9 @@
 const StunMainContainer = require("./container.template");
 
 // components
-const MyStunTemplate = require("./../components/my-stun.template");
-const ListenersTemplate = require("./../components/listeners.template");
-const PeersTemplate = require("./../components/peers.template");
+const StunComponentMyStun = require("./../components/my-stun");
+const StunComponentListeners = require("./../components/listeners");
+const StunComponentPeers = require("./../components/peers");
 
 const Stun = require("../stun");
 const {vanillaToast} = require("vanilla-toast");
@@ -28,10 +28,14 @@ const Container = {
             iceCandidates: []
         };
 
+        this.myStun = new StunComponentMyStun(app, mod);
+        this.listeners = new StunComponentListeners(app, mod);
+        this.peers = new StunComponentPeers(app, mod);
+
         this.mapTabToTemplate: {
-            "my-stun": MyStunTemplate,
-            "listeners": ListenersTemplate,
-            "peer-stun": PeersTemplate
+            "my-stun": StunComponentMyStun,
+            "listeners": StunComponentListeners,
+            "peer-stun": StunComponentPeers
         };
 
         this.videoChat = new VideoChat(app);
@@ -40,8 +44,10 @@ const Container = {
 
     render(app, mod) {
         const Tab = this.mapTabToTemplate[this.selectedTab];
-        if (!document.querySelector('.stun-container')) document.querySelector('.email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
-        document.querySelector(".stun-information").innerHTML = sanitize(Tab(app, mod));
+        if (!document.querySelector('.stun-container')) 
+            document.querySelector('.email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
+        Tab.render(app, mod);
+
         if (this.localStream && document.querySelector('#localStream')) {
             document.querySelector('#localStream').srcObject = this.localStream;
         }
@@ -62,16 +68,10 @@ const Container = {
         app.connection.on('stun-update', (app) => {
             console.log('stun update', app);
             let localStream, remoteStream;
-            // localStream = document.querySelector('#localStream');
-            // remoteStream = document.querySelector('#remoteStream1');
             Container.render(app, mod);
-            // document.querySelector('#localStream') = localStream;
-            // document.querySelector('#remoteStream1') = remoteStream;
-            // Container.attachEvents(app, mod);
         });
 
         app.connection.on('listeners-update', (app, listeners) => {
-
             let listenersHtml;
             if (listeners) {
                 listenersHtml = listeners.map(listener => ` <li class="list-group-item">${listener}</li>`).join('');
@@ -87,8 +87,6 @@ const Container = {
             if (document.querySelector('#connectSelect')) {
                 document.querySelector('#connectSelect').innerHTML = listenersHtml;
             }
-
-
         });
 
 

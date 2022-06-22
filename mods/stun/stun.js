@@ -76,6 +76,16 @@ class Stun extends ModTemplate {
     }
 
 
+    respondTo(type) {
+      if (type == 'email-appspace') {
+          let obj = {};
+          obj.render = this.main.render(app, mod);
+          return obj;
+      }
+      return null;
+    }
+
+
     onConfirmation(blk, tx, conf, app) {
         if (conf == 0) {
             let txmsg = tx.returnMessage();
@@ -584,16 +594,6 @@ class Stun extends ModTemplate {
 
     receiveMesssage(msg) {
         console.log(msg, " from ");
-    }
-
-
-    respondTo(type) {
-        if (type == 'email-appspace') {
-            let obj = {};
-            obj.render = this.main.render(app, mod);
-            return obj;
-        }
-        return null;
     }
 
     broadcastOffer(my_key, peer_key, offer) {
