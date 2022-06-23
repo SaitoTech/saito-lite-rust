@@ -26,6 +26,7 @@ class Peers {
       } else {
         app.browser.addElementToDom(StunComponentPeersTemplate(app, mod, tk), "stun-information");
       }
+    }
 
     this.attachEvents(app, mod);
   }

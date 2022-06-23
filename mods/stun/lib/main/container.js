@@ -6,20 +6,21 @@ const StunComponentMyStun = require("./../components/my-stun");
 const StunComponentListeners = require("./../components/listeners");
 const StunComponentPeers = require("./../components/peers");
 
-const Stun = require("../stun");
 const {vanillaToast} = require("vanilla-toast");
-const VideoChat = require('../../../lib/saito/ui/video-chat/video-chat');
+const VideoChat = require('./../../../../lib/saito/ui/video-chat/video-chat');
 
 
-const Container = {
+class Container {
     constructor(app, mod) {
-        this.selectedTab: "my-stun";
-        this.videoChat: "";
-        this.peer_connection: "";
-        this.localStream: "";
-        this.remoteStream: "";
+        this.app = app;
+        this.mod = mod;
+        this.selectedTab = "my-stun";
+        this.videoChat = "";
+        this.peer_connection = "";
+        this.localStream = "";
+        this.remoteStream = "";
 
-        this.stun: {
+        this.stun = {
             ip_address: "",
             port: "",
             offer_sdp: "",
@@ -32,20 +33,20 @@ const Container = {
         this.listeners = new StunComponentListeners(app, mod);
         this.peers = new StunComponentPeers(app, mod);
 
-        this.mapTabToTemplate: {
-            "my-stun": StunComponentMyStun,
-            "listeners": StunComponentListeners,
-            "peer-stun": StunComponentPeers
+        this.mapTabToTemplate = {
+            "my-stun": this.myStun,
+            "listeners": this.listeners,
+            "peer-stun": this.peers
         };
 
-        this.videoChat = new VideoChat(app);
+        this.videoChat = new VideoChat(app, mod);
     }
 
 
-    render(app, mod) {
+    render(app = this.app , mod = this.mod) {
         if (!document.querySelector('.stun-container')) 
-            document.querySelector('.email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
-        
+            document.querySelector('.email-container').innerHTML = sanitize(StunMainContainer(app, mod));
+       
         // render the selected tab
         const Tab = this.mapTabToTemplate[this.selectedTab];
         Tab.render(app, mod);
@@ -57,8 +58,8 @@ const Container = {
             document.querySelector('#remoteStream1').srcObject = this.remoteStream;
         }
 
-        attachEvents(app, mod);
-    },
+        this.attachEvents(app, mod);
+    }
 
 
     attachEvents(app, mod) {
@@ -399,17 +400,17 @@ const Container = {
 
                                 // pc.close();
 
-                                stun.offer_sdp = pc.localDescription;
+                                this.stun.offer_sdp = pc.localDescription;
 
 
-                                stun.pc = pc;
+                                this.stun.pc = pc;
                                 this.stun = stun;
-                                this.peer_connection = stun.pc;
-                                console.log("ice candidates", stun.iceCandidates);
+                                this.peer_connection = this.stun.pc;
+                                console.log("ice candidates", this.stun.iceCandidates);
 
                                 resolve({
-                                    offer_sdp: stun.offer_sdp,
-                                    iceCandidates: stun.iceCandidates
+                                    offer_sdp: this.stun.offer_sdp,
+                                    iceCandidates: this.stun.iceCandidates
                                 });
                                 // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
 
@@ -421,13 +422,13 @@ const Container = {
                             let split = ice.candidate.candidate.split(" ");
                             if (split[7] === "host") {
                                 // console.log(`Local IP : ${split[4]}`);
-                                // stun.ip_address = split[4];
+                                // this.stun.ip_address = split[4];
                                 // console.log(split);
                             } else {
 
-                                stun.ip_address = split[4];
-                                stun.port = split[5];
-                                stun.iceCandidates.push(ice.candidate);
+                                this.stun.ip_address = split[4];
+                                this.stun.port = split[5];
+                                this.stun.iceCandidates.push(ice.candidate);
                                 // resolve(stun);
                             }
                         };
@@ -527,8 +528,7 @@ const Container = {
         })
 
 
-    },
-
+    }
 
 
     displayMessage(sender, message) {
@@ -538,7 +538,7 @@ const Container = {
         $('#address-origin').text(`Received Messages`);
         $('#connection-status').html(` <p style="color: green" class="data">Connected to ${sender}</p>`);
         $('#msg-display').append(`<p style="border-radius: 8px; color: red; font-size:.9rem" class="data p-2 w-100" >${message}</p>`);
-    },
+    }
 
     displayConnectionClosed() {
         console.log('closing connection')

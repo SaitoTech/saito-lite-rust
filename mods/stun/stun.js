@@ -79,7 +79,7 @@ class Stun extends ModTemplate {
     respondTo(type) {
       if (type == 'email-appspace') {
           let obj = {};
-          obj.render = this.main.render(app, mod);
+          obj.render = this.main.render();
           return obj;
       }
       return null;
@@ -566,7 +566,7 @@ class Stun extends ModTemplate {
 
     transmitMessage(app, sender, msg, callback, recipients = null) {
         const stun_mod = app.modules.returnModule('Stun');
-        if (!recipients || recipients ? .length === 0) {
+        if (!recipients || recipients?.length === 0) {
             this.peer_connections.forEach(pc => {
                 if (pc.connectionState === "connected") {
                     pc.dc.send({
