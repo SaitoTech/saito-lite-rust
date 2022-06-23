@@ -1,6 +1,6 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
 const SaitoCalendar = require('../../../lib/saito/new-ui/saito-calendar/saito-calendar');
-
+const SaitoDatePicker = require("../../../lib/saito/new-ui/saito-datepicker/saito-datepicker");
 class RedSquareSidebar {
 
   constructor(app) {
@@ -19,6 +19,7 @@ class RedSquareSidebar {
     }
 
     this.calendar.render(app, mod, ".redsquare-sidebar");
+    this.datePicker.render(app, mod, ".redsquare-sidebar")
 
   }
 

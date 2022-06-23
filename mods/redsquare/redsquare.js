@@ -4,7 +4,9 @@ const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar
 const SaitoCalendar = require('../../lib/saito/new-ui/saito-calendar/saito-calendar');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
+const RedSquareChatBox = require('./lib/chatbox');
 const RedSquareSidebar = require('./lib/sidebar');
+
 
 class RedSquare extends ModTemplate {
 
@@ -19,9 +21,8 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
 
     this.styles = [
-	'/saito/saito.css', 
-	'/redsquare/css/redsquare-main.css', 
-	'/saito/lib/saito-date-picker/style.css'
+      '/saito/saito.css',
+      '/redsquare/css/redsquare-main.css',
     ];
 
     this.main = new RedSquareMain(app);
@@ -32,6 +33,8 @@ class RedSquare extends ModTemplate {
 
     this.rsidebar = new RedSquareSidebar(app);
     this.menu = new RedSquareMenu(app);
+    this.chatBox = new RedSquareChatBox(app)
+
 
     //
     // another approach to the right sidebar would be to
@@ -51,8 +54,8 @@ class RedSquare extends ModTemplate {
     this.addComponent(this.main);
     this.addComponent(this.rsidebar);
     this.addComponent(this.header);
-
     this.lsidebar.addComponent(this.menu);
+    this.lsidebar.addComponent(this.chatBox);
 
   }
 
