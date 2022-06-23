@@ -19,7 +19,6 @@ class RedSquareSidebar {
     }
 
     this.calendar.render(app, mod, ".redsquare-sidebar");
-    this.datePicker.render(app, mod, ".redsquare-sidebar")
 
   }
 
