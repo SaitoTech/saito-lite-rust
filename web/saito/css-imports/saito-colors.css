@@ -10,6 +10,13 @@
     color: var(--saito-white);
 }
 
+.saito-gray-color {
+    color: var(--saito-gray);
+}
+
+.saito-gradient-color {
+    color: var(--dreamscape);
+}
 
 
 
@@ -34,12 +41,11 @@ Backgrounds
 }
 
 .saito-gray-background {
-    background-color: var(--saito-background);
-    background: var(--saito-background);
+    background-color: var(--saito-gray);
+    background: var(--saito-gray);
 }
 
 .saito-gradient-background {
-    background: linear-gradient(77deg,
-            var(--saito-primary) 0%,
-            var(--saito-secondary) 69%);
+    background-color: var(--dreamscape);
+    background: var(--dreamscape);
 }

@@ -1,3 +1,4 @@
+const UIModTemplate = require('../../../../lib/templates/uimodtemplate');
 const NewDesignMainTemplate = require('./newdesign-main.template');
 
 class NewDesignMain {
@@ -6,7 +7,7 @@ class NewDesignMain {
   };
 
   render(app) {
-    if (!document.querySelector('.container')) {
+    if (document.querySelector('#saito-container')) {
       app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
     this.attachEvents();

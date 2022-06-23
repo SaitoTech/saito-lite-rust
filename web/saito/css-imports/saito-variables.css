@@ -41,10 +41,13 @@ font imports
 
 :root {
   --saito-font: 'visuelt-light';
-  --saito-background: #EAEAEF;
+  --saito-gray: #eaeaef45;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
-  --saito-tetiary: rgb(234, 234, 239);
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
+    linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
+    linear-gradient(180deg, #e9ce93, #f71f3d);
+  --saito-tertiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
   --saito-default-font-color: #555;
   --saito-paper: #f2f0f0;
@@ -71,7 +74,7 @@ To be implemented later
   --saito-background: rgb(8, 8, 9);
   --saito-primary: #730111;
   --saito-secondary: #693e23;
-  --saito-tetiary: rgb(234, 234, 239);
+  --saito-tertiary: rgb(234, 234, 239);
   --saito-blue: #3c6177;
   --saito-default-font-color: #555;
   --saito-paper: #2e2e2e4f;
