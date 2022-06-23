@@ -6,7 +6,6 @@ const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
 const RedSquareSidebar = require('./lib/sidebar');
 
-
 class RedSquare extends ModTemplate {
 
   constructor(app) {
@@ -18,12 +17,11 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
+
     this.styles = [
 	'/saito/saito.css', 
 	'/redsquare/css/redsquare-main.css', 
 	'/saito/lib/saito-date-picker/style.css'
-    ];
-    this.scripts = [
     ];
 
     this.main = new RedSquareMain(app);
@@ -32,31 +30,23 @@ class RedSquare extends ModTemplate {
     this.lsidebar = new SaitoSidebar(app);
     this.lsidebar.align = "left";
 
+    this.rsidebar = new RedSquareSidebar(app);
+    this.menu = new RedSquareMenu(app);
+
     //
-    // we have two options for our right sidebar, we can 
-    // either use the default sidebar, add components, or
-    // we can create a custom sidebar that handles all of
-    // its own component wizardry.
-    //
-    // with Saito UI element saito-sidebar
+    // another approach to the right sidebar would be to
+    // use another instance of the SaitoSidebar and then
+    // add components to it here the same way that we add
+    // the menu to our left-sidebar.
     //
     //this.rsidebar = new SaitoSidebar(app);
     //this.rsidebar.align = "right";
     //this.calendar = new SaitoCalendar(app);
+    //this.rsidebar.addComponent(this.calendar);
 
     //
-    // with module-specific sidebar
+    // finally, add ui-components
     //
-    this.rsidebar = new RedSquareSidebar(app);
-
-    this.menu = new RedSquareMenu(app);
-
-
-  }
-
-
-  render(app, mod) {
-
     this.addComponent(this.lsidebar);
     this.addComponent(this.main);
     this.addComponent(this.rsidebar);
@@ -64,12 +54,10 @@ class RedSquare extends ModTemplate {
 
     this.lsidebar.addComponent(this.menu);
 
-    //
-    // with classic saito-sidebar we can add 
-    // components like this and have them render
-    // when we trigger render of this element
-    //
-    //this.rsidebar.addComponent(this.calendar);
+  }
+
+
+  render(app, mod) {
 
     super.render(app, this);
 
@@ -79,20 +67,9 @@ class RedSquare extends ModTemplate {
     // fleshed out and ready to use, and can manually
     // add or edit the DOM however we want.
     //
-    // this avoids the need for developers to use
-    // our UIComponent-style of development. You 
-    // can always just hack up the DOM old-school
-    // style.
-    //
-    if (document.querySelector(".saito-sidebar.right")) {
-      app.browser.prependElementToClass(	
-        `<div class="saito-search-bar">
-          <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
-        </div>
-        `,
-        ".saito-sidebar.right"
-      );
-    }
+    //if (document.querySelector(".element-to-edit")) {
+    //  ...
+    //}
 
   }
 
