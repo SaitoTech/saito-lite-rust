@@ -2,7 +2,7 @@
 module.exports = RedSquareMenuTemplate = (app, mod) => {
 
   return `
-    <div class="redsquare-component-menu">
+    <div class="redsquare-menu">
 
           <div>
             <h5> Menu </h5>

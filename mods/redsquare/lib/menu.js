@@ -6,10 +6,10 @@ class RedSquareMenu {
     this.name = "RedSquareMenu";
   }
 
-  render(app, mod, class_container="") {
+  render(app, mod, container="") {
 
-    if (!document.querySelector(".redsquare-component-menu")) {
-      app.browser.addElementToClass(RedSquareMenuTemplate(app, mod), class_container);
+    if (!document.querySelector(".redsquare-menu")) {
+      app.browser.addElementToClass(RedSquareMenuTemplate(app, mod), container);
     }
 
   }
