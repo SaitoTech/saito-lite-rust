@@ -9,9 +9,25 @@ class Peers {
 
   render(app, mod) {
 
-    app.browser.addElementToDom(StunComponentPeersTemplate(app, mod), "stun-information");
-    this.attachEvents(app, mod);
+    let publicKey = preferred_crypto.returnAddress();
+    
+    for (let i = 0; i < app.keys.keys.length; i++) {
+      let tk = app.keys.keys[i];
+      
+      if (tk.publickey === publicKey) {
+        
+        console.log("public key ", tk.publickey, publicKey);
+        stun = app.keys.keys[i].data.stun;
 
+        //
+        // NOTHING HAPPENING INSIDE???
+        //
+
+      } else {
+        app.browser.addElementToDom(StunComponentPeersTemplate(app, mod, tk), "stun-information");
+      }
+
+    this.attachEvents(app, mod);
   }
 
 
@@ -19,5 +35,5 @@ class Peers {
   }
 }
 
-module.exports = Peer;
+module.exports = Peers;
 
