@@ -1,5 +1,5 @@
 //main
-const StunMainContainer = require("./container.template");
+const StunMainContainer = require("./../email-appspace/email-appspace.template");
 
 // components
 const StunComponentMyStun = require("./../components/my-stun");

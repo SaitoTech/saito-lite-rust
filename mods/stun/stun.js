@@ -1,8 +1,9 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunMainContainer = require('./lib/main/container');
+const StunStunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
+const config = require("./config.js");
 
 
 class Stun extends ModTemplate {
@@ -22,42 +23,9 @@ class Stun extends ModTemplate {
         this.stun.pc = "";
         this.stun.iceCandidates = [];
         this.stun.counter = 0;
-        this.servers = [{
-            urls: "stun:stun.l.google.com:19302",
-        }, {
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, {
-            urls: "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, {
-            urls: "turn:openrelay.metered.ca:443?transport=tcp",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, ]
-
-        this.stun_servers = [{
-            urls: "stun:stun.l.google.com:19302",
-        }, ]
-
-        this.turn_servers = [{
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, {
-            urls: "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, {
-            urls: "turn:openrelay.metered.ca:443?transport=tcp",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-        }, ]
+        this.servers = config.servers;
 
         this.peer_connections = {};
-        this.main = new StunMainContainer(app, this)
     }
 
     async initialize(app) {
@@ -77,10 +45,8 @@ class Stun extends ModTemplate {
 
 
     respondTo(type) {
-      if (type == 'email-appspace') {
-          let obj = {};
-          obj.render = this.main.render();
-          return obj;
+      if (type === 'email-appspace') {
+          return new StunEmailAppspace(app, this);
       }
       return null;
     }
@@ -90,126 +56,117 @@ class Stun extends ModTemplate {
         if (conf == 0) {
             let txmsg = tx.returnMessage();
             let my_pubkey = app.wallet.returnPublicKey();
-            if (txmsg.module === 'Stun') {
-                let stun_self = app.modules.returnModule("Stun");
+
+            if (txmsg.module === this.appname) {
+            
                 if (tx.msg.stun) {
                     // check if key exists in key chain
-                    let key_index = stun_self.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
+                    let key_index = this.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
                     console.log(key_index, "key index");
 
                     // save key if it doesn't exist
                     if (key_index === -1) {
-                        stun_self.app.keys.addKey(tx.transaction.from[0].add);
-                        stun_self.app.keys.saveKeys();
+                        this.app.keys.addKey(tx.transaction.from[0].add);
+                        this.app.keys.saveKeys();
                     }
                     for (let i = 0; i < app.keys.keys.length; i++) {
 
-                        if (tx.transaction.from[0].add === stun_self.app.keys.keys[i].publickey) {
-                            console.log(JSON.stringify(stun_self.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
-                            if (JSON.stringify(stun_self.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
+                        if (tx.transaction.from[0].add === this.app.keys.keys[i].publickey) {
+                            console.log(JSON.stringify(this.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
+                            if (JSON.stringify(this.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
                                 let my_pubkey = app.wallet.returnPublicKey();
                                 console.log("stun changed, saving changes..", tx.msg.stun);
-                                stun_self.app.keys.keys[i].data.stun = {...tx.msg.stun
+                                this.app.keys.keys[i].data.stun = {...tx.msg.stun
                                 };
 
-                                stun_self.app.keys.saveKeys();
+                                this.app.keys.saveKeys();
 
                             }
 
                         }
                     }
 
-
-                    app.connection.emit("stun-update", app, stun_self);
-
-
+                    app.connection.emit("stun-update", app, this);
                 }
 
 
 
-                if (tx.msg.answer) {
-                    // if (my_pubkey === tx.msg.answer.peer_b) {
-                    //   stun_self.app.connection.emit('answer_received', tx.msg.answer.peer_a, tx.msg.answer.peer_b, tx.msg.answer.reply);
-                    // } else {
-                    //   // console.log('tx peer key not equal');
-                    // }
+                if (tx.msg.request === "answer") {
                     if (app.BROWSER !== 1) return;
-                    if (my_pubkey === tx.msg.answer.offer_creator) {
+  
+                    if (my_pubkey === tx.msg.offer_creator) {
+                        console.log("current instance: ", my_pubkey, " answer room: ", tx.msg);
+                        console.log("peer connections: ", this.peer_connections, this);
+                        const reply = tx.msg.reply;
 
-                        console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
-                        console.log("peer connections: ", stun_self.peer_connections, stun_self);
-                        const reply = tx.msg.answer.reply;
+                        if (this.peer_connections[tx.msg.answer_creator]) {
+                            this.peer_connections[tx.msg.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                                console.log('setting remote description of ', this.peer_connections[tx.msg.answer_creator]);
 
-                        if (stun_self.peer_connections[tx.msg.answer.answer_creator]) {
-                            stun_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                                console.log('setting remote description of ', stun_self.peer_connections[tx.msg.answer.answer_creator]);
-
-                            }).catch(error => console.log(" An error occured with setting remote description for :", stun_self.peer_connections[tx.msg.answer.answer_creator], error));
+                            }).catch(error => console.log(" An error occured with setting remote description for :", this.peer_connections[tx.msg.answer_creator], error));
                             if (reply.ice_candidates.length > 0) {
                                 console.log("Adding answer candidates");
                                 for (let i = 0; i < reply.ice_candidates.length; i++) {
-                                    stun_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                                    this.peer_connections[tx.msg.answer_creator].addIceCandidate(reply.ice_candidates[i]);
                                 }
                             }
 
                         } else {
                             console.log("peer connection not found");
                         }
-
-
                     }
 
                 }
 
 
-                if (tx.msg.offers) {
+                if (tx.msg.request === "offers") {
                     if (app.BROWSER !== 1) return;
 
-                    const offer_creator = tx.msg.offers.offer_creator;
+                    const offer_creator = tx.msg.offer_creator;
 
                     // offer creator should not respond
                     if (my_pubkey === offer_creator) return;
-                    console.log("offers received from ", tx.msg.offers.offer_creator, tx.msg.offers);
+                    console.log("offers received from ", tx.msg.offer_creator, tx.msg);
 
                     // check if current instance is a recipent
-                    const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
+                    const index = tx.msg.offers.findIndex(offer => offer.recipient === my_pubkey);
 
                     if (index !== -1) {
-                        stun_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+                        this.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers[index]);
                     }
 
 
                 }
 
 
-                if (tx.msg.offer) {
+                if (tx.msg.request === "offer") {
                     console.log("offer received");
-                    if (my_pubkey === tx.msg.offer.peer_b) {
-                        stun_self.app.connection.emit('offer_received', tx.msg.offer.peer_a, tx.msg.offer.peer_b, tx.msg.offer.offer);
+                    if (my_pubkey === tx.msg.peer_b) {
+                        this.app.connection.emit('offer_received', tx.msg.peer_a, tx.msg.peer_b, tx.msg.offer);
                     } else {
                         console.log('tx peer key not equal');
                     }
                 }
 
-                if (tx.msg.broadcast_details) {
+                if (tx.msg.request === "broadcast_details") {
 
-                    const listeners = tx.msg.broadcast_details.listeners;
-                    const from = tx.msg.broadcast_details.from;
+                    const listeners = tx.msg.listeners;
+                    const from = tx.msg.from;
                     if (my_pubkey === from) return;
 
                     console.log("listeners: ", listeners, "from: ", from);
-                    const index = stun_self.app.keys.keys.findIndex(key => key.publickey === my_pubkey);
+                    const index = this.app.keys.keys.findIndex(key => key.publickey === my_pubkey);
                     if (index !== -1) {
-                        stun_self.app.keys.keys[index].data.stun.listeners.push(from);
-                        stun_self.app.keys.saveKeys();
+                        this.app.keys.keys[index].data.stun.listeners.push(from);
+                        this.app.keys.saveKeys();
 
-                        app.connection.emit('listeners-update', stun_self.app, stun_self.app.keys.keys[index].data.stun.listeners);
-                        console.log("keys updated, added: ", from, " updated listeners: ", stun_self.app.keys.keys[index].data.stun.listeners);
+                        app.connection.emit('listeners-update', this.app, this.app.keys.keys[index].data.stun.listeners);
+                        console.log("keys updated, added: ", from, " updated listeners: ", this.app.keys.keys[index].data.stun.listeners);
                     }
                 }
 
-                if (tx.msg.listeners) {
-                    stun_self.addListenersFromPeers(tx.msg.listeners.listeners);
+                if (tx.msg.request === "listeners") {
+                    this.addListenersFromPeers(tx.msg.listeners);
                 }
             }
         }
@@ -237,8 +194,11 @@ class Stun extends ModTemplate {
                 pubKeys
             };
 
-            newtx.msg.listeners = {
-                listeners: pubKeys
+            newtx.msg = {
+                module: this.appname,
+                request: "listener",
+                listeners: pubKeys,
+                pubKeys
             };
             newtx = this.app.wallet.signTransaction(newtx);
             this.app.network.propagateTransaction(newtx);
@@ -260,7 +220,6 @@ class Stun extends ModTemplate {
         }
 
         let tx = req.data;
-        let stun_self = app.modules.returnModule("Stun");
 
         switch (req.request) {
 
@@ -271,8 +230,8 @@ class Stun extends ModTemplate {
                 // create peer connection offers
 
 
-                stun_self.public_keys = tx.msg.pubKeys.pubKeys
-                app.options.public_keys = stun_self.public_keys
+                this.public_keys = tx.msg.pubKeys.pubKeys
+                app.options.public_keys = this.public_keys
                 app.storage.saveOptions();
 
                 this.createPeerConnectionOffers(app, app.options.public_keys);
@@ -409,7 +368,8 @@ class Stun extends ModTemplate {
         console.log(offer_creator, offers)
 
         newtx.msg.module = "Stun";
-        newtx.msg.offers = {
+        newtx.msg = {
+            request: "offers",
             offer_creator,
             offers
         }
@@ -601,8 +561,8 @@ class Stun extends ModTemplate {
         console.log('broadcasting offer  to ', peer_key);
         newtx.transaction.to.push(new saito.default.slip(peer_key));
         console.log("offer ", offer);
-        newtx.msg.module = "Stun";
         newtx.msg.offer = {
+            module: this.appname,
             peer_a: my_key,
             peer_b: peer_key,
             offer
@@ -618,8 +578,9 @@ class Stun extends ModTemplate {
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
 
-        newtx.msg.module = "Stun";
-        newtx.msg.answer = {
+        newtx.msg = {
+            module: this.appname,
+            request: "answer",
             answer_creator,
             offer_creator,
             reply: reply
@@ -719,8 +680,9 @@ class Stun extends ModTemplate {
             newtx.transaction.to.push(new saito.default.slip(listeners[i]));
         }
 
-        newtx.msg.module = "Stun";
-        newtx.msg.broadcast_details = {
+        newtx.msg = {
+            module: this.appname,
+            request: "broadcast_details",
             listeners,
             from
         };
