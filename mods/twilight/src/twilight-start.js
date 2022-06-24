@@ -767,6 +767,11 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
+      // HACK
+      this.game.state.events.formosan = 1;
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
+
       this.game.options = {};
       this.game.options.culturaldiplomacy = 1;
       this.game.options.gouzenkoaffair = 1;
@@ -2397,9 +2402,9 @@ console.log("received event: " + JSON.stringify(mv));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["asknot", "missileenvy", "oas", "duckandcover", "abmtreaty", "howilearned", "asia", "europe", "naziscientist"];
+          this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "abmtreaty", "starwars", "asia", "marshall"];
         } else {
-          this.game.deck[0].hand = ["culturalrev", "junta", "culturalrev", "culturalrev", "culturalrev", "culturalrev", "culturalrev", "china"];
+          this.game.deck[0].hand = ["culturalrev", "junta", "decolonization", "destalinization", "NATO", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
@@ -6921,6 +6926,7 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
       scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
     }
 
+console.log("SCORING OBJ: " + JSON.stringify(scoring));
 
     switch (region) {
 
@@ -6931,6 +6937,8 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
 
         scoring_range = {presence: 3, domination: 7, control: 10000 };
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
+
+console.log("SCORING 2: " + JSON.stringify(scoring));
 
         //
         // neighbouring countries
@@ -7042,11 +7050,10 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
       //////////
       case "asia":
         
-        //Move Taiwan to BG if necessay
+        //move Taiwan to BG if necessay
         if (this.game.state.events.formosan == 1 && this.isControlled("us", "taiwan") == 1) {
           bg_countries.push("taiwan");
           scoring.us.bg++;
-          scoring.us.total--;
         }
         
         scoring_range = {presence: 3, domination: 7, control: 9};
@@ -7060,11 +7067,11 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
           if (scoring.ussr.bg > 0) {
             scoring.ussr.bg--;
           }
-	        if (mouseover_preview == 0) {
+          if (mouseover_preview == 0) {
             scoring.shuttle = 1;
             this.game.state.events.shuttlediplomacy = 0;
       	    this.game.deck[0].discards['shuttle'] = this.game.deck[0].cards['shuttle'];
-            
+           
             if (this.isControlled("ussr", "japan") == 1) { 
                this.updateLog("USSR loses Japan/US-adjacency with Shuttle Diplomacy");
                ussr_bonus = false;
@@ -7085,10 +7092,12 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
         if (this.isControlled("us", "northkorea") == 1) { scoring.us.vp++; scoring.us.neigh.push("northkorea");}
         if (this.isControlled("ussr", "japan") == 1) { 
           if (ussr_bonus) { 
-  	        scoring.ussr.vp++; 
+  	    scoring.ussr.vp++; 
             scoring.ussr.neigh.push("japan");
-  	      }
-	      }
+  	  }
+	}
+
+console.log("SCORING FINAL: " + JSON.stringify(scoring));
 
         break;
       }
