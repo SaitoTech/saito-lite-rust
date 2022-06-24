@@ -77,6 +77,7 @@ class DevCenter extends ModTemplate {
     this.renderSidebar(app);
     this.renderMain(app);
 
+
   }
 
   renderMain(app) {

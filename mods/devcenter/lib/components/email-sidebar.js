@@ -12,7 +12,9 @@ module.exports = EmailSidebar = {
     }
 
     let email_apps = document.querySelector(".email-apps");
+
     mod.mods = app.modules.respondTo("email-appspace");
+
     for (let i = 0; i < mod.mods.length; i++) {
 
       let module = mod.mods[i];
@@ -29,6 +31,7 @@ module.exports = EmailSidebar = {
 
     EmailChat.render(app, mod);
     EmailChat.attachEvents(app, mod);
+
   },
 
   attachEvents(app, mod) {

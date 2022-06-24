@@ -25,42 +25,50 @@ class RedSquare extends ModTemplate {
       '/redsquare/css/redsquare-main.css',
     ];
 
-    this.main = new RedSquareMain(app);
-    this.header = new SaitoHeader(app);
+  }
 
-    this.lsidebar = new SaitoSidebar(app);
-    this.lsidebar.align = "left";
+  initializeUIComponents() {
 
-    this.rsidebar = new RedSquareSidebar(app);
-    this.menu = new RedSquareMenu(app);
-    this.chatBox = new RedSquareChatBox(app)
+    if (!this.ui_initialized) {
 
+      this.main = new RedSquareMain(app);
+      this.header = new SaitoHeader(app);
 
-    //
-    // another approach to the right sidebar would be to
-    // use another instance of the SaitoSidebar and then
-    // add components to it here the same way that we add
-    // the menu to our left-sidebar.
-    //
-    //this.rsidebar = new SaitoSidebar(app);
-    //this.rsidebar.align = "right";
-    //this.calendar = new SaitoCalendar(app);
-    //this.rsidebar.addComponent(this.calendar);
+      this.lsidebar = new SaitoSidebar(app);
+      this.lsidebar.align = "left";
 
-    //
-    // finally, add ui-components
-    //
-    this.addComponent(this.lsidebar);
-    this.addComponent(this.main);
-    this.addComponent(this.rsidebar);
-    this.addComponent(this.header);
-    this.lsidebar.addComponent(this.menu);
-    this.lsidebar.addComponent(this.chatBox);
+      this.rsidebar = new RedSquareSidebar(app);
+      this.menu = new RedSquareMenu(app);
+      this.chatBox = new RedSquareChatBox(app)
+      //
+      // another approach to the right sidebar would be to
+      // use another instance of the SaitoSidebar and then
+      // add components to it here the same way that we add
+      // the menu to our left-sidebar.
+      //
+      //this.rsidebar = new SaitoSidebar(app);
+      //this.rsidebar.align = "right";
+      //this.calendar = new SaitoCalendar(app);
+      //this.rsidebar.addComponent(this.calendar);
+
+      //
+      // finally, add ui-components
+      //
+      this.addComponent(this.lsidebar);
+      this.addComponent(this.main);
+      this.addComponent(this.rsidebar);
+      this.addComponent(this.header);
+      this.lsidebar.addComponent(this.chatBox);
+      this.lsidebar.addComponent(this.menu);
+    }
 
   }
 
 
   render(app, mod) {
+
+console.log("RENDERING REDSQUARE!");
+    this.initializeUIComponents();
 
     super.render(app, this);
 

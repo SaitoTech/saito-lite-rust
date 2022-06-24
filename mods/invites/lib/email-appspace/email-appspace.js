@@ -31,9 +31,9 @@ class InvitesEmailAppspace {
       }
       document.getElementById("actions").innerHTML = actions;
 
-//      this.attachEvents(app, mod);
     }
 
+    this.attachEvents(app, mod);
   }
 
 
@@ -45,22 +45,10 @@ class InvitesEmailAppspace {
       //
       document.getElementById("invite_btn").onclick = (e) => {
 
-	let address = document.getElementById("invite_address").value;
+	let recipient = document.getElementById("invite_address").value;
+	if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
 
-	alert("Clicked w/ address: " + address);
-
-	let newtx = app.wallet.createUnsignedTransaction(address);
-	newtx.transaction.msg = {
-	  module : mod.name ,
-	  request : "open" ,
-	}
-	newtx = app.wallet.signTransaction(newtx);
-	app.network.propagateTransaction(newtx);
-
-	let relay_mod = app.modules.returnModule("Relay");
-	if (relay_mod) {
-          relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
-	}
+        mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
 
       }
 
