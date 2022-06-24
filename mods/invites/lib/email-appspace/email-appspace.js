@@ -9,7 +9,7 @@ class InvitesEmailAppspace {
   render(app, mod, container = "") {
 
     if (!document.querySelector(".invite-email-appspace")) {
-      app.browser.addElementToClass(new InvitesEmailAppspaceTemplate(app, mod), ".email-appspace");
+      app.browser.addElementToClass(InvitesEmailAppspaceTemplate(app, mod), ".email-appspace");
     }
 
     try {
@@ -19,18 +19,20 @@ class InvitesEmailAppspace {
     }
 
     let actions = '';
-    for (let i = 0; i < mod.invites.length; i++) {
-      let inv = mod.invites[i];
-      if (inv.transaction.msg.request === "open" || inv.transaction.msg.request === "invite") {
-        actions += `<div class="action_link action_link_invite" data-id="${i}" id="action_link_${i}">accept ${i}</div>`;
+    if (mod.invites) {
+      for (let i = 0; i < mod.invites.length; i++) {
+        let inv = mod.invites[i];
+        if (inv.transaction.msg.request === "open" || inv.transaction.msg.request === "invite") {
+          actions += `<div class="action_link action_link_invite" data-id="${i}" id="action_link_${i}">accept ${i}</div>`;
+        }
+        if (inv.transaction.msg.request === "accept" || inv.transaction.msg.request === "accept") {
+          actions += `<div class="action_link action_link_accept" data-id="${i}" id="action_link_${i}">cancel ${i}</div>`;
+        }
       }
-      if (inv.transaction.msg.request === "accept" || inv.transaction.msg.request === "accept") {
-        actions += `<div class="action_link action_link_accept" data-id="${i}" id="action_link_${i}">cancel ${i}</div>`;
-      }
-    }
-    document.getElementById("actions").innerHTML = actions;
+      document.getElementById("actions").innerHTML = actions;
 
-    this.attachEvents(app, mod);
+//      this.attachEvents(app, mod);
+    }
 
   }
 

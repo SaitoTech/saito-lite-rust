@@ -2,8 +2,8 @@ module.exports = RedSquareChatBoxTemplate = (app, mod) => {
 
     return `
 
-    <div class="redsquare-chatbox section">
-  
+    <div class="redsquare-chatbox"> 
+ 
     <div>
       <div class="saito-item-list dense  saito-white-background  ">
         <div>
