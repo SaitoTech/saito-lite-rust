@@ -71,7 +71,7 @@ class Container {
         app.connection.on('stun-update', (app) => {
             console.log('stun update', app);
             let localStream, remoteStream;
-            Container.render(app, mod);
+            this.render(app, mod);
         });
 
         app.connection.on('listeners-update', (app, listeners) => {
@@ -142,7 +142,7 @@ class Container {
                                 break;
 
                             case "disconnected":
-                                Container.displayConnectionClosed();
+                                this.displayConnectionClosed();
                                 vanillaToast.error('Disconnected', {
                                     duration: 3000,
                                     fadeDuration: 500
@@ -161,7 +161,7 @@ class Container {
                     pc.dc.onmessage = (e) => {
 
                         console.log('new message from client : ', e.data);
-                        Container.displayMessage(peer_key, e.data);
+                        this.displayMessage(peer_key, e.data);
                     };
                     pc.dc.open = (e) => {
                         console.log('connection opened');
@@ -259,7 +259,7 @@ class Container {
                             break;
 
                         case "disconnected":
-                            Container.displayConnectionClosed()
+                            this.displayConnectionClosed()
                             break;
 
                         default:
@@ -273,7 +273,7 @@ class Container {
                 this.peer_connection.dc.onmessage = (e) => {
 
                     console.log('new message from client : ', e.data);
-                    Container.displayMessage(peer_b, e.data);
+                    this.displayMessage(peer_b, e.data);
                 };
                 this.peer_connection.dc.onopen = (e) => {
                     $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
@@ -287,11 +287,11 @@ class Container {
                         this.peer_connection.dc = e.channel;
                         this.peer_connection.dc.onmessage = e => {
                             console.log('new message from client:', e.data);
-                            Container.displayMessage(peer_a, e.data);
+                            this.displayMessage(peer_a, e.data);
                         };
                         this.peer_connection.dc.onopen = e => console.log('connection open');
                         this.peer_connection.dc.send("Connected", my_key);
-                        Container.displayMessage(peer_a, "Connected");
+                        this.displayMessage(peer_a, "Connected");
 
                     }
                     if (reply.iceCandidates.length > 0) {
@@ -336,7 +336,7 @@ class Container {
             $(this).addClass('button-active');
             this.selectedTab = $(this).attr('data-id');
 
-            Container.render(app, mod);
+            this.render(app, mod);
 
 
         });
@@ -353,7 +353,7 @@ class Container {
             if (this.peer_connection && this.peer_connection.connectionState === "connected") {
                 console.log("Closing connection");
                 this.peer_connection.close();
-                Container.displayConnectionClosed();
+                this.displayConnectionClosed();
                 this.localStream = "";
                 this.remoteStream = "";
                 // this.peer_connection = "";
@@ -472,7 +472,7 @@ class Container {
                         pc.dc.onmessage = (e) => {
 
                             console.log('new message from client : ', e.data);
-                            Container.displayMessage(peer_key, e.data);
+                            this.displayMessage(peer_key, e.data);
                         };
                         pc.dc.open = (e) => console.log("connection opened");
 
