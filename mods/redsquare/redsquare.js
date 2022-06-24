@@ -67,7 +67,6 @@ class RedSquare extends ModTemplate {
 
   render(app, mod) {
 
-console.log("RENDERING REDSQUARE!");
     this.initializeUIComponents();
 
     super.render(app, this);
