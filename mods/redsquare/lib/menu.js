@@ -12,8 +12,6 @@ class RedSquareMenu {
       app.browser.addElementToClass(RedSquareMenuTemplate(app, mod), container);
     }
 
-    
-
     this.attachEvents(app, mod);
 
   }
@@ -23,7 +21,8 @@ class RedSquareMenu {
     let obj = document.querySelector('.redsquare-menu-invites');
     obj.onclick = (e) => {
       document.querySelector(".email-appspace").innerHTML = "";
-      app.modules.returnModule("Invites").respondTo("email-appspace").render(app, this);
+      let invites_self = app.modules.returnModule("Invites");
+      invites_self.respondTo("email-appspace").render(invites_self.app, invites_self);
     }
 
   } 

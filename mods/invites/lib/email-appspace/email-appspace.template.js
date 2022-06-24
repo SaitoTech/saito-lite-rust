@@ -26,7 +26,7 @@ module.exports = InvitesEmailAppspaceTemplate = (app, mod) => {
 
   <p></p>
 
-  <div class="button invite_btn" id="invite_btn">Send Invite</div>
+  <div class="saito-button-primary invite_btn" id="invite_btn">Send Invite</div>
 
   `;
 
