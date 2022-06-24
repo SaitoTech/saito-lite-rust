@@ -31,7 +31,7 @@ class InvitesEmailAppspace {
       }
       document.getElementById("actions").innerHTML = actions;
 
-//      this.attachEvents(app, mod);
+      //      this.attachEvents(app, mod);
     }
 
   }
@@ -40,39 +40,39 @@ class InvitesEmailAppspace {
 
   attachEvents(app, mod) {
 
-      //
-      // button to initiate invites
-      //
-      document.getElementById("invite_btn").onclick = (e) => {
+    //
+    // button to initiate invites
+    //
+    document.getElementById("invite_btn").onclick = (e) => {
 
-	let address = document.getElementById("invite_address").value;
+      let address = document.getElementById("invite_address").value;
 
-	alert("Clicked w/ address: " + address);
+      alert("Clicked w/ address: " + address);
 
-	let newtx = app.wallet.createUnsignedTransaction(address);
-	newtx.transaction.msg = {
-	  module : mod.name ,
-	  request : "open" ,
-	}
-	newtx = app.wallet.signTransaction(newtx);
-	app.network.propagateTransaction(newtx);
+      let newtx = app.wallet.createUnsignedTransaction(address);
+      newtx.transaction.msg = {
+        module: mod.name,
+        request: "open",
+      }
+      newtx = app.wallet.signTransaction(newtx);
+      app.network.propagateTransaction(newtx);
 
-	let relay_mod = app.modules.returnModule("Relay");
-	if (relay_mod) {
-          relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
-	}
-
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod) {
+        relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
       }
 
-      //
-      // buttons to respond
-      //
-      document.querySelectorAll(".action_link_invite").forEach((el) => {
-alert("accept");
-      });
-      document.querySelectorAll(".action_link_accept").forEach((el) => {
-alert("cancel");
-      });
+    }
+
+    //
+    // buttons to respond
+    //
+    document.querySelectorAll(".action_link_invite").forEach((el) => {
+      alert("accept");
+    });
+    document.querySelectorAll(".action_link_accept").forEach((el) => {
+      alert("cancel");
+    });
 
   }
 

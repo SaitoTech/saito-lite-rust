@@ -19,11 +19,6 @@ global saito grid
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-grid.css");
 
-/* ----------------------------------------------------------------
-saito Components
------------------------------------------------------------------*/
-@import url("./css-imports/saito-components.css");
-
 
 /* ----------------------------------------------------------------
 saito buttons
@@ -39,10 +34,15 @@ saito form elements
 
 @import url("./css-imports/saito-form-elements.css");
 
+
 /* ----------------------------------------------------------------
-global saito Utilities
+saito Components
 -----------------------------------------------------------------*/
-@import url("./css-imports/saito-utilities.css");
+@import url("./css-imports/saito-components.css");
+
+
+
+
 /* ----------------------------------------------------------------
 
 saito header
@@ -67,3 +67,9 @@ saito DatePicker
 -----------------------------------------------------------------*/
 @import url("./css-imports/saito-datepicker.css");
 /* ----------------------------------------------------------------
+
+
+/* ----------------------------------------------------------------
+global saito Utilities
+-----------------------------------------------------------------*/
+@import url("./css-imports/saito-utilities.css");
