@@ -132,7 +132,7 @@ class Stun extends ModTemplate {
                     const index = tx.msg.offers.findIndex(offer => offer.recipient === my_pubkey);
 
                     if (index !== -1) {
-                        this.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers[index]);
+                        this.receiveOfferBroadcastAnswerTransaction(app, offer_creator, tx.msg.offers[index]);
                     }
 
 
@@ -242,155 +242,16 @@ class Stun extends ModTemplate {
     }
 
 
-
-    acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
-        if (app.BROWSER !== 1) return;
-        let stun_mod = app.modules.returnModule("Stun");
-
-        console.log('accepting offer');
-        console.log('from:', offer_creator, offer)
-
-        const createPeerConnection = async() => {
-            let reply = {
-                answer: "",
-                ice_candidates: []
-            }
-            const pc = new RTCPeerConnection({
-                iceServers: stun_mod.servers,
-            });
-            try {
-
-                pc.onicecandidate = (ice) => {
-                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
-                        console.log('ice candidate check closed');
-
-                        let stun_mod = app.modules.returnModule("Stun");
-                        stun_mod.peer_connections[offer_creator] = pc;
-
-                        stun_mod.broadcastAnswer(stun_mod.app.wallet.returnPublicKey(), offer_creator, reply);
-                        return;
-
-                    };
-
-                    reply.ice_candidates.push(ice.candidate);
-
-
-
-
-
-                }
-
-                pc.onconnectionstatechange = e => {
-                    console.log("connection state ", pc.connectionState)
-                        // switch (pc.connectionState) {
-
-
-                    //     // case "connected":
-                    //     //     vanillaToast.cancelAll();
-                    //     //     vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
-                    //     //     break;
-
-                    //     // case "disconnected":
-                    //     //     vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
-                    //     //     break;
-
-                    //     // default:
-                    //     //     ""
-                    //     //     break;
-                    // }
-                }
-
-                // add data channels 
-                const data_channel = pc.createDataChannel('channel');
-                pc.dc = data_channel;
-
-
-                pc.dc.onmessage = (e) => {
-                    console.log('new message from client : ', e.data);
-                    stun_mod.receiveMesssage(e);
-                    // main.displayMessage(peer_key, e.data);
-                };
-                pc.dc.onopen = (e) => {
-                    console.log('connection opened');
-                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
-                }
-
-
-
-                await pc.setRemoteDescription(offer.offer_sdp);
-
-                const offer_ice_candidates = offer.ice_candidates;
-                // console.log('peer ice candidates', offer_ice_candidates);
-                if (offer_ice_candidates.length > 0) {
-                    console.log('adding offer icecandidates');
-                    for (let i = 0; i < offer_ice_candidates.length; i++) {
-                        pc.addIceCandidate(offer_ice_candidates[i]);
-                    }
-                }
-
-
-                console.log('remote description  is set');
-
-                reply.answer = await pc.createAnswer();
-
-                console.log("answer ", reply.answer);
-
-
-                pc.setLocalDescription(reply.answer);
-
-                // console.log("peer connection ", pc);
-
-
-
-
-
-            } catch (error) {
-                console.log("error", error);
-            }
-
-        }
-
-        createPeerConnection();
-
-    }
-
-
-    broadcastOffers(offer_creator, offers) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-
-
-        console.log('broadcasting offers now');
-        for (let i = 0; i < offers.length; i++) {
-            newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
-
-        }
-
-        console.log(offer_creator, offers)
-
-        newtx.msg.module = "Stun";
-        newtx.msg = {
-            request: "offers",
-            offer_creator,
-            offers
-        }
-
-        newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
-        this.app.network.propagateTransaction(newtx);
-    }
-
-
-
     async createPeerConnectionOffers(app, pubKeys) {
         let peerConnectionOffers = [];
-        const stun_mod = app.modules.returnModule('Stun');
+        
 
         if (pubKeys.length > 1) {
 
             // send connection to other peers if they exit
             for (let i = 0; i < pubKeys.length; i++) {
-                if (pubKeys[i] !== stun_mod.app.wallet.returnPublicKey()) {
-                    peerConnectionOffers.push(stun_mod.createPeerConnectionOffer(app, pubKeys[i]));
+                if (pubKeys[i] !== this.app.wallet.returnPublicKey()) {
+                    peerConnectionOffers.push(this.createPeerConnectionOffer(app, pubKeys[i]));
                 }
             }
         }
@@ -405,7 +266,7 @@ class Stun extends ModTemplate {
                 peerConnectionOffers.forEach((offer) => {
                     // map key to pc
                     console.log('offer :', offer)
-                    stun_mod.peer_connections[offer.recipient] = offer.pc
+                    this.peer_connections[offer.recipient] = offer.pc
                     offers.push({
                         ice_candidates: offer.ice_candidates,
                         offer_sdp: offer.offer_sdp,
@@ -415,7 +276,7 @@ class Stun extends ModTemplate {
 
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
 
-                stun_mod.broadcastOffers(stun_mod.app.wallet.returnPublicKey(), offers);
+                this.sendOffersTransaction(this.app.wallet.returnPublicKey(), offers);
             } else {
 
                 console.log("no pair to connect to");
@@ -427,9 +288,8 @@ class Stun extends ModTemplate {
     }
 
 
-
     createPeerConnectionOffer(app, publicKey) {
-        const stun_mod = app.modules.returnModule('Stun');
+        
 
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
@@ -437,7 +297,7 @@ class Stun extends ModTemplate {
 
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: stun_mod.servers,
+                        iceServers: this.servers,
                     });
 
 
@@ -454,7 +314,7 @@ class Stun extends ModTemplate {
                                 ice_candidates,
                                 pc
                             });
-                            // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
+                            // this.broadcastIceCandidates(my_key, peer_key, ['savior']);
 
                             return;
                         } else {
@@ -488,7 +348,7 @@ class Stun extends ModTemplate {
                     pc.dc = data_channel;
                     pc.dc.onmessage = (e) => {
                         console.log('new message from client : ', e.data);
-                        stun_mod.receiveMesssage(e);
+                        this.receiveMesssage(e);
 
                     };
                     pc.dc.onopen = (e) => console.log("peer connection opened");
@@ -509,8 +369,6 @@ class Stun extends ModTemplate {
 
     }
 
-
-
     async updateKey(publicKey) {
         console.log('updating key');
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -522,10 +380,8 @@ class Stun extends ModTemplate {
 
     }
 
-
-
     transmitMessage(app, sender, msg, callback, recipients = null) {
-        const stun_mod = app.modules.returnModule('Stun');
+        
         if (!recipients || recipients?.length === 0) {
             this.peer_connections.forEach(pc => {
                 if (pc.connectionState === "connected") {
@@ -539,9 +395,9 @@ class Stun extends ModTemplate {
         } else {
             recipients.forEach(recipient => {
                 // check if exists 
-                for (let i in stun_mod.peer_connections) {
+                for (let i in this.peer_connections) {
                     if (i === recipient) {
-                        stun_mod.peer_connections[i].dc.send({
+                        this.peer_connections[i].dc.send({
                             from: sender,
                             msg: JSON.stringify(msg),
                             callback
@@ -555,41 +411,6 @@ class Stun extends ModTemplate {
     receiveMesssage(msg) {
         console.log(msg, " from ");
     }
-
-    broadcastOffer(my_key, peer_key, offer) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting offer  to ', peer_key);
-        newtx.transaction.to.push(new saito.default.slip(peer_key));
-        console.log("offer ", offer);
-        newtx.msg.offer = {
-            module: this.appname,
-            peer_a: my_key,
-            peer_b: peer_key,
-            offer
-        }
-        console.log('new tx', newtx);
-        newtx = this.app.wallet.signTransaction(newtx);
-        console.log(this.app.network);
-        this.app.network.propagateTransaction(newtx);
-    }
-
-    broadcastAnswer(answer_creator, offer_creator, reply) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        console.log('broadcasting answer to ', offer_creator);
-        newtx.transaction.to.push(new saito.default.slip(offer_creator));
-
-        newtx.msg = {
-            module: this.appname,
-            request: "answer",
-            answer_creator,
-            offer_creator,
-            reply: reply
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-
-        this.app.network.propagateTransaction(newtx);
-    }
-
 
     addListenersFromPeers(peers) {
         // only lite clients allowed to run this
@@ -662,7 +483,7 @@ class Stun extends ModTemplate {
         // filter out already existing keys
         validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
 
-        // this.broadcastKeyToListeners(validated_listeners);
+        // this.sendKeyToListenersTransaction(validated_listeners);
 
         // add listeners to existing listeners
         this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
@@ -671,7 +492,7 @@ class Stun extends ModTemplate {
     }
 
 
-    broadcastKeyToListeners(listeners) {
+    sendKeyToListenersTransaction(listeners) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         let from = this.app.wallet.returnPublicKey();
         console.log('Adding contacts :', listeners, " to ", from);
@@ -691,6 +512,178 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
 
     }
+
+    sendOfferTransaction(my_key, peer_key, offer) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting offer  to ', peer_key);
+        newtx.transaction.to.push(new saito.default.slip(peer_key));
+        console.log("offer ", offer);
+        newtx.msg.offer = {
+            module: this.appname,
+            peer_a: my_key,
+            peer_b: peer_key,
+            offer
+        }
+        console.log('new tx', newtx);
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    sendOffersTransaction(offer_creator, offers) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+
+
+        console.log('broadcasting offers now');
+        for (let i = 0; i < offers.length; i++) {
+            newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
+
+        }
+
+        console.log(offer_creator, offers)
+
+        newtx.msg.module = "Stun";
+        newtx.msg = {
+            request: "offers",
+            offer_creator,
+            offers
+        }
+
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    sendAnswerTransaction(answer_creator, offer_creator, reply) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting answer to ', offer_creator);
+        newtx.transaction.to.push(new saito.default.slip(offer_creator));
+
+        newtx.msg = {
+            module: this.appname,
+            request: "answer",
+            answer_creator,
+            offer_creator,
+            reply: reply
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    receiveOfferBroadcastAnswerTransaction(app, offer_creator, offer) {
+        if (app.BROWSER !== 1) return;
+        
+
+        console.log('accepting offer');
+        console.log('from:', offer_creator, offer)
+
+        const createPeerConnection = async() => {
+            let reply = {
+                answer: "",
+                ice_candidates: []
+            }
+            const pc = new RTCPeerConnection({
+                iceServers: this.servers,
+            });
+            try {
+
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        console.log('ice candidate check closed');
+
+                        
+                        this.peer_connections[offer_creator] = pc;
+
+                        this.sendAnswerTransaction(this.app.wallet.returnPublicKey(), offer_creator, reply);
+                        return;
+
+                    };
+
+                    reply.ice_candidates.push(ice.candidate);
+
+
+
+
+
+                }
+
+                pc.onconnectionstatechange = e => {
+                    console.log("connection state ", pc.connectionState)
+                        // switch (pc.connectionState) {
+
+
+                    //     // case "connected":
+                    //     //     vanillaToast.cancelAll();
+                    //     //     vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
+                    //     //     break;
+
+                    //     // case "disconnected":
+                    //     //     vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
+                    //     //     break;
+
+                    //     // default:
+                    //     //     ""
+                    //     //     break;
+                    // }
+                }
+
+                // add data channels 
+                const data_channel = pc.createDataChannel('channel');
+                pc.dc = data_channel;
+
+
+                pc.dc.onmessage = (e) => {
+                    console.log('new message from client : ', e.data);
+                    this.receiveMesssage(e);
+                    // main.displayMessage(peer_key, e.data);
+                };
+                pc.dc.onopen = (e) => {
+                    console.log('connection opened');
+                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
+                }
+
+
+
+                await pc.setRemoteDescription(offer.offer_sdp);
+
+                const offer_ice_candidates = offer.ice_candidates;
+                // console.log('peer ice candidates', offer_ice_candidates);
+                if (offer_ice_candidates.length > 0) {
+                    console.log('adding offer icecandidates');
+                    for (let i = 0; i < offer_ice_candidates.length; i++) {
+                        pc.addIceCandidate(offer_ice_candidates[i]);
+                    }
+                }
+
+
+                console.log('remote description  is set');
+
+                reply.answer = await pc.createAnswer();
+
+                console.log("answer ", reply.answer);
+
+
+                pc.setLocalDescription(reply.answer);
+
+                // console.log("peer connection ", pc);
+
+
+
+
+
+            } catch (error) {
+                console.log("error", error);
+            }
+
+        }
+
+        createPeerConnection();
+
+    }
+
+
+
 }
 
 module.exports = Stun;
