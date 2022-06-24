@@ -1,6 +1,6 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunStunEmailAppspace = require('./lib/email-appspace/email-appspace');
+const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const config = require("./config.js");
@@ -10,6 +10,7 @@ class Stun extends ModTemplate {
 
     constructor(app) {
         super(app);
+        this.app = app;
         this.appname = "Stun";
         this.name = "Stun";
         this.description = "Session Traversal Utilitiesf for NAT (STUN)";
@@ -46,7 +47,7 @@ class Stun extends ModTemplate {
 
     respondTo(type) {
       if (type === 'email-appspace') {
-          return new StunEmailAppspace(app, this);
+          return new StunEmailAppspace(this.app, this);
       }
       return null;
     }
@@ -200,6 +201,9 @@ class Stun extends ModTemplate {
                 listeners: pubKeys,
                 pubKeys
             };
+
+            console.log(newtx.msg);
+
             newtx = this.app.wallet.signTransaction(newtx);
             this.app.network.propagateTransaction(newtx);
 
@@ -224,14 +228,14 @@ class Stun extends ModTemplate {
         switch (req.request) {
 
             case "get_public_keys":
-                console.log('got public keys: ', tx.msg.pubKeys.pubKeys);
+
+                console.log('got public keys: ', tx.msg.pubKeys);
 
                 if (app.BROWSER !== 1) return;
                 // create peer connection offers
 
-
-                this.public_keys = tx.msg.pubKeys.pubKeys
-                app.options.public_keys = this.public_keys
+                this.public_keys = tx.msg.pubKeys;
+                app.options.public_keys = this.public_keys;
                 app.storage.saveOptions();
 
                 this.createPeerConnectionOffers(app, app.options.public_keys);
