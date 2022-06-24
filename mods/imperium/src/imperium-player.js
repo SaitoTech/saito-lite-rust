@@ -5770,7 +5770,7 @@ playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = nu
       for (let k = 0; k < sys.p[p].units[imperium_self.game.player - 1].length; k++) {
         if (filter_func(sys.p[p].units[imperium_self.game.player - 1][k])) {
           unit_array.push(sys.p[p].units[imperium_self.game.player - 1][k]);
-          sector_array.push(sector);
+          sector_array.push(rp);
           planet_array.push(p);
           unit_idx.push(k);
           exists_unit = 1;

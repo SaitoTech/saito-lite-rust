@@ -397,6 +397,37 @@ class Browser {
     el.outerHTML = html;
   }
 
+  // adds HTML element to class, or DOM if class does not exist
+  addElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
+  }
+
   prependElementToDom(html, elemWhere = document.body) {
     try {
       const elem = document.createElement("div");

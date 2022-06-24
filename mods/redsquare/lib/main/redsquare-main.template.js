@@ -3,7 +3,7 @@ module.exports = (app, mod) => {
 
   return `
 
-      <div class="saito-main">
+      <div class="saito-main email-appspace">
 
         <div id="chirp-input-container">
           <div class="chirp-input-profile">

@@ -145,19 +145,19 @@ Left Sidebar
     align-items: center;
     border-right: none;
     border-left: none;
+    border-top: none;
+    display: none;
 }
 
 /* header */
 .saito-sidebar .section>div:nth-child(1) h5 {
-    font-size: 1.92rem
+    font-size: 1.2rem;
 }
 
-.saito-sidebar .section>div:nth-child(1) h5 {
-    font-size: 1.92rem
-}
+
 
 .saito-sidebar .section>div:nth-child(1) i {
-    font-size: 1.92rem;
+    font-size: 1.2rem;
     margin-left: auto;
     cursor: pointer;
     color: var(--saito-default-font-color);
