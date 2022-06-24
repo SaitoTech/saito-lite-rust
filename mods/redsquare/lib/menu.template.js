@@ -5,7 +5,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
     <div class="redsquare-menu section">
 
           <div>
-            <h5> Menu </h5>
+            <h5> Links </h5>
           </div>
           <div>
             <div class="saito-menu-list dense ">
