@@ -1,4 +1,95 @@
 
+  this.importAgendaCard('homeland-defense-act', {
+  	name : "Homeland Defense Act" ,
+  	type : "Law" ,
+  	text : "FOR: there is no limit to the number of PDS units on a planet. AGAINST: each player must destroy one PDS unit" ,
+        returnAgendaOptions : function(imperium_self) { return ['for','against']; },
+	onPass : function(imperium_self, winning_choice) {
+	  imperium_self.game.state.homeland_defense_act = 1;
+	  let law_to_push = {};
+	      law_to_push.agenda = "homeland-defense-act";
+	      law_to_push.option = winning_choice;
+	  imperium_self.game.state.laws.push(law_to_push);
+
+          if (winning_choice === "for") {
+	    imperium_self.game.state.pds_limit_per_planet = 100;
+	  }
+
+          if (winning_choice === "against") {
+	    for (let i = 0; i < imperium_self.game.players_info.length; i++) {
+	      if (imperium_self.doesPlayerHaveUnitOnBoard((i+1), "pds")) {
+	        imperium_self.game.queue.push("destroy_a_pds\t"+(i+1));
+	      }
+	    }
+	  }
+
+	  imperium_self.game.state.laws.push({ agenda : "homeland-defense-act" , option : winning_choice });
+
+	},
+        repealAgenda(imperium_self) {
+
+          //
+          // remove from active play
+          //
+          for (let i = 0; i < imperium_self.game.state.laws.length; i++) {
+            if (imperium_self.game.state.laws[i].agenda === "homeland-defense-act") {
+              imperium_self.game.state.laws.splice(i, 1);
+              i--;
+            }
+          }
+
+          //
+          // unset the player
+          //
+          imperium_self.game.state.homeland_defense_act = 0;
+	  imperium_self.game.state.pds_limit_per_planet = 2; // limit back
+
+          return 1;
+
+        },
+        handleGameLoop : function(imperium_self, qe, mv) {
+
+          if (mv[0] == "destroy_a_pds") {
+
+            let player = parseInt(mv[1]);
+	    imperium_self.game.queue.splice(qe, 1);
+
+	    if (imperium_self.game.player == player) {
+              imperium_self.playerSelectUnitWithFilter(
+                    "Select a PDS unit to destroy: ",
+                    function(unit) {
+		      if (unit == undefined) { return 0; }
+                      if (unit.type == "pds") { return 1; }
+                      return 0;
+            	    },
+                    function(unit_identifier) {
+
+                      let sector        = unit_identifier.sector;
+                      let planet_idx    = unit_identifier.planet_idx;
+                      let unit_idx      = unit_identifier.unit_idx;
+                      let unit          = unit_identifier.unit;
+		      let sys = imperium_self.returnSectorAndPlanets(sector);
+
+		      if (unit == null) {
+                        imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " has no PDS units to destroy");
+		        imperium_self.endTurn();
+			return 0;
+		      }
+                      imperium_self.addMove("destroy_unit\t"+imperium_self.game.player+"\t"+imperium_self.game.player+"\t"+"ground"+"\t"+sector+"\t"+planet_idx+"\t"+unit_idx+"\t"+"1");
+                      imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " destroys a " + unit.name + " in " + sys.s.name);
+		      imperium_self.endTurn();
+
+                    }
+              );
+	    }
+
+            return 0;
+          }
+          return 1;
+        }
+  });
+
+
   this.importAgendaCard('structures-not-shackles', {
   	name : "Structures not Shackles" ,
   	type : "Law" ,
@@ -53,6 +144,7 @@
 
 	},
   });
+
 
 
   this.importAgendaCard('space-cadet', {
@@ -2271,4 +2363,5 @@ imperium_self.updateLog("Ixthian Artifact rolls " + roll);
         return 1;
       }
   });
+
 
