@@ -87,7 +87,9 @@ module.exports = EmailSidebar = {
       if (modname === module.name) {
         let obj = module.respondTo("email-appspace");
         obj.render(mod.app, module);
-        obj.attachEvents(mod.app, module);
+        
+        if ("attachEvents" in obj)        
+          obj.attachEvents(mod.app, module);
       }
     }
   }
