@@ -2,11 +2,7 @@
 module.exports = RedSquareMenuTemplate = (app, mod) => {
 
   return `
-    <div class="redsquare-menu section">
-
-          <div>
-            <h5> Menu </h5>
-          </div>
+    <div class="redsquare-menu">
           <div>
             <div class="saito-menu-list dense ">
               <ul>
@@ -18,7 +14,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="fas fa-calendar"></i>
                   <span> Events</span>
                 </li>
-                <li>
+                <li class="redsquare-menu-invites">
                   <i class="far fa-id-card"></i>
                   <span> Invites</span>
                 </li>
@@ -37,7 +33,6 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
               </ul>
             </div>
           </div>
-
     </div>
   `;
 

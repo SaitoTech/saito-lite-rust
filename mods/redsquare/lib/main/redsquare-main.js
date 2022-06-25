@@ -1,5 +1,5 @@
 const RedSquareMainTemplate = require("./redsquare-main.template");
-const RedSquareMenu = require("./../components/menu");
+const RedSquareMenu = require("./../menu");
 
 
 class RedSquareMain {
