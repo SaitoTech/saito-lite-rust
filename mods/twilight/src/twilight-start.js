@@ -767,7 +767,14 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
+      this.game.state.round = 9;
       this.game.state.events.formosan = 1;
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
+      this.advanceSpaceRace("us");
       this.advanceSpaceRace("us");
       this.advanceSpaceRace("us");
 
@@ -2401,9 +2408,9 @@ console.log("received event: " + JSON.stringify(mv));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "abmtreaty", "starwars", "asia", "marshall"];
+          this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["culturalrev", "junta", "decolonization", "destalinization", "NATO", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["romanian", "culturalrev", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
@@ -2502,20 +2509,20 @@ console.log("received event: " + JSON.stringify(mv));
       //
       this.game.state.events.inftreaty = 0;
 
+try {
+
       //
       // NORAD -- we check here in case the final move of the round triggers it
       //
-console.log("CHECKING US DEFCON BONUS 1");
       if (this.game.state.us_defcon_bonus == 1) {
+
         //
         // prevent DEFCON bonus from repeating when we bounce back to "round"
         //
         this.game.state.us_defcon_bonus = 0;
 
-console.log("CHECKING CANADA CONTROLLED 1");
         if (this.isControlled("us", "canada") == 1) {
 
-console.log("EXECUTING NORAD");
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
 
           if (this.game.player == 1) {
@@ -2549,23 +2556,28 @@ console.log("EXECUTING NORAD");
         }
       }
 
-      
+} catch (err) {
+}
 
-  	  // STATS - aggregate the statisics
-  	  if (this.game.state.round > 1) {
-  	    this.game.state.stats.round.push({});
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
-  	    this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
-  	  }
+      // STATS - aggregate the statisics
+      if (this.game.state.round > 1) {
+
+	while (this.game.state.stats.round.length < this.game.state.round) {
+          this.game.state.stats.round.push({});
+	}
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_scorings = this.game.state.stats.us_scorings;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_us_ops = this.game.state.stats.ussr_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_ussr_ops = this.game.state.stats.us_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ussr_ops = this.game.state.stats.ussr_ussr_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].us_neutral_ops = this.game.state.stats.us_neutral_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_neutral_ops = this.game.state.stats.ussr_neutral_ops;
+        this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
+      }
+
 
       //
       // settle outstanding VP issue
@@ -2619,7 +2631,7 @@ console.log("EXECUTING NORAD");
       // Eagle/Bear Has Landed -- Player can discard a held card
       //
       if (this.game.state.eagle_has_landed != "" && this.game.state.eagle_has_landed_bonus_taken == 0 && this.game.state.round > 0) {
-
+try {
         this.game.state.eagle_has_landed_bonus_taken = 1;
 
         let bonus_player = (this.game.state.eagle_has_landed == "us") ? 2 : 1;
@@ -2629,25 +2641,22 @@ console.log("EXECUTING NORAD");
           return 0;
         }
 
-  	    let available_cards = [];
-  	    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-  	      let thiscard = this.game.deck[0].hand[i];
-  	      if (thiscard != "europe" && thiscard != "asia" && thiscard != "mideast" && thiscard != "seasia" && thiscard != "camerica" && thiscard != "samerica" && thiscard != "africa" && thiscard != "china") {
-  	        available_cards.push(thiscard);
-  	      }
-  	    }
+  	let available_cards = [];
+  	for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+  	  let thiscard = this.game.deck[0].hand[i];
+  	  if (thiscard != "europe" && thiscard != "asia" && thiscard != "mideast" && thiscard != "seasia" && thiscard != "camerica" && thiscard != "samerica" && thiscard != "africa" && thiscard != "china") {
+  	    available_cards.push(thiscard);
+  	  }
+  	}
 
-  	    //
+  	//
         // if we have no cards, skip
-  	    //
+  	//
         if (available_cards.length == 0) {
-  	      this.updateLog("No cards in hand, skipping end-of-turn discard");
-  	      this.addMove("NOTIFY\tSkipping Eagle / Bear has Landed");
-  	      this.endTurn();
-  	    }else{
-          //
-          // DISCARD CARD
-          //
+  	  this.updateLog("No cards in hand, skipping end-of-turn discard");
+  	  this.addMove("NOTIFY\tSkipping Eagle / Bear has Landed");
+  	  this.endTurn();
+  	} else {
           let user_message = `${this.game.state.eagle_has_landed.toUpperCase()} may discard a card: (${(bonus_player == 1)?"Bear":"Eagle"} Has Landed)`;
           let html = `<ul>`;
           for (let i = 0; i < available_cards.length; i++) {
@@ -2677,8 +2686,9 @@ console.log("EXECUTING NORAD");
         }
 
         return 0;
+} catch (err) {
+}
       }
-
 
 
       //
@@ -2717,7 +2727,6 @@ console.log("EXECUTING NORAD");
 
       }
 
-
       //
       // if we have come this far, move to the next turn
       //
@@ -2726,7 +2735,7 @@ console.log("EXECUTING NORAD");
       }
 
       //Increment state.round and resets state variables for next round
-      if (!this.endRound()){return 0;} 
+      if (!this.endRound()) { return 0; } 
 
       //
       // END GAME IF WE MAKE IT !
@@ -2842,12 +2851,9 @@ console.log("EXECUTING NORAD");
       //
       // NORAD -- NEEDS TESTING
       //
-console.log("CHECKING US DEFCON BONUS 2");
       if (this.game.state.us_defcon_bonus == 1) {
         this.game.state.us_defcon_bonus = 0;
-console.log("CHECKING CANADA CONTROLLED 2");
         if (this.isControlled("us", "canada") == 1) {
-console.log("YES, RUNNING DEFCON 2");
 
           let twilight_self = this;
           
@@ -5714,10 +5720,9 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
             this.resignGame(this.game.id, "scoring card held");
             return 0;
           }
-	      }
+        }
       }
     }
-
 
     //
     // calculate milops
@@ -5781,8 +5786,10 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
     this.game.state.ussr_milops = 0;
     this.game.state.us_milops = 0;
 
-
-    this.displayBoard();
+    try {
+      this.displayBoard();
+    } catch (err) {
+    }
 
     //
     // give me the china card if needed -- OBSERVER
@@ -6770,6 +6777,8 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
 
   finalScoring() {
 
+console.log("FINAL SCORING RUNNING!");
+
     //
     // disable shuttle diplomacy
     //
@@ -7100,6 +7109,8 @@ console.log("SCORING FINAL: " + JSON.stringify(scoring));
 
         break;
       }
+
+
     return scoring;
   
   }
