@@ -272,7 +272,7 @@ Saito User List and Saito User
 }
 
 .item-info p {
-    max-width: 80%;
+    max-width: 95%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -6,7 +6,6 @@
     max-height: 100vh;
     background-color: var(--saito-white);
     top: calc(var(--saito-header-height) + 1rem);
-
 }
 
 .saito-sidebar.left {
