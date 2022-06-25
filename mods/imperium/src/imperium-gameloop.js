@@ -2298,7 +2298,18 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+
+	if (type === "strategy") {
+	  this.game.players_info[recipient-1].strategy.push(details);
+	  for (let i = 0; i < this.game.players_info[giver-1].strategy.length; i++) {
+	    if (this.game.players_info[giver-1].strategy[i] === details) {
+	      this.game.players_info[giver-1].strategy.splice(i, 1);
+	    }
+	  }
+        }
+
+
+        if (type === "action") {
 	  if (this.game.player == recipient) {
 	    this.game.deck[1].hand.push(details);
             let ac_in_hand = this.returnPlayerActionCards(this.game.player);
@@ -2359,7 +2370,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+        if (type === "action") {
 	  if (details === "random") {
 	    if (this.game.player == pullee) {
 
@@ -2501,6 +2512,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
   	this.game.queue.splice(qe, 1);
 
         let log_offer = '';
+
         let offering_html = this.returnFaction(offering_faction) + " makes a trade offer to " + this.returnFaction(faction_to_consider) + ": ";
 	    offering_html += '<div style="padding:20px;clear:left">';
 
@@ -2523,6 +2535,15 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_on_offer.action_cards.length > 0) {
+	      if (stuff_on_offer.goods >= 1 || stuff_on_offer.promissaries.length >= 1) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
+	        let ac = stuff_on_offer.action_cards[i];
+		log_offer += ac;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -2554,6 +2575,17 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_in_return.action_cards.length > 0) {
+	      nothing_check = "";
+	      if (stuff_in_return.goods > 1 || stuff_in_return.promissaries.length > 0) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
+	        nothing_check = "";
+	        let ac = stuff_in_return.action_cards[i];
+		log_offer += ac;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {
@@ -2617,6 +2649,13 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
   	this.game.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
        	this.game.players_info[faction_responding-1].commodities -= parseInt(response.goods);
+
+	if (offer.action_cards) {
+	  for (let i = 0; i < offer.action_cards.length; i++) {
+	    this.giveActionCard(offering_faction, faction_responding, offer.action_cards[i]);
+	  }
+	}
+	// no action cards received so no response.action_cards
 
 	if (offer.promissaries) {
 	  for (let i = 0; i < offer.promissaries.length; i++) {

@@ -1384,6 +1384,302 @@ console.log("P: " + planet);
 
 
 
+    this.importFaction('faction8', {
+      id		:	"faction8" ,
+      name		: 	"Emirates of Hacan",
+      nickname		: 	"Hacan",
+      homeworld		: 	"sector50",
+      space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
+      ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
+      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship", "faction8-quantum-datahub-node", "faction8-production-biomes"],
+      background	: 	'faction8.jpg' ,
+      promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	6,
+      intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`
+    });
+
+
+    this.importTech("faction8-flagship", {
+      name        	:       "Hacan Flagship" ,
+      faction     	:       "faction8",
+      type      	:       "ability" ,
+      text		:	"Spend 1 trade good to add +1 to any dice rolled in combat" ,
+    });
+
+
+
+    this.importTech('faction8-merchant-class', {
+
+      name        :       "Analytic" ,
+      faction     :       "faction8",
+      type        :       "ability" ,
+      text	  : 	  "May refresh commodities for free when Trade is played" ,
+      initialize     :    function(imperium_self, player) {
+        if (imperium_self.faction8_merchant_class_swapped == undefined) {
+          imperium_self.faction8_merchant_class_swapped = 1;
+
+          imperium_self.faction8_merchant_class_original_event = imperium_self.strategy_cards['trade'].strategySecondaryEvent;
+          imperium_self.strategy_cards["trade"].strategySecondaryEvent = function(imperium_self, player, strategy_card_player) {
+
+            if (imperium_self.doesPlayerHaveTech(player, "faction8-merchant-class") && player != strategy_card_player && imperium_self.game.player == player) {
+
+              let html = '<p>Do you wish to refresh your commodities free-of-charge?"';
+                  html += '<li class="option" id="yes">yes, of course</li>';
+                  html += '<li class="option" id="no">nom perhaps not</li>';
+
+              imperium_self.updateStatus(html);
+
+              $('.option').off();
+              $('.option').on('click', function() {
+                let id = $(this).attr("id");
+                $(this).hide();
+                if (id != "yes") {
+		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+            	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"commodities"+"\t"+imperium_self.game.players_info[imperium_self.game.player-1].commodity_limit);
+		  imperium_self.endTurn();
+		  return;
+                } else {
+                  imperium_self.endTurn();
+		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+            	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                }
+              });
+
+            } else {
+              imperium_self.faction8_merchant_class_original_event(imperium_self, player, strategy_card_player);
+            }
+          }
+        }
+      }
+    });
+
+
+    this.importTech('faction8-guild-ships', {
+
+      name        :       "Guild Ships" ,
+      faction     :       "faction8",
+      type        :       "ability" ,
+      text	  :	  "May trade with non-neighbours" ,
+      gainTechnology : function(imperium_self, gainer, tech) {
+        if (tech == "faction8-guild-ships") {
+          imperium_self.game.players_info[gainer-1].may_trade_with_non_neighbours = 1;
+        }
+      },
+    });
+
+
+    this.importTech('faction8-arbiters', {
+      name        :       "Arbiters" ,
+      faction     :       "faction8",
+      type        :       "ability" ,
+      text	  :	  "May trade in action cards" ,
+      gainTechnology : function(imperium_self, gainer, tech) {
+        if (tech == "faction8-arbiters") {
+          imperium_self.game.players_info[gainer-1].may_trade_action_cards = 1;
+        }
+      },
+    });
+
+
+
+    this.importTech('faction8-production-biomes', {
+      name        :       "Production Biomes" ,
+      faction     :       "faction8",
+      type        :       "special" ,
+      color       : 	"green" ,
+      prereqs	:	["green","green"],
+      text	:	"Spend strategy token to gain 4 trade goods. Pick a player to earn 2 trade goods." ,
+      initialize  : function(imperium_self, player) {
+        if (imperium_self.game.players_info[player-1].production_biomes == undefined) {
+          imperium_self.game.players_info[player-1].production_biomes = 0;
+          imperium_self.game.players_info[player-1].production_biomes_exhausted = 0;
+        }
+      },
+      gainTechnology : function(imperium_self, gainer, tech) {
+        if (tech == "faction8-production-biomes") {
+          imperium_self.game.players_info[gainer-1].production_biomes = 1;
+          imperium_self.game.players_info[gainer-1].production_biomes_exhausted = 0;
+        }
+      },
+      onNewRound     :    function(imperium_self, player) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes")) {
+          imperium_self.game.players_info[player-1].production_biomes_exhausted = 0;
+        }
+      },
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu === "main") {
+	  if (imperium_self.game.players_info[player-1].production_biomes === 1) {
+            x.event = 'production_biomes';
+            x.html = '<li class="option" id="production_biomes">production biomes</li>';
+	  }
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction8-production-biomes") && menu === "main") {
+          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+            if (imperium_self.game.state.active_player_moved == 0) {
+              return 1;
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+
+        if (imperium_self.game.player == player) {
+
+          imperium_self.playerSelectPlayerWithFilter(
+            "You spend 1 strategy token. You gain 4 Trade Goods. Pick player to gain 2 Trade Goods: ",
+            function(player) { if (player.player !== imperium_self.game.player) { return 1; } return 0; },
+            function(pnum) {
+	      // player = player number here
+              imperium_self.addMove("resolve\tplay");
+              imperium_self.addMove("setvar\tstate\t0\tactive_player_moved\t" + "int" + "\t" + "0");
+              imperium_self.addMove("player_end_turn\t" + imperium_self.game.player);
+              imperium_self.addMove("purchase\t"+pnum+"\t"+"goods"+"\t"+"2");
+              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\t"+"goods"+"\t"+"4");
+              imperium_self.addMove("expend\t"+imperium_self.game.player+"\t"+"strategy"+"\t"+"1");
+              imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " earns trade goods through production biomes");
+              imperium_self.endTurn();
+              return 0;
+            },
+            null
+          );
+          return 0;
+        };
+      }
+
+    });
+
+
+    this.importTech('faction8-quantum-datahub-node', {
+      name        :       "Quantum Datahub Node" ,
+      faction     :       "faction8",
+      type        :       "special" ,
+      color       	: "yellow" ,
+      prereqs	:	["yellow","yellow", "yellow"],
+      text	:	"Spend strategy token to swap strategy cards with one player. Give them 3 trade goods." ,
+      initialize  : function(imperium_self, player) {
+        if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node == undefined) {
+          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node = 0;
+          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
+        }
+      },
+      gainTechnology : function(imperium_self, gainer, tech) {
+        if (tech == "faction8-quantum-datahub-node") {
+          imperium_self.game.players_info[gainer-1].faction8_quantum_datahub_node = 1;
+          imperium_self.game.players_info[gainer-1].faction8_quantum_datahub_node_exhausted = 0;
+        }
+      },
+      onNewRound     :    function(imperium_self, player) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node")) {
+          imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted = 0;
+        }
+      },
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu === "main") {
+	  if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node === 1) {
+            x.event = 'quantum_datahub_node';
+            x.html = '<li class="option" id="quantum_datahub_node">quantum datahub node</li>';
+	  }
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (imperium_self.doesPlayerHaveTech(player, "faction8-quantum-datahub-node") && menu === "main") {
+          if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
+            if (imperium_self.game.players_info[player-1].faction8_quantum_datahub_node_exhausted == 0) {
+              if (imperium_self.game.state.active_player_moved == 0) {
+                 return 1;
+              }
+            }
+          }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+
+        if (imperium_self.game.player == player) {
+
+          imperium_self.playerSelectPlayerWithFilter(
+            "Steal strategy card from whom? Return one of yours and 3 trade goods" ,
+            function(player) { if (player.player !== imperium_self.game.player) { return 1; } return 0; },
+            function(pnum) {
+
+	      let strategy_cards = imperium_self.returnStrategyCards();
+
+              let html = '<div>Select Strategy Card to Steal: </div><ul>"';
+	      for (let i = 0; i < imperium_self.game.players_info[pnum-1].strategy.length; i++) {
+		let s = imperium_self.game.players_info[pnum-1].strategy[i];
+                html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
+	      }
+              html += '<li class="option" id="skip">skip</li>';
+
+              imperium_self.updateStatus(html);
+
+              $('.option').off();
+              $('.option').on('click', function() {
+
+                let id = $(this).attr("id");
+                $(this).hide();
+
+		if (id == "skip") {
+		  imperium_self.updateLog("Hacan skips Quantum Datahub Node");
+                  imperium_self.endTurn();
+                  return;
+		}
+
+		let pull_strategy_card = imperium_self.game.players_info[pnum-1].strategy[id];
+		let pull_strategy_card_from = pnum;
+
+	        let html = '<div>Select Your Strategy Card to Return: </div><ul>"';
+	        for (let i = 0; i < imperium_self.game.players_info[imperium_self.game.player-1].strategy.length; i++) {
+	   	  let s = imperium_self.game.players_info[imperium_self.game.player-1].strategy[i];
+                  html += `<li class="option" id="${i}">${strategy_cards[s].name}</li>`;
+	        }
+                html += '<li class="option" id="skip">skip</li>';
+
+                imperium_self.updateStatus(html);
+
+                $('.option').off();
+                $('.option').on('click', function() {
+
+                  let id = parseInt($(this).attr("id"));
+                  $(this).hide();
+
+		  let push_strategy_card = imperium_self.game.players_info[imperium_self.game.player-1].strategy[id];
+
+	  	  if (id == "skip") {
+		    imperium_self.updateLog("Hacan skips Quantum Datahub Node");
+                    imperium_self.endTurn();
+                    return;
+	          }
+
+		  imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"faction8_quantum_datahub_node_exhausted"+"\t"+"int"+"\t"+"1");
+		  imperium_self.addMove("give"+"\t"+pull_strategy_card_from+"\t"+imperium_self.game.player+"\t"+"strategy"+"\t"+pull_strategy_card);
+		  imperium_self.addMove("give"+"\t"+imperium_self.game.player+"\t"+pull_strategy_card_from+"\t"+"strategy"+"\t"+push_strategy_card);
+		  imperium_self.addMove(`NOTIFY\tPlayers swap ${push_strategy_card} and ${pull_strategy_card}`);
+                  imperium_self.endTurn();
+                });
+              });
+	    }
+	  );
+
+          return 0;
+        };
+
+	return 0;
+      }
+    });
+
+
+
+
+
     this.importFaction('faction2', {
       id		:	"faction2" ,
       name		: 	"Universities of Jol Nar",
@@ -1398,6 +1694,7 @@ console.log("P: " + planet);
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	4,
       intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`
     });
 
@@ -1696,6 +1993,7 @@ console.log("P: " + planet);
       //action_cards      :       ["trade-rider", "imperial-rider"],
       background	: 	'faction7.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	4,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Embers of Muaat, a faction which forges its instruments of war in the heat of lava-powered furnaces and whose technical research expands to conquering the heat of the very starts themselves. Goodl luck!</div>`
     });
 
@@ -1940,6 +2238,7 @@ console.log("P: " + planet);
       tech		: 	["faction4-unrelenting", "faction4-exotrireme-i", "faction4-flagship"],
       background	: 	'faction4.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sardaak N'Orr, an overpowered faction known for its raw strength in combat. Your brutal power makes you an intimidating faction on the board. Good luck!</div>`
     });
 
@@ -2242,6 +2541,7 @@ console.log("P: " + planet);
       tech		:	["neural-motivator","antimass-deflectors", "faction1-orbital-drop", "faction1-versatile", "faction1-flagship"],
       background	: 	"faction1.jpg",
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	4,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sol Federation. a Terran faction under cellular military government. Your reinforced infantry and tactical flexibility will be important in your fight for the Imperial Throne. Good luck!</div>`
     });
  
@@ -2430,7 +2730,7 @@ console.log("P: " + planet);
       //action_cards	:	["assassinate-representative","diplomatic-scandal"],
       tech		: 	["graviton-laser-system","faction3-peace-accords","faction3-quash","faction3-flagship"],
       background	: 	'faction3.jpg',
-
+      commodity_limit	:	4,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the XXCha Kingdom, a faction which excels in diplomacy and defensive weaponry. With the proper alliances and political maneuvers your faction you can be a contender for the Imperial Throne. Good luck!</div>`
     });
@@ -2825,6 +3125,7 @@ console.log("P: " + planet);
       tech		: 	["sarween-tools", "faction5-indoctrination", "faction5-devotion", "faction5-flagship"],
       background	: 	'faction5.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	2,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yin Brotherhood, a monastic order of religious zealots whose eagerness to sacrifice their lives for the collective good makes them terrifying in one-on-one combat. Direct their self-destructive passion and you can win the Imperial Throne. Good luck!</div>`
     });
 
@@ -3230,6 +3531,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
+      commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
 
@@ -12872,6 +13174,7 @@ handleSystemsMenuItem() {
     if (obj.objectives == null)  	{ obj.objectives = []; }
     if (obj.ground_units == null) 	{ obj.ground_units = []; }
     if (obj.tech == null) 		{ obj.tech = []; }
+    if (obj.commodity_limit == null) 	{ obj.commodity_limit = 3; }
     if (obj.intro == null) 		{ obj.intro = `
         <div style="font-weight:bold">The Republic has fallen!</div>
         <div style="margin-top:10px">
@@ -15258,7 +15561,18 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+
+	if (type === "strategy") {
+	  this.game.players_info[recipient-1].strategy.push(details);
+	  for (let i = 0; i < this.game.players_info[giver-1].strategy.length; i++) {
+	    if (this.game.players_info[giver-1].strategy[i] === details) {
+	      this.game.players_info[giver-1].strategy.splice(i, 1);
+	    }
+	  }
+        }
+
+
+        if (type === "action") {
 	  if (this.game.player == recipient) {
 	    this.game.deck[1].hand.push(details);
             let ac_in_hand = this.returnPlayerActionCards(this.game.player);
@@ -15319,7 +15633,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+        if (type === "action") {
 	  if (details === "random") {
 	    if (this.game.player == pullee) {
 
@@ -15461,6 +15775,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
   	this.game.queue.splice(qe, 1);
 
         let log_offer = '';
+
         let offering_html = this.returnFaction(offering_faction) + " makes a trade offer to " + this.returnFaction(faction_to_consider) + ": ";
 	    offering_html += '<div style="padding:20px;clear:left">';
 
@@ -15483,6 +15798,15 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_on_offer.action_cards.length > 0) {
+	      if (stuff_on_offer.goods >= 1 || stuff_on_offer.promissaries.length >= 1) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
+	        let ac = stuff_on_offer.action_cards[i];
+		log_offer += ac;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -15514,6 +15838,17 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_in_return.action_cards.length > 0) {
+	      nothing_check = "";
+	      if (stuff_in_return.goods > 1 || stuff_in_return.promissaries.length > 0) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
+	        nothing_check = "";
+	        let ac = stuff_in_return.action_cards[i];
+		log_offer += ac;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {
@@ -15577,6 +15912,13 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
   	this.game.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
        	this.game.players_info[faction_responding-1].commodities -= parseInt(response.goods);
+
+	if (offer.action_cards) {
+	  for (let i = 0; i < offer.action_cards.length; i++) {
+	    this.giveActionCard(offering_faction, faction_responding, offer.action_cards[i]);
+	  }
+	}
+	// no action cards received so no response.action_cards
 
 	if (offer.promissaries) {
 	  for (let i = 0; i < offer.promissaries.length; i++) {
@@ -18878,6 +19220,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
               <option value="faction5">Brotherhood of Yin</option>
               <option value="faction6">Yssaril Tribes</option>
               <option value="faction7">Embers of Muaat</option>
+              <option value="faction8">Emirates of Hacan</option>
             </select>
       `;
     }
@@ -18971,12 +19314,15 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 0;
-    players[i].commodities = 0;
+    players[i].goods = 2;
+    players[i].commodities = 2;
     players[i].commodity_limit = 3;
+    // some factions have different commodity limits
+    if (players[i].faction.commodity_limit > 0) { players[i].commodity_limit = players[i].faction.commodity_limit; }
     players[i].vp = 0;
     players[i].passed = 0;
     players[i].player = (i+1);
+    players[i].strategy = [];        // strategy cards  
     players[i].strategy_cards_played = [];
     players[i].strategy_cards_retained = [];
     players[i].cost_of_technology_primary = 6;
@@ -19028,6 +19374,8 @@ returnPlayers(num = 0) {
     players[i].may_repair_damaged_ships_after_space_combat = 0;
     players[i].may_assign_first_round_combat_shot = 0;
     players[i].production_bonus = 0;
+    players[i].may_trade_with_non_neighbours = 0;
+    players[i].may_trade_action_cards = 0;
     players[i].may_player_produce_without_spacedock = 0;
     players[i].may_player_produce_without_spacedock_production_limit = 0;
     players[i].may_player_produce_without_spacedock_cost_limit = 0;
@@ -19109,7 +19457,6 @@ returnPlayers(num = 0) {
     players[i].tech = [];
     players[i].tech_exhausted_this_turn = [];
     players[i].upgrades = [];
-    players[i].strategy = [];        // strategy cards  
 
     // scored objectives
     players[i].objectives_scored = [];
@@ -19245,7 +19592,6 @@ playerTurn(stage = "main") {
       imperium_self.endTurn();
       return 0;
     }
-
 
     this.updateStatus(html);
 
@@ -22271,6 +22617,28 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
   let goods_received = 0;
   let promissaries_offered = "";
   let promissaries_received = "";
+  let action_cards_offered = "";
+  let action_cards_received = "";
+
+  if (their_offer.action_cards) {
+    if (their_offer.action_cards.length > 0) {
+      for (let i = 0; i < their_offer.action_cards.length; i++) {
+        let ac = their_offer.action_cards[i];
+        if (i > 0) { action_cards_received += ', '; }
+        action_cards_received += ac;
+      }
+    }
+  }
+
+  if (my_offer.action_cards) {
+    if (my_offer.action_cards.length > 0) {
+      for (let i = 0; i < my_offer.action_cards.length; i++) {
+        let ac = my_offer.action_cards[i];
+        if (i > 0) { action_cards_offered += ', '; }
+        action_cards_offered += ac;
+      }
+    }
+  }
 
   if (their_offer.promissaries) {
     if (their_offer.promissaries.length > 0) {
@@ -22331,6 +22699,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
   playerTrade() {
 
+
     let imperium_self = this;
     let factions = this.returnFactions();
 
@@ -22338,11 +22707,30 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     let receive_selected = 0;
     let offer_promissaries = [];
     let receive_promissaries = [];
+    let offer_action_cards = [];
+    let receive_action_cards = [];
     let max_offer = 0;
     let max_receipt = 0;
 
 
-    let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+    let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
+
+      let receive_action_cards_text = 'no action cards';
+      for (let i = 0; i < receive_action_cards.length; i++) {
+        if (i == 0) { receive_action_cards_text = ''; }
+        let pm = receive_action_cards[i];
+	if (i > 0) { receive_action_cards_text += ', '; }
+        receive_action_cards_text += `${imperium_self.action_cards[pm].name}`;	
+      }
+
+      let offer_action_cards_text = 'no action cards';
+      for (let i = 0; i < offer_action_cards.length; i++) {
+        if (i == 0) { offer_action_cards_text = ''; }
+        let pm = offer_action_cards[i];
+	if (i > 0) { offer_action_cards_text += ', '; }
+        offer_action_cards_text += `${imperium_self.action_cards[pm].name}`;
+      }
+
 
       let receive_promissary_text = 'no promissaries';
       for (let i = 0; i < receive_promissaries.length; i++) {
@@ -22367,10 +22755,12 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
+      //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
       html += '<li id="promissary_offer" class="option">you give <span class="give_promissary">'+offer_promissary_text+'</span></li>';
       html += '<li id="promissary_receive" class="option">you receive <span class="receive_promissary">'+receive_promissary_text+'</span></li>';
       html += '<li id="confirm" class="option">submit offer</li>';
-      html += '<li id="cancel" class="option">cancel</li>';
+      html += '<li id="cancel" class="option">cancel offer</li>';
       html += '</ul>';
 
       imperium_self.updateStatus(html);
@@ -22387,12 +22777,20 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	  imperium_self.playerTurn();
 	  return;
 	}
+	if (selected == "action_cards_offer") {
+	  actionCardsTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+	}
+	if (selected == "action_cards_receive") {
+	  actionCardsTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+	}
 	if (selected == "promissary_offer") {
-	  promissaryTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	  promissaryTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 	}
 	if (selected == "promissary_receive") {
-	  promissaryTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	  promissaryTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 	}
 
@@ -22401,9 +22799,11 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let my_offer = {};
           my_offer.goods = $('.offer_total').html();
 	  my_offer.promissaries = offer_promissaries;
+	  my_offer.action_cards = offer_action_cards;
           let my_receive = {};
           my_receive.goods = $('.receive_total').html();
 	  my_receive.promissaries = receive_promissaries;
+	  my_receive.action_cards = receive_action_cards;
 
           imperium_self.addMove("offer\t" + imperium_self.game.player + "\t" + player + "\t" + JSON.stringify(my_offer) + "\t" + JSON.stringify(my_receive));
           imperium_self.updateStatus("trade offer submitted");
@@ -22416,11 +22816,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
       });
     }
+
+
+
     //
     // mode = 1 // offer
 	      2 // receive
     //
-    let promissaryTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+    let promissaryTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
       // offer mine to them
       if (mode == 1) {
@@ -22450,18 +22853,17 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let prom = $(this).attr("id");
 
           if (prom == "cancel") {
-            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
             return 0;
           }
 	  
 	  let promobj = { player : imperium_self.game.player , promissary : imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[prom] }
 	  offer_promissaries.push(promobj);
-          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 
 	});
       }
-
 
 
       // request theirs
@@ -22491,27 +22893,88 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let prom = $(this).attr("id");
 
           if (prom == "cancel") {
-            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
             return 0;
           }
 	  
 	  let promobj = { player : player , promissary : imperium_self.game.players_info[player-1].promissary_notes[prom] }
 	  receive_promissaries.push(promobj);
-          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 
 	});
-
-
       }
 
     }
-    let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+
+
+
+    //
+    // mode = 1 // offer
+	      2 // receive
+    //
+    let actionCardsTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
+
+      // offer mine to them
+      if (mode == 1) {
+
+        let html = '<div class="sf-readable">Add Action Card to YOUR Offer: </div><ul>';
+        for (let i = 0; i < imperium_self.game.deck[1].hand.length; i++) {
+	  let ac = imperium_self.game.deck[1].hand[i];
+	  let already_offered = 0;
+	  for (let b = 0; b < offer_action_cards.length; b++) {
+	    if (offer_action_cards[b] === ac) {
+	      already_offered = 1;
+	    }
+	  }
+	  if (already_offered == 0) {
+            html += `  <li class="option" id="${ac}">${ac}</li>`;
+          }
+        }
+        html += `  <li class="option" id="cancel">cancel</li>`;
+
+	imperium_self.updateStatus(html);
+        $('.option').off();
+        $('.option').on('click', function () {
+
+          let ac = $(this).attr("id");
+
+          if (ac === "cancel") {
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+            return 0;
+          }
+	  
+	  offer_action_cards.push(ac);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+
+	});
+      }
+
+
+      if (mode == 2) {
+        let html = '<div class="sf-readable">You may not request action cards - players must send on their turn</div><ul>';
+        html += `  <li class="option" id="cancel">return to trade menu</li>`;
+	imperium_self.updateStatus(html);
+        $('.option').off();
+        $('.option').on('click', function () {
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+          return 0;
+	});
+      }
+
+    }
+
+
+    let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
       let html = '<div class="sf-readable">Make Trade Offer to Faction: </div><ul>';
       for (let i = 0; i < imperium_self.game.players_info.length; i++) {
         if (imperium_self.game.players_info[i].traded_this_turn == 0 && (i + 1) != imperium_self.game.player) {
-          if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1))) {
+          if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1)) ||
+	      imperium_self.game.players_info[imperium_self.game.player-1].may_trade_with_non_neighbours == 1 ||
+	      imperium_self.game.players_info[i].may_trade_with_non_neighbours == 1
+	  ) {
             html += `  <li class="option" id="${i}">${factions[imperium_self.game.players_info[i].faction].name}</li>`;
           }
         }
@@ -22534,7 +22997,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         max_offer = imperium_self.game.players_info[imperium_self.game.player - 1].commodities + imperium_self.game.players_info[imperium_self.game.player - 1].goods;
         max_receipt = imperium_self.game.players_info[parseInt(faction)].commodities + imperium_self.game.players_info[parseInt(faction)].goods;
 
-	goodsTradeInterface(imperium_self, (parseInt(faction)+1), mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	goodsTradeInterface(imperium_self, (parseInt(faction)+1), mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 
       });
     }
@@ -22542,7 +23005,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     //
     // start with the main interface
     //
-    mainTradeInterface(imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+    mainTradeInterface(imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 
   }
 
@@ -26351,8 +26814,10 @@ playerDiscardActionCards(num, mycallback=null) {
 	    return 1;
 	  }
         }
+        if (this.game.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
       }
     }
+    if (this.game.players_info[player-1].may_trade_with_non_neighbours == 1) { return 1; }
     return 0;
   }
   
@@ -28934,6 +29399,24 @@ playerDiscardActionCards(num, mycallback=null) {
   }
 
 
+
+  giveActionCard(sender, receiver, ac) {
+
+    if (this.game.player == sender) {
+      for (let k = 0; k < this.game.deck[1].hand.length; k++) {
+	if (this.game.deck[1].hand[k] === ac) {
+	  this.game.deck[1].hand.splice(k, 1);
+	}
+      }
+    }
+    if (this.game.player == receiver) {
+      this.game.deck[1].hand.push(ac);
+    }
+
+  }
+
+
+
   givePromissary(sender, receiver, promissary) {
     this.game.players_info[receiver-1].promissary_notes.push(promissary);
 
@@ -31168,7 +31651,6 @@ updateSectorGraphics(sector) {
       </div>`;
 
     }
-    //this.cardbox.showCardboxHTML(thiscard, '<img src="/imperium/img' + thiscard.img + '" style="width:100%" /><div class="strategy_card_overlay">'+thiscard.text+'</div>'+strategy_card_bonus_html);
     this.cardbox.showCardboxHTML(thiscard, thiscard.returnCardImage());
   }
 

@@ -78,12 +78,15 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 0;
-    players[i].commodities = 0;
+    players[i].goods = 2;
+    players[i].commodities = 2;
     players[i].commodity_limit = 3;
+    // some factions have different commodity limits
+    if (players[i].faction.commodity_limit > 0) { players[i].commodity_limit = players[i].faction.commodity_limit; }
     players[i].vp = 0;
     players[i].passed = 0;
     players[i].player = (i+1);
+    players[i].strategy = [];        // strategy cards  
     players[i].strategy_cards_played = [];
     players[i].strategy_cards_retained = [];
     players[i].cost_of_technology_primary = 6;
@@ -135,6 +138,8 @@ returnPlayers(num = 0) {
     players[i].may_repair_damaged_ships_after_space_combat = 0;
     players[i].may_assign_first_round_combat_shot = 0;
     players[i].production_bonus = 0;
+    players[i].may_trade_with_non_neighbours = 0;
+    players[i].may_trade_action_cards = 0;
     players[i].may_player_produce_without_spacedock = 0;
     players[i].may_player_produce_without_spacedock_production_limit = 0;
     players[i].may_player_produce_without_spacedock_cost_limit = 0;
@@ -216,7 +221,6 @@ returnPlayers(num = 0) {
     players[i].tech = [];
     players[i].tech_exhausted_this_turn = [];
     players[i].upgrades = [];
-    players[i].strategy = [];        // strategy cards  
 
     // scored objectives
     players[i].objectives_scored = [];
@@ -352,7 +356,6 @@ playerTurn(stage = "main") {
       imperium_self.endTurn();
       return 0;
     }
-
 
     this.updateStatus(html);
 
@@ -3374,10 +3377,34 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
   let imperium_self = this;
 
+  let action_cards = this.returnActionCards();
+
   let goods_offered = 0;
   let goods_received = 0;
   let promissaries_offered = "";
   let promissaries_received = "";
+  let action_cards_offered = "";
+  let action_cards_received = "";
+
+  if (their_offer.action_cards) {
+    if (their_offer.action_cards.length > 0) {
+      for (let i = 0; i < their_offer.action_cards.length; i++) {
+        let ac = their_offer.action_cards[i];
+        if (i > 0) { action_cards_received += ', '; }
+        action_cards_received += action_cards[ac].name;
+      }
+    }
+  }
+
+  if (my_offer.action_cards) {
+    if (my_offer.action_cards.length > 0) {
+      for (let i = 0; i < my_offer.action_cards.length; i++) {
+        let ac = my_offer.action_cards[i];
+        if (i > 0) { action_cards_offered += ', '; }
+        action_cards_offered += action_cards[ac].name;
+      }
+    }
+  }
 
   if (their_offer.promissaries) {
     if (their_offer.promissaries.length > 0) {
@@ -3438,6 +3465,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
   playerTrade() {
 
+
     let imperium_self = this;
     let factions = this.returnFactions();
 
@@ -3445,11 +3473,31 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     let receive_selected = 0;
     let offer_promissaries = [];
     let receive_promissaries = [];
+    let offer_action_cards = [];
+    let receive_action_cards = [];
     let max_offer = 0;
     let max_receipt = 0;
 
 
-    let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+    let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
+
+      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1) {
+        let receive_action_cards_text = 'no action cards';
+        for (let i = 0; i < receive_action_cards.length; i++) {
+          if (i == 0) { receive_action_cards_text = ''; }
+          let pm = receive_action_cards[i];
+  	  if (i > 0) { receive_action_cards_text += ', '; }
+          receive_action_cards_text += `${imperium_self.action_cards[pm].name}`;	
+        }
+
+        let offer_action_cards_text = 'no action cards';
+        for (let i = 0; i < offer_action_cards.length; i++) {
+          if (i == 0) { offer_action_cards_text = ''; }
+          let pm = offer_action_cards[i];
+  	  if (i > 0) { offer_action_cards_text += ', '; }
+          offer_action_cards_text += `${imperium_self.action_cards[pm].name}`;
+        }
+      }
 
       let receive_promissary_text = 'no promissaries';
       for (let i = 0; i < receive_promissaries.length; i++) {
@@ -3474,10 +3522,12 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
+      html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
+      //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
       html += '<li id="promissary_offer" class="option">you give <span class="give_promissary">'+offer_promissary_text+'</span></li>';
       html += '<li id="promissary_receive" class="option">you receive <span class="receive_promissary">'+receive_promissary_text+'</span></li>';
       html += '<li id="confirm" class="option">submit offer</li>';
-      html += '<li id="cancel" class="option">cancel</li>';
+      html += '<li id="cancel" class="option">cancel offer</li>';
       html += '</ul>';
 
       imperium_self.updateStatus(html);
@@ -3494,12 +3544,20 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	  imperium_self.playerTurn();
 	  return;
 	}
+	if (selected == "action_cards_offer") {
+	  actionCardsTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+	}
+	if (selected == "action_cards_receive") {
+	  actionCardsTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+	}
 	if (selected == "promissary_offer") {
-	  promissaryTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	  promissaryTradeInterface(imperium_self, player, 1, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 	}
 	if (selected == "promissary_receive") {
-	  promissaryTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	  promissaryTradeInterface(imperium_self, player, 2, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 	}
 
@@ -3508,9 +3566,11 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let my_offer = {};
           my_offer.goods = $('.offer_total').html();
 	  my_offer.promissaries = offer_promissaries;
+	  my_offer.action_cards = offer_action_cards;
           let my_receive = {};
           my_receive.goods = $('.receive_total').html();
 	  my_receive.promissaries = receive_promissaries;
+	  my_receive.action_cards = receive_action_cards;
 
           imperium_self.addMove("offer\t" + imperium_self.game.player + "\t" + player + "\t" + JSON.stringify(my_offer) + "\t" + JSON.stringify(my_receive));
           imperium_self.updateStatus("trade offer submitted");
@@ -3523,11 +3583,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
       });
     }
+
+
+
     //
     // mode = 1 // offer
 	      2 // receive
     //
-    let promissaryTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+    let promissaryTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
       // offer mine to them
       if (mode == 1) {
@@ -3557,18 +3620,17 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let prom = $(this).attr("id");
 
           if (prom == "cancel") {
-            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
             return 0;
           }
 	  
 	  let promobj = { player : imperium_self.game.player , promissary : imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[prom] }
 	  offer_promissaries.push(promobj);
-          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 
 	});
       }
-
 
 
       // request theirs
@@ -3598,27 +3660,88 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           let prom = $(this).attr("id");
 
           if (prom == "cancel") {
-            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
             return 0;
           }
 	  
 	  let promobj = { player : player , promissary : imperium_self.game.players_info[player-1].promissary_notes[prom] }
 	  receive_promissaries.push(promobj);
-          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 	  return;
 
 	});
-
-
       }
 
     }
-    let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface) {
+
+
+
+    //
+    // mode = 1 // offer
+	      2 // receive
+    //
+    let actionCardsTradeInterface = function (imperium_self, player, mode, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
+
+      // offer mine to them
+      if (mode == 1) {
+
+        let html = '<div class="sf-readable">Add Action Card to YOUR Offer: </div><ul>';
+        for (let i = 0; i < imperium_self.game.deck[1].hand.length; i++) {
+	  let ac = imperium_self.game.deck[1].hand[i];
+	  let already_offered = 0;
+	  for (let b = 0; b < offer_action_cards.length; b++) {
+	    if (offer_action_cards[b] === ac) {
+	      already_offered = 1;
+	    }
+	  }
+	  if (already_offered == 0) {
+            html += `  <li class="option" id="${ac}">${ac}</li>`;
+          }
+        }
+        html += `  <li class="option" id="cancel">cancel</li>`;
+
+	imperium_self.updateStatus(html);
+        $('.option').off();
+        $('.option').on('click', function () {
+
+          let ac = $(this).attr("id");
+
+          if (ac === "cancel") {
+            goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+            return 0;
+          }
+	  
+	  offer_action_cards.push(ac);
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+	  return;
+
+	});
+      }
+
+
+      if (mode == 2) {
+        let html = '<div class="sf-readable">You may not request action cards - players must send on their turn</div><ul>';
+        html += `  <li class="option" id="cancel">return to trade menu</li>`;
+	imperium_self.updateStatus(html);
+        $('.option').off();
+        $('.option').on('click', function () {
+          goodsTradeInterface(imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
+          return 0;
+	});
+      }
+
+    }
+
+
+    let mainTradeInterface = function (imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
       let html = '<div class="sf-readable">Make Trade Offer to Faction: </div><ul>';
       for (let i = 0; i < imperium_self.game.players_info.length; i++) {
         if (imperium_self.game.players_info[i].traded_this_turn == 0 && (i + 1) != imperium_self.game.player) {
-          if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1))) {
+          if (imperium_self.arePlayersAdjacent(imperium_self.game.player, (i + 1)) ||
+	      imperium_self.game.players_info[imperium_self.game.player-1].may_trade_with_non_neighbours == 1 ||
+	      imperium_self.game.players_info[i].may_trade_with_non_neighbours == 1
+	  ) {
             html += `  <li class="option" id="${i}">${factions[imperium_self.game.players_info[i].faction].name}</li>`;
           }
         }
@@ -3641,7 +3764,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         max_offer = imperium_self.game.players_info[imperium_self.game.player - 1].commodities + imperium_self.game.players_info[imperium_self.game.player - 1].goods;
         max_receipt = imperium_self.game.players_info[parseInt(faction)].commodities + imperium_self.game.players_info[parseInt(faction)].goods;
 
-	goodsTradeInterface(imperium_self, (parseInt(faction)+1), mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+	goodsTradeInterface(imperium_self, (parseInt(faction)+1), mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 
       });
     }
@@ -3649,7 +3772,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
     //
     // start with the main interface
     //
-    mainTradeInterface(imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface);
+    mainTradeInterface(imperium_self, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface);
 
   }
 
