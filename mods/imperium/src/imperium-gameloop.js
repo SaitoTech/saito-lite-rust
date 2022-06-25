@@ -2372,7 +2372,9 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
 	      if (selectable.length == 0) {
 
+	        let roll = this.rollDice();
 	        this.addMove("NOTIFY\t" + this.returnFaction(pullee) + " does not have any action cards");
+		// everyone else is burning a roll
 
 	      } else {
 
