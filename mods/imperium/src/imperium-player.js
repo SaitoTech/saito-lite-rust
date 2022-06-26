@@ -78,11 +78,17 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 10;
-    players[i].commodities = 2;
+    players[i].goods = 0;
+    players[i].commodities = 0;
     players[i].commodity_limit = 3;
     // some factions have different commodity limits
-    if (players[i].faction.commodity_limit > 0) { players[i].commodity_limit = players[i].faction.commodity_limit; }
+
+    let fctn = this.returnFactions();
+
+    if (fctn[players[i].faction].commodity_limit > 0) {
+      players[i].commodity_limit = fctn[players[i].faction].commodity_limit; 
+    }
+
     players[i].vp = 0;
     players[i].passed = 0;
     players[i].player = (i+1);
