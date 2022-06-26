@@ -576,7 +576,6 @@ playerPlayActionCardMenu(action_card_player, card, action_cards_played = []) {
       if (imperium_self.game.state.action_card_order === "simultaneous") {
         imperium_self.prependMove("resolve\tsimultaneous_action_card_player_menu\t1\t" + imperium_self.app.wallet.returnPublicKey());
         imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
-console.log("BROADCASTING MOVES 3: " + JSON.stringify(this.moves));
       }
       imperium_self.endTurn(); 
     });
@@ -3131,8 +3130,6 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
     }
   }
 
-console.log("Calculated Production Limit: " + calculated_production_limit);
-
   if (this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock == 1) {
     if (production_limit == 0 && this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit >= 0) { production_limit = this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_production_limit; }
     if (cost_limit == 0 && this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit >= 0) { cost_limit = this.game.players_info[this.game.player - 1].may_player_produce_without_spacedock_cost_limit; }
@@ -4527,9 +4524,9 @@ playerSelectUnitsToMove(destination) {
 
         if (already_moved == 1) {
           if (rift_passage == 0) {
-            html += `<li id="sector_${i}_${ii}" class=""><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b></li>`;
+            html += `<li id="sector_${i}_${ii}" class="option"><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b></li>`;
 	  } else {
-            html += `<li id="sector_${i}_${ii}" class=""><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b> - rift</li>`;
+            html += `<li id="sector_${i}_${ii}" class="option"><b>${imperium_self.returnShipInformation(obj.ships_and_sectors[i].ships[ii])}</b> - rift</li>`;
 	  }
         } else {
           if (obj.ships_and_sectors[i].ships[ii].move - (obj.ships_and_sectors[i].adjusted_distance[ii] + spent_distance_boost) >= 0) {
@@ -4573,11 +4570,6 @@ playerSelectUnitsToMove(destination) {
         // source should be OK as moving out does not add units
         imperium_self.addMove("space_invasion\t" + imperium_self.game.player + "\t" + destination);
         imperium_self.addMove("check_fleet_supply\t" + imperium_self.game.player + "\t" + destination);
-
-console.log("-------------------------");
-console.log("-----STUFF TO MOVE-------");
-console.log("-------------------------");
-console.log(JSON.stringify(obj.stuff_to_move));
 
         for (let y = 0; y < obj.stuff_to_move.length; y++) {
 
@@ -4724,20 +4716,31 @@ console.log(JSON.stringify(obj.stuff_to_move));
 
 	let are_there_fighters = 0;
         let fighters_available_to_move = 0;
-        for (let iii = 0; iii < sys.s.units[imperium_self.game.player - 1].length; iii++) {
-          if (sys.s.units[imperium_self.game.player - 1][iii].type == "fighter") {
-	    are_there_fighters = 1;
-            let fighter_already_moved = 0;
-            for (let z = 0; z < obj.stuff_to_move.length; z++) {
-              if (obj.stuff_to_move[z].sector == sector) {
-                if (obj.stuff_to_move[z].ii == iii) {
-                  fighter_already_moved = 1;
+        for (let sec = 0; sec < obj.ships_and_sectors.length; sec++) {
+          if (obj.ships_and_sectors[sec].sector === sys.s.tile) {
+            for (let ii = 0; ii < obj.ships_and_sectors[sec].ships.length; ii++) {
+              if (obj.ships_and_sectors[sec].ships[ii].type == "fighter") {
+  	        are_there_fighters = 1;
+                let fighter_already_moved = 0;
+
+                for (let z = 0; z < obj.stuff_to_move.length; z++) {
+  	          let unmoved_unit = 1;
+                  for (let zz = 0; zz < obj.stuff_to_move.length; zz++) {
+                    if (obj.stuff_to_move[zz].sector == sector) {
+                      if (obj.stuff_to_move[zz].ii == ii) {
+                        unmoved_unit = 0;
+                      }
+                    }
+                  }
+                  if (unmoved_unit == 0) {
+		    fighter_already_moved = 1;
+	          }
                 }
-              }
-            }
-            if (fighter_already_moved == 0) {
-              fighters_available_to_move++;
-            }
+                if (fighter_already_moved == 0) {
+                  fighters_available_to_move++;
+                }
+	      }
+	    }
           }
         }
 	if (are_there_fighters == 1) {
@@ -4813,9 +4816,7 @@ console.log(JSON.stringify(obj.stuff_to_move));
                 $('.status').show();
                 $('.status-overlay').hide();
               }
-
             }
-
 
             if (action2 === "addfighter") {
 
@@ -4844,6 +4845,13 @@ console.log(JSON.stringify(obj.stuff_to_move));
 
                         // remove from arrays (as loaded)
                         // removed fri june 12
+			// 
+			// EXTREMELY FRAGILE
+			// this is messy and there are edge-cases around fighters loading into ships
+			// and still being on the board. I *think* that this approach works, it 
+			// creates issues not-removing elements in some situations, like if a ship
+			// with capacity is loaded AFTER fighters are removed.
+			//
                         //obj.ships_and_sectors[sec].ships.splice(f, 1);
                         //obj.ships_and_sectors[sec].adjusted_distance.splice(f, 1);
                         obj.ships_and_sectors[sec].ships[f] = {};
@@ -4857,10 +4865,39 @@ console.log(JSON.stringify(obj.stuff_to_move));
                 }
               }
 
-              let unitjson = imperium_self.removeSpaceUnit(imperium_self.game.player, sector, "fighter");
-              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][obj.ships_and_sectors[i].ship_idxs[ii]]);
+	      // JUNE 26, 2022
+	      let remove_ship_at_index = 0;
+console.log("A");
+              for (let iii = 0; iii < sys.s.units[imperium_self.game.player - 1].length; iii++) {
+console.log("B");
+		if (sys.s.units[imperium_self.game.player - 1][iii].type == "fighter") {
+		  remove_ship_at_index = iii;
+	          obj.ships_and_sectors[i].removed_ship_idxs.push(remove_ship_at_index);
+		  break;
+		}
+	      }
 
-              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, obj.ships_and_sectors[i].ship_idxs[ii], unitjson);
+	      let load_into_this_ship_idx = ii;
+console.log("C");
+	      for (let iii = 0; iii < obj.ships_and_sectors[i].removed_ship_idxs.length; iii++) {
+console.log("D");
+	        if (obj.ships_and_sectors[i].removed_ship_idxs[iii] < load_into_this_ship_idx) {
+		  load_into_this_ship_idx--;
+		}
+	      }
+console.log("ABOUT TO LOAD SHIP: ");
+console.log("removed: ");
+console.log(JSON.stringify(obj.ships_and_sectors[i].removed_ship_idxs));
+console.log("original load idx: " + ii);
+console.log("adjusted load idx: " + load_into_this_ship_idx);
+
+              let unitjson = imperium_self.removeSpaceUnit(imperium_self.game.player, sector, "fighter");
+              //let unitjson = imperium_self.copySpaceUnit(imperium_self.game.player, sector, "fighter");
+              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+
+              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
+
+
 
               let loading = {};
               obj.stuff_to_load.push(loading);
@@ -4869,7 +4906,8 @@ console.log(JSON.stringify(obj.stuff_to_move));
               loading.source = "ship";
               loading.source_idx = "";
               loading.unitjson = unitjson;
-              loading.ship_idx = obj.ships_and_sectors[i].ship_idxs[ii];
+              //loading.ship_idx = obj.ships_and_sectors[i].ship_idxs[ii];
+              loading.ship_idx = load_into_this_ship_idx;
               loading.shipjson = shipjson_preload;
               loading.i = i;
               loading.ii = ii;
@@ -6062,8 +6100,6 @@ playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = nu
     }
 
     let unit_to_return = { sector: sector_array[action], planet_idx: planet_array[action], unit_idx: unit_idx[action], unit: unit_array[action] }
-
-console.log("returning unit: " + JSON.stringify(unit_to_return));
 
     imperium_self.updateStatus("");
     mycallback(unit_to_return);

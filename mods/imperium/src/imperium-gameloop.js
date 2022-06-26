@@ -1435,8 +1435,6 @@
 
   	this.game.queue.push("resolve\tsetinitiativeorder");
 
-console.log("SET INITIATIVE ORDER: " + JSON.stringify(initiative_order));
-
   	for (let i = initiative_order.length-1; i >= 0; i--) {
   	  if (this.game.players_info[initiative_order[i]-1].passed == 0) {
   	    this.game.queue.push("play\t"+initiative_order[i]);
@@ -2004,8 +2002,6 @@ this.game.state.end_round_scoring = 0;
 
 
       if (mv[0] === "must_exhaust_at_round_start") {
-
-console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
 	let imperium_self = this;
 	let player = parseInt(mv[1]);

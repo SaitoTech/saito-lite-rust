@@ -26,13 +26,11 @@
 	      let costs_per_hit = [];
 	      for (let i = 0; i < combat_info.modified_roll.length; i++) {
 	        if (combat_info.hits_or_misses[i] == 0) {
-	          // 2 trade goods per
 	          costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
 	        }
               }
 	      if (costs_per_hit.length > 0) {
-	        costs_per_hit.sort();
-	        costs_per_hit.reverse();
+	        costs_per_hit.sort((a,b)=>a-b);
 	        if (imperium_self.game.players_info[attacker-1].goods >= costs_per_hit[0]) {
 	          return 1;
 	        }
@@ -50,8 +48,7 @@
 	        }
               }
 	      if (costs_per_hit.length > 0) {
-	        costs_per_hit.sort();
-	        costs_per_hit.reverse();
+	        costs_per_hit.sort((a,b)=>a-b);
 	        if (imperium_self.game.players_info[defender-1].goods >= costs_per_hit[0]) {
 	          return 1;
 	        }
@@ -72,8 +69,8 @@
 	      costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
 	    }
 	  }
-	  costs_per_hit.sort();
-	  costs_per_hit.reverse();
+	  costs_per_hit.sort((a,b)=>a-b);
+console.log("SORTING: " + JSON.stringify(costs_per_hit));
           let html = '<p>Do you wish to boost hits with Flagship Ability?"';
 	  let cumulative_cost = 0;
 	  for (let i = 0; i < costs_per_hit.length; i++) {
@@ -120,7 +117,7 @@
 	      cumulative_cost += costs_per_hit[i];
 	    }
 	    imperium_self.addMove("NOTIFY\tHacan Flagship: "+((parseInt(id)+1)*2)+" trade goods buys "+(parseInt(id)+1)+" extra hits");
-	    imperium_self.addMove("expend\t"+attacker+"\t"+cumulative_cost+"\t"+"goods");
+	    imperium_self.addMove("expend\t"+at+"\t"+"goods"+"\t"+((parseInt(id)+1)*2));
 	    imperium_self.endTurn();
 
           });
