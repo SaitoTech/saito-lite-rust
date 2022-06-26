@@ -3260,6 +3260,23 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         }
   	return 1;
       }
+
+
+
+      if (mv[0] === "post_ships_fire_event") {
+        let z		 = this.returnEventObjects();
+  	let player       = parseInt(mv[1]);
+  	let defender     = mv[2];
+  	let attacker     = mv[3];
+  	let sector       = mv[4];
+  	let combat_info  = JSON.parse(mv[5]);
+        let z_index	 = parseInt(mv[6]);
+  	this.game.queue.splice(qe, 1);
+	z[z_index].postShipsFireEvent(this, player, defender, attacker, sector, combat_info);
+	return 0;
+      }
+
+
       if (mv[0] === "post_agenda_stage_event") {
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
@@ -3795,7 +3812,6 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 	  }
 	}
 
-
         let attacker       = parseInt(mv[1]);
         let defender       = parseInt(mv[2]);
         let type           = mv[3]; // space // infantry
@@ -4201,6 +4217,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 	  //
 	  let restrictions = [];
 
+
 	  this.game.queue.push("assign_hits\t"+player+"\t"+attacker+"\tspace\t"+sector+"\tpds\t"+total_hits+"\tpds");
 
           //
@@ -4567,6 +4584,19 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
   	    this.updateLog(this.returnFactionNickname(attacker) + ":  " + total_hits + " hits");
 	  }
 	  this.game.queue.push("assign_hits\t"+attacker+"\t"+defender+"\tspace\t"+sector+"\tspace\t"+total_hits+"\tspace_combat");
+
+
+	  //
+	  // check for pre-assign-buffs -- NEW JUNE 25
+	  //
+          let speaker_order = this.returnSpeakerOrder();
+          for (let i = 0; i < speaker_order.length; i++) {
+            for (let k = 0; k < z.length; k++) {
+              if (z[k].postShipsFireEventTriggers(this, speaker_order[i], defender, attacker, sector, combat_info) == 1) {
+                this.game.queue.push("post_ships_fire_event\t"+speaker_order[i]+"\t"+defender+"\t"+attacker+"\t"+sector+"\t"+JSON.stringify(combat_info)+"\t"+k);
+              }
+            }
+          }
 
         }
 

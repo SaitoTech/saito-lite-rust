@@ -4,7 +4,7 @@
       name		: 	"Emirates of Hacan",
       nickname		: 	"Hacan",
       homeworld		: 	"sector50",
-      space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
+      space_units	: 	["carrier","carrier","cruiser","fighter","fighter","flagship"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship", "faction8-quantum-datahub-node", "faction8-production-biomes"],
       background	: 	'faction8.jpg' ,
@@ -19,8 +19,116 @@
       faction     	:       "faction8",
       type      	:       "ability" ,
       text		:	"Spend 1 trade good to add +1 to any dice rolled in combat" ,
-    });
+      postShipsFireEventTriggers :    function(imperium_self, player, attacker, defender, sector, combat_info) {
+        if (player == attacker && combat_info.attacker == player) {
+          if (imperium_self.doesPlayerHaveTech(attacker, "faction8-flagship")) {
+            if (imperium_self.doesSectorContainPlayerUnit(attacker, sector, "flagship")) {
+	      let costs_per_hit = [];
+	      for (let i = 0; i < combat_info.modified_roll.length; i++) {
+	        if (combat_info.hits_or_misses[i] == 0) {
+	          // 2 trade goods per
+	          costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
+	        }
+              }
+	      if (costs_per_hit.length > 0) {
+	        costs_per_hit.sort();
+	        costs_per_hit.reverse();
+	        if (imperium_self.game.players_info[attacker-1].goods >= costs_per_hit[0]) {
+	          return 1;
+	        }
+              }
+            }
+          }
+        }
+        if (player == defender && combat_info.attacker == player) {
+          if (imperium_self.doesPlayerHaveTech(defender, "faction8-flagship")) {
+            if (imperium_self.doesSectorContainPlayerUnit(defender, sector, "flagship")) {
+	      let costs_per_hit = [];
+	      for (let i = 0; i < combat_info.modified_roll.length; i++) {
+	        if (combat_info.hits_or_misses[i] == 0) {
+	          costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
+	        }
+              }
+	      if (costs_per_hit.length > 0) {
+	        costs_per_hit.sort();
+	        costs_per_hit.reverse();
+	        if (imperium_self.game.players_info[defender-1].goods >= costs_per_hit[0]) {
+	          return 1;
+	        }
+              }
+            }
+          }
+        }
+        return 0;
+      },
+      postShipsFireEvent :    function(imperium_self, player, attacker, defender, sector, combat_info) {
+	if (player != imperium_self.game.player) {
+	  imperium_self.updateStatus("Hacan considering using Flagship Ability to modify hits...");
+	  return 0;
+	} else {
+	  let costs_per_hit = [];
+	  for (let i = 0; i < combat_info.modified_roll.length; i++) {
+	    if (combat_info.hits_or_misses[i] == 0) {
+	      costs_per_hit.push(2 * (parseInt(combat_info.hits_on[i]) - parseInt(combat_info.modified_roll[i])));
+	    }
+	  }
+	  costs_per_hit.sort();
+	  costs_per_hit.reverse();
+          let html = '<p>Do you wish to boost hits with Flagship Ability?"';
+	  let cumulative_cost = 0;
+	  for (let i = 0; i < costs_per_hit.length; i++) {
+	    cumulative_cost += costs_per_hit[i];
+            html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
+	  }
+          html += '<li class="option" id="no">skip ability</li>';
 
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+            $(this).hide();
+
+            if (id == "no") {
+	      imperium_self.endTurn();
+	      return;
+	    }
+
+	    let at = attacker;
+	    let df = defender;
+
+	    if (player == defender) {
+	      at = defender;
+	      df = attacker;
+	    }
+
+	    let old_hits = 0;
+	    let last_move = imperium_self.game.queue[imperium_self.game.queue.length-1];
+	    let lmv = last_move.split("\t");
+	    if (lmv.length > 5) {
+	      if (lmv[0] === "assign_hits") {
+		  if (at == lmv[1]) {
+		  old_hits = parseInt(lmv[6]); 
+	          imperium_self.addMove("resolve\tassign_hits");
+	        }
+	      }
+	    }
+
+	    imperium_self.addMove("assign_hits\t"+at+"\t"+df+"\tspace\t"+sector+"\tspace\t"+(parseInt(id)+1+old_hits)+"\tspace_combat");
+	    for (let i = 0; i < costs_per_hit.length; i++) {
+	      cumulative_cost += costs_per_hit[i];
+	    }
+	    imperium_self.addMove("NOTIFY\tHacan Flagship: "+((parseInt(id)+1)*2)+" trade goods buys "+(parseInt(id)+1)+" extra hits");
+	    imperium_self.addMove("expend\t"+attacker+"\t"+cumulative_cost+"\t"+"goods");
+	    imperium_self.endTurn();
+
+          });
+        }
+        return 0;
+      }
+    });
+	  
 
 
     this.importTech('faction8-merchant-class', {
