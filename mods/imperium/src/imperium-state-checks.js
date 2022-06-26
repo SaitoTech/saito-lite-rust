@@ -353,8 +353,10 @@
 	    return 1;
 	  }
         }
+        if (this.game.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
       }
     }
+    if (this.game.players_info[player-1].may_trade_with_non_neighbours == 1) { return 1; }
     return 0;
   }
   

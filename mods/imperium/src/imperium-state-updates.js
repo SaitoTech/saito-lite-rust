@@ -22,6 +22,24 @@
   }
 
 
+
+  giveActionCard(sender, receiver, ac) {
+
+    if (this.game.player == sender) {
+      for (let k = 0; k < this.game.deck[1].hand.length; k++) {
+	if (this.game.deck[1].hand[k] === ac) {
+	  this.game.deck[1].hand.splice(k, 1);
+	}
+      }
+    }
+    if (this.game.player == receiver) {
+      this.game.deck[1].hand.push(ac);
+    }
+
+  }
+
+
+
   givePromissary(sender, receiver, promissary) {
     this.game.players_info[receiver-1].promissary_notes.push(promissary);
 
