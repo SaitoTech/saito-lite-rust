@@ -1388,7 +1388,7 @@ console.log("P: " + planet);
       id		:	"faction8" ,
       name		: 	"Emirates of Hacan",
       nickname		: 	"Hacan",
-      homeworld		: 	"sector50",
+      homeworld		: 	"sector40",
       space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
@@ -1515,7 +1515,7 @@ console.log("P: " + planet);
 
     this.importTech('faction8-merchant-class', {
 
-      name        :       "Analytic" ,
+      name        :       "Mercantile" ,
       faction     :       "faction8",
       type        :       "ability" ,
       text	  : 	  "May refresh commodities for free when Trade is played" ,
@@ -1575,7 +1575,7 @@ console.log("P: " + planet);
 
 
     this.importTech('faction8-arbiters', {
-      name        :       "Arbiters" ,
+      name        :       "Arbitrage" ,
       faction     :       "faction8",
       type        :       "ability" ,
       text	  :	  "May trade in action cards" ,
