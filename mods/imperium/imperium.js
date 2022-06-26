@@ -24169,9 +24169,7 @@ playerSelectUnitsToMove(destination) {
               let ic = parseInt($('.capacity_remaining').html());
 
 	      let load_into_this_ship_idx = ii;
-console.log("C 2");
 	      for (let iii = 0; iii < obj.ships_and_sectors[i].removed_ship_idxs.length; iii++) {
-console.log("D 2");
 	        if (obj.ships_and_sectors[i].removed_ship_idxs[iii] < load_into_this_ship_idx) {
 		  load_into_this_ship_idx--;
 		}
@@ -24257,9 +24255,7 @@ console.log("D 2");
 
 	      // JUNE 26, 2022
 	      let remove_ship_at_index = 0;
-console.log("A");
               for (let iii = 0; iii < sys.s.units[imperium_self.game.player - 1].length; iii++) {
-console.log("B");
 		if (sys.s.units[imperium_self.game.player - 1][iii].type == "fighter") {
 		  remove_ship_at_index = iii;
 	          obj.ships_and_sectors[i].removed_ship_idxs.push(remove_ship_at_index);
@@ -24268,26 +24264,15 @@ console.log("B");
 	      }
 
 	      let load_into_this_ship_idx = ii;
-console.log("C");
 	      for (let iii = 0; iii < obj.ships_and_sectors[i].removed_ship_idxs.length; iii++) {
-console.log("D");
 	        if (obj.ships_and_sectors[i].removed_ship_idxs[iii] < load_into_this_ship_idx) {
 		  load_into_this_ship_idx--;
 		}
 	      }
-console.log("ABOUT TO LOAD SHIP: ");
-console.log("removed: ");
-console.log(JSON.stringify(obj.ships_and_sectors[i].removed_ship_idxs));
-console.log("original load idx: " + ii);
-console.log("adjusted load idx: " + load_into_this_ship_idx);
 
               let unitjson = imperium_self.removeSpaceUnit(imperium_self.game.player, sector, "fighter");
-              //let unitjson = imperium_self.copySpaceUnit(imperium_self.game.player, sector, "fighter");
               let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
-
               imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
-
-
 
               let loading = {};
               obj.stuff_to_load.push(loading);
