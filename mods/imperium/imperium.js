@@ -1389,9 +1389,9 @@ console.log("P: " + planet);
       name		: 	"Emirates of Hacan",
       nickname		: 	"Hacan",
       homeworld		: 	"sector50",
-      space_units	: 	["carrier","carrier","cruiser","fighter","fighter","flagship"],
+      space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
-      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship", "faction8-quantum-datahub-node", "faction8-production-biomes"],
+      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
       background	: 	'faction8.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       commodity_limit	:	6,
@@ -1455,10 +1455,10 @@ console.log("P: " + planet);
 	    }
 	  }
 	  costs_per_hit.sort((a,b)=>a-b);
-console.log("SORTING: " + JSON.stringify(costs_per_hit));
           let html = '<p>Do you wish to boost hits with Flagship Ability?"';
 	  let cumulative_cost = 0;
-	  for (let i = 0; i < costs_per_hit.length; i++) {
+	  let available_trade_goods = imperium_self.game.players_info[player - 1].goods;
+	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
 	    cumulative_cost += costs_per_hit[i];
             html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
 	  }
@@ -15920,7 +15920,8 @@ this.game.state.end_round_scoring = 0;
 	      }
 	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
 	        let ac = stuff_on_offer.action_cards[i];
-		log_offer += ac;
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -15962,7 +15963,8 @@ this.game.state.end_round_scoring = 0;
 	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
 	        nothing_check = "";
 	        let ac = stuff_in_return.action_cards[i];
-		log_offer += ac;
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {
@@ -22858,8 +22860,9 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
     let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
-      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1) {
-        let receive_action_cards_text = 'no action cards';
+      let receive_action_cards_text = 'no action cards';
+      let offer_action_cards_text = 'no action cards';
+      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
         for (let i = 0; i < receive_action_cards.length; i++) {
           if (i == 0) { receive_action_cards_text = ''; }
           let pm = receive_action_cards[i];
@@ -22867,7 +22870,6 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           receive_action_cards_text += `${imperium_self.action_cards[pm].name}`;	
         }
 
-        let offer_action_cards_text = 'no action cards';
         for (let i = 0; i < offer_action_cards.length; i++) {
           if (i == 0) { offer_action_cards_text = ''; }
           let pm = offer_action_cards[i];
@@ -23063,8 +23065,9 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       if (mode == 1) {
 
         let html = '<div class="sf-readable">Add Action Card to YOUR Offer: </div><ul>';
-        for (let i = 0; i < imperium_self.game.deck[1].hand.length; i++) {
-	  let ac = imperium_self.game.deck[1].hand[i];
+	let pac = imperium_self.returnPlayerActionCards(imperium_self.game.player);
+        for (let i = 0; i < pac.length; i++) {
+	  let ac = pac[i];
 	  let already_offered = 0;
 	  for (let b = 0; b < offer_action_cards.length; b++) {
 	    if (offer_action_cards[b] === ac) {
@@ -23072,7 +23075,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${ac}">${ac}</li>`;
+            html += `  <li class="option" id="${ac}">${imperium_self.action_cards[ac].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;
@@ -26089,8 +26092,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-//      return ["1_1", "4_7"];
-      return ["1_1", "2_1"];
+      return ["1_1", "4_7"];
+//
+// for testing - place factions in fighting
+// position on start.
+//
+//      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {

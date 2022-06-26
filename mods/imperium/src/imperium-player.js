@@ -3478,8 +3478,9 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
     let goodsTradeInterface = function (imperium_self, player, mainTradeInterface, goodsTradeInterface, promissaryTradeInterface, actionCardsTradeInterface) {
 
-      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1) {
-        let receive_action_cards_text = 'no action cards';
+      let receive_action_cards_text = 'no action cards';
+      let offer_action_cards_text = 'no action cards';
+      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
         for (let i = 0; i < receive_action_cards.length; i++) {
           if (i == 0) { receive_action_cards_text = ''; }
           let pm = receive_action_cards[i];
@@ -3487,7 +3488,6 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
           receive_action_cards_text += `${imperium_self.action_cards[pm].name}`;	
         }
 
-        let offer_action_cards_text = 'no action cards';
         for (let i = 0; i < offer_action_cards.length; i++) {
           if (i == 0) { offer_action_cards_text = ''; }
           let pm = offer_action_cards[i];
@@ -3683,8 +3683,9 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       if (mode == 1) {
 
         let html = '<div class="sf-readable">Add Action Card to YOUR Offer: </div><ul>';
-        for (let i = 0; i < imperium_self.game.deck[1].hand.length; i++) {
-	  let ac = imperium_self.game.deck[1].hand[i];
+	let pac = imperium_self.returnPlayerActionCards(imperium_self.game.player);
+        for (let i = 0; i < pac.length; i++) {
+	  let ac = pac[i];
 	  let already_offered = 0;
 	  for (let b = 0; b < offer_action_cards.length; b++) {
 	    if (offer_action_cards[b] === ac) {
@@ -3692,7 +3693,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${ac}">${ac}</li>`;
+            html += `  <li class="option" id="${ac}">${imperium_self.action_cards[ac].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;

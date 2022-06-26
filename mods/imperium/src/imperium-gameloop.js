@@ -2539,7 +2539,8 @@ this.game.state.end_round_scoring = 0;
 	      }
 	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
 	        let ac = stuff_on_offer.action_cards[i];
-		log_offer += ac;
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -2581,7 +2582,8 @@ this.game.state.end_round_scoring = 0;
 	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
 	        nothing_check = "";
 	        let ac = stuff_in_return.action_cards[i];
-		log_offer += ac;
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {

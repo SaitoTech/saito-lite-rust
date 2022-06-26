@@ -4,9 +4,9 @@
       name		: 	"Emirates of Hacan",
       nickname		: 	"Hacan",
       homeworld		: 	"sector50",
-      space_units	: 	["carrier","carrier","cruiser","fighter","fighter","flagship"],
+      space_units	: 	["carrier","carrier","cruiser","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
-      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship", "faction8-quantum-datahub-node", "faction8-production-biomes"],
+      tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
       background	: 	'faction8.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       commodity_limit	:	6,
@@ -70,10 +70,10 @@
 	    }
 	  }
 	  costs_per_hit.sort((a,b)=>a-b);
-console.log("SORTING: " + JSON.stringify(costs_per_hit));
           let html = '<p>Do you wish to boost hits with Flagship Ability?"';
 	  let cumulative_cost = 0;
-	  for (let i = 0; i < costs_per_hit.length; i++) {
+	  let available_trade_goods = imperium_self.game.players_info[player - 1].goods;
+	  for (let i = 0; i < costs_per_hit.length && cumulative_cost <= available_trade_goods; i++) {
 	    cumulative_cost += costs_per_hit[i];
             html += '<li class="option" id="'+i+'">'+(i+1)+' extra hits - '+cumulative_cost+' trade goods</li>';
 	  }
