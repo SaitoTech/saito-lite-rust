@@ -4788,12 +4788,22 @@ playerSelectUnitsToMove(destination) {
               let ir = parseInt($(irdiv).html());
               let ic = parseInt($('.capacity_remaining').html());
 
+	      let load_into_this_ship_idx = ii;
+console.log("C 2");
+	      for (let iii = 0; iii < obj.ships_and_sectors[i].removed_ship_idxs.length; iii++) {
+console.log("D 2");
+	        if (obj.ships_and_sectors[i].removed_ship_idxs[iii] < load_into_this_ship_idx) {
+		  load_into_this_ship_idx--;
+		}
+	      }
+
+
               //
               // we have to load prematurely. so JSON will be accurate when we move the ship, so player_move is 0 for load
               //
               let unitjson = imperium_self.unloadUnitFromPlanet(imperium_self.game.player, sector, planet_idx, "infantry");
-              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][obj.ships_and_sectors[i].ship_idxs[ii]]);
-              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, obj.ships_and_sectors[i].ship_idxs[ii], unitjson);
+              let shipjson_preload = JSON.stringify(sys.s.units[imperium_self.game.player - 1][load_into_this_ship_idx]);
+              imperium_self.loadUnitByJSONOntoShip(imperium_self.game.player, sector, load_into_this_ship_idx, unitjson);
 
               $(irdiv).html((ir - 1));
               $('.capacity_remaining').html((ic - 1));
@@ -4803,7 +4813,7 @@ playerSelectUnitsToMove(destination) {
               loading.source = "planet";
               loading.source_idx = planet_idx;
               loading.unitjson = unitjson;
-              loading.ship_idx = obj.ships_and_sectors[i].ship_idxs[ii];
+              loading.ship_idx = load_into_this_ship_idx;
               loading.shipjson = shipjson_preload;
               loading.i = i;
               loading.ii = ii;
