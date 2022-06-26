@@ -1827,7 +1827,6 @@ updateSectorGraphics(sector) {
       </div>`;
 
     }
-    //this.cardbox.showCardboxHTML(thiscard, '<img src="/imperium/img' + thiscard.img + '" style="width:100%" /><div class="strategy_card_overlay">'+thiscard.text+'</div>'+strategy_card_bonus_html);
     this.cardbox.showCardboxHTML(thiscard, thiscard.returnCardImage());
   }
 
