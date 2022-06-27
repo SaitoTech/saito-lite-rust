@@ -1,7 +1,6 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const RegisterStaffTemplate = require('./register-staff.template');
-const ArcadeGameSidebar = require("../../mods/arcade/lib/arcade-sidebar/arcade-game-sidebar");
+const ReigsterStaffTemplate = require('./lib/register-staff.template');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 
 
@@ -18,6 +17,11 @@ class Staff extends ModTemplate {
         this.description = "Register as a Staff on Arcade";
         this.categories = "Utilities";
         this.isThisRegistered = false;
+
+        //
+        // master staff list publickey for this module
+        //
+        this.publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
         return this;
     }
@@ -37,54 +41,30 @@ class Staff extends ModTemplate {
         if (typeof app != "undefined") {
             this.header.render(app, this);
             this.header.attachEvents(app, this);
-    
+
             document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
-            this.addEvents(this.app);
             document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
             document.getElementById("isRegistered").checked = this.isThisRegistered;
 
             if (this.isThisRegistered) {
-               document.getElementById("add_staff").style.display = "none";
+                document.getElementById("add_staff").style.display = "none";
                 document.getElementById("remove_staff").style.display = "block";
             } else {
                 document.getElementById("add_staff").style.display = "block";
                 document.getElementById("remove_staff").style.display = "none";
             }
-    
+
+            //add button events
+            document.querySelector('#add_staff').addEventListener("click", () => {
+                this.sendRegisterTX(this.publickey, this.app.wallet.returnPublicKey(), "register");
+            });
+            document.querySelector('#remove_staff').addEventListener("click", () => {
+                this.sendRegisterTX(this.publickey, this.app.wallet.returnPublicKey(), "deregister");
+            });
+
         }
     }
 
-    addEvents(app) {
-        document.querySelector('#add_staff').onclick = this.addstaff(app);
-        document.querySelector('#remove_staff').onclick = this.removestaff(app);
-    
-    }
-
-    removestaff(app) {
-        var publicKey = this.app.wallet.returnPublicKey();
-        if (publicKey) {
-            this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "deregister");
-        }
-    }
-
-    addstaff(app) {
-        var publicKey = app.wallet.returnPublicKey();
-        if (publicKey) {
-            this.app.modules.returnModule(this.name).sendRegisterTX(publicKey, "register");
-        }
-    }
-
-    /*
-    renderSidebar() {
-        if (this.viewing_game_homepage) {
-            ArcadeGameSidebar.render(this.app, this);
-            ArcadeGameSidebar.attachEvents(this.app, this);
-        } else {
-            ArcadeSidebar.render(this.app, this);
-            ArcadeSidebar.attachEvents(this.app, this);
-        }
-    }
-    */
 
     async checkRecord(publickey) {
         sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
@@ -97,15 +77,15 @@ class Staff extends ModTemplate {
                         } else {
                             this.isThisRegistered = false;
                         }
-                        this.render();
+                        this.render(this.app);
                     }
                 }
             });
     }
 
 
-    createRegisterTransaction(publicKey, msgType) {
-        let newtx = this.app.wallet.createUnsignedTransaction();
+    createRegisterTransaction(to, publicKey, msgType) {
+        let newtx = this.app.wallet.createUnsignedTransaction(to);
         newtx.msg.module = this.name;
         newtx.msg.type = msgType;
         newtx.msg.publicKey = publicKey;
@@ -113,31 +93,42 @@ class Staff extends ModTemplate {
         return this.app.wallet.signTransaction(newtx);
     }
 
-    sendRegisterTX(publicKey, msgType) {
-        var registerTx = this.app.modules.returnModule(this.name).createRegisterTransaction(this.app.wallet.returnPublicKey(), msgType);
+    sendRegisterTX(to, publicKey, msgType) {
+        var registerTx = this.createRegisterTransaction(to, publicKey, msgType);
         this.app.network.propagateTransaction(registerTx);
     }
 
     onConfirmation(blk, tx, conf, app) {
+        let staff_self = app.modules.returnModule("Staff");
         let txmsg = tx.returnMessage();
-        if (app.BROWSER == 0) {
+        let publickey = txmsg.publicKey;
+
+        if (txmsg.module == this.name) {
             if (conf == 0) {
-                if (txmsg.module == this.name) {
-                    let staff_self = app.modules.returnModule(this.name);
-                    let publickey = txmsg.publicKey;
-                    if (txmsg.type == "register") {
-                        let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
-                        staff_self.receiveRegisterTransaction(txmsg, sql);
-                    } else if (txmsg.type == "deregister") {
-                        let sql = 'DELETE FROM staff WHERE publickey = $publickey';
-                        staff_self.receiveRegisterTransaction(txmsg, sql);
+                if (app.BROWSER == 0) {
+                    if (tx.isTo(staff_self.publickey) && app.wallet.returnPublicKey() === staff_self.publickey) {
+                        //this tx is for us - the authoritative node.
+                        if (txmsg.type == "register") {
+                            let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
+                            staff_self.receiveRegisterTransaction(txmsg, sql);
+                        } else if (txmsg.type == "deregister") {
+                            let sql = 'DELETE FROM staff WHERE publickey = $publickey';
+                            staff_self.receiveRegisterTransaction(txmsg, sql);
+                        }
+                        this.sendRegisterTX(txmsg.publicKey, txmsg.publicKey, txmsg.type);
                     }
-                }
-            }
-        } else {
-            if (conf == 0) {
-                if (txmsg.module == this.name) {
-                    if (txmsg.publicKey == this.app.wallet.returnPublicKey()) {
+                    else if (tx.isFrom(staff_self.publickey)) {
+                        //this message is from the authoritative node.
+                        if (txmsg.type == "register") {
+                            let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
+                            staff_self.receiveRegisterTransaction(txmsg, sql);
+                        } else if (txmsg.type == "deregister") {
+                            let sql = 'DELETE FROM staff WHERE publickey = $publickey';
+                            staff_self.receiveRegisterTransaction(txmsg, sql);
+                        }
+                    }
+                } else {
+                    if (tx.isTo(this.app.wallet.returnPublicKey())) {
                         this.checkRecord(this.app.wallet.returnPublicKey());
                     }
                 }
