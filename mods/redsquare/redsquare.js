@@ -27,7 +27,7 @@ class RedSquare extends ModTemplate {
 
   }
 
-  initializeUIComponents() {
+  initializeUIComponents(app) {
 
     if (!this.ui_initialized) {
 
@@ -67,8 +67,8 @@ class RedSquare extends ModTemplate {
 
   render(app, mod) {
 
-console.log("RENDERING REDSQUARE!");
-    this.initializeUIComponents();
+    console.log("RENDERING REDSQUARE!");
+    this.initializeUIComponents(app);
 
     super.render(app, this);
 
