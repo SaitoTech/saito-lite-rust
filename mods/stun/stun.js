@@ -3,8 +3,6 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
-const config = require("./config.js");
-
 
 class Stun extends ModTemplate {
 
