@@ -3,8 +3,6 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
-const config = require("./config.js");
-
 
 class Stun extends ModTemplate {
 
@@ -17,19 +15,12 @@ class Stun extends ModTemplate {
         this.categories = "Utility Networking";
 
         this.stun = {};
-        this.stun.ip_address = "";
-        this.stun.port = "";
-        this.stun.offer_sdp = "";
-        this.stun.listeners = [];
-        this.stun.pc = "";
-        this.stun.iceCandidates = [];
-        this.stun.counter = 0;
-        this.servers = config.servers;
-
         this.peer_connections = {};
     }
 
     async initialize(app) {
+        this.loadStun();
+
         let publickey = this.app.wallet.returnPublicKey();
         let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
@@ -45,13 +36,54 @@ class Stun extends ModTemplate {
     }
 
 
+    loadStun() {
+        if (this.app.options.stun) {
+            this.stun = this.app.options.invites;
+            return;
+        }
+
+        // load default values for stun if not avl in local storage
+        this.stun.ip_address = "";
+        this.stun.port = "";
+        this.stun.offer_sdp = "";
+        this.stun.listeners = [];
+        this.stun.pc = "";
+        this.stun.iceCandidates = [];
+        this.stun.counter = 0;
+        this.stun.servers = [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+        ];
+    }
+
+    saveStun() {
+        this.app.options.stun = this.stun;
+        this.app.options.saveOptions();
+    }
+
+
     respondTo(type) {
       if (type === 'email-appspace') {
           return new StunEmailAppspace(this.app, this);
       }
       return null;
     }
-
 
     onConfirmation(blk, tx, conf, app) {
         if (conf == 0) {
@@ -91,83 +123,26 @@ class Stun extends ModTemplate {
                 }
 
 
-
                 if (tx.msg.request === "answer") {
-                    if (app.BROWSER !== 1) return;
-  
-                    if (my_pubkey === tx.msg.offer_creator) {
-                        console.log("current instance: ", my_pubkey, " answer room: ", tx.msg);
-                        console.log("peer connections: ", this.peer_connections, this);
-                        const reply = tx.msg.reply;
-
-                        if (this.peer_connections[tx.msg.answer_creator]) {
-                            this.peer_connections[tx.msg.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                                console.log('setting remote description of ', this.peer_connections[tx.msg.answer_creator]);
-
-                            }).catch(error => console.log(" An error occured with setting remote description for :", this.peer_connections[tx.msg.answer_creator], error));
-                            if (reply.ice_candidates.length > 0) {
-                                console.log("Adding answer candidates");
-                                for (let i = 0; i < reply.ice_candidates.length; i++) {
-                                    this.peer_connections[tx.msg.answer_creator].addIceCandidate(reply.ice_candidates[i]);
-                                }
-                            }
-
-                        } else {
-                            console.log("peer connection not found");
-                        }
-                    }
-
+                    this.receiveAnswerTransaction(blk, tx, conf, app);
                 }
 
 
                 if (tx.msg.request === "offers") {
-                    if (app.BROWSER !== 1) return;
-
-                    const offer_creator = tx.msg.offer_creator;
-
-                    // offer creator should not respond
-                    if (my_pubkey === offer_creator) return;
-                    console.log("offers received from ", tx.msg.offer_creator, tx.msg);
-
-                    // check if current instance is a recipent
-                    const index = tx.msg.offers.findIndex(offer => offer.recipient === my_pubkey);
-
-                    if (index !== -1) {
-                        this.receiveOfferBroadcastAnswerTransaction(app, offer_creator, tx.msg.offers[index]);
-                    }
-
-
+                    this.receiveOffersTransaction(blk, tx, conf, app);
                 }
 
 
                 if (tx.msg.request === "offer") {
-                    console.log("offer received");
-                    if (my_pubkey === tx.msg.peer_b) {
-                        this.app.connection.emit('offer_received', tx.msg.peer_a, tx.msg.peer_b, tx.msg.offer);
-                    } else {
-                        console.log('tx peer key not equal');
-                    }
+                    this.receiveOfferTransaction(blk, tx, conf, app);   
                 }
 
                 if (tx.msg.request === "broadcast_details") {
-
-                    const listeners = tx.msg.listeners;
-                    const from = tx.msg.from;
-                    if (my_pubkey === from) return;
-
-                    console.log("listeners: ", listeners, "from: ", from);
-                    const index = this.app.keys.keys.findIndex(key => key.publickey === my_pubkey);
-                    if (index !== -1) {
-                        this.app.keys.keys[index].data.stun.listeners.push(from);
-                        this.app.keys.saveKeys();
-
-                        app.connection.emit('listeners-update', this.app, this.app.keys.keys[index].data.stun.listeners);
-                        console.log("keys updated, added: ", from, " updated listeners: ", this.app.keys.keys[index].data.stun.listeners);
-                    }
+                    this.receiveBroadcastDetailsTransaction(blk, tx, conf, app);
                 }
 
                 if (tx.msg.request === "listeners") {
-                    this.addListenersFromPeers(tx.msg.listeners);
+                    this.receiveSendKeyToListenersTransaction(blk, tx, conf, app);                    
                 }
             }
         }
@@ -301,7 +276,7 @@ class Stun extends ModTemplate {
 
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: this.servers,
+                        iceServers: this.stun.servers,
                     });
 
 
@@ -517,6 +492,11 @@ class Stun extends ModTemplate {
 
     }
 
+    receiveSendKeyToListenersTransaction(blk, tx, conf, app) {
+        this.addListenersFromPeers(tx.msg.listeners);
+    }
+
+
     sendOfferTransaction(my_key, peer_key, offer) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting offer  to ', peer_key);
@@ -533,6 +513,17 @@ class Stun extends ModTemplate {
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
     }
+
+    receiveOfferTransaction(blk, tx, conf, app) {
+        let my_pubkey = app.wallet.returnPublicKey();
+        console.log("offer received");
+        if (my_pubkey === tx.msg.peer_b) {
+            this.app.connection.emit('offer_received', tx.msg.peer_a, tx.msg.peer_b, tx.msg.offer);
+        } else {
+            console.log('tx peer key not equal');
+        }
+    }
+
 
     sendOffersTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -558,6 +549,26 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
+    receiveOffersTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+
+        let my_pubkey = app.wallet.returnPublicKey();
+
+        const offer_creator = tx.msg.offer_creator;
+
+        // offer creator should not respond
+        if (my_pubkey === offer_creator) return;
+        console.log("offers received from ", tx.msg.offer_creator, tx.msg);
+
+        // check if current instance is a recipent
+        const index = tx.msg.offers.findIndex(offer => offer.recipient === my_pubkey);
+
+        if (index !== -1) {
+            this.receiveOfferBroadcastAnswerTransaction(app, offer_creator, tx.msg.offers[index]);
+        }
+    }
+
+
     sendAnswerTransaction(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
@@ -575,6 +586,52 @@ class Stun extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
+    receiveAnswerTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+
+        let my_pubkey = app.wallet.returnPublicKey();
+  
+        if (my_pubkey === tx.msg.offer_creator) {
+            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg);
+            console.log("peer connections: ", this.peer_connections, this);
+            const reply = tx.msg.reply;
+
+            if (this.peer_connections[tx.msg.answer_creator]) {
+                this.peer_connections[tx.msg.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                    console.log('setting remote description of ', this.peer_connections[tx.msg.answer_creator]);
+
+                }).catch(error => console.log(" An error occured with setting remote description for :", this.peer_connections[tx.msg.answer_creator], error));
+                if (reply.ice_candidates.length > 0) {
+                    console.log("Adding answer candidates");
+                    for (let i = 0; i < reply.ice_candidates.length; i++) {
+                        this.peer_connections[tx.msg.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                    }
+                }
+
+            } else {
+                console.log("peer connection not found");
+            }
+        }
+    }
+
+
+    receiveBroadcastDetailsTransaction(blk, tx, conf, app) {
+        let my_pubkey = app.wallet.returnPublicKey();
+        const listeners = tx.msg.listeners;
+        const from = tx.msg.from;
+        if (my_pubkey === from) return;
+
+        console.log("listeners: ", listeners, "from: ", from);
+        const index = this.app.keys.keys.findIndex(key => key.publickey === my_pubkey);
+        if (index !== -1) {
+            this.app.keys.keys[index].data.stun.listeners.push(from);
+            this.app.keys.saveKeys();
+
+            app.connection.emit('listeners-update', this.app, this.app.keys.keys[index].data.stun.listeners);
+            console.log("keys updated, added: ", from, " updated listeners: ", this.app.keys.keys[index].data.stun.listeners);
+        }
+    }
+
     receiveOfferBroadcastAnswerTransaction(app, offer_creator, offer) {
         if (app.BROWSER !== 1) return;
         
@@ -588,7 +645,7 @@ class Stun extends ModTemplate {
                 ice_candidates: []
             }
             const pc = new RTCPeerConnection({
-                iceServers: this.servers,
+                iceServers: this.stun.servers,
             });
             try {
 
@@ -685,8 +742,6 @@ class Stun extends ModTemplate {
         createPeerConnection();
 
     }
-
-
 
 }
 
