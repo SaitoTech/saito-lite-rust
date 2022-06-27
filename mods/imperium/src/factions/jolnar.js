@@ -223,8 +223,14 @@
 	}
         return 0;
       },
-      postSystemActivation :   function(imperium_self, activating_player, player, sector) {
-        imperium_self.game.players_info[player-1].goods += 4;
+      activateSystemEvent :  function(imperium_self, activating_player, player, sector) {
+	if (imperium_self.game.players_info[player-1].eres_siphons == 1 && activating_player != player) {
+          if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) { 
+            imperium_self.game.players_info[player-1].goods += 4;
+	    imperium_self.displayFactionDashboard();
+	  }
+	}
+	return 1;
       }
     });
 
@@ -294,6 +300,8 @@
 	  }
 
 	});
+
+	return 0;
       }
     });
 

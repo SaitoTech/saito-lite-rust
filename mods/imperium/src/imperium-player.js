@@ -3468,7 +3468,6 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
   playerTrade() {
 
-
     let imperium_self = this;
     let factions = this.returnFactions();
 
@@ -3525,8 +3524,10 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
-      html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
-      //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
+      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
+        html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
+        //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
+      }
       html += '<li id="promissary_offer" class="option">you give <span class="give_promissary">'+offer_promissary_text+'</span></li>';
       html += '<li id="promissary_receive" class="option">you receive <span class="receive_promissary">'+receive_promissary_text+'</span></li>';
       html += '<li id="confirm" class="option">submit offer</li>';

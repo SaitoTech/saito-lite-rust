@@ -3147,6 +3147,7 @@ this.game.state.end_round_scoring = 0;
   	for (let i = 0; i < speaker_order.length; i++) {
 	  for (let k = 0; k < z.length; k++) {
 	    if (z[k].activateSystemTriggers(this, activating_player, speaker_order[i], sector) == 1) {
+console.log("K: " + z[k].name);
 	      this.game.queue.push("activate_system_event\t"+activating_player+"\t"+speaker_order[i]+"\t"+sector+"\t"+k);
 	    }
           }
@@ -3162,7 +3163,6 @@ this.game.state.end_round_scoring = 0;
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 	return z[z_index].activateSystemEvent(this, activating_player, player, sector);
-
       }
 
       if (mv[0] === "activate_system_post") {

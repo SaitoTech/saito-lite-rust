@@ -1796,7 +1796,7 @@ console.log("P: " + planet);
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
       //action_cards	:	["warfare-rider", "technology-rider"],
       //objectives	:	["close-the-trap"],
-      tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
+      tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship", "faction2-eres-siphons", "faction2-deep-space-conduits"],
       background	: 	'faction2.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       commodity_limit	:	4,
@@ -2009,8 +2009,14 @@ console.log("P: " + planet);
 	}
         return 0;
       },
-      postSystemActivation :   function(imperium_self, activating_player, player, sector) {
-        imperium_self.game.players_info[player-1].goods += 4;
+      activateSystemEvent :  function(imperium_self, activating_player, player, sector) {
+	if (imperium_self.game.players_info[player-1].eres_siphons == 1 && activating_player != player) {
+          if (imperium_self.doesSectorContainPlayerShips(player, sector) == 1) { 
+            imperium_self.game.players_info[player-1].goods += 4;
+	    imperium_self.displayFactionDashboard();
+	  }
+	}
+	return 1;
       }
     });
 
@@ -2080,6 +2086,8 @@ console.log("P: " + planet);
 	  }
 
 	});
+
+	return 0;
       }
     });
 
@@ -16528,6 +16536,7 @@ this.game.state.end_round_scoring = 0;
   	for (let i = 0; i < speaker_order.length; i++) {
 	  for (let k = 0; k < z.length; k++) {
 	    if (z[k].activateSystemTriggers(this, activating_player, speaker_order[i], sector) == 1) {
+console.log("K: " + z[k].name);
 	      this.game.queue.push("activate_system_event\t"+activating_player+"\t"+speaker_order[i]+"\t"+sector+"\t"+k);
 	    }
           }
@@ -16543,7 +16552,6 @@ this.game.state.end_round_scoring = 0;
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 	return z[z_index].activateSystemEvent(this, activating_player, player, sector);
-
       }
 
       if (mv[0] === "activate_system_post") {
@@ -22850,7 +22858,6 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 
   playerTrade() {
 
-
     let imperium_self = this;
     let factions = this.returnFactions();
 
@@ -22907,8 +22914,10 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
       html += '<li id="to_offer" class="option">you give <span class="offer_total">'+offer_selected+'</span> trade goods</li>';
       html += '<li id="to_receive" class="option">you receive <span class="receive_total">'+receive_selected+'</span> trade goods</li>';
-      html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
-      //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
+      if (imperium_self.game.players_info[imperium_self.game.player-1].may_trade_action_cards == 1 || imperium_self.game.players_info[player-1].may_trade_action_cards == 1) {
+        html += '<li id="action_cards_offer" class="option">you give <span class="give_action_cards">'+offer_action_cards_text+'</span></li>';
+        //html += '<li id="action_cards_receive" class="option">you receive <span class="receive_action_cards">'+receive_action_cards_text+'</span></li>';
+      }
       html += '<li id="promissary_offer" class="option">you give <span class="give_promissary">'+offer_promissary_text+'</span></li>';
       html += '<li id="promissary_receive" class="option">you receive <span class="receive_promissary">'+receive_promissary_text+'</span></li>';
       html += '<li id="confirm" class="option">submit offer</li>';
@@ -26098,12 +26107,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-      return ["1_1", "4_7"];
+//      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-//      return ["1_1", "2_1"];
+      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {
