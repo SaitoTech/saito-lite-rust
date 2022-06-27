@@ -2331,7 +2331,7 @@ console.log("planet is: " + winning_choice);
 
 	    let roll = imperium_self.rollDice(10);
 
-imperium_self.updateLog("Ixthian Artifact rolls " + roll);
+	    imperium_self.updateLog("Ixthian Artifact rolls " + roll);
 
 	    if (roll <= 5) {
 

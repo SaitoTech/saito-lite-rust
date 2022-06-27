@@ -184,19 +184,19 @@ module.exports = ArcadeMain = {
               }*/
 
               if (game_cmd === "cancel") {
-            		let c = true;//confirm("Are you sure you want to cancel this game?");
-            		if (c) {
+            	let c = confirm("Are you sure you want to cancel this game?");
+            	if (c) {
                   arcade_main_self.cancelGame(app, mod, game_sig);
                   return;
-		            }
+		}
               }
 
               if (game_cmd === "join") {
-            		let c = true;//confirm("Are you sure you want to join this game?");
-            		if (c) {
+                let c = confirm("Are you sure you want to join this game?");
+            	if (c) {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
-		            }
+		}
               }
 
               if (game_cmd === "continue") {

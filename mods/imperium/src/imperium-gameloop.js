@@ -1435,8 +1435,6 @@
 
   	this.game.queue.push("resolve\tsetinitiativeorder");
 
-console.log("SET INITIATIVE ORDER: " + JSON.stringify(initiative_order));
-
   	for (let i = initiative_order.length-1; i >= 0; i--) {
   	  if (this.game.players_info[initiative_order[i]-1].passed == 0) {
   	    this.game.queue.push("play\t"+initiative_order[i]);
@@ -2005,8 +2003,6 @@ this.game.state.end_round_scoring = 0;
 
       if (mv[0] === "must_exhaust_at_round_start") {
 
-console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
-
 	let imperium_self = this;
 	let player = parseInt(mv[1]);
 	let type = mv[2];
@@ -2298,7 +2294,18 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+
+	if (type === "strategy") {
+	  this.game.players_info[recipient-1].strategy.push(details);
+	  for (let i = 0; i < this.game.players_info[giver-1].strategy.length; i++) {
+	    if (this.game.players_info[giver-1].strategy[i] === details) {
+	      this.game.players_info[giver-1].strategy.splice(i, 1);
+	    }
+	  }
+        }
+
+
+        if (type === "action") {
 	  if (this.game.player == recipient) {
 	    this.game.deck[1].hand.push(details);
             let ac_in_hand = this.returnPlayerActionCards(this.game.player);
@@ -2359,7 +2366,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+        if (type === "action") {
 	  if (details === "random") {
 	    if (this.game.player == pullee) {
 
@@ -2372,7 +2379,9 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
 	      if (selectable.length == 0) {
 
+	        let roll = this.rollDice();
 	        this.addMove("NOTIFY\t" + this.returnFaction(pullee) + " does not have any action cards");
+		// everyone else is burning a roll
 
 	      } else {
 
@@ -2499,6 +2508,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
   	this.game.queue.splice(qe, 1);
 
         let log_offer = '';
+
         let offering_html = this.returnFaction(offering_faction) + " makes a trade offer to " + this.returnFaction(faction_to_consider) + ": ";
 	    offering_html += '<div style="padding:20px;clear:left">';
 
@@ -2521,6 +2531,16 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_on_offer.action_cards.length > 0) {
+	      if (stuff_on_offer.goods >= 1 || stuff_on_offer.promissaries.length >= 1) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
+	        let ac = stuff_on_offer.action_cards[i];
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -2552,6 +2572,18 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 		log_offer += this.promissary_notes[tmpar[1]].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_in_return.action_cards.length > 0) {
+	      nothing_check = "";
+	      if (stuff_in_return.goods > 1 || stuff_in_return.promissaries.length > 0) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
+	        nothing_check = "";
+	        let ac = stuff_in_return.action_cards[i];
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {
@@ -2615,6 +2647,13 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 
   	this.game.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
        	this.game.players_info[faction_responding-1].commodities -= parseInt(response.goods);
+
+	if (offer.action_cards) {
+	  for (let i = 0; i < offer.action_cards.length; i++) {
+	    this.giveActionCard(offering_faction, faction_responding, offer.action_cards[i]);
+	  }
+	}
+	// no action cards received so no response.action_cards
 
 	if (offer.promissaries) {
 	  for (let i = 0; i < offer.promissaries.length; i++) {
@@ -3219,6 +3258,23 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
         }
   	return 1;
       }
+
+
+
+      if (mv[0] === "post_ships_fire_event") {
+        let z		 = this.returnEventObjects();
+  	let player       = parseInt(mv[1]);
+  	let defender     = mv[2];
+  	let attacker     = mv[3];
+  	let sector       = mv[4];
+  	let combat_info  = JSON.parse(mv[5]);
+        let z_index	 = parseInt(mv[6]);
+  	this.game.queue.splice(qe, 1);
+	z[z_index].postShipsFireEvent(this, player, defender, attacker, sector, combat_info);
+	return 0;
+      }
+
+
       if (mv[0] === "post_agenda_stage_event") {
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
@@ -3754,7 +3810,6 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 	  }
 	}
 
-
         let attacker       = parseInt(mv[1]);
         let defender       = parseInt(mv[2]);
         let type           = mv[3]; // space // infantry
@@ -4160,6 +4215,7 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
 	  //
 	  let restrictions = [];
 
+
 	  this.game.queue.push("assign_hits\t"+player+"\t"+attacker+"\tspace\t"+sector+"\tpds\t"+total_hits+"\tpds");
 
           //
@@ -4526,6 +4582,19 @@ console.log("PLAYER " + mv[1] + " MUST EXHAUST: " + mv[2] + " at round start");
   	    this.updateLog(this.returnFactionNickname(attacker) + ":  " + total_hits + " hits");
 	  }
 	  this.game.queue.push("assign_hits\t"+attacker+"\t"+defender+"\tspace\t"+sector+"\tspace\t"+total_hits+"\tspace_combat");
+
+
+	  //
+	  // check for pre-assign-buffs -- NEW JUNE 25
+	  //
+          let speaker_order = this.returnSpeakerOrder();
+          for (let i = 0; i < speaker_order.length; i++) {
+            for (let k = 0; k < z.length; k++) {
+              if (z[k].postShipsFireEventTriggers(this, speaker_order[i], defender, attacker, sector, combat_info) == 1) {
+                this.game.queue.push("post_ships_fire_event\t"+speaker_order[i]+"\t"+defender+"\t"+attacker+"\t"+sector+"\t"+JSON.stringify(combat_info)+"\t"+k);
+              }
+            }
+          }
 
         }
 

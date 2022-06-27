@@ -16,7 +16,6 @@
 
       this.addMove("resolve\tstarwars");
 
-      let html = "<ul>";
       for (var i in this.game.deck[0].discards) {
         if (this.game.state.headline == 1 && i == "unintervention") {} else {
           if (this.game.deck[0].cards[i] != undefined) {
@@ -42,7 +41,7 @@
       }
 
 
-      twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`,html,false);
+      twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
       twilight_self.attachCardboxEvents(function(action2) {
         twilight_self.addMove("event\tus\t"+action2);
         twilight_self.addMove("NOTIFY\t"+player+" retrieved "+twilight_self.cardToText(action2));

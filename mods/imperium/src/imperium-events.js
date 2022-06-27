@@ -431,6 +431,16 @@
       obj.playerEndTurnEvent = function(imperium_self, player) { return 0; }
     }
 
+    //
+    // after ships have fired / before hits assignment
+    //
+    if (obj.postShipsFireEventTriggers == null) {
+      obj.postShipsFireEventTriggers = function(imperium_self, player, defender, attacker, sector, combat_info) { return 0; }
+    }
+    if (obj.postShipsFireEvent == null) {
+      obj.postShipsFireEvent = function(imperium_self, player, defender, attacker, sector, combat_info) { return 0; }
+    }
+
     return obj;
   
   }

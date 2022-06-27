@@ -81,7 +81,14 @@
         let removedunit = sys.s.units[player - 1].splice(i, 1);
         this.saveSystemAndPlanets(sys);
         return JSON.stringify(removedunit[0]);
-        ;
+      }
+    }
+  };
+  copySpaceUnit(player, sector, unitname) {
+    let sys = this.returnSectorAndPlanets(sector);
+    for (let i = 0; i < sys.s.units[player - 1].length; i++) {
+      if (sys.s.units[player - 1][i].type === unitname) {
+        return JSON.stringify(sys.s.units[player - 1][i]);
       }
     }
   };
@@ -129,9 +136,14 @@
     return JSON.stringify(unit_to_add);
   };
   loadUnitByJSONOntoShip(player, sector, ship_idx, unitjson) {
+console.log("AAA A - " + player + " - " + sector + " - " + ship_idx + " ||||| " + unitjson);
     let sys = this.returnSectorAndPlanets(sector);
+console.log("AAA B");
+console.log(JSON.stringify(sys.s.units[player-1]));
     sys.s.units[player - 1][ship_idx].storage.push(JSON.parse(unitjson));
+console.log("AAA C");
     this.saveSystemAndPlanets(sys);
+console.log("AAA D");
     return unitjson;
   };
   loadUnitOntoShipByJSON(player, sector, shipjson, unitname) {
@@ -352,6 +364,7 @@
         let x = {};
         x.ships = [];
         x.ship_idxs = [];
+        x.removed_ship_idxs = [];
         x.sector = null;
         x.distance = distance[i];
         x.adjusted_distance = [];
