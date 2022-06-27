@@ -17,19 +17,12 @@ class Stun extends ModTemplate {
         this.categories = "Utility Networking";
 
         this.stun = {};
-        this.stun.ip_address = "";
-        this.stun.port = "";
-        this.stun.offer_sdp = "";
-        this.stun.listeners = [];
-        this.stun.pc = "";
-        this.stun.iceCandidates = [];
-        this.stun.counter = 0;
-        this.servers = config.servers;
-
         this.peer_connections = {};
     }
 
     async initialize(app) {
+        this.loadStun();
+
         let publickey = this.app.wallet.returnPublicKey();
         let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
@@ -45,13 +38,54 @@ class Stun extends ModTemplate {
     }
 
 
+    loadStun() {
+        if (this.app.options.stun) {
+            this.stun = this.app.options.invites;
+            return;
+        }
+
+        // load default values for stun if not avl in local storage
+        this.stun.ip_address = "";
+        this.stun.port = "";
+        this.stun.offer_sdp = "";
+        this.stun.listeners = [];
+        this.stun.pc = "";
+        this.stun.iceCandidates = [];
+        this.stun.counter = 0;
+        this.stun.servers = [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+        ];
+    }
+
+    saveStun() {
+        this.app.options.stun = this.stun;
+        this.app.options.saveOptions();
+    }
+
+
     respondTo(type) {
       if (type === 'email-appspace') {
           return new StunEmailAppspace(this.app, this);
       }
       return null;
     }
-
 
     onConfirmation(blk, tx, conf, app) {
         if (conf == 0) {
@@ -301,7 +335,7 @@ class Stun extends ModTemplate {
 
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: this.servers,
+                        iceServers: this.stun.servers,
                     });
 
 
@@ -588,7 +622,7 @@ class Stun extends ModTemplate {
                 ice_candidates: []
             }
             const pc = new RTCPeerConnection({
-                iceServers: this.servers,
+                iceServers: this.stun.servers,
             });
             try {
 
@@ -685,8 +719,6 @@ class Stun extends ModTemplate {
         createPeerConnection();
 
     }
-
-
 
 }
 
