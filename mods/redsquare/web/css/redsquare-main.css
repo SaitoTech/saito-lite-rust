@@ -1,4 +1,4 @@
-#chirp-input-container {
+#redsquare-input-container {
     display: grid;
     grid-template-columns: 9rem 1fr;
     /* background-color: green; */
@@ -10,13 +10,13 @@
     margin-bottom: 1rem;
 }
 
-#chirp-input-container button {
+#redsquare-input-container button {
     position: absolute;
     right: 1rem;
     bottom: 1rem;
 }
 
-.chirp-input-profile img {
+.redsquare-input-profile img {
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
@@ -24,7 +24,7 @@
     margin-left: 3rem;
 }
 
-#chirp-input-container textarea {
+#redsquare-input-container textarea {
     margin-top: 3rem;
     padding-left: 1rem;
 
@@ -35,23 +35,23 @@
 }
 
 
-#chirp-list {
+#redsquare-list {
     border: 1px solid var(--saito-border);
     border-radius: .5rem;
     padding-bottom: 1rem;
 }
 
-.chirp-item {
+.redsquare-item {
     display: grid;
     grid-template-columns: 9rem 1fr;
 
 }
 
-.chirp-item:not(:last-child) {
+.redsquare-item:not(:last-child) {
     margin-bottom: 2rem;
 }
 
-.chirp-item-profile img {
+.redsquare-item-profile img {
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
@@ -61,53 +61,109 @@
 
 
 
-.chirp-item-contents {
+.redsquare-item-contents {
     padding-left: 1rem;
     margin-top: 2rem;
 }
 
 
-.chirp-user {
+.redsquare-user {
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
 }
 
-.chirp-user-details {
+.redsquare-user-details {
     margin-right: 5rem;
     display: flex;
     align-items: center;
 }
 
-.chirp-user-details p {
+.redsquare-user-details p {
     font-weight: bold;
     font-size: 1.9rem;
     margin-right: .5rem;
     word-wrap: break-word;
 }
 
-.chirp-user-details i {
+.redsquare-user-details i {
     color: var(--saito-primary)
 }
 
-.chirp-user-actions {
+.redsquare-user-actions {
     display: grid;
     align-items: center;
     grid-gap: 2rem;
     grid-template-columns: min-content min-content;
 }
 
-.chirp-user-actions i {
+.redsquare-user-actions i {
     cursor: pointer;
 }
 
-.chirp-text-container {
+.redsquare-text-container {
     margin-bottom: 1rem;
 }
 
-.chirp-image-container img {
+.redsquare-image-container img {
     width: 80%;
     height: 30rem;
     border-radius: .5rem;
     object-fit: cover;
+}
+
+
+
+
+/*  Trends */
+
+#redsquare-trends-container {
+    background-color: var(--saito-gray);
+    padding: 1rem;
+    border-radius: .5rem;
+
+}
+
+#redsquare-trends-container>div:not(:last-child) {
+    margin-bottom: 1.5rem;
+
+}
+
+#redsquare-trends-container>h5 {
+    margin-bottom: 2rem;
+    font-weight: bold;
+    font-size: 2.3rem;
+}
+
+#redsquare-trends-container>div>p {
+    font-size: 1.3rem;
+    color: var(--saito-default-font-color);
+
+}
+
+#redsquare-trends-container>div>p:not(:last-child) {
+    margin-bottom: .5rem;
+}
+
+#redsquare-trends-container>div>h6 {
+    font-size: 1.8rem;
+    color: var(--saito-black);
+    margin-bottom: .5rem;
+}
+
+
+/* Follow */
+
+#redsquare-follow-container {
+    background-color: var(--saito-gray);
+    padding-top: 1rem;
+
+}
+
+
+#redsquare-follow-container>h5 {
+    margin-bottom: 2rem;
+    font-weight: bold;
+    font-size: 2.3rem;
+    margin-left: 1rem;
 }

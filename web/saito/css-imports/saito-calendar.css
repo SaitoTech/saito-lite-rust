@@ -1,12 +1,12 @@
 :root {
-    --saito-calendar-width: 25rem;
-    --saito-calendar-minwidth: 10rem;
+    --calendar-width: 25rem;
+    --calendar-minwidth: 10rem;
 }
 
 
 .container {
-    max-width: var(--saito-calendar-width);
-    min-width: var(--saito-calendar-minwidth);
+    max-width: var(--calendar-width);
+    min-width: var(--calendar-minwidth);
     /* width: var(); */
 }
 
@@ -69,8 +69,8 @@
 }
 
 .saito-calendar-weekdays div {
-    /* min-width: calc((var(--saito-calendar-minwidth) - 2rem)/7); */
-    width: calc((var(--saito-calendar-width) - 2rem)/7);
+    /* min-width: calc((var(--calendar-minwidth) - 2rem)/7); */
+    width: calc((var(--calendar-width) - 2rem)/7);
     font-size: 1.6rem;
     text-align: center;
 
@@ -91,8 +91,8 @@
     font-size: 1.2rem;
     margin: .5rem;
 
-    width: calc((var(--saito-calendar-width) - (14 * .5rem) - 2rem) /7);
-    /* min-width: calc((var(--saito-calendar-minwidth) - (14 * .5rem) - 2rem) /7); */
+    width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
+    /* min-width: calc((var(--calendar-minwidth) - (14 * .5rem) - 2rem) /7); */
 }
 
 .saito-calendar-days div:hover {
