@@ -1,3 +1,23 @@
+
+.saito-container {
+  padding: 1rem 2rem;
+  margin-top: var(--saito-header-height);
+  display: grid;
+  grid-template-columns: 1fr;
+  /* grid-template-columns: min-content 1fr min-content; */
+  position: relative;
+}
+
+.saito-main {
+    min-height: 100vh;
+    margin-right: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: var(--saito-white);
+    padding: 1rem;
+    grid-column: 2/3;
+    grid-row: 1/2;
+}
+
 .saito-sidebar {
     min-width: 26rem;
     margin-bottom: 1.5rem;
@@ -15,7 +35,6 @@
     padding-top: 1rem;
 }
 
-
 .saito-sidebar.right {
     min-width: 26rem;
     padding: 1rem;
@@ -23,7 +42,6 @@
     grid-column: 3/4;
     grid-row: 1/2;
 }
-
 
 .saito-sidebar.left.mobile {
     transform: translateX(0);
@@ -58,34 +76,18 @@
 }
 
 
-.saito-main {
-    min-height: 100vh;
-    margin-right: 1.5rem;
-    margin-bottom: 1.5rem;
-    background-color: var(--saito-white);
-    padding: 1rem;
-    grid-column: 2/3;
-    grid-row: 1/2;
-}
-
-
-
-
-
-
-
 /* ----------------------------------------------------------------
  Sidebars
 -----------------------------------------------------------------*/
-
 
 .saito-sidebar>div:not(:last-child) {
     margin-bottom: 2rem;
 }
 
 
-
-
+/* ----------------------------------------------------------------
+ Media Queries
+-----------------------------------------------------------------*/
 
 @media screen and (max-width: 1200px) {
     .saito-sidebar.left {
@@ -134,9 +136,6 @@
     }
 }
 
-
-
-
 @media screen and (max-width: 503px) {
 
     .saito-sidebar .section>div:nth-child(1) {
@@ -148,3 +147,4 @@
         padding-left: 0rem;
     }
 }
+

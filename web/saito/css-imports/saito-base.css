@@ -26,15 +26,6 @@ body {
   overflow-x: hidden;
 }
 
-.saito-container {
-  padding: 1rem 2rem;
-  margin-top: var(--saito-header-height);
-  display: grid;
-  grid-template-columns: 1fr;
-  /* grid-template-columns: min-content 1fr min-content; */
-  position: relative;
-}
-
 .modal-dialog {
   border: 20rem;
 }
