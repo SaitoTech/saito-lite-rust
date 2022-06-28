@@ -460,7 +460,7 @@ class Container {
 
             createPeerConnection.then(offer => {
 
-                stun_mod.broadcastOffer(my_key, peer_key, offer);
+                stun_mod.sendOfferTransaction(my_key, peer_key, offer);
             });
 
         })
