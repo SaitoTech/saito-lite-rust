@@ -11,10 +11,10 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
       <div id="redsquare-follow-container">
        <h5> Who to follow </h5>
        <div>
-          <div class="saito-item-list">
+          <div class="saito-list">
           <div>
           <img src="/redsquare/images/david.jpeg" />
-          <div class="item-info">
+          <div>
             <p>David Lancashire </p>
             <span> @trevelyan</span>
           </div>
@@ -26,7 +26,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
         </div>
           <div>
           <img src="/redsquare/images/richard.jpeg" />
-          <div class="item-info">
+          <div>
             <p>Richard Parris </p>
             <span> @arpee</span>
           </div>

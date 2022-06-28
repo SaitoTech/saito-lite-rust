@@ -2,7 +2,9 @@
  Saito Base: CSS default settings, layouts
 -----------------------------------------------------------------*/
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -113,7 +115,8 @@ hr {
   font-size: 2rem;
 }
 
-p, .saito-mid-p {
+p,
+.saito-mid-p {
   color: var(--saito-black);
   font-size: 1.6rem;
 }
@@ -136,7 +139,7 @@ Media Queries
     font-size: 1.4rem;
   }
 
-  .saito-container {
+  #saito-container {
     padding: 1rem calc((100vw - var(--saito-width)) / 2);
   }
 }
@@ -146,8 +149,8 @@ Media Queries
     font-size: 1.4rem;
   }
 
-  .saito-container {
-    padding: 1rem 2rem;
+  #saito-container {
+    padding: 1rem calc((100vw - var(--saito-width)) / 2);
   }
 }
 

@@ -216,12 +216,12 @@ Saito Menu
 Saito User List and Saito User 
 -----------------------------------------------------------------*/
 
-.saito-item-list {
+.saito-list {
     padding: 1rem;
     padding-top: 0;
 }
 
-.saito-item-list>div {
+.saito-list>div {
     display: flex;
     position: relative;
     justify-items: start;
@@ -229,18 +229,16 @@ Saito User List and Saito User
     width: 100%;
 }
 
-.saito-item-list>div>i {
+.saito-list>div>div:nth-child(3) {
     color: var(--saito-primary);
     top: 0;
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
     cursor: pointer;
     font-size: 1.4rem;
 }
 
 
-/* .saito-item-list>div:first-child {
+
+/* .saito-list>div:first-child {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -249,11 +247,11 @@ Saito User List and Saito User
 
 
 
-.saito-item-list>div:not(:last-child) {
+.saito-list>div:not(:last-child) {
     margin-bottom: 1rem;
 }
 
-.saito-item-list>div>img {
+.saito-list>div>img {
     width: 5rem;
     height: 5rem;
     border-radius: .5rem;
@@ -263,30 +261,40 @@ Saito User List and Saito User
 
 
 
-.item-info {
-    width: 100%;
+.saito-list>div>div:nth-child(2) {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
 }
 
-.item-info p {
-    max-width: 95%;
+.saito-list>div>div:nth-child(3) {
+
+    top: 0;
+    position: absolute;
+    right: 0rem;
+}
+
+
+.saito-list>div>div:nth-child(2) p {
+    max-width: 80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 
 }
 
-.item-info span {
+.saito-list>div>div:nth-child(2) span {
     font-size: 1.3rem;
 }
 
 
 
+
+
+
 /*  Circlular image */
-.saito-item-list.circle>div>img {
+.saito-list.circle>div>img {
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
@@ -297,16 +305,16 @@ Saito User List and Saito User
 
 /* rectangular image */
 
-.saito-item-list.rectangle>div>img {
+.saito-list.rectangle>div>img {
     width: 7rem;
     height: 5rem;
 }
 
 
 
-.saito-item-list.rectangle .item-info p {}
+.saito-list.rectangle .item-info p {}
 
-.saito-item-list.rectangle .item-info span {
+.saito-list.rectangle .item-info span {
     max-width: 70%;
     white-space: nowrap;
     overflow: hidden;
@@ -317,16 +325,16 @@ Saito User List and Saito User
 /* rectangular image */
 
 
-/* .saito-item-list.saito-user-medium .saito-item-list > div{
+/* .saito-list.saito-user-medium .saito-list > div{
     height: 5rem;
 }
 
-.saito-item-list.saito-user-medium .saito-user:not(:last-child) {
+.saito-list.saito-user-medium .saito-user:not(:last-child) {
     margin-bottom: 5px;
 }
 
 
-.saito-item-list.saito-user-medium > div>img {
+.saito-list.saito-user-medium > div>img {
     width: 5rem;
     height: 5rem;
     border-radius: .5rem;
@@ -335,7 +343,7 @@ Saito User List and Saito User
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
-.saito-item-list.saito-user-medium .saito-item-list > divp {
+.saito-list.saito-user-medium .saito-list > divp {
     font-size: 1.6rem;
 } */
 
@@ -344,13 +352,13 @@ Saito User List and Saito User
 
 
 
-.saito-item-list.dense .saito-user:not(:last-child) {
+.saito-list.dense .saito-user:not(:last-child) {
     margin-bottom: 1rem
 }
 
 
 
-.saito-item-list.dense>div>img {
+.saito-list.dense>div>img {
     height: 3.4rem;
     width: 3.4rem;
     border-radius: 0;
@@ -359,14 +367,14 @@ Saito User List and Saito User
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
-.saito-item-list.dense .saito-item-list>div {
+.saito-list.dense .saito-list>div {
     font-size: 1.32rem;
     font-weight: bold;
 }
 
-.saito-item-list.dense .item-info {}
+.saito-list.dense .item-info {}
 
-.saito-item-list.dense .item-info span {
+.saito-list.dense .item-info span {
     font-size: 1.18rem;
 
 }
@@ -375,15 +383,15 @@ Saito User List and Saito User
 
 
 /*  Rectangular  Dense */
-.saito-item-list.dense.rectangle .saito-item-list>div {}
+.saito-list.dense.rectangle .saito-list>div {}
 
-.saito-item-list.dense.rectangle .saito-user:not(:last-child) {
+.saito-list.dense.rectangle .saito-user:not(:last-child) {
     margin-bottom: 1rem
 }
 
 
 
-.saito-item-list.dense.rectangle>div>img {
+.saito-list.dense.rectangle>div>img {
     height: 3.4rem;
     width: 5rem;
     border-radius: 0;
@@ -392,16 +400,16 @@ Saito User List and Saito User
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
-/* .saito-item-list.dense.rectangle>div {
+/* .saito-list.dense.rectangle>div {
     font-size: 1.32rem;
     font-weight: bold;
 } */
 
-.saito-item-list.dense.rectangle .item-info {
+.saito-list.dense.rectangle .item-info {
     justify-content: flex-start;
 }
 
-.saito-item-list.dense.rectangle .item-info span {
+.saito-list.dense.rectangle .item-info span {
     font-size: 1.18rem;
 }
 
@@ -448,17 +456,17 @@ Saito User List and Saito User
     }
 
 
-    .saito-item-list>div>img {
+    .saito-list>div>img {
         width: 3.5rem;
         height: 3.5rem;
     }
 
 
-    .saito-item-list.rectangle .item-info {
+    .saito-list.rectangle .item-info {
         width: 70%;
     }
 
-    .saito-item-list.rectangle .item-info span {
+    .saito-list.rectangle .item-info span {
         max-width: 80%;
         white-space: nowrap;
         overflow: hidden;
@@ -466,7 +474,7 @@ Saito User List and Saito User
     }
 
 
-    .saito-item-list.rectangle>div>img {
+    .saito-list.rectangle>div>img {
         width: 5rem;
         height: 3.5rem;
     }
