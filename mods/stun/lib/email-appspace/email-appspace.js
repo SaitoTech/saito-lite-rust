@@ -74,25 +74,6 @@ class Container {
             this.render(app, mod);
         });
 
-        app.connection.on('listeners-update', (app, listeners) => {
-            let listenersHtml;
-            if (listeners) {
-                listenersHtml = listeners.map(listener => ` <li class="list-group-item">${listener}</li>`).join('');
-                console.log(listeners, listenersHtml);
-            } else {
-                listenersHtml = "<p> There are no listeners";
-            }
-
-            if (document.querySelector("#stun-listeners")) {
-                document.querySelector("#stun-listeners").innerHTML = listenersHtml;
-            }
-
-            if (document.querySelector('#connectSelect')) {
-                document.querySelector('#connectSelect').innerHTML = listenersHtml;
-            }
-        });
-
-
 
         app.connection.on('offer_received', (peer_key, my_key, offer) => {
             vanillaToast.show('Connecting ..', {
@@ -304,18 +285,11 @@ class Container {
 
                 });
 
-
-
-
-
-
             } else {
                 console.log('KEY NOT FOUND');
             }
 
         })
-
-
 
 
 
@@ -447,11 +421,6 @@ class Container {
                         this.videoChat.addLocalStream(localStream);
 
 
-
-
-
-
-
                         pc.LOCAL_STREAM = localStream;
                         const remoteStream = new MediaStream();
                         pc.addEventListener('track', (event) => {
@@ -493,37 +462,6 @@ class Container {
 
                 stun_mod.broadcastOffer(my_key, peer_key, offer);
             });
-
-        })
-
-        // add listeners to stun module
-        $('.stun-container').on('click', '#add-to-listeners-btn', function(e) {
-
-            let input = $('#listeners-input').val().split(',');
-            const listeners = input.map(listener => listener.trim());
-            let stun_mod = app.modules.returnModule("Stun");
-            stun_mod.addListeners(listeners);
-
-        })
-
-        $('.stun-container').on('click', '#createInvite', function(e) {
-            let video_mod = app.modules.returnModule("Video");
-            console.log(video_mod);
-            video_mod.createVideoInvite();
-        })
-        $('.stun-container').on('click', '#joinInvite', function(e) {
-            let video_mod = app.modules.returnModule("Video");
-            // invite code hardcoded for dev purposes
-            const inviteCode = $("#inviteCode").val();
-            video_mod.joinVideoInvite(inviteCode.trim());
-        })
-
-        $('.stun-container').on('click', '#sendv-message-btn', (e) => {
-
-            if (!this.peer_connection) return console.log("Peer connection instance has not been created");
-            const text = $('#message-text').val();
-            // console.log('text message', text);
-            this.peer_connection.dc.send(text);
 
         })
 
