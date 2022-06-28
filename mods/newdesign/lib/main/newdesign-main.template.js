@@ -2,10 +2,10 @@ module.exports = (app) => {
 
   return `
   <div class="saito-tab-content">
-      <div class="saito-tab" id="general">
+      <div class="saito-tab active" id="general">
           <div class="saito-main">
-              <div class="saito-marb-3">
-                  <h4 class="saito-marb-2">Fieldset</h4>
+              <div class="">
+                  <h4 class="">Fieldset</h4>
                   <fieldset class="saito-box padding box-shadow  rounded saito-white-background ">
   
                       <h1>h1 Heading</h1>
@@ -19,7 +19,7 @@ module.exports = (app) => {
                           <p class="saito-large-p ">Large Paragraph
   
                           </p>
-                          <p class="saito-marb-2">Medium Paragraph
+                          <p class="">Medium Paragraph
   
                           </p>
                           <p class="saito-small-p">Small Paragraph
@@ -29,7 +29,7 @@ module.exports = (app) => {
               </div>
   
               <div>
-                  <h4 class=" saito-marb-2">Pre</h4>
+                  <h4 class=" ">Pre</h4>
   
                   <pre>
           {
@@ -56,46 +56,46 @@ module.exports = (app) => {
   
       <div class="saito-tab" id="forms">
           <div class="saito-main">
-              <div class=" saito-marb-3">
-                  <h4 class=" saito-marb-2">Buttons </h4>
+              <div class=" ">
+                  <h4 class=" ">Buttons </h4>
                   <div>
                       <button>Primary</button>
-                      <button class="saito-btn-secondary d">Secondary</button>
-                      <button class="saito-btn-gradient">Gradient</button>
+                      <button class="saito-button-secondary d">Secondary</button>
+                      <button class="saito-button-gradient">Gradient</button>
                       <button class="small">Small</button>
-                      <button class="saito-btn-secondary large">Large Secondary</button>
+                      <button class="saito-button-secondary large">Large Secondary</button>
                   </div>
               </div>
   
-              <div class=" saito-marb-3">
-                  <h4 class=" saito-marb-2">Form Items</h4>
+              <div class=" ">
+                  <h4 class=" ">Form Items</h4>
                   <form class="saito-box padding box-shadow  rounded  saito-white-background">
   
   
   
                       <h4>Title</h4>
-                      <p class="saito-marb-2">This is a row of plain text.</p>
+                      <p class="">This is a row of plain text.</p>
   
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Password</label>
                           <div><input id="password" type="password" placeholder="Password" class="password" />
                           </div>
                       </div>
                       <div>
-                          <div class="saito-marb-2">
+                          <div class="">
                               <label>Text Input</label>
                               <div><input placeholder="Text Field" type="text"></input></div>
                           </div>
                       </div>
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Date Input</label>
                           <div><input type="text" name="datepicker"></input></div>
                       </div>
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Range Input</label>
                           <div><input type="range" value="8"></input></div>
                       </div>
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Checkboxes</label>
                           <div><input type="checkbox" checked></input><input type="checkbox"></input><input
                                   type="checkbox"></input><input type="checkbox"></input></div>
@@ -107,7 +107,7 @@ module.exports = (app) => {
                                   type="radio"></input></div>
                       </div>
   
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Select</label>
   
                           <select class="saito-new-select saito-select-border">
@@ -124,7 +124,7 @@ module.exports = (app) => {
   
                       </div>
   
-                      <div class="saito-marb-2">
+                      <div class="">
                           <label>Text Area</label>
                           <textarea placeholder="Text area">Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
                     </textarea>
@@ -136,58 +136,58 @@ module.exports = (app) => {
       <div class="saito-tab " id="grids">
           <div class="saito-main">
               <h4>Grid System</h4>
-              <div class=" saito-mart-2 saito-pad-2">
+              <div class="  ">
                   <div class="saito-grid-1-1 ">
-                      <div class=" saito-white-background  saito-padx-2"> 1/2 </div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/2 </div>
+                      <div class=" saito-white-background  "> 1/2 </div>
+                      <div class=" saito-primary-background saito-white-color"> 1/2 </div>
                   </div>
                   <div class="saito-grid-1-1-1 ">
-                      <div class=" saito-white-background  saito-padx-2"> 1/3 </div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/3 </div>
-                      <div class="saito-secondary-background saito-white-color  saito-padx-2"> 1/3</div>
+                      <div class=" saito-white-background  "> 1/3 </div>
+                      <div class=" saito-primary-background saito-white-color"> 1/3 </div>
+                      <div class="saito-secondary-background saito-white-color  "> 1/3</div>
                   </div>
   
                   <div class="saito-grid-1-2-1">
-                      <div class=" saito-white-background  saito-padx-2"> 1/4 </div>
-                      <div class=" saito-padx-2 saito-primary-background saito-white-color"> 2/4</div>
-                      <div class="saito-secondary-background saito-white-color  saito-padx-2"> 1/4 </div>
+                      <div class=" saito-white-background  "> 1/4 </div>
+                      <div class="  saito-primary-background saito-white-color"> 2/4</div>
+                      <div class="saito-secondary-background saito-white-color  "> 1/4 </div>
                   </div>
                   <div class="saito-grid-2-1-1">
-                      <div class=" saito-white-background  saito-padx-2">2/4 </div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/4 </div>
-                      <div class="saito-secondary-background saito-white-color  saito-padx-2">1/4 </div>
+                      <div class=" saito-white-background  ">2/4 </div>
+                      <div class=" saito-primary-background saito-white-color"> 1/4 </div>
+                      <div class="saito-secondary-background saito-white-color  ">1/4 </div>
                   </div>
                   <div class="saito-grid-1-3">
-                      <div class="saito-white-background  saito-padx-2"> 1/4</div>
-                      <div class=" saito-padx-2 saito-primary-background saito-white-color"> 3/4 </div>
+                      <div class="saito-white-background  "> 1/4</div>
+                      <div class="  saito-primary-background saito-white-color"> 3/4 </div>
   
                   </div>
   
                   <div class="saito-grid-1-1-1-1">
-                      <div class="saito-white-background  saito-padx-2"> 1/4</div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/4 </div>
-                      <div class="saito-secondary-background saito-white-color  saito-padx-2"> 1/4 </div>
-                      <div class="saito-padx-2 saito-white-background "> 1/4 </div>
+                      <div class="saito-white-background  "> 1/4</div>
+                      <div class=" saito-primary-background saito-white-color"> 1/4 </div>
+                      <div class="saito-secondary-background saito-white-color  "> 1/4 </div>
+                      <div class=" saito-white-background "> 1/4 </div>
   
                   </div>
                   <div class="saito-grid-1-4">
-                      <div class="saito-white-background  saito-padx-2"> 1/5</div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 4/5 </div>
+                      <div class="saito-white-background  "> 1/5</div>
+                      <div class=" saito-primary-background saito-white-color"> 4/5 </div>
   
                   </div>
                   <div class="saito-grid-4-1">
-                      <div class="saito-white-background  saito-padx-2"> 1/5</div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 4/5 </div>
+                      <div class="saito-white-background  "> 1/5</div>
+                      <div class=" saito-primary-background saito-white-color"> 4/5 </div>
   
                   </div>
                   <div class="saito-grid-1-5">
-                      <div class="saito-white-background  saito-padx-2"> 1/6</div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 5/6 </div>
+                      <div class="saito-white-background  "> 1/6</div>
+                      <div class=" saito-primary-background saito-white-color"> 5/6 </div>
   
                   </div>
                   <div class="saito-grid-5-1">
-                      <div class="saito-white-background  saito-padx-2"> 5/6</div>
-                      <div class="saito-padx-2 saito-primary-background saito-white-color"> 1/6 </div>
+                      <div class="saito-white-background  "> 5/6</div>
+                      <div class=" saito-primary-background saito-white-color"> 1/6 </div>
   
                   </div>
               </div>
@@ -196,31 +196,27 @@ module.exports = (app) => {
       <div class="saito-tab" id="boxes">
           <div class="saito-main">
               <h4>Boxes</h4>
-              <div class="saito-mart-2">
+              <div class="">
                   <div class="saito-gray-background">
-                      <h5 class="saito-marb-2">Saito InfoBox with border-radius </h5>
+                      <h5 class="">Saito InfoBox with border-radius </h5>
                       <div class="saito-grid-1-1-1">
-                          <div class=" saito-padx-2">
+                          <div class=" ">
   
                               <div class="saito-infobox padding rounded box-shadow">
-                                  <div>
+                               <div>
                                       <h4> h4 Sub Heading </h4>
                                       <h3> h3 Sub Heading </h3>
                                   </div>
                                   <div>
-                                      <div class="saito-list   saito-white-background ">
+                                      <div class="saito-list">
                                           <div>
                                               <img src="/saito/img/background.png" />
                                               <div>
                                                   <p>Saitolicious</p>
                                                   <span>Tacos, the Saito Network and Saito Consensus</span>
                                               </div>
-                                      
-                                              <div>
-                                              <i class="fas fa-ellipsis-v"></i>
-                                              </div>
-                                           
-                                          </div>
+                                           </div>
+                                     
                                           <div>
                                               <img src="/saito/img/background.png" />
                                               <div>
@@ -245,19 +241,19 @@ module.exports = (app) => {
                                       </div>
                                   </div>
                                   <div>
-                                      <button class="saito-btn-secondary"> Button </button>
+                                      <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class=" saito-padx-2">
+                          <div class=" ">
                               <div class="saito-infobox padding rounded box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
                                       <h3> h3 Sub Heading </h3>
                                   </div>
                                   <div>
-                                      <div class="saito-menu-list">
+                                      <div class="saito-menu">
                                           <ul>
                                               <li>
                                                   <i class="far fa-address-card "> </i>
@@ -276,27 +272,27 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class=" saito-padx-2">
+                          <div class=" ">
                               <div class="saito-infobox padding rounded  box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
                                       <h3> h3 Sub Heading </h3>
                                   </div>
                                   <div>
-                                      <div class="saito-marb-2">
+                                      <div class="">
                                           <label>Text Input</label>
                                           <div><input placeholder="Text Field" type="text"></input></div>
                                       </div>
-                                      <div class="saito-marb-2">
+                                      <div class="">
                                           <label>Date Input</label>
                                           <div><input type="text" name="datepicker"></input></div>
                                       </div>
-                                      <div class="saito-marb-2">
+                                      <div class="">
                                           <label>Range Input</label>
                                           <div><input type="range" value="8"></input></div>
                                       </div>
@@ -304,15 +300,15 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
                       </div>
-                      <h5 class="saito-marb-2">Saito InfoBox with border-radius </h5>
+                      <h5 class="">Saito InfoBox with border-radius </h5>
                       <div class="saito-grid-1-1">
-                          <div class=" saito-padx-2">
+                          <div class=" ">
                               <div class="saito-infobox padding rounded box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -329,12 +325,12 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class=" saito-padx-2">
+                          <div class=" ">
                               <div class="saito-infobox  padding rounded  box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -348,15 +344,15 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
                       </div>
-                      <h5 class="saito-marb-2">Saito InfoBox without border-radius </h5>
+                      <h5 class="">Saito InfoBox without border-radius </h5>
                       <div class="saito-grid-1-1-1">
-                          <div class=" saito-padx-2">
+                          <div class=" ">
                               <div class="saito-infobox  padding box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -372,12 +368,12 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class="saito-padx-2">
+                          <div class="">
                               <div class="saito-infobox padding  box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -390,12 +386,12 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class="saito-padx-2">
+                          <div class="">
                               <div class="saito-infobox padding  box-shadow">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -411,16 +407,16 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
   
                           </div>
                       </div>
-                      <h5 class="saito-marb-2">Saito ContentBox without border-radius </h5>
+                      <h5 class="">Saito ContentBox without border-radius </h5>
                       <div class="saito-grid-1-1">
-                          <div class="saito-padx-2">
+                          <div class="">
                               <div class="saito-contentbox padding box-shadow">
                                   <h4> h4 Sub heading </h4>
                                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi
@@ -432,7 +428,7 @@ module.exports = (app) => {
   
                               </div>
                           </div>
-                          <div class="saito-padx-2">
+                          <div class="">
                               <div class="saito-contentbox padding box-shadow">
                                   <h4>h4 Sub heading</h4>
                                   <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex quisquam odio quo. Nisi
@@ -446,8 +442,8 @@ module.exports = (app) => {
                           </div>
                       </div>
                   </div>
-                  <h5 class="saito-marb-2">Saito InfoBox with gray background </h5>
-                  <div class="saito-white-background saito-pad-2 ">
+                  <h5 class="">Saito InfoBox with gray background </h5>
+                  <div class="saito-white-background  ">
   
                       <div class="saito-grid-1-1">
                           <div class="">
@@ -468,12 +464,12 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
                           </div>
-                          <div class="saito-padx-2">
+                          <div class="">
                               <div class="saito-infobox padding box-secondary ">
                                   <div>
                                       <h4> h4 Sub Heading </h4>
@@ -491,7 +487,7 @@ module.exports = (app) => {
   
                                   </div>
   
-                                  <div> <button class="saito-btn-secondary"> Button </button>
+                                  <div> <button class="saito-button-secondary"> Button </button>
                                   </div>
   
                               </div>
@@ -511,11 +507,11 @@ module.exports = (app) => {
       <div class="saito-tab" id="menus">
           <div class="saito-main">
               <h4>Menus</h4>
-              <div class="saito-mart-2">
+              <div class="">
                   <h5> Saito Menu : Left Aligned | Right Aligned | With icon | Without Border Radius </h5>
                   <div class="saito-grid-1-1-1">
-                      <div class=" saito-padx-3">
-                          <div class="saito-menu-list  saito-white-background">
+                      <div class=" ">
+                          <div class="saito-menu  saito-white-background">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -532,8 +528,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list right  saito-white-background">
+                      <div class="">
+                          <div class="saito-menu right  saito-white-background">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -550,8 +546,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3 ">
-                          <div class="saito-menu-list right  saito-white-background">
+                      <div class=" ">
+                          <div class="saito-menu right  saito-white-background">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -571,8 +567,8 @@ module.exports = (app) => {
                   </div>
                   <h5> Saito Menu : Default Size | Left Aligned | Right Aligned | With icon | With Border Radius </h5>
                   <div class="saito-grid-1-1-1">
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list  rounded  saito-white-background ">
+                      <div class="">
+                          <div class="saito-menu  rounded  saito-white-background ">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -589,8 +585,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list right  rounded saito-white-background  ">
+                      <div class="">
+                          <div class="saito-menu right  rounded saito-white-background  ">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -607,8 +603,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3 ">
-                          <div class="saito-menu-list  right  rounded saito-white-background">
+                      <div class=" ">
+                          <div class="saito-menu  right  rounded saito-white-background">
                               <ul>
                                   <li>
                                       <i class="far fa-address-card "> </i>
@@ -629,8 +625,8 @@ module.exports = (app) => {
   
                   <h5> Saito Menu : Default Size | Left Aligned | Right Aligned | Without icon | With Border Radius </h5>
                   <div class="saito-grid-1-1-1-1">
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list  rounded  saito-white-background">
+                      <div class="">
+                          <div class="saito-menu  rounded  saito-white-background">
                               <ul>
                                   <li>
   
@@ -647,8 +643,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list right rounded   saito-white-background">
+                      <div class="">
+                          <div class="saito-menu right rounded   saito-white-background">
                               <ul>
                                   <li>
   
@@ -665,8 +661,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3 ">
-                          <div class="saito-menu-list  right rounded  saito-white-background">
+                      <div class=" ">
+                          <div class="saito-menu  right rounded  saito-white-background">
                               <ul>
                                   <li>
   
@@ -686,8 +682,8 @@ module.exports = (app) => {
                   </div>
                   <h5> Saito Menu : Small Size | Left Aligned | Right Aligned | Without icon | Without Border Radius </h5>
                   <div class="saito-grid-1-1-1">
-                      <div class="saito-padx-3 ">
-                          <div class="saito-menu-list dense saito-white-background ">
+                      <div class=" ">
+                          <div class="saito-menu  saito-white-background ">
                               <ul>
                                   <li>
   
@@ -712,8 +708,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
-                          <div class="saito-menu-list right dense saito-white-background ">
+                      <div class="">
+                          <div class="saito-menu right  saito-white-background ">
                               <ul>
                                   <li>
   
@@ -738,8 +734,8 @@ module.exports = (app) => {
                               </ul>
                           </div>
                       </div>
-                      <div class="saito-padx-3 ">
-                          <div class="saito-menu-list right dense saito-white-background ">
+                      <div class=" ">
+                          <div class="saito-menu right  saito-white-background ">
                               <ul>
                                   <li>
   
@@ -773,10 +769,10 @@ module.exports = (app) => {
       <div class="saito-tab" id="user_lists">
           <div class="saito-main">
               <h4> User Lists </h4>
-              <div class="saito-mart-2">
+              <div class="">
   
                   <div class="saito-grid-1-1">
-                      <div class="saito-padx-3">
+                      <div class="">
                           <h5> Saito UserList:  </h5>
                           <div class="saito-list  saito-white-background ">
                               <div>
@@ -817,7 +813,7 @@ module.exports = (app) => {
                               </div>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
+                      <div class="">
                           <h5> Saito UserList: </h5>
                           <div class="saito-list  saito-white-background  ">
                               <div>
@@ -848,9 +844,9 @@ module.exports = (app) => {
                       </div>
                   </div>
                   <div class="saito-grid-1-1">
-                      <div class="saito-padx-3">
+                      <div class="">
                           <h5> Saito UserList:   </h5>
-                          <div class="saito-list  saito-user-dense saito-white-background ">
+                          <div class="saito-list  saito-user- saito-white-background ">
                               <div>
                                   <img src="/saito/img/background.png" />
                                   <div>
@@ -889,9 +885,9 @@ module.exports = (app) => {
                               </div>
                           </div>
                       </div>
-                      <div class="saito-padx-3">
+                      <div class="">
                           <h5> Saito UserList:  </h5>
-                          <div class="saito-list saito-user-dense saito-white-background  ">
+                          <div class="saito-list saito-user- saito-white-background  ">
                               <div>
                                   <img src="/saito/img/background.png" />
                                   <div>
@@ -932,18 +928,11 @@ module.exports = (app) => {
   
       <div class="saito-tab " id="example1">
   
-  
+
           <div class="saito-sidebar left">
-              <div class="hamburger">
-                  <i class="fas fa-bars"></i>
-              </div>
-              <div class="section">
+              <div>
                   <div>
-                      <h5> Games </h5>
-  
-                  </div>
-                  <div>
-                      <div class="saito-menu-list dense ">
+                      <div class="saito-menu  ">
                           <ul>
                               <li>
   
@@ -971,13 +960,9 @@ module.exports = (app) => {
               </div>
   
   
-              <div class="section">
+              <div>
                   <div>
-                      <h5> Chat </h5>
-                      <i class="fas fa-ellipsis-v"></i>
-                  </div>
-                  <div>
-                      <div class="saito-list dense  saito-white-background  ">
+                      <div class="saito-list   saito-white-background  ">
                           <div>
                               <img src="/saito/img/background.png" />
                               <div>
@@ -1063,7 +1048,7 @@ module.exports = (app) => {
               </div>
               <div>
                   <input type="text" placeholder="Type message" />
-                  <i id="saito-sendmsg-btn" class="fas fa-paper-plane"></i>
+                  <i id="saito-sendmsg-button" class="fas fa-paper-plane"></i>
               </div>
           </div>
   
@@ -1076,16 +1061,9 @@ module.exports = (app) => {
   
   
           <div class="saito-sidebar left">
-              <div class="hamburger">
-                  <i class="fas fa-bars"></i>
-              </div>
-              <div class="section">
+              <div>
                   <div>
-                      <h5> Games </h5>
-  
-                  </div>
-                  <div>
-                      <div class="saito-menu-list dense ">
+                      <div class="saito-menu  ">
                           <ul>
                               <li>
   
@@ -1113,13 +1091,9 @@ module.exports = (app) => {
               </div>
   
   
-              <div class="section">
+              <div>
                   <div>
-                      <h5> Chat </h5>
-                      <i class="fas fa-ellipsis-v"></i>
-                  </div>
-                  <div>
-                      <div class="saito-list dense  saito-white-background  ">
+                      <div class="saito-list   saito-white-background  ">
                           <div>
                               <img src="/saito/img/background.png" />
                               <div>
@@ -1250,13 +1224,10 @@ module.exports = (app) => {
               <div class="hamburger">
                   <i class="fas fa-bars"></i>
               </div>
-              <div class="section">
+              <div>
+                
                   <div>
-                      <h5> Games </h5>
-  
-                  </div>
-                  <div>
-                      <div class="saito-menu-list dense ">
+                      <div class="saito-menu  ">
                           <ul>
                               <li>
   
@@ -1284,13 +1255,9 @@ module.exports = (app) => {
               </div>
   
   
-              <div class="section">
+              <div>
                   <div>
-                      <h5> Chat </h5>
-                      <i class="fas fa-ellipsis-v"></i>
-                  </div>
-                  <div>
-                      <div class="saito-list dense  saito-white-background  ">
+                      <div class="saito-list   saito-white-background  ">
                           <div>
                               <img src="/saito/img/background.png" />
                               <div>
@@ -1353,15 +1320,25 @@ module.exports = (app) => {
           </div>
   
           <div class="saito-tab" id="components">
+               <div class="saito-overlay">
+                    <div>
+                       <i class="fas fa-power-off" > </i>
+                       <div>
+
+                       </div>
+                     </div>
+                    
+              </div>
               <div class="saito-main">
-                  <h4 class="saito-marb-2"> Components </h4>
+                  <h4 class=""> Components </h4>
                   <div>
-                      <button id="salert_btn"> salert </button>
-                      <button id="sprompt_btn"> sprompt </button>
-                      <button id="sconfirm_btn"> sconfirm </button>
+                      <button id="salert_button"> salert </button>
+                      <button id="sprompt_button"> sprompt </button>
+                      <button id="sconfirm_button"> sconfirm </button>
   
-                      <button id="sitemsg_btn"> siteMessage </button>
-                      <button id="changetheme_btn"> Change theme </button>
+                      <button id="sitemsg_button"> siteMessage </button>
+                      <button id="changetheme_button"> Change theme </button>
+                      <button id="showoverlay_button"> Show overlay </button>
                   </div>
               </div>
           </div>

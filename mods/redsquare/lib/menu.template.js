@@ -4,7 +4,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
   return `
     <div class="redsquare-menu">
           <div>
-            <div class="saito-menu-list  ">
+            <div class="saito-menu  ">
               <ul>
                 <li>
                   <i class="fas fa-home"></i>
