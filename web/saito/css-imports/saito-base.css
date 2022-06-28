@@ -2,9 +2,7 @@
  Saito Base: CSS default settings, layouts
 -----------------------------------------------------------------*/
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -28,24 +26,14 @@ body {
   overflow-x: hidden;
 }
 
-#saito-container {
-  padding: 1rem 2rem;
-  margin-top: var(--saito-header-height);
-  display: grid;
-  grid-template-columns: min-content 1fr min-content;
-  position: relative;
-}
-
 .saito-container {
   padding: 1rem 2rem;
   margin-top: var(--saito-header-height);
   display: grid;
+  grid-template-columns: 1fr;
+  /* grid-template-columns: min-content 1fr min-content; */
   position: relative;
 }
-
-
-
-
 
 .modal-dialog {
   border: 20rem;
@@ -96,7 +84,6 @@ h3 {
 
 h4 {
   font-size: 3.5rem;
-
 }
 
 h5 {
@@ -107,11 +94,9 @@ h6 {
   font-size: 2.5rem
 }
 
-
 textarea {
   resize: none;
 }
-
 
 
 /* ----------------------------------------------------------------
@@ -124,7 +109,6 @@ p {
 }
 
 
-
 /* ----------------------------------------------------------------
 Divider
 -----------------------------------------------------------------*/
@@ -134,21 +118,11 @@ hr {
   margin: 2.5rem;
 }
 
-
-
-
-
-
-
-
-
-
 .saito-large-p {
   font-size: 2rem;
 }
 
-p,
-.saito-mid-p {
+p, .saito-mid-p {
   color: var(--saito-black);
   font-size: 1.6rem;
 }
@@ -157,10 +131,8 @@ p,
   font-size: 1.3rem;
 }
 
-
 a:hover {
   opacity: 0.8;
-
 }
 
 
@@ -168,21 +140,9 @@ a:hover {
 Media Queries
 -----------------------------------------------------------------*/
 
-
-
-
-/* ----------------------------------------------------------------
-media queries
------------------------------------------------------------------*/
-
-
 @media screen and (min-width: 1600px) {
   body {
     font-size: 1.4rem;
-  }
-
-  #saito-container {
-    padding: 1rem calc((100vw - var(--saito-width)) / 2);
   }
 
   .saito-container {
@@ -193,10 +153,6 @@ media queries
 @media screen and (max-width: 1200px) {
   body {
     font-size: 1.4rem;
-  }
-
-  #saito-container {
-    padding: 1rem 2rem;
   }
 
   .saito-container {
@@ -214,11 +170,6 @@ media queries
 @media screen and (max-width: 768px) {
   body {
     font-size: 1.4rem;
-  }
-
-  #saito-container {
-    padding: 1rem 1.5rem;
-    flex-direction: column;
   }
 
   .saito-container {
