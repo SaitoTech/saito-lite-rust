@@ -32,10 +32,10 @@
   display: none;
   width: fit-content;
   height: 460px;
-  background-color: rgba(0,0,0,0.75);
-  border: 5px solid black;
+  background-color: rgba(245,245,245,0.95);
+  border: 2px solid black;
   border-radius: 10px;
-  color: white;
+  color: black;
   transform: unset;
   left: 10px;
   top: 60px;
@@ -519,9 +519,6 @@ body {
   /*overflow-y: scroll;*/
 }
 
-.rules-overlay{
-  overflow-y: scroll;
-}
 
 .trade_overlay_title{
   width: 100%;
@@ -657,10 +654,11 @@ ul.horizontal_list li.iconoption{
 /*Sit graphic on top of playerbox*/
 .me > .player-box-graphic{
   position: absolute;
-  /*left: calc(150px + 8vw);*/
-  bottom: calc(100% + 12px);
+  left: calc(100% + 12px);
+  top: 5px;
+ /*bottom: calc(100% + 12px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%);*/
 }
 
 .notme > .player-box-graphic{
@@ -675,34 +673,35 @@ ul.horizontal_list li.iconoption{
 }
 
 
-/* Dice */
+/* Dice display (position handled by playerbox-graphic) */
 .diceroll{
-  width: min(12vw,110px);
+  display: flex;
   margin: 0 auto;
-  /*position: absolute;
-  /*top: 0px;
-  left: 50%;
-  transform: translateX(-5vw);*/
   border: 2px solid black;
   border-radius: 5px;
   background-color: #222B;
+  /*width: min(12vw,110px);
   padding: min(0.5vw,5px) 0;
-  display: flex;
-  flex-direction: row;
+  flex-direction: row;*/
   justify-content: space-evenly;
+  align-items: center;
   z-index: 3;
+  width: 50px;
+  height: min(12vw, 110px);
+  padding: 0 min(0.5vw,5px);
+  flex-direction: column;
 }
 
 .die{
   width: min(4vw,40px);
 }
 
-.notme .diceroll{
+/*.notme .diceroll{
   width: 50px;
   height: min(12vw, 110px);
   padding: 0 min(0.5vw,5px);
   flex-direction: column;
-}
+}*/
 
 .flexline{
   display: flex;
@@ -860,6 +859,7 @@ ul.horizontal_list li.iconoption{
 /*Stats overlay table*/
 .rules-overlay{
   overflow-x: hidden;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
 }
@@ -905,19 +905,16 @@ ul.horizontal_list li.iconoption{
 
 .flash {
   animation-name: flash;
-  animation-duration: 1.3s;
-  animation-iteration-count: 3;
-  animation-fill-mode: backwards;
+  animation-duration: 1.8s;
+  animation-delay: 0.2s;
+  animation-iteration-count: 5;
+  /*animation-fill-mode: backwards;*/
 }
 
 @keyframes flash {
-  0% {
-    opacity: .8;
+  50% {
     background-color: white;
-    color: black !important;
-  }
-  100% {
-    opacity: 1;
+    color: black;
   }
 }
 
