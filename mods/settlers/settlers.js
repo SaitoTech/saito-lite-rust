@@ -1811,30 +1811,38 @@ class Settlers extends GameTemplate {
       }
     }
     if (thievingTargets.length > 0) {
-      let html = '<div class="tbd">Steal from which Player: <ul>';
-      for (let i = 0; i < this.game.players.length; i++) {
-        if (thievingTargets.includes(i + 1)) {
-          html += `<li class="option" id="${i + 1}">Player ${i + 1} (${
-            settlers_self.game.state.players[i].resources.length
-          } cards)</li>`;
-        }
-      }
-      html += "</ul></div>";
-      this.updateStatus(html, 1);
-
-      //Select a player to steal from
-      $(".option").off();
-      $(".option").on("click", function () {
-        let victim = $(this).attr("id");
+      let robPlayer = (victim) => {
         let potentialLoot =
-          settlers_self.game.state.players[victim - 1].resources;
-        if (potentialLoot.length > 0) {
-          let loot =
-            potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
-          settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
-        } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
-        settlers_self.endTurn();
-      });
+            settlers_self.game.state.players[victim - 1].resources;
+          if (potentialLoot.length > 0) {
+            let loot =
+              potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
+            settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
+          } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
+          settlers_self.endTurn();
+      };
+
+      if (thievingTargets.length > 1) {
+        let html = '<div class="tbd">Steal from which Player: <ul>';
+        for (let i = 0; i < this.game.players.length; i++) {
+          if (thievingTargets.includes(i + 1)) {
+            html += `<li class="option" id="${i + 1}">Player ${i + 1} (${
+              settlers_self.game.state.players[i].resources.length
+            } cards)</li>`;
+          }
+        }
+        html += "</ul></div>";
+        this.updateStatus(html, 1);
+
+        //Select a player to steal from
+        $(".option").off();
+        $(".option").on("click", function () {
+          let victim = $(this).attr("id");
+          robPlayer(victim);
+        });
+      } else {
+        robPlayer(thievingTargets[0]);
+      }
     } else {
       //No one to steal from
       settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
@@ -1879,8 +1887,8 @@ class Settlers extends GameTemplate {
 
       settlers_self.updateStatus(html, 1);
 
-      $(".option").off();
       $(".option").on("click", function () {
+        $(".option").off();
         let res = $(this).attr("id");
         cardsToDiscard.push(res); //Add it to recycling bin
         my_resources[res]--; //Subtract it from display

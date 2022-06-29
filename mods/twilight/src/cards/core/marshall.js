@@ -10,6 +10,8 @@
 
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var countries_where_i_can_place = 0;
         for (var i in this.countries) {

@@ -40,6 +40,8 @@
         return 0;
       }
 
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
       twilight_self.attachCardboxEvents(function(action2) {

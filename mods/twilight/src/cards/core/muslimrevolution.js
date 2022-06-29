@@ -44,6 +44,8 @@
       //
       if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.updateStatus("<div class='status-message' id='status-message'>Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.</div>");
 
