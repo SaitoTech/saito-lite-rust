@@ -34,6 +34,8 @@
       }
 
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");

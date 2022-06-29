@@ -6,6 +6,8 @@
         if (this.game.player == 1) {
           return 0;
         }
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
         
         let twilight_self = this;
         let ops_to_place = 1;

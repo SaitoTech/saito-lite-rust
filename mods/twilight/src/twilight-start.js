@@ -767,17 +767,6 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
-      this.game.state.round = 9;
-      this.game.state.events.formosan = 1;
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-
       this.game.options = {};
       this.game.options.culturaldiplomacy = 1;
       this.game.options.gouzenkoaffair = 1;
@@ -1190,6 +1179,8 @@ try {
         this.game.queue.splice(qe, 1);
 
         if (this.game.player == 2) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           let user_message  = `${this.cardToText(mv[0])} pulls ${this.cardToText(mv[2])} from USSR. Do you want to play this card?`;
           let html = "<ul>";
@@ -1293,6 +1284,8 @@ try {
 
             if (twilight_self.game.player == 1) {
 
+              //If the event card has a UI component, run the clock for the player we are waiting on
+              this.startClock();
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="card" id="skipche">or skip coup</li></ul>';
@@ -1425,6 +1418,9 @@ console.log(`missileenvy ${sender} ${card}`);
 
         } else {
 
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
+
           //
           // us decrypts and decides what to toss
           //
@@ -1554,6 +1550,8 @@ console.log(`missileenvy ${sender} ${card}`);
       this.game.queue.splice(qe, 1);
 
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
         
         let potCountries = [];
         for (var i in this.countries) {
@@ -1614,6 +1612,9 @@ console.log(`missileenvy ${sender} ${card}`);
         this.updateStatus(html);
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
         let user_message  = "Do you wish to take an extra turn?";
         let html = `<ul>
                     <li class="card" id="play">yes</li>
@@ -1737,6 +1738,8 @@ console.log(`missileenvy ${sender} ${card}`);
         }
 
         if (this.game.player == 1) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           this.updateStatusAndListCards(user_message, uscards, false);
 
@@ -1765,6 +1768,9 @@ console.log(`missileenvy ${sender} ${card}`);
 
     if (mv[0] === "cambridge") {
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
         let placetxt = `<div class="status-message" id="status-message">${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
           placetxt += " ";
@@ -1801,6 +1807,9 @@ console.log(`missileenvy ${sender} ${card}`);
         return 0;
 
       }
+
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
       let html = `<ul>
@@ -2104,7 +2113,7 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
     if (mv[0] === "event") {
 
-console.log("received event: " + JSON.stringify(mv));
+      console.log("received event: " + JSON.stringify(mv));
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
@@ -2410,7 +2419,7 @@ console.log("received event: " + JSON.stringify(mv));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["romanian", "culturalrev", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["romanian", "defectors", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
@@ -4077,6 +4086,7 @@ playerTurnHeadlineSelected(card, player) {
  
     if (player === me) {
 
+      this.startClock();
       let bind_back_button_state = true;
       if (twilight_self.game.state.event_before_ops == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
@@ -5015,8 +5025,6 @@ playerTurnHeadlineSelected(card, player) {
  
 
   playerPlaceInfluence(player, mycallback=null) {
-
-    this.startClock();
 
     // reset off
     this.playerFinishedPlacingInfluence();
@@ -8564,7 +8572,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       return 1;
     }
 
+    
     let i_played_the_card = (this.playerRoles[this.game.player] == player);
-
 
 

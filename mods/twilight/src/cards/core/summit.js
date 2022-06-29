@@ -48,6 +48,9 @@
 
         if (my_go == 1) {
 
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
+
           let twilight_self = this;
 
           twilight_self.addMove("resolve\tsummit");

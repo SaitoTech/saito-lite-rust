@@ -13,13 +13,14 @@
         return 1;
       }
 
-
       if (this.game.player == 1) {
         this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
         this.attachCardboxEvents();
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.addMove("resolve\tblockade");
 
