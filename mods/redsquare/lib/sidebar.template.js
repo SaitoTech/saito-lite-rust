@@ -2,43 +2,38 @@
 module.exports = RedSquareMenuTemplate = (app, mod) => {
 
   return `
-    <div class="saito-sidebar right redsquare-sidebar">
-      <div class="saito-search-bar">
-        <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
-      </div>
-      <div class="redsquare-calendar">
-      </div>
-      <div id="redsquare-follow-container">
-       <h5> Who to follow </h5>
-       <div>
+  <div class="saito-sidebar right redsquare-sidebar">
+  <div class="saito-search-bar">
+      <i class="fas fa-search"></i> <input type="text" placeholder="Search on Saito" />
+  </div>
+  <div class="redsquare-calendar">
+  </div>
+  <div id="redsquare-follow-container">
+      <h5> Who to follow </h5>
+      <div>
           <div class="saito-list">
-          <div>
-          <img src="/redsquare/images/david.jpeg" />
-          <div>
-            <p>David Lancashire </p>
-            <span> @trevelyan</span>
+              <div class="saito-list-user">
+                  <div class="saito-list-user-image-box">
+                      <img class="saito-idenitcon" src="/redsquare/images/david.jpeg" />
+                  </div>
+                  <div class="saito-list-user-content-box">
+                      <div class="saito-username">David Lancashire
+                      </div>
+                      <p> @trevelyan </p>
+                  </div>
+              </div>
+              <div class="saito-list-user">
+                  <div class="saito-list-user-image-box">
+                      <img class="saito-idenitcon" src="/redsquare/images/richard.jpeg" />
+                  </div>
+                  <div class="saito-list-user-content-box">
+                      <div class="saito-username">Richard Parris</div>
+                      <p> @arpee</p>
+                  </div>
+              </div>
           </div>
-
-          <div>
-            <button class="small">Follow </button>
-          </div>
-
-        </div>
-          <div>
-          <img src="/redsquare/images/richard.jpeg" />
-          <div>
-            <p>Richard Parris </p>
-            <span> @arpee</span>
-          </div>
-
-          <div>
-            <button class="small">Follow </button>
-          </div>
-
-        </div>
-          </div>
-      </div>  
-    </div>
+      </div>
+  </div>
   `;
 
 }

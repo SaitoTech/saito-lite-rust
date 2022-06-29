@@ -32,23 +32,23 @@ module.exports = (app) => {
                   <h4 class=" ">Pre</h4>
   
                   <pre>
-          {
-          "bf": 1,
-          "coinbase": "478016666.66666667",
-          "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
-          "difficulty": 0,
-          "id": 2,
-          "merkle": "",
-          "paysplit": 0.5,
-          "powsplit": 0.5,
-          "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
-          "reclaimed": "0.0",
-          "sr": 0,
-          "stakepool": "0",
-          "treasury": "2390083333.33333333",
-          "ts": 1572407380711
-          }
-                          </pre>
+                  {
+                  "bf": 1,
+                  "coinbase": "478016666.66666667",
+                  "creator": "z1UA26VVMkAKudvDVm9BseGGtq1bfdWz2msp4mMwjRPX",
+                  "difficulty": 0,
+                  "id": 2,
+                  "merkle": "",
+                  "paysplit": 0.5,
+                  "powsplit": 0.5,
+                  "prevbsh": "cb7cdd9633bf67cd3eff12266eb462018f239a78b666059ea3e7088c3f355b04",
+                  "reclaimed": "0.0",
+                  "sr": 0,
+                  "stakepool": "0",
+                  "treasury": "2390083333.33333333",
+                  "ts": 1572407380711
+                  }
+                                  </pre>
               </div>
           </div>
       </div>
@@ -127,7 +127,7 @@ module.exports = (app) => {
                       <div class="">
                           <label>Text Area</label>
                           <textarea placeholder="Text area">Bacon ipsum dolor amet meatloaf ribeye pork loin corned beef strip steak filet mignon shank chicken shankle cupim hamburger bacon kielbasa biltong. Alcatra pork belly ball tip kielbasa t-bone drumstick turducken, boudin porchetta landjaeger. Short ribs chuck frankfurter pork belly spare ribs meatloaf. Pig tri-tip meatloaf picanha, sirloin strip steak shoulder cow porchetta pork chop filet mignon swine burgdoggen bacon.
-                    </textarea>
+                            </textarea>
                       </div>
                   </form>
               </div>
@@ -203,41 +203,41 @@ module.exports = (app) => {
                           <div class=" ">
   
                               <div class="saito-infobox padding rounded box-shadow">
-                               <div>
+                                  <div>
                                       <h4> h4 Sub Heading </h4>
                                       <h3> h3 Sub Heading </h3>
                                   </div>
                                   <div>
-                                      <div class="saito-list">
-                                          <div>
-                                              <img src="/saito/img/background.png" />
-                                              <div>
-                                                  <p>Saitolicious</p>
-                                                  <span>Tacos, the Saito Network and Saito Consensus</span>
+                                      <div class="saito-list  saito-white-background ">
+                                          <div class="saito-list-user">
+                                              <div class="saito-list-user-image-box">
+                                                  <img class="saito-idenitcon" src="/saito/img/background.png" />
                                               </div>
-                                           </div>
-                                     
-                                          <div>
-                                              <img src="/saito/img/background.png" />
-                                              <div>
-                                                  <p>Blackjack </p>
-                                                  <span>Classic casino game with home rules</span>
-                                              </div>
-                                              <div>
-                                              <i class="fas fa-ellipsis-v"></i>
+                                              <div class="saito-list-user-content-box">
+                                                  <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33
+                                                  </div>
+                                                  <p> Active at 9.00am </p>
                                               </div>
                                           </div>
-                                          <div>
-                                              <img src="/saito/img/background.png" />
+                                          <div class="saito-list-user">
+                                              <div class="saito-list-user-image-box">
+                                                  <img class="saito-idenitcon" src="/saito/img/background.png" />
+                                              </div>
+                                              <div class="saito-list-user-content-box">
+                                                  <div class="saito-username">Davik Stone</div>
+                                                  <p> Active at 9.00am </p>
+                                              </div>
+                                          </div>
+                                          <div class="saito-list-user">
                                               <div>
-                                                  <p>Chess </p>
-                                                  <span> An implementation of the Chess for the Saito ... </span>
+                                                  <img src="/saito/img/background.png" />
                                               </div>
                                               <div>
-                                              <i class="fas fa-ellipsis-v"></i>
+                                                  <div>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</div>
+                                                  <p> Active at 9.00am </p>
                                               </div>
+                                          </div>
   
-                                          </div>
                                       </div>
                                   </div>
                                   <div>
@@ -770,154 +770,169 @@ module.exports = (app) => {
           <div class="saito-main">
               <h4> User Lists </h4>
               <div class="">
-  
                   <div class="saito-grid-1-1">
                       <div class="">
-                          <h5> Saito UserList:  </h5>
+                          <h5> Saito User List: </h5>
                           <div class="saito-list  saito-white-background ">
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>Saitolicious</p>
-                                      <span>Tacos, the Saito Network and Saito Consensus</span>
+                              <div class="saito-list-user">
+                                  <div class="saito-list-user-image-box">
+                                      <img class="saito-idenitcon" src="/saito/img/background.png" />
                                   </div>
-                                  <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-list-user-content-box">
+                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</div>
+                                      <p> Active at 9.00am </p>
                                   </div>
-  
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>Blackjack </p>
-                                      <span>Classic casino game with home rules. Try to get closest to 21 without busting,
-                                          b... </span>
-  
-  
+                              <div class="saito-list-user">
+                                  <div class="saito-list-user-image-box">
+                                      <img class="saito-idenitcon" src="/saito/img/background.png" />
                                   </div>
-                                  <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-list-user-content-box">
+                                      <div class="saito-username">Davik Stone</div>
+                                      <p> Active at 9.00am </p>
                                   </div>
-  
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
+                              <div class="saito-list-user">
                                   <div>
-                                      <p>Chess </p>
-                                      <span> An implementation of the Chess for the Saito Blockchain </span>
+                                      <img src="/saito/img/background.png" />
                                   </div>
                                   <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                      <div>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</div>
+                                      <p> Active at 9.00am </p>
                                   </div>
-  
                               </div>
+  
                           </div>
                       </div>
                       <div class="">
-                          <h5> Saito UserList: </h5>
+                          <h5> Saito Chatbox List: </h5>
                           <div class="saito-list  saito-white-background  ">
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
+                              <div class="saito-list-chatbox">
+                                  <div class="saito-list-user-image-box">
+                                      <img class="saito-identicon" src="/saito/img/background.png" />
+                                  </div>
+                                  <div class="saito-list-user-content-box">
+                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                                      <p> Hey how are you?</p>
+                                  </div>
+                                  <div class="saito-list-user-timestamp">
+                                      22:00pm
                                   </div>
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                      <span> Active at 9.00am </span>
+                              <div class="saito-list-chatbox">
+                                  <div class="saito-list-user-image-box">
+                                      <img class="saito-identicon" src="/saito/img/background.png" />
+                                  </div>
+                                  <div class="saito-list-user-content-box">
+                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                                      <p> Hey how are you?</p>
+                                  </div>
+                                  <div class="saito-list-user-timestamp">
+                                      22:00pm
                                   </div>
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
+                              <div class="saito-list-chatbox">
                                   <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                      <span> Active at 9.00am </span>
+                                      <img src="/saito/img/background.png" />
+                                  </div>
+                                  <div>
+                                      <div>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                                      <p> Hey how are you?</p>
+                                  </div>
+                                  <div>
+                                      22:00pm
+                                  </div>
+                              </div>
   
-                                  </div>
-                                  <div>
-                                  <p> Report </p>
-                                  </div>
-                              </div>
                           </div>
                       </div>
                   </div>
                   <div class="saito-grid-1-1">
                       <div class="">
-                          <h5> Saito UserList:   </h5>
-                          <div class="saito-list  saito-user- saito-white-background ">
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>Saitolicious</p>
-                                      <span>Tacos, the Saito Network and Saito Consensus</span>
+                          <h5> Saito App List: </h5>
+                          <div class="saito-list  saito-white-background ">
+                              <div class="saito-list-game">
+                                  <div class="saito-list-app-image-box">
+                                      <img class="saito-app-image" src="/saito/img/background.png" />
                                   </div>
-                                  <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-list-app-content-box">
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
                                   </div>
-  
+                                  <div class="saito-list-game-controls">
+                                      Report
+                                  </div>
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>Blackjack </p>
-                                      <span>Classic casino game with home rules. Try to get closest to 21 without busting,
-                                          b... </span>
-  
-  
+                              <div class="saito-list-game">
+                                  <div class="saito-list-app-image-box">
+                                      <img class="saito-app-image" src="/saito/img/background.png" />
                                   </div>
-                                  <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                  <div class="saito-list-app-content-box">
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
                                   </div>
-  
+                                  <div class="saito-list-game-controls">
+                                      Report
+                                  </div>
                               </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
+                              <div class="saito-list-game">
                                   <div>
-                                      <p>Chess </p>
-                                      <span> An implementation of the Chess for the Saito Blockchain </span>
+                                      <img src="/saito/img/background.png" />
                                   </div>
                                   <div>
-                                  <i class="fas fa-ellipsis-v"></i>
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
                                   </div>
-  
+                                  <div>
+                                      Report
+                                  </div>
                               </div>
+  
                           </div>
                       </div>
                       <div class="">
-                          <h5> Saito UserList:  </h5>
-                          <div class="saito-list saito-user- saito-white-background  ">
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-  
+                          <h5> Saito App List: </h5>
+                          <div class="saito-list  saito-white-background ">
+                              <div class="saito-list-game">
+                                  <div class="saito-list-app-image-box">
+                                      <img class="saito-app-image" src="/saito/img/background.png" />
                                   </div>
-  
-                              </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                      <span> Active at 9.00am </span>
+                                  <div class="saito-list-app-content-box">
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
                                   </div>
-  
-  
-                              </div>
-                              <div>
-                                  <img src="/saito/img/background.png" />
-                                  <div>
-                                      <p>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </p>
-                                      <span> Active at 9.00am </span>
-  
-                                  </div>
-                                  <div>
-                                  <p> Report </p>
+                                  <div class="saito-list-game-controls">
+                                      Report
                                   </div>
                               </div>
+                              <div class="saito-list-game">
+                                  <div class="saito-list-app-image-box">
+                                      <img class="saito-app-image" src="/saito/img/background.png" />
+                                  </div>
+                                  <div class="saito-list-app-content-box">
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
+                                  </div>
+                                  <div class="saito-list-game-controls">
+                                      Report
+                                  </div>
+                              </div>
+                              <div class="saito-list-game">
+                                  <div>
+                                      <img src="/saito/img/background.png" />
+                                  </div>
+                                  <div>
+                                      <div class="saito-app-name">Saitolicious</div>
+                                      <p>Tacos, the Saito Network and Saito Consensus</p>
+                                  </div>
+                                  <div>
+                                      Report
+                                  </div>
+                              </div>
+  
                           </div>
                       </div>
+  
                   </div>
   
   
@@ -928,7 +943,7 @@ module.exports = (app) => {
   
       <div class="saito-tab " id="example1">
   
-
+  
           <div class="saito-sidebar left">
               <div>
                   <div>
@@ -962,25 +977,31 @@ module.exports = (app) => {
   
               <div>
                   <div>
-                      <div class="saito-list   saito-white-background  ">
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat </p>
-                                  <span> new chat</span>
+                      <div class="saito-list  saito-white-background  ">
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
-  
-                          </div>
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat</p>
-                                  <span>new chat</span>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
                               </div>
-  
-  
+                              <div class="saito-list-user-timestamp">
+                   
+                              </div>
                           </div>
-  
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
+                              </div>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
+                              </div>
+                              <div class="saito-list-user-timestamp">
+                          
+                              </div>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -988,33 +1009,54 @@ module.exports = (app) => {
           </div>
   
           <div class="saito-main">
-  
               <div class="saito-list  saito-white-background ">
-                  <div>
-                      <img src="/saito/img/doom.jpg" />
-                      <div>
-                          <p>Doom</p>
-                          <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Doom</div>
+                          <p> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Blackjack </p>
-                          <span>Classic casino game with home rules. Try to get closest to 21 without busting, b...
-                          </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Doom</div>
+                          <p> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Chess </p>
-                          <span> An implementation of the Chess for the Saito Blockchain </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Blackjack</div>
+                          <p> Classic casino game with home rules. Try to get closest to 21 without busting, b...</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+
+                      </div>
+                  </div>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
+                      </div>
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Chess</div>
+                          <p>An implementation of the Chess for the Saito Blockchain</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+
+                      </div>
                   </div>
               </div>
   
@@ -1028,22 +1070,45 @@ module.exports = (app) => {
               </div>
               <div>
                   <div class="chat-dialog">
-                      <div class="chat-bubble">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p class="saito-small-p"> dLadj1dXEDAfDaYtz1idaf3DZTAvA3eKGSRdSZo3WgQ11E</p>
-                              <p class="saito-small-p"> Hi</p>
-                          </div>
-                          <p class="saito-small-p">22.23</p>
+                  <div class="saito-list  saito-white-background  ">
+                  <div class="saito-list-chatbox">
+                      <div class="saito-list-user-image-box">
+                          <img class="saito-identicon" src="/saito/img/background.png" />
                       </div>
-                      <div class="chat-bubble">
-                          <img src="/saito/img/background.png" />
-                          <div>
-                              <p class="saito-small-p"> gLWj1XEDAfDaYtz1ifpf3DZTAvA3eKGSRdSZo3WgQ11E</p>
-                              <p class="saito-small-p"> Hey</p>
-                          </div>
-                          <p class="saito-small-p">22.23</p>
+                      <div class="saito-list-user-content-box">
+                          <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                          <p> Hey how are you?</p>
                       </div>
+                      <div class="saito-list-user-timestamp">
+                          22:00pm
+                      </div>
+                  </div>
+                  <div class="saito-list-chatbox">
+                      <div class="saito-list-user-image-box">
+                          <img class="saito-identicon" src="/saito/img/background.png" />
+                      </div>
+                      <div class="saito-list-user-content-box">
+                          <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                          <p> Hey how are you?</p>
+                      </div>
+                      <div class="saito-list-user-timestamp">
+                          22:00pm
+                      </div>
+                  </div>
+                  <div class="saito-list-chatbox">
+                      <div>
+                          <img src="/saito/img/background.png" />
+                      </div>
+                      <div>
+                          <div>t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                          <p> Hey how are you?</p>
+                      </div>
+                      <div>
+                          22:00pm
+                      </div>
+                  </div>
+
+              </div>
                   </div>
               </div>
               <div>
@@ -1093,25 +1158,31 @@ module.exports = (app) => {
   
               <div>
                   <div>
-                      <div class="saito-list   saito-white-background  ">
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat </p>
-                                  <span> new chat</span>
+                      <div class="saito-list  saito-white-background  ">
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
-  
-                          </div>
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat</p>
-                                  <span>new chat</span>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
                               </div>
-  
-  
+                              <div class="saito-list-user-timestamp">
+                                 
+                              </div>
                           </div>
-  
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
+                              </div>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
+                              </div>
+                              <div class="saito-list-user-timestamp">
+                                 
+                              </div>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -1121,31 +1192,41 @@ module.exports = (app) => {
           <div class="saito-main">
   
               <div class="saito-list  saito-white-background ">
-                  <div>
-                      <img src="/saito/img/doom.jpg" />
-                      <div>
-                          <p>Doom</p>
-                          <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Doom</div>
+                          <p> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Blackjack </p>
-                          <span>Classic casino game with home rules. Try to get closest to 21 without busting, b...
-                          </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Blackjack</div>
+                          <p> Classic casino game with home rules. Try to get closest to 21 without busting, b...</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Chess </p>
-                          <span> An implementation of the Chess for the Saito Blockchain </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Chess</div>
+                          <p>An implementation of the Chess for the Saito Blockchain</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                        
+                      </div>
                   </div>
               </div>
   
@@ -1175,31 +1256,41 @@ module.exports = (app) => {
           <div class="saito-main">
   
               <div class="saito-list  saito-white-background ">
-                  <div>
-                      <img src="/saito/img/doom.jpg" />
-                      <div>
-                          <p>Doom</p>
-                          <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Doom</div>
+                          <p> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Blackjack </p>
-                          <span>Classic casino game with home rules. Try to get closest to 21 without busting, b...
-                          </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Blackjack</div>
+                          <p> Classic casino game with home rules. Try to get closest to 21 without busting, b...</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Chess </p>
-                          <span> An implementation of the Chess for the Saito Blockchain </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Chess</div>
+                          <p>An implementation of the Chess for the Saito Blockchain</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
               </div>
   
@@ -1225,7 +1316,7 @@ module.exports = (app) => {
                   <i class="fas fa-bars"></i>
               </div>
               <div>
-                
+  
                   <div>
                       <div class="saito-menu  ">
                           <ul>
@@ -1257,25 +1348,31 @@ module.exports = (app) => {
   
               <div>
                   <div>
-                      <div class="saito-list   saito-white-background  ">
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat </p>
-                                  <span> new chat</span>
+                      <div class="saito-list  saito-white-background  ">
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
-  
-                          </div>
-                          <div>
-                              <img src="/saito/img/background.png" />
-                              <div>
-                                  <p>Saito Community Chat</p>
-                                  <span>new chat</span>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
                               </div>
-  
-  
+                              <div class="saito-list-user-timestamp">
+                                 
+                              </div>
                           </div>
-  
+                          <div class="saito-list-chatbox">
+                              <div class="saito-list-user-image-box">
+                                  <img class="saito-identicon" src="/saito/img/background.png" />
+                              </div>
+                              <div class="saito-list-user-content-box">
+                                  <div class="saito-username">Saito Community Chat </div>
+                                  <p> new chat</p>
+                              </div>
+                              <div class="saito-list-user-timestamp">
+                                 
+                              </div>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -1284,33 +1381,41 @@ module.exports = (app) => {
           <div class="saito-main">
   
               <div class="saito-list  saito-white-background ">
-                  <div>
-                      <img src="/saito/img/doom.jpg" />
-                      <div>
-                          <p>Doom</p>
-                          <span> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Doom</div>
+                          <p> Publisher:t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Blackjack </p>
-                          <span>Classic casino game with home rules. Try to get closest to 21 without busting, b...
-                          </span>
-  
-  
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Blackjack</div>
+                          <p> Classic casino game with home rules. Try to get closest to 21 without busting, b...</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
-                  <div>
-                      <img src="/saito/img/background.png" />
-                      <div>
-                          <p>Chess </p>
-                          <span> An implementation of the Chess for the Saito Blockchain </span>
+                  <div class="saito-list-game">
+                      <div class="saito-list-app-image-box">
+                          <img class="saito-app-image" src="/saito/img/background.png" />
                       </div>
-  
+                      <div class="saito-list-app-content-box">
+                          <div class="saito-app-name">Chess</div>
+                          <p>An implementation of the Chess for the Saito Blockchain</p>
+                      </div>
+                      <div class="saito-list-game-controls">
+                         
+                      </div>
                   </div>
               </div>
   
@@ -1320,14 +1425,14 @@ module.exports = (app) => {
           </div>
   
           <div class="saito-tab" id="components">
-               <div class="saito-overlay">
-                    <div>
-                       <i class="fas fa-power-off" > </i>
-                       <div>
-
-                       </div>
-                     </div>
-                    
+              <div class="saito-overlay">
+                  <div>
+                      <i class="fas fa-power-off"> </i>
+                      <div>
+  
+                      </div>
+                  </div>
+  
               </div>
               <div class="saito-main">
                   <h4 class=""> Components </h4>
