@@ -1796,7 +1796,7 @@ console.log("P: " + planet);
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
       //action_cards	:	["warfare-rider", "technology-rider"],
       //objectives	:	["close-the-trap"],
-      tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship", "faction2-eres-siphons", "faction2-deep-space-conduits"],
+      tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
       promissary_notes	:	["trade","political","ceasefire","throne"],
       commodity_limit	:	4,
@@ -26107,12 +26107,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-//      return ["1_1", "4_7"];
+      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-      return ["1_1", "2_1"];
+//      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {
