@@ -1285,7 +1285,7 @@ try {
             if (twilight_self.game.player == 1) {
 
               //If the event card has a UI component, run the clock for the player we are waiting on
-              this.startClock();
+              twilight_self.startClock();
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="card" id="skipche">or skip coup</li></ul>';
