@@ -89,7 +89,7 @@
                 twilight_self.addMove("NOTIFY\tBrush War in "+twilight_self.countries[c].name+" failed.");
               }
 
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
+              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
               twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
               twilight_self.endTurn();
 

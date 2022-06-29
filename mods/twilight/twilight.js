@@ -2731,7 +2731,7 @@ try {
       // if we have come this far, move to the next turn
       //
       if (this.game.state.round > 0) {
-        this.updateLog("End of Round");
+        this.updateLog("End of Round " + this.game.state.round);
       }
 
       //Increment state.round and resets state variables for next round
@@ -3575,7 +3575,7 @@ playerTurnHeadlineSelected(card, player) {
       if (this.game.state.round > 3) { rounds_in_turn = 7; }
       let moves_remaining = rounds_in_turn - this.game.state.turn_in_round;
 
-      user_message = `Select a card for ${(this.game.player == 1)? "Bear Trap": "Quagmire"}: `;
+      user_message = `Select a card for ${(this.game.player == 1)? this.cardToText("beartrap"): this.cardToText("quagmire")}: `;
 
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
@@ -3746,6 +3746,10 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.events.wwby == 1 && twilight_self.game.state.headline == 0) {
         if (player == "us") {
           if (card != "unintervention") {
+            if (twilight_self.playerHoldsCard("unintervention")){
+              let c = await sconfirm(`If you don't play ${twilight_self.cardToText("unintervention")}, USSR will gain 3 VP. Still play this card?`);
+              if (c) {} else { return; }       
+            }
             twilight_self.game.state.events.wwby_triggers = 1; //Remember penalty to apply with next endturn
           }
           twilight_self.game.state.events.wwby = 0; //Turn off WWBY
@@ -5698,6 +5702,14 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
     this.updateRound();
   }
 
+  playerHoldsCard(card){
+    for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
+      if (this.game.deck[0].hand[i] == card) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   endRound() {
 
@@ -9141,7 +9153,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
                 twilight_self.addMove("NOTIFY\tBrush War in "+twilight_self.countries[c].name+" failed.");
               }
 
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
+              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
               twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
               twilight_self.endTurn();
 
@@ -9795,11 +9807,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
   if (card == "defectors") {
 
       if (this.game.state.headline == 0) {
-        if (this.game.state.turn == 0) {
-          this.game.state.vp += 1;
-          this.updateLog("US gains 1 VP from Defectors");
-          this.updateVictoryPoints();
-        }
+        this.game.state.vp += 1;
+        this.updateLog("US gains 1 VP from Defectors");
+        this.updateVictoryPoints();
         return 1;
       }
 
@@ -11301,7 +11311,10 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
     if (card == "muslimrevolution") {
 
-      if (this.game.state.events.awacs == 1) { return 1; }
+      if (this.game.state.events.awacs == 1) { 
+        this.updateLog(`${this.cardToText("muslimrevolution")} prevented by ${this.cardToText("awacs")}}`);
+        return 1; 
+      }
 
       var countries_to_purge = 2;
       let muslim_countries = [];

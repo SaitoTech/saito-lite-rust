@@ -1,7 +1,10 @@
 
     if (card == "muslimrevolution") {
 
-      if (this.game.state.events.awacs == 1) { return 1; }
+      if (this.game.state.events.awacs == 1) { 
+        this.updateLog(`${this.cardToText("muslimrevolution")} prevented by ${this.cardToText("awacs")}}`);
+        return 1; 
+      }
 
       var countries_to_purge = 2;
       let muslim_countries = [];
