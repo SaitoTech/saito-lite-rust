@@ -572,11 +572,11 @@ class Settlers extends GameTemplate {
     state.hexes = {};
     state.roads = [];
     state.cities = [];
-    state.longestRoad = { size: 0, player: 0 };
+    state.longestRoad = { size: 0, player: 0, path:[] };
     state.largestArmy = { size: 0, player: 0 };
     state.players = [];
     state.playerTurn = 0;
-    state.ports = [];
+    state.ports = {};
     state.lastroll = [];
     state.placedCity = "hello world"; //a slight hack for game iniitalization
     state.welcome = 0;
@@ -646,6 +646,7 @@ class Settlers extends GameTemplate {
         console.log("Building the map");
         this.game.queue.splice(qe, 1);
         this.generateMap();
+        this.addPortsToGameboard();
         return 1;
       }
 
@@ -862,7 +863,8 @@ class Settlers extends GameTemplate {
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
   	    try {
-          this.overlay.show(this.app, this, this.returnWelcomeOverlay());    
+          this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+          document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
   	    } catch (err) {}
           this.game.state.welcome = 1;
         }
@@ -1934,23 +1936,54 @@ class Settlers extends GameTemplate {
     Use road id + adjacent vertices for internal logic
   */
   addPortsToGameboard() {
-    let resources = this.skin.resourceArray();
-    this.addPortToGameboard("1_1", "any", 6);
-    this.addPortToGameboard("3_5", "any", 3);
-    this.addPortToGameboard("5_4", "any", 3);
-    this.addPortToGameboard("4_2", "any", 5);
 
-    let hexes = ["1_2", "2_1", "2_4", "5_3", "5_5"];
-    let angles = [1, 5, 1, 4, 2];
-    for (let i = 0; i < 5; i++) {
-      this.addPortToGameboard(hexes[i], /*"2:1 "+*/ resources[i], angles[i]);
+    if (Object.keys(this.game.state.ports).length == 9){
+      //Just read the port information and call the function
+      for (let p in this.game.state.ports){
+        let hex = p.substr(2);
+        let dir = p[0];
+        this.addPortToGameboard(hex, this.game.state.ports[p], dir);
+      }
+    }else{
+      //Define the ports
+      let resources = this.skin.resourceArray();
+      let randomRoll = this.rollDice(2);
+      let hexes, angles;
+      if (randomRoll == 1){
+         hexes = ["1_1", "3_5", "5_4", "4_2"];
+         angles = [6, 3, 3, 5]; 
+      }else{
+         hexes = ["1_2", "2_1",  "5_3", "5_5"];
+         angles = [1, 5,  4, 2];
+      }
+
+      for (let i = 0; i < hexes.length; i ++){
+        this.addPortToGameboard(hexes[i], "any", angles[i]);
+      }
+
+      //Now do resource ports
+      if (randomRoll == 1){
+         hexes = ["1_2", "2_1", "5_3", "5_5", "2_4"];
+         angles = [1, 5, 4, 2, 1];
+      }else{
+         hexes = ["1_1", "3_5", "5_4", "4_2", "2_4"];
+         angles = [6, 3, 3, 5, 1]; 
+      }
+
+      for (let i = 0; i < 5; i++) {
+        let r = resources.splice(this.rollDice(resources.length)-1,1);
+        this.addPortToGameboard(hexes[i], r, angles[i]);
+      }
     }
+    
   }
 
   addPortToGameboard(hex, port, direction) {
     let port_id = "port_" + direction + "_" + hex;
 
     this.game.state.ports[direction + "_" + hex] = port;
+
+    if (!this.browser_active){return;}
 
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
