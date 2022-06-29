@@ -572,11 +572,11 @@ class Settlers extends GameTemplate {
     state.hexes = {};
     state.roads = [];
     state.cities = [];
-    state.longestRoad = { size: 0, player: 0 };
+    state.longestRoad = { size: 0, player: 0, path:[] };
     state.largestArmy = { size: 0, player: 0 };
     state.players = [];
     state.playerTurn = 0;
-    state.ports = [];
+    state.ports = {};
     state.lastroll = [];
     state.placedCity = "hello world"; //a slight hack for game iniitalization
     state.welcome = 0;
@@ -646,6 +646,7 @@ class Settlers extends GameTemplate {
         console.log("Building the map");
         this.game.queue.splice(qe, 1);
         this.generateMap();
+        this.addPortsToGameboard();
         return 1;
       }
 
@@ -842,7 +843,9 @@ class Settlers extends GameTemplate {
 
         this.buildRoad(player, slot);
         this.updateLog(`Player ${player} built a ${this.skin.r.name}`);
-        this.checkLongestRoad(player); //Everyone checks
+        if (this.checkLongestRoad(player)){
+          console.log("Longest Road:",this.game.state.longestRoad.path);
+        }
         return 1;
       }
 
@@ -859,27 +862,10 @@ class Settlers extends GameTemplate {
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
-	    try {
-              this.overlay.show(this.app, this, this.returnWelcomeOverlay(), () => {
-	        if (parseInt(this.currently_active_player) === parseInt(this.game.player)) {
-                  $(".flash").removeClass("flash");
-                  this.playerbox.addClass('flash');
-                  setTimeout(() => {
-                    $(".flash").removeClass("flash");
-                  }, 3000);
-		}
-	      });
-              document.querySelector(".welcome_overlay").onclick = (e) => {
-                this.overlay.hide();
-	        if (this.currently_active_player == this.game.player) {
-                  $(".flash").removeClass("flash");
-                  this.playerbox.addClass('flash');
-                  setTimeout(() => {
-                    $(".flash").removeClass("flash");
-                  }, 3000);
-		}
-              };
-	    } catch (err) {}
+  	    try {
+          this.overlay.show(this.app, this, this.returnWelcomeOverlay());
+          document.querySelector(".welcome_overlay").onclick = () => { this.overlay.hide(); };
+  	    } catch (err) {}
           this.game.state.welcome = 1;
         }
 
@@ -928,6 +914,44 @@ class Settlers extends GameTemplate {
 	      }
 
         this.updateLog(`Player ${player} built a ${this.skin.c1.name}`);
+
+        //Check for edge case where the new city splits a (longest) road
+        let adj_road_owners = {};
+        let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
+        let bisect = -1;
+        for (let road of newRoads){
+          //Check if adjacent edge is a built road and if so, who owns it
+          for (let i = 0; i < this.game.state.roads.length; i++){
+            if (this.game.state.roads[i].slot == "road_"+road){
+              if (!adj_road_owners[this.game.state.roads[i].player]){
+                adj_road_owners[this.game.state.roads[i].player] = 0;
+              }
+              adj_road_owners[this.game.state.roads[i].player]++;
+            }
+          }
+          //Check if adjacent edge is part of longest road path (alternate method)
+          if (this.game.state.longestRoad.path.includes(road)){
+            bisect++;
+          }
+        }
+        if (bisect == 1){
+          for (let owner in adj_road_owners){
+            //If new town borders a road of the player with the longest road, recheck board to find longest road
+            if (adj_road_owners[owner] > 1 && owner != player && owner == this.game.state.longestRoad.player){
+              this.updateLog(`New ${this.skin.c1.name} bisects longest road, recalculating next longest road`);
+              this.game.state.longestRoad.player = 0; //unset longest road
+              //Check the person who had the longest road first so they have priority (in event of ties)
+              this.checkLongestRoad(owner);
+              //Check everyone else if they have a longer road now
+              for (let i = 1; i <= this.game.players.length; i++){
+                if (i !== owner){
+                  this.checkLongestRoad(i);  
+                }
+              }  
+            }
+          }
+        }
+
 
         return 1;
       }
@@ -1365,7 +1389,7 @@ class Settlers extends GameTemplate {
           //Messaging to User
           let html = `<div class="tbd"><div class="player-notice">YOUR TURN:</div>`;
           html += `<ul>`;
-          html += `<li class="option" id="rolldice">roll dice</li>`;
+          html += `<li class="option flashme" id="rolldice">roll dice</li>`;
           if (settlers_self.canPlayerPlayCard()) {
             html += `<li class="option" id="knight">play card</li>`;
           }
@@ -1374,16 +1398,13 @@ class Settlers extends GameTemplate {
 
           this.updateStatus(html);
 
-	  //
+	        //
           // Flash to be like "hey it's your move"
-	  //
+	        //
           if (this.is_sleeping){
-	    this.currently_active_player = player;
-            this.playerbox.addClass('flash');
-            setTimeout(() => {
-                $(".flash").removeClass("flash");
-            }, 3000);
-            this.is_sleeping = false;  
+	          this.currently_active_player = player;
+            $(".flashme").addClass("flash");
+            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state  
           }
 
           //roll the dice by clicking on the dice
@@ -1439,7 +1460,8 @@ class Settlers extends GameTemplate {
         // board animation
         this.displayDice();
         this.animateDiceRoll(roll);
-
+        $("#diceroll").off();
+        $("#diceroll").on("click", ()=>{ this.animateDiceRoll(roll);});
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
         this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
@@ -1789,30 +1811,38 @@ class Settlers extends GameTemplate {
       }
     }
     if (thievingTargets.length > 0) {
-      let html = '<div class="tbd">Steal from which Player: <ul>';
-      for (let i = 0; i < this.game.players.length; i++) {
-        if (thievingTargets.includes(i + 1)) {
-          html += `<li class="option" id="${i + 1}">Player ${i + 1} (${
-            settlers_self.game.state.players[i].resources.length
-          } cards)</li>`;
-        }
-      }
-      html += "</ul></div>";
-      this.updateStatus(html, 1);
-
-      //Select a player to steal from
-      $(".option").off();
-      $(".option").on("click", function () {
-        let victim = $(this).attr("id");
+      let robPlayer = (victim) => {
         let potentialLoot =
-          settlers_self.game.state.players[victim - 1].resources;
-        if (potentialLoot.length > 0) {
-          let loot =
-            potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
-          settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
-        } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
-        settlers_self.endTurn();
-      });
+            settlers_self.game.state.players[victim - 1].resources;
+          if (potentialLoot.length > 0) {
+            let loot =
+              potentialLoot[Math.floor(Math.random() * potentialLoot.length)];
+            settlers_self.addMove(`steal_card\t${player}\t${victim}\t${loot}`);
+          } else settlers_self.addMove(`steal_card\t${player}\t${victim}\tnothing`);
+          settlers_self.endTurn();
+      };
+
+      if (thievingTargets.length > 1) {
+        let html = '<div class="tbd">Steal from which Player: <ul>';
+        for (let i = 0; i < this.game.players.length; i++) {
+          if (thievingTargets.includes(i + 1)) {
+            html += `<li class="option" id="${i + 1}">Player ${i + 1} (${
+              settlers_self.game.state.players[i].resources.length
+            } cards)</li>`;
+          }
+        }
+        html += "</ul></div>";
+        this.updateStatus(html, 1);
+
+        //Select a player to steal from
+        $(".option").off();
+        $(".option").on("click", function () {
+          let victim = $(this).attr("id");
+          robPlayer(victim);
+        });
+      } else {
+        robPlayer(thievingTargets[0]);
+      }
     } else {
       //No one to steal from
       settlers_self.addMove(`steal_card\t${player}\t0\tnothing`);
@@ -1857,8 +1887,8 @@ class Settlers extends GameTemplate {
 
       settlers_self.updateStatus(html, 1);
 
-      $(".option").off();
       $(".option").on("click", function () {
+        $(".option").off();
         let res = $(this).attr("id");
         cardsToDiscard.push(res); //Add it to recycling bin
         my_resources[res]--; //Subtract it from display
@@ -1914,23 +1944,54 @@ class Settlers extends GameTemplate {
     Use road id + adjacent vertices for internal logic
   */
   addPortsToGameboard() {
-    let resources = this.skin.resourceArray();
-    this.addPortToGameboard("1_1", "any", 6);
-    this.addPortToGameboard("3_5", "any", 3);
-    this.addPortToGameboard("5_4", "any", 3);
-    this.addPortToGameboard("4_2", "any", 5);
 
-    let hexes = ["1_2", "2_1", "2_4", "5_3", "5_5"];
-    let angles = [1, 5, 1, 4, 2];
-    for (let i = 0; i < 5; i++) {
-      this.addPortToGameboard(hexes[i], /*"2:1 "+*/ resources[i], angles[i]);
+    if (Object.keys(this.game.state.ports).length == 9){
+      //Just read the port information and call the function
+      for (let p in this.game.state.ports){
+        let hex = p.substr(2);
+        let dir = p[0];
+        this.addPortToGameboard(hex, this.game.state.ports[p], dir);
+      }
+    }else{
+      //Define the ports
+      let resources = this.skin.resourceArray();
+      let randomRoll = this.rollDice(2);
+      let hexes, angles;
+      if (randomRoll == 1){
+         hexes = ["1_1", "3_5", "5_4", "4_2"];
+         angles = [6, 3, 3, 5]; 
+      }else{
+         hexes = ["1_2", "2_1",  "5_3", "5_5"];
+         angles = [1, 5,  4, 2];
+      }
+
+      for (let i = 0; i < hexes.length; i ++){
+        this.addPortToGameboard(hexes[i], "any", angles[i]);
+      }
+
+      //Now do resource ports
+      if (randomRoll == 1){
+         hexes = ["1_2", "2_1", "5_3", "5_5", "2_4"];
+         angles = [1, 5, 4, 2, 1];
+      }else{
+         hexes = ["1_1", "3_5", "5_4", "4_2", "2_4"];
+         angles = [6, 3, 3, 5, 1]; 
+      }
+
+      for (let i = 0; i < 5; i++) {
+        let r = resources.splice(this.rollDice(resources.length)-1,1);
+        this.addPortToGameboard(hexes[i], r, angles[i]);
+      }
     }
+    
   }
 
   addPortToGameboard(hex, port, direction) {
     let port_id = "port_" + direction + "_" + hex;
 
     this.game.state.ports[direction + "_" + hex] = port;
+
+    if (!this.browser_active){return;}
 
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
@@ -2059,7 +2120,7 @@ class Settlers extends GameTemplate {
   Draw the board (Tiles are already in DOM), add/update sector_values, add/update built cities and roads
   */
   displayBoard() {
-    //console.log("Draw board");
+    console.log("Draw board");
     $(".road.empty").remove();
     /*
       Set the tile backgrounds to display resources and display sector values (dice value tokens)
@@ -2287,6 +2348,7 @@ class Settlers extends GameTemplate {
   }
 
   removeEvents(){
+    console.trace("remove events");
     this.displayBoard();
     $(".cardselector").off();
     $(".trade").off();
@@ -2309,17 +2371,14 @@ class Settlers extends GameTemplate {
     Everyone starts with 2 settlements and can be placed anywhere on island
     */
     if (existing_cities < 2) {
-      this.playerbox.addClass("flash");
-      setTimeout(() => {
-        $(".flash").removeClass("flash");
-      }, 3000);
 
       if (existing_cities == 1){
-        this.updateStatus(`<div class="tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
       }else{
-        this.updateStatus(`<div class="tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
+        this.updateStatus(`<div class="flashme tbd">YOUR TURN: place ${this.skin.c1.name}...</div>`);
       }
-    
+      $(".flashme").addClass("flash");
+
       let xpos, ypos;
       $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
@@ -2435,16 +2494,15 @@ class Settlers extends GameTemplate {
     $(divname).html(this.skin.c1.svg);
 
     let blocks_me = false;
-    //Enable player to put roads on adjacent edges
+    let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
     if (this.game.player == player) {
-      let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
+      //Enable player to put roads on adjacent edges
       for (let road of newRoads) {
         //console.log("Add ghost road from city");
         this.addRoadToGameboard(road.substring(2), road[0]);
       }
     }else{
-      let newRoads = this.hexgrid.edgesFromVertex(slot.replace("city_", ""));
-      
+      //Check if new city blocks other players from expanding their roads    
       for (let road of newRoads) {
         //console.log("road: ",road);
         for (let i = 0; i < this.game.state.roads.length; i++){
@@ -2459,7 +2517,7 @@ class Settlers extends GameTemplate {
         }
       }
     }
-
+    
     //Save City to Internal Game Logic
     //Stop if we already saved the Village
     for (let i = 0; i < this.game.state.cities.length; i++) {
@@ -3230,13 +3288,16 @@ class Settlers extends GameTemplate {
             );
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
+            this.game.state.longestRoad.path = longest;
           } else {
             //Increase size
             this.game.state.longestRoad.size = longest.length;
+            this.game.state.longestRoad.path = longest;
             this.updateLog(
               `Player ${player} extended the ${this.skin.longest.name} to ${longest.length} segments.`
             );
           }
+          return 1;
         }
       } else {
         //Open to claim
@@ -3247,8 +3308,11 @@ class Settlers extends GameTemplate {
         );
         this.game.state.longestRoad.player = player;
         this.game.state.longestRoad.size = longest.length;
+        this.game.state.longestRoad.path = longest;
+        return 1;
       }
     }
+    return 0;
   }
 
   countResource(player, resource) {

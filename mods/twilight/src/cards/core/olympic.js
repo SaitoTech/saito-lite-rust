@@ -14,6 +14,8 @@
         this.attachCardboxEvents();
         return 0;
       } else {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         let twilight_self = this;
 

@@ -18,7 +18,7 @@ class RedSquareSidebar {
       app.browser.addElementToClass(RedSquareSidebarTemplate(app, mod), ".saito-container");
     }
 
-    this.calendar.render(app, mod, ".redsquare-sidebar");
+    this.calendar.render(app, mod, ".redsquare-calendar");
 
   }
 

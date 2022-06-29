@@ -30,7 +30,6 @@ class InvitesEmailAppspace {
         }
       }
       document.getElementById("actions").innerHTML = actions;
-
     }
 
     this.attachEvents(app, mod);
@@ -40,27 +39,32 @@ class InvitesEmailAppspace {
 
   attachEvents(app, mod) {
 
-      //
-      // button to initiate invites
-      //
-      document.getElementById("invite_btn").onclick = (e) => {
+    //
+    // button to initiate invites
+    //
+    document.getElementById("invite_btn").onclick = (e) => {
+/***
+      let recipient = document.getElementById("invite_address").value;
+      if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
 
-	let recipient = document.getElementById("invite_address").value;
-	if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
+      mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
 
-        mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
-
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod) {
+        relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
       }
+***/
+    }
 
-      //
-      // buttons to respond
-      //
-      document.querySelectorAll(".action_link_invite").forEach((el) => {
-alert("accept");
-      });
-      document.querySelectorAll(".action_link_accept").forEach((el) => {
-alert("cancel");
-      });
+    //
+    // buttons to respond
+    //
+    document.querySelectorAll(".action_link_invite").forEach((el) => {
+      alert("accept");
+    });
+    document.querySelectorAll(".action_link_accept").forEach((el) => {
+      alert("cancel");
+    });
 
   }
 

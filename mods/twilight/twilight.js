@@ -767,17 +767,6 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
-      this.game.state.round = 9;
-      this.game.state.events.formosan = 1;
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-      this.advanceSpaceRace("us");
-
       this.game.options = {};
       this.game.options.culturaldiplomacy = 1;
       this.game.options.gouzenkoaffair = 1;
@@ -1190,6 +1179,8 @@ try {
         this.game.queue.splice(qe, 1);
 
         if (this.game.player == 2) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           let user_message  = `${this.cardToText(mv[0])} pulls ${this.cardToText(mv[2])} from USSR. Do you want to play this card?`;
           let html = "<ul>";
@@ -1293,6 +1284,8 @@ try {
 
             if (twilight_self.game.player == 1) {
 
+              //If the event card has a UI component, run the clock for the player we are waiting on
+              this.startClock();
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="card" id="skipche">or skip coup</li></ul>';
@@ -1425,6 +1418,9 @@ console.log(`missileenvy ${sender} ${card}`);
 
         } else {
 
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
+
           //
           // us decrypts and decides what to toss
           //
@@ -1554,6 +1550,8 @@ console.log(`missileenvy ${sender} ${card}`);
       this.game.queue.splice(qe, 1);
 
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
         
         let potCountries = [];
         for (var i in this.countries) {
@@ -1614,6 +1612,9 @@ console.log(`missileenvy ${sender} ${card}`);
         this.updateStatus(html);
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
         let user_message  = "Do you wish to take an extra turn?";
         let html = `<ul>
                     <li class="card" id="play">yes</li>
@@ -1737,6 +1738,8 @@ console.log(`missileenvy ${sender} ${card}`);
         }
 
         if (this.game.player == 1) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           this.updateStatusAndListCards(user_message, uscards, false);
 
@@ -1765,6 +1768,9 @@ console.log(`missileenvy ${sender} ${card}`);
 
     if (mv[0] === "cambridge") {
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
         let placetxt = `<div class="status-message" id="status-message">${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
           placetxt += " ";
@@ -1801,6 +1807,9 @@ console.log(`missileenvy ${sender} ${card}`);
         return 0;
 
       }
+
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
       let html = `<ul>
@@ -2104,7 +2113,7 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
     if (mv[0] === "event") {
 
-console.log("received event: " + JSON.stringify(mv));
+      console.log("received event: " + JSON.stringify(mv));
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
@@ -2410,7 +2419,7 @@ console.log("received event: " + JSON.stringify(mv));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["romanian", "culturalrev", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["romanian", "defectors", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
@@ -2731,7 +2740,7 @@ try {
       // if we have come this far, move to the next turn
       //
       if (this.game.state.round > 0) {
-        this.updateLog("End of Round");
+        this.updateLog("End of Round " + this.game.state.round);
       }
 
       //Increment state.round and resets state variables for next round
@@ -3575,7 +3584,7 @@ playerTurnHeadlineSelected(card, player) {
       if (this.game.state.round > 3) { rounds_in_turn = 7; }
       let moves_remaining = rounds_in_turn - this.game.state.turn_in_round;
 
-      user_message = `Select a card for ${(this.game.player == 1)? "Bear Trap": "Quagmire"}: `;
+      user_message = `Select a card for ${(this.game.player == 1)? this.cardToText("beartrap"): this.cardToText("quagmire")}: `;
 
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
@@ -3746,6 +3755,10 @@ playerTurnHeadlineSelected(card, player) {
       if (twilight_self.game.state.events.wwby == 1 && twilight_self.game.state.headline == 0) {
         if (player == "us") {
           if (card != "unintervention") {
+            if (twilight_self.playerHoldsCard("unintervention")){
+              let c = await sconfirm(`If you don't play ${twilight_self.cardToText("unintervention")}, USSR will gain 3 VP. Still play this card?`);
+              if (c) {} else { return; }       
+            }
             twilight_self.game.state.events.wwby_triggers = 1; //Remember penalty to apply with next endturn
           }
           twilight_self.game.state.events.wwby = 0; //Turn off WWBY
@@ -4073,6 +4086,7 @@ playerTurnHeadlineSelected(card, player) {
  
     if (player === me) {
 
+      this.startClock();
       let bind_back_button_state = true;
       if (twilight_self.game.state.event_before_ops == 1) { bind_back_button_state = false; }
       if (twilight_self.game.state.headline == 1) { bind_back_button_state = false; }
@@ -5012,8 +5026,6 @@ playerTurnHeadlineSelected(card, player) {
 
   playerPlaceInfluence(player, mycallback=null) {
 
-    this.startClock();
-
     // reset off
     this.playerFinishedPlacingInfluence();
 
@@ -5698,6 +5710,14 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
     this.updateRound();
   }
 
+  playerHoldsCard(card){
+    for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
+      if (this.game.deck[0].hand[i] == card) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   endRound() {
 
@@ -8552,8 +8572,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       return 1;
     }
 
+    
     let i_played_the_card = (this.playerRoles[this.game.player] == player);
-
 
 
 
@@ -8815,6 +8835,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         let cards_discarded = 0;
@@ -8968,13 +8990,14 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 1;
       }
 
-
       if (this.game.player == 1) {
         this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
         this.attachCardboxEvents();
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.addMove("resolve\tblockade");
 
@@ -9062,6 +9085,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -9141,7 +9166,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
                 twilight_self.addMove("NOTIFY\tBrush War in "+twilight_self.countries[c].name+" failed.");
               }
 
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
+              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
               twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
               twilight_self.endTurn();
 
@@ -9304,6 +9329,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }   
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
           
         let user_message = `${this.cardToText(card)} takes effect. Pick first target for coup:`;
         let html = '<ul><li class="card" id="skipche">or skip coup</li></ul>';
@@ -9341,6 +9368,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         //this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let html = `<ul>
                   <li class="card" id="asia">Asia</li>
@@ -9437,6 +9466,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
       
@@ -9486,6 +9517,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -9693,6 +9726,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       let player = "ussr";
       if (this.game.player == 2) { player = "us"; }
 
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
+
       let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
       
       let cards_to_discard = [];
@@ -9748,6 +9784,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -9795,20 +9833,16 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
   if (card == "defectors") {
 
       if (this.game.state.headline == 0) {
-        if (this.game.state.turn == 0) {
-          this.game.state.vp += 1;
-          this.updateLog("US gains 1 VP from Defectors");
-          this.updateVictoryPoints();
-        }
-        return 1;
-      }
+        this.game.state.vp += 1;
+        this.updateLog(`US gains 1 VP from ${this.cardToText("defectors")}`);
+        this.updateVictoryPoints();
+      }else{
 
       //
       // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which
       // case it can only cancel the USSR headline if the USSR headline has not already gone.
       // what an insanely great but complicated game dynamic at play here....
       //
-      if (this.game.state.headline == 1) {
         this.game.state.defectors_pulled_in_headline = 1;
       }
 
@@ -9848,6 +9882,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -9957,6 +9993,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
 
@@ -10329,6 +10367,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       }
 
       if (i_played_the_card) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
       	//
       	// make DEFCON boxes clickable
@@ -10392,6 +10432,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -10454,6 +10496,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         //this.updateStatus("<div class='status-message' id='status-message'>US is playing Independent Reds</div>");
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let yugo_ussr = this.countries['yugoslavia'].ussr;
       let romania_ussr = this.countries['romania'].ussr;
@@ -10597,6 +10641,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -10720,6 +10766,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       this.game.state.events.junta = 1;
 
       if (i_played_the_card) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+        
         let className = (player == "us")? "westerneurope" : "easterneurope";
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -10954,6 +11003,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11071,6 +11122,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.addMove("resolve\tmarine");
 
@@ -11133,6 +11186,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var countries_where_i_can_place = 0;
         for (var i in this.countries) {
@@ -11301,7 +11356,10 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
     if (card == "muslimrevolution") {
 
-      if (this.game.state.events.awacs == 1) { return 1; }
+      if (this.game.state.events.awacs == 1) { 
+        this.updateLog(`${this.cardToText("muslimrevolution")} prevented by ${this.cardToText("awacs")}}`);
+        return 1; 
+      }
 
       var countries_to_purge = 2;
       let muslim_countries = [];
@@ -11341,6 +11399,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       //
       if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.updateStatus("<div class='status-message' id='status-message'>Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.</div>");
 
@@ -11615,6 +11675,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11674,6 +11736,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         this.attachCardboxEvents();
         return 0;
       } else {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         let twilight_self = this;
 
@@ -11821,6 +11885,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       if (this.game.player == 2){
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let twilight_self = this;
       let neighbors = ["costarica","cuba","honduras"];      
@@ -11897,6 +11963,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText(card)}: Remove 3 US influence from Western Europe (max 1 per country)</div>`);
@@ -11991,6 +12059,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -12122,6 +12192,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -12241,6 +12313,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       if (!i_played_the_card) {
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       // pick discarded card
       var twilight_self = this;
@@ -12336,6 +12410,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       }
       if (this.game.player == 1) {
 
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
         var twilight_self = this;
         //twilight_self.playerFinishedPlacingInfluence();
 
@@ -12424,6 +12500,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -12496,6 +12574,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         if (this.game.player == 1) {
           return 0;
         }
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
         
         let twilight_self = this;
         let ops_to_place = 1;
@@ -12593,6 +12673,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
 
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
       twilight_self.attachCardboxEvents(function(action2) {
@@ -12617,6 +12699,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
 
@@ -12751,6 +12835,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         if (ussr_roll > us_roll && this.game.player == 1) { my_go = 1; }
 
         if (my_go == 1) {
+
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           let twilight_self = this;
 
@@ -12952,6 +13039,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       }
 
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");
@@ -13122,6 +13211,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
         }
         if (this.game.player == 2) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
 
           var twilight_self = this;
           twilight_self.playerFinishedPlacingInfluence();
@@ -13229,6 +13320,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
       if (this.game.player == 1) { return 0; }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.updateStatus("<div class='status-message' id='status-message'>Remove 4 USSR influence from non-European countries (max 2 per country)</div>");
 
@@ -13291,6 +13384,8 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       if (!i_played_the_card){
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
 
@@ -13330,6 +13425,9 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         return 0;
       }
       if (this.game.player == 1) {
+
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();

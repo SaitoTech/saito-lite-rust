@@ -121,3 +121,7 @@
 }
 
 .chat-bubble>p:nth-child() {}
+
+.chat-container.hide-chat {
+    display: none;
+}

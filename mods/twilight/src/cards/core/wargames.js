@@ -10,6 +10,8 @@
       if (!i_played_the_card){
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
 
