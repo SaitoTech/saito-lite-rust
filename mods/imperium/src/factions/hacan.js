@@ -143,9 +143,20 @@
 
             if (imperium_self.doesPlayerHaveTech(player, "faction8-merchant-class") && player != strategy_card_player && imperium_self.game.player == player) {
 
+	      //
+	      // skip if we are full commodities
+	      //
+	      if (imperium_self.game.players_info[player-1].commodities === imperium_self.game.players_info[player-1].commodity_limit) {
+                imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
+                imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                imperium_self.endTurn();
+                imperium_self.updateLog("Hacan already refreshed, do not need to play faction ability.");
+                return 0;
+	      }
+
               let html = '<p>Do you wish to refresh your commodities free-of-charge?"';
                   html += '<li class="option" id="yes">yes, of course</li>';
-                  html += '<li class="option" id="no">nom perhaps not</li>';
+                  html += '<li class="option" id="no">no, perhaps not</li>';
 
               imperium_self.updateStatus(html);
 
@@ -160,9 +171,9 @@
 		  imperium_self.endTurn();
 		  return;
                 } else {
-                  imperium_self.endTurn();
 		  imperium_self.addMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
             	  imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.endTurn();
                 }
               });
 
