@@ -256,6 +256,8 @@ class Spider extends GameTemplate {
     
     super.initializeHTML(app);
 
+    this.preloadImages();
+
     //
     // ADD MENU
     //
@@ -279,7 +281,7 @@ class Spider extends GameTemplate {
     });
     
 
-    /*this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Play Mode",
       id : "game-play",
       class : "game-play",
@@ -315,7 +317,7 @@ class Spider extends GameTemplate {
        }catch(err){}
       }
     });
-    */
+    
 
     this.menu.addSubMenuOption("game-game", {
       text : "Difficulty",
@@ -444,15 +446,10 @@ class Spider extends GameTemplate {
     return html;
   }
 
-  checkBoardStatus(){
-    
-  }
 
   attachEventsToBoard(){
     let spider_self = this;
-    let selected_stack = null;
-    let selected_stack_size = 0;
-   
+
     //Undo last move
     $(".undo").off();
     $(".undo").on('click', function(){
@@ -482,6 +479,55 @@ class Spider extends GameTemplate {
         spider_self.endTurn();  
       }
     });
+
+    if (this.game.options.play_mode == "auto"){
+      this.attachEventsToBoardAutomatic();
+    }else{
+      this.attachEventsToBoardManual();
+    }
+  }
+
+  attachEventsToBoardAutomatic(){
+    let spider_self = this;
+    let selected_stack_size = 0;
+    //Manipulate cards
+    $('.card').off();
+    $('.card').on('click', function(e) {
+      e.stopPropagation();
+
+      let card_pos = $(this).attr("id");
+      
+      selected_stack_size = spider_self.canSelectStack(card_pos);
+      if (selected_stack_size > 0){
+        for (let i = 0; i < 10; i++){
+          if (card_pos[0] != i){  
+            if (spider_self.canMoveStack(card_pos, i.toString())){
+              spider_self.untoggleAll();
+              spider_self.updateScore();
+              spider_self.prependMove(`move\t${card_pos}\t${i}\t${selected_stack_size}`);
+              spider_self.moveStack(card_pos, i.toString());
+              let key = spider_self.revealCard(card_pos[0]); 
+              if (key){
+                spider_self.prependMove(`flip\t${card_pos[0]}\t${key}`);  
+              }
+              spider_self.displayBoard();
+              spider_self.checkStack(i);
+              return;
+            }
+          }   
+        }
+      }
+
+    });
+
+  }
+
+
+  attachEventsToBoardManual(){
+    let spider_self = this;
+    let selected_stack = null;
+    let selected_stack_size = 0;
+   
 
     $(".card-stack").off();
     $(".card-stack").on('click', function(){
@@ -636,6 +682,9 @@ class Spider extends GameTemplate {
     return true;
   }
 
+  /*
+    Check if we have completed a stack
+  */
   async checkStack(stackNum){
     if (this.game.state.board[stackNum].length < 13){
       return;
@@ -741,6 +790,11 @@ class Spider extends GameTemplate {
     else return true;
   }
 
+
+  getAvailableMoves(card){
+
+  }
+
   /* scan board to see if any legal moves available*/
   hasAvailableMoves(){
     
@@ -779,12 +833,6 @@ class Spider extends GameTemplate {
   }
 
   
-/*  boardToHand(){
-    let indexCt = 0;
-    for (let position in this.game.board){
-      this.game.deck[0].hand[indexCt++] = this.game.board[position];
-    }
-  }*/
 
   parseIndex(slot){
     let coords = slot.split("_");
@@ -953,11 +1001,12 @@ class Spider extends GameTemplate {
     let numLoops = 104 / (13*numSuits);
     
     for (let k = 0; k < numLoops; k++){
-      for (let i = 0; i<numSuits; i++)
+      for (let i = 0; i<numSuits; i++){
         for (let j=1; j<=13; j++){
           deck[index.toString()] = suits[i]+j;
           index ++;
         }  
+      }
     }
     //console.log("Deck Length:"+Object.keys(deck).length);
     return deck;
@@ -1007,6 +1056,32 @@ class Spider extends GameTemplate {
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
   }
+
+  preloadImages(){
+    let suits = ["S","D","C","H"];
+
+    var allImages = [];
+    for (let i = 0; i<this.difficulty; i++){
+      for (let j=1; j<=13; j++){
+        allImages.push( suits[i]+j );
+      }  
+    }
+    this.preloadImageArray(allImages, 0);
+  }
+
+   preloadImageArray(imageArray, idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/spider/img/cards/" + imageArray[idx] + ".png";
+    }
+  }
+
 
 
 }

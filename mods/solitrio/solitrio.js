@@ -76,8 +76,9 @@ class Solitrio extends GameTemplate {
             <label for="auto">Cards move to available slots</label></div>
             <div><input type="radio" id="manual" value="manual" name="play_mode">
             <label for="manual">Click empty slot to move card</label></div>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
+        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+
     `;
   }
 
