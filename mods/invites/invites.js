@@ -27,9 +27,9 @@ class Invites extends InviteTemplate {
 
   respondTo(type) {
 
-//    if (type == 'email-appspace') {
-//      return new InvitesEmailAppspace(this.app, this);
-//    }
+    if (type == 'email-appspace') {
+      return new InvitesEmailAppspace(this.app, this);
+    }
 
     return null;
   }
