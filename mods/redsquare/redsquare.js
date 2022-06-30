@@ -25,50 +25,47 @@ class RedSquare extends ModTemplate {
       '/redsquare/css/redsquare-main.css',
     ];
 
-  }
-
-  initializeUIComponents() {
-
-    if (!this.ui_initialized) {
-
-      this.main = new RedSquareMain(app);
-      this.header = new SaitoHeader(app);
-
-      this.lsidebar = new SaitoSidebar(app);
-      this.lsidebar.align = "left";
-
-      this.rsidebar = new RedSquareSidebar(app);
-      this.menu = new RedSquareMenu(app);
-      this.chatBox = new RedSquareChatBox(app)
-      //
-      // another approach to the right sidebar would be to
-      // use another instance of the SaitoSidebar and then
-      // add components to it here the same way that we add
-      // the menu to our left-sidebar.
-      //
-      //this.rsidebar = new SaitoSidebar(app);
-      //this.rsidebar.align = "right";
-      //this.calendar = new SaitoCalendar(app);
-      //this.rsidebar.addComponent(this.calendar);
-
-      //
-      // finally, add ui-components
-      //
-      this.addComponent(this.lsidebar);
-      this.addComponent(this.main);
-      this.addComponent(this.rsidebar);
-      this.addComponent(this.header);
-      this.lsidebar.addComponent(this.chatBox);
-      this.lsidebar.addComponent(this.menu);
-    }
+    this.ui_initialized = false;
 
   }
+
+
 
 
   render(app, mod) {
 
     console.log("RENDERING REDSQUARE!");
-    this.initializeUIComponents(app);
+
+    if (this.ui_initialized == false) {
+
+      this.main = new RedSquareMain(this.app);
+      this.header = new SaitoHeader(this.app);
+      this.menu = new RedSquareMenu(this.app);
+      this.chatBox = new RedSquareChatBox(this.app)
+      this.calendar = new SaitoCalendar(this.app);
+
+      this.lsidebar = new SaitoSidebar(this.app);
+      this.lsidebar.align = "left";
+
+      this.rsidebar = new SaitoSidebar(this.app);
+      this.rsidebar.align = "right";
+
+      //
+      // combine ui-components
+      //
+      this.addComponent(this.lsidebar);
+      this.addComponent(this.main);
+      this.addComponent(this.rsidebar);
+      this.addComponent(this.header);
+
+      this.lsidebar.addComponent(this.chatBox);
+      this.lsidebar.addComponent(this.menu);
+
+      this.rsidebar.addComponent(this.calendar);
+
+      this.ui_initialized = true;
+
+    }
 
     super.render(app, this);
 

@@ -51,9 +51,11 @@ class Invites extends InviteTemplate {
 
 
   //
-  // defined in InviteTemplate
+  // InviteTemplate handles
   //
-  //async onConfirmation(blk, tx, conf, app) {}
+  async onConfirmation(blk, tx, conf, app) {
+    super.onConfirmation(blk, tx, conf, app);
+  }
 
 }
 
