@@ -45,7 +45,7 @@ class Container {
 
     render(app = this.app , mod = this.mod) {
         if (!document.querySelector('.stun-container')) 
-            document.querySelector('.email-main').innerHTML = sanitize(StunMainContainer(app, mod));
+            document.querySelector('#email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
        
         // render the selected tab
         const Tab = this.mapTabToTemplate[this.selectedTab];
