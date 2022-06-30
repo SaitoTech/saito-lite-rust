@@ -124,78 +124,82 @@ class Chessgame extends GameTemplate {
     console.log('######################################################');
     console.log(game_id);
 
-    if (this.browser_active == 1) {
-      chess = require('./lib/chess.js');
-      chessboard = require('./lib/chessboard');
-      this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
-      this.engine = new chess.Chess();
-    }
-
-
     //
-    // finish initializing
+    // There is no initializing in Chess -- finish initializing
     //
     if (this.game.initializing == 1) {
       this.game.queue.push("READY");
     }
 
 
-    if (this.browser_active == 1) {
-      if (this.game.position != undefined) {
-        this.engine.load(this.game.position);
-      } else {
-        this.game.position = this.engine.fen();
-      }
-
-      this.updateStatusMessage("White moves first");
-      if (this.game.target == this.game.player) {
-        this.setBoard(this.engine.fen());
-	      if (this.useClock) { this.startClock(); }
-      } else {
-        this.lockBoard(this.engine.fen());
-      }
-
-      var opponent = this.game.opponents[0];
-
-      if (this.app.crypto.isPublicKey(opponent)) {
-        if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
-          opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
-        }
-        else {
-          try {
-            // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
-          }
-          catch (err) {
-            console.log(err);
-          }
-        }
-      }
-
-      let opponent_elem = document.getElementById('opponent_id');
-      if (opponent_elem) {
-        opponent_elem.innerHTML = sanitize(opponent);
-        opponent_elem.setAttribute('data-add', opponent)
-      }
-
-      let identicon = "";
-
-      name = this.game.players[0];
-      name = this.app.keys.returnUsername(opponent);
-      identicon = this.app.keys.returnIdenticon(name);
-
-      if (name != "") {
-        if (name.indexOf("@") > 0) {
-          name = name.substring(0, name.indexOf("@"));
-        }
-      }
-
-      let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
-      document.getElementById("opponent_identicon").innerHTML = html;
-
-      this.updateStatusMessage();
-      this.attachEvents();
-
+    if (this.game.options){
+      this.game.stake = (this.game.options.stake)? parseFloat(this.game.options.stake) : 0;
+      this.game.crypto =  this.game.options.crypto || "";  
     }
+
+    if (!this.browser_active){
+      return;
+    }
+
+    chess = require('./lib/chess.js');
+    chessboard = require('./lib/chessboard');
+    this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
+    this.engine = new chess.Chess();
+
+    if (this.game.position != undefined) {
+      this.engine.load(this.game.position);
+    } else {
+      this.game.position = this.engine.fen();
+    }
+
+    this.updateStatusMessage("White moves first");
+    if (this.game.target == this.game.player) {
+      this.setBoard(this.engine.fen());
+      if (this.useClock) { this.startClock(); }
+    } else {
+      this.lockBoard(this.engine.fen());
+    }
+
+    var opponent = this.game.opponents[0];
+
+    if (this.app.crypto.isPublicKey(opponent)) {
+      if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
+        opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
+      }
+      else {
+        try {
+          // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    }
+
+    let opponent_elem = document.getElementById('opponent_id');
+    if (opponent_elem) {
+      opponent_elem.innerHTML = sanitize(opponent);
+      opponent_elem.setAttribute('data-add', opponent)
+    }
+
+    let identicon = "";
+
+    name = this.game.players[0];
+    name = this.app.keys.returnUsername(opponent);
+    identicon = this.app.keys.returnIdenticon(name);
+    
+    if (name != "") {
+      if (name.indexOf("@") > 0) {
+        name = name.substring(0, name.indexOf("@"));
+      }
+    }
+
+    let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
+    document.getElementById("opponent_identicon").innerHTML = html;
+
+    this.updateStatusMessage();
+    this.attachEvents();
+
 
   }
 
@@ -698,32 +702,42 @@ class Chessgame extends GameTemplate {
 
   returnGameOptionsHTML() {
 
-
-    let html = `
-      <h1 class="overlay-title">Chess Options</h1>
-      <div class="overlay-input">   
-      <label for="color">Pick Your Color:</label>
-      <select name="color">
-        <option value="black" default>Black</option>
-        <option value="white">White</option>
-      </select>
-      </div>
-
+    let html = `<h1 class="overlay-title">Chess Options</h1>`;
       
-      <div class="overlay-input">
-      <label for="observer_mode">Observer Mode:</label>
-      <select name="observer">
-        <option value="enable" >enable</option>
-        <option value="disable" selected>disable</option>
-      </select>
-      </div>
-    
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-        
-    `;
+    html   +=  `<div class="overlay-input">   
+                  <label for="color">Pick Your Color:</label>
+                  <select name="color">
+                    <option value="black" default>Black</option>
+                    <option value="white">White</option>
+                  </select>
+                </div>`;
 
+    /*html   +=  `<div class="overlay-input">
+                  <label for="observer_mode">Observer Mode:</label>
+                  <select name="observer">
+                    <option value="enable" >enable</option>
+                    <option value="disable" selected>disable</option>
+                  </select>
+                </div>`;*/
+      
+    html += this.returnCryptoOptionsHTML();
+
+    html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+        
     return html;
 
+  }
+
+  attachAdvancedOptionsEventListeners(){
+    let crypto = document.getElementById("crypto");
+    let stakeInput = document.getElementById("stake_input");
+    crypto.onchange = ()=>{
+      if (crypto.value){
+        stakeInput.style.display = "block";
+      }else{
+        stakeInput.style.display = "none";
+      }
+    }
   }
 }
 
