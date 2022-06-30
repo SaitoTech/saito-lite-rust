@@ -32,7 +32,6 @@
     list-style: none;
 }
 
-
 .header-link-container {
     position: relative;
 }
@@ -76,10 +75,6 @@
     color: var(--saito-white);
 }
 
-
-
-.header-link-list a:not(:last-child) {}
-
 .mega-menu:hover .header-link-list {
     display: block;
 }
@@ -88,11 +83,6 @@
     margin-bottom: 1rem;
     display: inline-block;
 }
-
-
-
-
-
 
 #header-menu-toggle {
     margin-right: auto;
@@ -109,7 +99,6 @@
 #header-menu-toggle:active {
     transform: scale(0.9);
 }
-
 
 #header-menu-toggle span {
     display: block;
@@ -148,9 +137,7 @@
     opacity: 0;
     z-index: 10;
     padding: 2rem;
-    box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border),
-        1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
-        1px 1rem 1rem var(--saito-border);
+    box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border), 1px 1rem 1rem var(--saito-border);
     width: 20rem;
     height: 100vh;
     overflow: auto;
@@ -230,7 +217,6 @@
     border-bottom: 1px solid var(--saito-border);
 }
 
-
 .show-menu {
     opacity: 1;
     width: 40rem;
@@ -239,12 +225,9 @@
     pointer-events: auto;
 }
 
-
-
 /* .active {
     color: var(--saito-primary);
 } */
-
 
 @media screen and (max-width: 1600px) {
     #saito-header {
@@ -264,9 +247,6 @@
     }
 }
 
-
-
-
 @media screen and (max-width: 700px) {
     .header-hamburger-contents {
         width: 80vw;
@@ -277,15 +257,12 @@
     .header-hamburger-contents {
         width: 100vw;
     }
-
     #saito-header {
         padding: 1.3rem 1rem;
     }
-
     #saito-header>img {
         width: 10rem;
     }
-
     .shortcodes {
         font-size: 12px;
         position: absolute;
