@@ -421,7 +421,8 @@ class Poker extends GameTemplate {
 
       if (mv[0] === "winner") {
         this.game.queue = [];
-        this.endGame(this.game.players[parseInt(mv[1])]); 
+        this.game.crypto = null;
+        this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
 
@@ -2662,7 +2663,6 @@ class Poker extends GameTemplate {
             <label for="crypto">Crypto:</label>
             <select id="crypto" name="crypto">
               <option value="" selected>None</option>
-              <option value="SAITO">SAITO</option>
     `;
 
     let listed = [];
