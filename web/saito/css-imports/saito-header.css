@@ -151,8 +151,6 @@
     box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border),
         1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border),
         1px 1rem 1rem var(--saito-border);
-    /* -webkit-transform: translateX(20rem); */
-    /* transform: translateX(20rem); */
     width: 20rem;
     height: 100vh;
     overflow: auto;

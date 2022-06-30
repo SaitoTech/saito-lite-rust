@@ -6,14 +6,8 @@
     border: 1px solid var(--saito-border);
     border-radius: 8px 8px 0 0;
     box-shadow: 4px 4px 12px var(--saito-border);
-
     display: flex;
     flex-direction: column;
-    /* z-index: 5; */
-    /* min-height: 0;
-    width: 0; */
-    /* opacity: 0; */
-    /* pointer-events: none; */
     overflow: hidden;
     z-index: 5;
     pointer-events: auto;
@@ -26,7 +20,6 @@
 
 .chat-container>div:nth-child(1) {
     border-bottom: 1px solid var(--saito-border);
-    /* padding: .5em; */
     padding: 1rem;
     display: flex;
     justify-content: space-between;

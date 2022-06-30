@@ -7,7 +7,6 @@
 .container {
     max-width: var(--calendar-width);
     min-width: var(--calendar-minwidth);
-    /* width: var(); */
 }
 
 
@@ -69,7 +68,6 @@
 }
 
 .saito-calendar-weekdays div {
-    /* min-width: calc((var(--calendar-minwidth) - 2rem)/7); */
     width: calc((var(--calendar-width) - 2rem)/7);
     font-size: 1.6rem;
     text-align: center;

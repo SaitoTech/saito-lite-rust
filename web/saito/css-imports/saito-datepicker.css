@@ -18,14 +18,12 @@
 
 .datepicker-dropdown.datepicker-orient-top {
     padding-top: 0;
-
 }
 
 .datepicker-picker {
     display: inline-block;
     border-radius: 0.5rem;
     background-color: white;
-
 }
 
 .datepicker-dropdown .datepicker-picker {
@@ -35,7 +33,6 @@
 
 .datepicker-picker span {
     display: block;
-
     flex: 1;
     border: 0;
     cursor: default;
@@ -81,8 +78,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* padding: 1rem; */
 }
 
 .datepicker-view.datepicker-grid .datepicker-cell {
@@ -104,9 +99,7 @@
 }
 
 .datepicker-header .datepicker-controls {
-
     margin-bottom: 2rem;
-    /* rgb(209, 208, 209) */
 }
 
 .datepicker-controls .button {
@@ -130,7 +123,6 @@
     font-size: 1rem;
     min-width: auto;
     background: none;
-    /* color: var(--saito-primary); */
 }
 
 .datepicker-controls .button:focus,
