@@ -23,7 +23,7 @@ class RedSquareChatBox {
             document.querySelectorAll('.redsquare-chat-start').forEach(item => {
                 item.onclick = (e) => {
                     let chatContainer = document.querySelector(".chat-container");
-                    chatContainer.classList.contains('hide-chat') ? chatContainer.classList.remove('hide-chat') : chatContainer.classList.add('hide-chat')
+                    chatContainer.classList.contains('hide-chat') ? chatContainer.classList.remove('hide-chat') : chatContainer.classList.add('hide-chat');
                 }
             })
 

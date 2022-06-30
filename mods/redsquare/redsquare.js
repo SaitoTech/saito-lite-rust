@@ -31,7 +31,6 @@ class RedSquare extends ModTemplate {
 
 
 
-
   render(app, mod) {
 
     console.log("RENDERING REDSQUARE!");
@@ -66,18 +65,6 @@ class RedSquare extends ModTemplate {
       this.ui_initialized = true;
 
     }
-
-    super.render(app, this);
-
-    //
-    // whichever approach we use to add elements, 
-    // after super.render() has run we have the page
-    // fleshed out and ready to use, and can manually
-    // add or edit the DOM however we want.
-    //
-    //if (document.querySelector(".element-to-edit")) {
-    //  ...
-    //}
 
   }
 

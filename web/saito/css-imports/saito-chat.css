@@ -63,6 +63,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1em;
+    padding-left: 0;
     border-top: 1px solid var(--saito-border);
 }
 
@@ -98,8 +99,8 @@
 }
 
 .chat-bubble>img {
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 5rem;
+    height: 5rem;
     border-radius: .5rem;
 }
 
@@ -117,10 +118,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--saito-black);
-    font-size: 1.44rem;
+    font-size: 1.6rem;
 }
 
-.chat-bubble>p:nth-child() {}
+.chat-bubble>div>p:nth-child(2) {
+    font-size: 1.6rem;
+    font-weight: 300;
+}
 
 .chat-container.hide-chat {
     display: none;

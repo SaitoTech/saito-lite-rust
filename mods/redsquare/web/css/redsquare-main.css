@@ -19,7 +19,7 @@
 .redsquare-input-profile img {
     width: 5rem;
     height: 5rem;
-    border-radius: 50%;
+    border-radius: .5rem;
     margin-top: 3rem;
     margin-left: 3rem;
 }
@@ -54,7 +54,7 @@
 .redsquare-item-profile img {
     width: 5rem;
     height: 5rem;
-    border-radius: 50%;
+    border-radius: .5rem;
     margin-top: 2rem;
     margin-left: 3rem;
 }
