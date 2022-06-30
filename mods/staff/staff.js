@@ -4,9 +4,6 @@ const ReigsterStaffTemplate = require('./lib/register-staff.template');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 
 
-
-
-
 class Staff extends ModTemplate {
 
     constructor(app) {
@@ -30,7 +27,9 @@ class Staff extends ModTemplate {
     //Use this to check if the key from the wallet is in the db.
     onPeerHandshakeComplete(app, peer) {
         if (app.BROWSER == 1) {
-            this.checkRecord(this.app.wallet.returnPublicKey());
+            if (this.browser_active == 1) {
+                this.checkRecord(this.app.wallet.returnPublicKey());
+            }
         }
     }
 
@@ -67,7 +66,7 @@ class Staff extends ModTemplate {
 
 
     async checkRecord(publickey) {
-        sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
+        let sql = 'SELECT publickey FROM staff WHERE publickey = "' + publickey + '";';
         this.sendPeerDatabaseRequestWithFilter(this.name, sql,
             (res) => {
                 if (res) {
