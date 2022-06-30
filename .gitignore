@@ -4,6 +4,7 @@ saitolitedocs
 .vscode
 .vscode/*
 .idea/
+.vs/*
 
 .env
 

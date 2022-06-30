@@ -20,6 +20,7 @@ module.exports = {
     'settlers/settlers.js',
     'solitrio/solitrio.js',
     'wordblocks/wordblocks.js',
+    'calendar/calendar.js',
     'website/website.js',
   ],
   lite: [
@@ -44,6 +45,7 @@ module.exports = {
     'settlers/settlers.js',
     'solitrio/solitrio.js',
     'wordblocks/wordblocks.js',
+    'calendar/calendar.js',
     'website/website.js',
   ]
 }
