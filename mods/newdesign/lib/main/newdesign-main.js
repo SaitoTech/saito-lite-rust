@@ -10,7 +10,9 @@ class NewDesignMain {
     if (document.querySelector('#saito-container')) {
       app.browser.addElementToDom(NewDesignMainTemplate(app));
     }
+
     this.attachEvents();
+
   };
 
   attachEvents() {
@@ -24,58 +26,55 @@ class NewDesignMain {
 
 
 
-
-
-    // UserDrop Down
-    const icons = document.querySelectorAll('.saito-user > i');
-    const dropdowns = document.querySelectorAll('.saito-user-dropdown')
-
-    icons.forEach(icon => {
-      icon.addEventListener('click', (e) => {
-        console.log(icon.nextElementSibling);
-        const dropdown = icon.nextElementSibling;
-        if (dropdown.classList.contains('show')) {
-          dropdown.classList.remove('show');
-        } else {
-          dropdown.classList.add('show');
-        }
-
-      });
-    })
-    dropdowns.forEach(dropdown => {
-      dropdown.addEventListener('click', (e) => {
-        dropdown.classList.remove('show');
-      })
-    })
-
+    console.log('attaching events');
     // functions
-    const salert_btn = document.querySelector('#salert_btn');
-    const sprompt_btn = document.querySelector('#sprompt_btn');
-    const sconfirm_btn = document.querySelector('#sconfirm_btn');
-    const sitemsg_btn = document.querySelector('#sitemsg_btn');
+    const salert_btn = document.querySelector('#salert_button');
+    const sprompt_btn = document.querySelector('#sprompt_button');
+    const sconfirm_btn = document.querySelector('#sconfirm_button');
+    const sitemsg_btn = document.querySelector('#sitemsg_button');
 
-    salert_btn.addEventListener('click', (e) => {
-      salertNew("Clicked Successfully");
-    })
-    sprompt_btn.addEventListener('click', (e) => {
-      spromptNew("Please insert something");
-    })
-    sconfirm_btn.addEventListener('click', (e) => {
-      sconfirmNew("Activity Confirmed");
-    })
-    sitemsg_btn.addEventListener('click', (e) => {
-      siteMessageNew("New site message");
+
+    document.body.addEventListener('click', (e) => {
+      if (e.target.id === "salert_button") {
+        salertNew("Clicked Successfully");
+      }
+      if (e.target.id === "sprompt_button") {
+        spromptNew("Please insert something");
+      }
+      if (e.target.id === "sconfirm_button") {
+        sconfirmNew("Activity Confirmed");
+      }
+      if (e.target.id === "sitemsg_button") {
+        siteMessageNew("New site message");
+      }
+      if (e.target.id === "showoverlay_button") {
+        document.querySelector('.saito-overlay').classList.add('show');
+      }
+      if (e.target.classList.contains("fa-power-off")) {
+        document.querySelector('.saito-overlay').classList.remove('show');
+      }
+
+
+
+      if (e.target.classList.contains('hamburger')) {
+        console.log(e.target.parentElement);
+
+        const mobileSidebar = e.target.parentElement.querySelector('.saito-sidebar.left');
+        mobileSidebar.classList.contains('mobile') ? mobileSidebar.classList.remove('mobile') : mobileSidebar.classList.add('mobile');
+
+      }
+
     })
 
     // hamburger menu
-    const mobileHamburger = document.querySelectorAll('.saito-left-sidebar-hamburger')
-    mobileHamburger.forEach(item => {
-      item.addEventListener('click', (e) => {
-        console.log(item.parentElement);
-        const mobileSidebar = item.parentElement.querySelector('.saito-left-sidebar-mobile');
-        mobileSidebar.classList.contains('show-left-sidebar-mobile') ? mobileSidebar.classList.remove('show-left-sidebar-mobile') : mobileSidebar.classList.add('show-left-sidebar-mobile');
-      })
-    })
+    // const mobileHamburger = document.querySelectorAll('.saito-sidebar.left hamburger')
+    // mobileHamburger.forEach(item => {
+    //   document.body.addEventListener('click', (e) => {
+    //     console.log(item.parentElement);
+    //     const mobileSidebar = item.parentElement.querySelector('.saito-sidebar.mobile');
+    //     mobileSidebar.classList.contains('show-left-sidebar-mobile') ? mobileSidebar.classList.remove('show-left-sidebar-mobile') : mobileSidebar.classList.add('show-left-sidebar-mobile');
+    //   })
+    // })
 
   };
 }
