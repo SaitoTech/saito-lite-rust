@@ -10,6 +10,10 @@
     position: relative;
 }
 
+.saito-main {
+    background-color: transparent;
+}
+
 .newdesign-page>h4 {
     position: absolute;
 }
