@@ -1,3 +1,6 @@
+/*
+  Deprecated code
+*/
 module.exports = ArcadeGamesFullListOverlayTemplate = (app, mod) => {
 
   let html = `

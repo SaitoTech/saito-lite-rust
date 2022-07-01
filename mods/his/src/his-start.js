@@ -1,27 +1,6 @@
 
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/his/img/arcade/arcade-banner-background.png";
-      obj.title = "Here I Stand";
-      return obj;
-    }
-   
-    return null;
- 
-  }
-
-
 
 
   initializeHTML(app) {

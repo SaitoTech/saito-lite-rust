@@ -342,7 +342,7 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 
       let promises = directory.files.map(async file => {
 
-        if (file.path === "web/img/arcade.jpg") {
+        if (file.path === "web/img/arcade/arcade.jpg") {
           let content = await file.buffer();
           image = "data:image/jpeg;base64," + content.toString('base64')
 	}
