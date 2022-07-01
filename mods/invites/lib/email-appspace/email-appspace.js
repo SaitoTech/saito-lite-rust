@@ -47,12 +47,12 @@ class InvitesEmailAppspace {
       let recipient = document.getElementById("invite_address").value;
       if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
 
+console.log("found recipient!");
+
       mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
 
-      let relay_mod = app.modules.returnModule("Relay");
-      if (relay_mod) {
-        relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
-      }
+console.log("found! and ducking out with no relay in invites");
+
     }
 
     //
