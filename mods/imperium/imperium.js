@@ -11,10 +11,10 @@ class Imperium extends GameTemplate {
     this.gamename         = "Red Imperium";
     this.slug		  = "imperium";
     this.description      = `Red Imperium is a multi-player space exploration and conquest simulator. Each player controls a unique faction vying for political control of a galaxy in the waning days of a dying Empire.`;
-    this.categories	  = "Arcade Games Entertainment";
+    this.categories	  = "Games Boardgame Strategy";
     this.minPlayers       = 2;
     this.maxPlayers       = 6;
-    this.type             = "Strategy Boardgame";
+
     //this.status           = "Beta";
 
     this.boardWidth   = 1900;
@@ -12330,25 +12330,6 @@ try {
 
 
 
-//
-// manually add arcade banner support
-//
-respondTo(type) {
-
-  if (super.respondTo(type) != null) {
-    return super.respondTo(type);
-  }
-
-  if (type == "arcade-carousel") {
-    let obj = {};
-    obj.background = "/imperium/img/arcade/arcade-banner-background.png";
-    obj.title = "Red Imperium";
-    return obj;
-  }
-
-  return null;
-
-}
 
 
 

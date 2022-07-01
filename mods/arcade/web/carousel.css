@@ -46,31 +46,35 @@
     border: 1px solid darkorange;
 }
 
-.carousel-wrapper>div {
+/*.carousel-wrapper > div.leaf {
     animation: rightToLeft 50s linear infinite 0s;
 }
-
-/*
-.carousel-wrapper div.leaf:nth-child(1) {
-    animation-delay: 0s;
-}
-*/
 
 .carousel-wrapper div.leaf:nth-child(2) {
     animation-delay: 10s;
 }
-
 .carousel-wrapper div.leaf:nth-child(3) {
     animation-delay: 20s;
 }
-
 .carousel-wrapper div.leaf:nth-child(4) {
     animation-delay: 30s;
 }
-
 .carousel-wrapper div.leaf:nth-child(5) {
     animation-delay: 40s;
 }
+.carousel-wrapper div.leaf:nth-child(6) {
+    animation-delay: 50s;
+}
+.carousel-wrapper div.leaf:nth-child(7) {
+    animation-delay: 60s;
+}
+.carousel-wrapper div.leaf:nth-child(8) {
+    animation-delay: 70s;
+}
+.carousel-wrapper div.leaf:nth-child(9) {
+    animation-delay: 80s;
+}
+*/
 
 /*rightToLeft Animation*/
 

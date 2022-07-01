@@ -36,7 +36,8 @@ module.exports = ArcadeGameDetails = {
         `<div id="background-shim" class="background-shim" style=""><div id="background-shim-cover" class="background-shim-cover"></div></div>`
       );
     }
-    let gamemod_url = "/" + gamemod.returnSlug() + "/img/arcade.jpg";
+    
+    let gamemod_url = gamemod.respondTo("arcade-games")?.img;
     document.querySelector(".background-shim").style.backgroundImage = "url(" + gamemod_url + ")";
 
     //Create the gamedetails window
@@ -96,7 +97,7 @@ module.exports = ArcadeGameDetails = {
     //go to game home page
     document.querySelector(".game-home-link").addEventListener("click", (e) => {
       let options = getOptions();
-      let gamemod = app.modules.returnModule(options.gamename);
+      let gamemod = app.modules.returnModule(options.game);
       app.browser.logMatomoEvent("Navigation", "GameDetailtoPage", gamemod.returnSlug());
       window.location = "/arcade/?game=" + gamemod.returnSlug();
     });
@@ -111,7 +112,7 @@ module.exports = ArcadeGameDetails = {
     //Query game instructions
     //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
     //   let options = getOptions();
-    //   let gamemod = app.modules.returnModule(options.gamename);
+    //   let gamemod = app.modules.returnModule(options.game);
     //   gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
     //});
 
@@ -125,11 +126,11 @@ module.exports = ArcadeGameDetails = {
           let options = getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
           if (isPrivateGame == "private") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
           } else {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
           //
@@ -177,7 +178,7 @@ module.exports = ArcadeGameDetails = {
              console.log("ERROR checking crypto: " + err);
             return;
           }
-          let gamemod = app.modules.returnModule(options.gamename);
+          let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {
             players_needed = document.querySelector(".game-wizard-players-select").value;

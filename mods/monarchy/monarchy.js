@@ -12,20 +12,18 @@ class Monarchy extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Monarchy";
-    this.gamename        = "Monarchy";
-    this.slug		         = "monarchy";
-    this.description     = `Monarchy is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
-    this.categories      = "Games Arcade Entertainment";
+    this.name  		       = "Dominion";
 
+    this.description     = `${this.name} is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
+    this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
     this.scoreboard      = new GameScoreboard(app);
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
-    this.type       	 = "Strategy Boardgame";
-    this.categories 	 = "Boardgame Game"
+
+    this.categories 	 = "Games Boardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -40,25 +38,6 @@ class Monarchy extends GameTemplate {
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
   }
 
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/monarchy/img/arcade/arcade-banner-background.png";
-      obj.title = "Monarchy";
-      return obj;
-    }
-   
-    return null;
-   }
 
 
   showCardOverlay(cards, title = ""){
@@ -164,7 +143,7 @@ initializeGame(game_id) {
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("------ INITIALIZE GAME ----");
-    console.log("----------MONARCHY---------");
+    console.log("----------Dominion---------");
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("\n\n\n\n");
@@ -1023,10 +1002,10 @@ initializeGame(game_id) {
       if (c !== "curse"){
         html += `<div class="cardpile tip" id="${c}">`;
         if (this.game.state.supply[c] > 0){
-          html += `<img class="${cardClass}" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
+          html += `<img class="${cardClass}" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          html += `<img class="${cardClass}" src="/monarchy/img/cards/blank.jpg">`;
+          html += `<img class="${cardClass}" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
@@ -1546,7 +1525,7 @@ initializeGame(game_id) {
 
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
-      return `<img class="cardimg" src="/monarchy/img/cards/${this.deck[cardname].img}" />`;
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
     }else{
       return ""; 
     }
@@ -1689,7 +1668,7 @@ initializeGame(game_id) {
 
   returnGameRulesHTML(){
     let html = `<div class="rules-overlay">
-    <h1>Monarchy (Dominion)</h1>
+    <h1>${this.name}</h1>
     <p>You are the ruler of a small kingdom with grand hopes and dreams. In all directions lie small tracts of land on the verge of a nervous breakdown. Pacify these lands under your banner and expand your kingdom, and do it quickly as other principalities are looking to expand. Hire minions, construct buildings, and fill the coffers of your treasury.</p>
     <h2>How to Play</h2>
     <p>Players take turns, playing an <em>action</em> card from their hand, then buying a card from the supply pile with their <em>treasure</em>. Each player begins with seven COPPER and 3 ESTATES, so in the first two turns the player will not have any ACTION cards to play. Playing an action card or buying a card is optional, but each player is guaranteed one play or purchase per turn. Some action cards give players additional actions, purchases, or temporary treasure to spend that turn. All cards in the players hand are discarded at the end of the turn. </p>
@@ -1702,7 +1681,7 @@ initializeGame(game_id) {
 
   returnGameOptionsHTML(){
       let html = `
-      <h1 class="overlay-title">Monarchy Options</h1>
+      <h1 class="overlay-title">${this.name} Options</h1>
         <div class="overlay-input">
           <label for="card_set">Prearranged Supplies:</label>
           <select name="card_set">
