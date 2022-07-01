@@ -54,7 +54,9 @@ class Invites extends InviteTemplate {
   // InviteTemplate handles
   //
   async onConfirmation(blk, tx, conf, app) {
+console.log("IN ON CONF");
     super.onConfirmation(blk, tx, conf, app);
+console.log("IN ON CONF 2");
   }
 
 }
