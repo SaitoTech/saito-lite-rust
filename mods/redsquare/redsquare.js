@@ -5,7 +5,6 @@ const SaitoCalendar = require('../../lib/saito/new-ui/saito-calendar/saito-calen
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
 const RedSquareChatBox = require('./lib/chatbox');
-const RedSquareSidebar = require('./lib/sidebar');
 
 
 class RedSquare extends ModTemplate {
