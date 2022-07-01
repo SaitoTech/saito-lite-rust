@@ -52,7 +52,7 @@ class Stun extends ModTemplate {
         this.stun.counter = 0;
         this.stun.servers = [
           {
-            urls: "stun:stun.l.google.com:19302",
+            urls: "stun:stun-sf.saito.io",
           },
           {
             urls: "turn:openrelay.metered.ca:80",
