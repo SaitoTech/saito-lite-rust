@@ -43,7 +43,7 @@ class InvitesEmailAppspace {
     // button to initiate invites
     //
     document.getElementById("invite_btn").onclick = (e) => {
-/***
+
       let recipient = document.getElementById("invite_address").value;
       if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
 
@@ -53,7 +53,6 @@ class InvitesEmailAppspace {
       if (relay_mod) {
         relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
       }
-***/
     }
 
     //
