@@ -63,8 +63,6 @@ class RedSquare extends ModTemplate {
       this.rsidebar.addComponent(this.calendar);
 
       this.ui_initialized = true;
-
-      super.render(app, this);
     }
 
     super.render(app, this);
@@ -79,6 +77,11 @@ class RedSquare extends ModTemplate {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
           this.receiveTweetTransaction(blk, tx, conf, app);
+          
+          //
+          // TODO - update UI when tweet transaction is received
+          //
+          this.app.connection.emit('redsquare-update-tweets', row);
         }
 
       }
@@ -97,38 +100,32 @@ class RedSquare extends ModTemplate {
       timestamp: new Date().getTime()
     };
 
-    console.log("sending transaction");
-    console.log(newtx.msg);
-
     this.app.network.propagateTransaction(newtx); 
   }
 
   receiveTweetTransaction(blk, tx, conf, app) {
-    console.log('inside receiveTweetTransaction');
     let txmsg = tx.returnMessage();
     let content  = txmsg.content;
-    //let publickey = tx.transaction.from[0].add;
+    let publickey = tx.transaction.from[0].add;
+    let tweet_id = tx.transaction.id;
 
-    console.log("TransactionNN");
-    console.log(tx);
+    let sql = `INSERT INTO tweets (
+                content,
+                tweet_id,
+                publickey
+              ) VALUES (
+                $content,
+                $tweet_id,
+                $publickey
+              )`;
 
-    // let sql = `INSERT INTO tweets (
-    //             content,
-    //             tweet_id,
-    //             publickey
-    //           ) VALUES (
-    //             $game,
-    //             $type,
-    //             $publickey
-    //           )`;
-
-    // let params = {
-    //   $content: content,
-    //   $post_id: post_id,
-    //   $publickey: publickey
-    // };
-    // await app.storage.executeDatabase(sql, params, "redsquare");
-    // return;
+    let params = {
+      $content: content,
+      $tweet_id: tweet_id,
+      $publickey: publickey
+    };
+    app.storage.executeDatabase(sql, params, "redsquare");
+    return;
   }
 
 }

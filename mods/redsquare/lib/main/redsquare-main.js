@@ -21,21 +21,17 @@ class RedSquareMain {
 
   attachEvents(app, mod) {
 
-    let publishBtn = document.querySelector('#redsquare-input-container button');
-    publishBtn.onclick = (e) => {
+    let tweetBtn = document.querySelector('#redsquare-input-container button');
+    tweetBtn.onclick = (e) => {
       e.preventDefault();
-      let content = document.querySelector('#redsquare-input-container textarea').value;
 
-      if (content != "")
-        mod.sendTweetTransaction(content);
-      else
-        //
-        // TODO -- create a success and error UI component for displaying msgs
-        //
-        alert('Empty post cannot be published');
+      let content = document.querySelector('#redsquare-input-container textarea').value;     
+      mod.sendTweetTransaction(content);  
     }
 
   }
+
+
 }
 
 module.exports = RedSquareMain;
