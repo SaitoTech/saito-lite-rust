@@ -64,8 +64,69 @@ class RedSquare extends ModTemplate {
 
       this.ui_initialized = true;
 
+      super.render(app, this);
     }
 
+  }
+
+
+  async onConfirmation(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+
+    try {
+      if (conf == 0) {
+        if (txmsg.request === "create tweet") {
+          this.receiveTweetTransaction(blk, tx, conf, app);
+        }
+
+      }
+    } catch (err) {
+      console.log("ERROR in " + this.name + " onConfirmation: " + err);
+    }
+  }
+
+  sendTweetTransaction(content){
+    let newtx = this.app.wallet.createUnsignedTransaction();
+
+    newtx.msg = {
+      module: this.name,
+      content: content,
+      request:  "create tweet",
+      timestamp: new Date().getTime()
+    };
+
+    console.log("sending transaction");
+    console.log(newtx.msg);
+
+    this.app.network.propagateTransaction(newtx); 
+  }
+
+  receiveTweetTransaction(blk, tx, conf, app) {
+    console.log('inside receiveTweetTransaction');
+    let txmsg = tx.returnMessage();
+    let content  = txmsg.content;
+    //let publickey = tx.transaction.from[0].add;
+
+    console.log("TransactionNN");
+    console.log(tx);
+
+    // let sql = `INSERT INTO tweets (
+    //             content,
+    //             tweet_id,
+    //             publickey
+    //           ) VALUES (
+    //             $game,
+    //             $type,
+    //             $publickey
+    //           )`;
+
+    // let params = {
+    //   $content: content,
+    //   $post_id: post_id,
+    //   $publickey: publickey
+    // };
+    // await app.storage.executeDatabase(sql, params, "redsquare");
+    // return;
   }
 
 }
