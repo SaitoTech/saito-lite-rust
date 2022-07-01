@@ -1,10 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const ReigsterStaffTemplate = require('./lib/register-staff.template');
+const ReigsterStaff = require('./lib/register-staff');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-
-
-
 
 
 class Staff extends ModTemplate {
@@ -34,7 +31,7 @@ class Staff extends ModTemplate {
         }
     }
 
-    render(app, mod) {
+    initialize(app) {
         if (this.header == null) {
             this.header = new SaitoHeader(app, this);
         }
@@ -42,27 +39,10 @@ class Staff extends ModTemplate {
             this.header.render(app, this);
             this.header.attachEvents(app, this);
 
-            document.getElementById('staff_register').innerHTML = (sanitize(RegisterStaffTemplate()));
-            document.querySelector('#publicKey').innerHTML = this.app.wallet.returnPublicKey();
-            document.getElementById("isRegistered").checked = this.isThisRegistered;
-
-            if (this.isThisRegistered) {
-                document.getElementById("add_staff").style.display = "none";
-                document.getElementById("remove_staff").style.display = "block";
-            } else {
-                document.getElementById("add_staff").style.display = "block";
-                document.getElementById("remove_staff").style.display = "none";
-            }
-
-            //add button events
-            document.querySelector('#add_staff').addEventListener("click", () => {
-                this.sendRegisterTX(this.publickey, this.app.wallet.returnPublicKey(), "register");
-            });
-            document.querySelector('#remove_staff').addEventListener("click", () => {
-                this.sendRegisterTX(this.publickey, this.app.wallet.returnPublicKey(), "deregister");
-            });
-
         }
+
+        this.registerStaff = new ReigsterStaff(app, this);
+        this.registerStaff.render(app, this);
     }
 
 
@@ -84,10 +64,10 @@ class Staff extends ModTemplate {
     }
 
 
-    createRegisterTransaction(to, publicKey, msgType) {
+    createRegisterTransaction(to, publicKey, request) {
         let newtx = this.app.wallet.createUnsignedTransaction(to);
         newtx.msg.module = this.name;
-        newtx.msg.type = msgType;
+        newtx.msg.request = request;
         newtx.msg.publicKey = publicKey;
 
         return this.app.wallet.signTransaction(newtx);
@@ -108,21 +88,21 @@ class Staff extends ModTemplate {
                 if (app.BROWSER == 0) {
                     if (tx.isTo(staff_self.publickey) && app.wallet.returnPublicKey() === staff_self.publickey) {
                         //this tx is for us - the authoritative node.
-                        if (txmsg.type == "register") {
+                        if (txmsg.request == "register") {
                             let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
                             staff_self.receiveRegisterTransaction(txmsg, sql);
-                        } else if (txmsg.type == "deregister") {
+                        } else if (txmsg.request == "deregister") {
                             let sql = 'DELETE FROM staff WHERE publickey = $publickey';
                             staff_self.receiveRegisterTransaction(txmsg, sql);
                         }
-                        this.sendRegisterTX(txmsg.publicKey, txmsg.publicKey, txmsg.type);
+                        this.sendRegisterTX(txmsg.publicKey, txmsg.publicKey, txmsg.request);
                     }
                     else if (tx.isFrom(staff_self.publickey)) {
                         //this message is from the authoritative node.
-                        if (txmsg.type == "register") {
+                        if (txmsg.request == "register") {
                             let sql = "INSERT INTO staff (publickey) VALUES ($publickey)";
                             staff_self.receiveRegisterTransaction(txmsg, sql);
-                        } else if (txmsg.type == "deregister") {
+                        } else if (txmsg.request == "deregister") {
                             let sql = 'DELETE FROM staff WHERE publickey = $publickey';
                             staff_self.receiveRegisterTransaction(txmsg, sql);
                         }

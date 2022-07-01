@@ -1,6 +1,6 @@
-module.exports = RegisterStaffTemplate = () => {
+module.exports = RegisterStaffTemplate = (app, mod) => {
     return `
-<div class="grid-2" style="width: 700px;margin: 10vh auto;">
+<div id="staff-register-grid" class="grid-2" style="width: 700px;margin: 10vh auto;">
         <div id="list_of_keys">
             Public Key:
         </div>
