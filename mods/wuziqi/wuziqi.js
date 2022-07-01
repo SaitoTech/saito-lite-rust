@@ -159,9 +159,6 @@ class Wuziqi extends GameTemplate {
 
     initializeGame(game_id) {
 
-        // Grab the game from my wallet if it's there, and the arcade if not.
-        this.loadGame(game_id);
-
         // Send 'let's get started' message.
         this.game.queue.push("READY");
     }
@@ -362,6 +359,9 @@ class Wuziqi extends GameTemplate {
                 //Not duplicated in board events, so both players run these
                 this.updateScore();
                 this.drawBoard(this.game.board);
+
+                console.log(this.game.options);
+                console.log(this.game.crypto);
 
                 this.endGame(this.game.players[parseInt(mv[1])-1]);
                 return 0; //end queue cycling

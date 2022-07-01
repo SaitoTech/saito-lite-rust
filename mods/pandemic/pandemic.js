@@ -75,8 +75,6 @@ class Pandemic extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
  
-    this.loadGame(game_id);
-
 
     if (this.game.cities == undefined) {
       this.game.cities = this.returnCities();

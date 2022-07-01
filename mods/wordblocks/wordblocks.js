@@ -227,9 +227,6 @@ class Wordblocks extends GameTemplate {
     // OBSERVER MODE
     //if (this.game.player == 0) { return; }
 
-    this.updateStatus("loading game...");
-    this.loadGame(game_id);
-
     //
     // deal cards
     //
