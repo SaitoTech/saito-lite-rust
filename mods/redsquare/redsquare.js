@@ -100,6 +100,7 @@ class RedSquare extends ModTemplate {
       timestamp: new Date().getTime()
     };
 
+    this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx); 
   }
 
