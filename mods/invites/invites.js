@@ -15,7 +15,7 @@ class Invites extends InviteTemplate {
 
     this.invites        = [];
     this.scripts	= ['/saito/lib/jsonTree/jsonTree.js'];
-    this.styles		= ['/saito/lib/jsonTree/jsonTree.css'];
+    this.styles		= ['/invites/style.css','/saito/lib/jsonTree/jsonTree.css'];
     return this;
   }
 

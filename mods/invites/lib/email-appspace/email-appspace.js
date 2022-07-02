@@ -23,9 +23,13 @@ console.log("about to look through invites!");
 
     if (mod.invites) {
 console.log("about to look through invites 2!");
+console.log("mod invites len: " + mod.invites.length);
       for (let i = 0; i < mod.invites.length; i++) {
-        app.browser.addElementToClass(InvitesInvitationTemplate(app, mod, i), "invites");
+console.log("adding element to class...");
+        app.browser.addElementToClass(InvitesInvitationTemplate(app, mod, i), ".invites");
+console.log("done adding element to class...");
       }
+
 
 console.log("about to look through invites 3!");
 
