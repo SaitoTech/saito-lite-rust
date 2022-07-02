@@ -128,6 +128,7 @@
                 if (choices_selected >= max_choices) {
                   imperium_self.prependMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
 	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
                   imperium_self.endTurn();
                 }
 

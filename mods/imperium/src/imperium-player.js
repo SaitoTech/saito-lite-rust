@@ -5089,7 +5089,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let planets_invaded = [];
 
   //
-  // gamae-speed-up possible by auto-invading in early-war. this option will
+  // game-speed-up possible by auto-invading in early-war. this option will
   // only be available if there is no resistance on the planet(s) and the 
   // invading player has adequate infantry to place one on each planet.
   //
@@ -5100,8 +5100,8 @@ playerInvadePlanet(player, sector, auto_option=1) {
       for (let ii = 0; ii < sys.p[i].units.length; ii++) {
 	if (sys.p[i].units[ii].length > 0) {
 	  exists_resistance = 1;
-	  ii = sys.p[i].units[ii].length;
-	  i = sys.p.length;
+	  ii = sys.p[i].units[ii].length+1;
+	  i = sys.p.length+1;
         }
       }
     }

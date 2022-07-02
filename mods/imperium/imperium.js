@@ -3772,6 +3772,8 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 	    imperium_self.playerDiscardActionCards(num, function() {
 	      imperium_self.endTurn();
 	    });
+	  } else {
+	    imperium_self.updateStatus("Yssaril are discarding an action card...");
 	  }
 
           return 0;
@@ -4228,6 +4230,7 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
                 if (choices_selected >= max_choices) {
                   imperium_self.prependMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
 	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
                   imperium_self.endTurn();
                 }
 
@@ -11716,8 +11719,8 @@ console.log("Active Agenda: " + active_agenda);
       //
       // player 1 owns NB -- FOR TESTING AGENDA VOTING
       //
-      //let sys = this.returnSectorAndPlanets("4_4");
-      //sys.p[0].owner = 1;
+      let sys = this.returnSectorAndPlanets("4_4");
+      sys.p[0].owner = 1;
 
 
       //
@@ -24490,7 +24493,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let planets_invaded = [];
 
   //
-  // gamae-speed-up possible by auto-invading in early-war. this option will
+  // game-speed-up possible by auto-invading in early-war. this option will
   // only be available if there is no resistance on the planet(s) and the 
   // invading player has adequate infantry to place one on each planet.
   //
@@ -24501,8 +24504,8 @@ playerInvadePlanet(player, sector, auto_option=1) {
       for (let ii = 0; ii < sys.p[i].units.length; ii++) {
 	if (sys.p[i].units[ii].length > 0) {
 	  exists_resistance = 1;
-	  ii = sys.p[i].units[ii].length;
-	  i = sys.p.length;
+	  ii = sys.p[i].units[ii].length+1;
+	  i = sys.p.length+1;
         }
       }
     }
@@ -26118,12 +26121,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-      return ["1_1", "4_7"];
+//      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-//      return ["1_1", "2_1"];
+      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {
