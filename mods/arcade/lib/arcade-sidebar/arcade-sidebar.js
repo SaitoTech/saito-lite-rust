@@ -1,6 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
 const ArcadeSidebarTemplate = require('./arcade-sidebar.template');
-const ArcadeGamesFullListOverlayTemplate = require('./arcade-games-full-list-overlay.template');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
 const ArcadeGameDetails = require('../arcade-game/arcade-game-details');
@@ -18,21 +17,33 @@ module.exports = ArcadeSidebar = {
       }
     });
 
-    let games_menu = document.querySelector(".arcade-apps");
+    let gamelist = [];
+    //Query all games in Saito build
     app.modules.respondTo("arcade-games").forEach(module => {
       let title = (module.gamename)? module.gamename: module.name;
-      let status = "";
-      //let status = (module.status)? `<div class="tiptext">This game is: ${module.status}.</div>`: "";
       if (!document.getElementById(module.name)) {
-        games_menu.innerHTML += `<li class="arcade-navigator-item tip" id="${module.name}">${title}${status}</li>`;
+        gamelist.push([module.categories, `<li class="arcade-navigator-item" id="${module.name}">${title}</li>`]);
       }
     });
 
-    app.modules.respondTo("arcade-sidebar").forEach(module => {
-      if (module != null) {
-        module.respondTo('arcade-sidebar').render(app, module);
-      }
-    });
+    //Sort the games according to their categories...
+    if (false){
+      gamelist.sort(function (a,b){
+        if (a[0]>b[0]){ return 1;}
+        if (a[0]<b[0]){ return -1;}
+        return 0;
+      });
+    }
+
+    let gamelisthtml = "";
+    for (let g of gamelist){
+      gamelisthtml += g[1];
+    }
+
+    let games_menu = document.querySelector(".arcade-apps");
+    if (games_menu){
+      games_menu.innerHTML = sanitize(gamelisthtml);
+    }
 
   },
 
@@ -82,12 +93,6 @@ module.exports = ArcadeSidebar = {
       module.respondTo('email-chat').attachEvents(app, mod);
     });
 
-
-    app.modules.respondTo("arcade-sidebar").forEach(module => {
-      if (module != null) {
-        module.respondTo('arcade-sidebar').render(app, module);
-      }
-    });
 
   }
 

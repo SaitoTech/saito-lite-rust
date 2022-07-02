@@ -15,9 +15,7 @@ class Settlers extends GameTemplate {
     this.name = "Settlers";
     this.gamename = "Settlers of Saitoa";
     this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
-    this.categories = "Games Arcade Entertainment";
-    this.type = "Strategy Boardgame";
-    this.status = "Beta";
+    this.categories = "Games Boardgame Strategy";
 
     this.hexgrid = new GameHexGrid();
     this.skin = new SettlersSkin();
@@ -32,30 +30,7 @@ class Settlers extends GameTemplate {
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
   }
-  //
-  // requestInterface(type) {
-  //
-  //   if (type == "arcade-sidebar") {
-  //     return { title: this.name };
-  //   }
-  //   return null;
-  // }
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/settlers/img/arcade/arcade-banner-background.png";
-      obj.title = "Settlers";
-      return obj;
-    }
 
-    return null;
-  }
 
   /*
   Advanced Game options for Arcade
