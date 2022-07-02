@@ -31,10 +31,11 @@ module.exports = PostForums = {
     }
 
     //Create an array of objects for each module that responds to arcade-games
+    //respondTo arcade-games should just return an object with this information, lol, so inefficient!
     let obj = [];
     for (let i = 0; i < modgames.length; i++) {
       obj.push({
-      	ft_img    : `/${modgames[i].returnSlug()}/img/arcade.jpg`,
+      	ft_img    : modgames[i].respondTo("arcade-games").img,
       	ft_mod    : modgames[i].returnSlug(),
       	ft_title  : modgames[i].gamename || modgames[i].name,
       	ft_desc   : modgames[i].description,

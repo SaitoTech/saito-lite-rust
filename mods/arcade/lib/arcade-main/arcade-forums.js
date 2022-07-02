@@ -38,7 +38,7 @@ module.exports = ArcadeForums = {
     for (let i = 0; i < modgames.length; i++) {
       obj.push({
         ft_link: "/arcade/?game=" + modgames[i].returnSlug(),
-        ft_img: `/${modgames[i].returnSlug()}/img/arcade.jpg`,
+        ft_img: modgames[i].respondTo("arcade-games").img ||`/${modgames[i].returnSlug()}/img/arcade/arcade.jpg`,
         ft_mod: modgames[i].returnSlug(),
         ft_title: modgames[i].gamename || modgames[i].name,
         ft_desc: modgames[i].description,
