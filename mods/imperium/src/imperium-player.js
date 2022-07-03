@@ -78,7 +78,7 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 0;
+    players[i].goods = 20;
     players[i].commodities = 0;
     players[i].commodity_limit = 3;
     // some factions have different commodity limits
@@ -5089,7 +5089,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let planets_invaded = [];
 
   //
-  // gamae-speed-up possible by auto-invading in early-war. this option will
+  // game-speed-up possible by auto-invading in early-war. this option will
   // only be available if there is no resistance on the planet(s) and the 
   // invading player has adequate infantry to place one on each planet.
   //
@@ -5097,11 +5097,12 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let tai = 0;
   for (let i = 0; i < sys.p.length; i++) {
     if (sys.p[i].owner != player) {
-      for (let ii = 0; ii < sys.p[i].units.length; ii++) {
+      let bounded_length = sys.p[i].units.length;
+      for (let ii = 0; ii < bounded_length; ii++) {
 	if (sys.p[i].units[ii].length > 0) {
 	  exists_resistance = 1;
-	  ii = sys.p[i].units[ii].length;
-	  i = sys.p.length;
+	  ii = sys.p[i].units[ii].length+1;
+	  i = sys.p.length+1;
         }
       }
     }
@@ -5527,7 +5528,7 @@ playerPostActivateSystem(sector) {
   if (ac.length > 0) {
     html += '<li class="option" id="action">play action card</li>';
   }
-  html += '<li class="option" id="finish">finish turn</li>';
+  html += '<li class="option" id="finish">end turn</li>';
   html += '</ul>';
 
   imperium_self.updateStatus(html);
@@ -5539,13 +5540,14 @@ playerPostActivateSystem(sector) {
     if (action2 == "action") {
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("activate_system_post\t" + imperium_self.game.player + "\t" + sector);
-        imperium_self.game.players_info[this.game.player - 1].action_cards_played.push(card);
+        imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(card);
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
+        imperium_self.endTurn();
       }, function () {
-        imperium_self.playerPlayActionCardMenu(action_card_player, card);
-      }, ["action"]);
+        imperium_self.playerPlayActionCardMenu(imperium_self.game.player, card);
+      }, ["post_activate_system"]);
     }
 
 

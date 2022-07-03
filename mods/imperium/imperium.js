@@ -780,7 +780,7 @@ console.log("returning upgraded carrier...");
         }
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        if (tech == "warsun") {
+        if (tech == "warsun" && imperium_self.doesPlayerHaveTech(gainer, "warsuns")) {
           imperium_self.game.players_info[gainer-1].may_produce_warsuns = 1;
         }
       },
@@ -1805,7 +1805,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","pds","spacedock"],
       // is_testing -- you can use this to preseed action cards and objectives
       //ground_units	: 	["infantry","infantry","pds","pds","spacedock"],
-      //action_cards	:	["warfare-rider", "technology-rider"],
+      //action_cards	:	["upgrade", "tactical-bombardment", "diaspora-conflict"],
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
@@ -3772,6 +3772,8 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 	    imperium_self.playerDiscardActionCards(num, function() {
 	      imperium_self.endTurn();
 	    });
+	  } else {
+	    imperium_self.updateStatus("Yssaril are discarding an action card...");
 	  }
 
           return 0;
@@ -4103,7 +4105,7 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
       name     			:       "Diplomacy",
       rank			:	2,
       img			:	"/strategy/2_DIPLOMACY.png",
-      text			:	"<b>Player</b> activates non-Byzantium sector for others, refreshes two planets.<hr /><b>Others</b> may spend strategy token to refresh two planets." ,
+      text			:	"<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets." ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -4154,7 +4156,7 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
 
           let html = '<p>Do you wish to spend 1 strategy token to unexhaust two planet cards? </p><ul>';
 	  if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has just played the Diplomacy strategy card. This lets you to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</p><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
 	    html += '<li class="option" id="yes">Yes</li>';
@@ -4228,6 +4230,7 @@ this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_
                 if (choices_selected >= max_choices) {
                   imperium_self.prependMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
 	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
                   imperium_self.endTurn();
                 }
 
@@ -16552,7 +16555,12 @@ console.log("K: " + z[k].name);
   	this.game.queue.splice(qe, 1);
         this.updateSectorGraphics(sector);
 	// control returns to original player
-        if (this.game.player == player) { this.playerPostActivateSystem(sector); }
+        if (this.game.player == player) {
+	  this.playerPostActivateSystem(sector); 
+	} else {
+          let sys = imperium_self.returnSectorAndPlanets(sector);
+	  this.updateStatus(this.returnFactionName(this, player) + " continues after activating " + sys.s.name);
+	}
 	return 0;
 
       }
@@ -19460,7 +19468,7 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 0;
+    players[i].goods = 20;
     players[i].commodities = 0;
     players[i].commodity_limit = 3;
     // some factions have different commodity limits
@@ -24471,7 +24479,7 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let planets_invaded = [];
 
   //
-  // gamae-speed-up possible by auto-invading in early-war. this option will
+  // game-speed-up possible by auto-invading in early-war. this option will
   // only be available if there is no resistance on the planet(s) and the 
   // invading player has adequate infantry to place one on each planet.
   //
@@ -24479,11 +24487,12 @@ playerInvadePlanet(player, sector, auto_option=1) {
   let tai = 0;
   for (let i = 0; i < sys.p.length; i++) {
     if (sys.p[i].owner != player) {
-      for (let ii = 0; ii < sys.p[i].units.length; ii++) {
+      let bounded_length = sys.p[i].units.length;
+      for (let ii = 0; ii < bounded_length; ii++) {
 	if (sys.p[i].units[ii].length > 0) {
 	  exists_resistance = 1;
-	  ii = sys.p[i].units[ii].length;
-	  i = sys.p.length;
+	  ii = sys.p[i].units[ii].length+1;
+	  i = sys.p.length+1;
         }
       }
     }
@@ -24909,7 +24918,7 @@ playerPostActivateSystem(sector) {
   if (ac.length > 0) {
     html += '<li class="option" id="action">play action card</li>';
   }
-  html += '<li class="option" id="finish">finish turn</li>';
+  html += '<li class="option" id="finish">end turn</li>';
   html += '</ul>';
 
   imperium_self.updateStatus(html);
@@ -24921,13 +24930,14 @@ playerPostActivateSystem(sector) {
     if (action2 == "action") {
       imperium_self.playerSelectActionCard(function (card) {
         imperium_self.addMove("activate_system_post\t" + imperium_self.game.player + "\t" + sector);
-        imperium_self.game.players_info[this.game.player - 1].action_cards_played.push(card);
+        imperium_self.game.players_info[imperium_self.game.player - 1].action_cards_played.push(card);
         imperium_self.addMove("action_card_post\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("action_card\t" + imperium_self.game.player + "\t" + card);
         imperium_self.addMove("lose\t" + imperium_self.game.player + "\taction_cards\t1");
+        imperium_self.endTurn();
       }, function () {
-        imperium_self.playerPlayActionCardMenu(action_card_player, card);
-      }, ["action"]);
+        imperium_self.playerPlayActionCardMenu(imperium_self.game.player, card);
+      }, ["post_activate_system"]);
     }
 
 
