@@ -15,14 +15,16 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
     return selection;
   };
 
+  let game_name = mod.gamename || mod.name;
+  let gamemod_url = mod.respondTo("arcade-games")?.img || `/${mod.returnSlug()}/img/arcade.jpg`;
   let html = `
     <div class="game-wizard">
       <form id="game-wizard-form" class="game-wizard-form">
         <div class="game-wizard-header">
-          <div class="game-wizard-image"><img class="game-image" src="/${mod.returnSlug()}/img/arcade.jpg"/></div>
+          <div class="game-wizard-image"><img class="game-image" src="${gamemod_url}"/></div>
           <div class="game-wizard-intro">
-            <input type="hidden" name="gamename" value="${invite.msg.game}" />
-            <div class="game-wizard-title">${mod.gamename}</div>
+            <input type="hidden" name="game" value="${invite.msg.game}" />
+            <div class="game-wizard-title">${game_name}</div>
             <div class="game-wizard-description">${mod.description} <div class="game-wizard-post-description">[<span class="game-home-link">homepage</span>]</div></div>
           </div>
         </div>

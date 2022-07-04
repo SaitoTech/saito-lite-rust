@@ -66,26 +66,3 @@ font imports
 }
 
 
-
-/* ----------------------------------------------------------------
-To be implemented later
------------------------------------------------------------------*/
-/* :root {
-  --saito-background: rgb(8, 8, 9);
-  --saito-primary: #730111;
-  --saito-secondary: #693e23;
-  --saito-tertiary: rgb(234, 234, 239);
-  --saito-blue: #3c6177;
-  --saito-default-font-color: #555;
-  --saito-paper: #2e2e2e4f;
-  --saito-white: #ffffff;
-  --saito-black: #1c1c23;
-  --saito-black-faded: #1c1c23b5;
-  --saito-font: "Lato", sans-serif;
-  --saito-cyber-black-wash: rgb(28, 28, 35, 0.3);
-  --saito-cyber-black: rgb(28, 28, 35);
-  --saito-red-wash: rgb(247, 31, 61, 0.3);
-  --saito-cyber-black-cut: rgb(28, 28, 35, 0.5);
-  --saito-wu: none;
-  --saito-width: 1500px;
-} */

@@ -3171,7 +3171,12 @@ console.log("K: " + z[k].name);
   	this.game.queue.splice(qe, 1);
         this.updateSectorGraphics(sector);
 	// control returns to original player
-        if (this.game.player == player) { this.playerPostActivateSystem(sector); }
+        if (this.game.player == player) {
+	  this.playerPostActivateSystem(sector); 
+	} else {
+          let sys = imperium_self.returnSectorAndPlanets(sector);
+	  this.updateStatus(this.returnFactionName(this, player) + " continues after activating " + sys.s.name);
+	}
 	return 0;
 
       }

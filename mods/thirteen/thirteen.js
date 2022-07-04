@@ -10,15 +10,13 @@ class Thirteen extends GameTemplate {
 
     super(app);
 
-    this.app             = app;
+    this.app          = app;
 
-    this.name  		 = "Thirteen Days";
-    this.gamename        = "Thirteen Days";
-    this.slug		 = "thirteen";
-    this.description     = `Thirteen Days is a mid-length simulation of the Cuban Missile Crisis created by Asger Granerud and Daniel Skjold Pedersenmade.`;
+    this.name  		    = "Thirteen Days";
+    this.slug		      = "thirteen";
+    this.description  = `Thirteen Days is a mid-length simulation of the Cuban Missile Crisis created by Asger Granerud and Daniel Skjold Pedersenmade.`;
     this.publisher_message = `Thirteen Days is owned by <a href="http://jollyrogergames.com/game/13-days/">Jolly Roger Games</a>. This module includes the open source Vassal module explicitly authorized by the publisher. Vassal module requirements are that at least one player per game has purchased a copy of the game. Please support Jolly Roger Games and purchase your copy <a href="http://jollyrogergames.com/game/13-days/">here</a>`;
-    this.type       = "Strategy Boardgame";
-    this.categories      = "Games Arcade Entertainment";
+    this.categories   = "Games Boardgame Strategy";
 	  this.status     = "Beta";
     
     this.boardWidth  = 2450;
@@ -50,27 +48,7 @@ class Thirteen extends GameTemplate {
 
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/thirteen/img/arcade/arcade-banner-background.png";
-      obj.title = "Thirteen Days";
-      return obj;
-    }
-   
-    return null;
- 
-  }
-
-
+  
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }

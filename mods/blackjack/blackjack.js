@@ -13,10 +13,9 @@ class Blackjack extends GameTemplate {
 
     this.app = app;
     this.name = "Blackjack";
-    this.gamename = "Blackjack";
     this.description = 'Classic casino game with home rules. Try to get closest to 21 without busting, beat the dealer and win your bet, but look out! You may be dealer next hand.';
-    this.categories = "Games Arcade Entertainment";
-    this.type            = "Classic Cardgame";
+
+    this.categories = "Games Cardgame Casino";
 
     this.card_img_dir = '/blackjack/img/cards';
  
@@ -29,25 +28,6 @@ class Blackjack extends GameTemplate {
 
     return this;
   }
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/blackjack/img/arcade/arcade-banner-background.png";
-      obj.title = "Blackjack";
-      return obj;
-    }
-
-    return null;
-  }
-
 
 
   initializeHTML(app) {
@@ -658,9 +638,10 @@ class Blackjack extends GameTemplate {
 
       if (mv[0] === "winner") { //copied from poker
         this.game.queue = [];
+        this.game.crypto = null; //Clear crypto to prevent double dipping
         //Notably not keyed to game.player, but by the index
         if (this.game.player == parseInt(mv[1]) + 1){
-          this.endGame(this.app.wallet.returnPublicKey()); 
+          this.endGame(this.app.wallet.returnPublicKey(), "elimination"); 
         }
         return 0;
 
@@ -1207,42 +1188,10 @@ class Blackjack extends GameTemplate {
 
   returnGameOptionsHTML() {
 
-    let options_html = `
-      <h1 class="overlay-title">Blackjack Options</h1>
-      <div class="overlay-input">
-      <label for="stake">Initial Stake:</label>
-        <select id="stake" name="stake">
-          <option value="0.001">0.001</option>
-          <option value="0.01" >0.01</option>
-          <option value="0.1" >0.1</option>
-          <option value="1" >1.0</option>
-          <option value="5" >5.0</option>
-          <option value="10" >10</option>
-          <option value="100" selected="selected">100</option>
-          <option value="500" >500</option>
-          <option value="1000" >1000</option>
-          <option value="5000" >5000</option>
-        </select>
-      </div>
-      <div class="overlay-input">
-        <label for="crypto">Crypto:</label>
-        <select id="crypto" name="crypto">
-          <option value="" selected>none</option>
-    `;
-
-    let listed = [];
-    for (let i = 0; i < this.app.modules.mods.length; i++) {
-      if (this.app.modules.mods[i].ticker && !listed.includes(this.app.modules.mods[i].ticker)) {
-        options_html += `<option value="${this.app.modules.mods[i].ticker}">${this.app.modules.mods[i].ticker}</option>`;
-        listed.push(this.app.modules.mods[i].ticker);
-      }
-    }
-
-    options_html += `
-      </select>
-      </div>
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button" style="margin-top:20px;padding:30px;text-align:center">accept</div>
-    `;
+    let options_html = `<h1 class="overlay-title">Blackjack Options</h1>`;
+    options_html += this.returnCryptoOptionsHTML();
+    options_html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+      //margin-top:20px;padding:30px;text-align:center
 
     return options_html;
 
@@ -1250,26 +1199,17 @@ class Blackjack extends GameTemplate {
 
   attachAdvancedOptionsEventListeners(){
     let crypto = document.getElementById("crypto");
-    let stakeValue = document.getElementById("stake");
-  
-    const updateChips = function(){
-      console.log("update chips");
-      if(crypto && chipDisplay && stakeValue /*&& numPlayers*/){
-        if (crypto.value == ""){
-          chipDisplay.textContent = "The game is just for fun";
-        }else{
-          let amt = parseFloat(stakeValue.value);
-        }
-      }
-    };
+    let stakeInput = document.getElementById("stake_input");
 
     if (crypto){
-    crypto.onchange = updateChips;
+      crypto.onchange = ()=>{
+          if (crypto.value == ""){
+            stakeInput.style.display = "none";
+          }else{
+            stakeInput.style.display = "block";
+          }
+      };
     }
-    if (stakeValue){
-      stakeValue.onchange = updateChips;
-    }
-
   }
 
   returnFormattedGameOptions(options) {

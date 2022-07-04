@@ -10,11 +10,10 @@ class Poker extends GameTemplate {
 
     this.app = app;
     this.name = "Poker";
-    this.gamename = "Poker";
+
     this.description =
       "Texas Hold'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?";
-    this.categories = "Games Arcade Entertainment";
-    this.type = "Classic Cardgame";
+    this.categories = "Games Cardgame Casino";
     this.card_img_dir = "/poker/img/cards";
 
     this.minPlayers = 2;
@@ -30,13 +29,6 @@ class Poker extends GameTemplate {
   // manually announce arcade banner support
   //
   respondTo(type) {
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/poker/img/arcade/arcade-banner-background.png";
-      obj.title = "Poker";
-      return obj;
-    }
 
     /*Deprecated ? */
     if (type == "arcade-create-game") {
@@ -421,7 +413,8 @@ class Poker extends GameTemplate {
 
       if (mv[0] === "winner") {
         this.game.queue = [];
-        this.endGame(this.game.players[parseInt(mv[1])]); 
+        this.game.crypto = null;
+        this.endGame(this.game.players[parseInt(mv[1])], "elimination"); 
         return 0;
       }
 
@@ -2662,7 +2655,6 @@ class Poker extends GameTemplate {
             <label for="crypto">Crypto:</label>
             <select id="crypto" name="crypto">
               <option value="" selected>None</option>
-              <option value="SAITO">SAITO</option>
     `;
 
     let listed = [];
@@ -2791,7 +2783,7 @@ class Poker extends GameTemplate {
     for (let i in sgoa) {
       if (sgoa[i] != "") {
         let okey = i;
-        let oval = options[i];
+        let oval = sgoa[i];
 
         let output_me = 1;
         if (okey == "chip") {
@@ -2819,13 +2811,13 @@ class Poker extends GameTemplate {
             oval = null;
           }
         }
-        if (okey == "crypto"){
+        /*if (okey == "crypto"){
           output_me = 0;
           crypto = oval;
         }
         if (okey == "stake"){
           oval += crypto;
-        }
+        }*/
 
         if (output_me == 1) {
           ngoa[okey] = oval;
