@@ -34,6 +34,13 @@ class RedSquareMenu {
       settings_self.respondTo("email-appspace").render(settings_self.app, settings_self);
     }
 
+    obj = document.querySelector('.redsquare-menu-arcade');
+    obj.onclick = (e) => {
+      document.querySelector(".email-appspace").innerHTML = "";
+      let arcade_self = app.modules.returnModule("Arcade");
+      arcade_self.respondTo("email-appspace").render(arcade_self.app, arcade_self);
+    }
+
   } 
 
 }

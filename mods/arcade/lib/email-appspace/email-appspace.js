@@ -1,3 +1,4 @@
+const saito = require("./../../../../lib/saito/saito");
 const ArcadeEmailAppspaceTemplate = require('./email-appspace.template.js');
 
 class ArcadeEmailAppspace {
@@ -8,48 +9,53 @@ class ArcadeEmailAppspace {
   render(app, mod, container = "") {
 
     if (!document.querySelector(".arcade-email-appspace")) {
-      app.browser.addElementToClass(InvitesEmailAppspaceTemplate(app, mod), ".email-appspace");
+      app.browser.addElementToClass(ArcadeEmailAppspaceTemplate(app, mod), ".email-appspace");
     }
 
-    try {
-      var tree = jsonTree.create(app.options.invites, document.getElementById("invites-json-tree"));
-    } catch (err) {
-      console.log("error creating jsonTree: " + jsonTree);
+
+    //
+    // add games
+    //
+    if (document.querySelector(".arcade-hero")) {
+      mod.games.forEach((invite, i) => {
+        if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
+          console.log("GAME INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
+          app.browser.addElementToElement(
+            ArcadeInviteTemplate(app, mod, invite, i),
+            document.querySelector(".arcade-hero")
+          );
+        }
+      });
     }
 
-console.log("about to look through invites!");
 
-    if (mod.invites) {
-console.log("about to look through invites 2!");
-console.log("mod invites len: " + mod.invites.length);
-      for (let i = 0; i < mod.invites.length; i++) {
-console.log("adding element to class...");
-        app.browser.addElementToClass(InvitesInvitationTemplate(app, mod, i), ".invites");
-console.log("done adding element to class...");
-      }
-
-
-console.log("about to look through invites 3!");
-
-      for (let i = 0; i < mod.invites.length; i++) {
-console.log("about to look through invites 3 1!");
-console.log(JSON.stringify(mod.invites[i]));
-        if (mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
-	  let qs = `#invites-invitation-${i} > invites-invitation-accept`;
-	  document.querySelectorAll(qs).forEach((el) => {
-	    el.style.display = "none";
-	  });
+    //
+    // add open games from server
+    //
+    let existing_games = mod.games.length;
+    let cutoff = new Date().getTime() - 90000000;
+//    let cutoff = new Date().getTime() - 2000000;
+    let sql = `SELECT * FROM games WHERE status = "open" AND created_at > ${cutoff}`;
+console.log("sql: " + sql);
+    mod.sendPeerDatabaseRequestWithFilter("Arcade", sql,
+      (res) => {
+console.log("res: " + JSON.stringif(res.rows));
+        if (res.rows) {
+          mod.addGamesToOpenList(
+            res.rows.map((row) => {
+console.log("adding open game invite!");
+              return new saito.default.transaction(JSON.parse(row.tx));
+            })
+          );
+        }
+console.log("mod.games.length: " + mod.games.length);
+console.log("existing_games: " + existing_games);
+        if (mod.games.length > existing_games) {
+	  console.log("RE-RENDERING");
+	  this.render(app, mod, container);
 	}
-console.log("about to look through invites 3 2!");
-        if (mod.isPendingOthers(mod.invites[i], app.wallet.returnPublicKey())) {
-	  let qs = `#invites-invitation-${i} > invites-invitation-accept`;
-	  document.querySelectorAll(qs).forEach((el) => {
-	    el.style.display = "none";
-	  });
-	}
       }
-    }
-console.log("about to look through invites 3 3!");
+    );
 
     this.attachEvents(app, mod);
   }
@@ -57,36 +63,6 @@ console.log("about to look through invites 3 3!");
 
 
   attachEvents(app, mod) {
-
-    //
-    // button to initiate invites
-    //
-    document.getElementById("invite_btn").onclick = (e) => {
-
-      let recipient = document.getElementById("invite_address").value;
-      if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
-
-      mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
-
-    }
-
-    //
-    // buttons to respond
-    //
-console.log("about to look through invites 5!");
-    document.querySelectorAll(".invites-invitation-accept").forEach((el) => {
-      el.onclick = (e) => {
-	let index = el.getAttr("data-id");
-        alert("accept: " + index);
-      }
-    });
-console.log("about to look through invites 6!");
-    document.querySelectorAll(".invites-invitation-cancel").forEach((el) => {
-      el.onclick = (e) => {
-	let index = el.getAttr("data-id");
-        alert("cancel: " + index);
-      }
-    });
 
   }
 
