@@ -13,7 +13,6 @@ class Chessgame extends GameTemplate {
     super(app);
 
     this.name = "Chess";
-    this.gamename = "Chess";
     this.description = "Chess is a two-player strategy board game played on a checkered board with 64 squares arranged in an 8×8 grid."
     this.board = null;
     this.engine = null;
@@ -22,32 +21,15 @@ class Chessgame extends GameTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
-    this.type       = "Classic Boardgame";
+
     this.description = "An implementation of Chess for the Saito Blockchain";
-    this.categories  = "Boardgame Game";
+    this.categories  = "Games Boardgame Classic";
+    
     this.player_roles = ["Observer", "White", "Black"];
     return this;
 
   }
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/chess/img/arcade/arcade-banner-background.png";
-      obj.title = "Chess";
-      return obj;
-    }
-    return null;
-
-  }
 
   initializeHTML(app) {
 
@@ -131,11 +113,6 @@ class Chessgame extends GameTemplate {
       this.game.queue.push("READY");
     }
 
-
-    if (this.game.options){
-      this.game.stake = (this.game.options.stake)? parseFloat(this.game.options.stake) : 0;
-      this.game.crypto =  this.game.options.crypto || "";  
-    }
 
     if (!this.browser_active){
       return;
@@ -728,17 +705,6 @@ class Chessgame extends GameTemplate {
 
   }
 
-  attachAdvancedOptionsEventListeners(){
-    let crypto = document.getElementById("crypto");
-    let stakeInput = document.getElementById("stake_input");
-    crypto.onchange = ()=>{
-      if (crypto.value){
-        stakeInput.style.display = "block";
-      }else{
-        stakeInput.style.display = "none";
-      }
-    }
-  }
 }
 
 module.exports = Chessgame;

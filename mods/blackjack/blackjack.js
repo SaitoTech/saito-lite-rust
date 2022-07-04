@@ -13,10 +13,9 @@ class Blackjack extends GameTemplate {
 
     this.app = app;
     this.name = "Blackjack";
-    this.gamename = "Blackjack";
     this.description = 'Classic casino game with home rules. Try to get closest to 21 without busting, beat the dealer and win your bet, but look out! You may be dealer next hand.';
-    this.categories = "Games Arcade Entertainment";
-    this.type            = "Classic Cardgame";
+
+    this.categories = "Games Cardgame Casino";
 
     this.card_img_dir = '/blackjack/img/cards';
  
@@ -29,25 +28,6 @@ class Blackjack extends GameTemplate {
 
     return this;
   }
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/blackjack/img/arcade/arcade-banner-background.png";
-      obj.title = "Blackjack";
-      return obj;
-    }
-
-    return null;
-  }
-
 
 
   initializeHTML(app) {

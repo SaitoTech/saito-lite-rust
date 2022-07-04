@@ -13,8 +13,9 @@ class Hearts extends GameTemplate {
 
     this.name = "Hearts";
     this.description = 'A version of Hearts for the Saito Arcade';
-    this.categories = "Games Arcade Entertainment";
-    this.type            = "Classic Cardgame";
+    
+    this.categories = "Games Cardgame Classic";
+    
     this.card_img_dir = '/hearts/img/cards';
 
     this.minPlayers = 4;
@@ -47,14 +48,6 @@ class Hearts extends GameTemplate {
         maxPlayers: this.maxPlayers,
       }
     }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/hearts/img/arcade/arcade-banner-background.png";
-      obj.title = "Hearts";
-      return obj;
-    }
-
 
     return null;
 
