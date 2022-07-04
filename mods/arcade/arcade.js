@@ -8,6 +8,7 @@ const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
 const ArcadeLink = require("./lib/arcade-main/arcade-link");
+const ArcadeEmailAppspace = require("./lib/email-appspace/email-appspace");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 
@@ -130,6 +131,10 @@ class Arcade extends ModTemplate {
         browser_active: this.browser_active,
         slug: this.returnSlug(),
       };
+    }
+    if (type == "email-appspace") {
+      super.render(this.app, this); // for scripts + styles
+      return new ArcadeEmailAppspace(this.app, this);
     }
     return null;
   }

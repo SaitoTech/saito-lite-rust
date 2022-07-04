@@ -13,10 +13,23 @@ class RedSquareMain {
 
     if (document.getElementById("saito-container")) {
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod), "saito-container");
+
+      this.attachEvents(app, mod);
     }
 
   }
 
+  attachEvents(app, mod) {
+
+    let tweetBtn = document.querySelector('#redsquare-input-container button');
+    tweetBtn.onclick = (e) => {
+      e.preventDefault();
+
+      let content = document.querySelector('#redsquare-input-container textarea').value;     
+      mod.sendTweetTransaction(content);  
+    }
+
+  }
 
 
 }

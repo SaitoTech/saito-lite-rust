@@ -1,4 +1,5 @@
 const SettingsAppspace = require('./lib/email-appspace/settings-appspace');
+const SettingsEmailAppspace = require('./lib/email-appspace/email-appspace');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 
@@ -25,15 +26,10 @@ class Settings extends ModTemplate {
   initialize(app) {
     let settings_self = this;
     this.app.connection.on("update_identifier", (tmpkey) => {
-console.log("1- 1");
-console.log(JSON.stringify(tmpkey));
       if (document.getElementById("register-identifier-btn")) {
-console.log("1- 2");
 	if (tmpkey.publickey === settings_self.app.wallet.returnPublicKey()) {
-console.log("1- 3");
           let username = settings_self.app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
           document.getElementById("register-identifier-btn").innerHTML = username;
-console.log("1- 4");
 	}
       }
     });
@@ -42,6 +38,12 @@ console.log("1- 4");
 
   respondTo(type) {
 
+    if (type == 'email-appspace') {
+console.log("RENDERING SETTINGS EMAIL APPSPACE!");
+      //super.render(this.app, this); // for scripts + styles
+      return new SettingsEmailAppspace(this.app, this);
+    }
+/*****
     if (type == 'email-appspace') {
       let obj = {};
 	  obj.render = function (app, data) {
@@ -52,7 +54,7 @@ console.log("1- 4");
 	  }
       return obj;
     }
-
+*****/
     return null;
   }
 

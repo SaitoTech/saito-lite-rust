@@ -1,10 +1,9 @@
 
 module.exports = (app, mod) => {
 
-  return `
+    return `
 
-
-  <div class="saito-main email-appspace">
+      <div class="saito-main email-appspace">
 
   <div id="redsquare-input-container">
       <div class="redsquare-input-profile">

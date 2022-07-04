@@ -14,7 +14,8 @@ class Invites extends InviteTemplate {
     this.categories     = "Utilities Education Demo";
 
     this.invites        = [];
-
+    this.scripts	= ['/saito/lib/jsonTree/jsonTree.js'];
+    this.styles		= ['/invites/style.css','/saito/lib/jsonTree/jsonTree.css'];
     return this;
   }
 
@@ -28,26 +29,12 @@ class Invites extends InviteTemplate {
   respondTo(type) {
 
     if (type == 'email-appspace') {
+      super.render(this.app, this); // for scripts + styles
       return new InvitesEmailAppspace(this.app, this);
     }
 
     return null;
   }
-
-
-  addInvite(tx) {
-
-    let txmsg = tx.returnMessage();
-
-    for (let i = 0; i < this.invites.length; i++) {
-      if (JSON.stringify(txmsg) === JSON.stringify(this.invites[i])) {
-	return;
-      }
-    }
-
-    this.invites.push(txmsg);
-  }
-
 
 
   //

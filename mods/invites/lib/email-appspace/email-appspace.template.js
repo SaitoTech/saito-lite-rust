@@ -2,7 +2,11 @@ module.exports = InvitesEmailAppspaceTemplate = (app, mod) => {
 
   return `
   
-  <h3>Invite Display:</h3> 
+  <h3>Invitations:</h3> 
+
+  <p></p>
+
+  <div class="invites-json-tree" id="invites-json-tree"></div>
 
   <p></p>
 
@@ -10,17 +14,7 @@ module.exports = InvitesEmailAppspaceTemplate = (app, mod) => {
 
   <p></p>
 
-  <h3>Invite Actions:</h3> 
-
-  <p></p>
-
-  <div class="actions" id="actions"></div>
-
-  <p></p>
-
-  <div class="invites" id="invites"></div>
-
-  <p></p>
+  <h3>Create New Invitation</h3>
 
   <input type="text" class="invite_address" id="invite_address" />
 

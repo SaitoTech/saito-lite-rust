@@ -1,4 +1,5 @@
 const InvitesEmailAppspaceTemplate = require('./email-appspace.template.js');
+const InvitesInvitationTemplate = require('./../invitation.template.js');
 const jsonTree = require('json-tree-viewer');
 
 class InvitesEmailAppspace {
@@ -13,24 +14,44 @@ class InvitesEmailAppspace {
     }
 
     try {
-      var tree = jsonTree.create(app.options.invites, document.getElementById("invites"));
+      var tree = jsonTree.create(app.options.invites, document.getElementById("invites-json-tree"));
     } catch (err) {
       console.log("error creating jsonTree: " + jsonTree);
     }
 
-    let actions = '';
+console.log("about to look through invites!");
+
     if (mod.invites) {
+console.log("about to look through invites 2!");
+console.log("mod invites len: " + mod.invites.length);
       for (let i = 0; i < mod.invites.length; i++) {
-        let inv = mod.invites[i];
-        if (inv.transaction.msg.request === "open" || inv.transaction.msg.request === "invite") {
-          actions += `<div class="action_link action_link_invite" data-id="${i}" id="action_link_${i}">accept ${i}</div>`;
-        }
-        if (inv.transaction.msg.request === "accept" || inv.transaction.msg.request === "accept") {
-          actions += `<div class="action_link action_link_accept" data-id="${i}" id="action_link_${i}">cancel ${i}</div>`;
-        }
+console.log("adding element to class...");
+        app.browser.addElementToClass(InvitesInvitationTemplate(app, mod, i), ".invites");
+console.log("done adding element to class...");
       }
-      document.getElementById("actions").innerHTML = actions;
+
+
+console.log("about to look through invites 3!");
+
+      for (let i = 0; i < mod.invites.length; i++) {
+console.log("about to look through invites 3 1!");
+console.log(JSON.stringify(mod.invites[i]));
+        if (mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
+	  let qs = `#invites-invitation-${i} > invites-invitation-accept`;
+	  document.querySelectorAll(qs).forEach((el) => {
+	    el.style.display = "none";
+	  });
+	}
+console.log("about to look through invites 3 2!");
+        if (mod.isPendingOthers(mod.invites[i], app.wallet.returnPublicKey())) {
+	  let qs = `#invites-invitation-${i} > invites-invitation-accept`;
+	  document.querySelectorAll(qs).forEach((el) => {
+	    el.style.display = "none";
+	  });
+	}
+      }
     }
+console.log("about to look through invites 3 3!");
 
     this.attachEvents(app, mod);
   }
@@ -43,27 +64,30 @@ class InvitesEmailAppspace {
     // button to initiate invites
     //
     document.getElementById("invite_btn").onclick = (e) => {
-/***
+
       let recipient = document.getElementById("invite_address").value;
       if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
 
       mod.createOpenTransaction(recipient, { from : app.wallet.returnPublicKey() , to : recipient });
 
-      let relay_mod = app.modules.returnModule("Relay");
-      if (relay_mod) {
-        relay_mod.sendRelayMessage([address, app.wallet.returnPublicKey()], "invites open", newtx);
-      }
-***/
     }
 
     //
     // buttons to respond
     //
-    document.querySelectorAll(".action_link_invite").forEach((el) => {
-      alert("accept");
+console.log("about to look through invites 5!");
+    document.querySelectorAll(".invites-invitation-accept").forEach((el) => {
+      el.onclick = (e) => {
+	let index = el.getAttr("data-id");
+        alert("accept: " + index);
+      }
     });
-    document.querySelectorAll(".action_link_accept").forEach((el) => {
-      alert("cancel");
+console.log("about to look through invites 6!");
+    document.querySelectorAll(".invites-invitation-cancel").forEach((el) => {
+      el.onclick = (e) => {
+	let index = el.getAttr("data-id");
+        alert("cancel: " + index);
+      }
     });
 
   }

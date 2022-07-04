@@ -10,13 +10,11 @@ class Pandemic extends GameTemplate {
     super(app);
 
     this.name = "Pandemic";
-    this.gamename = "Pandemic";
     this.description = `Pandemic is a cooperative multiplayer board game in which players work together to try and fend off a global epidemic.`;
-    this.categories = "Arcade Games Entertainment";
+    this.categories = "Games Boardgame Strategy Cooperative";
     this.maxPlayers = 4;
     this.minPlayers = 2;
-    this.type = "Cooperative Boardgme";
-    this.status = "Alpha";
+    this.status = "Beta";
 
     this.boardWidth = 2602;
     this.card_height_ratio = 1.41;
@@ -43,13 +41,6 @@ class Pandemic extends GameTemplate {
   respondTo(type) {
     if (super.respondTo(type) != null) {
       return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/pandemic/web/img/arcade.jpg";
-      obj.title = "Pandemic";
-      return obj;
     }
 
     if (type == "arcade-create-game") {
@@ -84,8 +75,6 @@ class Pandemic extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
  
-    this.loadGame(game_id);
-
 
     if (this.game.cities == undefined) {
       this.game.cities = this.returnCities();
