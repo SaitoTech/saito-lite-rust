@@ -15,13 +15,11 @@ class GameTestSuite extends GameTemplate {
     this.name = "GameTestSuite";
     this.gamename = "Game Test Suite";
     this.description = 'A test suite covering core functions for the Saito Game Engine';
-    this.categories = "Games Arcade Entertainment";
-    this.type            = "Education Development";
+    
+    this.categories = "Utilities Development Demonstration";
+
     this.card_img_dir = '/gametestsuite/img/cards';
 
-
-    this.categories = "Demonstration Utility";
-    this.type = "Utility";
     this.status = "Demonstration";
 
     // player numbers

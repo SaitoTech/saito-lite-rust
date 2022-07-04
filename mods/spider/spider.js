@@ -13,50 +13,18 @@ class Spider extends GameTemplate {
     super(app);
 
     this.name            = "Spider";
-    this.gamename        = "Spider";
-    this.slug            = "spider";
+
     this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
-    this.categories      = "Arcade Games Entertainment";
-    //So we have multiple categories defined??
-    this.categories       = "Cardgame Game Solitaire";
+    this.categories       = "Games Cardgame one-player";
 
     this.scoreboard      = new GameScoreboard(app);
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    this.type            = "Solitaire Cardgame";
-    this.status          = "Alpha";
+    this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
   }
 
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/spider/img/arcade/arcade-banner-background.jpg";
-      obj.title = "Spider";
-      return obj;
-    }
-
-    return null;
-
-  }
-
-  requestInterface(type) {
-    if (type == "arcade-sidebar") {
-      return { title: this.name };
-    }
-    return null;
-  }
-
-
+  
 
   returnGameRulesHTML(){
     return `<div class="rules-overlay">

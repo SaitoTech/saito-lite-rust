@@ -3,7 +3,7 @@
       name     			:       "Diplomacy",
       rank			:	2,
       img			:	"/strategy/2_DIPLOMACY.png",
-      text			:	"<b>Player</b> activates non-Byzantium sector for others, refreshes two planets.<hr /><b>Others</b> may spend strategy token to refresh two planets." ,
+      text			:	"<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets." ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -54,7 +54,7 @@
 
           let html = '<p>Do you wish to spend 1 strategy token to unexhaust two planet cards? </p><ul>';
 	  if (imperium_self.game.state.round == 1) {
-            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} has just played the Diplomacy strategy card. This lets you to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens. Use this ability? </p><ul>`;
+            html = `<p class="doublespace">${imperium_self.returnFaction(strategy_card_player)} plays Diplomacy. Do you wish to spend 1 strategy token to unexhaust two planet cards. You have ${imperium_self.game.players_info[player-1].strategy_tokens} strategy tokens.</p><ul>`;
           }
           if (imperium_self.game.players_info[player-1].strategy_tokens > 0) {
 	    html += '<li class="option" id="yes">Yes</li>';
@@ -128,6 +128,7 @@
                 if (choices_selected >= max_choices) {
                   imperium_self.prependMove("resolve\tstrategy\t1\t"+imperium_self.app.wallet.returnPublicKey());
 	          imperium_self.addPublickeyConfirm(imperium_self.app.wallet.returnPublicKey(), 1);
+                  imperium_self.addMove("expend\t"+imperium_self.game.player+"\tstrategy\t1");
                   imperium_self.endTurn();
                 }
 

@@ -15,37 +15,11 @@ class Solitrio extends GameTemplate {
     this.gamename        = "Solitrio";
     this.slug            = "solitrio";
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
-    this.categories      = "Arcade Games Entertainment";
+    this.categories      = "Games Cardgame one-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    this.type            = "Solitaire Cardgame";
-    //this.status          = "Beta";
-
-    this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
-    this.categories  = "Cardgame Game Solitaire";
     
-  }
-
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/solitrio/img/arcade/arcade-banner-background.jpg";
-      obj.title = "Solitrio";
-      return obj;
-    }
-
-    return null;
-
   }
 
 
@@ -226,13 +200,6 @@ class Solitrio extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-  }
-
-  requestInterface(type) {
-    if (type == "arcade-sidebar") {
-      return { title: this.name };
-    }
-    return null;
   }
 
 
