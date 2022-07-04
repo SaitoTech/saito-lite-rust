@@ -10,7 +10,6 @@
   box-sizing: border-box;
 }
 
-
 :root {
   font-size: 10px;
 }
@@ -45,7 +44,9 @@ a {
   cursor: pointer;
 }
 
-
+a:hover {
+  opacity: 0.8;
+}
 
 /* ----------------------------------------------------------------
 	Headings
@@ -59,9 +60,6 @@ h5,
 h6 {
   color: var(--saito-primary);
 }
-
-h5,
-h6 {}
 
 h1 {
   font-size: 5rem;
@@ -91,7 +89,6 @@ textarea {
   resize: none;
 }
 
-
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
@@ -115,7 +112,6 @@ p::-webkit-scrollbar {
   font-size: 1.3rem;
 }
 
-
 /* ----------------------------------------------------------------
 Divider
 -----------------------------------------------------------------*/
@@ -125,11 +121,6 @@ hr {
   margin: 2.5rem;
 }
 
-
-
-a:hover {
-  opacity: 0.8;
-}
 
 
 /* ----------------------------------------------------------------
@@ -160,7 +151,6 @@ Media Queries
   }
 }
 
-
 @media (max-width: 767.98px) {
   h1 {
     font-size: 4.5rem;
@@ -186,21 +176,19 @@ Media Queries
     font-size: 2rem;
   }
 
-  .saito-large-paragraph {
-    font-size: 2rem;
-    font-weight: bold;
+  .saito-large-p {
+    font-size: 1.8rem;
   }
 
   p,
-  .saito-mid-paragraph {
+  .saito-mid-p {
     color: var(--saito-black);
     font-size: 1.4rem;
   }
 
-  .saito-small-paragraph {
+  .saito-small-p {
     font-size: 1.1rem;
   }
-
 }
 
 @media screen and (max-width: 320px) {

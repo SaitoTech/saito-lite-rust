@@ -1,6 +1,6 @@
 module.exports = (app) => {
 
-  return `
+    return `
   <div class="saito-tab-content">
       <div class="saito-tab active" id="general">
           <div class="saito-main">
@@ -1426,8 +1426,8 @@ module.exports = (app) => {
   
           <div class="saito-tab" id="components">
               <div class="saito-overlay">
-                  <div>
-                      <i class="fas fa-power-off"> </i>
+                  <div class="saito-backdrop">
+                      <i  class="close-overlay fas fa-times"> </i>
                       <div>
   
                       </div>

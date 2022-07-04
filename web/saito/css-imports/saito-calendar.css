@@ -3,14 +3,10 @@
     --calendar-minwidth: 10rem;
 }
 
-
 .container {
     max-width: var(--calendar-width);
     min-width: var(--calendar-minwidth);
-    /* width: var(); */
 }
-
-
 
 .saito-calendar {
     border-radius: .5rem;
@@ -22,7 +18,6 @@
     padding: 1rem 0;
 }
 
-
 .saito-calendar-month {
     /* padding: 1rem 1rem; */
     display: grid;
@@ -33,21 +28,16 @@
     padding: 0 2rem;
 }
 
-
 .saito-calendar-month i {
     font-size: 2rem;
     cursor: pointer;
 }
-
-
-
 
 .saito-calendar-date div {
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
 }
 
 .saito-calendar-date h4 {
@@ -59,22 +49,16 @@
     font-size: 2.3rem;
 }
 
-
 .saito-calendar-weekdays {
-
     display: flex;
     justify-content: center;
     padding: .5rem .5rem;
-
 }
 
 .saito-calendar-weekdays div {
-    /* min-width: calc((var(--calendar-minwidth) - 2rem)/7); */
     width: calc((var(--calendar-width) - 2rem)/7);
     font-size: 1.6rem;
     text-align: center;
-
-
 }
 
 .saito-calendar-days {
@@ -83,16 +67,12 @@
     cursor: pointer;
     padding: 1rem .5rem;
     text-align: center;
-
 }
 
 .saito-calendar-days div {
-
     font-size: 1.2rem;
     margin: .5rem;
-
     width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
-    /* min-width: calc((var(--calendar-minwidth) - (14 * .5rem) - 2rem) /7); */
 }
 
 .saito-calendar-days div:hover {

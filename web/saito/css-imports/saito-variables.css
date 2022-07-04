@@ -1,13 +1,11 @@
 /* ----------------------------------------------------------------
 font imports
 -----------------------------------------------------------------*/
+
 @font-face {
   font-family: "visuelt-black";
   src: url("/saito/fonts/visuelt-black.eot");
-  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"),
-    url("/saito/fonts/visuelt-black.woff2") format("woff2"),
-    url("/saito/fonts/visuelt-black.woff") format("woff"),
-    url("/saito/fonts/visuelt-black.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -15,10 +13,7 @@ font imports
 @font-face {
   font-family: "visuelt-light";
   src: url("/saito/fonts/visuelt-light.eot");
-  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"),
-    url("/saito/fonts/visuelt-light.woff2") format("woff2"),
-    url("/saito/fonts/visuelt-light.woff") format("woff"),
-    url("/saito/fonts/visuelt-light.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -26,10 +21,7 @@ font imports
 @font-face {
   font-family: "visuelt-medium";
   src: url("/saito/fonts/visuelt-medium.eot");
-  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"),
-    url("/saito/fonts/visuelt-medium.woff2") format("woff2"),
-    url("/saito/fonts/visuelt-medium.woff") format("woff"),
-    url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -44,9 +36,7 @@ font imports
   --saito-gray: #eaeaef45;
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
-  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%),
-    linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000),
-    linear-gradient(180deg, #e9ce93, #f71f3d);
+  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
   --saito-tertiary: rgb(234, 234, 239);
   --saito-blue: #35b2ff;
   --saito-default-font-color: #555;
@@ -64,5 +54,3 @@ font imports
   --saito-width: 1500px;
   --saito-default-border-radius: .5rem;
 }
-
-

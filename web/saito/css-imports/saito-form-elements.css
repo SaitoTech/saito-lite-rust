@@ -4,10 +4,10 @@ form {}
 Fieldset
 -----------------------------------------------------------------*/
 
-
 /* ----------------------------------------------------------------
 form label
 -----------------------------------------------------------------*/
+
 label {
   margin: 0.5rem 0;
   display: inline-block;
@@ -17,21 +17,17 @@ label {
   font-weight: 1000;
 }
 
-
 /* ----------------------------------------------------------------
 date inputs
 -----------------------------------------------------------------*/
 
 /* ------->  refer to /saito/lib/datepicker/css/datepicker.css */
 
-
-
 /* ----------------------------------------------------------------
 text and password inputs
 -----------------------------------------------------------------*/
 
-input[type="text"],
-input[type="password"] {
+input[type="text"], input[type="password"] {
   border: 1px solid var(--saito-border);
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
@@ -40,13 +36,11 @@ input[type="password"] {
   border-radius: .5rem;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="text"]:focus, input[type="password"]:focus {
   outline: none;
 }
 
-input[type="text"]::placeholder,
-input[type="password"]::placeholder {
+input[type="text"]::placeholder, input[type="password"]::placeholder {
   color: var(--saito-border);
 }
 
@@ -152,7 +146,6 @@ input[type="range"]::-webkit-slider-runnable-track {
   border: var(--saito-border);
 }
 
-
 input[type="range"]::-webkit-slider-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
@@ -175,7 +168,6 @@ input[type="range"]::-moz-range-track {
   border: var(--saito-border);
 }
 
-
 input[type="range"]::-moz-range-thumb {
   box-shadow: var(--saito-box-shadow);
   border: 1px solid #000000;
@@ -192,9 +184,6 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]:focus::-webkit-slider-runnable-track {
   background: var(--saito-primary);
 }
-
-
-
 
 input[type="range"]::-ms-track {
   width: 100%;
@@ -238,12 +227,9 @@ input[type="range"]:focus::-ms-fill-upper {
   background: var(--saito-primary);
 }
 
-input[type="text"],
-input[type="password"],
-select {
+input[type="text"], input[type="password"], select {
   width: 100%;
 }
-
 
 /* ----------------------------------------------------------------
 Text area
@@ -275,7 +261,6 @@ textarea::placeholder {
   background-color: var(--saito-primary);
   color: var(--saito-white);
   min-width: 16rem;
-
   padding: 1.2rem 1.6rem;
   z-index: 1;
   border-radius: .5rem 2rem 2rem;
@@ -288,26 +273,18 @@ textarea::placeholder {
   cursor: pointer;
 }
 
-.dropdown-content>p:hover {}
-
 .dropdown:hover .dropdown-content {
   display: flex;
 }
-
-
 
 /* ----------------------------------------------------------------
 Selects
 -----------------------------------------------------------------*/
 
-select {}
-
 .saito-select-wrapper {
   width: 100%;
   position: relative;
   cursor: pointer;
-
-
 }
 
 .saito-select-btn {
@@ -321,10 +298,6 @@ select {}
   border-bottom-left-radius: 0;
   font-size: 1.6rem;
   padding: 0 0 0 1.5rem;
-
-
-
-
 }
 
 .saito-select-btn span {
@@ -332,12 +305,9 @@ select {}
   width: calc(100% - 5rem);
   display: flex;
   justify-content: flex-start;
-
 }
 
 .saito-select-btn>div {
-
-
   cursor: pointer;
   margin-left: auto;
   background-color: var(--saito-primary);
@@ -356,8 +326,6 @@ select {}
   color: var(--saito-white);
 }
 
-
-
 .saito-select-content {
   position: absolute;
   width: calc(100% - 5rem);
@@ -371,7 +339,6 @@ select {}
   border-top: none;
   z-index: 12;
 }
-
 
 .saito-select-content li {
   list-style: none;
@@ -393,7 +360,6 @@ select {}
   color: white;
 }
 
-
 .saito-select-content li:last-child {
   border-bottom-left-radius: .5rem;
   border-bottom-right-radius: .5rem;
@@ -403,8 +369,6 @@ select {}
   border-bottom-left-radius: .5rem;
   border-bottom-right-radius: .5rem;
 }
-
-
 
 .show-content {
   display: block;
