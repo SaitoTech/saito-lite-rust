@@ -108,7 +108,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <p class="saito-mid-paragraph">${app.options.wallet.version}</p>
       </div>
 
-      <p style="padding-bottom:40px;">
+      <p class="saito-small-paragraph" style="padding-bottom:40px;">
         Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" id="reset-account-btn" class="">resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
       </p>
 
