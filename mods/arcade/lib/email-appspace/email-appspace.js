@@ -1,5 +1,7 @@
 const saito = require("./../../../../lib/saito/saito");
 const ArcadeEmailAppspaceTemplate = require('./email-appspace.template.js');
+const ArcadeEmailAppspaceGameTemplate = require('./game.template.js');
+const JSON = require("json-bigint");
 
 class ArcadeEmailAppspace {
 
@@ -21,7 +23,7 @@ class ArcadeEmailAppspace {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           console.log("GAME INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
-            ArcadeInviteTemplate(app, mod, invite, i),
+            ArcadeEmailAppspaceGameTemplate(app, mod, invite, i),
             document.querySelector(".arcade-hero")
           );
         }
@@ -39,7 +41,7 @@ class ArcadeEmailAppspace {
 console.log("sql: " + sql);
     mod.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
-console.log("res: " + JSON.stringif(res.rows));
+console.log("res: " + JSON.stringify(res.rows));
         if (res.rows) {
           mod.addGamesToOpenList(
             res.rows.map((row) => {

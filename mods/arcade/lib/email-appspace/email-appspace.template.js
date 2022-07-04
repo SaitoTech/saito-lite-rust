@@ -8,7 +8,9 @@ module.exports = ArcadeEmailAppspaceTemplate = (app, mod) => {
 
     <p></p>
 
-    Loading game invitations...
+    <div class="arcade-hero">
+    
+    </div>
 
   </div>
 
