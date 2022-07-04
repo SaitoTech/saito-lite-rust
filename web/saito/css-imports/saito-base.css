@@ -95,10 +95,24 @@ textarea {
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
+.saito-large-paragraph {
+  font-size: 2rem;
+  font-weight: bold;
+}
 
-p {
-  font-size: 1.8rem;
+p,
+.saito-mid-paragraph {
+  color: var(--saito-black);
+  font-size: 1.6rem;
+  overflow: auto;
+}
 
+p::-webkit-scrollbar {
+  display: none;
+}
+
+.saito-small-paragraph {
+  font-size: 1.3rem;
 }
 
 
@@ -111,19 +125,7 @@ hr {
   margin: 2.5rem;
 }
 
-.saito-large-paragraph {
-  font-size: 2rem;
-}
 
-p,
-.saito-mid-paragraph {
-  color: var(--saito-black);
-  font-size: 1.6rem;
-}
-
-.saito-small-paragraph {
-  font-size: 1.3rem;
-}
 
 a:hover {
   opacity: 0.8;
