@@ -1,15 +1,17 @@
 const saito = require("./../../../../lib/saito/saito");
-const ArcadeEmailAppspaceTemplate = require('./email-appspace.template.js');
+const ArcadeAppspaceTemplate = require('./main.template.js');
+const ArcadeAppspaceGameTemplate = require('./game.template.js');
+const JSON = require("json-bigint");
 
-class ArcadeEmailAppspace {
+class ArcadeAppspace {
 
   constructor(app) {
   }
 
   render(app, mod, container = "") {
 
-    if (!document.querySelector(".arcade-email-appspace")) {
-      app.browser.addElementToClass(ArcadeEmailAppspaceTemplate(app, mod), ".email-appspace");
+    if (!document.querySelector(".arcade-appspace")) {
+      app.browser.addElementToClass(ArcadeAppspaceTemplate(app, mod), ".appspace");
     }
 
 
@@ -21,7 +23,7 @@ class ArcadeEmailAppspace {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           console.log("GAME INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
-            ArcadeInviteTemplate(app, mod, invite, i),
+            ArcadeAppspaceGameTemplate(app, mod, invite, i),
             document.querySelector(".arcade-hero")
           );
         }
@@ -39,7 +41,7 @@ class ArcadeEmailAppspace {
 console.log("sql: " + sql);
     mod.sendPeerDatabaseRequestWithFilter("Arcade", sql,
       (res) => {
-console.log("res: " + JSON.stringif(res.rows));
+console.log("res: " + JSON.stringify(res.rows));
         if (res.rows) {
           mod.addGamesToOpenList(
             res.rows.map((row) => {
@@ -68,5 +70,5 @@ console.log("existing_games: " + existing_games);
 
 }
 
-module.exports = ArcadeEmailAppspace;
+module.exports = ArcadeAppspace;
 
