@@ -111,17 +111,17 @@ hr {
   margin: 2.5rem;
 }
 
-.saito-large-p {
+.saito-large-paragraph {
   font-size: 2rem;
 }
 
 p,
-.saito-mid-p {
+.saito-mid-paragraph {
   color: var(--saito-black);
   font-size: 1.6rem;
 }
 
-.saito-small-p {
+.saito-small-paragraph {
   font-size: 1.3rem;
 }
 
@@ -135,16 +135,16 @@ Media Queries
 -----------------------------------------------------------------*/
 
 @media screen and (min-width: 1600px) {
-  body {
+  /* body {
     font-size: 1.4rem;
-  }
+  } */
 
 }
 
 @media screen and (max-width: 1200px) {
-  body {
+  /* body {
     font-size: 1.4rem;
-  }
+  } */
 
 }
 
@@ -184,17 +184,18 @@ Media Queries
     font-size: 2rem;
   }
 
-  .saito-large-p {
-    font-size: 1.8rem;
+  .saito-large-paragraph {
+    font-size: 2rem;
+    font-weight: bold;
   }
 
   p,
-  .saito-mid-p {
+  .saito-mid-paragraph {
     color: var(--saito-black);
     font-size: 1.4rem;
   }
 
-  .saito-small-p {
+  .saito-small-paragraph {
     font-size: 1.1rem;
   }
 
