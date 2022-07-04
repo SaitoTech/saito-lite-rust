@@ -30,7 +30,7 @@
     grid-column: 1/ 2;
     grid-row: 1/2;
     padding-top: 1rem;
-    z-index: 12;
+    z-index: 9;
 }
 
 .saito-sidebar.right {
@@ -95,6 +95,7 @@
     .saito-container {
         padding: 1rem calc((100vw - var(--saito-width)) / 2);
     }
+
     .saito-sidebar.left {
         position: fixed;
         transform: translateX(-4000px);
@@ -106,6 +107,7 @@
         left: 0;
         border-right: 1px solid var(--saito-primary);
     }
+
     .saito-sidebar.left .hamburger {
         transform: translateX(4000px);
         visibility: visible;
@@ -115,6 +117,7 @@
         align-items: center;
         bottom: 12rem;
     }
+
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 1rem;
     }
@@ -130,6 +133,7 @@
     .saito-container {
         flex-direction: column;
     }
+
     .saito-sidebar.right {
         display: none;
     }
@@ -139,6 +143,7 @@
     .saito-container {
         padding: 1rem 1.5rem;
     }
+
     .saito-sidebar.left {
         left: 0;
         width: 100%;
@@ -149,6 +154,7 @@
     .saito-sidebar .section>div:nth-child(1) {
         padding-left: 1rem;
     }
+
     .saito-sidebar .section>div:nth-child(2) {
         padding-left: 0rem;
     }
