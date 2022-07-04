@@ -111,6 +111,35 @@ class Chessgame extends GameTemplate {
     //
     if (this.game.initializing == 1) {
       this.game.queue.push("READY");
+      //Check colors
+      // observer skips
+        if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+            return 1;
+        } 
+
+        //Game engine automatically randomizes player order, so we are good to go
+        if (!this.game.options.player1 || this.game.options.player1 == "random"){
+          return 1;
+        }
+        
+        //Reordeer the players so that originator can be the correct role
+        if (this.game.options.player1 === "white"){
+          if (this.game.players[0] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }else{
+          if (this.game.players[1] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }
+        //Fix game.player so that it corresponds to the indices of game.players[]
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+            this.game.player = i+1;
+          }
+        }
     }
 
 
@@ -682,9 +711,10 @@ class Chessgame extends GameTemplate {
     let html = `<h1 class="overlay-title">Chess Options</h1>`;
       
     html   +=  `<div class="overlay-input">   
-                  <label for="color">Pick Your Color:</label>
-                  <select name="color">
-                    <option value="black" default>Black</option>
+                  <label for="player1">Pick Your Color:</label>
+                  <select name="player1">
+                    <option value="random" default>Random</option>
+                    <option value="black">Black</option>
                     <option value="white">White</option>
                   </select>
                 </div>`;
@@ -705,6 +735,17 @@ class Chessgame extends GameTemplate {
 
   }
 
+
+  returnShortGameOptionsArray(options) {
+    let sgoa = super.returnShortGameOptionsArray(options);
+    let ngoa = {};
+    for (let i in sgoa) {
+      if (!(i == "player1" && sgoa[i] == "random")){
+        ngoa[i] = sgoa[i];
+      }
+    }
+    return ngoa;
+  }
 }
 
 module.exports = Chessgame;
