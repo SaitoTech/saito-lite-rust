@@ -50,7 +50,7 @@ class NewDesignMain {
       if (e.target.id === "showoverlay_button") {
         document.querySelector('.saito-overlay').classList.add('show');
       }
-      if (e.target.classList.contains("fa-power-off")) {
+      if (e.target.classList.contains("close-overlay")) {
         document.querySelector('.saito-overlay').classList.remove('show');
       }
 
