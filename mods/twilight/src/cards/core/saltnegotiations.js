@@ -25,6 +25,8 @@
       if (!i_played_the_card) {
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       // pick discarded card
       var twilight_self = this;

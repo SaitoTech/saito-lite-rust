@@ -219,7 +219,7 @@ class Stun extends ModTemplate {
         }
 
     }
-
+    
 
     async createPeerConnectionOffers(app, pubKeys) {
         let peerConnectionOffers = [];
@@ -502,8 +502,9 @@ class Stun extends ModTemplate {
         console.log('broadcasting offer  to ', peer_key);
         newtx.transaction.to.push(new saito.default.slip(peer_key));
         console.log("offer ", offer);
-        newtx.msg.offer = {
+        newtx.msg = {
             module: this.appname,
+            request: "offer",
             peer_a: my_key,
             peer_b: peer_key,
             offer

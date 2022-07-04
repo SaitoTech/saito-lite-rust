@@ -27,9 +27,9 @@ class Invites extends InviteTemplate {
 
   respondTo(type) {
 
-//    if (type == 'email-appspace') {
-//      return new InvitesEmailAppspace(this.app, this);
-//    }
+    if (type == 'email-appspace') {
+      return new InvitesEmailAppspace(this.app, this);
+    }
 
     return null;
   }
@@ -51,9 +51,11 @@ class Invites extends InviteTemplate {
 
 
   //
-  // defined in InviteTemplate
+  // InviteTemplate handles
   //
-  //async onConfirmation(blk, tx, conf, app) {}
+  async onConfirmation(blk, tx, conf, app) {
+    super.onConfirmation(blk, tx, conf, app);
+  }
 
 }
 

@@ -7,6 +7,9 @@
       this.game.state.events.junta = 1;
 
       if (i_played_the_card) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+        
         let className = (player == "us")? "westerneurope" : "easterneurope";
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();

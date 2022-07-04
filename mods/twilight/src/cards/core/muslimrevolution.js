@@ -1,7 +1,10 @@
 
     if (card == "muslimrevolution") {
 
-      if (this.game.state.events.awacs == 1) { return 1; }
+      if (this.game.state.events.awacs == 1) { 
+        this.updateLog(`${this.cardToText("muslimrevolution")} prevented by ${this.cardToText("awacs")}}`);
+        return 1; 
+      }
 
       var countries_to_purge = 2;
       let muslim_countries = [];
@@ -41,6 +44,8 @@
       //
       if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         this.updateStatus("<div class='status-message' id='status-message'>Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.</div>");
 
