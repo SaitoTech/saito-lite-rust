@@ -56,8 +56,8 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.rsidebar);
       this.addComponent(this.header);
 
-      this.lsidebar.addComponent(this.chatBox);
       this.lsidebar.addComponent(this.menu);
+      this.lsidebar.addComponent(this.chatBox);
 
       this.rsidebar.addComponent(this.calendar);
 

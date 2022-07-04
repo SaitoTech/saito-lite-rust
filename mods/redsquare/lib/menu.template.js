@@ -18,17 +18,13 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="far fa-id-card"></i>
                   <span> Invites</span>
                 </li>
-                <li>
-                  <i class="fas fa-user"></i>
-                  <span> Profile</span>
+                <li class="redsquare-menu-settings">
+                  <i class="fas fa-settings"></i>
+                  <span> Settings</span>
                 </li>
                 <li>
                   <i class="fas fa-gamepad"></i>
                   <span> Games</span>
-                </li>
-                <li>
-                  <i class="fas fa-address-book"></i>
-                  <span>Contacts</span>
                 </li>
               </ul>
             </div>
