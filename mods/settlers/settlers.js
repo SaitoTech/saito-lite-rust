@@ -26,6 +26,8 @@ class Settlers extends GameTemplate {
 
     this.tradeWindowOpen = false;
     this.is_sleeping = true;
+    this.confirm_moves = true;
+
     this.grace_window = 24;
     // temp variable to help with post-splash flash
     this.currently_active_player = 0;
@@ -372,11 +374,11 @@ class Settlers extends GameTemplate {
 
       for (let i = 1; i <= this.game.players.length; i++) {
         this.game.queue.push("player_build_road\t" + i + "\t1");
-        this.game.queue.push("player_build_city\t" + i);
+        this.game.queue.push(`player_build_city\t${i}\t0`);
       }
       for (let i = this.game.players.length; i >= 1; i--) {
         this.game.queue.push("player_build_road\t" + i + "\t1");
-        this.game.queue.push("player_build_city\t" + i);
+        this.game.queue.push(`player_build_city\t${i}\t0`);
       }
 
       this.game.queue.push("READY");
@@ -762,6 +764,16 @@ class Settlers extends GameTemplate {
       }
 
       /* Building Actions */
+      if (mv[0] == "undo_build"){
+        this.game.queue.splice(qe,1);
+        let last_mv = this.game.queue.pop();
+        while (last_mv.split("\t")[0] == "spend_resource"){
+          console.log(last_mv);
+          last_mv = this.game.queue.pop();
+        }
+        this.game.queue.push(last_mv);
+        return 1;
+      }
 
       // remove a resource from players stockpile
       if (mv[0] == "spend_resource") {
@@ -793,15 +805,17 @@ class Settlers extends GameTemplate {
         if (this.game.player == player) {
 
           /* In initial set up, if game reloaded, the free road spaces are lost*/
-	      if (parseInt(mv[2])) {
+	        if (parseInt(mv[2])) {
             let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
             for (let road of newRoads) {
               //console.log("road: ",road);
               this.addRoadToGameboard(road.substring(2), road[0]);
             }
-	       }  
+	        }
+          
+          let canbackup = parseInt(mv[3]) || 0;  
 
-          this.playerBuildRoad(mv[1]);
+          this.playerBuildRoad(mv[1], canbackup);
         } else {
           this.updateStatus(
             `<div class="tbd">Player ${player} is building a ${this.skin.r.name}...</div>`
@@ -845,7 +859,7 @@ class Settlers extends GameTemplate {
         }
 
         if (this.game.player == player) {
-          this.playerBuildCity(mv[1]);
+          this.playerBuildCity(mv[1], parseInt(mv[2]));
         } else {
           this.updateStatus(
             `<div class="tbd">Player ${player} is building a ${this.skin.c1.name}...</div>`
@@ -938,7 +952,7 @@ class Settlers extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.stopTrading();
         if (this.game.player == player) {
-          this.playerUpgradeCity(player);
+          this.playerUpgradeCity(player, 1);
         } else {
           this.updateStatus(
             `<div class="tbd">Player ${player} is upgrading to a ${this.skin.c2.name}...</div>`
@@ -2332,7 +2346,7 @@ class Settlers extends GameTemplate {
     Functions for Player interacting with the board
   */
 
-  playerBuildCity() {
+  playerBuildCity(player, canBackUp = 0) {
 
     let settlers_self = this;
     let existing_cities = 0;
@@ -2341,6 +2355,7 @@ class Settlers extends GameTemplate {
         existing_cities++;
       }
     }
+    let xpos, ypos;
     $(".flash").removeClass("flash");
     /*
     Everyone starts with 2 settlements and can be placed anywhere on island
@@ -2354,7 +2369,7 @@ class Settlers extends GameTemplate {
       }
       $(".flashme").addClass("flash");
 
-      let xpos, ypos;
+
       $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
@@ -2374,81 +2389,73 @@ class Settlers extends GameTemplate {
           $(".city.empty").css("background-color", "");   
           //Confirm this move
           let slot = $(this).attr("id");
-          $(this).css("background-color", "yellow");
-
-          let html = `
-          <div class="popup-confirm-menu">
-            <div class="popup-prompt">Place ${settlers_self.skin.c1.name} here?</div>
-            <div class="action" id="confirm">yes</div>
-            <div class="action" id="cancel">cancel</div>
-          </div>`;
-
-          let left = $(this).offset().left + 50;
-          let top = $(this).offset().top + 20;
-          
-          $(".popup-confirm-menu").remove();
-          $("body").append(html);
-          $(".popup-confirm-menu").css({
-                position: "absolute",
-                top: top,
-                left: left,
-              });
-
-            $(".action").off();
-            $(".action").on("click", function () {
-              $("#"+slot).css("background-color", "");
-              let confirmation = $(this).attr("id");
-              $(".action").off();
-              $(".popup-confirm-menu").remove();
-              if (confirmation === "confirm"){
-                $(".city.empty").removeClass("chover");
-                $(".city.empty").off();
-                  settlers_self.game.state.placedCity = slot;
-                  settlers_self.buildCity(settlers_self.game.player, slot);
-                  if (existing_cities == 1)
-                    settlers_self.addMove(
-                      `secondcity\t${settlers_self.game.player}\t${slot.replace(
-                        "city_",
-                        ""
-                      )}`
-                    );
-                  settlers_self.addMove(
-                    `build_city\t${settlers_self.game.player}\t${slot}`
-                  );
-                  settlers_self.endTurn();
-              } 
-            });
+          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
+            $(".city.empty").removeClass("chover");
+            $(".city.empty").off();
+              settlers_self.game.state.placedCity = slot;
+              settlers_self.buildCity(settlers_self.game.player, slot);
+              if (existing_cities == 1)
+                settlers_self.addMove(
+                  `secondcity\t${settlers_self.game.player}\t${slot.replace(
+                    "city_",
+                    ""
+                  )}`
+                );
+              settlers_self.addMove(
+                `build_city\t${settlers_self.game.player}\t${slot}`
+              );
+              settlers_self.endTurn();
+          });
+        
       });
       
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);
-      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
-      for (let i = 0; i < building_options.length; i++) {
-        /*
-          Highlight connected areas available to build a new settlement
-        */
-        let divname = "#" + building_options[i];
-
-        $(divname).addClass("rhover");
-
-        $(divname).off();
-        $(divname).on("click", function () {
-          //Need to turn of these things for all the potential selections, no?
-          $(".rhover").off();
-          $(".rhover").removeClass("rhover");
-
-          //$(divname).off();
-          let slot = $(this).attr("id");
-          settlers_self.buildCity(settlers_self.game.player, slot);
-          settlers_self.addMove(
-            `build_city\t${settlers_self.game.player}\t${slot}`
-          );
+      if (canBackUp){
+        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div><ul><li class="undo">don't build ${this.skin.c1.name}</li></ul>`);
+        $(".undo").on("click",function(){
+          settlers_self.addMove("undo_build");
           settlers_self.endTurn();
         });
+      }else{
+        this.updateStatus(`<div class="tbd">You may build a ${this.skin.c1.name}...</div>`);  
       }
+      
+      let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
+      for (let i = 0; i < building_options.length; i++) {
+        console.log(building_options[i]);
+        let divname = "#" + building_options[i];
+        $(divname).addClass("rhover");
+      }
+        
+        $(".rhover").off();
+        $(".rhover").on("mousedown", function (e) {
+          xpos = e.clientX;
+          ypos = e.clientY;
+        });
+
+        $(".rhover").on("mouseup", function (e) {
+          if (Math.abs(xpos - e.clientX) > 4) {
+            return;
+          }
+          if (Math.abs(ypos - e.clientY) > 4) {
+            return;
+          }
+  
+          let slot = $(this).attr("id");
+          settlers_self.confirmPlacement(slot, settlers_self.skin.c1.name, ()=>{
+            $(".rhover").off();
+            $(".rhover").removeClass("rhover");
+
+            settlers_self.buildCity(settlers_self.game.player, slot);
+            settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
+            settlers_self.endTurn();
+          })
+        });
+      
     }
   }
+
 
   buildCity(player, slot) {
     // remove adjacent slots
@@ -2532,10 +2539,17 @@ class Settlers extends GameTemplate {
 
   }
 
-  playerUpgradeCity(player) {
-    this.updateStatus(
-      `<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`
-    );
+  playerUpgradeCity(player, canBackUp = 0) {
+    
+    if (canBackUp){
+      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div><ul><li class="undo">don't build ${this.skin.c2.name}</li></ul>`);
+      $(".undo").on("click",function(){
+        settlers_self.addMove("undo_build");
+        settlers_self.endTurn();
+      });
+    }else{
+      this.updateStatus(`<div class="tbd">Click on a ${this.skin.c1.name} to upgrade it to a ${this.skin.c2.name}...</div>`);  
+    }
 
     let settlers_self = this;
     //let selector = `.city.p${player}`;
@@ -2574,13 +2588,13 @@ class Settlers extends GameTemplate {
   /*
     Allows player to click a road 
   */
-  playerBuildRoad() {
+  playerBuildRoad(player, canBackUp = false) {
  
    let settlers_self = this;
 
     if (this.game.state.placedCity) {
       this.updateStatus(
-        `<div class="tbd">YOUR TURN: place ${this.skin.r.name}...</div>`
+        `<div class="tbd">YOUR TURN: place a ${this.skin.r.name}...</div>`
       );
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
@@ -2598,32 +2612,42 @@ class Settlers extends GameTemplate {
       
       $(".road.new").off();
       $(".road.new").on("click", function () {
-        $(".road.new").off();
-        $(".road.new").removeAttr("style");
-        $(".road.new").removeClass("rhover");
-        $(".road.new").removeClass("new");
-
         let slot = $(this).attr("id");
-        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
-        settlers_self.endTurn();
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+          $(".road.new").off();
+          $(".road.new").removeAttr("style");
+          $(".rhover").removeClass("rhover");
+          $(".road.new").removeClass("new");
+        
+          settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
+        });
       });
     } else {
+      if (canBackUp){
+        this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div><ul><li class="undo">don't build ${this.skin.r.name}</li></ul>`);
+        $(".undo").on("click",function(){
+          settlers_self.addMove(`undo_build`);
+          settlers_self.endTurn();
+        });
 
-      this.updateStatus(
-      `<div class="tbd">You may build a ${this.skin.r.name}...</div>`
-      );
+      } else{
+        this.updateStatus(`<div class="tbd">You may build a ${this.skin.r.name}...</div>`);
+      }
 
       /*Normal game play, can play road anywhere empty connected to my possessions*/
       $(".road.empty").addClass("rhover");
       
       $(".road.empty").off();
       $(".road.empty").on("click", function () {
-        $(".road.empty").off();
-        $(".road.empty").removeClass("rhover");
-        $(".road.empty").removeAttr("style");
         let slot = $(this).attr("id");
-        settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
-        settlers_self.endTurn();
+        settlers_self.confirmPlacement(slot, settlers_self.skin.r.name, ()=>{
+          $(".road.empty").off();
+          $(".rhover").removeClass("rhover");
+          $(".road.empty").removeAttr("style");
+          settlers_self.addMove(`build_road\t${settlers_self.game.player}\t${slot}`);
+          settlers_self.endTurn();
+        });
       });
     }
   }
@@ -2846,13 +2870,10 @@ class Settlers extends GameTemplate {
       }
       if (id === "0") {
         settlers_self.addMove(
-          "player_build_road\t" + settlers_self.game.player
-        );
+          `player_build_road\t${settlers_self.game.player}\t0\t1`);
       }
       if (id === "1") {
-        settlers_self.addMove(
-          "player_build_city\t" + settlers_self.game.player
-        );
+        settlers_self.addMove(`player_build_city\t${settlers_self.game.player}\t1`);
       }
       if (id === "2") {
         settlers_self.addMove(
@@ -2870,9 +2891,11 @@ class Settlers extends GameTemplate {
       if (purchase >= 0 && purchase <= 3) {
         let cost = settlers_self.skin.priceList[parseInt(id)];
         for (let resource of cost) {
-          settlers_self.addMove(
+          //Put the spends on the front of the move, so we can maybe cancel the building action
+          settlers_self.prependMove(
             "spend_resource\t" + settlers_self.game.player + "\t" + resource
           );
+
         }
         settlers_self.endTurn();
       } else {
@@ -4042,6 +4065,55 @@ class Settlers extends GameTemplate {
     } catch (err) {
       //console.log("ERR: " + err);
     }
+  }
+
+
+  confirmPlacement(slot, piece, callback){
+    if (this.confirm_moves == 0){
+      callback();
+      return;
+    }
+
+    $(`#${slot}`).css("background-color", "yellow");
+    let settlers_self = this;
+    let html = `
+          <div class="popup-confirm-menu">
+            <div class="popup-prompt">Place ${piece} here?</div>
+            <div class="action" id="confirm">yes</div>
+            <div class="action" id="cancel">cancel</div>
+            <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask again </div>
+          </div>`;
+
+    let left = $(`#${slot}`).offset().left + 50;
+    let top = $(`#${slot}`).offset().top + 20;
+          
+    $(".popup-confirm-menu").remove();
+    $("body").append(html);
+    $(".popup-confirm-menu").css({
+      position: "absolute",
+          top: top,
+          left: left,
+      });
+
+    $(".action").off();
+    $(".action").on("click", function () {
+      $("#"+slot).css("background-color", "");
+      let confirmation = $(this).attr("id");
+      
+      $(".action").off();
+      $(".popup-confirm-menu").remove();
+      if (confirmation == "confirm"){
+        callback();
+      }
+    });
+
+    $('input:checkbox').change(function() {
+      if ($(this).is(':checked')) {
+        settlers_self.confirm_moves = 0;
+      }else{
+        settlers_self.confirm_moves = 1;
+      }
+    });
   }
 
 
