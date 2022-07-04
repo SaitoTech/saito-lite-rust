@@ -1,4 +1,4 @@
-module.exports = InvitesEmailAppspaceTemplate = (app, mod) => {
+module.exports = InvitesAppspaceTemplate = (app, mod) => {
 
   return `
   

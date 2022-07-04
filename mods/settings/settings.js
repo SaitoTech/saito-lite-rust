@@ -1,8 +1,7 @@
-const SettingsAppspace = require('./lib/email-appspace/settings-appspace');
+const SettingsAppspace = require('./lib/appspace/main');
 const SettingsEmailAppspace = require('./lib/email-appspace/email-appspace');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
-
 
 class Settings extends ModTemplate {
 
@@ -38,23 +37,21 @@ class Settings extends ModTemplate {
 
   respondTo(type) {
 
-    if (type == 'email-appspace') {
+    if (type == 'appspace') {
 console.log("RENDERING SETTINGS EMAIL APPSPACE!");
       //super.render(this.app, this); // for scripts + styles
-      return new SettingsEmailAppspace(this.app, this);
+      return new SettingsAppspace(this.app, this);
     }
-/*****
     if (type == 'email-appspace') {
       let obj = {};
 	  obj.render = function (app, data) {
-     	    SettingsAppspace.render(app, data);
+     	    SettingsEmailAppspace.render(app, data);
           }
 	  obj.attachEvents = function (app, data) {
-     	    SettingsAppspace.attachEvents(app, data);
+     	    SettingsEmailAppspace.attachEvents(app, data);
 	  }
       return obj;
     }
-*****/
     return null;
   }
 

@@ -1,8 +1,8 @@
-module.exports = ArcadeEmailAppspaceTemplate = (app, mod) => {
+module.exports = ArcadeAppspaceTemplate = (app, mod) => {
 
   return `
 
-  <div class="arcade-email-appspace"> 
+  <div class="arcade-appspace"> 
  
     <h3>Game Invitations:</h3> 
 

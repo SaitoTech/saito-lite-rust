@@ -1,5 +1,5 @@
 
-module.exports = ArcadeEmailAppspaceGameTemplate = (app, mod, invite, idx) => {
+module.exports = ArcadeAppspaceGameTemplate = (app, mod, invite, idx) => {
 
   let gameModule = app.modules.returnModule(invite.msg.game);
 

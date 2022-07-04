@@ -1,6 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var InviteTemplate = require('../../lib/templates/invitetemplate');
-const InvitesEmailAppspace = require('./lib/email-appspace/email-appspace');
+const InvitesAppspace = require('./lib/appspace/main');
 
 
 class Invites extends InviteTemplate {
@@ -28,9 +28,9 @@ class Invites extends InviteTemplate {
 
   respondTo(type) {
 
-    if (type == 'email-appspace') {
+    if (type == 'appspace') {
       super.render(this.app, this); // for scripts + styles
-      return new InvitesEmailAppspace(this.app, this);
+      return new InvitesAppspace(this.app, this);
     }
 
     return null;
