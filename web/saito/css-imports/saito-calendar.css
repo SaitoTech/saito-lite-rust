@@ -71,7 +71,7 @@
 
 .saito-calendar-days div {
     font-size: 1.2rem;
-    margin: .5rem;
+    margin: .3rem .5rem;
     width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
 }
 

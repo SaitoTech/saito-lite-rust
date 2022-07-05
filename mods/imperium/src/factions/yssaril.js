@@ -128,6 +128,8 @@
 	    imperium_self.playerDiscardActionCards(num, function() {
 	      imperium_self.endTurn();
 	    });
+	  } else {
+	    imperium_self.updateStatus("Yssaril are discarding an action card...");
 	  }
 
           return 0;

@@ -440,6 +440,18 @@ body {
 }
 
 
+.popup-confirm-menu .confirm_check{
+  border: 1px gray solid;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+input[type="checkbox"]{
+  margin: 0;
+}
+
 .city1{
   top: -10%;
   left: 50%;
