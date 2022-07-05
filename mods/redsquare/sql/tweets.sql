@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS tweets (
+CREATE TABLE IF NOT EXISTS tweets9 (
   id INTEGER,
   tx TEXT,
   tx_sig VARCHAR(99),
