@@ -127,17 +127,14 @@ class RedSquare extends ModTemplate {
     for (let i=0; i<dummy_content.length; i++) {
       this.sendTweetTransaction(dummy_content[i]);
     }
-
-    console.log("Dummy tweets added to db");
   }
 
 
   onPeerHandshakeComplete(app, peer) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets8 DESC LIMIT 100` ,
+      `SELECT * FROM tweets DESC LIMIT 100` ,
       (res) => {
-        console.log("RECEIVED TWEETS!");
         if (res.rows) {
           res.rows.forEach(row => {
             this.app.connection.emit('tweet-render-request', row);
@@ -189,7 +186,7 @@ class RedSquare extends ModTemplate {
   receiveTweetTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
 
-    let txn = '';//JSON.stringify(tx);
+    let txn = '';//JSON.stringify(tx); currently getting error when storing tx to db
     let tx_sig = tx.transaction.sig;
     let parent_id = txmsg.parent_id;
     let publickey = tx.transaction.from[0].add;
@@ -200,9 +197,7 @@ class RedSquare extends ModTemplate {
     let created_at = new Date().getTime();
     let updated_at = new Date().getTime();
 
-    console.log(txmsg);
-
-    let sql = `INSERT INTO tweets8 (
+    let sql = `INSERT INTO tweets (
                 tx,
                 tx_sig,
                 parent_id, 

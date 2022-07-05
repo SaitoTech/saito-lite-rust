@@ -1,6 +1,6 @@
 const RedSquareMainTemplate = require("./redsquare-main.template");
 const RedSquareMenu = require("./../menu");
-const RedSquareItem = require("./../redsquare-item");
+const TweetBox = require("./../tweet-box");
 
 
 class RedSquareMain {
@@ -22,7 +22,7 @@ class RedSquareMain {
     app.connection.on("tweet-render-request", (tweet) => {
         console.log('inside emit');
         console.log(tweet);
-        let item = new RedSquareItem(app, mod, tweet);
+        let item = new TweetBox(app, mod, tweet);
         item.render(app, mod); 
     });
 

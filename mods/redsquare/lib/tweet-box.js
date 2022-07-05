@@ -1,6 +1,6 @@
-const RedSquareItemTemplate = require("./redsquare-item.template");
+const TweetBoxTemplate = require("./tweet-box.template");
 
-class RedSquareItem {
+class TweetBox {
 
     constructor(app, mod, tweet) {
       this.tweet_item = tweet;
@@ -11,7 +11,7 @@ class RedSquareItem {
 
       console.log('inside tweet item');
       console.log(this.tweet_item);
-      app.browser.addElementToDom(RedSquareItemTemplate(app, mod, this.tweet_item), 'redsquare-list');
+      app.browser.addElementToDom(TweetBoxTemplate(app, mod, this.tweet_item), 'redsquare-list');
       this.attachEvents();
     }
 
@@ -33,6 +33,6 @@ class RedSquareItem {
     }
 }
 
-module.exports = RedSquareItem;
+module.exports = TweetBox;
 
 
