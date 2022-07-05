@@ -150,43 +150,15 @@ class Scotland extends GameTemplate {
         game_mod.menu.showSubMenu("game-game");
       },
     });
-    this.menu.addSubMenuOption("game-game",{
-      text: "Clues",
-      id: "game-clue",
-      class: "game-clue",
-      callback: function (app, game_mod) {
+    this.menu.addSubMenuOption("game-game", {
+      text: "How to Play",
+      id: "game-rules",
+      class: "game-rules",
+      callback: function(app, game_mod){
         game_mod.menu.hideSubMenus();
-        game_mod.handleCluesMenuItem();
+        game_mod.overlay.show(app, game_mod, game_mod.returnGameRulesHTML());
       },
     });
-    this.menu.addSubMenuOption("game-game",{
-      text: "Underground Map",
-      id: "game-underground",
-      class: "game-underground",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.drawUndergroundMap();
-      },
-    });
-    this.menu.addSubMenuOption("game-game",{
-      text: "Bus Routes",
-      id: "game-bus",
-      class: "game-bus",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.drawBusMap();
-      },
-    });
-    this.menu.addSubMenuOption("game-game",{
-      text: "Inspect Map",
-      id: "game-map",
-      class: "game-map",
-      callback: function (app, game_mod) {
-        game_mod.menu.hideSubMenus();
-        game_mod.magnifyingGlass();
-      },
-    });
-
     this.menu.addSubMenuOption("game-game", {
       text: "Log",
       id: "game-log",
@@ -205,6 +177,60 @@ class Scotland extends GameTemplate {
       },
     });
  
+    this.menu.addMenuOption({
+      text: "Clues",
+      id: "game-clues",
+      callback: function(app, game_mod){
+        game_mod.menu.showSubMenu("game-clues");
+      }
+    });
+
+    this.menu.addSubMenuOption("game-clues",{
+      text: "Clues",
+      id: "game-clue-list",
+      class: "game-clue-list",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.handleCluesMenuItem();
+      },
+    });
+    this.menu.addSubMenuOption("game-clues",{
+      text: "Inspect Map",
+      id: "game-map",
+      class: "game-map",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.magnifyingGlass();
+      },
+    });
+    this.menu.addSubMenuOption("game-clues",{
+      text: "Underground Map",
+      id: "game-underground",
+      class: "game-underground",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.drawUndergroundMap();
+      },
+    });
+    this.menu.addSubMenuOption("game-clues",{
+      text: "Bus Routes",
+      id: "game-bus",
+      class: "game-bus",
+      callback: function (app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.drawBusMap();
+      },
+    });
+    this.menu.addSubMenuOption("game-clues",{
+      text: "Clear Map",
+      id: "clear-map",
+      class: "clear-map",
+      callback: function(app, game_mod){
+        game_mod.menu.hideSubMenus();
+        game_mod.clearMap();
+      }
+    });
+
     this.menu.addMenuIcon({
       text: '<i class="fa fa-window-maximize" aria-hidden="true"></i>',
       id: "game-menu-fullscreen",
@@ -244,7 +270,7 @@ class Scotland extends GameTemplate {
     //
     // initialize
     //
-    if (this.game.state == undefined) {
+    if (!this.game.state) {
       this.game.state = this.returnState();
 
       console.log("\n\n\n\n");
@@ -266,13 +292,16 @@ class Scotland extends GameTemplate {
       this.addDeck(0);
 
       this.game.queue.push("round");
-      this.game.queue.push("init");
       this.game.queue.push("READY");
+      this.game.queue.push("init");
     }
+
+    console.log(JSON.parse(JSON.stringify(this.game.state)));
 
     this.restoreLog();
 
     if (!this.browser_active) {
+      this.saveGame(this.game.id)
       return;
     }
 
@@ -395,15 +424,18 @@ class Scotland extends GameTemplate {
         this.game.queue = [];
         if (method == "escape"){
           this.updateLog("Detectives are out of moves! Mister X escapes");
-          this.game.winner = winner;
+          this.endGame(this.game.players[this.game.state.x], "escape");
+          return 0;
         }
         if (method == "caught"){
           this.updateLog(`Detective ${winner+1} landed on Mister X and arrested him`);
-          this.game.winner = this.game.state.detectives[pawn];
         }
         if (method == "trapped"){
           this.updateLog(`The detectives encircled Mister X forcing him to surrender`);
-          this.game.winner = -1;
+        }
+        if (this.game.player == this.game.state.x){
+          this.game.over = 1;
+          this.resignGame(this.game.id, "arrest");
         }
         return 0;
       }
@@ -458,9 +490,7 @@ class Scotland extends GameTemplate {
           if (this.game.player == this.game.state.x){
             if (target_id === this.game.state.player_location[this.game.state.numDetectives]){
               this.addMove(`win\tcaught\t${pawn}\t${target_id}`);
-              //this.addMove("NOTIFY\tMister X has been caught at " + target_id);
               this.endTurn();
-              //this.resignGame();
             }
           }
 
@@ -578,31 +608,34 @@ class Scotland extends GameTemplate {
 
 
   ticketsToHTML(pawn){
+    let source_id = this.game.state.player_location[pawn];
+    let mylocation = this.game.state.locations[source_id]; //Obj
+
     let html =  `<div class='status-icon-menu'>
 
-            <div class="menu_icon" id="taxi">
+            <div class="menu_icon ${(mylocation.taxi.length == 0 || this.game.state.tickets[pawn]["taxi"] == 0)? "unavailable":""}" id="taxi">
               <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: yellow;"></i>
               <div class="menu-text">
                Taxi: ${this.game.state.tickets[pawn]["taxi"]}
               </div>
             </div>
 
-            <div class="menu_icon" id="bus">
+            <div class="menu_icon ${(mylocation.bus.length == 0 || this.game.state.tickets[pawn]["bus"] == 0)? "unavailable":""}" id="bus">
               <i class="menu_icon_icon fas fa-bus fa-border"  style="background-color: #4382b5;"></i>
               <div class="menu-text">Bus: ${this.game.state.tickets[pawn]["bus"]}</div>
             </div>
 
-            <div class="menu_icon" id="underground">
+            <div class="menu_icon ${(mylocation.underground.length == 0 || this.game.state.tickets[pawn]["underground"] == 0)? "unavailable":""}" id="underground">
                <i class="menu_icon_icon fas fa-subway fa-border"  style="background-color: #be5e2f;"></i>
                <div class="menu-text">U.: ${this.game.state.tickets[pawn]["underground"]}</div>
             </div>
             `;
     if (pawn == this.game.state.numDetectives){
-      html += `<div class="menu_icon" id="mystery">
+      html += `<div class="menu_icon ${(this.game.state.tickets[pawn]["x"] == 0)? "unavailable":""}" id="mystery">
                 <i class="menu_icon_icon fas fa-mask fa-border"></i>
                 <div class="menu-text">X: ${this.game.state.tickets[pawn]["x"]}</div>
               </div>
-              <div class="menu_icon" id="double">
+              <div class="menu_icon ${(this.game.state.tickets[pawn]["double"] == 0)? "unavailable":""}" id="double">
                 <i class="menu_icon_icon fas fa-angle-double-right fa-border" style="background-color: #062E03;"></i>
                 <div class="menu-text">Double: ${this.game.state.tickets[pawn]["double"]}</div>
               </div>`;      
@@ -620,7 +653,6 @@ class Scotland extends GameTemplate {
     if (!this.browser_active) return;
 
     let scotland_self = this;
-    let can_player_move = 0;
 
     this.menu_backup_callback = function(){scotland_self.playerTurn(player, pawn);};    
 
@@ -650,11 +682,14 @@ class Scotland extends GameTemplate {
       this.setHudClass(-1);
     }
 
+    let detectives = scotland_self.game.state.player_location.slice(0,scotland_self.game.state.numDetectives);  
+    console.log(JSON.parse(JSON.stringify(detectives)));
+
     // attach events
     $(".menu_icon").off();
     $(".menu_icon").on("click", function(){
       scotland_self.disableBoardClicks();
-      let detectives = scotland_self.game.state.player_location.slice(0,scotland_self.game.state.numDetectives);  
+      
       let action = $(this).attr("id");
       if (action == "double"){
         scotland_self.addMove("double");
@@ -664,8 +699,7 @@ class Scotland extends GameTemplate {
       if (action == "taxi"){
         if (scotland_self.game.state.tickets[pawn]["taxi"] > 0) {
         for (let z of mylocation.taxi) {
-          if (!detectives.includes(parseInt(z))){
-            can_player_move = 1;
+          if (!detectives.includes(z)){
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
               scotland_self.movePlayer(player, pawn, target_id, "taxi");
@@ -679,8 +713,7 @@ class Scotland extends GameTemplate {
       if (action == "bus"){
         if (scotland_self.game.state.tickets[pawn]["bus"] > 0) {
         for (let z of mylocation.bus) {
-          if (!detectives.includes(parseInt(z))){
-            can_player_move = 1;
+          if (!detectives.includes(z)){
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
               scotland_self.movePlayer(player, pawn, target_id, "bus");
@@ -694,8 +727,7 @@ class Scotland extends GameTemplate {
       if (action == "underground"){
         if (scotland_self.game.state.tickets[pawn]["underground"] > 0) {
           for (let z of mylocation.underground) {
-            if (!detectives.includes(parseInt(z))){
-              can_player_move = 1;
+            if (!detectives.includes(z)){
               $(`#${z}`).on("click", function () {
                 let target_id = $(this).attr("id");
                 scotland_self.movePlayer(player, pawn, target_id, "underground");
@@ -714,8 +746,7 @@ class Scotland extends GameTemplate {
         for (let mode of mot){
           console.log(mode);
           for (let z of mylocation[mode]) {
-          if (!detectives.includes(parseInt(z))){
-            can_player_move = 1;
+          if (!detectives.includes(z)){
             $(`#${z}`).on("click", function () {
               let target_id = $(this).attr("id");
               scotland_self.movePlayer(player, pawn, target_id, "x");
@@ -730,7 +761,7 @@ class Scotland extends GameTemplate {
     });
     
 
-    /*if (can_player_move == 0) {
+    if (!this.canPlayerMove(player, pawn)) {
       //Mr. X is boxed in and cannot move --> game over
       if (player === this.game.state.x){
         this.addMove(`win\ttrapped\t-1\t${source_id}`);
@@ -741,7 +772,47 @@ class Scotland extends GameTemplate {
       }
       $(".location").off();
       return 0;
-    }*/
+    }
+  }
+
+  canPlayerMove(player, pawn){
+    let source_id = this.game.state.player_location[pawn];
+    let mylocation = this.game.state.locations[source_id]; //Obj
+    let detectives = this.game.state.player_location.slice(0,this.game.state.numDetectives);
+
+    if (this.game.state.tickets[pawn]["taxi"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
+      for (let z of mylocation.taxi) {
+        if (!detectives.includes(z)){
+          return true;
+        }
+      }
+    }
+
+    if (this.game.state.tickets[pawn]["bus"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
+      for (let z of mylocation.bus) {
+        if (!detectives.includes(z)){
+          return true;
+        }
+      }
+    }
+
+    if (this.game.state.tickets[pawn]["underground"] > 0 || this.game.state.tickets[pawn]["x"] > 0) {
+      for (let z of mylocation.underground) {
+        if (!detectives.includes(z)){
+          return true;
+        }
+      }
+    }
+
+    if (this.game.state.tickets[pawn]["x"] > 0) {
+      for (let z of mylocation.ferry) {
+        if (!detectives.includes(z)){
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   movePlayer(player, pawn, target_id, ticket) {
@@ -781,7 +852,7 @@ class Scotland extends GameTemplate {
 
   showPlayers(){
     for (let i = 0; i <= this.game.state.numDetectives; i++) {
-      let pawn = document.querySelector(`#pawn${i+1}`);
+      let pawn = (i < this.game.state.numDetectives)? document.querySelector(`#pawn${i+1}`) : document.querySelector("#pawnX");
       if (pawn){
         let position = this.game.state.player_location[i]; 
         if (position != -1) {
@@ -874,6 +945,9 @@ class Scotland extends GameTemplate {
     state.locations = this.returnLocations();
     state.starting_positions = this.returnStartingPositions(); //We store this to give detectives a clue in the first two rounds
     state.numDetectives = (this.game.players.length < 4) ? 4 : 5; 
+    if (this.game.players.length == 2){
+      state.numDetectives = 3;
+    }
     //organized by detective #, mr x's location/tickets @ index = numDetectives
     state.player_location = [];
     state.tickets = [];
@@ -937,6 +1011,14 @@ class Scotland extends GameTemplate {
         }
       }
     }
+  }
+
+  clearMap(){
+    const c = document.querySelector(".gameboard canvas");
+    if (!c){ return;}
+
+    let ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, 5135, 3829);
   }
 
   returnLocations() {

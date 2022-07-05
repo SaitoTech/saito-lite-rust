@@ -142,3 +142,7 @@
 .status-icon-menu{
   width: 100%;
 }
+
+.menu_icon.unavailable{
+  filter: brightness(0.4);
+}
