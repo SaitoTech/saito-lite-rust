@@ -92,13 +92,13 @@ textarea {
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
-.saito-large-paragraph {
+p.large {
   font-size: 2rem;
   font-weight: bold;
 }
 
 p,
-.saito-mid-paragraph {
+p.middle {
   color: var(--saito-black);
   font-size: 1.6rem;
   overflow: auto;
@@ -108,7 +108,7 @@ p::-webkit-scrollbar {
   display: none;
 }
 
-.saito-small-paragraph {
+p.small {
   font-size: 1.3rem;
 }
 
@@ -176,17 +176,17 @@ Media Queries
     font-size: 2rem;
   }
 
-  .saito-large-p {
+  p.large {
     font-size: 1.8rem;
   }
 
   p,
-  .saito-mid-p {
+  p.middle {
     color: var(--saito-black);
     font-size: 1.4rem;
   }
 
-  .saito-small-p {
+  p.small {
     font-size: 1.1rem;
   }
 }

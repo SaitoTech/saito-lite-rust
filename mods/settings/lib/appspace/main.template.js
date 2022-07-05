@@ -11,7 +11,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       .map((mod, i) => {
         let CHECKED = mod.active ? 'CHECKED' : '';
         return `
-        <div class="settings-app-select">
+        <div class="settings-appspace-app">
         <input
         type="checkbox"
         value="modules_mods_${i}"
@@ -43,38 +43,36 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   let html = `
-  <link rel="stylesheet" href="/settings/style.css">
   <div class="settings-appspace">
 
-    <div class="settings-appspace-grid">
+    <div>
 
-      <div class="settings-appspace-wallet-management">
+      <div>
 
         <div class="saito-grid-1-1-1">
-          <button id="backup-account-btn" class="backup-account-btn"">Backup Wallet</button>
-          <button id="restore-account-btn" class="restore-account-btn">Restore Wallet</button>
-          <button id="restore-privatekey-btn" class="restore-privatekey-btn">Import Private Key</button>
-         
+          <button>Backup Wallet</button>
+          <button>Restore Wallet</button>
+          <button>Import Private Key</button>
         </div>
 
         <div class="saito-grid-1">
-        <button class="small"><input id="file-input" class="file-input" type="file" name="name" style="display:none;" /></button>
+         <input  type="file" name="name" style="display:none;" />
         </div>
         ${balance_link}
 
 
         <div class="saito-grid-1-1">
 
-          <p class="saito-large-paragraph">Email:</p>
+          <p class="large">Email:</p>
           <p>${email_registered}</p>
 
-          <p class="saito-large-paragraph">Username:</p>
-          <p>${identifier_registered}</p>
+          <p class="large">Username:</p>
+ .         <p>${identifier_registered}</p>
 
-          <p class="public-key saito-large-paragraph">Public Key:</p>
+          <p class="large">Public Key:</p>
           <p>${app.wallet.returnPublicKey()}</p>
 
-          <p class="saito-large-paragraph">Private Key:</p>
+          <p class="large">Private Key:</p>
           <p class="settings-privatekey">
             <input id="settings-privatekey-input" type="text" value="${app.wallet.returnPrivateKey()}" class="settings-password" />
             <i class="settings-see-password fas fa-eye" id="settings-see-password"></i>
@@ -84,7 +82,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       </div>
 
-      <div class="settings-app-management">
+      <div class="">
 
         <h3>Installed Modules: `;
 
@@ -93,23 +91,20 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   }
 
   html += `</h2>
-        <div class="settings-app-list">
+        <div class="settings-appspace-modules">
         ${modules_html}
         </div>
       </div>
-
-      <div id="settings-appspace" class="settings-appspace"></div>
-
       <hr />
       <div class="saito-grid-1-1-1-1">
-        <p class="saito-large-paragraph">Code Version:</p>
-        <p class="saito-mid-paragraph">${app.wallet.wallet.version}</p>
-        <p class="saito-large-paragraph">Wallet Version:</p>
-        <p class="saito-mid-paragraph">${app.options.wallet.version}</p>
+        <p class="large">Code Version:</p>
+        <p class="middle">${app.wallet.wallet.version}</p>
+        <p class="large">Wallet Version:</p>
+        <p class="middle">${app.options.wallet.version}</p>
       </div>
 
-      <p class="saito-small-paragraph" style="padding-bottom:40px;">
-        Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" id="reset-account-btn" class="">resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
+      <p class="small" style="padding-bottom:40px;">
+        Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" >resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
       </p>
 
     </div>
