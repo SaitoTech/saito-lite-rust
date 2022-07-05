@@ -18,7 +18,6 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-    this.tweets = [];
 
     this.styles = [
       '/saito/saito.css',
