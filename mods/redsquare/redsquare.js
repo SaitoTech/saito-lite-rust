@@ -73,8 +73,8 @@ class RedSquare extends ModTemplate {
   // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
   // NEEDS TO BE REMOVED BEFORE CODE MERGE
   //
-
   installModule(app){
+
     if (this.app.BROWSER == 1) { return }
 
     super.installModule(app);
@@ -82,8 +82,8 @@ class RedSquare extends ModTemplate {
     let dummy_content = [
       {
         content: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-        img: '',
-        parent_id: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg', 
+        img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+        parent_id: '', 
         flagged: 0,
         moderated: 0
       },
@@ -133,7 +133,7 @@ class RedSquare extends ModTemplate {
   onPeerHandshakeComplete(app, peer) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets DESC LIMIT 100` ,
+      `SELECT * FROM tweets9 DESC LIMIT 100` ,
       (res) => {
         if (res.rows) {
           res.rows.forEach(row => {
@@ -166,6 +166,7 @@ class RedSquare extends ModTemplate {
   }
 
   sendTweetTransaction(data){
+
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg = {
@@ -197,7 +198,9 @@ class RedSquare extends ModTemplate {
     let created_at = new Date().getTime();
     let updated_at = new Date().getTime();
 
-    let sql = `INSERT INTO tweets (
+
+
+    let sql = `INSERT INTO tweets9 (
                 tx,
                 tx_sig,
                 parent_id, 

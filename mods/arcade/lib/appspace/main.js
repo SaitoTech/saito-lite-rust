@@ -1,6 +1,7 @@
 const saito = require("./../../../../lib/saito/saito");
 const ArcadeAppspaceTemplate = require('./main.template.js');
 const ArcadeAppspaceGameTemplate = require('./game.template.js');
+const HARDCODED_GAME_INVITE_TEMPLATE = require('./game.hardcoded.template.js');
 const JSON = require("json-bigint");
 
 class ArcadeAppspace {
@@ -14,6 +15,8 @@ class ArcadeAppspace {
       app.browser.addElementToClass(ArcadeAppspaceTemplate(app, mod), ".appspace");
     }
 
+    app.browser.addElementToElement(HARDCODED_GAME_INVITE_TEMPLATE(app, mod, {}, 0), document.querySelector(".arcade-hero"));
+    return;
 
     //
     // add games
