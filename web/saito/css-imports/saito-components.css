@@ -112,7 +112,8 @@ Saito Menu
     font-size: 1.92rem;
 }
 
-.saito-menu>ul>li:hover, .saito-menu>ul>li:hover>i {
+.saito-menu>ul>li:hover,
+.saito-menu>ul>li:hover>i {
     background-color: var(--saito-primary);
     color: var(--saito-white);
 }
@@ -184,7 +185,7 @@ Saito Username
 -----------------------------------------------------------------*/
 
 .saito-username {
-    max-width: 90%;
+    max-width: 60%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -207,7 +208,9 @@ Saito List,Saito User List and Saito User
     margin-bottom: 1rem;
 }
 
-.saito-list-user, .saito-list-chatbox, .saito-list-game {
+.saito-list-user,
+.saito-list-chatbox,
+.saito-list-game {
     display: flex;
     position: relative;
     justify-items: start;
@@ -215,7 +218,8 @@ Saito List,Saito User List and Saito User
     width: 100%;
 }
 
-.saito-list-user>div:nth-child(1)>img, .saito-list-chatbox>div:nth-child(1)>img {
+.saito-list-user>div:nth-child(1)>img,
+.saito-list-chatbox>div:nth-child(1)>img {
     width: 5rem;
     height: 5rem;
     border-radius: .5rem;
@@ -231,7 +235,9 @@ Saito List,Saito User List and Saito User
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
-.saito-list-user>div:nth-child(2), .saito-list-chatbox>div:nth-child(2), .saito-list-game>div:nth-child(2) {
+.saito-list-user>div:nth-child(2),
+.saito-list-chatbox>div:nth-child(2),
+.saito-list-game>div:nth-child(2) {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -239,7 +245,9 @@ Saito List,Saito User List and Saito User
     width: 70%;
 }
 
-.saito-list-user>div:nth-child(2)>div, .saito-list-chatbox>div:nth-child(2)>div, .saito-list-game>div:nth-child(2)>div {
+.saito-list-user>div:nth-child(2)>div,
+.saito-list-chatbox>div:nth-child(2)>div,
+.saito-list-game>div:nth-child(2)>div {
     max-width: 90%;
     white-space: nowrap;
     overflow: hidden;
@@ -248,11 +256,14 @@ Saito List,Saito User List and Saito User
     font-size: 1.6rem;
 }
 
-.saito-list-user>div:nth-child(2)>p, .saito-list-chatbox>div:nth-child(2)>p, .saito-list-game>div:nth-child(2)>p {
+.saito-list-user>div:nth-child(2)>p,
+.saito-list-chatbox>div:nth-child(2)>p,
+.saito-list-game>div:nth-child(2)>p {
     font-size: 1.3rem;
 }
 
-.saito-list-chatbox>div:nth-child(3), .saito-list-game>div:nth-child(3) {
+.saito-list-chatbox>div:nth-child(3),
+.saito-list-game>div:nth-child(3) {
     top: 0;
     cursor: pointer;
     font-size: 1.4rem;
@@ -265,7 +276,8 @@ Saito List,Saito User List and Saito User
 
 /*  Small Size */
 
-.saito-list-user.small>div:nth-child(1)>img, .saito-list-chatbox.small>div:nth-child(1)>img {
+.saito-list-user.small>div:nth-child(1)>img,
+.saito-list-chatbox.small>div:nth-child(1)>img {
     width: 3rem;
     height: 3rem;
     border-radius: .5rem;
@@ -279,17 +291,22 @@ Saito List,Saito User List and Saito User
     margin-right: .8rem;
 }
 
-.saito-list-user.small>div:nth-child(2)>div, .saito-list-chatbox.small>div:nth-child(2)>div, .saito-list-game.small>div:nth-child(2)>div {
+.saito-list-user.small>div:nth-child(2)>div,
+.saito-list-chatbox.small>div:nth-child(2)>div,
+.saito-list-game.small>div:nth-child(2)>div {
     font-size: 1.4rem;
 }
 
-.saito-list-user.small>div:nth-child(2)>p, .saito-list-chatbox.small>div:nth-child(2)>p, .saito-list-game.small>div:nth-child(2)>p {
+.saito-list-user.small>div:nth-child(2)>p,
+.saito-list-chatbox.small>div:nth-child(2)>p,
+.saito-list-game.small>div:nth-child(2)>p {
     font-size: 1.1rem;
 }
 
 /*  Large Size */
 
-.saito-list-user.large>div:nth-child(1)>img, .saito-list-chatbox.large>div:nth-child(1)>img {
+.saito-list-user.large>div:nth-child(1)>img,
+.saito-list-chatbox.large>div:nth-child(1)>img {
     width: 6.5rem;
     height: 6.5rem;
     border-radius: .5rem;
@@ -303,11 +320,15 @@ Saito List,Saito User List and Saito User
     margin-right: .8rem;
 }
 
-.saito-list-user.large>div:nth-child(2)>div, .saito-list-chatbox.large>div:nth-child(2)>div, .saito-list-game.large>div:nth-child(2)>div {
+.saito-list-user.large>div:nth-child(2)>div,
+.saito-list-chatbox.large>div:nth-child(2)>div,
+.saito-list-game.large>div:nth-child(2)>div {
     font-size: 1.8rem;
 }
 
-.saito-list-user.large>div:nth-child(2)>p, .saito-list-chatbox.large>div:nth-child(2)>p, .saito-list-game.large>div:nth-child(2)>p {
+.saito-list-user.large>div:nth-child(2)>p,
+.saito-list-chatbox.large>div:nth-child(2)>p,
+.saito-list-game.large>div:nth-child(2)>p {
     font-size: 1.5rem;
 }
 
@@ -331,25 +352,30 @@ Saito List,Saito User List and Saito User
     .item-info {
         width: 70%;
     }
+
     .item-info span {
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
     .saito-list>div>img {
         width: 3.5rem;
         height: 3.5rem;
     }
+
     .saito-list.rectangle .item-info {
         width: 70%;
     }
+
     .saito-list.rectangle .item-info span {
         max-width: 80%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
     .saito-list.rectangle>div>img {
         width: 5rem;
         height: 3.5rem;
@@ -406,6 +432,7 @@ Saito Tabs
     .saito-tab-buttons {
         display: block;
     }
+
     .saito-tab-buttons>ul {
         display: block;
     }
@@ -600,7 +627,8 @@ Saito overlay
     display: flex;
 }
 
-.saito-overlay>div, .saito-overlay>div>i {
+.saito-overlay>div,
+.saito-overlay>div>i {
     position: absolute;
     right: 0;
     color: var(--saito-primary);

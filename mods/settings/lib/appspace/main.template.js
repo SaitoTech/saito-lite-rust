@@ -15,10 +15,9 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <input
         type="checkbox"
         value="modules_mods_${i}"
-        class="modules_mods_checkbox"
         name="modules_mods_${i}" id="${i}" ${CHECKED}/>
-          <label class="s-container">${mod.name}
-            <span class="s-checkmark"></span>
+          <label>${mod.name}
+            <span></span>
           </label>
          </div>
       `;
@@ -53,38 +52,35 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <button>Backup Wallet</button>
           <button>Restore Wallet</button>
           <button>Import Private Key</button>
-        </div>
-
-        <div class="saito-grid-1">
-         <input  type="file" name="name" style="display:none;" />
+          <input type="file" style="display:none;" />
         </div>
         ${balance_link}
 
 
-        <div class="saito-grid-1-1">
-
+        <div class="settings-appspace-user-details">
+          
           <p class="large">Email:</p>
-          <p>${email_registered}</p>
+          <div>${email_registered}</div>
 
           <p class="large">Username:</p>
- .         <p>${identifier_registered}</p>
+         <div>${identifier_registered}</div>
 
           <p class="large">Public Key:</p>
-          <p>${app.wallet.returnPublicKey()}</p>
+          <div class="saito-username">${app.wallet.returnPublicKey()}</div>
 
           <p class="large">Private Key:</p>
-          <p class="settings-privatekey">
-            <input id="settings-privatekey-input" type="text" value="${app.wallet.returnPrivateKey()}" class="settings-password" />
-            <i class="settings-see-password fas fa-eye" id="settings-see-password"></i>
-          </p>
+          <div class="settings-appspace-privatekey">
+            <input type="text" value="${app.wallet.returnPrivateKey()}" class="settings-appspace-password" />
+            <i class="settings-appspace-see-password fas fa-eye"></i>
+          </div>
 
 	</div>
 
       </div>
 
-      <div class="">
+      <div class="settings-appspace-modules-container">
 
-        <h3>Installed Modules: `;
+        <h4>Installed Modules: </h4> `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
@@ -96,11 +92,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         </div>
       </div>
       <hr />
-      <div class="saito-grid-1-1-1-1">
+      <div class="settings-appspace-versions">
         <p class="large">Code Version:</p>
-        <p class="middle">${app.wallet.wallet.version}</p>
+        <p>${app.wallet.wallet.version}</p>
         <p class="large">Wallet Version:</p>
-        <p class="middle">${app.options.wallet.version}</p>
+        <p>${app.options.wallet.version}</p>
       </div>
 
       <p class="small" style="padding-bottom:40px;">

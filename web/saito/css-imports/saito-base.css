@@ -35,6 +35,10 @@ pre {
   overflow: auto;
 }
 
+.treated {
+  display: none;
+}
+
 /* ----------------------------------------------------------------
  Link
 -----------------------------------------------------------------*/
@@ -190,6 +194,8 @@ Media Queries
     font-size: 1.1rem;
   }
 }
+
+
 
 @media screen and (max-width: 320px) {
   body {
