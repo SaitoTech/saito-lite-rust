@@ -18,6 +18,7 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
+    this.tweets = [];
 
     this.styles = [
       '/saito/saito.css',
@@ -68,6 +69,27 @@ class RedSquare extends ModTemplate {
 
   }
 
+  onPeerHandshakeComplete(app, peer) {
+    app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+      "RedSquare",
+      `SELECT * FROM tweets DESC LIMIT 100` ,
+      (res) => {
+        console.log("RECEIVED TWEETS!");
+        if (res.rows) {
+          res.rows.forEach(row => {
+            
+            this.tweets.push(row);
+            console.log(row);
+            this.app.connection.emit('tweet-render-request', row);
+
+          });
+        }
+
+
+      }
+    );
+  }
+
 
   async onConfirmation(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -80,7 +102,7 @@ class RedSquare extends ModTemplate {
           //
           // TODO - update UI when tweet transaction is received
           //
-          this.app.connection.emit('redsquare-update-tweets', row);
+          //this.app.connection.emit('redsquare-update-tweets', row);
         }
 
       }
