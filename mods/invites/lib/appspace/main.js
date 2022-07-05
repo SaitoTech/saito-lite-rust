@@ -1,6 +1,5 @@
 const InvitesAppspaceTemplate = require('./main.template.js');
 const InvitesInvitationTemplate = require('./../invitation.template.js');
-const jsonTree = require('json-tree-viewer');
 
 class InvitesAppspace {
 
@@ -11,12 +10,6 @@ class InvitesAppspace {
 
     if (!document.querySelector(".invite-email-appspace")) {
       app.browser.addElementToClass(InvitesAppspaceTemplate(app, mod), ".appspace");
-    }
-
-    try {
-      var tree = jsonTree.create(app.options.invites, document.getElementById("invites-json-tree"));
-    } catch (err) {
-      console.log("error creating jsonTree: " + jsonTree);
     }
 
     if (mod.invites) {
