@@ -20,6 +20,8 @@ class RedSquareMain {
     }
 
     app.connection.on("tweet-render-request", (tweet) => {
+        console.log('inside emit');
+        console.log(tweet);
         let item = new RedSquareItem(app, mod, tweet);
         item.render(app, mod); 
     });

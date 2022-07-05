@@ -24,9 +24,9 @@ module.exports = (app, mod, tweet) => {
           </div>
       `;
 
-  if (typeof tweet.image != 'undefined' && tweet.image != "") {
+  if (typeof tweet.img != 'undefined' && tweet.img != "") {
       html  += `<div class="redsquare-image-container">
-              <img src="/redsquare/images/nice-car.jpg" />
+              <img src="${tweet.img}" />
           </div>`;
   }
 

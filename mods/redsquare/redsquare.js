@@ -68,23 +68,81 @@ class RedSquare extends ModTemplate {
 
   }
 
+
+  //
+  // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
+  // NEEDS TO BE REMOVED BEFORE CODE MERGE
+  //
+
+  installModule(app){
+    if (this.app.BROWSER == 1) { return }
+
+    super.installModule(app);
+
+    let dummy_content = [
+      {
+        content: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
+        img: '',
+        parent_id: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg', 
+        flagged: 0,
+        moderated: 0
+      },
+      {
+        content: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
+        img: '',
+        parent_id: '', 
+        flagged: 0,
+        moderated: 0
+      },
+      {
+        content: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
+        img: '',
+        parent_id: 'https://dmccdn.com/uploads/share/Saitonetwork-tn.png', 
+        flagged: 0,
+        moderated: 0
+      },
+      {
+        content: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
+        parent_id: '',
+        img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080', 
+        flagged: 0,
+        moderated: 0
+      },
+      {
+        content: 'Etiam hendrerit ex ut neque bibendum porta.',
+        img: '',
+        parent_id: '', 
+        flagged: 0,
+        moderated: 0
+      },
+      {
+        content: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
+        img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
+        parent_id: '', 
+        flagged: 0,
+        moderated: 0
+      }  
+    ];
+
+    for (let i=0; i<dummy_content.length; i++) {
+      this.sendTweetTransaction(dummy_content[i]);
+    }
+
+    console.log("Dummy tweets added to db");
+  }
+
+
   onPeerHandshakeComplete(app, peer) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets DESC LIMIT 100` ,
+      `SELECT * FROM tweets8 DESC LIMIT 100` ,
       (res) => {
         console.log("RECEIVED TWEETS!");
         if (res.rows) {
           res.rows.forEach(row => {
-            
-            this.tweets.push(row);
-            console.log(row);
             this.app.connection.emit('tweet-render-request', row);
-
           });
         }
-
-
       }
     );
   }
@@ -110,12 +168,16 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  sendTweetTransaction(content){
+  sendTweetTransaction(data){
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg = {
       module: this.name,
-      content: content,
+      content: data.content,
+      img: data.img,
+      parent_id: data.parent_id, 
+      flagged: data.flagged,
+      moderated: data.moderated,
       request:  "create tweet",
       timestamp: new Date().getTime()
     };
@@ -126,24 +188,55 @@ class RedSquare extends ModTemplate {
 
   receiveTweetTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    let content  = txmsg.content;
-    let publickey = tx.transaction.from[0].add;
-    let tweet_id = tx.transaction.id;
 
-    let sql = `INSERT INTO tweets (
+    let txn = '';//JSON.stringify(tx);
+    let tx_sig = tx.transaction.sig;
+    let parent_id = txmsg.parent_id;
+    let publickey = tx.transaction.from[0].add;
+    let flagged = txmsg.flagged;
+    let moderated = txmsg.moderated;
+    let img = txmsg.img;
+    let content = txmsg.content;
+    let created_at = new Date().getTime();
+    let updated_at = new Date().getTime();
+
+    console.log(txmsg);
+
+    let sql = `INSERT INTO tweets8 (
+                tx,
+                tx_sig,
+                parent_id, 
+                publickey,
+                flagged,
+                moderated,
+                img,
                 content,
-                tweet_id,
-                publickey
+                created_at,
+                updated_at
               ) VALUES (
+                $txn,
+                $tx_sig,
+                $parent_id, 
+                $publickey,
+                $flagged,
+                $moderated,
+                $img,
                 $content,
-                $tweet_id,
-                $publickey
+                $created_at,
+                $updated_at
               )`;
 
     let params = {
+      $txn: txn,
+      $tx_sig: tx_sig,
+      $parent_id: parent_id, 
+      $publickey: publickey,
+      $flagged: flagged,
+      $moderated: moderated,
+      $img: img,
       $content: content,
-      $tweet_id: tweet_id,
-      $publickey: publickey
+      $created_at: created_at,
+      $updated_at: updated_at
     };
     app.storage.executeDatabase(sql, params, "redsquare");
     return;
