@@ -4,12 +4,12 @@ module.exports = (app, mod, tweet) => {
 
   let html = `<div class="redsquare-item">
       <div class="redsquare-item-profile">
-          <img src="/redsquare/images/david.jpeg" />
+          <img src="${tweet.identicon}" />
       </div>
       <div class="redsquare-item-contents">
           <div class="redsquare-user">
               <div class="redsquare-user-details">
-                  <p> trevelyan</p>
+                  <p>${tweet.publickey}</p>
                   <i class="fas fa-certificate"></i>
               </div>
 
