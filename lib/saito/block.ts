@@ -462,14 +462,17 @@ class Block {
 
       if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
         if (difficulty > 0) {
-          cv.expected_difficulty = previous_block.returnDifficulty() - 1;
+          cv.expected_difficulty = Math.floor(previous_block.returnDifficulty() * 0.9);
+          console.log("Difficulty adjusted down to: " + cv.expected_difficulty);
         }
       } else if (previous_block.hasGoldenTicket() && cv.gt_num > 0) {
-        cv.expected_difficulty = difficulty + 1;
+        cv.expected_difficulty = Math.ceil(difficulty * 1.1);
+        console.log("Difficulty adjusted up to: " + cv.expected_difficulty);
+
       } else {
         cv.expected_difficulty = difficulty;
       }
-
+ 
       //
       // average income and variance depends on previous block too
       //
