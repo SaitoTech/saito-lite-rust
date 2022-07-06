@@ -6,7 +6,7 @@ module.exports = (app, mod, tweet) => {
       <div class="redsquare-item-profile">
           <img src="${tweet.identicon}" />
       </div>
-      <div class="redsquare-item-contents">
+      <div class="redsquare-item-contents" id="tweet-${tweet.tx_sig}" data-tweet-id="${tweet.id}">
           <div class="redsquare-user">
               <div class="redsquare-user-details">
                   <p>${tweet.publickey}</p>
@@ -31,6 +31,11 @@ module.exports = (app, mod, tweet) => {
   }
 
   html += `
+
+         <div class="redsquare-tweet-tools">
+            <span class="tweet-tool-like"><span class="tweet-like-count">0</span> LIKES</span>
+        </div>
+
       </div>
   </div>`;
 

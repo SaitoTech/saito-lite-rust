@@ -6,13 +6,6 @@ module.exports = (app, mod) => {
       <div class="saito-main appspace">
 
   <div id="redsquare-input-container">
-      <div class="redsquare-input-profile">
-          <img src="/redsquare/images/david.jpeg" />
-      </div>
-      <div class="">
-          <textarea placeholder="What's happening"></textarea>
-      </div>
-      <button> Tweet </button>
   </div>
   <div id="redsquare-list">
   </div>

@@ -29,15 +29,6 @@ class RedSquareMain {
   }
 
   attachEvents(app, mod) {
-
-    let tweetBtn = document.querySelector('#redsquare-input-container button');
-    tweetBtn.onclick = (e) => {
-      e.preventDefault();
-
-      let content = document.querySelector('#redsquare-input-container textarea').value;     
-      mod.sendTweetTransaction(content);  
-    }
-
   }
 
 
