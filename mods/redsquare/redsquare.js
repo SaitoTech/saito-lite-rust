@@ -125,9 +125,9 @@ class RedSquare extends ModTemplate {
       }  
     ];
 
-    // for (let i=0; i<dummy_content.length; i++) {
-    //   this.sendTweetTransaction(dummy_content[i]);
-    // }
+    for (let i=0; i<dummy_content.length; i++) {
+      this.sendTweetTransaction(dummy_content[i]);
+    }
   }
 
 
