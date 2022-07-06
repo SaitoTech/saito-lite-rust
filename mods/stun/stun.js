@@ -55,20 +55,10 @@ class Stun extends ModTemplate {
             urls: "stun:stun-sf.saito.io",
           },
           {
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443?transport=tcp",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
+            urls: "turn:stun-sf.saito.io",
+            username: "saito",
+            credential: "saito123",
+          }
         ];
     }
 
