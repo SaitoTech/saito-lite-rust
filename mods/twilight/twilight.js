@@ -29,20 +29,20 @@ class Twilight extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Twilight";
+    this.name  		 = "Twilight";
     this.gamename        = "Twilight Struggle";
-
+    this.slug		 = "twilight";
     this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
       One player plays the United States (US), and the other plays the Soviet Union (USSR).`;
     this.publisher_message = "Twilight Struggle is owned by GMT Games. This module is made available under an open source license provided by GMT Games for usage in open source game engines. Publisher requirements is that at least one player per game has purchased a copy of the game.";
-    this.categories      = "Games Boardgame Strategy";
+    this.categories      = "Games Arcade Entertainment";
 
     this.boardWidth  = 5100; //Pieces originally scaled to 5100px wide board
     this.card_height_ratio = 1.39; // height is 1.39x width
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -51,7 +51,8 @@ class Twilight extends GameTemplate {
     
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
-
+    this.type       	 = "Strategy Boardgame";
+    this.categories 	 = "Boardgame Game"
     //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -2398,7 +2399,7 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["romanian", "defectors", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["romanian", "indopaki", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
@@ -10425,12 +10426,13 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
         twilight_self.attachCardboxEvents(function(invaded) {
 
-          for (let c in twilight_self.countries[invaded].neighbours){
+          for (let c of twilight_self.countries[invaded].neighbours){
+            console.log(c);
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
           }
 
           let die = twilight_self.rollDice(6);
-          twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls: ${die}, adjusted: ${die-modifications}`);
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
             winner = (invaded == "pakistan")? "India conquers Pakistan!": "Pakistan conquers India";
