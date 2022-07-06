@@ -1225,6 +1225,11 @@ class Blackjack extends GameTemplate {
     return new_options;
   }
 
+  payWinners(winner){
+    return 0;
+  }
+
+
   processResignation(resigning_player, txmsg){
     //if (this.game.players.length == 2){
       super.processResignation(resigning_player, txmsg);
