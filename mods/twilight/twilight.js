@@ -10637,7 +10637,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
         twilight_self.attachCardboxEvents(function(invaded) {
 
-          for (let c in twilight_self.countries[invaded].neighbours){
+          for (let c of twilight_self.countries[invaded].neighbours){
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
           }
 
