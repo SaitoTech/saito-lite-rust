@@ -55,18 +55,16 @@ class Arcade extends ModTemplate {
           this.app.storage.saveOptions();
         }
         //this.renderSidebar();
-        try {
           let chat_mod = this.app.modules.returnModule("Chat");
-          if (
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
+          if (chat_mod){
+            if (chat_mod?.groups && 
+                chat_mod.groups.length > 0 &&
+                this.chat_open == 0 &&
+                this.app.options.auto_open_chat_box
+             ) {
+              this.chat_open = 1;
+              chat_mod.openChats();
           }
-        } catch (err) {
-          console.log("Err: " + err);
         }
       }
     }
