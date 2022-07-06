@@ -52,13 +52,23 @@ class Stun extends ModTemplate {
         this.stun.counter = 0;
         this.stun.servers = [
           {
-            urls: "stun:stun-sf.saito.io",
+            urls: "stun:stun.l.google.com:19302",
           },
           {
-            urls: "turn:stun-sf.saito.io",
-            username: "saito",
-            credential: "saito123",
-          }
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
         ];
     }
 
