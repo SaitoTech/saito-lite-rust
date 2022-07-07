@@ -15,6 +15,9 @@ module.exports = (app, mod) => {
       <button> Tweet </button>
   </div>
   <div id="redsquare-list">
+    <div class="redsquare-ghost-panel" style="float:right; min-height: 200px; min-width:200px; background-color: blue;">
+    </div>
+
   </div>
 
 

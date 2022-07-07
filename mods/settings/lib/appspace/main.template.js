@@ -49,14 +49,14 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div>
 
         <div class="saito-grid-1-1-1">
-          <button>Backup Wallet</button>
-          <button>Restore Wallet</button>
-          <button>Import Private Key</button>
+          <div class="saito-button-primary">Backup Wallet</div>
+          <div class="saito-button-primary">Restore Wallet</div>
+          <div class="saito-button-primary">Import Private Key</div>
           <input type="file" style="display:none;" />
         </div>
         ${balance_link}
 
-
+	<h6>Wallet Information:</h6>
         <div class="settings-appspace-user-details">
           
           <p class="large">Email:</p>
@@ -80,7 +80,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div class="settings-appspace-modules-container">
 
-        <h4>Installed Modules: </h4> `;
+        <h6>Installed Modules: </h6> `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
