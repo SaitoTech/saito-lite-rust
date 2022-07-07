@@ -42,7 +42,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     // newbie mode
     this.confirm_moves = 0;
@@ -10427,7 +10427,6 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
         twilight_self.attachCardboxEvents(function(invaded) {
 
           for (let c of twilight_self.countries[invaded].neighbours){
-            console.log(c);
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
           }
 
