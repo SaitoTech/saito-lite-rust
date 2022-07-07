@@ -8,7 +8,6 @@
   box-sizing: border-box;
 }
 
-
 :root {
   font-size: 10px;
 }
@@ -18,7 +17,7 @@ body {
   color: var(--saito-default-font-color);
   font-family: var(--saito-font);
   margin: 0;
-  background-color: var(--saito-white);
+  background-color: var(--saito-gray);
   max-width: 100vw;
   font-size: 1.6rem;
   font-weight: 400;
@@ -43,23 +42,17 @@ a {
   cursor: pointer;
 }
 
-
+a:hover {
+  opacity: 0.8;
+}
 
 /* ----------------------------------------------------------------
 	Headings
 -----------------------------------------------------------------*/
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   color: var(--saito-primary);
 }
-
-h5,
-h6 {}
 
 h1 {
   font-size: 5rem;
@@ -89,16 +82,13 @@ textarea {
   resize: none;
 }
 
-
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
 
 p {
   font-size: 1.8rem;
-
 }
-
 
 /* ----------------------------------------------------------------
 Divider
@@ -122,11 +112,6 @@ p, .saito-mid-p {
   font-size: 1.3rem;
 }
 
-a:hover {
-  opacity: 0.8;
-}
-
-
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/
@@ -135,26 +120,11 @@ Media Queries
   body {
     font-size: 1.4rem;
   }
-
-  .saito-container {
-    padding: 1rem calc((100vw - var(--saito-width)) / 2);
-  }
 }
 
 @media screen and (max-width: 1200px) {
   body {
     font-size: 1.4rem;
-  }
-
-  .saito-container {
-    padding: 1rem 2rem;
-  }
-}
-
-@media screen and (max-width: 854px) {
-
-  #saito-container {
-    flex-direction: column;
   }
 }
 
@@ -162,52 +132,40 @@ Media Queries
   body {
     font-size: 1.4rem;
   }
-
   .saito-container {
     padding: 1rem 1.5rem;
   }
 }
 
-
 @media (max-width: 767.98px) {
   h1 {
     font-size: 4.5rem;
   }
-
   h2 {
     font-size: 4rem;
   }
-
   h3 {
     font-size: 3.5rem;
   }
-
   h4 {
     font-size: 3rem;
   }
-
   h5 {
     font-size: 2.5rem;
   }
-
   h6 {
     font-size: 2rem;
   }
-
   .saito-large-p {
     font-size: 1.8rem;
   }
-
-  p,
-  .saito-mid-p {
+  p, .saito-mid-p {
     color: var(--saito-black);
     font-size: 1.4rem;
   }
-
   .saito-small-p {
     font-size: 1.1rem;
   }
-
 }
 
 @media screen and (max-width: 320px) {

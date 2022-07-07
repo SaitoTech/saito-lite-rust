@@ -307,6 +307,12 @@ class Wuziqi extends GameTemplate {
                             this.addMove("roundover\t" + this.game.player);
                         }
                     }
+
+                    //If board full
+                    if (!this.canPlayTile()){
+                        this.addMove("draw\t" + this.game.player);
+                    }
+
                     // No matter what, add a 'place' message (filo - thi will be executed first) to update the board for both players.
                     // Set the message type, the board state, cell played, player, and existing scores.
                     let mv = "place\t" + this.serializeBoard(board) + "\t" + cell.id + "\t" + this.game.player + "\t" + this.game.score[0] + "|" + this.game.score[1];
@@ -360,12 +366,30 @@ class Wuziqi extends GameTemplate {
                 this.updateScore();
                 this.drawBoard(this.game.board);
 
-                console.log(this.game.options);
-                console.log(this.game.crypto);
+                //console.log(this.game.options);
+                //console.log(this.game.crypto);
 
-                this.endGame(this.game.players[parseInt(mv[1])-1]);
+                this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
+            if (mv[0] == "draw"){
+                this.drawBoard(this.game.board);
+                this.updateScore();
+              
+                // Initiate next round.
+                // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
+                if (mv[1] != this.game.player) {
+                    this.updateStatus(`<span class='playertitle'>It's a draw -- no winner.`);
+                    this.addContinueButton();
+                } else {
+                    this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.game.sides[mv[1]%2]}</span> will start next round.`);
+                    this.drawBoard(this.game.board);
+                }
+                // Remove this item from the queue.
+                this.game.queue.splice(this.game.queue.length - 1, 1);
+                return 1;
+            }
+
             // Round over
             if (mv[0] == "roundover") {
                 this.drawBoard(this.game.board);
@@ -507,6 +531,15 @@ class Wuziqi extends GameTemplate {
             }
         });
         return cell;
+    }
+
+    canPlayTile(){
+        for (let item of this.game.board){
+            if (item.owner == "none") {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
