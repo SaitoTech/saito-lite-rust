@@ -5,7 +5,7 @@ const SaitoCalendar = require('../../lib/saito/new-ui/saito-calendar/saito-calen
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
 const RedSquareChatBox = require('./lib/chatbox');
-
+const RedSquarePostTweet = require('./lib/post-tweet');
 
 class RedSquare extends ModTemplate {
 
@@ -25,13 +25,10 @@ class RedSquare extends ModTemplate {
     ];
 
     this.ui_initialized = false;
-
   }
 
 
-
   render(app, mod) {
-
     console.log("RENDERING REDSQUARE!");
 
     if (this.ui_initialized == false) {
@@ -48,6 +45,8 @@ class RedSquare extends ModTemplate {
       this.rsidebar = new SaitoSidebar(this.app);
       this.rsidebar.align = "right";
 
+      this.postTweet = new RedSquarePostTweet(this.app);
+
       //
       // combine ui-components
       //
@@ -55,6 +54,8 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.main);
       this.addComponent(this.rsidebar);
       this.addComponent(this.header);
+
+      this.addComponent(this.postTweet)
 
       this.lsidebar.addComponent(this.menu);
       this.lsidebar.addComponent(this.chatBox);
@@ -198,8 +199,6 @@ class RedSquare extends ModTemplate {
     let created_at = new Date().getTime();
     let updated_at = new Date().getTime();
 
-
-
     let sql = `INSERT INTO tweets9 (
                 tx,
                 tx_sig,
@@ -233,6 +232,51 @@ class RedSquare extends ModTemplate {
       $moderated: moderated,
       $img: img,
       $content: content,
+      $created_at: created_at,
+      $updated_at: updated_at
+    };
+    app.storage.executeDatabase(sql, params, "redsquare");
+    return;
+  }
+
+  sendLikeTweetTransaction(tweet_id){
+    let newtx = this.app.wallet.createUnsignedTransaction();
+
+    newtx.msg = {
+      module: this.name,
+      tweet_id: tweet_id,
+      request:  "like tweet",
+      timestamp: new Date().getTime()
+    };
+
+    this.app.wallet.signTransaction(newtx);
+    this.app.network.propagateTransaction(newtx); 
+  }
+
+
+  receiveLikeTweetTransaction(blk, tx, conf, app) {
+    let txmsg = tx.returnMessage();
+
+    let tweet_id = txmsg.tweet_id;
+    let publickey = tx.transaction.from[0].add;
+    let created_at = new Date().getTime();
+    let updated_at = new Date().getTime();
+
+    let sql = `INSERT INTO likes (
+                tweet_id,
+                publickey,
+                created_at,
+                updated_at,
+              ) VALUES (
+                $tweet_id, 
+                $publickey,
+                $created_at,
+                $updated_at
+              )`;
+
+    let params = {
+      $tweet_id: tweet_id, 
+      $publickey: publickey,
       $created_at: created_at,
       $updated_at: updated_at
     };

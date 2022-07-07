@@ -1473,6 +1473,10 @@ class Poker extends GameTemplate {
     }
   }
 
+  payWinners(winner){
+    return 0;
+  }
+
   processResignation(resigning_player, txmsg){
     //if (this.game.players.length == 2){
       super.processResignation(resigning_player, txmsg);
@@ -2855,6 +2859,8 @@ class Poker extends GameTemplate {
       }
 
   }
+
+
 
   returnStats(){
     let stats = {};

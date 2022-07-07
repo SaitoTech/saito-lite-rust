@@ -36,6 +36,12 @@ class Chessgame extends GameTemplate {
     if (!this.browser_active) { return; }
     super.initializeHTML(app);
 
+    this.confirm_moves = this.loadGamePreference("chess_expert_mode"); 
+    if (this.confirm_moves == null || this.confirm_moves == undefined){
+      this.confirm_moves = 1;
+    }
+    console.log(this.loadGamePreference("chess_expert_mode"), this.confirm_moves);
+
     //
     // ADD MENU
     //
@@ -47,7 +53,42 @@ class Chessgame extends GameTemplate {
         game_mod.menu.showSubMenu("game-game");
       },
     });
-    
+    this.menu.addSubMenuOption("game-game", {
+      text : "Play Mode",
+      id : "game-confirm",
+      class : "game-confirm",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-confirm"); 
+      }
+    });
+
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 0){
+          game_mod.saveGamePreference('chess_expert_mode', 1);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+          game_mod.saveGamePreference('chess_expert_mode', 0);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
     this.menu.addSubMenuOption("game-game", {
       text: "Rules",
       id: "game-rules",
@@ -93,6 +134,13 @@ class Chessgame extends GameTemplate {
     this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
+
+    if (!this.confirm_moves){
+      let confirm_btn = document.getElementById("buttons");
+      if (confirm_btn){
+        confirm_btn.style.display = "none";
+      }
+    }
   }
 
   async initializeGame(game_id) {
@@ -349,7 +397,6 @@ class Chessgame extends GameTemplate {
       this.endTurn(data);
 
       move_accept.disabled = true;
-
       move_reject.disabled = true;
     };
 
@@ -357,7 +404,6 @@ class Chessgame extends GameTemplate {
       this.setBoard(this.game.position);
 
       move_accept.disabled = true;
-
       move_reject.disabled = true;
     }
 
@@ -521,8 +567,7 @@ class Chessgame extends GameTemplate {
       promotion: piece
     });
 
-    document.getElementById('promotion').style.display = "none";
-    document.getElementById('buttons').style.display = "flex";
+    //document.getElementById('promotion').style.display = "none";
 
     this_chess.updateStatusMessage("Confirm Move to Send!");
 
@@ -530,24 +575,36 @@ class Chessgame extends GameTemplate {
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
     this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
 
+    if (this_chess.confirm_moves == 0){
+      var data = {};
+      data.white = this.game.white;
+      data.black = this.game.black;
+      data.id = this.game.id;
+      data.position = this.engine.fen();
+      data.move = this.game.move;
+      this.endTurn(data);
+    }else{
+      document.getElementById('buttons').style.display = "flex";
+    }
+
   };
 
   checkPromotion(source, target, color) {
     let promotion = document.getElementById('promotion');
     let promotion_choices = document.getElementById('promotion-choices');
-    let buttons = document.getElementById('buttons');
-    buttons.style.display = "none";
+    //let buttons = document.getElementById('buttons');
+    //buttons.style.display = "none";
 
     let html = ['q', 'r', 'b', 'n'].map(n => this.piecehtml(n, color)).join('');
     promotion_choices.innerHTML = html;
     promotion_choices.childNodes.forEach(node => {
       node.onclick = () => {
         promotion.style.display = "none";
-        buttons.style.display = "flex";
+        //buttons.style.display = "flex";
         this_chess.promoteAfterDrop(source, target, node.alt);
       }
     });
-    this.updateStatusMessage('Chose promotion piece');
+    this.updateStatusMessage('Choose promotion piece');
     promotion.style.display = "block";
   }
 
@@ -600,13 +657,23 @@ class Chessgame extends GameTemplate {
   onChange(oldPos, newPos) {
 
     this_chess.lockBoard(this_chess.engine.fen(newPos));
-    document.getElementById('buttons').style.display = "flex";
-    let move_accept = document.getElementById('move_accept');
-    let move_reject = document.getElementById('move_reject');
 
-    move_accept.disabled = false;
-    
-    move_reject.disabled = false;
+    if (this_chess.confirm_moves){
+      document.getElementById('buttons').style.display = "flex";
+      let move_accept = document.getElementById('move_accept');
+      let move_reject = document.getElementById('move_reject');
+
+      move_accept.disabled = false;
+      move_reject.disabled = false;
+    }else{
+      var data = {};
+      data.white = this_chess.game.white;
+      data.black = this_chess.game.black;
+      data.id = this_chess.game.id;
+      data.position = this_chess.engine.fen();
+      data.move = this_chess.game.move;
+      this_chess.endTurn(data);
+    }
     
   };
 

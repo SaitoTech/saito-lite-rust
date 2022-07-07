@@ -64,14 +64,14 @@
 
 
 .settings-appspace-app {
-    line-height: 2.4rem;
+    line-height: 2rem;
     display: flex;
     align-items: center;
 }
 
 .settings-appspace-app label {
     text-transform: none;
-    font-size: 1.7rem;
+    font-size: 1.5rem;
 }
 
 .settings-appspace-versions {
