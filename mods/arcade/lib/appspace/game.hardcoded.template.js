@@ -12,18 +12,18 @@ module.exports = ArcadeAppspaceGameTemplate = (app, mod, invite, idx) => {
             </div>
 	</div>
         <div class="arcade-invite-options">
-	  <div>
+	  
 	    <div class="arcade-invite-options-key">VP: </div>
 	    <div class="arcade-invite-options-value">8</div>
-          </div>
-	  <div>
+        
+	  
 	    <div class="arcade-invite-options-key">player1: </div>
 	    <div class="arcade-invite-options-value">US</div>
-          </div>
-	  <div>
+        
+	  
 	    <div class="arcade-invite-options-key">player2: </div>
 	    <div class="arcade-invite-options-value">USSR</div>
-          </div>
+          
         </div>
 	<div class="arcade-invite-buttons">
           <div class="saito-button-primary" data-sig="00091941b042e247a2548b77922ca7d55f8bc267b2623d52572ebc6cd8308c593fdeee18c9c012573581b42fa90dc3a677dde1d8632ee953370f6acecac82922" data-cmd="continue" class="button invite-tile-button">JOIN</div>
