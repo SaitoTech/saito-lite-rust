@@ -42,7 +42,6 @@
   margin-bottom: 1.5rem;
   min-width: none;
   transition: max-height .2s;
-  overflow: hidden;
   background-color: var(--saito-white);
 }
 
@@ -74,15 +73,16 @@
 
 
 .invites-appspace-adduser-box {
-  background-color: lightgray;
+  background-color: rgba(211, 211, 211, 0.587);
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: all .3s;
+  color: var(--saito-secondary);
 }
 
 .invites-appspace-adduser-box:hover {
-  background-color: rgba(211, 211, 211, 0.587);
+  background-color: lightgray;
   transform: scale(1.1);
 
 }
