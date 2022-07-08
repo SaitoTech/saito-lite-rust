@@ -410,3 +410,42 @@
 
 
 
+
+    this.importPromissary("faction8-promissary", {
+      name        :       "Trade Convoys" ,
+      faction     :       -1,
+      text        :       "Holder may negotiate transactions with non-neighbours. Return if player activates system with Hacan units" ,
+      activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
+        let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.doesSectorContainPlayerUnits(hacan_player, sector)) {
+            if (activating_player != hacan_player) { return 1; }
+          }
+        }
+        return 0;
+      },
+      activateSystemEvent : function(imperium_self, activating_player, player, sector) {
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.game.player == player) {
+            imperium_self,addMove("give" + "\t" + player + "\t" + muaat_player + "\t" + "promissary" + "\t"+"faction8-promissary");
+            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction((i+1)) + " redeems Trade Convoys (Hacan Promissary) from " + imperium_self.returnFaction(player));
+            imperium_self.endTurn();
+          }
+          return 0;
+        }
+        return 1;
+      },
+      gainPromissary : function(imperium_self, gainer, promissary) {
+        imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+	return 1;
+      },
+      losePromissary : function(imperium_self, loser, promissary) {
+	if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
+          imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+	}
+	return 1;
+      },
+    });
+
+
+

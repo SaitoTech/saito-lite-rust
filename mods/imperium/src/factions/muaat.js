@@ -244,3 +244,38 @@
 
 
 
+
+    this.importPromissary("faction7-promissary", {
+      name        :       "Fires of the Gashlai" ,
+      faction     :       -1,
+      text        :       "Muaat fleet supply falls by 1, player gains War Suns unit upgrade technology" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction7-promissary';
+          x.html = '<li class="option" id="political-promissary">Fires of the Gashlai (Muaat Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        let playable_promissaries = imperium_self.returnPlayablePromissaryArray(player, "faction7-promissary");
+        for (let i = 0; i < playable_promissaries.length; i++) {
+          if (imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.includes(playable_promissaries[i])) { return 1; }
+        }
+        return 0;
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let muaat_player = imperium_self.returnPlayerOfFaction("muaat");
+        if (imperium_self.game.player == player) {
+          imperium_self.addMove("expend\t"+muaat_player+"\tfleet\t1");
+	  imperium_self,addMove("purchase" + "\t" + player + "\t" + "technology" + "\t"+"warsun");
+	  imperium_self,addMove("give" + "\t" + player + "\t" + muaat_player + "\t" + "promissary" + "\t"+"faction7-promissary");
+          imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction((i+1)) + " redeems Fires of the Gashlai (Muaat Promissary) from " + imperium_self.returnFaction(player));
+          imperium_self.endTurn();
+        }
+        return 0;
+      }
+    });
+
+

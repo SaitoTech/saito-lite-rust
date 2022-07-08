@@ -308,3 +308,63 @@
 
 
 
+
+    this.importPromissary("faction2-promissary", {
+      name        :       "Research Agreement" ,
+      faction     :       -1,
+      text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
+      researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
+	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
+	  if (imperium_self.returnPlayerOfFaction("faction2") === researcher) {
+	    return 1;
+	  }
+	}
+	return 0;
+      }
+      researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
+	if (imperium_self.game.player === player) {
+  	  if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
+	    if (imperium_self.returnPlayerOfFaction("faction2") === researcher) {
+
+              let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
+                    html += '<li class="option" id="yes">Yes</li>';
+                    html += '<li class="option" id="no">No</li>';
+                    html += '</ul>';
+
+              imperium_self.updateStatus(html);
+              imperium_self.lockInterface();
+
+              $('.option').off();
+              $('.option').on('click', function() {
+
+                if (!imperium_self.mayUnlockInterface()) {
+                  salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+                  return;
+                }
+                imperium_self.unlockInterface();
+
+                let id = $(this).attr("id");
+
+                if (id === "no") {
+                  imperium_self.endTurn();
+                  return 0;
+                }
+
+                if (id === "yes") {
+	          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
+                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
+                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Research Agreement promissary");
+		  imperium_self.endTurn();
+                  return 0;
+                }
+
+	      });
+	    }
+	  }
+	}
+	return 0;
+      }
+    });
+
+
+
