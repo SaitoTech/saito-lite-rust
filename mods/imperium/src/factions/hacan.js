@@ -427,8 +427,9 @@
       activateSystemEvent : function(imperium_self, activating_player, player, sector) {
         if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
           if (imperium_self.game.player == player) {
-            imperium_self,addMove("give" + "\t" + player + "\t" + muaat_player + "\t" + "promissary" + "\t"+"faction8-promissary");
-            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction((i+1)) + " redeems Trade Convoys (Hacan Promissary) from " + imperium_self.returnFaction(player));
+	    let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+            imperium_self,addMove("give" + "\t" + player + "\t" + hacan_player + "\t" + "promissary" + "\t"+"faction8-promissary");
+            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(player) + " redeems Trade Convoys (Hacan Promissary)");
             imperium_self.endTurn();
           }
           return 0;

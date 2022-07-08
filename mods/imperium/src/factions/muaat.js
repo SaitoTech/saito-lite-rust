@@ -253,20 +253,21 @@
         let x = {};
         if (menu == "main") {
           x.event = 'faction7-promissary';
-          x.html = '<li class="option" id="political-promissary">Fires of the Gashlai (Muaat Promissary)</li>';
+          x.html = '<li class="option" id="faction7-promissary">Fires of the Gashlai (Muaat Promissary)</li>';
         }
         return x;
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
         if (menu != "main") { return 0; }
-        let playable_promissaries = imperium_self.returnPlayablePromissaryArray(player, "faction7-promissary");
-        for (let i = 0; i < playable_promissaries.length; i++) {
-          if (imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.includes(playable_promissaries[i])) { return 1; }
+        if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction7-promissary")) {
+	    return 1;
+	  }
+          return 0;
         }
-        return 0;
       },
       menuOptionActivated:  function(imperium_self, menu, player) {
-        let muaat_player = imperium_self.returnPlayerOfFaction("muaat");
+        let muaat_player = imperium_self.returnPlayerOfFaction("faction7");
         if (imperium_self.game.player == player) {
           imperium_self.addMove("expend\t"+muaat_player+"\tfleet\t1");
 	  imperium_self,addMove("purchase" + "\t" + player + "\t" + "technology" + "\t"+"warsun");

@@ -393,3 +393,63 @@
     });
 
 
+
+    this.importPromissary("faction3-promissary", {
+      name        :       "Military Support" ,
+      faction     :       -1,
+      text        :       "Owner loses 1 strategy token. Redeemer may play 2 infantry on any planet they control" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction3-promissary';
+          x.html = '<li class="option" id="faction3-promissary">Political Favour (XXCha Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction3") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction3-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+
+        let xxcha_player = imperium_self.returnPlayerOfFaction("faction3");
+        if (imperium_self.game.player == player) {
+
+          let html = '';
+          html += 'Select one agenda to quash in the Galactic Senate.<ul>';
+          for (i = 0; i < imperium_self.game.state.agendas.length; i++) {
+            if (imperium_self.game.state.agendas[i] != "") {
+              html += '<li class="option" id="'+imperium_self.game.state.agendas[i]+'">' + imperium_self.agenda_cards[imperium_self.game.state.agendas[i]].name + '</li>';
+            }
+          }
+          html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
+          $('.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
+          $('.option').on('click', function() {
+
+             let agenda_to_quash = $(this).attr('id');
+             imperium_self.updateStatus("Quashing Agenda");
+
+             imperium_self.addMove("quash\t"+agenda_to_quash+"\t"+"1"); // 1 = re-deal
+             imperium_self.addMove("expend\t"+xxcha_player+"\t"+"strategy"+"\t"+"1");
+             imperium_self,addMove("give" + "\t" + player + "\t" + xxcha_player + "\t" + "promissary" + "\t"+"faction3-promissary");
+             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems XXCha Promissary");
+             imperium_self.endTurn();
+          });
+        }
+      }
+      return 0;
+    });
+
+
+
+

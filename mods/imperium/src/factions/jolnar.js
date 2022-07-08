@@ -315,12 +315,14 @@
       text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
       researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
-	  if (imperium_self.returnPlayerOfFaction("faction2") === researcher) {
-	    return 1;
+	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
+	    if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+	      return 1;
+	    }
 	  }
 	}
 	return 0;
-      }
+      },
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
   	  if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
@@ -351,7 +353,9 @@
                 }
 
                 if (id === "yes") {
+		  let jolnar_player = imperium_self.returnPlayerOfFaction("faction2");
 	          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
+                  imperium_self,addMove("give" + "\t" + player + "\t" + jolnar_player + "\t" + "promissary" + "\t"+"faction2-promissary");
                   imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
                   imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Research Agreement promissary");
 		  imperium_self.endTurn();
