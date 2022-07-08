@@ -202,6 +202,10 @@ Saito List,Saito User List and Saito User
     z-index: 1;
 }
 
+.saito-list.horizontal {
+    display: flex;
+}
+
 /*  Default Size */
 
 .saito-list>div:not(:last-child) {
@@ -627,7 +631,7 @@ Saito overlay
     display: flex;
 }
 
-.saito-overlay>div,
+
 .saito-overlay>div>i {
     position: absolute;
     right: 0;
@@ -654,4 +658,9 @@ Saito backdrop
     border-radius: .5rem;
     position: relative;
     padding: 1rem;
+}
+
+.saito-overlay-actions {
+    display: flex;
+    justify-content: flex-end;
 }

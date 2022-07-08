@@ -135,6 +135,7 @@
 .invites-appspace-advancedoption-button {
   bottom: -2rem;
   opacity: 1;
+  position: absolute;
   left: .5rem;
   cursor: pointer;
   color: var(--saito-text);
