@@ -214,6 +214,10 @@ Saito List,Saito User List and Saito User
     margin-bottom: 1rem;
 }
 
+.saito-list.horizontal>div:not(:last-child) {
+    margin-bottom: 0;
+}
+
 .saito-list-user,
 .saito-list-chatbox,
 .saito-list-game {

@@ -95,7 +95,7 @@ module.exports = InvitesAppspaceTemplate = (app, mod) => {
                   </div>
                   <div class="saito-list-user">
                       <div class="saito-list-user-image-box">
-                          <img class="saito-idenitcon" src="/saito /img/richard.jpeg" />
+                          <img class="saito-idenitcon" src="/saito/img/richard.jpeg" />
                       </div>
                       <div class="saito-list-user-content-box">
                           <div class="saito-username">Richard Parris</div>
