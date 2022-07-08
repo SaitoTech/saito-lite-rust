@@ -203,7 +203,9 @@ Saito List,Saito User List and Saito User
 }
 
 .saito-list.horizontal {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min-content, 15rem));
+    grid-gap: 1rem;
 }
 
 /*  Default Size */
