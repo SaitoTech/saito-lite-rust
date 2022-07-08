@@ -1,16 +1,164 @@
-
 .invites-invitation {
   border: 1px solid var(--saito-primary);
-}
-.invites-invitation-title {
-
+  border-radius: .5em;
 }
 
-.invites-invitation-adds-add {
+.invites-appspace {
+  /* border: 1px solid var(--saito-border); */
+  /* display: grid;
+  justify-content: center; */
 
 }
-.invites-invitation-adds-terms {
-  text-align: right;
+
+.invites-appspace>h3 {
+  margin-bottom: 1rem;
+}
+
+.invites-appspace-create {
+  position: relative;
+  width: 60rem;
+
+}
+
+.invites-appspace-event {
+  position: relative;
+  border: 1px solid var(--saito-border);
+  margin-bottom: 2rem;
+  border-radius: .5rem;
+  padding: 1rem;
+
+}
+
+.invites-appspace-date {
+  right: 1rem;
+  top: .5rem;
+  position: absolute;
+}
+
+.invites-appspace-invite {
+
+  border-radius: .5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  min-width: none;
+  transition: max-height .2s;
+  overflow: hidden;
+  background-color: var(--saito-white);
+}
+
+.invites-appspace-section {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.invites-appspace-section-icon {
+  font-size: 1.7rem;
+  color: var(--saito-default-font-color);
 }
 
 
+
+.invites-appspace-section:not(:last-child) {
+  margin-bottom: 1.5rem;
+}
+
+.invites-appspace-invite>i {
+  position: absolute;
+  right: 0;
+  top: -.5rem;
+  /* font-size: 2rem; */
+}
+
+
+.invites-appspace-adduser-box {
+  background-color: lightgray;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.invites-appspace-adduser-box:hover {
+  background-color: rgba(211, 211, 211, 0.587);
+  transform: scale(1.1);
+
+}
+
+
+.invites-appspace-header {
+
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+.invites-appspace-header>p {
+  font-size: 1.3rem;
+  margin-right: 3rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.invites-appspace-actions {
+  padding-left: 1rem;
+  margin-left: auto;
+  display: flex;
+  right: 0;
+  justify-content: end;
+}
+
+.invites-appspace-actions>div {
+  /* width: 100%; */
+
+}
+
+.invites-appspace-actions>div:not(:last-child) {
+  margin-right: 1rem;
+
+}
+
+
+.invites-appspace-additional-info {
+  bottom: -1.5rem;
+  opacity: 1;
+  position: absolute;
+  right: .5rem;
+  cursor: pointer;
+  color: var(--saito-text);
+  z-index: 3;
+
+}
+
+.invites-appspace-advancedoption-button {
+  bottom: -2rem;
+  opacity: 1;
+  left: .5rem;
+  cursor: pointer;
+  color: var(--saito-text);
+  z-index: 3;
+  text-decoration: dashed;
+
+}
+
+.invites-appspace-additional-info>i {
+  transition: all .5s;
+
+}
+
+.invites-appspace-link {
+  color: var(--saito-secondary);
+  color: pointer;
+}
+
+.invites-appspace-additional-info>i:hover {
+
+  color: var(--saito-primary);
+}
+
+
+.rotate {
+  transform: rotateZ(180deg);
+}
