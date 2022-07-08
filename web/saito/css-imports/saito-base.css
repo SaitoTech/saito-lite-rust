@@ -104,7 +104,7 @@ p.large {
 p,
 p.middle {
   color: var(--saito-black);
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   overflow: auto;
 }
 
