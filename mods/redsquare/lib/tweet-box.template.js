@@ -13,9 +13,8 @@ module.exports = (app, mod, tweet) => {
                   <i class="fas fa-certificate"></i>
               </div>
 
-              <div class="redsquare-user-actions">
-                  <i class="fab fa-rocketchat"></i>
-                  <i class="fas fa-user-friends"></i>
+              <div class="x">
+                  <i class="fas fa-solid fa-ellipsis-h"></i>
               </div>
 
           </div>
@@ -32,8 +31,14 @@ module.exports = (app, mod, tweet) => {
 
   html += `
 
-         <div class="redsquare-tweet-tools">
-            <span class="tweet-tool-like"><span class="tweet-like-count">0</span> LIKES</span>
+        <div class="redsquare-date-container">
+          <p>3:46 PM · Jul 6, 2022</p>
+        </div>
+
+        <div class="redsquare-tweet-tools">
+          <span class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-comment"></i></span>
+          <span class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-heart"></i></span>
+          <span class="tweet-tool-like"><i class="fad fa-bullhorn"></i></span>
         </div>
 
       </div>

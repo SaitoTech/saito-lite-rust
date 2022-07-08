@@ -34,7 +34,8 @@ class Settings extends ModTemplate {
   respondTo(type) {
     if (type == 'appspace') {
       console.log("RENDERING SETTINGS EMAIL APPSPACE!");
-      //super.render(this.app, this); // for scripts + styles
+      this.scripts['/settings/new-style.css'];
+      super.render(this.app, this); // for scripts + styles
       return new SettingsAppspace(this.app, this);
     }
     if (type == 'email-appspace') {

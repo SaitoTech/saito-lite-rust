@@ -8,6 +8,8 @@ module.exports = (app, mod) => {
   <div id="redsquare-input-container">
   </div>
   <div id="redsquare-list">
+  
+
   </div>
 
 

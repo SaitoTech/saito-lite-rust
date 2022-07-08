@@ -1,15 +1,15 @@
-.settings-grid {}
 
+.grid-1-1-1 {
+  margin-bottom: 2rem;
+}
 
-
+.settings-appspace > button {
+  margin: 0px;
+}
 
 .settings-appspace-qrcode {
     display: inline-block;
 }
-
-
-
-
 
 .settings-appspace-user-details {
     display: grid;
