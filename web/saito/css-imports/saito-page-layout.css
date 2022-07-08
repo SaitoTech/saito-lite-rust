@@ -3,6 +3,7 @@
     display: grid;
     grid-template-columns: min-content 1fr min-content;
     position: relative;
+    padding: 1rem calc((100vw - var(--saito-width)) / 2);
 }
 
 .saito-main {
@@ -85,16 +86,7 @@
  Media Queries
 -----------------------------------------------------------------*/
 
-@media screen and (min-width: 1600px) {
-    .saito-container {
-        padding: 1rem calc((100vw - var(--saito-width)) / 2);
-    }
-}
-
 @media screen and (max-width: 1200px) {
-    .saito-container {
-        padding: 1rem calc((100vw - var(--saito-width)) / 2);
-    }
 
     .saito-sidebar.left {
         position: fixed;
