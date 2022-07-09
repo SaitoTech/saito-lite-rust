@@ -2,47 +2,55 @@
 module.exports = (app, mod, tweet) => {
 
 
-  let html = `<div class="redsquare-item">
-      <div class="redsquare-item-profile">
-          <img src="${tweet.identicon}" />
-      </div>
+    let html = `<div class="redsquare-item">
+     <div class="redsquare-user-container">
+    <div class="saito-list-user">
+    <div class="saito-list-user-image-box">
+        <img class="saito-idenitcon" src="${tweet.identicon}" />
+    </div>
+    <div class="saito-list-user-content-box">
+    <div class="saito-username">
+        <p>${tweet.publickey}</p>
+        <i class="fas fa-certificate redsquare-certificate"></i>
+   </div>
+        <p> posted on: 3:46 PM - July 7, 2022 </p>
+    </div>
+    
+    <div class="x">
+    <i class="fas fa-solid fa-ellipsis-h"></i>
+</div>
+</div>
+</div>
+    <div class="redsquare-item-contents-container">
       <div class="redsquare-item-contents" id="tweet-${tweet.tx_sig}" data-tweet-id="${tweet.id}">
-          <div class="redsquare-user">
-              <div class="redsquare-user-details">
-                  <p>${tweet.publickey}</p>
-                  <i class="fas fa-certificate"></i>
-              </div>
-
-              <div class="x">
-                  <i class="fas fa-solid fa-ellipsis-h"></i>
-              </div>
-
-          </div>
           <div class="redsquare-text-container">
               <p>${tweet.content}</p>
           </div>
       `;
 
-  if (typeof tweet.img != 'undefined' && tweet.img != "") {
-      html  += `<div class="redsquare-image-container">
+    if (typeof tweet.img != 'undefined' && tweet.img != "") {
+        html += `<div class="redsquare-image-container">
               <img src="${tweet.img}" />
           </div>`;
-  }
+    }
 
-  html += `
+    html += `
 
-        <div class="redsquare-date-container">
-          <p>3:46 PM · Jul 6, 2022</p>
-        </div>
 
         <div class="redsquare-tweet-tools">
-          <span class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-comment"></i></span>
-          <span class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-heart"></i></span>
-          <span class="tweet-tool-like"><i class="fad fa-bullhorn"></i></span>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-comment"></i></div>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-heart"></i></div>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-share"></i></div>
         </div>
 
       </div>
+      </div>
   </div>`;
 
-  return html;
+    return html;
 }
+
+   //   <div class="redsquare-item-profile">
+    //       <img src="${tweet.identicon}" />
+    //   </div>
+

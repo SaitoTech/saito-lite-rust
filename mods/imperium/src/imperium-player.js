@@ -3414,9 +3414,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       for (let i = 0; i < their_offer.promissaries.length; i++) {
         let pm = their_offer.promissaries[i].promissary;
 	let tmpar = pm.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
         if (i > 0) { promissaries_received += ', '; }
-        promissaries_received += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        promissaries_received += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
     }
   }
@@ -3427,8 +3432,13 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         let pm = my_offer.promissaries[i].promissary;
 	let tmpar = pm.split("-");
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         if (i > 0) { promissaries_offered += ', '; }
-        promissaries_offered += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        promissaries_offered += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
     }
   }
@@ -3506,9 +3516,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         if (i == 0) { receive_promissary_text = ''; }
         let pm = receive_promissaries[i];
 	let tmpar = pm.promissary.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	if (i > 0) { receive_promissary_text += ', '; }
-        receive_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        receive_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
       let offer_promissary_text = 'no promissaries';
@@ -3516,9 +3531,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         if (i == 0) { offer_promissary_text = ''; }
         let pm = offer_promissaries[i];
 	let tmpar = pm.promissary.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	if (i > 0) { offer_promissary_text += ', '; }
-        offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
@@ -3603,7 +3623,12 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         for (let i = 0; i < imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.length; i++) {
 
 	  let pm = imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[i];
-	  let tmpar = pm.split("-");
+	  tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+          for (let i = 2; i < tmpar.length; i++) {
+	    tmpname += "-";
+	    tmpname += tmpar[i];
+          }
           let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	  let already_offered = 0;
 	  for (let b = 0; b < offer_promissaries.length; b++) {
@@ -3612,7 +3637,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}</li>`;
+            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;
@@ -3644,6 +3669,11 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         for (let i = 0; i < imperium_self.game.players_info[player-1].promissary_notes.length; i++) {
 	  let pm = imperium_self.game.players_info[player-1].promissary_notes[i];
 	  let tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+            for (let i = 2; i < tmpar.length; i++) {
+	    tmpname += "-";
+	    tmpname += tmpar[i];
+          }
           let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	  let already_offered = 0;
 	  for (let b = 0; b < receive_promissaries.length; b++) {
@@ -3652,7 +3682,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}</li>`;
+            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;
@@ -4145,6 +4175,49 @@ playerSelectActionCard(mycallback, cancel_callback, types = []) {
   });
 
 }
+
+
+playerSelectActionCardFromList(mycallback, cancel_callback, array_of_cards = []) {
+
+  let imperium_self = this;
+  if (array_of_cards.length == 0) {
+    this.playerAcknowledgeNotice("You do not have any action cards to select", function () {
+      if (cancel_callback != null) { cancel_callback(); return 0; }
+      imperium_self.playerTurn();
+      return 0;
+    });
+    return 0;
+  }
+
+  let html = '';
+
+  html += "<div class='sf-readable'>Select an action card: </div><ul>";
+  for (let z = 0; z < array_of_cards.length; z++) {
+    if (!this.game.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
+      let thiscard = imperium_self.action_cards[array_of_cards[z]];
+      html += '<li class="textchoice pointer" id="' + array_of_cards[z] + '">' + thiscard.name + '</li>';
+    }
+  }
+  html += '<li class="textchoice pointer" id="cancel">cancel</li>';
+  html += '</ul>';
+
+  this.updateStatus(html);
+  $('.textchoice').off();
+  //$('.textchoice').on('mouseenter', function () { let s = $(this).attr("id"); if (s != "cancel") { imperium_self.showActionCard(s); } });
+  //$('.textchoice').on('mouseleave', function () { let s = $(this).attr("id"); if (s != "cancel") { imperium_self.hideActionCard(s); } });
+  $('.textchoice').on('click', function () {
+
+    let action2 = $(this).attr("id");
+
+    //if (action2 != "cancel") { imperium_self.hideActionCard(action2); }
+    if (action2 === "cancel") { cancel_callback(); return 0; }
+
+    mycallback(action2);
+
+  });
+
+}
+
 
 
 //

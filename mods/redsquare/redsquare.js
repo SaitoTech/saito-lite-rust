@@ -74,7 +74,7 @@ class RedSquare extends ModTemplate {
   // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
   // NEEDS TO BE REMOVED BEFORE CODE MERGE
   //
-  installModule(app){
+  installModule(app) {
 
     if (this.app.BROWSER == 1) { return }
 
@@ -84,48 +84,48 @@ class RedSquare extends ModTemplate {
       {
         content: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
         img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-        parent_id: '', 
+        parent_id: '',
         flagged: 0,
         moderated: 0
       },
       {
         content: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
         img: '',
-        parent_id: '', 
+        parent_id: '',
         flagged: 0,
         moderated: 0
       },
       {
         content: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
         img: '',
-        parent_id: 'https://dmccdn.com/uploads/share/Saitonetwork-tn.png', 
+        parent_id: 'https://dmccdn.com/uploads/share/Saitonetwork-tn.png',
         flagged: 0,
         moderated: 0
       },
       {
         content: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
         parent_id: '',
-        img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080', 
+        img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080',
         flagged: 0,
         moderated: 0
       },
       {
         content: 'Etiam hendrerit ex ut neque bibendum porta.',
         img: '',
-        parent_id: '', 
+        parent_id: '',
         flagged: 0,
         moderated: 0
       },
       {
         content: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
         img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
-        parent_id: '', 
+        parent_id: '',
         flagged: 0,
         moderated: 0
-      }  
+      }
     ];
 
-    for (let i=0; i<dummy_content.length; i++) {
+    for (let i = 0; i < dummy_content.length; i++) {
       this.sendTweetTransaction(dummy_content[i]);
     }
   }
@@ -134,7 +134,7 @@ class RedSquare extends ModTemplate {
   onPeerHandshakeComplete(app, peer) {
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets9 DESC LIMIT 100` ,
+      `SELECT * FROM tweets9 DESC LIMIT 100`,
       (res) => {
         if (res.rows) {
           res.rows.forEach(row => {
@@ -153,7 +153,7 @@ class RedSquare extends ModTemplate {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
           this.receiveTweetTransaction(blk, tx, conf, app);
-          
+
           //
           // TODO - update UI when tweet transaction is received
           //
@@ -166,7 +166,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  sendTweetTransaction(data){
+  sendTweetTransaction(data) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -174,15 +174,15 @@ class RedSquare extends ModTemplate {
       module: this.name,
       content: data.content,
       img: data.img,
-      parent_id: data.parent_id, 
+      parent_id: data.parent_id,
       flagged: data.flagged,
       moderated: data.moderated,
-      request:  "create tweet",
+      request: "create tweet",
       timestamp: new Date().getTime()
     };
 
     this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx); 
+    this.app.network.propagateTransaction(newtx);
   }
 
   receiveTweetTransaction(blk, tx, conf, app) {
@@ -226,7 +226,7 @@ class RedSquare extends ModTemplate {
     let params = {
       $txn: txn,
       $tx_sig: tx_sig,
-      $parent_id: parent_id, 
+      $parent_id: parent_id,
       $publickey: publickey,
       $flagged: flagged,
       $moderated: moderated,
@@ -239,18 +239,18 @@ class RedSquare extends ModTemplate {
     return;
   }
 
-  sendLikeTweetTransaction(tweet_id){
+  sendLikeTweetTransaction(tweet_id) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
     newtx.msg = {
       module: this.name,
       tweet_id: tweet_id,
-      request:  "like tweet",
+      request: "like tweet",
       timestamp: new Date().getTime()
     };
 
     this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx); 
+    this.app.network.propagateTransaction(newtx);
   }
 
 
@@ -275,7 +275,7 @@ class RedSquare extends ModTemplate {
               )`;
 
     let params = {
-      $tweet_id: tweet_id, 
+      $tweet_id: tweet_id,
       $publickey: publickey,
       $created_at: created_at,
       $updated_at: updated_at

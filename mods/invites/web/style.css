@@ -1,13 +1,36 @@
+.invites-appspace {
+  /* border: 1px solid var(--saito-border); */
+  /* display: grid;
+  justify-content: center; */
+  width: 69.5rem;
+}
+
+.invites-appspace .saito-list {
+  padding: 0;
+}
+
+
 .invites-invitation {
   border: 1px solid var(--saito-primary);
   border-radius: .5em;
 }
 
-.invites-appspace {
-  /* border: 1px solid var(--saito-border); */
-  /* display: grid;
-  justify-content: center; */
 
+
+.invites-appspace-item {
+  padding: 2rem 3rem 2rem 1.5rem;
+  border-bottom: 1px solid #a5a5a533;
+}
+
+.invites-appspace-user-container {
+  padding: 0;
+}
+
+.invites-appspace-item-contents-container {
+  /* display: grid;
+    grid-template-columns: 9rem 1fr; */
+  padding-left: 5.5rem;
+  padding-top: 1rem;
 }
 
 .invites-appspace>h3 {
@@ -22,10 +45,9 @@
 
 .invites-appspace-event {
   position: relative;
-  border: 1px solid var(--saito-border);
   margin-bottom: 2rem;
   border-radius: .5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
 
 }
 
@@ -38,7 +60,7 @@
 .invites-appspace-invite {
 
   border-radius: .5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
   margin-bottom: 1.5rem;
   min-width: none;
   transition: max-height .2s;
@@ -46,11 +68,14 @@
 }
 
 .invites-appspace-section {
-  display: grid;
-  grid-template-columns: 4rem 1fr;
+  /* grid-template-columns: 4rem 1fr;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
 
+}
+
+.invites-appspace-section:not(:last-child) {
+  margin-bottom: 2rem;
 }
 
 .invites-appspace-section-icon {
@@ -60,9 +85,7 @@
 
 
 
-.invites-appspace-section:not(:last-child) {
-  margin-bottom: 1.5rem;
-}
+
 
 .invites-appspace-invite>i {
   position: absolute;
@@ -89,15 +112,14 @@
 
 
 .invites-appspace-header {
-
   display: flex;
   align-items: center;
-  padding-left: 1rem;
+
 }
 
-.invites-appspace-header>p {
-  font-size: 1.3rem;
-  margin-right: 3rem;
+.invites-appspace-header~p {
+  font-size: 1.6rem;
+  /* margin-right: 3rem; */
   cursor: pointer;
   font-weight: bold;
 }
@@ -162,4 +184,9 @@
 
 .rotate {
   transform: rotateZ(180deg);
+}
+
+
+.invites-appspace-empty-slot {
+  cursor: pointer;
 }

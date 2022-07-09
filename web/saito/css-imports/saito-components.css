@@ -185,12 +185,18 @@ Saito Username
 -----------------------------------------------------------------*/
 
 .saito-username {
-    max-width: 60%;
+    max-width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: bold;
     font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+}
+
+.saito-username>*:first-child {
+    margin-right: .5rem;
 }
 
 /* ----------------------------------------------------------------
@@ -204,7 +210,7 @@ Saito List,Saito User List and Saito User
 
 .saito-list.horizontal {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min-content, 15rem));
+    grid-template-columns: repeat(auto-fit, minmax(min-content, 20rem));
     grid-gap: 1rem;
 }
 
@@ -228,12 +234,20 @@ Saito List,Saito User List and Saito User
     width: 100%;
 }
 
+
+
+.saito-list-user>div:nth-child(1),
+.saito-list-chatbox>div:nth-child(1),
+.saito-list-game>div:nth-child(1) {
+    margin-right: 1rem;
+}
+
 .saito-list-user>div:nth-child(1)>img,
 .saito-list-chatbox>div:nth-child(1)>img {
-    width: 5rem;
-    height: 5rem;
+    width: 4.5rem;
+    height: 4.5rem;
     border-radius: .5rem;
-    margin-right: 1rem;
+
     transition: all 400ms cubic-bezier(.47, 1.64, .41, .8);
 }
 
@@ -251,9 +265,12 @@ Saito List,Saito User List and Saito User
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    width: 70%;
+    /* justify-content: center; */
+    width: 75%;
 }
+
+
+
 
 .saito-list-user>div:nth-child(2)>div,
 .saito-list-chatbox>div:nth-child(2)>div,
@@ -264,6 +281,7 @@ Saito List,Saito User List and Saito User
     text-overflow: ellipsis;
     font-weight: bold;
     font-size: 1.6rem;
+    margin-bottom: .5rem;
 }
 
 .saito-list-user>div:nth-child(2)>p,
@@ -272,12 +290,13 @@ Saito List,Saito User List and Saito User
     font-size: 1.3rem;
 }
 
+.saito-list-user>div:nth-child(3),
 .saito-list-chatbox>div:nth-child(3),
 .saito-list-game>div:nth-child(3) {
     top: 0;
     cursor: pointer;
     font-size: 1.4rem;
-    top: 1rem;
+    top: 0;
     position: absolute;
     right: 0rem;
     display: flex;

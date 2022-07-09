@@ -14,7 +14,6 @@ class Imperium extends GameTemplate {
     this.categories	  = "Games Boardgame Strategy";
     this.minPlayers       = 2;
     this.maxPlayers       = 6;
-
     //this.status           = "Beta";
 
     this.boardWidth   = 1900;
@@ -1393,7 +1392,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
       background	: 	'faction8.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction8-promissary"],
       commodity_limit	:	6,
       intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`
     });
@@ -1796,6 +1795,46 @@ console.log("P: " + planet);
 
 
 
+    this.importPromissary("faction8-promissary", {
+      name        :       "Trade Convoys" ,
+      faction     :       -1,
+      text        :       "Holder may negotiate transactions with non-neighbours. Return if player activates system with Hacan units" ,
+      activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
+        let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.doesSectorContainPlayerUnits(hacan_player, sector)) {
+            if (activating_player != hacan_player) { return 1; }
+          }
+        }
+        return 0;
+      },
+      activateSystemEvent : function(imperium_self, activating_player, player, sector) {
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.game.player == player) {
+	    let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+            imperium_self.addMove("give" + "\t" + player + "\t" + hacan_player + "\t" + "promissary" + "\t"+"faction8-promissary");
+            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(player) + " redeems Trade Convoys (Hacan Promissary)");
+            imperium_self.endTurn();
+          }
+          return 0;
+        }
+        return 1;
+      },
+      gainPromissary : function(imperium_self, gainer, promissary) {
+        imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+	return 1;
+      },
+      losePromissary : function(imperium_self, loser, promissary) {
+	if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
+          imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+	}
+	return 1;
+      },
+    });
+
+
+
+
     this.importFaction('faction2', {
       id		:	"faction2" ,
       name		: 	"Universities of Jol Nar",
@@ -1809,7 +1848,7 @@ console.log("P: " + planet);
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction2-promissary"],
       commodity_limit	:	4,
       intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`
     });
@@ -2106,6 +2145,72 @@ console.log("P: " + planet);
 
 
 
+    this.importPromissary("faction2-promissary", {
+      name        :       "Research Agreement" ,
+      faction     :       -1,
+      text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
+      researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
+console.log("RESEARCH TECH TRIGGERS");
+	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
+console.log("we have this promissary " + researcher + " -- " + player);
+	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
+console.log("A");
+	    if (researcher != player) {
+console.log("B");
+	      return 1;
+	    }
+	  }
+	}
+	return 0;
+      },
+      researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
+	if (imperium_self.game.player === player) {
+
+console.log("research tech event");
+
+              let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
+                    html += '<li class="option" id="yes">Yes</li>';
+                    html += '<li class="option" id="no">No</li>';
+                    html += '</ul>';
+
+              imperium_self.updateStatus(html);
+              imperium_self.lockInterface();
+
+              $('.option').off();
+              $('.option').on('click', function() {
+
+                if (!imperium_self.mayUnlockInterface()) {
+                  salert("The game engine is currently processing moves related to another player's move. Please wait a few seconds and reload your browser.");
+                  return;
+                }
+                imperium_self.unlockInterface();
+
+                let id = $(this).attr("id");
+
+                if (id === "no") {
+                  imperium_self.endTurn();
+                  return 0;
+                }
+
+                if (id === "yes") {
+		  let jolnar_player = imperium_self.returnPlayerOfFaction("faction2");
+	          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
+                  imperium_self.addMove("give" + "\t" + player + "\t" + jolnar_player + "\t" + "promissary" + "\t"+"faction2-promissary");
+                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
+                  imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Research Agreement promissary");
+		  imperium_self.endTurn();
+                  return 0;
+                }
+
+	      });
+	}
+	return 0;
+      }
+    });
+
+
+
+
     this.importFaction('faction7', {
       id		:	"faction7" ,
       name		: 	"Embers of Muaat",
@@ -2116,7 +2221,7 @@ console.log("P: " + planet);
       tech		: 	["plasma-scoring", "faction7-star-forge", "faction7-gashlai-physiology", "faction7-advanced-warsun-i","faction7-flagship"],
       //action_cards      :       ["trade-rider", "imperial-rider"],
       background	: 	'faction7.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction7-promissary"],
       commodity_limit	:	4,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Embers of Muaat, a faction which forges its instruments of war in the heat of lava-powered furnaces and whose technical research expands to conquering the heat of the very starts themselves. Goodl luck!</div>`
     });
@@ -2352,6 +2457,42 @@ console.log("P: " + planet);
 
 
 
+    this.importPromissary("faction7-promissary", {
+      name        :       "Fires of the Gashlai" ,
+      faction     :       -1,
+      text        :       "Muaat fleet supply falls by 1, player gains War Suns unit upgrade technology" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction7-promissary';
+          x.html = '<li class="option" id="faction7-promissary">Fires of the Gashlai (Muaat Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction7-promissary")) {
+	    return 1;
+	  }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let muaat_player = imperium_self.returnPlayerOfFaction("faction7");
+        if (imperium_self.game.player == player) {
+          imperium_self.addMove("expend\t"+muaat_player+"\tfleet\t1");
+	  imperium_self.addMove("purchase" + "\t" + player + "\t" + "technology" + "\t"+"warsun");
+	  imperium_self.addMove("give" + "\t" + player + "\t" + muaat_player + "\t" + "promissary" + "\t"+"faction7-promissary");
+          imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction((i+1)) + " redeems Fires of the Gashlai (Muaat Promissary) from " + imperium_self.returnFaction(player));
+          imperium_self.endTurn();
+        }
+        return 0;
+      }
+    });
+
+
+
     this.importFaction('faction4', {
       id		:	"faction4" ,
       name		: 	"Sardakk N'Orr",
@@ -2361,7 +2502,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["faction4-unrelenting", "faction4-exotrireme-i", "faction4-flagship"],
       background	: 	'faction4.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction4-promissary"],
       commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sardaak N'Orr, an overpowered faction known for its raw strength in combat. Your brutal power makes you an intimidating faction on the board. Good luck!</div>`
     });
@@ -2655,6 +2796,129 @@ console.log("P: " + planet);
 
 
 
+
+    this.importPromissary("faction4-promissary", {
+      name        :       "Tekklar Legion",
+      faction     :       -1,
+      text        :       "Redeemer gets +1 on all combat rolls this combat, owner gets -1 if in combat",
+      initialize  : function(imperium_self, player) {
+	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+      },
+      modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      spaceCombatTriggers : function(imperium_self, player, sector) {
+        // reset before space combat
+	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+        if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+          if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+            return 1;
+	  }
+        }
+	return 0;
+      },
+      spaceCombatEvent : function(imperium_self, player, sector) {
+        if (imperium_self.game.player == player) {
+
+          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+
+            if (id === "no") {
+	      imperium_self.endTurn();
+	    }
+            if (id === "no") {
+	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
+	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
+	      imperium_self.addMove("setvar\tplayers\t"+hacan_player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+	      imperium_self.endTurn();
+	    }
+	  });
+        }
+	return 0;
+      },
+      groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
+	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+        if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+          if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+            return 1;
+	  }
+        }
+        return 0;
+      },
+      groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
+        if (imperium_self.game.player == player) {
+
+          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+
+            if (id === "no") {
+	      imperium_self.endTurn();
+	    }
+            if (id === "no") {
+	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
+	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
+	      imperium_self.addMove("setvar\tplayers\t"+sardaak_player           +"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+              imperium_self.addMove("give" + "\t" + player + "\t" + sardaak_player + "\t" + "promissary" + "\t"+"faction4-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Sardaak Promissary redeemed");
+	      imperium_self.endTurn();
+	    }
+	  });
+        }
+	return 0;
+      }
+    });
+
+
+
+
+
     this.importFaction('faction1', {
       id		:	"faction1" ,
       name		: 	"Federation of Sol",
@@ -2664,7 +2928,7 @@ console.log("P: " + planet);
       ground_units	:	["infantry","infantry","infantry","infantry","infantry","spacedock"],
       tech		:	["neural-motivator","antimass-deflectors", "faction1-orbital-drop", "faction1-versatile", "faction1-flagship"],
       background	: 	"faction1.jpg",
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction1-promissary"],
       commodity_limit	:	4,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sol Federation. a Terran faction under cellular military government. Your reinforced infantry and tactical flexibility will be important in your fight for the Imperial Throne. Good luck!</div>`
     });
@@ -2844,6 +3108,59 @@ console.log("P: " + planet);
 
 
 
+    this.importPromissary("faction1-promissary", {
+      name        :       "Military Support" ,
+      faction     :       -1,
+      text        :       "Owner loses 1 strategy token. Redeemer may play 2 infantry on any planet they control" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction1-promissary';
+          x.html = '<li class="option" id="faction1-promissary">Military Support (Sol Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction1") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction1-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let sol_player = imperium_self.returnPlayerOfFaction("faction1");
+        if (imperium_self.game.player == player) {
+	  let my_planets = imperium_self.returnPlayerPlanetCards(imperium_self.game.player);
+          imperium_self.playerSelectPlanetWithFilter(
+            "Sol Promissary - select planet on which to deploy 2 infantry: " ,
+            function(planet) {
+              if (my_planets.includes(planet)) { return 1; } return 0;
+            },
+            function(p) {
+	      let sol_player = imperium_self.returnPlayerOfFaction("faction1");
+	      let planet = imperium_self.game.players[p];
+
+              imperium_self.addMove("produce\t"+imperium_self.game.player+"\t"+"1"+"\t"+planet.idx+"\t"+"infantry"+"\t"+planet.sector);
+              imperium_self.addMove("produce\t"+imperium_self.game.player+"\t"+"1"+"\t"+planet.idx+"\t"+"infantry"+"\t"+planet.sector);
+              imperium_self.addMove("expend\t"+sol_player+"\t"+"strategy"+"\t"+"1");
+              imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " drops 2 infantry onto " + planet.name);
+              imperium_self.addMove("give" + "\t" + player + "\t" + sol_player + "\t" + "promissary" + "\t"+"faction1-promissary");
+              imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Sol Promissary");
+              imperium_self.endTurn();
+              return 0;
+            },
+            null
+          );
+          return 0;
+        }
+        return 0;
+      }
+    });
+
+
+
     this.importFaction('faction3', {
       id		:	"faction3" ,
       name		: 	"XXCha Kingdom",
@@ -2855,7 +3172,7 @@ console.log("P: " + planet);
       tech		: 	["graviton-laser-system","faction3-peace-accords","faction3-quash","faction3-flagship"],
       background	: 	'faction3.jpg',
       commodity_limit	:	4,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction3-promissary"],
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the XXCha Kingdom, a faction which excels in diplomacy and defensive weaponry. With the proper alliances and political maneuvers your faction you can be a contender for the Imperial Throne. Good luck!</div>`
     });
   
@@ -3239,6 +3556,67 @@ console.log("P: " + planet);
 
 
 
+    this.importPromissary("faction3-promissary", {
+      name        :       "Military Support" ,
+      faction     :       -1,
+      text        :       "Owner loses 1 strategy token. Redeemer may play 2 infantry on any planet they control" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction3-promissary';
+          x.html = '<li class="option" id="faction3-promissary">Political Favour (XXCha Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction3") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction3-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+	return 0;
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+
+        let xxcha_player = imperium_self.returnPlayerOfFaction("faction3");
+        if (imperium_self.game.player == player) {
+
+          let html = '';
+          html += 'Select one agenda to quash in the Galactic Senate.<ul>';
+          for (i = 0; i < imperium_self.game.state.agendas.length; i++) {
+            if (imperium_self.game.state.agendas[i] != "") {
+              html += '<li class="option" id="'+imperium_self.game.state.agendas[i]+'">' + imperium_self.agenda_cards[imperium_self.game.state.agendas[i]].name + '</li>';
+            }
+          }
+          html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
+          $('.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
+          $('.option').on('click', function() {
+
+             let agenda_to_quash = $(this).attr('id');
+             imperium_self.updateStatus("Quashing Agenda");
+
+             imperium_self.addMove("quash\t"+agenda_to_quash+"\t"+"1"); // 1 = re-deal
+             imperium_self.addMove("expend\t"+xxcha_player+"\t"+"strategy"+"\t"+"1");
+             imperium_self.addMove("give" + "\t" + player + "\t" + xxcha_player + "\t" + "promissary" + "\t"+"faction3-promissary");
+             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems XXCha Promissary");
+             imperium_self.endTurn();
+          });
+        }
+        return 0;
+      },
+    });
+
+
+
+
+
     this.importFaction('faction5', {
       id		:	"faction5" ,
       name		: 	"Yin Brotherhood",
@@ -3248,7 +3626,7 @@ console.log("P: " + planet);
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "faction5-indoctrination", "faction5-devotion", "faction5-flagship"],
       background	: 	'faction5.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction5-promissary"],
       commodity_limit	:	2,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yin Brotherhood, a monastic order of religious zealots whose eagerness to sacrifice their lives for the collective good makes them terrifying in one-on-one combat. Direct their self-destructive passion and you can win the Imperial Throne. Good luck!</div>`
     });
@@ -3643,6 +4021,68 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
 
 
+
+
+
+
+
+
+
+
+    this.importPromissary("faction5-promissary", {
+      name        :       "Greyfire Mutagen" ,
+      faction     :       -1,
+      text        :       "Redeemer may replace 1 opponent infantry with their own if more than 1 invader" ,
+      groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
+        if (imperium_self.doesPlayerHavePromissary(player, "faction5-promissary")) {
+          if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+	    return 1;
+          }
+        }
+        return 0;
+      },
+      groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
+        if (imperium_self.game.player == player) {
+
+          let html = `<p>Do you wish to return your Yin Promissary to convert 1 opponent infantry?</p><ul>`;
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+
+            if (id === "no") {
+              imperium_self.endTurn();
+            }
+            if (id === "no") {
+
+              let yin_player = imperium_self.returnPlayerOfFaction("faction5");
+  	      let sys = imperium_self.returnSectorAndPlanets(sector);
+  	      let planet = sys.p[planet_idx];
+
+              imperium_self.addMove("destroy_infantry_on_planet"+"\t"+player+"\t"+sector+"\t"+planet_idx+"\t"+1);
+              imperium_self.addMove("add_infantry_to_planet"+"\t"+player+"\t"+planet.planet+"\t"+1);
+              imperium_self.addMove("NOTIFY\tGreyfire Mutagen converts opposing infantry");
+
+              imperium_self.addMove("give" + "\t" + player + "\t" + yin_player + "\t" + "promissary" + "\t"+"faction5-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Yin Promissary redeemed");
+              imperium_self.endTurn();
+
+            }
+          });
+        }
+        return 0;
+      }
+    });
+
+
+
+
     this.importFaction('faction6', {
       id		:	"faction6" ,
       name		: 	"Yssaril Tribes",
@@ -3654,7 +4094,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction6-promissary"],
       commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
@@ -3976,88 +4416,120 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
 
 
 
-/****
-
-this.playMageonImplants = function(imperium_self, player, target, mycallback) {
-
-  if (imperium_self.game.player != player) { return 0; }
 
 
+    this.importPromissary("faction6-promissary", {
+      name        :       "Nest of Spies" ,
+      faction     :       -1,
+      text        :       "Redeemer may choose one action card from Yssaril hand" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction6-promissary';
+          x.html = '<li class="option" id="faction6-promissary">Nest of Spies (Yssaril Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction6") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction6-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let yssaril_player = imperium_self.returnPlayerOfFaction("faction6");
+        if (imperium_self.game.player == player) {
 
-}
+          let html = 'Reveal Yssaril Action Cards and Take One? <ul>';
+              html += '<li class="option" id="yes">yes</li>';
+              html += '<li class="option" id="no">no</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+             let id = $(this).attr('id');
+
+	     if (id === "yes") {
+	       imperium_self.addMove("faction6_promissary_triggered"+"\t"+imperium_self.game.player+"\t"+yssaril_player);
+               imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril promissary");
+               imperium_self.addMove("give" + "\t" + player + "\t" + yssaril_player + "\t" + "promissary" + "\t"+"faction6-promissary");
+	       imperium_self.endTurn();
+	     }
+	     if (id === "no") {
+	       imperium_self.endTurn();
+	     }
+
+          });
+        }
+      },
+
+      handleGameLoop : function(imperium_self, qe, mv) {
+
+        if (mv[0] == "faction6_promissary_triggered") {
+
+          let recipient = parseInt(mv[1]);
+          let sender 	= parseInt(mv[2]);
+
+          imperium_self.game.queue.splice(qe, 1);
+
+	  if (sender == imperium_self.game.player) {
+            imperium_self.addMove("faction6_promissary_executed" + "\t" + recipient + "\t" + sender + "\t" + JSON.stringify(imperium_self.returnPlayerActionCards()));
+	    imperium_self.endTurn();
+	  }
+
+          return 0;
+        }
 
 
+        if (mv[0] == "faction6_promissary_executed") {
 
-this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_core=0) {
+          let recipient 		= parseInt(mv[1]);
+          let sender 			= parseInt(mv[2]);
+          let relevant_action_cards 	= JSON.parse(mv[3]);
 
+          imperium_self.game.queue.splice(qe, 1);
 
-  let sys = imperium_self.returnSectorAndPlanets(sector);
-  let opponent = imperium_self.returnOpponentInSector(player, sector);
+	  if (relevant_action_cards.length <= 0) {
+	    imperium_self.updateStatus("Yssaril has no action cards to steal...");
+	    return 1;
+	  }
 
-  let can_sacrifice_destroyer = imperium_self.doesSectorContainPlayerUnit(player, sector, "destroyer");
-  let can_sacrifice_cruiser = imperium_self.doesSectorContainPlayerUnit(player, sector, "cruiser");
+	  //
+	  // otherwise player selects
+	  //
+	  if (recipient == imperium_self.game.player) {
+
+            imperium_self.playerSelectActionCardFromList(
+
+	      function (card) {
+                imperium_self.addMove("pull\t" + recipient + "\t" + sender + "\t" + "action" + "\t" + card);
+                imperium_self.addMove("give" + "\t" + recipient + "\t" + sender + "\t" + "promissary" + "\t"+"faction6-promissary");
+                imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril Promissary");
+                imperium_self.endTurn();
+              },
  
-  if (can_sacrifice_destroyer != 1 && can_sacrifice_cruiser != 1) {
-    mycallback(imperium_self);
-    return;
-  }
-  if (opponent == -1) {
-    mycallback(imperium_self);
-    return;
-  }
+	      function () {
+                imperium_self.endTurn();
+	      },
 
+              relevant_action_cards
 
-  let html = "<div class='sf-readable'>Do you wish to sacrifice a Destroyer or Cruiser to assign 1 hit to an enemy ship?</div><ul>";
-  if (can_sacrifice_destroyer) {
-      html += '<li class="textchoice" id="destroyer">sacrifice destroyer</li>';
-  }
-  if (can_sacrifice_cruiser) {
-      html += '<li class="textchoice" id="cruiser">sacrifice cruiser</li>';
-  }
-      html += '<li class="textchoice" id="no">no</li>';
-      html += '</ul>';
-  imperium_self.updateStatus(html);
+  	    );
+	  }
 
-  $('.textchoice').off();
-  $('.textchoice').on('click', function () {
-    let action2 = $(this).attr("id");
-    if (action2 === "no") {
-      mycallback(imperium_self);
-      return;
-    }
-    if (action2 === "destroyer") {
+	}
 
-      let unit_idx = 0;
-      for (let i = 0; i < sys.s.units[player-1].length; i++) {
-	if (sys.s.units[player-1][i].type == "destroyer") {
-	  unit_idx = i;
-        }
-      }
+        return 0;
 
-      imperium_self.addMove("destroy_unit"+"\t"+player+"\t"+player+"\t"+"space"+"\t"+sector+"\t"+0+"\t"+unit_idx+"\t"+1);
-      imperium_self.playDevotionAssignHit(imperium_self, player, sector, mycallback, impulse_core);
-      return;
-    }
-    if (action2 === "cruiser") {
+      },
 
-      let unit_idx = 0;
-      for (let i = 0; i < sys.s.units[player-1].length; i++) {
-	if (sys.s.units[player-1][i].type == "cruiser") {
-	  unit_idx = i;
-        }
-      }
-
-      imperium_self.addMove("destroy_unit"+"\t"+player+"\t"+player+"\t"+"space"+"\t"+sector+"\t"+0+"\t"+unit_idx+"\t"+1);
-      imperium_self.playDevotionAssignHit(imperium_self, player, sector, mycallback, impulse_core);
-      return;
-    }
-  });
-
-  return 0;
-}
-
-*****/
-
+    });
 
 
 
@@ -12336,7 +12808,6 @@ try {
 
 
 
-
 /////////////////
 /// HUD MENUS ///
 /////////////////
@@ -13285,7 +13756,8 @@ console.log("AAA D");
   
   importFaction(name, obj) {
 
-    if (obj.id == null)			{ obj.id = "faction"; }
+    if (obj.id == null)			{ obj.id = name; }
+    if (obj.key == null)		{ obj.key = name; }
     if (obj.name == null) 		{ obj.name = "Unknown Faction"; }
     if (obj.nickname == null)		{ obj.nickname = obj.name; }
     if (obj.homeworld  == null) 	{ obj.homeworld = "sector32"; }
@@ -13675,6 +14147,7 @@ console.log("AAA D");
 
         if (imperium_self.game.player == player) {
             imperium_self.playerResearchTechnology(function(tech) {
+              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
               imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
               imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
               imperium_self.endTurn();
@@ -15719,8 +16192,8 @@ this.game.state.end_round_scoring = 0;
 	  this.givePromissary(giver, recipient, details);
 	  let z = this.returnEventObjects();
 	  for (let z_index = 0; z_index < z.length; z++) {
-	    z[z_index].gainPromissary(this, receipient, details);
-	    z[z_index].losePromissary(this, sender, details);
+	    z[z_index].gainPromissary(this, recipient, details);
+	    z[z_index].losePromissary(this, giver, details);
 	  }
 	}
 
@@ -15826,6 +16299,12 @@ this.game.state.end_round_scoring = 0;
   	    this.game.players_info[player-1].strategy_tokens = 0;
 	  };
   	}
+        if (type == "fleet") {
+  	  this.game.players_info[player-1].fleet_supply -= parseInt(details);
+  	  if (this.game.players_info[player-1].fleet_supply < 0) { 
+  	    this.game.players_info[player-1].fleet_supply = 0;
+	  };
+  	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
   	  if (this.game.players_info[player-1].goods < 0) { 
@@ -15911,8 +16390,13 @@ this.game.state.end_round_scoring = 0;
 	      for (let i = 0; i < stuff_on_offer.promissaries.length; i++) {
 	        let pm = stuff_on_offer.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
 	      }
@@ -15952,8 +16436,13 @@ this.game.state.end_round_scoring = 0;
 	        nothing_check = "";
 	        let pm = stuff_in_return.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
 	      }
@@ -15977,7 +16466,7 @@ this.game.state.end_round_scoring = 0;
 	    offering_html += log_offer;
 	    offering_html += '</div>';
 
-        log_offer = this.returnFactionNickname(offering_faction) + " offers " + this.returnFactionNickname(faction_to_consider) + " " + log_offer;
+        log_offer = this.returnFactionNickname(offering_faction) + " offers " + log_offer;
 	this.updateLog(log_offer);
 	if (this.game.player == faction_to_consider) {
 	  this.playerHandleTradeOffer(offering_faction, stuff_on_offer, stuff_in_return, log_offer);
@@ -16629,6 +17118,40 @@ console.log("K: " + z[k].name);
         return 0;
       }
 
+
+
+
+      //
+      // examines events and selectively halts when player researches tech
+      //
+      if (mv[0] === "post_research_technology") {
+
+	let researcher = parseInt(mv[1]);
+	let tech = mv[2];
+
+        let z = this.returnEventObjects();
+  	this.game.queue.splice(qe, 1);
+	let speaker_order = this.returnSpeakerOrder();
+  	for (let i = 0; i < speaker_order.length; i++) {
+	  for (let k = 0; k < z.length; k++) {
+	    if (z[k].researchTechnologyEventTriggers(this, researcher, speaker_order[i], tech) == 1) {
+	      this.game.queue.push("post_research_technology_event\t"+researcher+"\t"+speaker_order[i]+"\t"+tech+"\t"+k);
+	    }
+          }
+        }
+  	return 1;
+      }
+
+      if (mv[0] === "post_research_technology_event") {
+	let researcher 	= parseInt(mv[1]);
+	let player 	= parseInt(mv[2]);
+	let tech 	= mv[3];
+        let z_index	= parseInt(mv[4]);
+
+  	this.game.queue.splice(qe, 1);
+	z[z_index].researchTechnologyEvent(this, researcher, player, tech);
+	return 0;
+      }
 
 
 
@@ -22804,9 +23327,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
       for (let i = 0; i < their_offer.promissaries.length; i++) {
         let pm = their_offer.promissaries[i].promissary;
 	let tmpar = pm.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
         if (i > 0) { promissaries_received += ', '; }
-        promissaries_received += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        promissaries_received += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
     }
   }
@@ -22817,8 +23345,13 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         let pm = my_offer.promissaries[i].promissary;
 	let tmpar = pm.split("-");
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         if (i > 0) { promissaries_offered += ', '; }
-        promissaries_offered += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        promissaries_offered += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
     }
   }
@@ -22896,9 +23429,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         if (i == 0) { receive_promissary_text = ''; }
         let pm = receive_promissaries[i];
 	let tmpar = pm.promissary.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	if (i > 0) { receive_promissary_text += ', '; }
-        receive_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        receive_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
       let offer_promissary_text = 'no promissaries';
@@ -22906,9 +23444,14 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         if (i == 0) { offer_promissary_text = ''; }
         let pm = offer_promissaries[i];
 	let tmpar = pm.promissary.split("-");
+	let tmpname = tmpar[1];
+        for (let i = 2; i < tmpar.length; i++) {
+	  tmpname += "-";
+	  tmpname += tmpar[i];
+        }
         let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	if (i > 0) { offer_promissary_text += ', '; }
-        offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}`;	
+        offer_promissary_text += `${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}`;	
       }
 
       let html = "<div class='sf-readable'>Make an Offer: </div><ul>";
@@ -22993,7 +23536,12 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         for (let i = 0; i < imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes.length; i++) {
 
 	  let pm = imperium_self.game.players_info[imperium_self.game.player-1].promissary_notes[i];
-	  let tmpar = pm.split("-");
+	  tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+          for (let i = 2; i < tmpar.length; i++) {
+	    tmpname += "-";
+	    tmpname += tmpar[i];
+          }
           let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	  let already_offered = 0;
 	  for (let b = 0; b < offer_promissaries.length; b++) {
@@ -23002,7 +23550,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}</li>`;
+            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;
@@ -23034,6 +23582,11 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
         for (let i = 0; i < imperium_self.game.players_info[player-1].promissary_notes.length; i++) {
 	  let pm = imperium_self.game.players_info[player-1].promissary_notes[i];
 	  let tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+            for (let i = 2; i < tmpar.length; i++) {
+	    tmpname += "-";
+	    tmpname += tmpar[i];
+          }
           let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
 	  let already_offered = 0;
 	  for (let b = 0; b < receive_promissaries.length; b++) {
@@ -23042,7 +23595,7 @@ playerHandleTradeOffer(faction_offering, their_offer, my_offer, offer_log) {
 	    }
 	  }
 	  if (already_offered == 0) {
-            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpar[1]].name}</li>`;
+            html += `  <li class="option" id="${i}">${faction_promissary_owner} - ${imperium_self.promissary_notes[tmpname].name}</li>`;
           }
         }
         html += `  <li class="option" id="cancel">cancel</li>`;
@@ -23535,6 +24088,49 @@ playerSelectActionCard(mycallback, cancel_callback, types = []) {
   });
 
 }
+
+
+playerSelectActionCardFromList(mycallback, cancel_callback, array_of_cards = []) {
+
+  let imperium_self = this;
+  if (array_of_cards.length == 0) {
+    this.playerAcknowledgeNotice("You do not have any action cards to select", function () {
+      if (cancel_callback != null) { cancel_callback(); return 0; }
+      imperium_self.playerTurn();
+      return 0;
+    });
+    return 0;
+  }
+
+  let html = '';
+
+  html += "<div class='sf-readable'>Select an action card: </div><ul>";
+  for (let z = 0; z < array_of_cards.length; z++) {
+    if (!this.game.players_info[this.game.player - 1].action_cards_played.includes(array_of_cards[z])) {
+      let thiscard = imperium_self.action_cards[array_of_cards[z]];
+      html += '<li class="textchoice pointer" id="' + array_of_cards[z] + '">' + thiscard.name + '</li>';
+    }
+  }
+  html += '<li class="textchoice pointer" id="cancel">cancel</li>';
+  html += '</ul>';
+
+  this.updateStatus(html);
+  $('.textchoice').off();
+  //$('.textchoice').on('mouseenter', function () { let s = $(this).attr("id"); if (s != "cancel") { imperium_self.showActionCard(s); } });
+  //$('.textchoice').on('mouseleave', function () { let s = $(this).attr("id"); if (s != "cancel") { imperium_self.hideActionCard(s); } });
+  $('.textchoice').on('click', function () {
+
+    let action2 = $(this).attr("id");
+
+    //if (action2 != "cancel") { imperium_self.hideActionCard(action2); }
+    if (action2 === "cancel") { cancel_callback(); return 0; }
+
+    mycallback(action2);
+
+  });
+
+}
+
 
 
 //
@@ -26109,12 +26705,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-      return ["1_1", "4_7"];
+//      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-//      return ["1_1", "2_1"];
+      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {
@@ -26308,6 +26904,12 @@ playerDiscardActionCards(num, mycallback=null) {
     // ensure that "player" has the right to execute the logic being coded, either by 
     // adding gainTechnology() or doesPlayerHaveTech()
     //
+    // if you need to code a function that actually provides the opportunity for users to
+    // selectively take action, then you need an asychronous trigger. these functions will
+    // be named as follows
+    //
+    // nameEventTriggers - returns 1 if triggers -- default is 0 don't trigger and cont game
+    // nameEvent - returns 1 by default - 0 is halt game until next move
     //
     // runs for everyone
     //
@@ -26554,6 +27156,17 @@ playerDiscardActionCards(num, mycallback=null) {
 
 
     //
+    // when a player researches a technology
+    //
+    if (obj.researchTechnologyEventTriggers == null) {
+      obj.researchTechnologyEventTriggers = function(imperium_self, researcher, player, technology) { return 0; } // default skips
+    }
+    if (obj.researchTechnologyEvent == null) {
+      obj.researchTechnologyEvent = function(imperium_self, researcher, player, technology) { return 1; } // default continues gameloop
+    }
+
+
+    //
     // when strategy card primary is played
     //
     if (obj.playStrategyCardPrimaryTriggers == null) {
@@ -26691,6 +27304,12 @@ playerDiscardActionCards(num, mycallback=null) {
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
     return factions[imperium_self.game.players_info[player-1].faction].name;
+  }
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.game.players_info[i].faction === faction) { return (i+1); }
+    }
+    return 0;
   }
   returnFactionNameNickname(imperium_self, player) {
     let factions = imperium_self.returnFactions();
@@ -28760,9 +29379,18 @@ playerDiscardActionCards(num, mycallback=null) {
   }
 
 
-
+  // either a full match on promissary name
+  // or a partial match where player is not the promissary owner
   doesPlayerHavePromissary(player, promissary) {
     if (this.game.players_info[player-1].promissary_notes.includes(promissary)) { return 1; }
+    for (let i = 0; i < this.game.players_info[player-1].promissary_notes.length; i++) {
+      let pn = this.game.players_info[player-1].promissary_notes[i];
+      if (pn.indexOf(promissary) > 0) {
+        let player_faction = this.game.players_info[player-1].faction.id;
+        if (pn.indexOf(player_faction) == 0) { return 0; }
+	return 1;
+      }
+    }
     return 0;
   }
 

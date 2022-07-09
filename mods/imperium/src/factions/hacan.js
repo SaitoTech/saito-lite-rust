@@ -8,7 +8,7 @@
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "antimass-deflectors", "faction8-merchant-class", "faction8-guild-ships", "faction8-arbiters", "faction8-flagship"],
       background	: 	'faction8.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction8-promissary"],
       commodity_limit	:	6,
       intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Emirates of Hacan, a guild-class of traders whose political machinations play out behind the veil of ruthless commercial competition. May you trade your way to wealth and power. Good luck!</div>`
     });
@@ -407,6 +407,46 @@
       }
     });
 
+
+
+
+
+    this.importPromissary("faction8-promissary", {
+      name        :       "Trade Convoys" ,
+      faction     :       -1,
+      text        :       "Holder may negotiate transactions with non-neighbours. Return if player activates system with Hacan units" ,
+      activateSystemTriggers : function(imperium_self, activating_player, player, sector) {
+        let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.doesSectorContainPlayerUnits(hacan_player, sector)) {
+            if (activating_player != hacan_player) { return 1; }
+          }
+        }
+        return 0;
+      },
+      activateSystemEvent : function(imperium_self, activating_player, player, sector) {
+        if (imperium_self.doesPlayerHavePromissary(player, "faction8-promissary")) {
+          if (imperium_self.game.player == player) {
+	    let hacan_player = imperium_self.returnPlayerOfFaction("faction8");
+            imperium_self.addMove("give" + "\t" + player + "\t" + hacan_player + "\t" + "promissary" + "\t"+"faction8-promissary");
+            imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(player) + " redeems Trade Convoys (Hacan Promissary)");
+            imperium_self.endTurn();
+          }
+          return 0;
+        }
+        return 1;
+      },
+      gainPromissary : function(imperium_self, gainer, promissary) {
+        imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+	return 1;
+      },
+      losePromissary : function(imperium_self, loser, promissary) {
+	if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
+          imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+	}
+	return 1;
+      },
+    });
 
 
 
