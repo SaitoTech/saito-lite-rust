@@ -10,7 +10,7 @@
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction6-promissary"],
       commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
@@ -342,7 +342,7 @@
         let x = {};
         if (menu == "main") {
           x.event = 'faction6-promissary';
-          x.html = '<li class="option" id="faction6-promissary">Military Support (Sol Promissary)</li>';
+          x.html = '<li class="option" id="faction6-promissary">Nest of Spies (Yssaril Promissary)</li>';
         }
         return x;
       },
@@ -372,9 +372,9 @@
              let id = $(this).attr('id');
 
 	     if (id === "yes") {
-	       imperium_self.addMove("yssaril_promissary_executed"+"\t"+imperium_self.game.player+"\t"+yssaril_player);
+	       imperium_self.addMove("faction6_promissary_triggered"+"\t"+imperium_self.game.player+"\t"+yssaril_player);
                imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril promissary");
-               imperium_self,addMove("give" + "\t" + player + "\t" + yssaril_player + "\t" + "promissary" + "\t"+"faction6-promissary");
+               imperium_self.addMove("give" + "\t" + player + "\t" + yssaril_player + "\t" + "promissary" + "\t"+"faction6-promissary");
 	       imperium_self.endTurn();
 	     }
 	     if (id === "no") {
@@ -395,7 +395,7 @@
           imperium_self.game.queue.splice(qe, 1);
 
 	  if (sender == imperium_self.game.player) {
-            imperium_self.addMove("faction6_promissary_executed" + "\t" + recipient + "\t" + sender + "\t" + JSON.stringify(imperium_self.()));
+            imperium_self.addMove("faction6_promissary_executed" + "\t" + recipient + "\t" + sender + "\t" + JSON.stringify(imperium_self.returnPlayerActionCards()));
 	    imperium_self.endTurn();
 	  }
 
@@ -421,24 +421,29 @@
 	  //
 	  if (recipient == imperium_self.game.player) {
 
-            imperium_self.playerSelectActionCard(function (card) {
-              imperium_self.addMove("pull\t" + recipient + "\t" + sender + "\t" + "action" + "\t" + card);
-              imperium_self,addMove("give" + "\t" + recipient + "\t" + sender + "\t" + "promissary" + "\t"+"faction6-promissary");
-              imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction((i+1)) + " redeems Yssaril Promissary");
-              imperium_self.endTurn();
-            },
+            imperium_self.playerSelectActionCardFromList(
+
+	      function (card) {
+                imperium_self.addMove("pull\t" + recipient + "\t" + sender + "\t" + "action" + "\t" + card);
+                imperium_self.addMove("give" + "\t" + recipient + "\t" + sender + "\t" + "promissary" + "\t"+"faction6-promissary");
+                imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril Promissary");
+                imperium_self.endTurn();
+              },
  
-	    function () {
-              imperium_self.endTurn();
-	    },
+	      function () {
+                imperium_self.endTurn();
+	      },
 
-            relevant_action_cards
+              relevant_action_cards
 
-	  );
+  	    );
+	  }
+
 	}
+
         return 0;
 
-      }
+      },
 
     });
 

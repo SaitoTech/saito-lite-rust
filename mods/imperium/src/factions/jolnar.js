@@ -12,7 +12,7 @@
       //objectives	:	["close-the-trap"],
       tech		: 	["sarween-tools", "neural-motivator", "plasma-scoring", "antimass-deflectors", "faction2-analytic", "faction2-brilliant", "faction2-fragile", "faction2-flagship"],
       background	: 	'faction2.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction2-promissary"],
       commodity_limit	:	4,
       intro		:	`<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Universities of Jol Nar, a physically weak faction which excells at science and technology. Survive long enough to amass enough protective technology and you can be a contender for the Imperial Throne. Good luck!</div>`
     });
@@ -314,9 +314,13 @@
       faction     :       -1,
       text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
       researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
+console.log("RESEARCH TECH TRIGGERS");
 	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
+console.log("we have this promissary " + researcher + " -- " + player);
 	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
-	    if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+console.log("A");
+	    if (researcher != player) {
+console.log("B");
 	      return 1;
 	    }
 	  }
@@ -325,8 +329,8 @@
       },
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
-  	  if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
-	    if (imperium_self.returnPlayerOfFaction("faction2") === researcher) {
+
+console.log("research tech event");
 
               let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
                     html += '<li class="option" id="yes">Yes</li>';
@@ -355,7 +359,7 @@
                 if (id === "yes") {
 		  let jolnar_player = imperium_self.returnPlayerOfFaction("faction2");
 	          imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
-                  imperium_self,addMove("give" + "\t" + player + "\t" + jolnar_player + "\t" + "promissary" + "\t"+"faction2-promissary");
+                  imperium_self.addMove("give" + "\t" + player + "\t" + jolnar_player + "\t" + "promissary" + "\t"+"faction2-promissary");
                   imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
                   imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Research Agreement promissary");
 		  imperium_self.endTurn();
@@ -363,8 +367,6 @@
                 }
 
 	      });
-	    }
-	  }
 	}
 	return 0;
       }

@@ -292,6 +292,7 @@
         if (imperium_self.game.player == player) {
             imperium_self.playerResearchTechnology(function(tech) {
               imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
+              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
               imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
               imperium_self.endTurn();
           });
@@ -2335,8 +2336,8 @@ this.game.state.end_round_scoring = 0;
 	  this.givePromissary(giver, recipient, details);
 	  let z = this.returnEventObjects();
 	  for (let z_index = 0; z_index < z.length; z++) {
-	    z[z_index].gainPromissary(this, receipient, details);
-	    z[z_index].losePromissary(this, sender, details);
+	    z[z_index].gainPromissary(this, recipient, details);
+	    z[z_index].losePromissary(this, giver, details);
 	  }
 	}
 
@@ -2442,6 +2443,12 @@ this.game.state.end_round_scoring = 0;
   	    this.game.players_info[player-1].strategy_tokens = 0;
 	  };
   	}
+        if (type == "fleet") {
+  	  this.game.players_info[player-1].fleet_supply -= parseInt(details);
+  	  if (this.game.players_info[player-1].fleet_supply < 0) { 
+  	    this.game.players_info[player-1].fleet_supply = 0;
+	  };
+  	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
   	  if (this.game.players_info[player-1].goods < 0) { 
@@ -2527,8 +2534,13 @@ this.game.state.end_round_scoring = 0;
 	      for (let i = 0; i < stuff_on_offer.promissaries.length; i++) {
 	        let pm = stuff_on_offer.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
 	      }
@@ -2568,8 +2580,13 @@ this.game.state.end_round_scoring = 0;
 	        nothing_check = "";
 	        let pm = stuff_in_return.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
 	      }
@@ -2593,7 +2610,7 @@ this.game.state.end_round_scoring = 0;
 	    offering_html += log_offer;
 	    offering_html += '</div>';
 
-        log_offer = this.returnFactionNickname(offering_faction) + " offers " + this.returnFactionNickname(faction_to_consider) + " " + log_offer;
+        log_offer = this.returnFactionNickname(offering_faction) + " offers " + log_offer;
 	this.updateLog(log_offer);
 	if (this.game.player == faction_to_consider) {
 	  this.playerHandleTradeOffer(offering_faction, stuff_on_offer, stuff_in_return, log_offer);
@@ -3245,6 +3262,40 @@ console.log("K: " + z[k].name);
         return 0;
       }
 
+
+
+
+      //
+      // examines events and selectively halts when player researches tech
+      //
+      if (mv[0] === "post_research_technology") {
+
+	let researcher = parseInt(mv[1]);
+	let tech = mv[2];
+
+        let z = this.returnEventObjects();
+  	this.game.queue.splice(qe, 1);
+	let speaker_order = this.returnSpeakerOrder();
+  	for (let i = 0; i < speaker_order.length; i++) {
+	  for (let k = 0; k < z.length; k++) {
+	    if (z[k].researchTechnologyEventTriggers(this, researcher, speaker_order[i], tech) == 1) {
+	      this.game.queue.push("post_research_technology_event\t"+researcher+"\t"+speaker_order[i]+"\t"+tech+"\t"+k);
+	    }
+          }
+        }
+  	return 1;
+      }
+
+      if (mv[0] === "post_research_technology_event") {
+	let researcher 	= parseInt(mv[1]);
+	let player 	= parseInt(mv[2]);
+	let tech 	= mv[3];
+        let z_index	= parseInt(mv[4]);
+
+  	this.game.queue.splice(qe, 1);
+	z[z_index].researchTechnologyEvent(this, researcher, player, tech);
+	return 0;
+      }
 
 
 

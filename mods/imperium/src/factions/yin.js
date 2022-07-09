@@ -8,7 +8,7 @@
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["sarween-tools", "faction5-indoctrination", "faction5-devotion", "faction5-flagship"],
       background	: 	'faction5.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction5-promissary"],
       commodity_limit	:	2,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yin Brotherhood, a monastic order of religious zealots whose eagerness to sacrifice their lives for the collective good makes them terrifying in one-on-one combat. Direct their self-destructive passion and you can win the Imperial Throne. Good luck!</div>`
     });
@@ -451,8 +451,8 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
               imperium_self.addMove("add_infantry_to_planet"+"\t"+player+"\t"+planet.planet+"\t"+1);
               imperium_self.addMove("NOTIFY\tGreyfire Mutagen converts opposing infantry");
 
-              imperium_self,addMove("give" + "\t" + player + "\t" + yin_player + "\t" + "promissary" + "\t"+"faction5-promissary");
-              imperium_self,addMove("NOTIFY" + "\t" + "Yin Promissary redeemed");
+              imperium_self.addMove("give" + "\t" + player + "\t" + yin_player + "\t" + "promissary" + "\t"+"faction5-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Yin Promissary redeemed");
               imperium_self.endTurn();
 
             }
