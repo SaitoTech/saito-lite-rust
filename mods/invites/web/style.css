@@ -1,11 +1,25 @@
 .invites-appspace {
-  /* border: 1px solid var(--saito-border); */
-  /* display: grid;
-  justify-content: center; */
   width: 69.5rem;
 }
 
 .invites-appspace .saito-list {
+  padding: 0;
+}
+
+
+
+.invites-appspace-item-list {
+  border: 1px solid var(--saito-border-light);
+  border-radius: .5rem;
+}
+
+.invites-appspace-item {
+  padding: 2rem 3rem 1rem 1.5rem;
+  border-bottom: 1px solid #a5a5a533;
+}
+
+
+.invites-appspace-user-container {
   padding: 0;
 }
 
@@ -17,18 +31,9 @@
 
 
 
-.invites-appspace-item {
-  padding: 2rem 3rem 2rem 1.5rem;
-  border-bottom: 1px solid #a5a5a533;
-}
 
-.invites-appspace-user-container {
-  padding: 0;
-}
 
 .invites-appspace-item-contents-container {
-  /* display: grid;
-    grid-template-columns: 9rem 1fr; */
   padding-left: 5.5rem;
   padding-top: 1rem;
 }
@@ -37,42 +42,26 @@
   margin-bottom: 1rem;
 }
 
-.invites-appspace-create {
+.invites-appspace-create-container {
   position: relative;
-  width: 60rem;
+  width: 69.5rem;
+  border-radius: .5rem;
+  min-width: none;
+  transition: max-height .2s;
+  background-color: var(--saito-white);
 
 }
 
 .invites-appspace-event {
   position: relative;
-  margin-bottom: 2rem;
   border-radius: .5rem;
-  /* padding: 1rem; */
 
 }
 
-.invites-appspace-date {
-  right: 1rem;
-  top: .5rem;
-  position: absolute;
-}
 
-.invites-appspace-invite {
+.invites-appspace-invite {}
 
-  border-radius: .5rem;
-  /* padding: 1rem; */
-  margin-bottom: 1.5rem;
-  min-width: none;
-  transition: max-height .2s;
-  background-color: var(--saito-white);
-}
-
-.invites-appspace-section {
-  /* grid-template-columns: 4rem 1fr;
-  align-items: center;
-  justify-content: center; */
-
-}
+.invites-appspace-section {}
 
 .invites-appspace-section:not(:last-child) {
   margin-bottom: 2rem;
@@ -114,6 +103,7 @@
 .invites-appspace-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
 }
 
@@ -163,6 +153,7 @@
   color: var(--saito-text);
   z-index: 3;
   text-decoration: dashed;
+  cursor: pointer;
 
 }
 
@@ -171,9 +162,9 @@
 
 }
 
-.invites-appspace-link {
-  color: var(--saito-secondary);
+.invites-appspace-advanced-options {
   color: pointer;
+  text-decoration: underline;
 }
 
 .invites-appspace-additional-info>i:hover {
@@ -188,5 +179,64 @@
 
 
 .invites-appspace-empty-slot {
+  cursor: pointer;
+}
+
+
+
+
+/*  Create invite */
+
+.invites-appspace-create-container {
+  width: 69.5rem;
+  padding: 1.5rem;
+  padding-top: 2rem;
+}
+
+
+.invites-appspace-create-header p {
+  color: var(--saito-black);
+  cursor: pointer;
+  font-size: 1.4rem;
+}
+
+
+.invites-appspace-create-section {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: center;
+
+}
+
+.invites-appspace-create-section i {
+  font-size: 2rem;
+}
+
+.invites-appspace-create-section:not(:last-child) {
+  margin-bottom: 2rem;
+}
+
+.invites-appspace-create-actions {
+  padding-left: 1rem;
+  margin-left: auto;
+  display: flex;
+  right: 0;
+  justify-content: end;
+}
+
+.invites-appspace-create-container .saito-select-btn,
+.saito-select-content {
+  width: 9rem;
+}
+
+
+.invites-appspace-create-date {
+  position: absolute;
+  right: 1rem;
+}
+
+.invites-appspace-create-advancedoption-button {}
+
+.invites-appspace-create-advancedoption-button {
   cursor: pointer;
 }

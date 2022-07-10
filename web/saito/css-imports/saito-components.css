@@ -682,7 +682,6 @@ Saito backdrop
     background-color: var(--saito-white);
     border-radius: .5rem;
     position: relative;
-    padding: 1rem;
 }
 
 .saito-overlay-actions {

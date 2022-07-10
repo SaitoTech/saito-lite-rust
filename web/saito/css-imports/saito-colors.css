@@ -10,12 +10,17 @@
     color: var(--saito-white);
 }
 
-.saito-gray-color, .saito-grey-color {
+.saito-gray-color,
+.saito-grey-color {
     color: var(--saito-gray);
 }
 
 .saito-gradient-color {
     color: var(--dreamscape);
+}
+
+.saito-green-color {
+    color: var(--saito-green)
 }
 
 /* ----------------------------------------------------------------
@@ -37,7 +42,8 @@ Backgrounds
     background: var(--saito-white);
 }
 
-.saito-gray-background, .saito-grey-background {
+.saito-gray-background,
+.saito-grey-background {
     background-color: var(--saito-gray);
     background: var(--saito-gray);
 }

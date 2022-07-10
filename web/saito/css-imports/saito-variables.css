@@ -34,6 +34,7 @@ font imports
 :root {
   --saito-font: 'visuelt-light';
   --saito-gray: #eaeaef45;
+  --saito-green: rgb(47, 188, 47);
   --saito-primary: #f71f3d;
   --saito-secondary: #ff8235;
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);

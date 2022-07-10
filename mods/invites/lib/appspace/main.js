@@ -98,7 +98,7 @@ class InvitesAppspace {
         document.querySelector('.saito-overlay').classList.remove('show');
       }
 
-      if (e.target.classList.contains("invites-appspace-create-invite")) {
+      if (e.target.classList.contains("invites-appspace-create-invite-button")) {
         document.querySelector('.saito-overlay').classList.add('show');
       }
 
