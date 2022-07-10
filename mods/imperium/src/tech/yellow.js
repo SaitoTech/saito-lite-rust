@@ -160,7 +160,6 @@
         if (imperium_self.doesPlayerHaveTech(gainer, "integrated-economy")) {
           imperium_self.game.players_info[gainer-1].may_player_produce_without_spacedock = 1;
           imperium_self.game.players_info[gainer-1].may_player_produce_without_spacedock_production_limit = 0;
-console.log("P: " + planet);
           imperium_self.game.players_info[gainer-1].may_player_produce_without_spacedock_cost_limit += imperium_self.game.planets[planet].resources;
         }
       },

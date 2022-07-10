@@ -417,7 +417,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       text        :       "Redeemer may replace 1 opponent infantry with their own if more than 1 invader" ,
       groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
         if (imperium_self.doesPlayerHavePromissary(player, "faction5-promissary")) {
-          if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+          if (imperium_self.returnPlayerOfFaction("faction5") != player) {
 	    return 1;
           }
         }
@@ -441,7 +441,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
             if (id === "no") {
               imperium_self.endTurn();
             }
-            if (id === "no") {
+            if (id === "yes") {
 
               let yin_player = imperium_self.returnPlayerOfFaction("faction5");
   	      let sys = imperium_self.returnSectorAndPlanets(sector);

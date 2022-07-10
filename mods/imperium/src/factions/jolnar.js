@@ -314,13 +314,9 @@
       faction     :       -1,
       text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
       researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
-console.log("RESEARCH TECH TRIGGERS");
 	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
-console.log("we have this promissary " + researcher + " -- " + player);
 	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
-console.log("A");
 	    if (researcher != player) {
-console.log("B");
 	      return 1;
 	    }
 	  }
@@ -329,8 +325,6 @@ console.log("B");
       },
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
-
-console.log("research tech event");
 
               let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
                     html += '<li class="option" id="yes">Yes</li>';

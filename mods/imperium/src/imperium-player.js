@@ -1047,10 +1047,6 @@ playerAcknowledgeNotice(msg, mycallback) {
 
       if (maximum_assignable_hits == 0) {
         console.log("ERROR: you had no hits left to assign, bug?");
-        console.log("SHIPS: " + JSON.stringify(sys.s.units[imperium_self.game.player - 1]));
-//        imperium_self.eliminateDestroyedUnitsInSector(imperium_self.game.player, sector);
-//        imperium_self.saveSystemAndPlanets(sys);
-//        imperium_self.updateSectorGraphics(sector);
         imperium_self.endTurn();
         return 0;
       }
