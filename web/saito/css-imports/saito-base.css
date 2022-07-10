@@ -2,7 +2,9 @@
  Saito Base: CSS default settings, layouts
 -----------------------------------------------------------------*/
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,6 +35,10 @@ pre {
   overflow: auto;
 }
 
+.treated {
+  display: none;
+}
+
 /* ----------------------------------------------------------------
  Link
 -----------------------------------------------------------------*/
@@ -50,7 +56,12 @@ a:hover {
 	Headings
 -----------------------------------------------------------------*/
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--saito-primary);
 }
 
@@ -85,9 +96,24 @@ textarea {
 /* ----------------------------------------------------------------
  Paragraph
 -----------------------------------------------------------------*/
+p.large {
+  font-size: 2rem;
+  font-weight: bold;
+}
 
-p {
-  font-size: 1.8rem;
+p,
+p.middle {
+  color: var(--saito-black);
+  font-size: 1.75rem;
+  overflow: auto;
+}
+
+p::-webkit-scrollbar {
+  display: none;
+}
+
+p.small {
+  font-size: 1.3rem;
 }
 
 /* ----------------------------------------------------------------
@@ -99,39 +125,31 @@ hr {
   margin: 2.5rem;
 }
 
-.saito-large-p {
-  font-size: 2rem;
-}
 
-p, .saito-mid-p {
-  color: var(--saito-black);
-  font-size: 1.6rem;
-}
-
-.saito-small-p {
-  font-size: 1.3rem;
-}
 
 /* ----------------------------------------------------------------
 Media Queries
 -----------------------------------------------------------------*/
 
 @media screen and (min-width: 1600px) {
-  body {
+  /* body {
     font-size: 1.4rem;
-  }
+  } */
+
 }
 
 @media screen and (max-width: 1200px) {
-  body {
+  /* body {
     font-size: 1.4rem;
-  }
+  } */
+
 }
 
 @media screen and (max-width: 768px) {
   body {
     font-size: 1.4rem;
   }
+
   .saito-container {
     padding: 1rem 1.5rem;
   }
@@ -141,32 +159,43 @@ Media Queries
   h1 {
     font-size: 4.5rem;
   }
+
   h2 {
     font-size: 4rem;
   }
+
   h3 {
     font-size: 3.5rem;
   }
+
   h4 {
     font-size: 3rem;
   }
+
   h5 {
     font-size: 2.5rem;
   }
+
   h6 {
     font-size: 2rem;
   }
-  .saito-large-p {
+
+  p.large {
     font-size: 1.8rem;
   }
-  p, .saito-mid-p {
+
+  p,
+  p.middle {
     color: var(--saito-black);
     font-size: 1.4rem;
   }
-  .saito-small-p {
+
+  p.small {
     font-size: 1.1rem;
   }
 }
+
+
 
 @media screen and (max-width: 320px) {
   body {

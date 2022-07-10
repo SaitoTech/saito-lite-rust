@@ -1,6 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var InviteTemplate = require('../../lib/templates/invitetemplate');
-const InvitesEmailAppspace = require('./lib/email-appspace/email-appspace');
+const InvitesAppspace = require('./lib/appspace/main');
 
 
 class Invites extends InviteTemplate {
@@ -14,7 +14,8 @@ class Invites extends InviteTemplate {
     this.categories     = "Utilities Education Demo";
 
     this.invites        = [];
-
+    this.scripts	= [];
+    this.styles		= ['/invites/style.css'];
     return this;
   }
 
@@ -27,27 +28,13 @@ class Invites extends InviteTemplate {
 
   respondTo(type) {
 
-    if (type == 'email-appspace') {
-      return new InvitesEmailAppspace(this.app, this);
+    if (type == 'appspace') {
+      super.render(this.app, this); // for scripts + styles
+      return new InvitesAppspace(this.app, this);
     }
 
     return null;
   }
-
-
-  addInvite(tx) {
-
-    let txmsg = tx.returnMessage();
-
-    for (let i = 0; i < this.invites.length; i++) {
-      if (JSON.stringify(txmsg) === JSON.stringify(this.invites[i])) {
-	return;
-      }
-    }
-
-    this.invites.push(txmsg);
-  }
-
 
 
   //

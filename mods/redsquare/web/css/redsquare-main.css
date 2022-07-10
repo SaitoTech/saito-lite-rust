@@ -27,11 +27,16 @@
 #redsquare-input-container textarea {
     margin-top: 3rem;
     padding-left: 1rem;
-
     padding-top: 1.5rem;
-    height: calc(100% - 9rem);
+    height: calc(100% - 6rem);
     width: 100%;
     border: none;
+}
+
+#tweet-img-input-label {
+    display: inline-block;
+    margin-left: 30px;
+    width: 150px;
 }
 
 
@@ -95,6 +100,14 @@
     align-items: center;
     grid-gap: 2rem;
     grid-template-columns: min-content min-content;
+    position: relative;
+}
+
+.redsquare-user-actions i {
+    font-size: 25px;
+    position: absolute;    
+    top: -15px;
+    font-size: 25px;
 }
 
 .redsquare-user-actions i {
@@ -166,4 +179,44 @@
     font-weight: bold;
     font-size: 2.3rem;
     margin-left: 1rem;
+}
+
+/* TWEET BOX */
+
+.tweet-tool-like {
+    display: inline-block;
+    line-height: 19px;
+    border-radius: 3px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    margin-right: 30px;
+}
+
+.tweet-tool-like.liked, .tweet-tool-like:hover{
+    background: #EA462F;
+    color: #fff;
+    border: none;
+}
+
+
+.redsquare-date-container {
+    margin-top: 25px;
+}
+
+
+.redsquare-date-container p {
+    font-size: 1.34rem;
+    color: #666060;
+}
+
+.redsquare-tweet-tools {
+    margin-top: 9px;
+    font-size: 20px;
+}
+
+.redsquare-tweet-tools span {
+}
+
+.redsquare-tweet-tools i {
+    margin-left: 5px;
 }

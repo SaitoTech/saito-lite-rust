@@ -136,14 +136,9 @@
     return JSON.stringify(unit_to_add);
   };
   loadUnitByJSONOntoShip(player, sector, ship_idx, unitjson) {
-console.log("AAA A - " + player + " - " + sector + " - " + ship_idx + " ||||| " + unitjson);
     let sys = this.returnSectorAndPlanets(sector);
-console.log("AAA B");
-console.log(JSON.stringify(sys.s.units[player-1]));
     sys.s.units[player - 1][ship_idx].storage.push(JSON.parse(unitjson));
-console.log("AAA C");
     this.saveSystemAndPlanets(sys);
-console.log("AAA D");
     return unitjson;
   };
   loadUnitOntoShipByJSON(player, sector, shipjson, unitname) {
