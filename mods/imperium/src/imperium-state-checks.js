@@ -358,11 +358,12 @@
 	  if (this.game.players_info[this.game.player-1].promissary_notes.length > 0 || this.game.players_info[i].promissary_notes.length > 0) {
 	    return 1;
 	  }
-        }
+        } else {
+          if (this.game.players_info[this.game.player-1].may_trade_with_non_neighbours == 1) { return 1; }
+	}
         if (this.game.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
       }
     }
-    if (this.game.players_info[player-1].may_trade_with_non_neighbours == 1) { return 1; }
     return 0;
   }
   

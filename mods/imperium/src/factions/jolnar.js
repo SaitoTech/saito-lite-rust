@@ -242,7 +242,7 @@
       type        :       "special" ,
       color       	: 	"blue" ,
       prereqs	:	["blue","blue"],
-      text	:	"Activate card to make activated system 1 hop away from all other systems with Jol Nar ships" ,
+      text	:	"Exhaust and activated system with Jol Nar ships now 1 hop away from others" ,
       initialize  :	  function(imperium_self, player) {
         if (imperium_self.game.players_info[player-1].deep_space_conduits == null) {
           imperium_self.game.players_info[player-1].deep_space_conduits = 0;
@@ -314,13 +314,9 @@
       faction     :       -1,
       text        :       "After owner researches a technology, holder may gain that technology and return card to owner." ,
       researchTechnologyEventTriggers : function(imperium_self, researcher, player, tech) {
-console.log("RESEARCH TECH TRIGGERS");
 	if (imperium_self.doesPlayerHavePromissary(player, "faction2-promissary")) {
-console.log("we have this promissary " + researcher + " -- " + player);
 	  if (imperium_self.returnPlayerOfFaction("faction2") == researcher) {
-console.log("A");
 	    if (researcher != player) {
-console.log("B");
 	      return 1;
 	    }
 	  }
@@ -329,8 +325,6 @@ console.log("B");
       },
       researchTechnologyEvent : function(imperium_self, researcher, player, tech) {
 	if (imperium_self.game.player === player) {
-
-console.log("research tech event");
 
               let html = `<p>Do you wish to return your Research Agreement and gain ${imperium_self.tech[tech].name}? </p><ul>`;
                     html += '<li class="option" id="yes">Yes</li>';

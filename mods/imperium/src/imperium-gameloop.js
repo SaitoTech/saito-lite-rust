@@ -862,16 +862,20 @@
 
       if (mv[0] === "quash") {
 
-	let agenda_to_quash = parseInt(mv[1]);
+	let agenda_to_quash = mv[1];
 	let redeal_new = parseInt(mv[2]);
   	this.game.queue.splice(qe, 1);
 
-	this.game.state.agendas.splice(agenda_to_quash, 1);
+        for (let i = 0; i < this.game.state.agendas.length; i++) {
+	  if (this.game.state.agendas[i] === agenda_to_quash) {
+	    this.game.state.agendas.splice(i, 1);
+	    break;
+	  }
+	}
 
 	if (redeal_new == 1) {
           this.game.queue.push("revealagendas\t1");
   	  for (let i = 1; i <= this.game.players_info.length; i++) {
-            //this.game.queue.push("FLIPCARD\t1\t1\t1\t"+i); // deck card poolnum player
             this.game.queue.push("FLIPCARD\t3\t1\t1\t"+i); // deck card poolnum player
    	  }
 	}
@@ -2783,7 +2787,6 @@ this.game.state.end_round_scoring = 0;
 	if (mv[4] === "0") { run_events = 0; }
 	let z            = this.returnEventObjects();
 
-
 	if (type == "action_cards") {
 
           if (this.game.player == player && this.browser_active == 1) {
@@ -2880,6 +2883,12 @@ this.game.state.end_round_scoring = 0;
   	    z[z_index].gainTechnology(imperium_self, player, mv[3]);
   	  }
 	  this.upgradePlayerUnitsOnBoard(player);
+
+	  //
+	  // game engine will see if anyone wants to do anything
+	  //
+	  this.game.queue.push("post_research_technology\t"+player+"\t"+mv[3]);
+
   	}
 
         if (item === "goods") {
@@ -4526,6 +4535,7 @@ console.log("K: " + z[k].name);
 
 	    for (let z_index in z) {
 	      roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "space", roll);
+	      roll = z[z_index].modifySpaceCombatRoll(this, attacker, defender, roll);
 	      total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "space", sys.s.units[attacker-1][i], roll, total_hits);
 	      imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
 	    }
@@ -4726,6 +4736,7 @@ console.log("K: " + z[k].name);
 
 	      for (let z_index in z) {
 	        roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "ground", roll);
+	        roll = z[z_index].modifyGroundCombatRoll(this, attacker, defender, roll);
 	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.players_info[defender-1].target_units);
 	      }
 

@@ -437,12 +437,20 @@
         return 1;
       },
       gainPromissary : function(imperium_self, gainer, promissary) {
-        imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+	if (promissary.indexOf("faction8-promissary") >= 0) {
+          if (imperium_self.doesPlayerHavePromissary(gainer, "faction8-promissary")) {
+            imperium_self.game.players_info[gainer - 1].may_trade_with_non_neighbours = 1;
+	  }
+	}
 	return 1;
       },
       losePromissary : function(imperium_self, loser, promissary) {
-	if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
-          imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+	if (promissary.indexOf("faction8-promissary") >= 0) {
+          if (!imperium_self.doesPlayerHavePromissary(loser, "faction8-promissary")) {
+	    if (loser !== imperium_self.returnPlayerOfFaction("faction8")) {
+              imperium_self.game.players_info[loser - 1].may_trade_with_non_neighbours = 0;
+	    }
+	  }
 	}
 	return 1;
       },

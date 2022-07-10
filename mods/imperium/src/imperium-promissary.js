@@ -7,6 +7,7 @@
 
     if (obj.name == null) 	{ obj.name = "Unknown Promissary"; }
     if (obj.text == null)	{ obj.text = "Unknown Promissary"; }
+    if (obj.key == null)	{ obj.key = name; }
 
     obj = this.addEvents(obj);
     this.promissary_notes[name] = obj;

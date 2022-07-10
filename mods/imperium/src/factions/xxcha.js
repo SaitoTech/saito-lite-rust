@@ -312,7 +312,7 @@
       type        :       "special" ,
       color	  :	  "yellow" ,
       prereqs	:	["yellow","yellow"] ,
-      text	:	  "Terminate the turn of active player who activates a system containing your ship" ,
+      text	:	  "Exhaust to terminate turn of player who activates system containing your ship" ,
       initialize  : function(imperium_self, player) {
         if (imperium_self.game.players_info[player-1].field_nullification == undefined) {
           imperium_self.game.players_info[player-1].field_nullification = 0;
@@ -395,9 +395,9 @@
 
 
     this.importPromissary("faction3-promissary", {
-      name        :       "Military Support" ,
+      name        :       "Political Favor" ,
       faction     :       -1,
-      text        :       "Owner loses 1 strategy token. Redeemer may play 2 infantry on any planet they control" ,
+      text        :       "Redeemer discards an upcoming agenda, XXCha loses a strategy token." ,
       menuOption  :       function(imperium_self, menu, player) {
         let x = {};
         if (menu == "main") {

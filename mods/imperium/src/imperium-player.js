@@ -78,7 +78,7 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 20;
+    players[i].goods = 0;
     players[i].commodities = 0;
     players[i].commodity_limit = 3;
     // some factions have different commodity limits
@@ -1047,10 +1047,6 @@ playerAcknowledgeNotice(msg, mycallback) {
 
       if (maximum_assignable_hits == 0) {
         console.log("ERROR: you had no hits left to assign, bug?");
-        console.log("SHIPS: " + JSON.stringify(sys.s.units[imperium_self.game.player - 1]));
-//        imperium_self.eliminateDestroyedUnitsInSector(imperium_self.game.player, sector);
-//        imperium_self.saveSystemAndPlanets(sys);
-//        imperium_self.updateSectorGraphics(sector);
         imperium_self.endTurn();
         return 0;
       }

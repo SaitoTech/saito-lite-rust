@@ -37,8 +37,10 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-arcade');
     obj.onclick = (e) => {
       document.querySelector(".appspace").innerHTML = "";
+
       let arcade_self = app.modules.returnModule("Arcade");
       arcade_self.respondTo("appspace").render(arcade_self.app, arcade_self);
+
     }
 
   } 

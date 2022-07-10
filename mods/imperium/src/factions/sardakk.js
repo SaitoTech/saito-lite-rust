@@ -343,17 +343,20 @@
 	return roll;
       },
       spaceCombatTriggers : function(imperium_self, player, sector) {
-        // reset before space combat
-	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
-        if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
-          if (imperium_self.returnPlayerOfFaction("faction2") != player) {
-            return 1;
-	  }
+	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+        if (imperium_self.hasUnresolvedSpaceCombat(player, sector)) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+            if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+              return 1;
+	    }
+          }
         }
 	return 0;
       },
       spaceCombatEvent : function(imperium_self, player, sector) {
         if (imperium_self.game.player == player) {
+
+	  let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
 
           let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
               html += '<li class="option" id="yes">Yes</li>';
@@ -370,10 +373,12 @@
             if (id === "no") {
 	      imperium_self.endTurn();
 	    }
-            if (id === "no") {
+            if (id === "yes") {
 	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
 	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
-	      imperium_self.addMove("setvar\tplayers\t"+hacan_player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+	      imperium_self.addMove("setvar\tplayers\t"+sardaak_player+"\t"      +"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+              imperium_self.addMove("give" + "\t" + player + "\t" + sardaak_player + "\t" + "promissary" + "\t"+"faction4-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Sardaak Promissary redeemed");
 	      imperium_self.endTurn();
 	    }
 	  });
@@ -381,11 +386,13 @@
 	return 0;
       },
       groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
-	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
-        if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
-          if (imperium_self.returnPlayerOfFaction("faction2") != player) {
-            return 1;
-	  }
+	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+        if (imperium_self.hasUnresolvedGroundCombat(player, sector, planet_idx)) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+            if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+              return 1;
+	    }
+          }
         }
         return 0;
       },
@@ -407,7 +414,7 @@
             if (id === "no") {
 	      imperium_self.endTurn();
 	    }
-            if (id === "no") {
+            if (id === "yes") {
 	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
 	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
 	      imperium_self.addMove("setvar\tplayers\t"+sardaak_player           +"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
@@ -418,6 +425,19 @@
 	  });
         }
 	return 0;
+      },
+      spaceCombatRoundEnd : function(imperium_self, attacker, defender, sector) {
+        if (imperium_self.hasUnresolvedSpaceCombat(attacker, sector) || imperium_self.hasUnresolvedSpaceCombat(defender, sector)) {
+	  imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+	};
+	return 1;
+      },
+      groundCombatRoundEnd : function(imperium_self, attacker, defender, sector, planet_idx) {
+        if (imperium_self.hasUnresolvedGroundCombat(attacker, sector, planet_idx) || imperium_self.hasUnresolvedGroundCombat(defender, sector, planet_idx)) {
+	  imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.players_info[defender - 1].tekklar_legion_modifier = 0;
+	};
+	return 1;
       }
     });
 

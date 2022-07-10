@@ -65,7 +65,6 @@
       },
       upgradeUnit :       function(imperium_self, player, unit) {
         if (unit.type === "carrier" && imperium_self.doesPlayerHaveTech(player, "carrier-ii")) {
-console.log("returning upgraded carrier...");
           return imperium_self.returnUnit("carrier-ii", player, 0);
         }
         return unit;

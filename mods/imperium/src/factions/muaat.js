@@ -259,7 +259,7 @@
       },
       menuOptionTriggers:  function(imperium_self, menu, player) {
         if (menu != "main") { return 0; }
-        if (imperium_self.returnPlayerOfFaction("faction2") != player) {
+        if (imperium_self.returnPlayerOfFaction("faction7") != player) {
           if (imperium_self.doesPlayerHavePromissary(player, "faction7-promissary")) {
 	    return 1;
 	  }
