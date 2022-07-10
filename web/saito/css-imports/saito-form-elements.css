@@ -27,7 +27,8 @@ date inputs
 text and password inputs
 -----------------------------------------------------------------*/
 
-input[type="text"], input[type="password"] {
+input[type="text"],
+input[type="password"] {
   border: 1px solid var(--saito-border);
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
@@ -36,11 +37,13 @@ input[type="text"], input[type="password"] {
   border-radius: .5rem;
 }
 
-input[type="text"]:focus, input[type="password"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   outline: none;
 }
 
-input[type="text"]::placeholder, input[type="password"]::placeholder {
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
   color: var(--saito-border);
 }
 
@@ -227,7 +230,9 @@ input[type="range"]:focus::-ms-fill-upper {
   background: var(--saito-primary);
 }
 
-input[type="text"], input[type="password"], select {
+input[type="text"],
+input[type="password"],
+select {
   width: 100%;
 }
 
