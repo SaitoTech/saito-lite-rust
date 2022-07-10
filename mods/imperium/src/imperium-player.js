@@ -78,7 +78,7 @@ returnPlayers(num = 0) {
     players[i].faction = rf;
     players[i].homeworld = "";
     players[i].color = col;
-    players[i].goods = 20;
+    players[i].goods = 0;
     players[i].commodities = 0;
     players[i].commodity_limit = 3;
     // some factions have different commodity limits

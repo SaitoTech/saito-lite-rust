@@ -312,7 +312,7 @@
       type        :       "special" ,
       color	  :	  "yellow" ,
       prereqs	:	["yellow","yellow"] ,
-      text	:	  "Terminate the turn of active player who activates a system containing your ship" ,
+      text	:	  "Exhaust to terminate turn of player who activates system containing your ship" ,
       initialize  : function(imperium_self, player) {
         if (imperium_self.game.players_info[player-1].field_nullification == undefined) {
           imperium_self.game.players_info[player-1].field_nullification = 0;

@@ -242,7 +242,7 @@
       type        :       "special" ,
       color       	: 	"blue" ,
       prereqs	:	["blue","blue"],
-      text	:	"Activate card to make activated system 1 hop away from all other systems with Jol Nar ships" ,
+      text	:	"Exhaust and activated system with Jol Nar ships now 1 hop away from others" ,
       initialize  :	  function(imperium_self, player) {
         if (imperium_self.game.players_info[player-1].deep_space_conduits == null) {
           imperium_self.game.players_info[player-1].deep_space_conduits = 0;
