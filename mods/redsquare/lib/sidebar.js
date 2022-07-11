@@ -22,7 +22,7 @@ class RedSquareSidebar {
 
 
       let sidebar_calendar = new SaitoCalendar(app, mod);
-      sidebar_calendar.render(app, mod, ".top-container-cal");
+      sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
 
     }
 
