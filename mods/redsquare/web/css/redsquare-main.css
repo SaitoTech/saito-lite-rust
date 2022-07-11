@@ -2,6 +2,8 @@
 
 .saito-leaderboard {
 }
+.saito-calendar.small {
+}
 .saito-sidebar-intro {
   line-height: 2rem;
 }
@@ -31,7 +33,6 @@
   grid-column: 3;
 }
 .saito-sidebar.right {
-  width: 40rem;
 }
 
 

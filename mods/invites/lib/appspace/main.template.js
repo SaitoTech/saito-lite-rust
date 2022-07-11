@@ -3,9 +3,6 @@ module.exports = InvitesAppspaceTemplate = (app, mod) => {
   return `
 
   <div class="invites-appspace">
-    <div class="invites-appspace-create-invite">
-    <button  class="invites-appspace-create-invite-button">Create Invite</button>
-  </div>
   <div class="invites-appspace-item-list">
   <div class="invites-appspace-item">
     <div class="invites-appspace-user-container">
