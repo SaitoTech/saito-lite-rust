@@ -20,9 +20,12 @@ class RedSquareChatBox {
     attachEvents() {
         if (document.querySelector('.redsquare-chat-start')) {
 
-            document.querySelectorAll('.redsquare-chat-start').forEach(item => {
+            document.querySelectorAll('.saito-chat-list').forEach(item => {
                 item.onclick = (e) => {
+		    alert("clicked to create!");
+
                     let chatContainer = document.querySelector(".chat-container");
+
                     chatContainer.classList.contains('hide-chat') ? chatContainer.classList.remove('hide-chat') : chatContainer.classList.add('hide-chat');
                 }
             })
@@ -40,10 +43,7 @@ class RedSquareChatBox {
         }
     }
 
-
-
 }
 
 module.exports = RedSquareChatBox;
-
 

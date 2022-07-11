@@ -1,7 +1,7 @@
-module.exports = RedSquareChatBoxTemplate = (app, mod) => {
+module.exports = ChatManagerTemplate = (app, mod) => {
 
   return `
-  <div class="redsquare-chatbox">
+  <div class="chat-manager">
   <div>
       <div class="saito-list  saito-white-background  ">
           <div class="saito-list-chatbox">
@@ -9,7 +9,7 @@ module.exports = RedSquareChatBoxTemplate = (app, mod) => {
                   <img class="saito-identicon" src="/saito/img/background.png" />
               </div>
               <div class="saito-list-user-content-box">
-                  <div class="saito-username">OLD Chat </div>
+                  <div class="saito-username">Saito Community Chat </div>
                   <p> new chat</p>
               </div>
               <div class="saito-list-user-timestamp">
@@ -21,7 +21,7 @@ module.exports = RedSquareChatBoxTemplate = (app, mod) => {
                   <img class="saito-identicon" src="/saito/img/background.png" />
               </div>
               <div class="saito-list-user-content-box">
-                  <div class="saito-username">BAD Chat </div>
+                  <div class="saito-username">Saito Community Chat </div>
                   <p> new chat</p>
               </div>
               <div class="saito-list-user-timestamp">

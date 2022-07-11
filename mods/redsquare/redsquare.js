@@ -3,7 +3,7 @@ const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
-const RedSquareChatBox = require('./lib/chatbox');
+//const RedSquareChatBox = require('./lib/chatbox');
 const RedSquarePostTweet = require('./lib/post-tweet');
 const RedSquareSidebar = require('./lib/sidebar');
 const RedSquareGamesSidebar = require('./lib/games-sidebar');
@@ -36,13 +36,14 @@ class RedSquare extends ModTemplate {
       this.main = new RedSquareMain(this.app);
       this.header = new SaitoHeader(this.app);
       this.menu = new RedSquareMenu(this.app);
-      this.chatBox = new RedSquareChatBox(this.app)
+
 
       this.lsidebar = new SaitoSidebar(this.app);
       this.lsidebar.align = "left";
 
       this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
       this.games_sidebar = new RedSquareGamesSidebar(this.app, this, ".saito-container");
+
 
 
       //this.post_tweet = new RedSquarePostTweet(this.app);
@@ -58,7 +59,10 @@ class RedSquare extends ModTemplate {
       //this.addComponent(this.post_tweet)
 
       this.lsidebar.addComponent(this.menu);
-      this.lsidebar.addComponent(this.chatBox);
+      this.app.modules.respondTo("chat-manager").forEach(mod => {
+	this.lsidebar.addComponent(mod.respondTo("chat-manager"));
+      });
+      //this.lsidebar.addComponent(this.chatBox);
 
       this.ui_initialized = true;
     }

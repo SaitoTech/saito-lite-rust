@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const EmailChat = require('./lib/email-chat/email-chat');
 const ChatMain = require('./lib/chat-main/chat-main');
 const ChatRoom = require('./lib/chat-main/chat-room');
+const ChatManager = require('./lib/manager');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 const JSON = require('json-bigint');
 
@@ -69,6 +70,10 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
+            case 'chat-manager':
+            	this.scripts['/chat/css/style.css'];
+      		super.render(this.app, this); // add scripts + styles
+      		return new ChatManager(this.app, this);
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,
