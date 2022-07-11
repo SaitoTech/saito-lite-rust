@@ -3,7 +3,6 @@ const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
-//const RedSquareChatBox = require('./lib/chatbox');
 const RedSquarePostTweet = require('./lib/post-tweet');
 const RedSquareSidebar = require('./lib/sidebar');
 const RedSquareGamesSidebar = require('./lib/games-sidebar');
