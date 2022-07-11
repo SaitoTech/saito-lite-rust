@@ -1,11 +1,11 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
-const SaitoCalendar = require('../../lib/saito/new-ui/saito-calendar/saito-calendar');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
 const RedSquareChatBox = require('./lib/chatbox');
 const RedSquarePostTweet = require('./lib/post-tweet');
+const RedSquareSidebar = require('./lib/sidebar');
 
 class RedSquare extends ModTemplate {
 
@@ -29,7 +29,6 @@ class RedSquare extends ModTemplate {
 
 
   render(app, mod) {
-    console.log("RENDERING REDSQUARE!");
 
     if (this.ui_initialized == false) {
 
@@ -37,15 +36,13 @@ class RedSquare extends ModTemplate {
       this.header = new SaitoHeader(this.app);
       this.menu = new RedSquareMenu(this.app);
       this.chatBox = new RedSquareChatBox(this.app)
-      this.calendar = new SaitoCalendar(this.app);
 
       this.lsidebar = new SaitoSidebar(this.app);
       this.lsidebar.align = "left";
 
-      this.rsidebar = new SaitoSidebar(this.app);
-      this.rsidebar.align = "right";
+      this.rsidebar = new RedSquareSidebar(this.app, this, ".saito-container");
 
-      this.postTweet = new RedSquarePostTweet(this.app);
+      this.post_tweet = new RedSquarePostTweet(this.app);
 
       //
       // combine ui-components
@@ -55,12 +52,10 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.rsidebar);
       this.addComponent(this.header);
 
-      this.addComponent(this.postTweet)
+      this.addComponent(this.post_tweet)
 
       this.lsidebar.addComponent(this.menu);
       this.lsidebar.addComponent(this.chatBox);
-
-      this.rsidebar.addComponent(this.calendar);
 
       this.ui_initialized = true;
     }

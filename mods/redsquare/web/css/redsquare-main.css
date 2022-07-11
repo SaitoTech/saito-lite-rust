@@ -1,3 +1,44 @@
+
+
+.saito-leaderboard {
+}
+.saito-sidebar-intro {
+  line-height: 2rem;
+}
+.saito-sidebar-info {
+  line-height: 2rem;
+}
+.saito-leaderboard-row.odd {
+  background-color: #e4e4e4;
+}
+.saito-leaderboard-row {
+    display: grid;
+    grid-template-columns: 1fr auto min-content;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem; 
+}
+.saito-leaderboard-gamename {
+  grid-column: 1;
+}
+.saito-leaderboard-rank {
+  padding-right: 4rem;
+  grid-column: 2;
+  text-align: right;
+}
+.saito-leaderboard-change {
+  grid-column: 3;
+}
+.saito-sidebar.right {
+  width: 40rem;
+}
+
+
+
+
+
+
 #redsquare-container {
     width: 69.5rem;
 }
@@ -251,3 +292,6 @@
 .redsquare-certificate {
     color: var(--saito-primary);
 }
+
+
+
