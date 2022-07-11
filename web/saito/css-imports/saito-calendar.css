@@ -62,14 +62,11 @@
 }
 
 .saito-calendar-days {
-    display: flex;
-    flex-wrap: wrap;
-    cursor: pointer;
-    padding: 1rem .5rem;
-    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
-
-.saito-calendar-days div {
+.saito-calendar-day {
+    min-height: 3rem;
     font-size: 1.2rem;
     margin: .3rem .5rem;
     width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);

@@ -2,6 +2,10 @@
 module.exports = RedSquareMenuTemplate = (app, mod) => {
 
   return `
+    <div id="redsquare-red-button" class="redsquare-red-button saito-button-primary">
+      Tweet
+    </div>
+
     <div class="redsquare-menu">
           <div>
             <div class="saito-menu  ">

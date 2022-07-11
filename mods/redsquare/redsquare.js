@@ -6,6 +6,7 @@ const RedSquareMenu = require('./lib/menu');
 const RedSquareChatBox = require('./lib/chatbox');
 const RedSquarePostTweet = require('./lib/post-tweet');
 const RedSquareSidebar = require('./lib/sidebar');
+const RedSquareGamesSidebar = require('./lib/games-sidebar');
 
 class RedSquare extends ModTemplate {
 
@@ -40,19 +41,21 @@ class RedSquare extends ModTemplate {
       this.lsidebar = new SaitoSidebar(this.app);
       this.lsidebar.align = "left";
 
-      this.rsidebar = new RedSquareSidebar(this.app, this, ".saito-container");
+      this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
+      this.games_sidebar = new RedSquareGamesSidebar(this.app, this, ".saito-container");
 
-      this.post_tweet = new RedSquarePostTweet(this.app);
+
+      //this.post_tweet = new RedSquarePostTweet(this.app);
 
       //
       // combine ui-components
       //
       this.addComponent(this.lsidebar);
       this.addComponent(this.main);
-      this.addComponent(this.rsidebar);
+      this.addComponent(this.wide_sidebar);
       this.addComponent(this.header);
 
-      this.addComponent(this.post_tweet)
+      //this.addComponent(this.post_tweet)
 
       this.lsidebar.addComponent(this.menu);
       this.lsidebar.addComponent(this.chatBox);

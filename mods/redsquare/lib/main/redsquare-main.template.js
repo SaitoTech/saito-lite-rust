@@ -5,8 +5,6 @@ module.exports = (app, mod) => {
 
 <div class="saito-main appspace">
  <div id="redsquare-container">
-  <div id="redsquare-input-container">
-  </div>
   <div id="redsquare-list">
   
 

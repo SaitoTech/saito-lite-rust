@@ -1,41 +1,14 @@
 
-module.exports = RedSquareSidebarTemplate = (app, mod) => {
+module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
 
   return `
 <div class="saito-sidebar right">
 
-<div class="top-container" style="
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 1rem;
-">
-<div class="top-container-cal">
-<h6 style="
-    font-size: 2rem;
-    padding-bottom: 0.5rem;
-">Your Calendar</h6>
+  <div class="redsquare-arcade-sidebar-top">
+    This is our narrow Games-specific sidebar
+  </div>
 
-</div>
-<div class="top-container-text">
-<h6 style="
-    font-size: 2rem;
-    padding-bottom: 0.5rem;
-">About</h6>
-
-Red Square is a social media and gaming portal running on the Saito blockchain.
-
-<p></p>
-
-Schedule games, meetings, zoom calls and more.
-
-<p></p>
-
-And click on your calendar anytime to manage one-off and recurring events.
-
-</div>
-</div>
-
-    <div class="saito-leaderboard">
+  <div class="saito-leaderboard">
 <h6 style="
     font-size: 2rem;
     padding-bottom: 0.5rem;
@@ -97,31 +70,6 @@ And click on your calendar anytime to manage one-off and recurring events.
 </div>
 
 
-  <div id="redsquare-follow-container">
-      <h5> Who to follow </h5>
-      <div>
-          <div class="saito-list">
-              <div class="saito-list-user">
-                  <div class="saito-list-user-image-box">
-                      <img class="saito-idenitcon" src="/redsquare/images/david.jpeg" />
-                  </div>
-                  <div class="saito-list-user-content-box">
-                      <div class="saito-username">David Lancashire
-                      </div>
-                      <p> @trevelyan </p>
-                  </div>
-              </div>
-              <div class="saito-list-user">
-                  <div class="saito-list-user-image-box">
-                      <img class="saito-idenitcon" src="/redsquare/images/richard.jpeg" />
-                  </div>
-                  <div class="saito-list-user-content-box">
-                      <div class="saito-username">Richard Parris</div>
-                      <p> @arpee</p>
-                  </div>
-              </div>
-          </div>
-      </div>
   </div>
 </div>
 
