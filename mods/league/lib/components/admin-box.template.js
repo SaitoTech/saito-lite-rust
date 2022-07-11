@@ -14,7 +14,7 @@ module.exports = (app, mod, game) => {
             <option value="private">Private</option>
           </select>
           <select id="ranking">
-            <option value="default">Default</option>
+            <option value="unk">Default</option>
             <option value="elo">ELO</option>
             <option value="exp">EXP</option>
           </select>

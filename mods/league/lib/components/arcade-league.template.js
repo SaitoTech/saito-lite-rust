@@ -32,6 +32,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
         </div>
         <div class="gameShortDescription">${makeDescription(app, league)}</div>
 	      <div class="gameButtons">
+          ${league.myRank < 0 ? `<button data-sig="${league.id}" data-cmd="join" class="button league-tile-button">JOIN</button>`:''}
           <button data-sig="${league.id}" data-cmd="view" class="button league-tile-button">VIEW</button>
         </div>
       </div>

@@ -70,8 +70,16 @@ class League extends ModTemplate {
     let leagues_to_display = [];
     //filter leagues to display
     for (let le of this.leagues){
-      if (le.myRank > 0 || le.max_players == 0 || le.playerCnt < le.max_players){
-        leagues_to_display.push(le);
+      if (le.type == "public"){
+        //Only show public leagues if there are available slots or I am a member
+        if (le.myRank > 0 || le.max_players == 0 || le.playerCnt < le.max_players){
+          leagues_to_display.push(le);
+        }
+      }else{
+        //Only show private leagues if I am a member or I am the admin
+        if (le.myRank > 0 || le.admin == app.wallet.returnPublicKey()){
+          leagues_to_display.push(le); 
+        }
       }
     }
 
@@ -153,17 +161,25 @@ class League extends ModTemplate {
 
     try {
       let txmsg = tx.returnMessage();
-
       if (conf == 0) {
+      console.log("LEAGUE ON-chain: "+txmsg.request);
         if (txmsg.request === "create league") {
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
           this.addLeague(tx);
+          return;
         }
 
         if (txmsg.request === "join league") {
           this.receiveJoinLeagueTransaction(blk, tx, conf, app);
+          return;
+        }
+      
+        if (txmsg.request === "gameover"){
+          this.receiveGameOverTransaction(blk, tx, conf, app);
         }
       }
+
+
     } catch (err) {
       console.log("ERROR in league onConfirmation: " + err);
     }
@@ -269,12 +285,6 @@ class League extends ModTemplate {
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
-    //Code test
-    let f = async() => {
-      let x = await this.getLeagueType(league_id);
-      console.log(x);
-    }
-    f();
   }
 
   /*
@@ -286,7 +296,12 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
     let league_id  = txmsg.league_id;
     let publickey  = tx.transaction.from[0].add;
+
     let base_score = 0; //TODO: getLeagueType and add some logic to change this
+    let league_rank = this.getLeagueRankAlgo(league_id);
+    if (league_rank == "ELO"){
+      base_score = 1000;
+    }
 
     let sql = `INSERT INTO players (
                 league_id,
@@ -312,15 +327,64 @@ class League extends ModTemplate {
     return;
   }
 
+  async receiveGameOverTransaction(blk, tx, conf, app){
+    console.log("League Receive Gameover");
+    let txmsg = tx.returnMessage();
+    let game = txmsg.module;
+    console.log(game);
+    console.log(JSON.parse(JSON.stringify(this.leagues)));
+    
+    const relevantLeagues = this.leagues.filter(league => league.game == game);
+    let publickeys = [];
+    for (let i = 0; i < tx.transaction.to.length; i++) {
+      if (!publickeys.includes(tx.transaction.to[i].add)) {
+        publickeys.push(tx.transaction.to[i].add);
+      }
+    }
+    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
+    
+    for (let leag in relevantLeagues){
+      if (leag.ranking == "elo"){
+        //All players must belong to ELO league for points to change
+      }else if (leag.ranking == "exp"){
+        //Winner(s) get 5 points, true ties get 3 pts, losers get 1 pt
+        //as long as player is in the league
+        if (Array.isArray(txmsg.winner)){
+          let numPoints = (txmsg.reason == "tie") ? 3: 4;
+          for (let i = publickeys.length-1; i>=0; i--){
+            if (txmsg.winner.includes(publickeys[i])){
+              this.incrementPlayer(publickeys[i], league.id, numPoints);
+              publickeys.splice(i,1);
+            }
+          }
+        }else{
+          for (let i = publickeys.length-1; i>=0; i--){
+            if (txmsg.winner == publickeys[i]){
+              this.incrementPlayer(publickeys[i], league.id, 5);
+              publickeys.splice(i,1);
+            }
+          }
+        }
+        //Everyone left gets a point for playing
+        for (let i = 0; i < publickeys.length; i++){
+          this.incrementPlayer(publickeys[i], league.id, 1);
+        }
+      }else{
+        //No idea what to do here, but should call a function of the game module/game engine
+      }
+    }
+    
+  }
+
 
   /*
   * Some wrapper functions to query individual stats of the league
   */
-  async getLeagueType(league_id){
+  async getLeagueRankAlgo(league_id){
     
     for (let l of this.leagues){
       if (l.league_id == league_id){
-        return l.type;
+        return l.ranking;
       }
     }
     
@@ -330,7 +394,7 @@ class League extends ModTemplate {
     await this.sendPeerDatabaseRequestWithFilter("League", `SELECT * FROM leagues WHERE id = '${league_id}'`, (res) =>{ row = res.rows});
 
     if (row?.length > 0){
-      return row[0].type;
+      return row[0].ranking;
     }
     return null;
 
@@ -347,12 +411,12 @@ class League extends ModTemplate {
       let now = new Date().getTime();
       league.myRank = -1;
       league.playerCnt = 0;
-      if (league.type == "EXP"){
+      if (league.ranking == "exp"){
         let cutoff = now - 24*60*60*1000;
         let sql1 = `UPDATE player SET score = (score - 1), ts = ${now} WHERE ts < ${cutoff} AND league_id = '${league.id}'`;
-        await app.storage.executeDatabase(sql1, {}, "league");
+        await this.app.storage.executeDatabase(sql1, {}, "league");
         let sql2 = `UPDATE player SET score = 0 WHERE score < 0 AND league_id = '${league.id}'`;
-        await app.storage.executeDatabase(sql2, {}, "league");
+        await this.app.storage.executeDatabase(sql2, {}, "league");
       }
 
       this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC` ,
@@ -375,6 +439,14 @@ class League extends ModTemplate {
    // }
   }
 
+
+  incrementPlayer(pkey, lid, amount){
+    let now = new Date().getTime();
+    let sql = `UPDATE player SET score = (score + ${amount}), ts = ${now} WHERE pkey = '${pkey}' AND league_id = '${lid}'`;
+    console.log(sql);
+    this.sendPeerDatabaseRequestWithFilter("League", sql);
+  }
+
   /**
    * Tell League to also listen to messages from Arcade and every installed game
    * (Overwrites modtemplate function)
@@ -382,10 +454,10 @@ class League extends ModTemplate {
   shouldAffixCallbackToModule(modname, tx = null) {
 
     if (modname == "League") { return 1; }
-    //if (modname == "Arcade") { return 1; }
+    if (modname == "Arcade") { return 1; }
 
     for (let i = 0; i < this.games.length; i++) {
-      if (this.games[i].name == modname) {
+      if (this.games[i].modname == modname) {
         return 1;
       }
     }

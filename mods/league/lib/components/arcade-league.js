@@ -20,17 +20,22 @@ class ArcadeLeague {
 
   attachEvents(app, mod) {
     let league = this.league;
-    try{
-      document.querySelector(`#league-${league.id} .league-tile-button`).onclick = function (e) {
+    
+    document.querySelectorAll(`#league-${league.id} .league-tile-button`).forEach((el) =>{
+        el.onclick = function (e) {
         let game_sig = e.currentTarget.getAttribute("data-sig");
         let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
         if (game_cmd == "view" && game_sig == league.id){
           ArcadeLeagueView.render(app, mod, league);
         }
+        if (game_cmd == "join" && game_sig == league.id){
+          mod.sendJoinLeagueTransaction(league.id);
+          salert('League joined');
+        }
       }
+    });
     
-    }catch(err){console.log(err);}
     
   }
 

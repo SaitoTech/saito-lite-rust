@@ -29,7 +29,7 @@ class AdminBox {
       box.onsubmit = (e) => {
         e.preventDefault();
         let leaguename = sanitize(box.querySelector("#leaguename")?.textContent || e.target.game.value);
- 	      mod.sendCreateLeagueTransaction(leaguename, e.target.game.value, e.target.type.value, "default", e.target.max_players.value);
+ 	      mod.sendCreateLeagueTransaction(leaguename, e.target.game.value, e.target.type.value, e.target.ranking.value, e.target.max_players.value);
         salert('League created');
         //location.reload();
         return false;
