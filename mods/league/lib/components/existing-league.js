@@ -3,14 +3,14 @@ const LeagueComponentExistingLeagueTemplate = require("./existing-league.templat
 
 class ExistingLeague {
 
-  constructor(app, mod, game) {
+  constructor(app, mod, league) {
     this.app = app;
     this.mod = mod;
-    this.game = game;
+    this.league = league;
   }
 
   render(app, mod) {
-    app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, this.game), "league-component-existing-league");
+    app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, this.league), "league-component-existing-league");
     this.attachEvents(app, mod);
   }
 
@@ -19,9 +19,8 @@ class ExistingLeague {
       btn.onclick = (e) => {
         e.preventDefault();
         let league_id = btn.getAttribute('data-league-id');
-	mod.sendJoinLeagueTransaction(league_id);
-        alert('League joined');
-        location.reload();
+	      mod.sendJoinLeagueTransaction(league_id);
+        salert('League joined');
       }
     });
   }

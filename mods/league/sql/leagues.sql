@@ -1,8 +1,12 @@
 CREATE TABLE IF NOT EXISTS leagues (
-  id INTEGER,
+  id TEXT,
   game TEXT,
   type TEXT,
-  publickey TEXT,
+  admin TEXT,
+  league_name TEXT,
+  description TEXT,
+  ranking TEXT,
+  max_players INTEGER,
   UNIQUE (id),
-  PRIMARY KEY (id ASC)
+  PRIMARY KEY (id)
 );

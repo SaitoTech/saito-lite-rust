@@ -42,4 +42,5 @@ body {
 
 .league-component-existing-league-box {
     border-bottom: 1px solid #fff;
+    align-items: center;
 }
