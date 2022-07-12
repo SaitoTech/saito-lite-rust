@@ -13,7 +13,7 @@
 
 .saito-container {
     display: grid;
-    grid-template-columns: min-content minmax(min-content, 1fr) minmax(min-content, 55rem);
+    grid-template-columns: min-content minmax(min-content, 1fr) min-content;
     grid-template-rows: 1fr;
     grid-column-gap: 15px;
     grid-row-gap: 0px;

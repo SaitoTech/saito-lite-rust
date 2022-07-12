@@ -11,11 +11,9 @@
 .saito-calendar {
     border-radius: .5rem;
     width: 100%;
-    border: 1px solid #00000052;
     display: grid;
     grid-template-rows: min-content min-content min-content;
     flex-direction: column;
-    padding: 1rem 0;
 }
 
 .saito-calendar-month {
@@ -49,27 +47,27 @@
     font-size: 2.3rem;
 }
 
-.saito-calendar-weekdays {
+.x {
     display: flex;
     justify-content: center;
     padding: .5rem .5rem;
 }
 
 .saito-calendar-weekdays div {
-    width: calc((var(--calendar-width) - 2rem)/7);
     font-size: 1.6rem;
     text-align: center;
 }
 
-.saito-calendar-days {
+.saito-calendar-days, .saito-calendar-weekdays  {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 3px;
 }
 .saito-calendar-day {
     min-height: 3rem;
     font-size: 1.2rem;
-    margin: .3rem .5rem;
-    width: calc((var(--calendar-width) - (14 * .5rem) - 2rem) /7);
+    padding: 3px;
+    background-color: #fcfcfc;
 }
 
 .saito-calendar-days div:hover {

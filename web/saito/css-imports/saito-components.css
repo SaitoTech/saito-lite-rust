@@ -42,7 +42,6 @@ Saito Info box
 
 .saito-infobox>div:nth-child(1) h3 {
     position: relative;
-    font-weight: bold;
     bottom: 1rem;
     display: flex;
     justify-content: center;
@@ -189,7 +188,6 @@ Saito Username
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: bold;
     font-size: 1.6rem;
     display: flex;
     align-items: center;
@@ -279,7 +277,6 @@ Saito List,Saito User List and Saito User
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: bold;
     font-size: 1.6rem;
     margin-bottom: .5rem;
 }
