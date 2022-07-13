@@ -11,7 +11,7 @@
   line-height: 2rem;
 }
 .saito-leaderboard-row.odd {
-  background-color: #e4e4e4;
+  background-color: #fafafa;
 }
 .saito-leaderboard-row {
     display: grid;
@@ -33,15 +33,7 @@
   grid-column: 3;
 }
 .saito-sidebar.right {
-}
-
-
-
-
-
-
-#redsquare-container {
-    width: 69.5rem;
+    width: 51rem;
 }
 
 .redsquare-user-container {
@@ -143,7 +135,6 @@
 }
 
 .redsquare-user-details p {
-    font-weight: bold;
     font-size: 1.9rem;
     margin-right: .5rem;
     word-wrap: break-word;
@@ -185,6 +176,9 @@
 }
 
 
+.redsquare-text-container p {
+    font-size: 1.8rem;
+}
 
 
 /*  Trends */
@@ -203,7 +197,6 @@
 
 #redsquare-trends-container>h5 {
     margin-bottom: 2rem;
-    font-weight: bold;
     font-size: 2.3rem;
 }
 
@@ -233,12 +226,6 @@
 }
 
 
-#redsquare-follow-container>h5 {
-    margin-bottom: 2rem;
-    font-weight: bold;
-    font-size: 2.3rem;
-    margin-left: 1rem;
-}
 
 /* TWEET BOX */
 
@@ -294,5 +281,13 @@
     color: var(--saito-primary);
 }
 
+/* rp suggestions */
 
+h1, h2, h3, h4, h5, h6, .saito-username {
+    font-weight: normal;
+}
+
+.saito-tweet-timestamp {
+    color: var(--saito-secondary-black);
+}
 
