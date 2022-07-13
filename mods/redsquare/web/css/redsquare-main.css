@@ -176,6 +176,9 @@
 }
 
 
+.redsquare-text-container p {
+    font-size: 1.8rem;
+}
 
 
 /*  Trends */
@@ -284,5 +287,7 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     font-weight: normal;
 }
 
-
+.saito-tweet-timestamp {
+    color: var(--saito-secondary-black);
+}
 
