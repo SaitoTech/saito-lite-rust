@@ -36,7 +36,6 @@ console.log("rendering: " + mod_settings_obj.name);
   attachEvents(app, mod) {
 
     try {
-/***
 
     try {
     let settings_appspace = document.querySelector(".settings-appspace");
@@ -213,7 +212,6 @@ console.log("rendering: " + mod_settings_obj.name);
 
     };
     } catch (err) {}
-***/
 
     } catch (err) {
 console.log("Error in Settings Appspace: " + JSON.stringify(err));

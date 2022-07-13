@@ -38,9 +38,9 @@ module.exports = (app, mod, tweet) => {
 
 
         <div class="redsquare-tweet-tools">
-          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-comment"></i></div>
-          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-heart"></i></div>
-          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-share"></i></div>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fa-regular fa-comment"></i></div>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fa-regular fa-heart"></i></div>
+          <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fa-regular fa-share"></i></div>
         </div>
 
       </div>
