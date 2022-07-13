@@ -24,15 +24,9 @@ class Container {
     app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
 
     //
-    // render league boxes
+    // render league creation boxes
     //
-    //if (template == "container") {
-    this.mod.games.forEach((game, i) => {
-        let league = new LeagueComponentAdminBox(app, mod, game);
-        league.render(app, mod);
-    });
-
-    //}
+    LeagueComponentAdminBox.render(app, mod, this.mod.games);
 
     //
     // render existing league componenets

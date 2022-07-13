@@ -1,4 +1,5 @@
 const LeagueComponentExistingLeagueTemplate = require("./existing-league.template");
+const ArcadeLeagueView = require("../overlays/arcade-league-view");
 
 
 class ExistingLeague {
@@ -15,12 +16,27 @@ class ExistingLeague {
   }
 
   attachEvents(app, mod) {
-    Array.from(document.getElementsByClassName('league-component-existing-league-join')).forEach(btn => {
+    Array.from(document.getElementsByClassName('league-component-existing-league')).forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
         let league_id = btn.getAttribute('data-league-id');
-	      mod.sendJoinLeagueTransaction(league_id);
-        salert('League joined');
+        let cmd = btn.getAttribute('data-cmd');
+        if (cmd == "join"){
+          mod.sendJoinLeagueTransaction(league_id);
+          salert('League joined');
+        }
+        if (cmd == "view"){
+          for (let league of mod.leagues){
+            if (league.id == league_id){
+              ArcadeLeagueView.render(app, mod, league);
+              return;    
+            }
+          }
+          console.log("League not found");
+        }
+        if (cmd == "invite"){
+         mod.overlay.show(app, mod, `<h2>Insert invite link here</h2>`); 
+        }
       }
     });
   }

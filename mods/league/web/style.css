@@ -6,14 +6,24 @@ body {
 }
 
 .league-main-container {
-	position: relative;
-    width: 90%;
-    margin-left: 50%;
-    transform: translateX(-50%);
-    margin-top: 15vh;
+    width: 100%;
+    margin-top: 10vh;
+    padding: 3%;
+    display: grid;
+    grid-template-rows: 80px auto;
+    grid-template-columns: 1fr 1fr;
 }
 
-.league-main-container-games, .league-component-existing-league-box{
+#league-main-container-header{
+    grid-column: 1 / 3;
+}
+
+
+.league-main-container-games{
+
+}
+
+.league-component-existing-league-box{
     display: flex;
     justify-content: space-between;
     margin-top: 5vh;
@@ -21,7 +31,9 @@ body {
 }
 
 .league-component-admin-box {
-	width: 26%;
+	width: 90%;
+    min-width: 250px;
+    max-width: 600px;
     margin-bottom: 5vh;
     border-radius: 5px;
     background-color: #3b4458;
@@ -30,6 +42,7 @@ body {
 
 .league-component-admin-box img {
 	width: 150px;
+    height: fit-content;
 }
 
 .league-component-admin-box h3 {
@@ -44,3 +57,26 @@ body {
     border-bottom: 1px solid #fff;
     align-items: center;
 }
+
+.editable-content{
+    border: 1px solid var(--saito-cyber-black-wash);
+    background-color: whitesmoke;
+    color: black;
+    padding: 0.25em;
+}
+
+.forceinrow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+  .post-create-textarea {
+    color: black;
+    width: calc(100% - 170px);
+    height: 120px;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow: hidden;
+  }

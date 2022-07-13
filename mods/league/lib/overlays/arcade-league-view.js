@@ -39,10 +39,11 @@ module.exports = ArcadeLeagueView = {
    		if (loader){ loader.remove();}
 
    		if (leaderboard.length > 0){
-   			let html = `<table><thead><tr><th>Rank</th><th>Player</th><th>Score</th><th></th></tr></thead><tbody>`;
+   			let html = `<table><thead><tr><th>Rank</th><th>Player</th><th>Score</th><th>Games</th><th>Wins</th><th>Ties</th><th></th></tr></thead><tbody>`;
    			let cnt = 1;
    			for (let r of leaderboard){
-   				html += `<tr><th>${cnt++}</th><td>${app.keys.returnUsername(r.pkey)}</td><td>${r.score}</td><td>`;
+   				html += `<tr><th>${cnt++}</th><td>${app.keys.returnUsername(r.pkey)}</td><td>${r.score}</td>`;
+          html += `<td>${r.games_finished}</td><td>${r.games_won}</td><td>${r.games_tied}</td><td>`;
           if (r.pkey !== app.wallet.returnPublicKey()){
             html += `<button class="button" data-id="${r.pkey}">CHALLENGE</button>`;
           }

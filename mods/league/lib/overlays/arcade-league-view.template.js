@@ -6,7 +6,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
 
   let html = `<div class="league-details-overlay">
     
-    <h2>${league.league_name}</h2>
+    <h2>${league.name}</h2>
      
     <p>${league.description}</p>
     <div class="league-overview-box">

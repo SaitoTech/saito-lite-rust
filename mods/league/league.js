@@ -3,6 +3,9 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueMainContainer = require('./lib/main/container');
 const ArcadeLeague = require('./lib/components/arcade-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+
+const Elo = require('elo-rank');
 
 class League extends ModTemplate {
 
@@ -13,7 +16,7 @@ class League extends ModTemplate {
     this.slug = "league";
     this.description = "Leaderboards and leagues for Saito Games";
     this.categories = "Arcade Competition";
-
+    this.overlay = null;
     this.games = []; //Game Module Respond tos
 
     //
@@ -24,7 +27,7 @@ class League extends ModTemplate {
     //
     // used in onPeerHandshakeComplete
     //
-    this.services = [{ service : "leagues" , domain : "saito" }];
+    this.services = [{ service : "league" , domain : "saito" }];
 
     //
     // UI components
@@ -47,6 +50,26 @@ class League extends ModTemplate {
 
   }
 
+  /*notifyPeers(app, tx) {
+    // lite-clients can skip
+    if (app.BROWSER == 1) {
+      return;
+    }
+    for (let i = 0; i < app.network.peers.length; i++) {
+      if (app.network.peers[i].peer.synctype == "lite") {
+        //
+        // fwd tx to peer
+        //
+        let message = {};
+        message.request = "league spv update";
+        message.data = {};
+        message.data.tx = tx;
+        app.network.peers[i].sendRequest(message.request, message.data);
+      }
+    }
+  }*/
+
+
   render(app, mod) {
 
     super.render(app);
@@ -54,6 +77,9 @@ class League extends ModTemplate {
     if (this.header == null) {
       this.header = new SaitoHeader(app);
       this.main = new LeagueMainContainer(app, this)
+    }
+    if (this.overlay == null) {
+      this.overlay = new SaitoOverlay(app);
     }
 
     this.header.render(app, this);
@@ -97,6 +123,8 @@ class League extends ModTemplate {
   }
 
   renderLeagues(app, mod){
+    if (this.app.BROWSER == 0){return;}
+
     if (this.browser_active){
       this.main.render(app, this);
     }else{
@@ -161,17 +189,26 @@ class League extends ModTemplate {
 
     try {
       let txmsg = tx.returnMessage();
+      console.log("LEAGUE ON-chain: "+txmsg.request + ` (${conf})`);
+
       if (conf == 0) {
-      console.log("LEAGUE ON-chain: "+txmsg.request);
+      //if (app.BROWSER == 0 && txmsg.module == "League") {
+      //  console.log("SERVER NOTIFY PEERS");
+      //    this.notifyPeers(app, tx);
+      //}
+
         if (txmsg.request === "create league") {
+          //Perform db ops
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
-          this.addLeague(tx);
-          return;
+          //Update saito-lite, refresh UI
+          this.addLeague(tx); 
         }
 
         if (txmsg.request === "join league") {
+          //Perform db ops
           this.receiveJoinLeagueTransaction(blk, tx, conf, app);
-          return;
+          //Update saito-lite, refresh UI
+          this.addPlayer(tx);
         }
       
         if (txmsg.request === "gameover"){
@@ -185,23 +222,47 @@ class League extends ModTemplate {
     }
   }
 
+  /*async handlePeerRequest(app, message, peer, mycallback = null) {
+    //
+    // this code doubles onConfirmation
+    //
+
+    if (message.request === "league spv update") {
+      let tx = null;
+
+      if (!message.data.tx) {
+        if (message.data.transaction) {
+          tx = new saito.default.transaction(message.data.transaction);
+        }
+      }
+
+      if (tx == null) {
+        tx = new saito.default.transaction(message.data.tx.transaction);
+      }
+
+      if (app.BROWSER){
+        console.log("Handling Peer Request");
+        this.onConfirmation(null, tx, 0, app);
+      }
+    }
+  }*/
+
 
   //
   // TODO -- consistency in variable names -- game_id not game in DB etc.
   // -- game should be game_module, i imagine
   //
-  sendCreateLeagueTransaction(name= "", game="", type="public", ranking, max_players) {
+  sendCreateLeagueTransaction(leagueObj = null) {
+    if (leagueObj == null){
+      return;
+    }
 
     let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
     tx.msg = {
       module:  "League",
       request: "create league",
-      name:    name,
-      game: 	 game,
-      type: 	 type,
-      ranking: ranking,
-      max:     max_players,
+      league:    leagueObj,
     };
 
     let newtx = this.app.wallet.signTransaction(tx);
@@ -212,63 +273,48 @@ class League extends ModTemplate {
 
 
   async receiveCreateLeagueTransaction(blk, tx, conf, app) {
+    if (this.app.BROWSER) { return; }
 
     console.log("Receive Create Request");
     console.log(tx);
     
-    let sender = tx.transaction.from[0].add; 
-    console.log("sender: " +sender);
-    let txmsg = tx.returnMessage();
+    let league = Object.assign({id: tx.transaction.sig}, tx.returnMessage().league);
+    let params = {};
+    for (let i in league){
+      params[`$${i}`] = league[i];
+    }
+    console.log(league);
+    console.log(params);
 
-    let sql = `INSERT INTO leagues (
-                id,
-                game,
-                type,
-                admin,
-                league_name,
-                description,
-                ranking,
-                max_players
-              ) VALUES (
-                $id,
-                $game,
-                $type,
-                $admin,
-                $name,
-                $description,
-                $ranking,
-                $max_players
-              )`;
+    let sql = `INSERT INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players)
+                        VALUES ($id, $game, $type, $admin, $name, $description, $ranking, $starting_score, $max_players)`;
 
-    let params = {
-      $id: tx.transaction.sig,
-      $game: txmsg.game,
-      $type: txmsg.type,
-      $admin: sender,
-      $name: txmsg.name,
-      $description: "",
-      $ranking: txmsg.ranking,
-      $max_players: parseInt(txmsg.max),
-    };
     await app.storage.executeDatabase(sql, params, "league");
     return;
   }
 
   addLeague(tx){
-    let sender = tx.transaction.from[0].add; 
     let txmsg = tx.returnMessage();
-    let lobj = {
-      id: tx.transaction.sig,
-      game: txmsg.game,
-      type: txmsg.type,
-      admin: sender,
-      league_name: txmsg.name,
-      description: "",
-      ranking: txmsg.ranking,
-      max_players: parseInt(txmsg.max),
-    };
+    let lobj = txmsg.league;
+    lobj.id = tx.transaction.sig;
+
+    this.updateLeague(lobj);
     this.leagues.push(lobj);
-    this.renderLeagues(this.app, this);
+    setTimeout(()=>{
+      this.renderLeagues(this.app, this);
+    },1000);
+  }
+
+  addPlayer(tx){
+    let txmsg = tx.returnMessage();
+    for (let league of this.leagues){
+      if (txmsg.league_id == league.id){
+        this.updateLeague(league);
+      }
+    }
+    setTimeout(()=>{
+      this.renderLeagues(this.app, this);
+    },1000); 
   }
 
   sendJoinLeagueTransaction(league_id="") {
@@ -291,18 +337,15 @@ class League extends ModTemplate {
    * The tricky thing is we want every player to start with a default number of points depending on the league type 
    */ 
   async receiveJoinLeagueTransaction(blk, tx, conf, app) {
+    if (this.app.BROWSER) { return; }
 
     console.log("Receive Join Request");
     let txmsg = tx.returnMessage();
     let league_id  = txmsg.league_id;
     let publickey  = tx.transaction.from[0].add;
 
-    let base_score = 0; //TODO: getLeagueType and add some logic to change this
-    let league_rank = this.getLeagueRankAlgo(league_id);
-    if (league_rank == "ELO"){
-      base_score = 1000;
-    }
-
+    let base_score = await this.getLeagueData(league_id, "starting_score");
+    
     let sql = `INSERT INTO players (
                 league_id,
                 pkey,
@@ -318,56 +361,113 @@ class League extends ModTemplate {
     let params = {
       $league_id: league_id,
       $publickey: publickey,
-      $score: 0,
+      $score: base_score,
       $timestamp: parseInt(txmsg.timestamp)
     };
 
-    console.log(params);
     await app.storage.executeDatabase(sql, params, "league");
     return;
   }
 
+  /* Let's try this function as a service node only */
   async receiveGameOverTransaction(blk, tx, conf, app){
+    if (this.app.BROWSER == 1) { return; }
     console.log("League Receive Gameover");
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
-    console.log(game);
-    console.log(JSON.parse(JSON.stringify(this.leagues)));
-    
-    const relevantLeagues = this.leagues.filter(league => league.game == game);
+
+    //Which leagues may this gameover affect?
+    let sql = `SELECT * FROM leagues WHERE game = ?`;
+    const relevantLeagues = await this.app.storage.queryDatabase(sql, [game], "league");
+
+    console.log(relevantLeagues);
+
+    //Who are all the players in the game?
     let publickeys = [];
     for (let i = 0; i < tx.transaction.to.length; i++) {
       if (!publickeys.includes(tx.transaction.to[i].add)) {
         publickeys.push(tx.transaction.to[i].add);
       }
     }
-    console.log(JSON.parse(JSON.stringify(relevantLeagues)));
-    
-    for (let leag in relevantLeagues){
+
+    if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
+      txmsg.winner = txmsg.winner[0];
+    }
+
+    var elo = new Elo(15);
+
+    //Let's check each league
+    for (let leag of relevantLeagues){
       if (leag.ranking == "elo"){
         //All players must belong to ELO league for points to change
+        if (publickeys.length != 2){
+          console.log(`This game will not be ELO rated because there are not 2 players`);
+          return;
+        }
+
+        if (Array.isArray(txmsg.winner) || txmsg.reason == "tie"){
+          console.log("This game will not be rated because we haven't implemented ELO for ties or multiple winners yet");
+          return;
+        }  
+
+        let sql2 = `SELECT * FROM players WHERE league_id = ? AND pkey IN (`;
+        for (let pk of publickeys){
+          sql2 += `'${pk}', `;
+        }
+        sql2 = sql2.substr(0, sql2.length - 2);
+        sql2 += `)`;
+        console.log(sql2);
+
+        let playerStats = await this.app.storage.queryDatabase(sql2, [leag.id], "league");
+        console.log(playerStats);
+
+        if (playerStats.length !== publickeys.length){
+          console.log(`This game will not be rated because not all the players are League members: ${leag.id}`);
+          return;
+        }
+        
+        let winner, loser;
+        for (let player of playerStats){
+          if (player.pkey == txmsg.winner){
+            winner = player;
+          }else{
+            loser = player;
+          }
+        }
+
+        console.log(winner, loser);
+        winner.elo = elo.getExpected(winner.score, loser.score);
+        loser.elo = elo.getExpected(loser.score, winner.score);
+        winner.score = elo.updateRating(winner.elo, 1, winner.score);
+        loser.score = elo.updateRating(loser.elo, 0, loser.score);
+        await this.updatePlayerScore(winner, "games_won");
+        await this.updatePlayerScore(loser);
+        
       }else if (leag.ranking == "exp"){
         //Winner(s) get 5 points, true ties get 3 pts, losers get 1 pt
         //as long as player is in the league
+
         if (Array.isArray(txmsg.winner)){
           let numPoints = (txmsg.reason == "tie") ? 3: 4;
+          let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
+
           for (let i = publickeys.length-1; i>=0; i--){
             if (txmsg.winner.includes(publickeys[i])){
-              this.incrementPlayer(publickeys[i], league.id, numPoints);
+              await this.incrementPlayer(publickeys[i], leag.id, numPoints, gamekey);
               publickeys.splice(i,1);
             }
           }
         }else{
           for (let i = publickeys.length-1; i>=0; i--){
             if (txmsg.winner == publickeys[i]){
-              this.incrementPlayer(publickeys[i], league.id, 5);
+              await this.incrementPlayer(publickeys[i], leag.id, 5, "games_won");
               publickeys.splice(i,1);
             }
           }
         }
         //Everyone left gets a point for playing
         for (let i = 0; i < publickeys.length; i++){
-          this.incrementPlayer(publickeys[i], league.id, 1);
+          await this.incrementPlayer(publickeys[i], leag.id, 1);
         }
       }else{
         //No idea what to do here, but should call a function of the game module/game engine
@@ -380,24 +480,24 @@ class League extends ModTemplate {
   /*
   * Some wrapper functions to query individual stats of the league
   */
-  async getLeagueRankAlgo(league_id){
-    
-    for (let l of this.leagues){
-      if (l.league_id == league_id){
-        return l.ranking;
+  async getLeagueData(league_id, data_field = null){
+    if (!data_field){return null;}
+
+    if (this.app.BROWSER == 1){
+      for (let l of this.leagues){
+        if (l.id == league_id){
+          return l[data_field];
+        }
+      }
+    }else{
+
+      let row = await this.app.storage.queryDatabase(`SELECT * FROM leagues WHERE id = ?`, [league_id], "league");
+
+      if (row?.length > 0){
+        return row[0][data_field];
       }
     }
-    
-    //TODO make fallback code to query the database that actually works
-
-    let row;
-    await this.sendPeerDatabaseRequestWithFilter("League", `SELECT * FROM leagues WHERE id = '${league_id}'`, (res) =>{ row = res.rows});
-
-    if (row?.length > 0){
-      return row[0].ranking;
-    }
     return null;
-
   }
 
 
@@ -405,46 +505,76 @@ class League extends ModTemplate {
    * 
    */ 
   async updateLeague(league){
-    //for (let league of this.leagues){
-      let lid = league.id;
-      let pid = this.app.wallet.returnPublicKey();
-      let now = new Date().getTime();
-      league.myRank = -1;
-      league.playerCnt = 0;
-      if (league.ranking == "exp"){
-        let cutoff = now - 24*60*60*1000;
-        let sql1 = `UPDATE player SET score = (score - 1), ts = ${now} WHERE ts < ${cutoff} AND league_id = '${league.id}'`;
-        await this.app.storage.executeDatabase(sql1, {}, "league");
-        let sql2 = `UPDATE player SET score = 0 WHERE score < 0 AND league_id = '${league.id}'`;
-        await this.app.storage.executeDatabase(sql2, {}, "league");
+    let lid = league.id;
+    let pid = this.app.wallet.returnPublicKey();
+    let now = new Date().getTime();
+    league.myRank = -1;
+    league.playerCnt = 0;
+    if (league.ranking == "exp"){
+      let cutoff = now - 24*60*60*1000;
+      let sql1 = `UPDATE players SET score = (score - 1), ts = ${now} WHERE ts < ${cutoff} AND league_id = '${league.id}'`;
+      await this.app.storage.executeDatabase(sql1, {}, "league");
+      let sql2 = `UPDATE players SET score = 0 WHERE score < 0 AND league_id = '${league.id}'`;
+      await this.app.storage.executeDatabase(sql2, {}, "league");
+    }
+    league.players = [];
+    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC` ,
+
+      (res) => {
+        if (res.rows) {
+          let cnt = 0;
+          for (let p of res.rows){
+            league.players.push(p.pkey); //Keep a list of who is in each league
+            cnt++; //Count number of players 
+            if (p.pkey == pid){
+              league.myRank = cnt; //I am the cnt player in the leaderboard
+            }
+          }
+          league.playerCnt = cnt;
+        }
       }
 
-      this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC` ,
+    );
 
-        (res) => {
-          if (res.rows) {
-            let cnt = 0;
-            for (let p of res.rows){
-              cnt++; //Count number of players 
-              if (p.pkey == pid){
-                league.myRank = cnt; //I am the cnt player in the leaderboard
-              }
-            }
-            league.playerCnt = cnt;
-          }
-        }
-
-      );
-
-   // }
   }
 
 
-  incrementPlayer(pkey, lid, amount){
+  async incrementPlayer(pkey, lid, amount, game_status = null){
+    //if (this.app.wallet.returnPublicKey() !== pkey){ return; }
     let now = new Date().getTime();
-    let sql = `UPDATE player SET score = (score + ${amount}), ts = ${now} WHERE pkey = '${pkey}' AND league_id = '${lid}'`;
+    let sql = `UPDATE players SET score = (score + ${amount}), games_finished = (games_finished + 1), ts = $ts`;
+    if (game_status){
+      sql += `, ${game_status} = (${game_status} + 1)`;
+    }
+    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
     console.log(sql);
-    this.sendPeerDatabaseRequestWithFilter("League", sql);
+    let params = {
+      $ts: now,
+      $pkey: pkey,
+      $lid: lid
+    }
+    console.log(params);
+    await this.app.storage.executeDatabase(sql, params, "league");
+    return 1;
+  }
+
+  async updatePlayerScore(playerObj, game_status = null){
+    let now = new Date().getTime();
+    let sql = `UPDATE players SET score = $score, games_finished = ${playerObj.games_finished + 1}, ts = $ts`;
+    if (game_status){
+      sql += `, ${game_status} = ${playerObj[game_status] + 1}`;
+    }
+    sql+= ` WHERE pkey = $pkey AND league_id = $lid`;
+    console.log(sql);
+    let params = {
+      $score: playerObj.score,
+      $ts: now,
+      $pkey: playerObj.pkey,
+      $lid: playerObj.league_id
+    }
+    console.log(params);
+    await this.app.storage.executeDatabase(sql, params, "league");
+    return 1;
   }
 
   /**

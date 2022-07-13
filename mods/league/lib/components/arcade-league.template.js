@@ -27,7 +27,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
       <div class="invite-tile-wrapper">
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
-          <div class="gameName">${league.league_name}</div>
+          <div class="gameName">${league.name}</div>
           <div class="gamePlayers">${playersHtml}</div>
         </div>
         <div class="gameShortDescription">${makeDescription(app, league)}</div>
