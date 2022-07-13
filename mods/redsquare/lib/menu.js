@@ -38,6 +38,12 @@ class RedSquareMenu {
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
     }
 
+    obj = document.querySelector('.redsquare-menu-contacts');
+    obj.onclick = (e) => {
+      document.querySelector(".appspace").innerHTML = "";
+      mod.contactlist.render(app, mod);
+    }
+
     obj = document.querySelector('.redsquare-menu-arcade');
     obj.onclick = (e) => {
 
