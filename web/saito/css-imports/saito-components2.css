@@ -14,7 +14,7 @@ Saito User
 .saito-user > div:nth-child(1) {
     margin-right: 1rem;
     grid-column-start: 1;
-    grid-column-end: 1;
+    grid-column-end: span 1;
     grid-row: span 2;
 }
 
@@ -27,23 +27,23 @@ Saito User
 
 .saito-user > div:nth-child(2) {
     grid-column-start: 2;
-    grid-column-end: 2;
+    grid-column-end: span 1;
     grid-row-start: 1;
-    grid-row-end: 1;
+    grid-row-end: span 1;
 }
 
 .saito-user > div:nth-child(3) {
     grid-column-start: 2;
-    grid-column-end: 2;
+    grid-column-end: span 1;
     grid-row-start: 2;
-    grid-row-end: 2;
+    grid-row-end: span 1;
     font-size: 1.4rem;
 }
 
 .saito-user > div:nth-child(4) {
     cursor: pointer;
     grid-column-start: 3;
-    grid-column-end: 3;
+    grid-column-end: span 1;
     grid-rows: span 2;
     font-size: 1.4rem;
     align-items: top;
@@ -52,6 +52,92 @@ Saito User
 .saito-user > .saito-datetime {
     align-items: top;
     grid-row-start: 2;
-    grid-row-end: 2;
+    grid-row-end: span 1;
 }
 
+
+
+/* ----------------------------------------------------------------
+Saito Arcade Invite
+-----------------------------------------------------------------*/
+
+.saito-arcade-invite {
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  grid-template-rows: 1fr;
+  padding: 1rem;
+  column-gap: 0.0rem;
+}
+
+.saito-arcade-invite-graphic {
+  grid-column-start: 1;
+  grid-column-end: span 1;
+  max-width: 10rem;
+  max-height: 8rem;
+  height: 8rem;
+  width: 10rem;
+}
+.saito-arcade-game-image {
+  height: 100%;
+  width: 100%;
+}
+
+.saito-arcade-invite-name-container {
+  grid-column-start: 2;
+  grid-column-end: span 1;
+  padding-top: 0.5rem;
+  display: grid;
+  font-size: 3rem;
+  padding-left: 1rem;
+  background-image: url('/redsquare/images/orange_left.png');
+  background-repeat: no-repeat;
+  background-position-x: right;
+}
+.saito-arcade-invite-details {
+  grid-column-start: 3;
+  grid-column-end: span 1;
+  display: grid;
+  background-image: url('/redsquare/images/orange_right.png');
+  background-size: cover;
+  min-width: 10rem;
+  color: white;
+  font-weight: bold;
+}
+.saito-arcade-invite-details-summary {
+    font-size: 1.7rem;
+    padding-top: 2rem;
+    text-align: center;
+    padding-right: 2rem;
+}
+.saito-arcade-invite-controls {
+  grid-column-start: 3;
+  grid-column-end: span 1;
+  grid-row-start: 2;
+  grid-row-end: span 1;
+}
+.saito-arcade-invite-controls-button {
+}
+.saito-arcade-invite-controls-button.saito-button-secondary.small {
+    height: 2.5rem;
+    width: 6rem;
+    margin: 0;
+    margin-left: 1rem;
+    min-width: 6.5rem;
+    float: right;
+}
+.saito-arcade-invite-slots {
+}
+.saito-arcade-invite-slot {
+    height: 3rem;
+    margin: 0.0em 0.2em;
+    float: left;
+    width: 3rem;
+}
+.saito-identicon.small {
+    width: 3rem;
+    height: 3rem;
+}
+.saito-identicon.empty {
+    background-color: #8884;
+    box-shadow: 1px 1px #ccc, 1px 1px #333 inset;
+}

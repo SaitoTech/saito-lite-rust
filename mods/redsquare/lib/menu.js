@@ -24,8 +24,25 @@ class RedSquareMenu {
 
     let obj;
 
+    obj = document.querySelector('.redsquare-menu-home');
+    obj.onclick = (e) => {
+
+      // re-render sidebar
+      document.querySelector(".saito-sidebar.right").remove();
+      mod.wide_sidebar.render(app, mod);
+
+      document.querySelector(".appspace").innerHTML = "";
+      mod.main.render(app, mod);
+
+    }
+
     obj = document.querySelector('.redsquare-menu-invites');
     obj.onclick = (e) => {
+
+      // re-render sidebar
+      document.querySelector(".saito-sidebar.right").remove();
+      mod.wide_sidebar.render(app, mod);
+
       document.querySelector(".appspace").innerHTML = "";
       let invites_self = app.modules.returnModule("Invites");
       invites_self.respondTo("appspace").render(invites_self.app, invites_self);
@@ -33,6 +50,11 @@ class RedSquareMenu {
 
     obj = document.querySelector('.redsquare-menu-settings');
     obj.onclick = (e) => {
+
+      // re-render sidebar
+      document.querySelector(".saito-sidebar.right").remove();
+      mod.wide_sidebar.render(app, mod);
+
       document.querySelector(".appspace").innerHTML = "";
       let settings_self = app.modules.returnModule("Settings");
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
@@ -40,6 +62,11 @@ class RedSquareMenu {
 
     obj = document.querySelector('.redsquare-menu-contacts');
     obj.onclick = (e) => {
+
+      // re-render sidebar
+      document.querySelector(".saito-sidebar.right").remove();
+      mod.wide_sidebar.render(app, mod);
+
       document.querySelector(".appspace").innerHTML = "";
       mod.contactlist.render(app, mod);
     }
@@ -48,13 +75,18 @@ class RedSquareMenu {
     obj.onclick = (e) => {
 
       //
-      let arcade_mod = app.modules.returnModule("Arcade");
-      ArcadeMain.render(app, arcade_mod);
-      ArcadeMain.attachEvents(app, arcade_mod);
+      //let arcade_mod = app.modules.returnModule("Arcade");
+      //ArcadeMain.render(app, arcade_mod);
+      //ArcadeMain.attachEvents(app, arcade_mod);
+
+
+      // re-render element
+      mod.games_appspace.render(app, mod);
 
       // re-render element
       document.querySelector(".saito-sidebar.right").remove();
       mod.games_sidebar.render(app, mod);
+
 
 /***
       // remove appspace content and re-fill
@@ -69,7 +101,6 @@ class RedSquareMenu {
       let red_button = document.querySelector("#redsquare-red-button");
       red_button.innerHTML = "Create Game";
       red_button.addEventListener("click", (e) => {
-alert("click");
         let arcade_self = app.modules.returnModule("Arcade");
         GameCreateMenu.render(app, arcade_self);
         GameCreateMenu.attachEvents(app, arcade_self);

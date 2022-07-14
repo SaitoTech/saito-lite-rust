@@ -7,6 +7,7 @@ const RedSquareMenu = require('./lib/menu');
 const RedSquarePostTweet = require('./lib/post-tweet');
 const RedSquareSidebar = require('./lib/sidebar');
 const RedSquareGamesSidebar = require('./lib/games-sidebar');
+const RedSquareGamesAppspace = require('./lib/games-appspace');
 
 class RedSquare extends ModTemplate {
 
@@ -36,6 +37,7 @@ class RedSquare extends ModTemplate {
       this.main = new RedSquareMain(this.app);
       this.header = new SaitoHeader(this.app);
       this.menu = new RedSquareMenu(this.app);
+      this.games_appspace = new RedSquareGamesAppspace(this.app);
 
       this.contactlist = new RedSquareFriends(this.app, this);
 
