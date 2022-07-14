@@ -1,10 +1,9 @@
-
 .grid-1-1-1 {
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
 }
 
-.settings-appspace > button {
-  margin: 0px;
+.settings-appspace>button {
+    margin: 0px;
 }
 
 .settings-appspace-qrcode {
@@ -15,46 +14,54 @@
     display: grid;
     grid-template-columns: auto 1fr;
     grid-column-gap: 1.5rem;
-    grid-row-gap: 2rem;
+    grid-row-gap: 1.5rem;
     align-items: center;
-    margin-bottom: 5rem;
+    margin-bottom: 3rem;
     padding: 1rem;
-    border: 1px solid var(--saito-border);
     border-radius: .5rem;
     max-width: 100%;
     overflow: auto;
+}
 
+.settings-appspace-user-details-container>h4 {
+    /* margin-bottom: 1rem; */
 }
 
 .settings-appspace-modules-container>h4 {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .settings-appspace-modules {
     display: grid;
     grid-gap: 1em;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    border: 1px solid var(--saito-border);
     border-radius: .5rem;
     padding: 1rem;
+
 }
+
+.settings-appspace-modules-container {
+    margin-bottom: 3rem;
+}
+
+
 
 .settings-appspace-privatekey {
     display: grid;
-    grid-template-columns: 1fr 1.2em;
+    grid-template-columns: 1fr 1fr;
     grid-column-gap: .4rem;
     white-space: nowrap;
     overflow-x: hidden;
     text-overflow: ellipsis;
+    align-items: center;
 }
 
-.settings-appspace-privatekey>input {
+.settings-appspace-privatekey>div {
     font-family: p-word;
 }
 
 
 .settings-appspace-privatekey>i {
-    line-height: 4rem;
     cursor: pointer;
 }
 
@@ -71,14 +78,14 @@
 
 .settings-appspace-app label {
     text-transform: none;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
 }
 
 .settings-appspace-versions {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    margin-bottom: 5rem;
+    margin-bottom: 2rem;
     grid-gap: 1rem;
 }
 

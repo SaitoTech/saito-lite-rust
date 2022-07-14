@@ -56,31 +56,34 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         </div>
         ${balance_link}
 
-	<h6>Wallet Information:</h6>
+
+  <div class="settings-appspace-user-details-container">
+	<h5>Wallet Information</h5>
         <div class="settings-appspace-user-details">
           
-          <p class="large">Email:</p>
-          <div>${email_registered}</div>
+          <div class="saito-black">Email:</div>
+          <div >${email_registered}</div>
 
-          <p class="large">Username:</p>
+          <div class="saito-black">Username:</div>
          <div>${identifier_registered}</div>
 
-          <p class="large">Public Key:</p>
+          <div class="saito-black">Public Key:</div>
           <div class="saito-username">${app.wallet.returnPublicKey()}</div>
 
-          <p class="large">Private Key:</p>
+          <div class="saito-black">Private Key:</div>
           <div class="settings-appspace-privatekey">
-            <input type="text" value="${app.wallet.returnPrivateKey()}" class="settings-appspace-password" />
+            <div class="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
             <i class="settings-appspace-see-password fas fa-eye"></i>
           </div>
 
 	</div>
+  </div>
 
       </div>
 
       <div class="settings-appspace-modules-container">
 
-        <h6>Installed Modules: </h6> `;
+        <h5>Installed Modules </h5> `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
@@ -91,11 +94,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         ${modules_html}
         </div>
       </div>
-      <hr />
       <div class="settings-appspace-versions">
-        <p class="large">Code Version:</p>
+        <p class="saito-black">Code Version:</p>
         <p>${app.wallet.wallet.version}</p>
-        <p class="large">Wallet Version:</p>
+        <p class="saito-black">Wallet Version:</p>
         <p>${app.options.wallet.version}</p>
       </div>
 
@@ -104,6 +106,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       </p>
 
     </div>
+
   </div>
 </div>
   `;
