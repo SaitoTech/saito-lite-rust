@@ -2,7 +2,7 @@ const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar");
 const RedSquareGamesSidebar = require("./games-sidebar");
 const GameCreateMenu = require("./../../arcade/lib/arcade-main/game-create-menu");
-
+const ArcadeMain = require("./../../arcade/lib/arcade-main/arcade-main");
 
 class RedSquareMenu {
 
@@ -38,9 +38,21 @@ class RedSquareMenu {
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
     }
 
+    obj = document.querySelector('.redsquare-menu-contacts');
+    obj.onclick = (e) => {
+      document.querySelector(".appspace").innerHTML = "";
+      mod.contactlist.render(app, mod);
+    }
+
     obj = document.querySelector('.redsquare-menu-arcade');
     obj.onclick = (e) => {
 
+      //
+      let arcade_mod = app.modules.returnModule("Arcade");
+      ArcadeMain.render(app, arcade_mod);
+      ArcadeMain.attachEvents(app, arcade_mod);
+
+/***
       // re-render element
       document.querySelector(".saito-sidebar.right").remove();
       mod.games_sidebar.render(app, mod);
@@ -49,6 +61,7 @@ class RedSquareMenu {
       document.querySelector(".appspace").innerHTML = "";
       let arcade_self = app.modules.returnModule("Arcade");
       arcade_self.respondTo("appspace").render(arcade_self.app, arcade_self);
+***/
 
       //
       // we need a good way to remove events

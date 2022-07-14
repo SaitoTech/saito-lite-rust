@@ -26,9 +26,9 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="fas fa-calendar"></i>
                   <span> Settings</span>
                 </li>
-                <li class="redsquare-menu-invites">
+                <li class="redsquare-menu-contacts">
                   <i class="far fa-id-card"></i>
-                  <span> Friends</span>
+                  <span> Contacts</span>
                 </li>
               </ul>
             </div>
