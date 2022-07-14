@@ -18,6 +18,12 @@
     let factions = imperium_self.returnFactions();
     return factions[imperium_self.game.players_info[player-1].faction].name;
   }
+  returnPlayerOfFaction(faction) {
+    for (let i = 0; i < this.game.players_info.length; i++) {
+      if (this.game.players_info[i].faction === faction) { return (i+1); }
+    }
+    return 0;
+  }
   returnFactionNameNickname(imperium_self, player) {
     let factions = imperium_self.returnFactions();
     return factions[imperium_self.game.players_info[player-1].faction].nickname;
@@ -352,7 +358,10 @@
 	  if (this.game.players_info[this.game.player-1].promissary_notes.length > 0 || this.game.players_info[i].promissary_notes.length > 0) {
 	    return 1;
 	  }
-        }
+        } else {
+          if (this.game.players_info[this.game.player-1].may_trade_with_non_neighbours == 1) { return 1; }
+	}
+        if (this.game.players_info[i].may_trade_with_non_neighbours == 1) { return 1; }
       }
     }
     return 0;
@@ -2084,9 +2093,18 @@
   }
 
 
-
+  // either a full match on promissary name
+  // or a partial match where player is not the promissary owner
   doesPlayerHavePromissary(player, promissary) {
     if (this.game.players_info[player-1].promissary_notes.includes(promissary)) { return 1; }
+    for (let i = 0; i < this.game.players_info[player-1].promissary_notes.length; i++) {
+      let pn = this.game.players_info[player-1].promissary_notes[i];
+      if (pn.indexOf(promissary) > 0) {
+        let player_faction = this.game.players_info[player-1].faction.id;
+        if (pn.indexOf(player_faction) == 0) { return 0; }
+	return 1;
+      }
+    }
     return 0;
   }
 

@@ -6,7 +6,8 @@
   
   importFaction(name, obj) {
 
-    if (obj.id == null)			{ obj.id = "faction"; }
+    if (obj.id == null)			{ obj.id = name; }
+    if (obj.key == null)		{ obj.key = name; }
     if (obj.name == null) 		{ obj.name = "Unknown Faction"; }
     if (obj.nickname == null)		{ obj.nickname = obj.name; }
     if (obj.homeworld  == null) 	{ obj.homeworld = "sector32"; }
@@ -16,6 +17,8 @@
     if (obj.objectives == null)  	{ obj.objectives = []; }
     if (obj.ground_units == null) 	{ obj.ground_units = []; }
     if (obj.tech == null) 		{ obj.tech = []; }
+    if (obj.commodity_limit == null) 	{ obj.commodity_limit = 3; }
+    if (obj.promissary_notes == null)   { obj.promissary_notes = []; }
     if (obj.intro == null) 		{ obj.intro = `
         <div style="font-weight:bold">The Republic has fallen!</div>
         <div style="margin-top:10px">

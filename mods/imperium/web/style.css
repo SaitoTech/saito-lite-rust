@@ -14,9 +14,10 @@
 }
 
 
-.hud-body {
-  height: 370px;
-  min-height: 370px;
+.status-header > status-content ,
+.status-message > #status-content {
+  line-height: 1.5em;
+  padding-top: 10px;
 }
 
 
@@ -1481,6 +1482,8 @@ body {
 }
 .hud-square .hud-body {
   min-height: 367px;
+  height: 367px;
+  max-height: 367px;
 }
 
 .status-message{
@@ -1710,6 +1713,15 @@ body {
   cursor: pointer;
   font-family: 'orbitron-medium', helvetica, arial, courier;
   text-transform: uppercase;
+  padding: 15px;
+}
+.buildchoice {
+  padding: 15px;
+}
+.option {
+  cursor: pointer;
+  font-family: 'orbitron-medium', helvetica, arial, courier;
+  padding: 15px;
 }
 
 .status ul .cardchoice-card {

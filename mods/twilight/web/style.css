@@ -1,5 +1,3 @@
-
-
 /*********************/
 /*** MOD DEFAULTS ****/
 /*********************/
@@ -14,23 +12,88 @@
   padding: 10px;
 }
 
-.hud-header{
+.hud-header {
   max-width: 500px;
   margin: auto;
+  box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 75%);
 }
-.hud-header.soviet{
-  background:  linear-gradient(to right, rgba(255,0,0,0.6), rgba(255,255,0,0.4), rgba(255,0,0,0.6));
+
+.hud-header.soviet {
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.6), rgba(255, 255, 0, 0.4), rgba(255, 0, 0, 0.6));
 }
-.hud-header.american{
-  background:  linear-gradient(to right, rgba(0,0,255,0.6), rgba(255,255,255,0.4), rgba(0,0,255,0.6));
+
+.hud-header.american {
+  background: linear-gradient(to right, rgba(0, 0, 255, 0.6), rgba(255, 255, 255, 0.4), rgba(0, 0, 255, 0.6));
 }
+
+/*.hud{
+  pointer-events: none;
+}*/
 
 .status-message {
   padding-left: 0;
   padding-right: 0;
   border-radius: 0px;
 }
-.status-header {
+
+.status-header {}
+
+/* General overlays */
+.rules-overlay {
+  background: whitesmoke;
+  padding: 0.5em 2.5em;
+}
+
+.ts-overlay h1 {
+  text-align: center;
+}
+
+.ts-overlay {
+  border-radius: 5px;
+  border: 5px solid blue;
+  border-right: 5px solid red;
+  border-bottom: 5px solid red;
+  background-color: lightgrey;
+  min-width: min(750px, 90vw);
+  min-height: 50vh;
+  padding: 10px 0;
+}
+
+.ts-overlay .ts-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-overlay h1 {
+  font-size: 3rem;
+}
+
+.waroverlay-body {
+  display: flex;
+  justify-content: space-around;
+  margin: 3em 1em;
+}
+
+.waroverlay-body .cardlist-container {
+  min-width: unset;
+  background-color: unset;
+}
+
+.warstats {
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.warstats div {
+  flex: 1;
+}
+
+.warstats .winner {
+  font-size: 1.5em;
+  font-weight: bold;
+  flex: 2;
 }
 
 /*Stats overlay*/
@@ -38,43 +101,53 @@ tbody th {
   text-align: left;
   max-width: 70px;
 }
-tbody td{
+
+tbody td {
   text-align: center;
 }
-table{
+
+table {
   font-size: 20px;
 }
-table caption{
+
+table caption {
   font-weight: bolder;
   margin: 0.5em;
 }
+
 .statistics-overlay {
-  min-width: min(750px,90vw);
+  min-width: min(750px, 90vw);
   min-height: 50vh;
   padding: 10px;
   background-color: whitesmoke;
 }
+
 .statistics-round-table {
-  min-width:50vw;
+  min-width: 50vw;
   width: 100%;
   text-align: center;
 }
-.headline-statistics-table{
+
+.headline-statistics-table {
   width: 100%;
 }
 
 .china_card_status_us_faceup {
   background-color: #3277de;
 }
+
 .china_card_status_us_facedown {
   background-color: #063b8a;
 }
+
 .china_card_status_ussr_faceup {
   background-color: #8a0612;
 }
+
 .china_card_status_ussr_facedown {
   background-color: #ea3041;
 }
+
 .china_card_status {
   position: absolute;
   width: 130px;
@@ -93,15 +166,18 @@ table caption{
   background-image: url("img/Formosan.png");
   background-size: cover;
 }
+
 .removecards li {
   float: left;
   min-width: 300px;
   font-size: 15px;
   list-style-type: none;
 }
+
 .game_details_select {
   max-width: 300px;
 }
+
 .game_details {
   max-width: 100%;
 }
@@ -112,23 +188,26 @@ table caption{
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
 .statistics-info {
-  margin-top:20px;
+  margin-top: 20px;
 }
+
 .zoom_button {
- border: 1px solid #707070;
- background-color: #646464;
- -webkit-border-radius: 4px;
- -moz-border-radius: 4px;
- border-radius: 4px;
- font-size:2em;
- color: #FFFFFF;
- height: 40px;
- width: 40px;
- text-align: center;
- vertical-align: middle;
- line-height: 20px;
+  border: 1px solid #707070;
+  background-color: #646464;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  font-size: 2em;
+  color: #FFFFFF;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 20px;
 }
+
 .action_round_cover {
   position: absolute;
   background-color: black;
@@ -145,7 +224,7 @@ body {
   display: grid;
   width: 100vw;
   height: 100vh;
-  overflow: scroll;
+  overflow: auto;
 
   margin-top: unset;
 }
@@ -153,16 +232,24 @@ body {
 
 /** Modal **/
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
 }
 
 /* The Close Button */
@@ -187,7 +274,10 @@ body {
 }
 
 /* Modal Body */
-.modal_body {padding: 2px 16px; color: white;}
+.modal_body {
+  padding: 2px 16px;
+  color: white;
+}
 
 #modal_header_text {
   margin-top: 1em;
@@ -195,7 +285,9 @@ body {
   text-decoration: center;
 }
 
-#modal_body_text { margin: 1em 0 1em 0; }
+#modal_body_text {
+  margin: 1em 0 1em 0;
+}
 
 /* Modal Footer */
 .modal_footer {
@@ -215,7 +307,7 @@ body {
   font-size: 1em;
   color: white;
   border: unset;
-  color:white;
+  color: white;
   width: 125px;
   background-color: rgb(0, 190, 10);
 }
@@ -230,14 +322,14 @@ body {
   width: 33%;
   min-width: 250px;
   max-width: 600px;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   animation-name: animatetop;
   animation-duration: 0.4s;
   background: #4e4e4e;
   border-radius: 5px;
   top: 30%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
 }
 
 .connection_monitor {
@@ -269,7 +361,7 @@ body {
   height: 1650px;
 
 
-/*   3D Perspective
+  /*   3D Perspective
   -webkit-transform: perspective(200px) rotateX(5deg);
   -moz-transform: perspective(200px) rotateX(5deg);
   -ms-transform: perspective(200px) rotateX(5deg);
@@ -310,6 +402,7 @@ body {
   position: absolute;
   background-image: url("img/VPs.svg");
   background-size: cover;
+  transition: top 2s, left 2s;
 }
 
 .space_race_us {
@@ -355,9 +448,19 @@ body {
   cursor: pointer;
 }
 
+.easterneurope {
+  background: rgba(255, 0, 0, 0.2);
+  box-shadow: -2px 2px 8px 4px pink;
+}
+
+.westerneurope {
+  background: rgba(0, 0, 255, 0.2);
+  box-shadow: -2px 2px 8px 4px lightblue;
+}
 
 
-.us, .ussr {
+.us,
+.ussr {
   float: left;
 }
 
@@ -368,7 +471,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:3px;
+  padding-top: 3px;
 }
 
 .us_uncontrol {
@@ -377,7 +480,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:3px;
+  padding-top: 3px;
 }
 
 .ussr_control {
@@ -386,7 +489,7 @@ body {
   background-size: cover;
   text-align: center;
   line-height: 48px;
-  padding-top:3px;
+  padding-top: 3px;
 }
 
 .ussr_uncontrol {
@@ -395,7 +498,7 @@ body {
   background-image: url("img/SovietInfluenceUnControlledBackground.png");
   text-align: center;
   line-height: 48px;
-  padding-top:3px;
+  padding-top: 3px;
 }
 
 .loader {
@@ -404,8 +507,8 @@ body {
 }
 
 .event_tile {
-  display:none;
-  float:right;
+  display: none;
+  float: right;
 }
 
 
@@ -417,8 +520,9 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
 }
+
 .cardlist-container .card {
   height: 30vh;
   max-height: 520px;
@@ -454,7 +558,7 @@ body {
   padding: 0.5em;
 }
 
-.game-cardbox{
+.game-cardbox {
   width: 388px;
 }
 
@@ -468,12 +572,12 @@ body {
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-  .cardbox-card{
+  .cardbox-card {
     height: 90vh;
     width: calc(90vh * 0.714);
   }
 
-   .game-cardbox{
+  .game-cardbox {
     top: 5vh;
     height: 90vh;
     width: calc(90vh * 0.714);
@@ -481,13 +585,11 @@ body {
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-  .cardbox-card, .game-cardbox{
+
+  .cardbox-card,
+  .game-cardbox {
     top: 5vh;
     width: 90vw;
     height: calc(90vw * 1.4);
   }
 }
-
-
-
-

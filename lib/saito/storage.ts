@@ -116,6 +116,21 @@ class Storage {
     }
   }
 
+  getOptions() {
+    if (this.app.BROWSER == 1) {
+      if (this.active_tab == 0) {
+        return;
+      }
+    }
+    try {
+      if (typeof Storage !== "undefined") {
+        return localStorage.getItem("options");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   getModuleOptionsByName(modname) {
     for (let i = 0; i < this.app.options.modules.length; i++) {
       if (this.app.options.modules[i].name === modname) {
@@ -195,7 +210,9 @@ class Storage {
 
   async returnBlockFilenameByHash(block_hash, mycallback) {}
 
-  returnTokenSupplySlipsFromDisk(): any { return []; }
+  returnTokenSupplySlipsFromDisk(): any {
+    return [];
+  }
 
   returnBlockFilenameByHashPromise(block_hash) {}
 

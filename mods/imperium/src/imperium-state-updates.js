@@ -22,11 +22,49 @@
   }
 
 
+
+  giveActionCard(sender, receiver, ac) {
+
+    if (this.game.player == sender) {
+      for (let k = 0; k < this.game.deck[1].hand.length; k++) {
+	if (this.game.deck[1].hand[k] === ac) {
+	  this.game.deck[1].hand.splice(k, 1);
+	}
+      }
+    }
+    if (this.game.player == receiver) {
+      this.game.deck[1].hand.push(ac);
+    }
+
+  }
+
+
+
   givePromissary(sender, receiver, promissary) {
-    this.game.players_info[receiver-1].promissary_notes.push(promissary);
+
+    //
+    // the promissary may be
+    //
+    let actual_promissary_name = promissary;
+    if (!this.game.players_info[sender-1].promissary_notes.includes(promissary)) {
+      for (let i = 0; i < this.game.players_info[sender-1].promissary_notes.length; i++) {
+	let pm = this.game.players_info[sender-1].promissary_notes[i];
+	if (pm.indexOf(promissary) > 0) {
+	  let tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+	  for (let z = 2; z < tmpar.length; z++) {
+	    tmpname += '-';
+	    tmpname += tmpar[z];
+	  }
+	  actual_promissary_name = tmpname;
+	}
+      }
+    }
+
+    this.game.players_info[receiver-1].promissary_notes.push(actual_promissary_name);
 
     for (let k = 0; k < this.game.players_info[sender-1].promissary_notes.length; k++) {
-      if (this.game.players_info[sender-1].promissary_notes[k] === promissary) {
+      if (this.game.players_info[sender-1].promissary_notes[k] === actual_promissary_name) {
         this.game.players_info[sender-1].promissary_notes.splice(k, 1);
         k = this.game.players_info[sender-1].promissary_notes.length;
       }
@@ -73,6 +111,10 @@
       this.saveSystemAndPlanets(sys);
     }
 
+    //
+    // avoid ghosts-on-display
+    //
+    this.updateSectorGraphics(sector);
 
     return 1;
   }
@@ -185,8 +227,8 @@
 
     let planetname = "";
     let sys = this.returnSectorAndPlanets(sector);
-    let owner = new_owner;
-    let existing_owner = sys.p[planet_idx].owner;
+    let owner = parseInt(new_owner);
+    let existing_owner = parseInt(sys.p[planet_idx].owner);
 
     //
     // first-to-the-post New Byzantium bonus

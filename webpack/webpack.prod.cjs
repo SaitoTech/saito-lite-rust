@@ -28,9 +28,6 @@ webpack({
       archiver: "archiver"
     },
     {
-      "stun": "stun"
-    },
-    {
       child_process: "child_process"
     },
     {
@@ -49,10 +46,14 @@ webpack({
       unzipper: "unzipper"
     },
     {
-      webpack: "webpack"
+      webpack: "webpack",
+
+    },
+    {
+      "node-turn": "node-turn"
     },
     // /^(image-resolver|\$)$/i,
-    /\.txt/,
+    /\.txt /,
     /\.png$/,
     /\.jpg$/,
     /\.html$/,
@@ -87,7 +88,7 @@ webpack({
       "buffer": require.resolve("buffer"),
       "crypto": require.resolve("crypto-browserify"),
       "crypto-browserify": require.resolve("crypto-browserify"),
-      "stun": require.resolve("stun")
+
     }
   },
   module: {

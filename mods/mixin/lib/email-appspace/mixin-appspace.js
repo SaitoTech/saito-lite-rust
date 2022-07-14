@@ -21,15 +21,38 @@ module.exports = MixinAppspace = {
 
     try {
       document.querySelector(".activity_button").onclick = (e) => {
-
-alert("loading history...");
-
+        document.getElementById('activity_button').innerHTML = 'fetching history...';
+        
         mod.fetchSnapshots("", 20, "DESC", (d) => { 
-	  document.querySelector(".activity_container").innerHTML = "";
-	  for (let i = 0; i < d.data.length; i++) {
-	    document.querySelector(".activity_container").innerHTML += JSON.stringify(d.data[i]);;
-	  }
+          let html = "";
+          for (let i = 0; i < d.data.length; i++) {
+
+          let ticker = '';
+          for (let j=0; j<mod.mods.length; j++) {
+            if (mod.mods[j].asset_id == d.data[i].asset_id) {
+              ticker = mod.mods[j].ticker;
+              break;
+            }
+          }
+
+          let trans = d.data[i];
+          let created_at = trans.created_at.slice(0, 19).replace('T', ' ');
+          let type = (trans.closing_balance > trans.opening_balance) ? 'Deposit' : 'Withdrawal';
+          let amount = trans.amount;
+          let indicator = (type == 'Deposit') ? '+' : '';
+
+          html = "<div class='item'>"+ created_at +"</div>" +
+          "<div class='item'>"+ type +"</div>" +
+          "<div class='item'>"+ ticker +"</div>" +
+          "<div class='item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
+          "<div class='item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
+          
+          document.getElementById('activity_button').setAttribute("class", "hide-btn");
+          document.querySelector(".history_container").innerHTML += html;
+          }
         });
+
+        document.getElementById('activity_button').innerHTML = 'load account history';
       }
     } catch (err) {}
 
@@ -43,31 +66,74 @@ alert("loading history...");
 
       overlay.show(app, mod, MixinWithdrawTemplate(app, ticker, balance), function() {});
 
-      document.querySelector(".withdraw_submit").onclick = (e) => {
-
-	let amount = document.querySelector(".withdraw_amount").value;
-	let address = document.querySelector(".withdraw_address").value;
-
-	let c = confirm(`Check fee for withdrawing ${amount} to ${address}?`);
- 	if (c) {
-	  document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Checking withdrawl fee. Please be patient...";
-	  mod.checkWithdrawalFee(asset_id, function(fee) {
-	    document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Withdrawal Fee: "+fee;
-	    let c2 = confirm(`Withdrawal fee is ${fee}. Please confirm withdrawal`);
-	    if (c2) {
-	      document.getElementById("email-appspace-withdraw-overlay").innerHTML = "Processing Withdrawal... please wait";
-	      alert("Processing Withdrawal!");
-	      let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), function() {
-                mod.overlay.hide();
-              }, ticker);
-      	      overlay.hide();
-	    }
-	  });
-	} else {
-	  alert("withdrawal cancelled");
-	}
+      document.querySelector("#withdraw-reject").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'block';
       }
+
+      document.querySelector("#withdraw-accept").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'none';  
+           
+          mod.checkWithdrawalFee(asset_id, function(fee) {
+            document.getElementById("confirm-fee-text").innerHTML = 'Withdrawal fee is '+fee+'. Continue with withdrawal?';
+            document.querySelector("#withdrawl-sent-cont").style.display = 'block';
+          });
+
+      }
+
+      document.querySelector("#withdraw-fee-accept").onclick = (e) => {
+          let hash = app.wallet.sendPayment([sender], [address], [amount], (new Date().getTime()), btoa(sender+address+amount+Date.now()), function() {
+                      mod.overlay.hide();
+                    }, ticker);
+                    overlay.hide();
+          
+          document.querySelector("#email-appspace-withdraw-overlay").innerHTML = 'Withdrawal Successful!';
+          setTimeout(function(){
+            location.reload();
+          }, 1500);
+      }
+
+      document.querySelector("#withdraw-fee-reject").onclick = (e) => {
+          document.querySelector("#withdrawl-confirm-cont").style.display = 'none';
+          document.querySelector("#withdrawl-sent-cont").style.display = 'none';
+          document.querySelector("#withdrawl-form-cont").style.display = 'block';
+      }
+
+      document.querySelector("#withdrawal-form").onsubmit = (e) => {
+        e.preventDefault();
+        document.querySelector(".error-msg").style.display = "none";
+      	amount = document.querySelector(".withdraw_amount").value;
+      	address = document.querySelector(".withdraw_address").value;
+        amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+
+        if (amount > amount_avl) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Not enough amount avaibale ("+amount_avl+" available)";
+          document.querySelector(".max-amount-error").style.display = "block";
+          return false;          
+        }
+
+        if (amount <= 0) {
+          document.querySelector(".max-amount-error").innerHTML = "Error: Amount should be greater than 0";
+          document.querySelector(".max-amount-error").style.display = "block";
+          return false;          
+        }
+
+
+        document.querySelector(".decision-cont").style.display = 'none';
+        document.querySelector("#withdrawl-sent-cont").style.display = 'none';
+        document.getElementById("check-fee-text").innerHTML = 'Check fee for withdrawing <b>'+amount+'</b> to <b>'+address+'</b>?';
+        document.querySelector("#withdrawl-confirm-cont").style.display = 'block';
+
+      }
+
+      document.querySelector("#max-amount-btn").onclick = (e) => {
+        let amount_avl = document.querySelector("#amount-avl").getAttribute('data-amount-avl');
+        document.querySelector("#withdraw_amount").value = amount_avl;
+      }
+
     }
+
     document.querySelector(".balances_deposit").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);
@@ -78,13 +144,28 @@ alert("loading history...");
       overlay.show(app, mod, MixinDepositTemplate(app, address, confs, ticker), function() {
       });
 
+      document.querySelector("#copy-deposit-add").onclick = (e) => {
+        let public_key = document.querySelector(".public-address").value;
+        
+        navigator.clipboard.writeText(public_key);
+        document.querySelector("#copy-deposit-add").classList.add("copy-check");
+
+        setTimeout(() => {
+          document.querySelector("#copy-deposit-add").classList.remove("copy-check");            
+        }, 400);
+      };
+
       const QRCode = require('../../../../lib/helpers/qrcode');
       return new QRCode(
-        document.getElementById("deposit_qrcode"),
+        document.getElementById("qrcode"),
         address
       );
 
     }
+
+
+
+
   },
 
 }

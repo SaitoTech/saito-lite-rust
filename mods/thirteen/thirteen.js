@@ -10,15 +10,13 @@ class Thirteen extends GameTemplate {
 
     super(app);
 
-    this.app             = app;
+    this.app          = app;
 
-    this.name  		 = "Thirteen Days";
-    this.gamename        = "Thirteen Days";
-    this.slug		 = "thirteen";
-    this.description     = `Thirteen Days is a mid-length simulation of the Cuban Missile Crisis created by Asger Granerud and Daniel Skjold Pedersenmade.`;
+    this.name  		    = "Thirteen Days";
+    this.slug		      = "thirteen";
+    this.description  = `Thirteen Days is a mid-length simulation of the Cuban Missile Crisis created by Asger Granerud and Daniel Skjold Pedersenmade.`;
     this.publisher_message = `Thirteen Days is owned by <a href="http://jollyrogergames.com/game/13-days/">Jolly Roger Games</a>. This module includes the open source Vassal module explicitly authorized by the publisher. Vassal module requirements are that at least one player per game has purchased a copy of the game. Please support Jolly Roger Games and purchase your copy <a href="http://jollyrogergames.com/game/13-days/">here</a>`;
-    this.type       = "Strategy Boardgame";
-    this.categories      = "Games Arcade Entertainment";
+    this.categories   = "Games Boardgame Strategy";
 	  this.status     = "Beta";
     
     this.boardWidth  = 2450;
@@ -50,27 +48,7 @@ class Thirteen extends GameTemplate {
 
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/thirteen/img/arcade/arcade-banner-background.png";
-      obj.title = "Thirteen Days";
-      return obj;
-    }
-   
-    return null;
- 
-  }
-
-
+  
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -224,8 +202,6 @@ class Thirteen extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
-
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
 
     //
     // initialize
@@ -739,11 +715,11 @@ class Thirteen extends GameTemplate {
 	  return 0;
 	}
 	if (us_loses == 1) {
-	  this.endGame("ussr", "US DEFCON too high");
+	  this.endGame(this.game.players[0], "US DEFCON too high");
 	  return 0;
 	}
 	if (ussr_loses == 1) {
-	  this.endGame("us", "US DEFCON too high");
+	  this.endGame(this.game.players[1], "US DEFCON too high");
 	  return 0;
 	}
 
@@ -1025,13 +1001,13 @@ console.log("tallying alliances before scoring");
 	//
         if (this.game.state.round == 4) {
 	  if (this.game.state.prestige > 7) {
-	    this.endGame("ussr", "prestige track");
+	    this.endGame(this.game.players[0], "prestige track");
 	  }
 	  if (this.game.state.prestige < 7) {
-	    this.endGame("us", "prestige track");
+	    this.endGame(this.game.players[1], "prestige track");
 	  }
 	  if (this.game.state.prestige == 7) {
-	    this.endGame("us/ussr", "tie game");
+	    this.tieGame("tie game");
 	  }
 	  return 0;
 	}
@@ -4447,34 +4423,6 @@ console.log("SHOULD PLACE: " + player);
     }
     return new_options;
   }
-
-
-
-    
-
-  //
-  // OVERWRITE -- to take "us" and "ussr" instead of player_id
-  //
-  endGame(winner, method) {
-
-    this.game.over = 1;
-    if (winner == "us") { this.game.winner = 2; }
-    if (winner == "ussr") { this.game.winner = 1; }
-
-    if (this.game.winner == this.game.player) {
-      //
-      // share wonderful news
-      //
-      this.game.over = 0;
-      this.resignGame();
-    }
-
-    if (this.browser_active == 1) {
-      this.displayModal("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
-      this.updateStatus("<div class='status-message' id='status-message'><span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span></div>");
-    }
-  }
-
 
 
 

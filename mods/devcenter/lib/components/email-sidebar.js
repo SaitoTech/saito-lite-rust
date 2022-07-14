@@ -4,6 +4,7 @@ const EmailChat = require("./email-chat.js");
 
 module.exports = EmailSidebar = {
   welcome_space: "",
+
   render(app, mod) {
     if (!document.getElementById("email-sidebar")) {
       app.browser.addElementToDom(EmailSidebarTemplate(), "email-container");
@@ -11,18 +12,26 @@ module.exports = EmailSidebar = {
     }
 
     let email_apps = document.querySelector(".email-apps");
+
     mod.mods = app.modules.respondTo("email-appspace");
+
     for (let i = 0; i < mod.mods.length; i++) {
+
       let module = mod.mods[i];
+
+      let modulename = mod.mods[i].name;
+      if (mod.mods[i].appname) { modulename = mod.mods[i].appname; }
+
       if (module.name === "MyQRCode") {
-        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" style="display:none" id="email-nav-${module.name}">${module.name}</li>`;
+        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" style="display:none" id="email-nav-${module.name}">${modulename}</li>`;
       } else {
-        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">${module.name}</li>`;
+        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">${modulename}</li>`;
       }
     }
 
     EmailChat.render(app, mod);
     EmailChat.attachEvents(app, mod);
+
   },
 
   attachEvents(app, mod) {
@@ -78,7 +87,9 @@ module.exports = EmailSidebar = {
       if (modname === module.name) {
         let obj = module.respondTo("email-appspace");
         obj.render(mod.app, module);
-        obj.attachEvents(mod.app, module);
+        
+        if ("attachEvents" in obj)        
+          obj.attachEvents(mod.app, module);
       }
     }
   }

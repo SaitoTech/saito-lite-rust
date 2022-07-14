@@ -1,0 +1,141 @@
+:root{
+  --dominion-parchment: tan;
+}
+
+body {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden; 
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+
+
+.gameboard{
+  /* Default fill the background with image */
+  position: absolute;
+  background-image: url("img/gameboard.jpg");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#zoom{
+  position: absolute;
+  border-radius: 25px;
+  top: 8px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  text-align: center;
+  color: whitesmoke;
+  background-color: black;
+}
+
+#zoom.active{
+  /*border: 1px ghostwhite solid;*/
+  
+  box-shadow: 0 0 5px 5px #f5f5f5f5;
+  color: black;
+  background-color: whitesmoke;
+}
+
+.passivecard{
+  filter: brightness(0.8);
+}
+
+.passivecard:hover{
+ filter:  brightness(1.0); 
+}
+
+.cardstacks{
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(30, minmax(auto, 20px));
+  width: fit-content;
+  max-width: 70vw;
+  margin: 60px auto;
+  box-shadow: 0 0 10px 5px black;
+  background-color: #f5f5f555;
+  padding: 0.5em;
+}
+
+.cardpile{
+  max-width: 100px;
+  grid-column: span 5;
+}
+
+.cardpile:nth-child(n+7){
+  grid-column: span 6;
+  /*margin-left: 10px;*/
+  max-width: 120px;
+}
+
+.cardpile .showcard, .cardpile .passivecard{
+  width: 100%;
+}
+
+.cardpile .showcard.dim{
+  filter: brightness(0.35);  
+}
+
+.logcard{
+  font-weight: bold;
+}
+
+.showcard + .tiptext{
+  display: none;
+}
+
+.tiptext{
+  width: calc(100% + 30px);
+  min-width: unset;
+  color: black;
+  background-color: var(--dominion-parchment);
+}
+
+.cardimg {
+      width: 100%;
+}
+
+.hud-long{
+  max-height: 310px;
+}
+
+.game-scoreboard{
+  background-color: var(--dominion-parchment);
+}
+.game-scoreboard .score{
+  font-size: 16px;
+  font-family: "Papyrus";
+  font-weight: bold;
+  margin: 0 8px;
+}
+
+#mydecks{
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 140px;
+  height: 180px;
+  background-color: var(--dominion-parchment);
+  border-radius: 5px;
+  box-shadow: 0 0 5px 2px black;
+  padding-left: 4px;
+  font-family: "Papyrus";
+  display: flex;
+  flex-direction: column;
+  color: black;
+  font-size: 18px;
+  justify-content: space-evenly;
+}
+
+.rules-overlay{
+  background-color: var(--dominion-parchment);
+}

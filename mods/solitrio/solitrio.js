@@ -15,37 +15,11 @@ class Solitrio extends GameTemplate {
     this.gamename        = "Solitrio";
     this.slug            = "solitrio";
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
-    this.categories      = "Arcade Games Entertainment";
+    this.categories      = "Games Cardgame one-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    this.type            = "Solitaire Cardgame";
-    //this.status          = "Beta";
-
-    this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
-    this.categories  = "Cardgame Game Solitaire";
     
-  }
-
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/solitrio/img/arcade/arcade-banner-background.jpg";
-      obj.title = "Solitrio";
-      return obj;
-    }
-
-    return null;
-
   }
 
 
@@ -66,8 +40,8 @@ class Solitrio extends GameTemplate {
   }
 
 
-  /*
-  Single player games don't allow game-creation and options prior to join
+  
+  //Single player games don't allow game-creation and options prior to join
   returnGameOptionsHTML() {
     return `
         <div class="overlay-input">
@@ -76,21 +50,16 @@ class Solitrio extends GameTemplate {
             <label for="auto">Cards move to available slots</label></div>
             <div><input type="radio" id="manual" value="manual" name="play_mode">
             <label for="manual">Click empty slot to move card</label></div>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
+        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+
     `;
-  }*/
+  }
 
 
   initializeGame(game_id) {
-
     console.log("SET WITH GAMEID: " + game_id);
 
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
-    this.updateStatus("loading game...");
-
-    this.loadGame(game_id);
-    
     if (!this.game.state) {
       console.log("******Generating the Game******");
       this.game.state = this.returnState();
@@ -231,13 +200,6 @@ class Solitrio extends GameTemplate {
     this.menu.attachEvents(app, this);
 
 
-  }
-
-  requestInterface(type) {
-    if (type == "arcade-sidebar") {
-      return { title: this.name };
-    }
-    return null;
   }
 
 
@@ -895,6 +857,18 @@ no status atm, but this is to update the hud
     return card.substring(1);
   }
 
+  resignGame(game_id = null, reason = "forfeit") {
+    console.log("Mark game as closed");
+    this.loadGame(game_id);
+    this.game.over = 2;
+    this.saveGame(game_id);
+    //Refresh Arcade if in it
+    let arcade = this.app.modules.returnModule("Arcade");
+    if (arcade){
+      //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
+      arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
+    }
+  }
 
 }
 

@@ -10,7 +10,8 @@
       //tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-transparasteel-plating","faction6-mageon-implants","faction6-flagship"],
       tech		: 	["neural-motivator", "faction6-stall-tactics", "faction6-scheming", "faction6-crafty","faction6-flagship"],
       background	: 	'faction6.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction6-promissary"],
+      commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Yssaril Tribe, a primitive race of swamp-dwelling creatures whose fast instincts and almost unerring ability to change tactics on-the-fly lead many to suspect more is at work than their primitive appearance belies. Good luck!</div>`
     });
 
@@ -127,6 +128,8 @@
 	    imperium_self.playerDiscardActionCards(num, function() {
 	      imperium_self.endTurn();
 	    });
+	  } else {
+	    imperium_self.updateStatus("Yssaril are discarding an action card...");
 	  }
 
           return 0;
@@ -225,8 +228,8 @@
 
         imperium_self.playerSelectPlayerWithFilter(
           "Select a player from which to take an action card (if possible): " ,
-          function(player) {
-            if (player != imperium_self.game.player) { return 1; } return 0;
+          function(p) {
+            if (p.player != imperium_self.game.player) { return 1; } return 0;
           },
           function(player) {
             imperium_self.addMove("faction6_choose_card_triggered\t"+imperium_self.game.player+"\t"+player);
@@ -329,88 +332,120 @@
 
 
 
-/****
-
-this.playMageonImplants = function(imperium_self, player, target, mycallback) {
-
-  if (imperium_self.game.player != player) { return 0; }
 
 
+    this.importPromissary("faction6-promissary", {
+      name        :       "Nest of Spies" ,
+      faction     :       -1,
+      text        :       "Redeemer may choose one action card from Yssaril hand" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction6-promissary';
+          x.html = '<li class="option" id="faction6-promissary">Nest of Spies (Yssaril Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction6") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction6-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let yssaril_player = imperium_self.returnPlayerOfFaction("faction6");
+        if (imperium_self.game.player == player) {
 
-}
+          let html = 'Reveal Yssaril Action Cards and Take One? <ul>';
+              html += '<li class="option" id="yes">yes</li>';
+              html += '<li class="option" id="no">no</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+             let id = $(this).attr('id');
+
+	     if (id === "yes") {
+	       imperium_self.addMove("faction6_promissary_triggered"+"\t"+imperium_self.game.player+"\t"+yssaril_player);
+               imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril promissary");
+               imperium_self.addMove("give" + "\t" + player + "\t" + yssaril_player + "\t" + "promissary" + "\t"+"faction6-promissary");
+	       imperium_self.endTurn();
+	     }
+	     if (id === "no") {
+	       imperium_self.endTurn();
+	     }
+
+          });
+        }
+      },
+
+      handleGameLoop : function(imperium_self, qe, mv) {
+
+        if (mv[0] == "faction6_promissary_triggered") {
+
+          let recipient = parseInt(mv[1]);
+          let sender 	= parseInt(mv[2]);
+
+          imperium_self.game.queue.splice(qe, 1);
+
+	  if (sender == imperium_self.game.player) {
+            imperium_self.addMove("faction6_promissary_executed" + "\t" + recipient + "\t" + sender + "\t" + JSON.stringify(imperium_self.returnPlayerActionCards()));
+	    imperium_self.endTurn();
+	  }
+
+          return 0;
+        }
 
 
+        if (mv[0] == "faction6_promissary_executed") {
 
-this.playDevotion = function(imperium_self, player, sector, mycallback, impulse_core=0) {
+          let recipient 		= parseInt(mv[1]);
+          let sender 			= parseInt(mv[2]);
+          let relevant_action_cards 	= JSON.parse(mv[3]);
 
+          imperium_self.game.queue.splice(qe, 1);
 
-  let sys = imperium_self.returnSectorAndPlanets(sector);
-  let opponent = imperium_self.returnOpponentInSector(player, sector);
+	  if (relevant_action_cards.length <= 0) {
+	    imperium_self.updateStatus("Yssaril has no action cards to steal...");
+	    return 1;
+	  }
 
-  let can_sacrifice_destroyer = imperium_self.doesSectorContainPlayerUnit(player, sector, "destroyer");
-  let can_sacrifice_cruiser = imperium_self.doesSectorContainPlayerUnit(player, sector, "cruiser");
+	  //
+	  // otherwise player selects
+	  //
+	  if (recipient == imperium_self.game.player) {
+
+            imperium_self.playerSelectActionCardFromList(
+
+	      function (card) {
+                imperium_self.addMove("pull\t" + recipient + "\t" + sender + "\t" + "action" + "\t" + card);
+                imperium_self.addMove("give" + "\t" + recipient + "\t" + sender + "\t" + "promissary" + "\t"+"faction6-promissary");
+                imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Yssaril Promissary");
+                imperium_self.endTurn();
+              },
  
-  if (can_sacrifice_destroyer != 1 && can_sacrifice_cruiser != 1) {
-    mycallback(imperium_self);
-    return;
-  }
-  if (opponent == -1) {
-    mycallback(imperium_self);
-    return;
-  }
+	      function () {
+                imperium_self.endTurn();
+	      },
 
+              relevant_action_cards
 
-  let html = "<div class='sf-readable'>Do you wish to sacrifice a Destroyer or Cruiser to assign 1 hit to an enemy ship?</div><ul>";
-  if (can_sacrifice_destroyer) {
-      html += '<li class="textchoice" id="destroyer">sacrifice destroyer</li>';
-  }
-  if (can_sacrifice_cruiser) {
-      html += '<li class="textchoice" id="cruiser">sacrifice cruiser</li>';
-  }
-      html += '<li class="textchoice" id="no">no</li>';
-      html += '</ul>';
-  imperium_self.updateStatus(html);
+  	    );
+	  }
 
-  $('.textchoice').off();
-  $('.textchoice').on('click', function () {
-    let action2 = $(this).attr("id");
-    if (action2 === "no") {
-      mycallback(imperium_self);
-      return;
-    }
-    if (action2 === "destroyer") {
+	}
 
-      let unit_idx = 0;
-      for (let i = 0; i < sys.s.units[player-1].length; i++) {
-	if (sys.s.units[player-1][i].type == "destroyer") {
-	  unit_idx = i;
-        }
-      }
+        return 0;
 
-      imperium_self.addMove("destroy_unit"+"\t"+player+"\t"+player+"\t"+"space"+"\t"+sector+"\t"+0+"\t"+unit_idx+"\t"+1);
-      imperium_self.playDevotionAssignHit(imperium_self, player, sector, mycallback, impulse_core);
-      return;
-    }
-    if (action2 === "cruiser") {
+      },
 
-      let unit_idx = 0;
-      for (let i = 0; i < sys.s.units[player-1].length; i++) {
-	if (sys.s.units[player-1][i].type == "cruiser") {
-	  unit_idx = i;
-        }
-      }
-
-      imperium_self.addMove("destroy_unit"+"\t"+player+"\t"+player+"\t"+"space"+"\t"+sector+"\t"+0+"\t"+unit_idx+"\t"+1);
-      imperium_self.playDevotionAssignHit(imperium_self, player, sector, mycallback, impulse_core);
-      return;
-    }
-  });
-
-  return 0;
-}
-
-*****/
-
+    });
 
 
 

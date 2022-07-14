@@ -1,17 +1,19 @@
 module.exports = SendTokensOverlayTemplate = () => {
   return `
-    <div class="wallet-send-tokens-overlay" id="wallet-send-tokens-overlay">
+    <form id="wallet-send-tokens-form" action="" method="POST">
+      <div class="wallet-send-tokens-overlay" id="wallet-send-tokens-overlay">
 
-      <label for="wallet-send-tokens-recipient" class="wallet-label">send to address:</label>
-      <br />
-      <input id="wallet-send-tokens-recipient" class="wallet-send-tokens-recipient" />
-      <br />
-      <label for="wallet-send-tokens-amount" class="wallet-label">amount:</label> 
-      <br />
-      <input id="wallet-send-tokens-amount" class="wallet-send-tokens-amount" />
-      <div id="wallet-send-tokens-submit-btn" class="button wallet-send-tokens-submit-btn">send</div>
+        <label for="wallet-send-tokens-recipient" class="wallet-label">send to address:</label>
+        <br />
+        <input type="text" id="wallet-send-tokens-recipient" class="wallet-send-tokens-recipient" required>
+        <br />
+        <label for="wallet-send-tokens-amount" class="wallet-label">amount:</label> 
+        <br />
+        <input type="number" min="0" step="0.00000001" id="wallet-send-tokens-amount" class="wallet-send-tokens-amount" required>
+        <input id="wallet-send-tokens-submit-btn" class="button wallet-send-tokens-submit-btn" type="submit" value="send" >
 
-    </div>
+      </div>
+    </form>
     <style>
 .wallet-label {
   clear:both;

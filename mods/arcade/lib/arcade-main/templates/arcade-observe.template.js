@@ -2,13 +2,16 @@
 module.exports = ArcadeObserveTemplate = (app, mod, msg, idx, msgjson) => {
 
 
+  let gameModule = app.modules.returnModule(invite.msg.game);
+  /*for (let i = 0; i < app.modules.mods.length; i++) {
+    if (app.modules.mods[i].name === slug) { 
+      slug = app.modules.mods[i].returnSlug(); 
+    }
+  }*/
   //
   // gameslug given game
   //
-  let slug = msg.module;
-  for (let i = 0; i < app.modules.mods.length; i++) {
-    if (app.modules.mods[i].name === slug) { slug = app.modules.mods[i].returnSlug(); }
-  }
+  let slug = gameModule.returnSlug();
 
   let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${msg.players_array.split("_").length}, 1fr);">`;
   let gametime = new Date().getTime();
@@ -20,10 +23,13 @@ module.exports = ArcadeObserveTemplate = (app, mod, msg, idx, msgjson) => {
   });
   playersHtml += '</div>';
 
+  let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
+  let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+
   let inviteHtml = `
-    <div id="invite-${msg.game_id}" class="arcade-tile" style="background-image: url(/'${slug}/img/arcade.jpg');">
+    <div id="invite-${msg.game_id}" class="arcade-tile" style="background-image: url('${bannerBack}');">
       <div class="invite-tile-wrapper">
-        <div class="game-inset-img" style="background-image: url('/${slug}/img/arcade.jpg');"></div>
+        <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName" style="font-size:0.9em">${datetime.day} ${datetime.month} ${datetime.year}</div>
           ${playersHtml}

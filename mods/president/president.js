@@ -16,7 +16,7 @@ class President extends GameTemplate {
     this.app = app;
     this.name = "President";
     this.description = 'Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?';
-    this.categories = "Games Arcade Entertainment";
+    this.categories = "Games Cardgame";
     this.card_img_dir = '/president/img/cards';
 
     this.minPlayers = 2;
@@ -31,31 +31,6 @@ class President extends GameTemplate {
     return this;
 
   }
-
-
-
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/president/img/arcade/arcade-banner-background.png";
-      obj.title = "President";
-      return obj;
-    }
-
-    return null;
-
-  }
-
-
 
 
 
@@ -98,18 +73,13 @@ class President extends GameTemplate {
     
     this.log.render(app,this);
     this.log.attachEvents(app,this);
-    this.restoreLog();
+    
   }
 
 
 
 
   initializeGame(game_id) {
-
-    //
-    // game engine needs this to start
-    //
-    if (this.game.status != "") { this.updateStatus(this.game.status); }
 
     //
     // initialize

@@ -1,343 +1,749 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunUI = require('./lib/stun-ui');
+const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 
-
-console.log(ModTemplate, Slip, saito);
-
 class Stun extends ModTemplate {
 
+    constructor(app) {
+        super(app);
+        this.app = app;
+        this.appname = "Stun";
+        this.name = "Stun";
+        this.description = "Session Traversal Utilitiesf for NAT (STUN)";
+        this.categories = "Utility Networking";
 
-  constructor(app) {
-    console.log(serialize)
-    super(app);
-    this.appname = "Stun";
-    this.name = "Stun";
-    this.description = "Session Traversal Utilitiesf for NAT (STUN)";
-    this.categories = "Utility Networking";
+        this.stun = {};
+        this.peer_connections = {};
+    }
 
-    this.stun = {};
-    this.stun.ip_address = "";
-    this.stun.port = "";
-    this.stun.offer_sdp = "";
-    this.stun.listeners = [];
-    this.stun.pc = ""
+    async initialize(app) {
+        this.loadStun();
 
-  }
+        let publickey = this.app.wallet.returnPublicKey();
+        let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
 
-
-  onConfirmation(blk, tx, conf, app) {
-
-    console.log("testing ...");
-    let stun_self = app.modules.returnModule("Stun");
-    let txmsg = tx.returnMessage();
-
-    if (conf == 0) {
-      if (txmsg.module === "Stun" && tx.msg.stun) {
-
-        // check if key exists in key chain
-
-        let key_index = stun_self.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
-        console.log(key_index, "key index");
-
-        // save key if it doesn't exist
+        // save key if it doesnt exist
         if (key_index === -1) {
-          stun_self.app.keys.addKey(tx.transaction.from[0].add);
-          stun_self.app.keys.saveKeys();
+            this.app.keys.addKey(publickey);
+            this.app.keys.saveKeys();
         }
-        for (let i = 0; i < app.keys.keys.length; i++) {
+        if (!this.app.keys.keys[key_index].data.stun) {
+            this.app.keys.keys[key_index].data.stun = this.stun;
+            this.app.keys.saveKeys();
+        }
+    }
 
-          if (tx.transaction.from[0].add === stun_self.app.keys.keys[i].publickey) {
-            console.log(JSON.stringify(stun_self.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
-            if (JSON.stringify(stun_self.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
-              const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
-              let address = preferred_crypto.returnAddress();
-              console.log("stun changed, saving changes..", tx.msg.stun);
-              stun_self.app.keys.keys[i].data.stun = { ...tx.msg.stun };
 
-              stun_self.app.keys.saveKeys();
+    loadStun() {
+        if (this.app.options.stun) {
+            this.stun = this.app.options.invites;
+            return;
+        }
 
+        // load default values for stun if not avl in local storage
+        this.stun.ip_address = "";
+        this.stun.port = "";
+        this.stun.offer_sdp = "";
+        this.stun.listeners = [];
+        this.stun.pc = "";
+        this.stun.iceCandidates = [];
+        this.stun.counter = 0;
+        this.stun.servers = [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+          {
+            urls: "turn:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+        ];
+    }
+
+    saveStun() {
+        this.app.options.stun = this.stun;
+        this.app.options.saveOptions();
+    }
+
+
+    respondTo(type) {
+      if (type === 'email-appspace') {
+          return new StunEmailAppspace(this.app, this);
+      }
+      return null;
+    }
+
+    onConfirmation(blk, tx, conf, app) {
+        if (conf == 0) {
+            let txmsg = tx.returnMessage();
+            let my_pubkey = app.wallet.returnPublicKey();
+
+            if (txmsg.module === this.appname) {
+            
+                if (tx.msg.stun) {
+                    // check if key exists in key chain
+                    let key_index = this.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
+                    console.log(key_index, "key index");
+
+                    // save key if it doesn't exist
+                    if (key_index === -1) {
+                        this.app.keys.addKey(tx.transaction.from[0].add);
+                        this.app.keys.saveKeys();
+                    }
+                    for (let i = 0; i < app.keys.keys.length; i++) {
+
+                        if (tx.transaction.from[0].add === this.app.keys.keys[i].publickey) {
+                            console.log(JSON.stringify(this.app.keys.keys[i].data.stun), JSON.stringify(tx.msg.stun))
+                            if (JSON.stringify(this.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
+                                let my_pubkey = app.wallet.returnPublicKey();
+                                console.log("stun changed, saving changes..", tx.msg.stun);
+                                this.app.keys.keys[i].data.stun = {...tx.msg.stun
+                                };
+
+                                this.app.keys.saveKeys();
+
+                            }
+
+                        }
+                    }
+
+                    app.connection.emit("stun-update", app, this);
+                }
+
+
+                if (tx.msg.request === "answer") {
+                    this.receiveAnswerTransaction(blk, tx, conf, app);
+                }
+
+
+                if (tx.msg.request === "offers") {
+                    this.receiveOffersTransaction(blk, tx, conf, app);
+                }
+
+
+                if (tx.msg.request === "offer") {
+                    this.receiveOfferTransaction(blk, tx, conf, app);   
+                }
+
+                if (tx.msg.request === "broadcast_details") {
+                    this.receiveBroadcastDetailsTransaction(blk, tx, conf, app);
+                }
+
+                if (tx.msg.request === "listeners") {
+                    this.receiveSendKeyToListenersTransaction(blk, tx, conf, app);                    
+                }
+            }
+        }
+    }
+
+    onPeerHandshakeComplete() {
+        if (this.app.BROWSER === 0) {
+
+            // browser instance's public key
+            const instance_pubkey = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
+
+            let newtx = this.app.wallet.createUnsignedTransaction();
+
+            const pubKeys = [];
+            this.app.network.peers.forEach(peer => {
+                pubKeys.push(peer.returnPublicKey());
+            })
+
+
+            console.log('instance ', instance_pubkey, ' pubkeys ', pubKeys)
+                // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
+
+            newtx.msg.module = "Stun";
+            newtx.msg.pubKeys = {
+                pubKeys
+            };
+
+            newtx.msg = {
+                module: this.appname,
+                request: "listener",
+                listeners: pubKeys,
+                pubKeys
+            };
+
+            console.log(newtx.msg);
+
+            newtx = this.app.wallet.signTransaction(newtx);
+            this.app.network.propagateTransaction(newtx);
+
+            let relay_mod = this.app.modules.returnModule('Relay');
+
+            relay_mod.sendRelayMessage(instance_pubkey, 'get_public_keys', newtx);
+        }
+
+    }
+
+    handlePeerRequest(app, req, peer, mycallback) {
+
+        if (req.request == null) {
+            return;
+        }
+        if (req.data == null) {
+            return;
+        }
+
+        let tx = req.data;
+
+        switch (req.request) {
+
+            case "get_public_keys":
+
+                console.log('got public keys: ', tx.msg.pubKeys);
+
+                if (app.BROWSER !== 1) return;
+                // create peer connection offers
+
+                this.public_keys = tx.msg.pubKeys;
+                app.options.public_keys = this.public_keys;
+                app.storage.saveOptions();
+
+                this.createPeerConnectionOffers(app, app.options.public_keys);
+                break;
+
+        }
+
+    }
+    
+
+    async createPeerConnectionOffers(app, pubKeys) {
+        let peerConnectionOffers = [];
+        
+
+        if (pubKeys.length > 1) {
+
+            // send connection to other peers if they exit
+            for (let i = 0; i < pubKeys.length; i++) {
+                if (pubKeys[i] !== this.app.wallet.returnPublicKey()) {
+                    peerConnectionOffers.push(this.createPeerConnectionOffer(app, pubKeys[i]));
+                }
+            }
+        }
+
+        try {
+            peerConnectionOffers = await Promise.all(peerConnectionOffers);
+
+
+            if (peerConnectionOffers.length > 0) {
+
+                const offers = [];
+                peerConnectionOffers.forEach((offer) => {
+                    // map key to pc
+                    console.log('offer :', offer)
+                    this.peer_connections[offer.recipient] = offer.pc
+                    offers.push({
+                        ice_candidates: offer.ice_candidates,
+                        offer_sdp: offer.offer_sdp,
+                        recipient: offer.recipient,
+                    })
+                })
+
+                // const offers = peerConnectionOffers.map(item => item.offer_sdp);
+
+                this.sendOffersTransaction(this.app.wallet.returnPublicKey(), offers);
+            } else {
+
+                console.log("no pair to connect to");
             }
 
-          }
+        } catch (error) {
+            console.log('an error occurred with peer connection creation', error);
         }
-
-
-
-
-        app.connection.emit("stun-update", app, stun_self);
-
-
-
-
-      }
     }
 
 
-    if (conf == 0) {
-      if (txmsg.module === "Stun") {
-        const preferred_crypto = stun_self.app.wallet.returnPreferredCrypto();
-        let address = preferred_crypto.returnAddress();
+    createPeerConnectionOffer(app, publicKey) {
+        
 
-        if (!tx.msg.peer_info) return;
-        if (address === tx.msg.peer_info.peer_b) {
-          stun_self.app.connection.emit('answer_received', tx.msg.peer_info.peer_a, tx.msg.peer_info.peer_b, tx.msg.peer_info.answer);
+        const createPeerConnection = new Promise((resolve, reject) => {
+            let ice_candidates = [];
+            const execute = async() => {
+
+                try {
+                    const pc = new RTCPeerConnection({
+                        iceServers: this.stun.servers,
+                    });
+
+
+
+                    pc.onicecandidate = (ice) => {
+                        if (!ice || !ice.candidate || !ice.candidate.candidate) {
+
+                            // pc.close();
+
+                            let offer_sdp = pc.localDescription;
+                            resolve({
+                                recipient: publicKey,
+                                offer_sdp,
+                                ice_candidates,
+                                pc
+                            });
+                            // this.broadcastIceCandidates(my_key, peer_key, ['savior']);
+
+                            return;
+                        } else {
+                            ice_candidates.push(ice.candidate);
+                        }
+
+                    };
+
+                    pc.onconnectionstatechange = e => {
+                        console.log("connection state ", pc.connectionState)
+                        switch (pc.connectionState) {
+
+
+                            case "connected":
+
+                                break;
+
+                            case "disconnecting":
+
+                                break;
+
+                            default:
+                                ""
+                                break;
+                        }
+                    }
+
+
+
+                    const data_channel = pc.createDataChannel('channel');
+                    pc.dc = data_channel;
+                    pc.dc.onmessage = (e) => {
+                        console.log('new message from client : ', e.data);
+                        this.receiveMesssage(e);
+
+                    };
+                    pc.dc.onopen = (e) => console.log("peer connection opened");
+
+                    const offer = await pc.createOffer();
+                    pc.setLocalDescription(offer);
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            }
+            execute();
+
+        })
+
+        return createPeerConnection;
+
+    }
+
+    async updateKey(publicKey) {
+        console.log('updating key');
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        newtx.msg.module = "Stun";
+
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+
+    }
+
+    transmitMessage(app, sender, msg, callback, recipients = null) {
+        
+        if (!recipients || recipients?.length === 0) {
+            this.peer_connections.forEach(pc => {
+                if (pc.connectionState === "connected") {
+                    pc.dc.send({
+                        from: sender,
+                        msg: JSON.stringify(msg),
+                        callback
+                    })
+                }
+            })
         } else {
-          console.log('tx peer key not equal');
+            recipients.forEach(recipient => {
+                // check if exists 
+                for (let i in this.peer_connections) {
+                    if (i === recipient) {
+                        this.peer_connections[i].dc.send({
+                            from: sender,
+                            msg: JSON.stringify(msg),
+                            callback
+                        })
+                    }
+                }
+            })
+        }
+    }
+
+    receiveMesssage(msg) {
+        console.log(msg, " from ");
+    }
+
+    addListenersFromPeers(peers) {
+        // only lite clients allowed to run this
+        if (this.app.BROWSER === 0) return;
+        console.log("adding peers as listeners ...");
+        if (peers.length === 0) return console.log("No peers to add");
+
+        let filteredListeners;
+
+        // remove current istance public key
+        filteredListeners = peers.filter(peer => peer !== this.app.wallet.returnPublicKey());
+
+        // remove duplicates
+        const seen = new Map();
+        let filteredPeers = [];
+        for (let i = 0; i < filteredListeners.length; i++) {
+            if (!seen[filteredListeners[i]]) {
+                seen[filteredListeners[i]] = 1;
+                filteredPeers.push(filteredListeners[i]);
+
+            } else {
+                seen[filteredListeners[i]] += 1;
+            }
+        }
+        console.log('filtered peers ', filteredPeers, ' seen ', seen);
+
+        // save key if it doesnt exist
+        let publickey = this.app.wallet.returnPublicKey();
+        let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+        if (key_index === -1) {
+            this.app.keys.addKey(publickey);
+            this.app.keys.saveKeys();
+        }
+        if (!this.app.keys.keys[key_index].data.stun) {
+            this.app.keys.keys[key_index].data.stun = this.stun;
+            this.app.keys.saveKeys();
+
+        }
+        this.app.keys.keys[key_index].data.stun.listeners = filteredPeers;
+        this.app.keys.saveKeys();
+        // this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
+    }
+
+
+    addListeners(listeners) {
+        if (this.app.BROWSER === 0) return;
+        console.log("adding listeners ...");
+        if (listeners.length === 0) return console.log("No listeners to add");
+
+        let publickey = this.app.wallet.returnPublicKey();
+        let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
+
+        // save key if it doesnt exist
+        if (key_index === -1) {
+            this.app.keys.addKey(publickey);
+            this.app.keys.saveKeys();
+        }
+        if (!this.app.keys.keys[key_index].data.stun) {
+            this.app.keys.keys[key_index].data.stun = this.stun;
+            this.app.keys.saveKeys();
+
         }
 
+        let validated_listeners;
 
-      }
+        // check if key is valid
+        validated_listeners = listeners.map(listener => listener.trim());
+        validated_listeners = listeners.filter(listener => listener.length === 44);
+
+        // filter out already existing keys
+        validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
+
+        // this.sendKeyToListenersTransaction(validated_listeners);
+
+        // add listeners to existing listeners
+        this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
+        this.app.keys.saveKeys();
+        this.app.connection.emit('listeners-update', this.app, this.app.keys.keys[key_index].data.stun.listeners);
     }
 
 
-  }
+    sendKeyToListenersTransaction(listeners) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        let from = this.app.wallet.returnPublicKey();
+        console.log('Adding contacts :', listeners, " to ", from);
 
+        for (let i = 0; i < listeners.length; i++) {
+            newtx.transaction.to.push(new saito.default.slip(listeners[i]));
+        }
 
-  async updateKey(publicKey) {
-
-    console.log('updating key');
-    let newtx = this.app.wallet.createUnsignedTransaction();
-    newtx.msg.module = "Stun";
-
-    newtx = this.app.wallet.signTransaction(newtx);
-    console.log(this.app.network);
-
-    // does not work without the settimeout, it seems the blockchain isn't initialized by the time this function is run , so propagation doesn't register
-    this.app.network.propagateTransaction(newtx);
-
-  }
-
-
-
-  async generateStun(publicKey) {
-
-
-
-    let stun = await this.fetchStunInformation();
-    if (!stun) {
-      console.log("no stun");
-      return;
-    }
-
-    //
-    // my key
-    //
-    let do_we_broadcast_and_update = 1;
-
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
-    console.log(publickey);
-    let index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-
-    if (index === -1) {
-      this.app.keys.addKey(publickey);
-      let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-      this.app.keys.keys[new_index].data.stun = stun;
-      this.app.keys.saveKeys();
-    }
-
-    let new_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-    const key = this.app.keys.keys[new_index];
-
-    // don't broadcast if is equal
-    if (JSON.stringify(key.data.stun) === JSON.stringify(stun)) {
-      do_we_broadcast_and_update = 1;
-    }
-    this.app.keys.keys[new_index].data.stun = { ...stun, listeners: this.app.keys.keys[new_index].data.stun.listeners };
-    this.app.keys.saveKeys();
-
-
-
-    // do we need to broadcast a message and update our keychain?
-    console.log(do_we_broadcast_and_update, "broadcast");
-    if (do_we_broadcast_and_update) {
-      this.broadcastAddress(this.app.keys.keys[new_index].data.stun);
-    }
-
-  }
-
-
-  respondTo(type) {
-
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = this.renderStunUI;
-      obj.attachEvents = this.attachEvents;
-      return obj;
-    }
-    return null;
-  }
-
-
-  renderStunUI(app, mod) {
-    StunUI.render(app, mod);
-  }
-
-  attachEvents(app, mod) {
-    StunUI.attachEvents(app, mod);
-  }
-
-
-
-
-
-
-
-  async initialize(app) {
-
-  }
-
-
-
-  fetchStunInformation() {
-
-    return new Promise((resolve, reject) => {
-      let stun = {
-        ip_address: "",
-        port: "",
-        offer_sdp: "",
-        pc: "",
-        listeners: []
-
-      };
-      try {
-
-        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        pc.createDataChannel('');
-        pc.createOffer().then(offer => {
-          pc.setLocalDescription(offer);
-          //  console.log("offer ", offer);
-
-        }).catch(e => console.log(`${e} An error occured on offer creation`));
-        pc.onicecandidate = (ice) => {
-          if (!ice || !ice.candidate || !ice.candidate.candidate) {
-            // console.log("ice canditate check closed.");
-            // pc.close();
-
-            stun.offer_sdp = pc.localDescription;
-
-            let new_obj = $.extend(new_obj, pc);
-            let peer_connection = JSON.stringify(new_obj); //returns correct JSON string
-            // console.log('peer_connection ', peer_connection)
-            stun.pc = peer_connection;
-            this.app.connection.emit('peer_connection', pc)
-            resolve(stun);
-            return;
-          }
-          let split = ice.candidate.candidate.split(" ");
-          if (split[7] === "host") {
-            // console.log(`Local IP : ${split[4]}`);
-            // stun.ip_address = split[4];
-            // console.log(split);
-          } else {
-            // console.log(`External IP : ${split[4]}`);
-            // console.log(`PORT: ${split[5]}`);
-            stun.ip_address = split[4];
-            stun.port = split[5];
-            // resolve(stun);
-          }
+        newtx.msg = {
+            module: this.appname,
+            request: "broadcast_details",
+            listeners,
+            from
         };
+        newtx = this.app.wallet.signTransaction(newtx);
 
-      } catch (error) {
-        console.log("An error occured with stun", error);
-      }
-    });
-  }
-
-
-
-
-
-  broadcastAddress(stun) {
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
-    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-    let listeners = this.app.keys.keys[key_index].data.stun.listeners;
-
-
-
-    console.log('broadcasting address');
-    let newtx = this.app.wallet.createUnsignedTransaction();
-
-    console.log("listeners are ", listeners);
-    for (let i = 0; i < listeners.length; i++) {
-      console.log('broadcasting to ', listeners[i]);
-      newtx.transaction.to.push(new saito.default.slip(listeners[i]));
-    }
-
-
-
-    newtx.msg.module = "Stun";
-    newtx.msg.stun = stun;
-    newtx = this.app.wallet.signTransaction(newtx);
-    console.log(this.app.network);
-
-    // does not work without the settimeout, it seems the blockchain isn't initialized by the time this function is run , so propagation doesn't register
-    this.app.network.propagateTransaction(newtx);
-
-
-
-  }
-
-  broadcastAnswer(my_key, peer_key, answer) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
-    console.log('broadcasting answer  to ', peer_key);
-    newtx.transaction.to.push(new saito.default.slip(peer_key));
-
-    newtx.msg.module = "Stun";
-    newtx.msg.peer_info = {
-      peer_a: my_key,
-      peer_b: peer_key,
-      answer
-    };
-    newtx = this.app.wallet.signTransaction(newtx);
-    console.log(this.app.network);
-    this.app.network.propagateTransaction(newtx);
-  }
-
-  addListeners(listeners) {
-    if (listeners.length === 0) return console.log("No listeners to add");
-
-    const preferred_crypto = this.app.wallet.returnPreferredCrypto();
-    let publickey = preferred_crypto.returnAddress();
-    let key_index = this.app.keys.keys.findIndex(key => key.publickey === publickey);
-
-    // save key if it doesnt exist
-    if (key_index === -1) {
-      this.app.keys.addKey(publickey);
-      this.app.keys.saveKeys();
-    }
-    if (!this.app.keys.keys[key_index].data.stun) {
-      this.app.keys.keys[key_index].data.stun = this.stun;
-      this.app.keys.saveKeys();
+        this.app.network.propagateTransaction(newtx);
 
     }
 
-    let validated_listeners;
-
-    // check if key is valid
-    validated_listeners = listeners.map(listener => listener.trim());
-    validated_listeners = listeners.filter(listener => listener.length === 44);
-
-    // filter out already existing keys
-    validated_listeners = listeners.filter(listener => !this.app.keys.keys[key_index].data.stun.listeners.includes(listener));
+    receiveSendKeyToListenersTransaction(blk, tx, conf, app) {
+        this.addListenersFromPeers(tx.msg.listeners);
+    }
 
 
-    // add listeners to existing listeners
-    this.app.keys.keys[key_index].data.stun.listeners = [...this.app.keys.keys[key_index].data.stun.listeners, ...validated_listeners];
-    this.app.keys.saveKeys();
+    sendOfferTransaction(my_key, peer_key, offer) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting offer  to ', peer_key);
+        newtx.transaction.to.push(new saito.default.slip(peer_key));
+        console.log("offer ", offer);
+        newtx.msg = {
+            module: this.appname,
+            request: "offer",
+            peer_a: my_key,
+            peer_b: peer_key,
+            offer
+        }
+        console.log('new tx', newtx);
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
 
-    this.app.connection.emit('listeners-update', this.app, this);
-  }
+    receiveOfferTransaction(blk, tx, conf, app) {
+        let my_pubkey = app.wallet.returnPublicKey();
+        console.log("offer received");
+        if (my_pubkey === tx.msg.peer_b) {
+            this.app.connection.emit('offer_received', tx.msg.peer_a, tx.msg.peer_b, tx.msg.offer);
+        } else {
+            console.log('tx peer key not equal');
+        }
+    }
+
+
+    sendOffersTransaction(offer_creator, offers) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+
+
+        console.log('broadcasting offers now');
+        for (let i = 0; i < offers.length; i++) {
+            newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
+
+        }
+
+        console.log(offer_creator, offers)
+
+        newtx.msg.module = "Stun";
+        newtx.msg = {
+            request: "offers",
+            offer_creator,
+            offers
+        }
+
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    receiveOffersTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+
+        let my_pubkey = app.wallet.returnPublicKey();
+
+        const offer_creator = tx.msg.offer_creator;
+
+        // offer creator should not respond
+        if (my_pubkey === offer_creator) return;
+        console.log("offers received from ", tx.msg.offer_creator, tx.msg);
+
+        // check if current instance is a recipent
+        const index = tx.msg.offers.findIndex(offer => offer.recipient === my_pubkey);
+
+        if (index !== -1) {
+            this.receiveOfferBroadcastAnswerTransaction(app, offer_creator, tx.msg.offers[index]);
+        }
+    }
+
+
+    sendAnswerTransaction(answer_creator, offer_creator, reply) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        console.log('broadcasting answer to ', offer_creator);
+        newtx.transaction.to.push(new saito.default.slip(offer_creator));
+
+        newtx.msg = {
+            module: this.appname,
+            request: "answer",
+            answer_creator,
+            offer_creator,
+            reply: reply
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    receiveAnswerTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+
+        let my_pubkey = app.wallet.returnPublicKey();
+  
+        if (my_pubkey === tx.msg.offer_creator) {
+            console.log("current instance: ", my_pubkey, " answer room: ", tx.msg);
+            console.log("peer connections: ", this.peer_connections, this);
+            const reply = tx.msg.reply;
+
+            if (this.peer_connections[tx.msg.answer_creator]) {
+                this.peer_connections[tx.msg.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                    console.log('setting remote description of ', this.peer_connections[tx.msg.answer_creator]);
+
+                }).catch(error => console.log(" An error occured with setting remote description for :", this.peer_connections[tx.msg.answer_creator], error));
+                if (reply.ice_candidates.length > 0) {
+                    console.log("Adding answer candidates");
+                    for (let i = 0; i < reply.ice_candidates.length; i++) {
+                        this.peer_connections[tx.msg.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                    }
+                }
+
+            } else {
+                console.log("peer connection not found");
+            }
+        }
+    }
+
+
+    receiveBroadcastDetailsTransaction(blk, tx, conf, app) {
+        let my_pubkey = app.wallet.returnPublicKey();
+        const listeners = tx.msg.listeners;
+        const from = tx.msg.from;
+        if (my_pubkey === from) return;
+
+        console.log("listeners: ", listeners, "from: ", from);
+        const index = this.app.keys.keys.findIndex(key => key.publickey === my_pubkey);
+        if (index !== -1) {
+            this.app.keys.keys[index].data.stun.listeners.push(from);
+            this.app.keys.saveKeys();
+
+            app.connection.emit('listeners-update', this.app, this.app.keys.keys[index].data.stun.listeners);
+            console.log("keys updated, added: ", from, " updated listeners: ", this.app.keys.keys[index].data.stun.listeners);
+        }
+    }
+
+    receiveOfferBroadcastAnswerTransaction(app, offer_creator, offer) {
+        if (app.BROWSER !== 1) return;
+        
+
+        console.log('accepting offer');
+        console.log('from:', offer_creator, offer)
+
+        const createPeerConnection = async() => {
+            let reply = {
+                answer: "",
+                ice_candidates: []
+            }
+            const pc = new RTCPeerConnection({
+                iceServers: this.stun.servers,
+            });
+            try {
+
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        console.log('ice candidate check closed');
+
+                        
+                        this.peer_connections[offer_creator] = pc;
+
+                        this.sendAnswerTransaction(this.app.wallet.returnPublicKey(), offer_creator, reply);
+                        return;
+
+                    };
+
+                    reply.ice_candidates.push(ice.candidate);
 
 
 
 
+
+                }
+
+                pc.onconnectionstatechange = e => {
+                    console.log("connection state ", pc.connectionState)
+                        // switch (pc.connectionState) {
+
+
+                    //     // case "connected":
+                    //     //     vanillaToast.cancelAll();
+                    //     //     vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
+                    //     //     break;
+
+                    //     // case "disconnected":
+                    //     //     vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
+                    //     //     break;
+
+                    //     // default:
+                    //     //     ""
+                    //     //     break;
+                    // }
+                }
+
+                // add data channels 
+                const data_channel = pc.createDataChannel('channel');
+                pc.dc = data_channel;
+
+
+                pc.dc.onmessage = (e) => {
+                    console.log('new message from client : ', e.data);
+                    this.receiveMesssage(e);
+                    // main.displayMessage(peer_key, e.data);
+                };
+                pc.dc.onopen = (e) => {
+                    console.log('connection opened');
+                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
+                }
+
+
+
+                await pc.setRemoteDescription(offer.offer_sdp);
+
+                const offer_ice_candidates = offer.ice_candidates;
+                // console.log('peer ice candidates', offer_ice_candidates);
+                if (offer_ice_candidates.length > 0) {
+                    console.log('adding offer icecandidates');
+                    for (let i = 0; i < offer_ice_candidates.length; i++) {
+                        pc.addIceCandidate(offer_ice_candidates[i]);
+                    }
+                }
+
+
+                console.log('remote description  is set');
+
+                reply.answer = await pc.createAnswer();
+
+                console.log("answer ", reply.answer);
+
+
+                pc.setLocalDescription(reply.answer);
+
+                // console.log("peer connection ", pc);
+
+
+
+
+
+            } catch (error) {
+                console.log("error", error);
+            }
+
+        }
+
+        createPeerConnection();
+
+    }
 
 }
 
 module.exports = Stun;
-

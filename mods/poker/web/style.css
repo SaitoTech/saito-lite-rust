@@ -20,6 +20,13 @@ body {
   overflow: hidden;
 }
 
+.crypto_logo{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20vw;
+}
+
 .player-box{
   max-width: 250px;
 }
@@ -30,6 +37,8 @@ body {
   width: 100%;
   z-index: -10;
 }
+
+
 
 /* Since Poker only has two cards in a hand, can adjust the angles*/
 .cardfan>.card:nth-child(1), .hand>.card:nth-child(1) {
@@ -206,8 +215,13 @@ body {
     font-size: 2.4em;
   }
 
-  .chip_stack .poker_chip{
+  /*.chip_stack .poker_chip{
     width: 50px;
+    height: 35px;
+  }*/
+
+  /*.player-box*/ .chip_stack{
+    display: none;
   }
 
  
@@ -232,9 +246,14 @@ body {
     width: 100% /*of grid slot*/
   }
 
-  .chip_stack .poker_chip{
-    width: 50px;
+  /*.player-box*/ .chip_stack{
+    display: none;
   }
+
+  /*.chip_stack .poker_chip{
+    width: 50px;
+    height: 35px;
+  }*/
 
 
 }

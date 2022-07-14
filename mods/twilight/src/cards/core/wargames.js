@@ -7,17 +7,16 @@
       }
 
       let twilight_self = this;
-      let player_to_go = 1;
-      if (player == "us") { player_to_go = 2; }
-
-      let choicehtml = '<div class="status-message" id="status-message"><span>Wargames triggers. Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponents)</span><ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul></div>';
-
-      if (player_to_go == this.game.player) {
-        this.updateStatus(choicehtml);
-      } else {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent deciding whether to trigger Wargames...</div>");
+      if (!i_played_the_card){
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
+
+      let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
+
+      this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, false);
+      
 
       twilight_self.attachCardboxEvents(function(action2) {
 

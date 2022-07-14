@@ -8,7 +8,8 @@
       ground_units	: 	["infantry","infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["faction4-unrelenting", "faction4-exotrireme-i", "faction4-flagship"],
       background	: 	'faction4.jpg' ,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction4-promissary"],
+      commodity_limit	:	3,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sardaak N'Orr, an overpowered faction known for its raw strength in combat. Your brutal power makes you an intimidating faction on the board. Good luck!</div>`
     });
 
@@ -298,5 +299,148 @@
 	return 1; 
       }
     });
+
+
+
+
+    this.importPromissary("faction4-promissary", {
+      name        :       "Tekklar Legion",
+      faction     :       -1,
+      text        :       "Redeemer gets +1 on all combat rolls this combat, owner gets -1 if in combat",
+      initialize  : function(imperium_self, player) {
+	imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+      },
+      modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifySpaceCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      modifyGroundCombatRoll : function(imperium_self, attacker, defender, roll) {
+	let tmod = imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier;
+	if (tmod != 0) {
+	  roll += tmod;
+	  imperium_self.updateLog("Tekklar Legion applies modifier on combat rolls");
+        }
+	return roll;
+      },
+      spaceCombatTriggers : function(imperium_self, player, sector) {
+	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+        if (imperium_self.hasUnresolvedSpaceCombat(player, sector)) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+            if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+              return 1;
+	    }
+          }
+        }
+	return 0;
+      },
+      spaceCombatEvent : function(imperium_self, player, sector) {
+        if (imperium_self.game.player == player) {
+
+	  let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
+
+          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+
+            if (id === "no") {
+	      imperium_self.endTurn();
+	    }
+            if (id === "yes") {
+	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
+	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
+	      imperium_self.addMove("setvar\tplayers\t"+sardaak_player+"\t"      +"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+              imperium_self.addMove("give" + "\t" + player + "\t" + sardaak_player + "\t" + "promissary" + "\t"+"faction4-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Sardaak Promissary redeemed");
+	      imperium_self.endTurn();
+	    }
+	  });
+        }
+	return 0;
+      },
+      groundCombatTriggers : function(imperium_self, player, sector, planet_idx) {
+	if (imperium_self.game.players_info[player - 1].tekklar_legion_modifier == 1) { return 0; };
+        if (imperium_self.hasUnresolvedGroundCombat(player, sector, planet_idx)) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction4-promissary")) {
+            if (imperium_self.returnPlayerOfFaction("faction4") != player) {
+              return 1;
+	    }
+          }
+        }
+        return 0;
+      },
+      groundCombatEvent : function(imperium_self, player, sector, planet_idx) {
+        if (imperium_self.game.player == player) {
+
+          let html = `<p>Do you wish to return your Sardaak Promissary for +1 combat bonus?</p><ul>`;
+              html += '<li class="option" id="yes">Yes</li>';
+              html += '<li class="option" id="no">No</li>';
+              html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('click', function() {
+
+            let id = $(this).attr("id");
+
+            if (id === "no") {
+	      imperium_self.endTurn();
+	    }
+            if (id === "yes") {
+	      let sardaak_player = imperium_self.returnPlayerOfFaction("faction4");
+	      imperium_self.addMove("setvar\tplayers\t"+imperium_self.game.player+"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"1");
+	      imperium_self.addMove("setvar\tplayers\t"+sardaak_player           +"\t"+"tekklar_legion_modifier"+"\t"+"int"+"\t"+"-1");
+              imperium_self.addMove("give" + "\t" + player + "\t" + sardaak_player + "\t" + "promissary" + "\t"+"faction4-promissary");
+              imperium_self.addMove("NOTIFY" + "\t" + "Sardaak Promissary redeemed");
+	      imperium_self.endTurn();
+	    }
+	  });
+        }
+	return 0;
+      },
+      spaceCombatRoundEnd : function(imperium_self, attacker, defender, sector) {
+        if (imperium_self.hasUnresolvedSpaceCombat(attacker, sector) || imperium_self.hasUnresolvedSpaceCombat(defender, sector)) {
+	  imperium_self.game.players_info[player - 1].tekklar_legion_modifier = 0;
+	};
+	return 1;
+      },
+      groundCombatRoundEnd : function(imperium_self, attacker, defender, sector, planet_idx) {
+        if (imperium_self.hasUnresolvedGroundCombat(attacker, sector, planet_idx) || imperium_self.hasUnresolvedGroundCombat(defender, sector, planet_idx)) {
+	  imperium_self.game.players_info[attacker - 1].tekklar_legion_modifier = 0;
+	  imperium_self.game.players_info[defender - 1].tekklar_legion_modifier = 0;
+	};
+	return 1;
+      }
+    });
+
+
 
 

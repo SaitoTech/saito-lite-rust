@@ -10,106 +10,59 @@
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
 
         twilight_self.addMove("resolve\tiraniraq");
-        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="card" id="invadeiraq">Iraq</li><li class="card" id="invadeiran">Iran</li></ul>`,false);
+        twilight_self.updateStatusWithOptions('Iran-Iraq War. Choose Target:',`<ul><li class="card" id="iraq">Iraq</li><li class="card" id="iran">Iran</li></ul>`,false);
 
         let target = 4;
+        let modifications = 0;
+        let winner = "";
 
         twilight_self.attachCardboxEvents(function(invaded) {
 
-          if (invaded == "invadeiran") {
-
-            if (twilight_self.isControlled(opponent, "pakistan") == 1) { target++; }
-            if (twilight_self.isControlled(opponent, "iraq") == 1) { target++; }
-            if (twilight_self.isControlled(opponent, "afghanistan") == 1) { target++; }
-
-            let modified = target-4;
-            let die = twilight_self.rollDice(6);
-            twilight_self.addMove("notify\t"+player.toUpperCase()+" modified: "+ (die-modified));
-            twilight_self.addMove("notify\t"+player.toUpperCase()+" rolls: "+die);
-
-            if (die >= target) {
-
-              if (player == "us") {
-                twilight_self.addMove("place\tus\tus\tiran\t"+twilight_self.countries['iran'].ussr);
-                twilight_self.addMove("remove\tus\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
-                twilight_self.addMove("milops\tus\t2");
-                twilight_self.addMove("vp\tus\t2");
-                twilight_self.placeInfluence("iran", twilight_self.countries['iran'].ussr, "us");
-                twilight_self.removeInfluence("iran", twilight_self.countries['iran'].ussr, "ussr");
-                twilight_self.showInfluence("iran", "ussr");
-                twilight_self.endTurn();
-              } else {
-                twilight_self.addMove("place\tussr\tussr\tiran\t"+twilight_self.countries['iran'].us);
-                twilight_self.addMove("remove\tussr\tus\tiran\t"+twilight_self.countries['iran'].us);
-                twilight_self.addMove("milops\tussr\t2");
-                twilight_self.addMove("vp\tussr\t2");
-                twilight_self.placeInfluence("iran", twilight_self.countries['iran'].us, "ussr");
-                twilight_self.removeInfluence("iran", twilight_self.countries['iran'].us, "us");
-                twilight_self.endTurn();
-                twilight_self.showInfluence("iran", "ussr");
-              }
-            } else {
-
-              if (player == "us") {
-                twilight_self.addMove("milops\tus\t2");
-                twilight_self.endTurn();
-              } else {
-                twilight_self.addMove("milops\tussr\t2");
-                twilight_self.endTurn();
-              }
-
-            }
-
+          for (let c of twilight_self.countries[invaded].neighbours){
+            if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
           }
-          if (invaded == "invadeiraq") {
 
-            if (twilight_self.isControlled(opponent, "iran") == 1) { target++; }
-            if (twilight_self.isControlled(opponent, "jordan") == 1) { target++; }
-            if (twilight_self.isControlled(opponent, "gulfstates") == 1) { target++; }
-            if (twilight_self.isControlled(opponent, "saudiarabia") == 1) { target++; }
+          let die = twilight_self.rollDice(6);
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls: ${die}, adjusted: ${die-modifications}`);
 
-            let modified = target-4;
-            let die = twilight_self.rollDice(6);
-            twilight_self.addMove("notify\t"+player.toUpperCase()+" modified: "+ (die-modified));
-            twilight_self.addMove("notify\t"+player.toUpperCase()+" rolls: "+die);
+          if (die >= target + modifications) { //Successful Invasion
+            winner = (invaded == "iran")? "Iraq conquers Iran!": "Iran conquers Iraq";
 
-            if (die >= target) {
-
-              if (player == "us") {
-                twilight_self.addMove("place\tus\tus\tiraq\t"+twilight_self.countries['iraq'].ussr);
-                twilight_self.addMove("remove\tus\tussr\tiraq\t"+twilight_self.countries['iraq'].ussr);
-                twilight_self.addMove("milops\tus\t2");
-                twilight_self.addMove("vp\tus\t2");
-                twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].ussr, "us");
-                twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].ussr, "ussr");
-                twilight_self.endTurn();
-                twilight_self.showInfluence("iraq", "ussr");
-              } else {
-                twilight_self.addMove("place\tussr\tussr\tiraq\t"+twilight_self.countries['iraq'].us);
-                twilight_self.addMove("remove\tussr\tus\tiraq\t"+twilight_self.countries['iraq'].us);
-                twilight_self.addMove("milops\tussr\t2");
-                twilight_self.addMove("vp\tussr\t2");
-                twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].us, "ussr");
-                twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].us, "us");
-                twilight_self.endTurn();
-                twilight_self.showInfluence("iraq", "ussr");
-              }
+            let influence_change = 0;
+            if (player == "us") {
+              influence_change = twilight_self.countries[invaded].ussr;
             } else {
+              influence_change = twilight_self.countries[invaded].us;
+            }
+            if (influence_change > 0){
+              twilight_self.addMove(`place\t${player}\t${player}\t${invaded}\t${influence_change}`);
+              twilight_self.addMove(`remove\t${player}\t${opponent}\t${invaded}\t${influence_change}`);
+              twilight_self.placeInfluence(invaded, influence_change, player);
+              twilight_self.removeInfluence(invaded, influence_change, opponent);
+            }
+            twilight_self.addMove(`milops\t${player}\t2`);
+            twilight_self.addMove(`vp\t${player}\t2`);
+            twilight_self.showInfluence(invaded);
 
-              if (player == "us") {
-                twilight_self.addMove("milops\tus\t2");
-                twilight_self.endTurn();
-              } else {
-                twilight_self.addMove("milops\tussr\t2");
-                twilight_self.endTurn();
-              }
+          } else { //India fails invasion
+            winner = (invaded == "iran")? "Iran repels Iraqi aggression!": "Iraq repels Iranian aggression!";
+            if (player == "us") {
+              twilight_self.addMove("milops\tus\t2");
+            } else {
+              twilight_self.addMove("milops\tussr\t2");
             }
           }
+          twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
+          twilight_self.endTurn();
+
+
         });
       }
       return 0;

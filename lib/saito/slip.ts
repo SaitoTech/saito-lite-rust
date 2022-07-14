@@ -7,11 +7,7 @@ export enum SlipType {
   MinerOutput = 5,
   RouterInput = 6,
   RouterOutput = 7,
-  StakerOutput = 8,
-  StakerDeposit = 9,
-  StakerWithdrawalPending = 10,
-  StakerWithdrawalStaking = 11,
-  Other = 12,
+  Other = 8,
 }
 
 class Slip {
@@ -22,7 +18,6 @@ class Slip {
   public sid: number;
   public lc: number;
   public timestamp: number;
-  public payout: bigint;
   public key: string;
 
   // amount can be a string in NOLAN or a BigInt
@@ -32,7 +27,6 @@ class Slip {
     type = SlipType.Normal,
     uuid = "",
     slip_ordinal = 0,
-    payout = BigInt(0),
     lc = 1
   ) {
     //
@@ -49,7 +43,6 @@ class Slip {
     //
     this.lc = lc; // longest-chain
     this.timestamp = 0; // timestamp
-    this.payout = BigInt(payout); // calculated for staking slips
     this.key = ""; // index in utxoset hashmap
   }
 
@@ -58,10 +51,13 @@ class Slip {
   }
 
   //
-  // slip comparison is used when inserting slips (staking slips) into the
-  // staking tables, as the order of the stakers table needs to be identical
-  // regardless of the order in which components are added, lest we get
-  // disagreement.
+  // slip comparison function was originally created for managing the staking
+  // tables since slip insertion / removal needed to be consistent across the
+  // network which means a way of agreeing which slips are greater or less
+  // than other slips.
+  //
+  // we are keeping this code as it may be useful in the future to have a
+  // standard way to compare slips, although it is not currently used.
   //
   // 1 = self is bigger
   // 2 = other is bigger
@@ -98,15 +94,7 @@ class Slip {
   }
 
   clone() {
-    return new Slip(
-      this.add,
-      BigInt(this.amt.toString()),
-      this.type,
-      this.uuid,
-      this.sid,
-      this.payout,
-      this.lc
-    );
+    return new Slip(this.add, BigInt(this.amt.toString()), this.type, this.uuid, this.sid, this.lc);
   }
 
   deserialize(app, buffer) {
@@ -145,10 +133,6 @@ class Slip {
     return this.add;
   }
 
-  returnPayout() {
-    return this.payout;
-  }
-
   /**
    * Serialize Slip
    * @returns {Uint8Array} raw bytes
@@ -183,10 +167,6 @@ class Slip {
   serializeOutputForSignature(app) {
     return this.serialize(app, "0");
     //(new Array(32).fill(0).toString()));
-  }
-
-  setPayout(payout) {
-    this.payout = payout;
   }
 
   validate(app) {

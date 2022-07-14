@@ -163,6 +163,7 @@
               <option value="faction5">Brotherhood of Yin</option>
               <option value="faction6">Yssaril Tribes</option>
               <option value="faction7">Embers of Muaat</option>
+              <option value="faction8">Emirates of Hacan</option>
             </select>
       `;
     }

@@ -1,6 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var InviteTemplate = require('../../lib/templates/invitetemplate');
-const InvitesAppspace = require('./lib/email-appspace/invites-appspace');
+const InvitesAppspace = require('./lib/appspace/main');
 
 
 class Invites extends InviteTemplate {
@@ -13,30 +13,35 @@ class Invites extends InviteTemplate {
     this.description    = "Demo module with UI for invite display and acceptance";
     this.categories     = "Utilities Education Demo";
 
+    this.invites        = [];
+    this.scripts	= [];
+    this.styles		= ['/invites/style.css'];
     return this;
   }
 
+
+  initialize(app) {
+    this.load();
+  }
 
 
 
   respondTo(type) {
 
-    if (type == 'email-appspace') {
-      let obj = {};
-	  obj.render = this.renderEmail;
-	  obj.attachEvents = this.attachEventsEmail;
-      return obj;
+    if (type == 'appspace') {
+      super.render(this.app, this); // for scripts + styles
+      return new InvitesAppspace(this.app, this);
     }
 
     return null;
   }
 
-  renderEmail(app, mod) {
-     InvitesAppspace.render(app, this);
-  }
 
-  attachEventsEmail(app, mod) {
-     InvitesAppspace.attachEvents(app, this);
+  //
+  // InviteTemplate handles
+  //
+  async onConfirmation(blk, tx, conf, app) {
+    super.onConfirmation(blk, tx, conf, app);
   }
 
 }

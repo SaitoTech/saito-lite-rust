@@ -5,27 +5,25 @@ class Wordblocks extends GameTemplate {
   constructor(app) {
     super(app);
 
-    this.name = "Wordblocks";
-    this.gamename = "Wordblocks";
-
     this.wordlist = [];
     this.mydeck = {};
     this.score = "";
     this.app = app;
+
     this.name = "Wordblocks";
     this.description = `Wordblocks is a word game in which two to four players score points by placing TILES bearing a single letter onto a board divided into a grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
-    this.categories = "Game Arcade Entertainment";
+    this.categories = "Games Boardgame Classic Wordgame";
     //
     // Game Class VARS
     //
     this.minPlayers = 2;
     this.maxPlayers = 4;
-    this.type = "Wordgame";
 
     this.boardWidth = 1000;
     this.tileHeight = 163;
     this.tileWidth = 148;
     this.letters = {};
+    this.grace_window = 10;
 
     this.tilesToHighlight = [];
     this.moves = [];
@@ -37,29 +35,7 @@ class Wordblocks extends GameTemplate {
 
     return this;
   }
-  // requestInterface(type) {
-  //
-  //   if (type == "arcade-sidebar") {
-  //     return { title: this.name };
-  //   }
-  //   return null;
-  // }
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/wordblocks/img/arcade/arcade-banner-background.png";
-      obj.title = "Wordblocks";
-      return obj;
-    }
 
-    return null;
-  }
 
   initializeHTML(app) {
 
@@ -113,6 +89,7 @@ class Wordblocks extends GameTemplate {
       id: "game-exit",
       class: "game-exit",
       callback: function (app, game_mod) {
+        game_mod.saveGame(game_mod.game.id);
         window.location.href = "/arcade";
       },
     });
@@ -250,9 +227,6 @@ class Wordblocks extends GameTemplate {
     // OBSERVER MODE
     //if (this.game.player == 0) { return; }
 
-    this.updateStatus("loading game...");
-    this.loadGame(game_id);
-
     //
     // deal cards
     //
@@ -296,6 +270,7 @@ class Wordblocks extends GameTemplate {
         xhr.responseType = "json"; //only in async
         xhr.send();
         this.loadingDictionary = true; //flag that the game module is processing xhr
+        //this.game.halted = 1;
         xhr.onload = ()=>{
            if (xhr.status != 200) {
             salert(`Network issues downloading dictionary -- ${durl}`);
@@ -304,7 +279,7 @@ class Wordblocks extends GameTemplate {
             this.wordlist = xhr.response;//;Array.from(JSON.parse(xhr.response));
             //console.log("\n\n\nDOWNLOADED WORDLIST: " + JSON.parse(JSON.stringify(xhr.response)));
             console.log("My word list is a :",typeof this.wordlist);
-            this.startQueue();
+            this.restartQueue();
           }
         };
       } catch (err) {
@@ -360,6 +335,9 @@ class Wordblocks extends GameTemplate {
       );
     }
 
+    if (this.game.players.length > 2){
+      this.grace_window = this.game.players.length * 8;
+    }
   }
 
   /*
@@ -508,6 +486,19 @@ class Wordblocks extends GameTemplate {
           }
         });
       }
+    }
+  }
+
+  removeEvents(){
+    if (this.browser_active == 1){
+        $("#skipturn").off();
+        $("#shuffle").off(); //Don't want to shuffle when manually placing tiles or deleting
+        $(".slot").off(); //Reset clicking on board
+        $(".tosstiles").off();
+        $("#rack .tile").off();
+        $("#delete").off();
+        $("#canceldelete").off();
+        $(".tile").off();
     }
   }
 
@@ -2169,63 +2160,43 @@ class Wordblocks extends GameTemplate {
       wordblocks_self.saveGame(wordblocks_self.game.id);
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
-      let shd_continue = 1;
 
       //
-      // game over conditions
+      // game over -- pick the winner
       //
 
       if (mv[0] === "gameover") {
-        //
-        // pick the winner
-        //
+        this.game.queue = [];
+        
         let x = 0;
-        let idx = 0;
+        let idx = -1;
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (wordblocks_self.game.score[i] > x) {
-            x = wordblocks_self.game.score[i];
+        //Find Highest Score
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (this.game.score[i] > x) {
+            x = this.game.score[i];
             idx = i;
           }
         }
+        if (idx < 0){
+          this.endGame([], "no winners");
+        }
+        let winners = [this.game.players[idx]];
 
-        for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-          if (
-            i != idx &&
-            wordblocks_self.game.score[i] == wordblocks_self.game.score[idx]
-          ) {
-            idx = -1;
+        //Check for ties -- will need to improve the logic for multi winners
+        for (let i = 0; i < this.game.score.length; i++) {
+          if (i != idx && this.game.score[i] == this.game.score[idx]) {
+            winners.push(this.game.players[i]);
           }
         }
 
-        wordblocks_self.game.winner = idx + 1;
-        //wordblocks_self.game.over = 1;
-        wordblocks_self.saveGame(wordblocks_self.game.id);
-
-        if (wordblocks_self.browser_active == 1) {
-          var result = `Game Over -- Player ${wordblocks_self.game.winner} Wins!`;
-
-          if (idx < 0) {
-            result = "It's a tie! Well done everyone!";
-          }
-
-          wordblocks_self.updateStatusWithTiles(result);
-          wordblocks_self.updateLog(result);
-
-          if (this.game.winner == this.game.player) {
-            //not resigning as game.winner is set.
-            this.resignGame();
-          }
+        if (winners.length == this.game.players.length){
+          this.tieGame();
+        }else{
+          this.endGame(winners, "high score");
         }
 
-        this.game.queue.splice(this.game.queue.length - 1, 1);
         return 0;
-      }
-
-      if (mv[0] === "endgame") {
-        this.game.queue.splice(this.game.queue.length - 1, 1);
-        this.addMove("gameover");
-        return 1;
       }
 
       //
@@ -2291,7 +2262,8 @@ class Wordblocks extends GameTemplate {
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
         this.game.queue.splice(this.game.queue.length - 1, 1);
-        return 1; // remove word and wait for next
+        console.log("New Queue:",JSON.stringify(this.game.queue));
+        return 0; // remove word and wait for next
       }
 
       //Actually tile discarding action
@@ -2360,20 +2332,13 @@ class Wordblocks extends GameTemplate {
         );
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
         this.game.queue.splice(this.game.queue.length - 1, 1);
-        return 1;
-      }
-
-      //
-      // avoid infinite loops
-      //
-      if (shd_continue == 0) {
+        console.log("New Queue:",JSON.stringify(this.game.queue));
         return 0;
       }
-    }else{
-      console.log("No moves in queue");
+      
     }
 
-    return 1;
+    return 0;    
   }
 
   checkForEndGame() {
@@ -2384,9 +2349,8 @@ class Wordblocks extends GameTemplate {
       this.game.deck[0].hand.length == 0 &&
       this.game.deck[0].crypt.length == 0
     ) {
-      this.addMove("endgame");
+      this.addMove("gameover");
       this.endTurn();
-      return 1;
     }
 
     return 0;
@@ -2415,31 +2379,27 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameOptionsHTML() {
-    let testHtml = "";
-    if (this.app.config && this.app.config.currentEnv == "DEV") {
-      testHtml = `<option value="test">Test Dictionary</option>`;
-    }
-    return `
-          <h1 class="overlay-title">Wordblocks Options</h1>
-          <div class="overlay-input">
-          <label for="dictionary">Dictionary:</label>
-          <select name="dictionary">
-            <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
-            <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
-            <option value="fise">Spanish: FISE</option>
-            <option value="tagalog">Tagalog</option>
-            ${testHtml}
-          </select>
-          </div>
+    let html = `<h1 class="overlay-title">Wordblocks Options</h1>`;
+
+    html += `<div class="overlay-input">
+                <label for="dictionary">Dictionary:</label>
+                <select name="dictionary">
+                  <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
+                  <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
+                  <option value="fise">Spanish: FISE</option>
+                  <option value="tagalog">Tagalog</option>
+                </select>
+              </div>
           <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
-            <option value="enable" selected>enable</option>
-            <option value="disable">disable</option>
+            <option value="enable">enable</option>
+            <option value="disable" selected>disable</option>
           </select>
-          </div>
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-          `;
+          </div>`;
+
+    html += this.returnCryptoOptionsHTML();
+    return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
   }
 
   async animatePlay(){
@@ -2452,7 +2412,7 @@ class Wordblocks extends GameTemplate {
       await new Promise(resolve => setTimeout(resolve, 250));
     }
   } 
-
+  
 }
 
 module.exports = Wordblocks;

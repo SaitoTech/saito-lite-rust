@@ -2,10 +2,11 @@
     if (card == "chernobyl") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Chernobyl</div>");
         return 0;
-
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let html = `<ul>
                   <li class="card" id="asia">Asia</li>
@@ -23,7 +24,7 @@
 
         twilight_self.addMove("resolve\tchernobyl");
         twilight_self.addMove("chernobyl\t"+action2);
-        twilight_self.addMove("notify\tUS restricts placement in "+action2);
+        twilight_self.addMove("NOTIFY\tUS restricts placement in "+action2);
         twilight_self.endTurn();
 
       });

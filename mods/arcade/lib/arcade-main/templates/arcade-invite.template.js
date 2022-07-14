@@ -1,13 +1,17 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log("ARCADEINVITETEMPLATE");
   //console.log(invite);
+
+  let gameModule = app.modules.returnModule(invite.msg.game);
+  /*for (let i = 0; i < app.modules.mods.length; i++) {
+    if (app.modules.mods[i].name === slug) { 
+      slug = app.modules.mods[i].returnSlug(); 
+    }
+  }*/
   //
   // gameslug given game
   //
-  let slug = invite.msg.game;
-  for (let i = 0; i < app.modules.mods.length; i++) {
-    if (app.modules.mods[i].name === slug) { slug = app.modules.mods[i].returnSlug(); }
-  }
+  let slug = gameModule.returnSlug();
 
 
   let inviteTypeClass = "open-invite";
@@ -22,6 +26,8 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       game_initialized = 1;
     }
   }
+  console.log("Arcade invite template");
+  console.log(JSON.parse(JSON.stringify(invite.msg)));
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load
@@ -62,11 +68,13 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   playersHtml += '</div>';
 
   if (document.getElementById(`invite-${invite.transaction.sig}`)) { return ''; }
+  let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
+  let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 
   let inviteHtml = `
-    <div id="invite-${invite.transaction.sig}" class="arcade-tile i_${idx} ${inviteTypeClass}" style="background-image: url('/${slug}/img/arcade.jpg');">
+    <div id="invite-${invite.transaction.sig}" class="arcade-tile i_${idx} ${inviteTypeClass}" style="background-image: url('${bannerBack}');">
       <div class="invite-tile-wrapper">
-        <div class="game-inset-img" style="background-image: url('/${slug}/img/arcade.jpg');"></div>
+        <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${invite.msg.game}</div>
           <div class="gamePlayers">${playersHtml}</div>
@@ -112,7 +120,7 @@ let makeDescription = (app, invite) => {
 
   if (invite.msg) {
     let gameModule = app.modules.returnModule(invite.msg.game);
-    if (gameModule) {
+    if (gameModule && gameModule !== "Arcade") {
       let sgoa = gameModule.returnShortGameOptionsArray(invite.msg.options);
       for (let i in sgoa) {
         html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">${i.replace(/_/g, ' ')}`;

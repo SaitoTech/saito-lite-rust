@@ -127,21 +127,21 @@ module.exports = ArcadeMain = {
     if (mod.games.length == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
+      carousel.attachEvents(app, mod);
       if (mod.viewing_game_homepage) { //Overwrite the carousel to only show the relevant game
         let gamemod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
         let cdiv = document.getElementById("saito-carousel");
         if (cdiv) {
-          cdiv.innerHTML = `<div class="big">${gamemod.gamename}</div>`;
-          cdiv.style.backgroundImage = `url('/${gamemod.returnSlug()}/img/arcade.jpg')`;
+          let name = gamemod.gamename || gamemod.name;
+          cdiv.innerHTML = `<div class="big">${name}</div>`;
+          cdiv.style.backgroundImage = `url('${gamemod.respondTo("arcade-carousel")?.background}')`;
           cdiv.style.backgroundSize = "cover";
         }
       }
+
     }
 
     try {
-
-      // fetch any usernames needed
-      app.browser.addIdentifiersToDom();
 
       //What is this?
       if (app.browser.isSupportedBrowser(navigator.userAgent) == 0) {
@@ -187,19 +187,19 @@ module.exports = ArcadeMain = {
               }*/
 
               if (game_cmd === "cancel") {
-            		let c = true;//confirm("Are you sure you want to cancel this game?");
-            		if (c) {
+            	let c = confirm("Are you sure you want to cancel this game?");
+            	if (c) {
                   arcade_main_self.cancelGame(app, mod, game_sig);
                   return;
-		            }
+		}
               }
 
               if (game_cmd === "join") {
-            		let c = true;//confirm("Are you sure you want to join this game?");
-            		if (c) {
+                let c = confirm("Are you sure you want to join this game?");
+            	if (c) {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
-		            }
+		}
               }
 
               if (game_cmd === "continue") {
@@ -285,23 +285,14 @@ module.exports = ArcadeMain = {
           salert(`You must set ${game_options.crypto} as your preferred crypto to join this game`);
           return;
         }
-        let cryptoMod = null;
-        try {
-          cryptoMod = app.wallet.returnCryptoModuleByTicker(game_options.crypto);
-        } catch (err) {
-          if (err.startsWith("Module Not Found")) {
-            salert("This game requires " + game_options.crypto + " crypto to play! Not Found!");
-            return;
-          } else {
-            throw err;
-          }
-        }
+      
+
 
         let c = await sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
         if (!c) {
           return;
         }
-
+        console.log(game_options.stake);
         //
         // if a specific cost / stake specified
         //
@@ -309,18 +300,24 @@ module.exports = ArcadeMain = {
         if (parseFloat(game_options.stake) > 0) {
           let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
-          crypto_transfer_manager.returnBalance(
+ //         try{
+           let current_balance = await crypto_transfer_manager.returnBalance(
             app,
             mod,
             my_address,
             game_options.crypto,
             function () { }
           );
-
-          let current_balance = await cryptoMod.returnBalance();
-
-          crypto_transfer_manager.hideOverlay();
-
+            console.log("Current balance", current_balance);
+/*          } catch (err) {
+            if (err.startsWith("Module Not Found")) {
+              salert("This game requires " + game_options.crypto + " crypto to play! Not Found!");
+              return;
+            } else {
+              throw err;
+            }
+          }
+*/
           try {
             if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
@@ -335,7 +332,7 @@ module.exports = ArcadeMain = {
         }
       }
     } catch (err) {
-      console.log("ERROR checking if crypto-required: " + err);
+     console.log("ERROR checking if crypto-required: " + err);
       return;
     }
 
@@ -369,7 +366,7 @@ module.exports = ArcadeMain = {
         relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
         relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
       }
-      if (this.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
+      if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
       return;
@@ -402,9 +399,8 @@ module.exports = ArcadeMain = {
             GameLoader.attachEvents(app, mod);
 
           } else {
-            //
-            // game exists, so "continue" not "join"
-            //
+           
+            // game exists and is no longer initializing, so "continue" not "join"
             existing_game.ts = new Date().getTime();
             existing_game.initialize_game_run = 0;
             app.storage.saveOptions();
@@ -443,7 +439,7 @@ module.exports = ArcadeMain = {
           if (res.rows) {
             if (res.rows.length > 0) {
               if (res.rows[0].game_still_open == 1 || (res.rows[0].game_still_open == 0 && players_needed > 2)) {
-                if (this.debug){
+                if (mod.debug){
                   console.log("We meet the accept conditions");
                   console.log(app.wallet.returnPublicKey()+" sends the accept message from arcade-main");
                 }
@@ -534,21 +530,20 @@ module.exports = ArcadeMain = {
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];
-
+    console.log("Click to Cancel Game");
+    console.log(JSON.parse(JSON.stringify(mod.games)));
+    console.log(JSON.parse(JSON.stringify(app.options.games)));
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-        if (typeof app.options.games[i].transaction != "undefined") {
-          testsig = app.options.games[i].transaction.sig;
-        } else if (typeof app.options.games[i].id != "undefined") {
-          testsig = app.options.games[i].id;
-        }
-        if (testsig == game_id) {
-          app.options.games[i].over = 1;
-          app.options.games[i].status = "I Resigned";
-    
-          players = app.options.games[i].players;
-          //app.options.games.splice(i, 1);
-          app.storage.saveOptions();
+        testsig = app.options.games[i].transaction?.sig || app.options.games[i].id;
+        if (testsig == game_id) { //If the game has been initialized
+          let gamemod = app.modules.returnModule(app.options.games[i].module);
+          if (gamemod) {
+            this.removeGameFromList(game_id);
+            gamemod.resignGame(game_id);
+            //console.log(JSON.parse(JSON.stringify(gamemod.game)));
+            return;
+          }
         }
       }
     }
@@ -694,8 +689,10 @@ module.exports = ArcadeMain = {
   },
 
   removeGameFromList(game_id) {
-    document
+    try{
+      document
       .getElementById(`arcade-hero`)
       .removeChild(document.getElementById(`invite-${game_id}`));
+    }catch(err){console.log(err);};
   },
 };

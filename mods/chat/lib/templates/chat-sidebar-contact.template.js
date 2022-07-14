@@ -6,9 +6,6 @@ module.exports = ChatSidebarContactTemplate = (app, group) => {
 
   if (group.txs.length == 0) {
     description = "New Chat Room";
-  } else {
-    let txmsg = group.txs[group.txs.length-1].returnMessage();
-    description = txmsg.message;
   }
 
   return `

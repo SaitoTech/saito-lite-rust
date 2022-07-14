@@ -36,7 +36,8 @@ module.exports = ArcadeGameDetails = {
         `<div id="background-shim" class="background-shim" style=""><div id="background-shim-cover" class="background-shim-cover"></div></div>`
       );
     }
-    let gamemod_url = "/" + gamemod.returnSlug() + "/img/arcade.jpg";
+    
+    let gamemod_url = gamemod.respondTo("arcade-games")?.img;
     document.querySelector(".background-shim").style.backgroundImage = "url(" + gamemod_url + ")";
 
     //Create the gamedetails window
@@ -96,7 +97,7 @@ module.exports = ArcadeGameDetails = {
     //go to game home page
     document.querySelector(".game-home-link").addEventListener("click", (e) => {
       let options = getOptions();
-      let gamemod = app.modules.returnModule(options.gamename);
+      let gamemod = app.modules.returnModule(options.game);
       app.browser.logMatomoEvent("Navigation", "GameDetailtoPage", gamemod.returnSlug());
       window.location = "/arcade/?game=" + gamemod.returnSlug();
     });
@@ -111,7 +112,7 @@ module.exports = ArcadeGameDetails = {
     //Query game instructions
     //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
     //   let options = getOptions();
-    //   let gamemod = app.modules.returnModule(options.gamename);
+    //   let gamemod = app.modules.returnModule(options.game);
     //   gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
     //});
 
@@ -125,56 +126,59 @@ module.exports = ArcadeGameDetails = {
           let options = getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
           if (isPrivateGame == "private") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
           } else {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
           //
           // if crypto and stake selected, make sure creator has it
           //
-          if (options.crypto != "") {
-            if (options.stake > 0) {
-              let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(
-                options.crypto
-              ).ticker;
-              let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
-              if (selected_crypto_ticker === preferred_crypto_ticker) {
-                let my_address = app.wallet.returnPreferredCrypto().returnAddress();
-                let crypto_transfer_manager = new GameCryptoTransferManager(app);
-                crypto_transfer_manager.returnBalance(app, mod, my_address, options.crypto, function () { });
-                let returnObj = await app.wallet.returnPreferredCryptoBalances(
-                  [my_address],
-                  null,
-                  options.crypto
-                );
+          try{
+            if (options.crypto != "") {
+              if (parseFloat(options.stake) > 0) {
+                let selected_crypto_ticker = app.wallet.returnCryptoModuleByTicker(options.crypto).ticker; //is this really necessary?
+                let preferred_crypto_ticker = app.wallet.returnPreferredCrypto().ticker;
+                if (selected_crypto_ticker === preferred_crypto_ticker) {
+                  let my_address = app.wallet.returnPreferredCrypto().returnAddress();
+                  let crypto_transfer_manager = new GameCryptoTransferManager(app);
+        
+                  let current_balance = await crypto_transfer_manager.returnBalance(
+                    app,
+                    mod,
+                    my_address,
+                    options.crypto,
+                    function () { }
+                  );
+                  console.log("Current balance", current_balance);
 
-                let adequate_balance = 0;
-                for (let i = 0; i < returnObj.length; i++) {
-                  if (returnObj[i].address == my_address) {
-                    if (parseFloat(returnObj[i].balance) >= parseFloat(options.stake)) {
-                      adequate_balance = 1;
+                  try {
+                    if (BigInt(current_balance) < BigInt(options.stake)) {
+                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
+                      return;
+                    }
+                  } catch (err) {
+                    if (parseFloat(current_balance) < parseFloat(options.stake)) {
+                      salert("You do not have enough " + options.crypto + "! Balance: " + current_balance);
+                      return;
                     }
                   }
-                }
-                crypto_transfer_manager.hideOverlay();
-
-                if (adequate_balance == 0) {
-                  salert("You don't have enough " + options.crypto + " to create this game!");
+                  
+                } else {
+                  salert(
+                    `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
+                  );
                   return;
                 }
-              } else {
-                salert(
-                  `${options.crypto} must be set as your preferred crypto to create a game using ${options.crypto}`
-                );
-                return;
               }
             }
+          }catch(err){
+             console.log("ERROR checking crypto: " + err);
+            return;
           }
-
-          let gamemod = app.modules.returnModule(options.gamename);
+          let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {
             players_needed = document.querySelector(".game-wizard-players-select").value;
@@ -187,7 +191,6 @@ module.exports = ArcadeGameDetails = {
             name: gamemod.name,
             slug: gamemod.returnSlug(),
             options: gamemod.returnFormattedGameOptions(options),
-            /*options_html: gamemod.returnGameRowOptionsHTML(options),*/
             players_needed: players_needed,
             invitation_type: "public",
           };

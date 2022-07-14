@@ -63,7 +63,9 @@ class MixinModule extends CryptoModule {
     if (this.mixin) {
       if (this.app.wallet.wallet.preferred_crypto !== "SAITO" && this.app.wallet.wallet.preferred_crypto !== "") {
         if (this.mixin.account_created == 0) {
+console.log("---------------------");
 console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
+console.log("---------------------");
 	  this.mixin.createAccount();
         }
       }
@@ -89,6 +91,10 @@ console.log("creating on install: " + this.app.wallet.wallet.preferred_crypto);
 console.log("checking to see if we have received payment with unique_hash: " + unique_hash);
 console.log("checking to see if we have received payment with trace_id: " + trace_id);
 console.log("deposits complete: " + JSON.stringify(this.mixin.deposits));
+
+console.log("this.mixin.deposits length: " + this.mixin.deposits.length);
+console.log("this.options.transfers_inbound length: " + this.options.transfers_inbound.length);
+console.log("this.options.transfers_outbound length: " + this.options.transfers_outbound.length);
 
     for (let i = 0; i < this.mixin.deposits.length; i++) {
       if (
@@ -140,13 +146,12 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
       <div class="mixin_crypto_title">Heads up!</div>
 
       <div class="mixin_crypto_warning">
-      Third-party cryptocurrency support in Saito is currently experimental. All users should 
-      be aware that support is experimental. If your browser wallet is compromised you may lose 
-      all crypto you upload.
+      Third-party cryptocurrency support in Saito is experimental. If your browser wallet
+      is compromised you may lose all crypto you upload.
 
       <p></p>
 
-      Please be sensible and do not put more than 100 USD worth of crypto in your live wallet
+      Please be sensible and do not put more than 25 USD worth of crypto in your live wallet
       while our network is under development.
       </div>
 
@@ -184,7 +189,11 @@ MixinModule.prototype.renderModalSelectCrypto = function() {
 MixinModule.prototype.attachEventsModalSelectCrypto = function(app, cryptomod) {
   let ab = document.querySelector(".mixin_risk_acknowledge");
   ab.onclick = (e) => {
-    cryptomod.modal_overlay.hide();
+    cryptomod.modal_overlay.hide(function(){
+      setTimeout(function(){
+        document.querySelector('#settings-dropdown').classList.add("show-right-sidebar");
+      }, 500);
+    });
   }
 }
 
@@ -228,6 +237,7 @@ console.log("this is a Mixin address so send in-network transfer request to: " +
       let trace_id = this.mixin.sendInNetworkTransferRequest(this.asset_id, opponent_address_id, amount, unique_hash, function() {});
 console.log("and saving outbound payment");
       this.saveOutboundPayment(amount, this.returnAddress(), recipient, ts, trace_id);
+console.log("and done saving outbound payment");
       return;
     }
   }
@@ -338,7 +348,7 @@ console.log("checking for this trace ID: " + trace_id);
   // the mixin module might have a record of this already stored locally
   //
   if (this.hasReceivedPayment(amount, sender, recipient, timestamp, unique_hash) == 1) { return 1; }
-  this.mixin.fetchDeposits(this.asset_id, (d) => {});
+  this.mixin.fetchDeposits(this.asset_id, this.ticker, (d) => {});
 
   return 0;
 

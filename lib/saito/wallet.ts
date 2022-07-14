@@ -1,5 +1,5 @@
 import { Saito } from "../../apps/core";
-const getUuid = require('uuid-by-string');
+const getUuid = require("uuid-by-string");
 import saito from "./saito";
 
 import * as JSON from "json-bigint";
@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.079,
+    version: 4.209,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -337,7 +337,7 @@ console.log("---------------------");
     return tx;
   }
 
-  initialize() {
+  async initialize() {
     //
     // add ghost crypto module so Saito interface available
     //
@@ -356,7 +356,7 @@ console.log("---------------------");
       returnPrivateKey() {
         return this.app.wallet.returnPrivateKey();
       }
-      async sendPayment(amount, to_address, unique_hash="") {
+      async sendPayment(amount, to_address, unique_hash = "") {
         let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(to_address, amount);
         newtx = this.app.wallet.signAndEncryptTransaction(newtx);
         this.app.network.propagateTransaction(newtx);
@@ -423,6 +423,9 @@ console.log("---------------------");
             const tmpprivkey = this.app.options.wallet.privatekey;
             const tmppubkey = this.app.options.wallet.publickey;
 
+            let mixin = this.app.options.mixin;
+            let crypto = this.app.options.crypto;
+
             // specify before reset to avoid archives reset problem
             this.wallet.publickey = tmppubkey;
             this.wallet.privatekey = tmpprivkey;
@@ -431,7 +434,7 @@ console.log("---------------------");
             this.app.modules.onWalletReset();
 
             // reset and save
-            this.app.storage.resetOptions();
+            await this.app.storage.resetOptions();
             this.app.storage.saveOptions();
 
             // re-specify after reset
@@ -450,6 +453,10 @@ console.log("---------------------");
             this.app.options.wallet.pending = [];
             this.app.options.wallet.balance = "0.0";
             this.app.options.wallet.version = this.wallet.version;
+
+            // keep mixin
+            this.app.options.mixin = mixin;
+            this.app.options.crypto = crypto;
 
             this.saveWallet();
 
@@ -627,13 +634,7 @@ console.log("---------------------");
             if (to_slips[m].isNonZeroAmount()) {
               if (!this.containsInput(to_slips[m])) {
                 if (!this.containsOutput(to_slips[m])) {
-                  if (
-                    to_slips[m].type != SlipType.StakerOutput ||
-                    (to_slips[m].type != SlipType.StakerWithdrawalPending &&
-                      to_slips[m].type != SlipType.StakerWithdrawalStaking)
-                  ) {
-                    this.addInput(to_slips[m]);
-                  }
+                  this.addInput(to_slips[m]);
                 }
               } else {
                 const key = to_slips[m].returnKey();
@@ -959,13 +960,13 @@ console.log("---------------------");
     let cryptomod = null;
     for (let i = 0; i < mods.length; i++) {
       if (mods[i].ticker === ticker) {
-console.log("setting cryptomod");
+        console.log("setting cryptomod");
         cryptomod = mods[i];
         can_we_do_this = 1;
       }
     }
 
-console.log("cryptomod.ticker: " + cryptomod.ticker);
+    console.log("cryptomod.ticker: " + cryptomod.ticker);
 
     if (ticker == "SAITO") {
       can_we_do_this = 1;
@@ -973,10 +974,10 @@ console.log("cryptomod.ticker: " + cryptomod.ticker);
 
     if (can_we_do_this == 1) {
       this.wallet.preferred_crypto = ticker;
-console.log("Activating cryptomod: " + cryptomod.ticker);
+      console.log("Activating cryptomod: " + cryptomod.ticker);
       cryptomod.activate();
       this.saveWallet();
-console.log("emitting set preferred crypto event");
+      console.log("emitting set preferred crypto event");
       this.app.connection.emit("set_preferred_crypto", ticker);
     }
 
@@ -1072,8 +1073,16 @@ console.log("emitting set preferred crypto event");
    * @param {Function} mycallback - ({hash: {String}}) -> {...}
    * @param {String} ticker - Ticker of install crypto module
    */
-  async sendPayment(senders = [], receivers = [], amounts = [], timestamp, unique_hash="", mycallback=null, ticker) {
-console.log("wallet sendPayment");
+  async sendPayment(
+    senders = [],
+    receivers = [],
+    amounts = [],
+    timestamp,
+    unique_hash = "",
+    mycallback = null,
+    ticker
+  ) {
+    console.log("wallet sendPayment");
     // validate inputs
     if (senders.length != receivers.length || senders.length != amounts.length) {
       console.log("Lengths of senders, receivers, and amounts must be the same");
@@ -1087,39 +1096,58 @@ console.log("wallet sendPayment");
       return;
     }
     // only send if hasn't been sent before
-console.log("does preferred crypto transaction exist: " + this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker));
-console.log("unique hash: " + unique_hash);
-console.log("uuid: " + getUuid(unique_hash));
+    console.log(
+      "does preferred crypto transaction exist: " +
+        this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+    );
+    console.log("unique hash: " + unique_hash);
+    console.log("uuid: " + getUuid(unique_hash));
 
-    if (!this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
+    if (
+      !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+    ) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
-console.log("senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress());
+        console.log(
+          "senders and returnAddress: " + senders[i] + " -- " + cryptomod.returnAddress()
+        );
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
           try {
-            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
-console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-console.log("unique_hash: " + unique_tx_hash);
-console.log("senders: " + JSON.stringify(senders));
-console.log("receivers: " + JSON.stringify(receivers));
-console.log("amounts: " + JSON.stringify(amounts));
-console.log("timestamp: " + timestamp);
-console.log("ticker: " + ticker);
+            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
+              senders,
+              receivers,
+              amounts,
+              unique_hash,
+              ticker
+            );
+            console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+            console.log("unique_hash: " + unique_tx_hash);
+            console.log("senders: " + JSON.stringify(senders));
+            console.log("receivers: " + JSON.stringify(receivers));
+            console.log("amounts: " + JSON.stringify(amounts));
+            console.log("timestamp: " + timestamp);
+            console.log("ticker: " + ticker);
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
-console.log("wallet -> cryptomod - sendPayment - done");
-	    //
-	    // hash is "" if unsuccessful, trace_id if successful
-	    //
-	    if (hash === "") {
-              this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+            console.log("wallet -> cryptomod - sendPayment - done");
+            //
+            // hash is "" if unsuccessful, trace_id if successful
+            //
+            if (hash === "") {
+              this.deletePreferredCryptoTransaction(
+                senders,
+                receivers,
+                amounts,
+                unique_hash,
+                ticker
+              );
             }
 
-	    if (mycallback) {
+            if (mycallback) {
               mycallback({ hash: hash });
-	    }
-console.log("and after the callback");
+            }
+            console.log("and after the callback");
             return;
           } catch (err) {
             // it failed, delete the transaction
@@ -1158,18 +1186,26 @@ console.log("and after the callback");
     tries = 36,
     pollWaitTime = 5000
   ) {
-console.log("wallet receivePayment");
-    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
-console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
-console.log("unique_hash: " + unique_tx_hash);
-console.log("senders: " + JSON.stringify(senders));
-console.log("receivers: " + JSON.stringify(receivers));
-console.log("amounts: " + JSON.stringify(amounts));
-console.log("timestamp: " + timestamp);
-console.log("ticker: " + ticker);
+    console.log("wallet receivePayment");
+    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
+    console.log("wallet -> cryptomod - sendPayment: " + unique_tx_hash);
+    console.log("unique_hash: " + unique_tx_hash);
+    console.log("senders: " + JSON.stringify(senders));
+    console.log("receivers: " + JSON.stringify(receivers));
+    console.log("amounts: " + JSON.stringify(amounts));
+    console.log("timestamp: " + timestamp);
+    console.log("ticker: " + ticker);
 
     if (senders.length != receivers.length || senders.length != amounts.length) {
-      console.log("receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same");
+      console.log(
+        "receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same"
+      );
       return;
     }
     if (senders.length !== 1) {
@@ -1180,9 +1216,11 @@ console.log("ticker: " + ticker);
     //
     // if payment already received, return
     //
-    if (this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)) {
+    if (
+      this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
+    ) {
       mycallback();
-console.log("our preferred crypto transaction exists!");
+      console.log("our preferred crypto transaction exists!");
       return 1;
     }
 
@@ -1193,8 +1231,14 @@ console.log("our preferred crypto transaction exists!");
     // create a function we can loop through to check if the payment has come in....
     //
     const check_payment_function = async () => {
-console.log("wallet -> cryptmod receivePayment");
-      return await cryptomod.receivePayment(amounts[0], senders[0], receivers[0], timestamp - 3, unique_tx_hash); // subtract 3 seconds in case system time is slightly off
+      console.log("wallet -> cryptmod receivePayment");
+      return await cryptomod.receivePayment(
+        amounts[0],
+        senders[0],
+        receivers[0],
+        timestamp - 3,
+        unique_tx_hash
+      ); // subtract 3 seconds in case system time is slightly off
     };
 
     const poll_check_payment_function = async () => {
@@ -1241,17 +1285,29 @@ console.log("wallet -> cryptmod receivePayment");
     //});
   }
 
-  generatePreferredCryptoTransactionHash(senders = [], receivers = [], amounts, unique_hash, ticker) {
+  generatePreferredCryptoTransactionHash(
+    senders = [],
+    receivers = [],
+    amounts,
+    unique_hash,
+    ticker
+  ) {
     return this.app.crypto.hash(
       JSON.stringify(senders) +
-      JSON.stringify(receivers) +
-      JSON.stringify(amounts) +
-      unique_hash +
-      ticker
+        JSON.stringify(receivers) +
+        JSON.stringify(amounts) +
+        unique_hash +
+        ticker
     );
   }
   savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    let sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+    let sig = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
     this.wallet.preferred_txs.push({
       sig: sig,
       ts: new Date().getTime(),
@@ -1268,7 +1324,13 @@ console.log("wallet -> cryptmod receivePayment");
   }
 
   doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+    const sig = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         return 1;
@@ -1278,7 +1340,13 @@ console.log("wallet -> cryptmod receivePayment");
   }
 
   deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    const sig = this.generatePreferredCryptoTransactionHash(senders, receivers, amounts, unique_hash, ticker);
+    const sig = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
     for (let i = 0; i < this.wallet.preferred_txs.length; i++) {
       if (this.wallet.preferred_txs[i].sig === sig) {
         this.wallet.preferred_txs.splice(i, 1);

@@ -60,6 +60,7 @@ class Browser {
         }
 
         channel.onmessage = (e) => {
+          console.log("document onmessage change");
           if (!document.hidden) {
             channel.postMessage({
               active: 1,
@@ -83,12 +84,14 @@ class Browser {
         document.addEventListener(
           "visibilitychange",
           () => {
+            console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
+              console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -101,6 +104,7 @@ class Browser {
 
         window.addEventListener("storage", (e) => {
           if (this.active_tab == 0) {
+            console.log("LOAD OPTIONS IN BROWSER");
             this.app.storage.loadOptions();
           }
         });
@@ -114,10 +118,10 @@ class Browser {
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        console.log("Initializing Saito Node");
+        //console.log("Initializing Saito Node");
         return;
       } else {
-        console.info("Initializing Saito Light Client");
+        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -229,9 +233,20 @@ class Browser {
         }
       }
     } catch (err) {
-      console.log("error in urlparams: " + err);
+      //console.log("error in urlparams: " + err);
     }
     return "";
+  }
+
+  returnPreferredLanguage() {
+    try {
+      let x = navigator.language;
+      if (x.length > 2) {
+        return x.substring(0, 2);
+      }
+      return x;
+    } catch (err) {}
+    return "en";
   }
 
   isMobileBrowser(user_agent) {
@@ -350,6 +365,7 @@ class Browser {
   // functionality as needed.
   //
   setActiveTab(active) {
+    console.log("SET ACTIVE TAB");
     this.active_tab = active;
     this.app.blockchain.process_blocks = active;
     this.app.storage.save_options = active;
@@ -381,6 +397,37 @@ class Browser {
       }
     }
     el.outerHTML = html;
+  }
+
+  // adds HTML element to class, or DOM if class does not exist
+  addElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
   }
 
   prependElementToDom(html, elemWhere = document.body) {
@@ -586,10 +633,6 @@ class Browser {
         mouse_down_top = e.clientY;
 
         element_moved = false;
-        //console.log("Element Start Left: " + element_start_left);
-        //console.log("Element Start Top: " + element_start_top);
-        //console.log("Mouse Down Left: " + mouse_down_left);
-        //console.log("Mouse Down Top: " + mouse_down_top);
 
         document.onmouseup = function (e) {
           document.onmouseup = null;
@@ -699,7 +742,6 @@ class Browser {
       };
     } catch (err) {
       console.error("error: " + err);
-      console.log(element_to_move, element_to_drag);
     }
   }
 
@@ -756,7 +798,7 @@ class Browser {
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        console.log("Matomo module not present, cannot push event");
+        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -872,7 +914,6 @@ class Browser {
   async captureScreenshot(callback = null) {
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
-      console.log("img: " + img);
       if (callback != null) {
         callback(img);
       }

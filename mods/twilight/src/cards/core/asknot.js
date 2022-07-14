@@ -1,71 +1,62 @@
 
-
-
     //
-    // Ask Not What Your Country Can Do For You
-    //
+    // US may discard any number of cards and replace them with a new draw
     if (card == "asknot") {
 
       if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
+        //this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
         return 0;
-
       }
       if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         let cards_discarded = 0;
 
-        let cards_to_discard = 0;
-        let user_message = "Select cards to discard:";
-        let html = "<ul>";
+        let user_message = `${this.cardToText(card)} -- Select cards to discard:`;
+        let cardList = [];
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].hand[i] != "china" && this.game.deck[0].hand[i] != this.game.state.headline_opponent_card && this.game.deck[0].hand != this.game.state.headline_card) {
-            html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-            cards_to_discard++;
+          let card_in_hand = this.game.deck[0].hand[i];
+          if (card_in_hand != "china" && card_in_hand != this.game.state.headline_opponent_card && card_in_hand != this.game.state.headline_card) {
+            //html += '<li class="card card_'+this.game.deck[0].hand[i]+'" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            cardList.push(card_in_hand);
           }
         }
 
-        if (cards_to_discard == 0) {
+        if (cardList.length == 0) {
           twilight_self.addMove("notify\tUS has no cards available to discard");
           twilight_self.endTurn();
           return;
         }
 
-        html += '<span class="card dashed nocard" id="finished">done discarding</span></ul>';
+        cardList.push("finished");
+        //html += '<span class="card dashed nocard" id="finished">done discarding</span></ul>';
 
-        twilight_self.updateStatusWithOptions(user_message, html, false);
+        twilight_self.updateStatusAndListCards(user_message, cardList, false);
         twilight_self.addMove("resolve\tasknot");
         twilight_self.attachCardboxEvents(function(action2) {
 
           if (action2 == "finished") {
 
-	    //
-	    // cards to deal first
-	    //
-	    let cards_to_deal_before_reshuffle = cards_discarded;
-	    let cards_to_deal_after_reshuffle = 0;
-	    
-            if (cards_to_deal_before_reshuffle > twilight_self.game.deck[0].crypt.length) {
-	      cards_to_deal_before_reshuffle = twilight_self.game.deck[0].crypt.length;
-	      cards_to_deal_after_reshuffle = cards_discarded - cards_to_deal_before_reshuffle;
-	    }
-
-            //
+      	    //
             // if Aldrich Ames is active, US must reveal cards
             //
             if (twilight_self.game.state.events.aldrich == 1) {
               twilight_self.addMove("aldrichreveal\tus");
             }
 
-	    if (cards_to_deal_after_reshuffle > 0) {
-              twilight_self.addMove("DEAL\t1\t2\t"+cards_to_deal_after_reshuffle);
-	    }
-
             //
-            // are there enough cards available, if not, reshuffle
-            //
-            if (cards_discarded > twilight_self.game.deck[0].crypt.length) {
+      	    // cards to deal first
+      	    //
+      	    let cards_to_deal_before_reshuffle = cards_discarded;
+	    
+            if (cards_to_deal_before_reshuffle > twilight_self.game.deck[0].crypt.length) {
+      	      cards_to_deal_before_reshuffle = twilight_self.game.deck[0].crypt.length;
+      	      let cards_to_deal_after_reshuffle = cards_discarded - cards_to_deal_before_reshuffle;
+              if (cards_to_deal_after_reshuffle > 0) {
+                twilight_self.addMove("DEAL\t1\t2\t"+cards_to_deal_after_reshuffle);
+              }
 
               let discarded_cards = twilight_self.returnDiscardedCards();
 
@@ -93,21 +84,22 @@
                 twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
                 twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
                 twilight_self.addMove("DECKBACKUP\t1");
-                twilight_self.updateLog("cards remaining: " + twilight_self.game.deck[0].crypt.length);
-                twilight_self.updateLog("Shuffling discarded cards back into the deck...");
+                twilight_self.addMove("NOTIFY\tcards remaining: " + twilight_self.game.deck[0].crypt.length);
+                twilight_self.addMove("NOTIFY\tShuffling discarded cards back into the deck...");
 
               }
-            }
+      	    }
 
             twilight_self.addMove("DEAL\t1\t2\t"+cards_to_deal_before_reshuffle);
             twilight_self.endTurn();
 
           } else {
-            cards_discarded++;
-            let id_to_remove = ".card_"+action2;
-            $(id_to_remove).hide();
-            twilight_self.removeCardFromHand(action2);
-            twilight_self.addMove("discard\tus\t"+action2);
+            if (this.game.deck[0].hand.includes(action2)){
+              cards_discarded++;
+              $(`#${action2}.card`).hide();
+              twilight_self.removeCardFromHand(action2);
+              twilight_self.addMove("discard\tus\t"+action2);  
+            }
           }
         });
 

@@ -27,7 +27,6 @@ class Blockchain {
     last_callback_block_id: 0,
   };
   // public blockring: Blockring;
-  // public staking: Staking;
   public blocks: Map<string, Block>;
   // public utxoset: any;
   public prune_after_blocks: number;
@@ -46,7 +45,6 @@ class Blockchain {
     // core components
     //
     // this.blockring = new Blockring(this.app, this.blockchain.genesis_period);
-    // this.staking = new Staking(this.app);
     this.blocks = new Map<string, Block>(); // hashmap of block_hash => block
     // this.utxoset = new UtxoSet();
 
@@ -70,7 +68,7 @@ class Blockchain {
     //
     this.run_callbacks = 1;
     this.callback_limit = 2; // 2 blocks
-    
+
     this.debugging = true;
   }
 
@@ -100,8 +98,8 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block.hash)) {
-      if (this.debugging){
-        console.error("ERROR 581023: block exists in blockchain index");  
+      if (this.debugging) {
+        console.error("ERROR 581023: block exists in blockchain index");
       }
       this.indexing_active = false;
       return;
@@ -137,9 +135,9 @@ class Blockchain {
     //
     block.generateHashes();
 
-    if (this.debugging){
-      console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
-    //console.debug(this);
+    if (this.debugging) {
+      //console.log("blockchain.addBlockToBlockchain : " + block.returnHash());
+      //console.debug(this);
     }
     //
     // start by extracting some variables that we will use
@@ -155,22 +153,27 @@ class Blockchain {
     // sanity checks
     //
     if (this.isBlockIndexed(block_hash)) {
-      if (this.debugging){
+      if (this.debugging) {
         console.error("ERROR 581023: block exists in blockchain index");
       }
       this.indexing_active = false;
       return;
     }
 
-
     // check if previous block exists and if not fetch that block.
     let parent_block_hash = block.block.previous_block_hash;
     if (!this.app.blockring.isEmpty() && !this.isBlockIndexed(parent_block_hash)) {
-      if (this.debugging){ console.log("fetching unknown block: " + parent_block_hash); }
+      if (this.debugging) {
+        console.log("fetching unknown block: " + parent_block_hash);
+      }
       if (!parent_block_hash) {
-        if (this.debugging){ console.log("hash is empty for parent: ", block.returnHash()); }
+        if (this.debugging) {
+          console.log("hash is empty for parent: ", block.returnHash());
+        }
       } else {
-        if (this.debugging){ console.log("parent block hash is not indexed..."); }
+        if (this.debugging) {
+          console.log("parent block hash is not indexed...");
+        }
         await this.app.network.fetchBlock(parent_block_hash);
       }
     }
@@ -293,7 +296,9 @@ class Blockchain {
           //
           // NOTE - requires testing
           //
-          if (this.debugging){ console.log("potential edge case requires handling: blocks received out-of-order");}
+          if (this.debugging) {
+            console.log("potential edge case requires handling: blocks received out-of-order");
+          }
 
           let disconnected_block_id = this.app.blockring.returnLatestBlockId();
 
@@ -400,10 +405,11 @@ class Blockchain {
     // set genesis block hash if block #1
     //
     if (this.app.blockchain.blockchain.genesis_block_hash === "") {
-      if (this.debugging){ console.log("setting our genesis block hash to first hash received!"); }
+      if (this.debugging) {
+        console.log("setting our genesis block hash to first hash received!");
+      }
       this.app.blockchain.blockchain.genesis_block_hash = block.returnHash();
     }
-
 
     //
     // pre-load for next block
@@ -426,6 +432,7 @@ class Blockchain {
     if (block_id <= this.blockchain.last_callback_block_id) {
       already_processed_callbacks = 1;
     }
+
     if (this.run_callbacks === 1 && already_processed_callbacks === 0) {
       //
       // this block is initialized with zero-confs processed
@@ -444,13 +451,6 @@ class Blockchain {
         if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
           block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
         }
-
-        //console.log(
-        //  "block_id_from_which_to_run_callbacks: " + block_id_from_which_to_run_callbacks
-        //);
-        //console.log(
-        //  "block_id_in_which_to_delete_callbacks: " + block_id_in_which_to_delete_callbacks
-        //);
 
         if (block_id_from_which_to_run_callbacks > 0) {
           for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
@@ -507,7 +507,9 @@ class Blockchain {
   }
 
   async addBlockFailure(block) {
-    if (this.debugging){ console.log("FAILURE: " + block.returnHash());}
+    if (this.debugging) {
+      console.log("FAILURE: " + block.returnHash());
+    }
     //
     // clean up mempool
     //
@@ -519,7 +521,9 @@ class Blockchain {
   //
   async deleteBlocks(delete_block_id: number) {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
-    if (this.debugging){console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);}
+    if (this.debugging) {
+      console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
+    }
     for (let i = 0; i < block_hashes.length; i++) {
       if (this.blocks[block_hashes[i]]) {
         if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
@@ -530,7 +534,9 @@ class Blockchain {
   }
 
   async downgradeBlockchainData() {
-    if (this.debugging){ console.debug("blockchain.downgradeBlockchainData");}
+    if (this.debugging) {
+      console.debug("blockchain.downgradeBlockchainData");
+    }
     //
     // downgrade blocks still on the chain
     //
@@ -618,13 +624,17 @@ class Blockchain {
 
   // deletes a single block
   async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
-    if (this.debugging){ console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);}
+    if (this.debugging) {
+      console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
+    }
     //
     // ask block to delete itself / utxo-wise
     // -- need to load data as async
     let block = await this.loadBlockAsync(deletedBlockHash);
     if (!block) {
-      if (this.debugging){ console.trace("deleting non-existing block : " + deletedBlockHash); }
+      if (this.debugging) {
+        console.trace("deleting non-existing block : " + deletedBlockHash);
+      }
     }
 
     let blockFilename = this.app.storage.generateBlockFilename(block);
@@ -811,10 +821,14 @@ class Blockchain {
       if (this.blocks[block_hash] && this.blocks[block_hash].block_type === BlockType.Full) {
         return this.blocks[block_hash];
       }
-      if (this.debugging){ console.debug(`loading block from disk : ${block_hash}`);}
+      if (this.debugging) {
+        console.debug(`loading block from disk : ${block_hash}`);
+      }
       let block = await this.app.storage.loadBlockByHash(block_hash);
       if (!block) {
-        if (this.debugging){ console.warn(`block is not found in disk : ${block_hash}`);}
+        if (this.debugging) {
+          console.warn(`block is not found in disk : ${block_hash}`);
+        }
         return null;
       }
       block.block_type = BlockType.Full;
@@ -944,30 +958,8 @@ class Blockchain {
     block.onChainReorganization(false);
     // blockring update
     this.app.blockring.onChainReorganization(block.returnId(), block.returnHash(), false);
-    // staking tables
-    let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
-      block,
-      false
-    );
     this.app.wallet.onChainReorganization(block, false);
     await this.onChainReorganization(block, false);
-
-    //
-    // we cannot pass the UTXOSet into the staking object to update as that would
-    // require multiple mutable borrows of the blockchain object, so we receive
-    // return vectors of the slips that need to be inserted, spent or deleted and
-    // handle this after-the-fact. this keeps the UTXOSet up-to-date with whatever
-    // is in the staking tables.
-    //
-    for (let i = 0; i < res_spend.length; i++) {
-      //res_spend[i].onChainReorganization(this.app, true, 1);
-    }
-    for (let i = 0; i < res_unspend.length; i++) {
-      //res_unspend[i].onChainReorganization(this.app, true, 0);
-    }
-    for (let i = 0; i < res_delete.length; i++) {
-      //res_spend[i].delete(this.app);
-    }
 
     if (current_unwind_index === old_chain.length - 1) {
       //
@@ -1091,7 +1083,7 @@ class Blockchain {
       golden_tickets_found < MIN_GOLDEN_TICKETS_NUMERATOR &&
       search_depth_idx >= MIN_GOLDEN_TICKETS_DENOMINATOR
     ) {
-      if (this.debugging){ 
+      if (this.debugging) {
         console.log(
           "not enough golden tickets: " + golden_tickets_found + " --- " + search_depth_idx
         );
@@ -1118,7 +1110,9 @@ class Blockchain {
       );
 
     if (!does_chain_meet_golden_ticket_requirements) {
-      if (this.debugging){ console.log("not enough golden tickets!");}
+      if (this.debugging) {
+        console.log("not enough golden tickets!");
+      }
       return false;
     }
 
@@ -1128,7 +1122,9 @@ class Blockchain {
       if (new_chain.length > 0) {
         return await this.unwindChain(new_chain, old_chain, 0, true);
       } else {
-        if (this.debugging){ console.log("lengths are inappropriate");}
+        if (this.debugging) {
+          console.log("lengths are inappropriate");
+        }
         return false;
       }
     }
@@ -1203,37 +1199,12 @@ class Blockchain {
 
       // utxoset update
       //block.onChainReorganization(true);
-      let { res_spend, res_unspend, res_delete } = this.app.staking.onChainReorganization(
-        block,
-        true
-      );
       this.app.wallet.onChainReorganization(block, true);
 
       //
       // TODO - do we want async on this?
       //
       await this.onChainReorganization(block, true);
-
-      //
-      // we cannot pass the UTXOSet into the staking object to update as that would
-      // require multiple mutable borrows of the blockchain object, so we receive
-      // return vectors of the slips that need to be inserted, spent or deleted and
-      // handle this after-the-fact. this keeps the UTXOSet up-to-date with whatever
-      // is in the staking tables.
-      //
-      // this is actually not a problem in Javascript, but we are handling the same
-      // way as Rust in order to maintain consistency in approach across our two
-      // major codebases.
-      //
-      for (let i = 0; i < res_spend.length; i++) {
-        //res_spend[i].onChainReorganization(this.app, true, 1);
-      }
-      for (let i = 0; i < res_unspend.length; i++) {
-        //res_unspend[i].onChainReorganization(this.app, true, 0);
-      }
-      for (let i = 0; i < res_delete.length; i++) {
-        //res_spend[i].delete(this.app);
-      }
 
       //
       // we have received the first entry in new_blocks() which means we
