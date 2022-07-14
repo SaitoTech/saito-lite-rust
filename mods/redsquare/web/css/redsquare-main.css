@@ -298,11 +298,6 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     float: left;
 }
 
-.identicon, .arcade-invite-slot {
-    max-width: 1em;
-    min-width: 1em;
-}
-
 .arcade-invite-game {
   font-size: 1.5em;
 }

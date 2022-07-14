@@ -52,11 +52,11 @@ class RedSquareMenu {
       ArcadeMain.render(app, arcade_mod);
       ArcadeMain.attachEvents(app, arcade_mod);
 
-/***
       // re-render element
       document.querySelector(".saito-sidebar.right").remove();
       mod.games_sidebar.render(app, mod);
 
+/***
       // remove appspace content and re-fill
       document.querySelector(".appspace").innerHTML = "";
       let arcade_self = app.modules.returnModule("Arcade");
