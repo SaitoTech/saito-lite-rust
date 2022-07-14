@@ -9,7 +9,7 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
 
     <div id="redsquare-invite" class="redsquare-invite">
 
-      <div class="game-graphic"><img src="/twilight/img/arcade/arcade.jpg" class="game-graphic-img"></div>
+      <div class="game-graphic"><img src="/poker/img/arcade/arcade.jpg" class="game-graphic-img"></div>
 
       <div class="game-name">Twilight Struggle</div>
 
@@ -49,7 +49,7 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
 
     <div id="redsquare-invite" class="redsquare-invite">
 
-      <div class="game-graphic"><img src="/imperium/img/arcade/arcade.jpg" class="game-graphic-img"></div>
+      <div class="game-graphic"><img src="/poker/img/arcade/arcade.jpg" class="game-graphic-img"></div>
 
       <div class="game-name">Red Imperium</div>
 
@@ -101,6 +101,7 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
      grid-template-rows: 1fr 1fr; 
      grid-template-columns: min-content 1fr min-content; 
      grid-column-gap: 1rem;
+     margin-bottom: 30px;
   }
   .game-graphic {
      grid-column-start: 1;
