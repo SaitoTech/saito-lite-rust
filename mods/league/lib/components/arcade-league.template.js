@@ -6,11 +6,16 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
 
   let game = league.game;
   let gameModule = app.modules.returnModule(game);
-  if (!gameModule){ return "";}
-  let slug = gameModule.returnSlug();
+  let slug, bannerBack, gameBack;
 
-  let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
-  let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+  if (!gameModule){ 
+    bannerBack = "/saito/img/doom.jpg";
+    gameBack = "/saito/img/background.png";
+  }else{
+    slug = gameModule.returnSlug();
+    bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
+    gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
+  }
   
   let playersHtml = `<div class="playerInfo" style="">`;
   
@@ -50,7 +55,9 @@ let makeDescription = (app, league) => {
   let html = '';
 
   
-  html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">League: </div><div class="gameShortDescriptionValue">${league.game}</div></div>`;
+  if (league.game){
+    html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">League: </div><div class="gameShortDescriptionValue">${league.game}</div></div>`;
+  }
   if (league.max_players > 0){
     html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">Players: </div><div class="gameShortDescriptionValue">${league.playerCnt}/${league.max_players}</div></div>`;  
   }else{

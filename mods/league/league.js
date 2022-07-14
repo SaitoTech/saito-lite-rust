@@ -48,6 +48,10 @@ class League extends ModTemplate {
         this.games.push(mod);
     });
 
+    if (app.BROWSER == 0){
+      this.insertSaitolicious();
+      setInterval(this.collectRent, 5*60*1000, app);
+    }
   }
 
   /*notifyPeers(app, tx) {
@@ -68,6 +72,33 @@ class League extends ModTemplate {
       }
     }
   }*/
+
+  async insertSaitolicious(){
+    console.log("Is there a Saitolicious League?");
+    let sql = `SELECT * from leagues WHERE id="SAITOLICIOUS"`;
+    let rows = await this.app.storage.queryDatabase(sql, {}, "league");
+    if (!rows || !rows.length || rows.length == 0){
+      console.log("Not yet");
+       let sql2 = `INSERT OR REPLACE INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players)
+                        VALUES ("SAITOLICIOUS", NULL, "public", "saito", "Saitolicious", "Who is the most Saitolicious Saitozen out there? Earn points for playing games on the Arcade and climb the rankings, but your score will drop if you don't come by regularly.", "exp", 0, 0)`;
+       await this.app.storage.executeDatabase(sql2, {}, "league");
+    }
+  }
+
+  async collectRent(app){
+
+    console.log("Rent time");
+
+    let now = new Date().getTime();
+    let cutoff = now - 5*60*1000;
+    let params = {
+      $now: now,
+      $cutoff: cutoff,
+    }
+    let sql = `UPDATE players SET score = (score - 1), ts = $now WHERE score > 0 AND ts < $cutoff AND league_id = 'SAITOLICIOUS'`;
+    await app.storage.executeDatabase(sql, params, "league");
+
+  }
 
 
   render(app, mod) {
@@ -145,27 +176,17 @@ class League extends ModTemplate {
 
   onPeerHandshakeComplete(app, peer) {
     let league_self = this;
-    //
-    // TODO -- services -- so we only message peers supporting LeagueDB
-    //
+
+    console.log("Refreshing list of leagues");
     this.sendPeerDatabaseRequestWithFilter(
-
       "League" ,
-
       `SELECT * FROM leagues DESC LIMIT 100` ,
-
       (res) => {
-      
-  	    //app.connection.emit('league-update', {});
+
         league_self.resetLeagues();
 
         if (res.rows) {
           res.rows.forEach(row => {
-
-      	    //
-      	    // update components
-      	    //
-      	    //app.connection.emit('league-update', row);
 
             console.log(row);
             league_self.updateLeague(row);
@@ -178,8 +199,23 @@ class League extends ModTemplate {
           },1000);
         } else {}
       }
-
     );
+
+    if (app.BROWSER == 1){
+      console.log("Checking if I am a member of Saitolicious");
+      this.sendPeerDatabaseRequestWithFilter(
+      "League",
+      `SELECT * FROM players WHERE pkey = '${app.wallet.returnPublicKey()}' AND league_id = 'SAITOLICIOUS'`,
+      (res) =>{
+        if (res.rows){
+          if (res.rows.length > 0){
+            return;
+          }
+        }
+        league_self.sendJoinLeagueTransaction("SAITOLICIOUS");
+      });  
+    }
+    
 
   }
 
@@ -377,10 +413,9 @@ class League extends ModTemplate {
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
-    let sql = `SELECT * FROM leagues WHERE game = ?`;
+    let sql = `SELECT * FROM leagues WHERE game = ? OR id='SAITOLICIOUS'`;
     const relevantLeagues = await this.app.storage.queryDatabase(sql, [game], "league");
 
-    console.log(relevantLeagues);
 
     //Who are all the players in the game?
     let publickeys = [];
@@ -390,6 +425,9 @@ class League extends ModTemplate {
       }
     }
 
+    console.log(relevantLeagues);
+    console.log(publickeys);
+
     if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
       txmsg.winner = txmsg.winner[0];
     }
@@ -398,16 +436,17 @@ class League extends ModTemplate {
 
     //Let's check each league
     for (let leag of relevantLeagues){
+
       if (leag.ranking == "elo"){
         //All players must belong to ELO league for points to change
         if (publickeys.length != 2){
           console.log(`This game will not be ELO rated because there are not 2 players`);
-          return;
+          continue;
         }
 
         if (Array.isArray(txmsg.winner) || txmsg.reason == "tie"){
           console.log("This game will not be rated because we haven't implemented ELO for ties or multiple winners yet");
-          return;
+          continue;
         }  
 
         let sql2 = `SELECT * FROM players WHERE league_id = ? AND pkey IN (`;
@@ -423,7 +462,7 @@ class League extends ModTemplate {
 
         if (playerStats.length !== publickeys.length){
           console.log(`This game will not be rated because not all the players are League members: ${leag.id}`);
-          return;
+          continue;
         }
         
         let winner, loser;
@@ -444,6 +483,8 @@ class League extends ModTemplate {
         await this.updatePlayerScore(loser);
         
       }else if (leag.ranking == "exp"){
+        let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
+
         //Winner(s) get 5 points, true ties get 3 pts, losers get 1 pt
         //as long as player is in the league
 
@@ -451,23 +492,23 @@ class League extends ModTemplate {
           let numPoints = (txmsg.reason == "tie") ? 3: 4;
           let gamekey = (txmsg.reason == "tie") ? "games_tied" : "games_won";
 
-          for (let i = publickeys.length-1; i>=0; i--){
-            if (txmsg.winner.includes(publickeys[i])){
-              await this.incrementPlayer(publickeys[i], leag.id, numPoints, gamekey);
-              publickeys.splice(i,1);
+          for (let i = players.length-1; i>=0; i--){
+            if (txmsg.winner.includes(players[i])){
+              await this.incrementPlayer(players[i], leag.id, numPoints, gamekey);
+              players.splice(i,1);
             }
           }
         }else{
-          for (let i = publickeys.length-1; i>=0; i--){
-            if (txmsg.winner == publickeys[i]){
-              await this.incrementPlayer(publickeys[i], leag.id, 5, "games_won");
-              publickeys.splice(i,1);
+          for (let i = players.length-1; i>=0; i--){
+            if (txmsg.winner == players[i]){
+              await this.incrementPlayer(players[i], leag.id, 5, "games_won");
+              players.splice(i,1);
             }
           }
         }
         //Everyone left gets a point for playing
-        for (let i = 0; i < publickeys.length; i++){
-          await this.incrementPlayer(publickeys[i], leag.id, 1);
+        for (let i = 0; i < players.length; i++){
+          await this.incrementPlayer(players[i], leag.id, 1);
         }
       }else{
         //No idea what to do here, but should call a function of the game module/game engine
@@ -504,19 +545,12 @@ class League extends ModTemplate {
   /**
    * 
    */ 
-  async updateLeague(league){
+  updateLeague(league){
     let lid = league.id;
     let pid = this.app.wallet.returnPublicKey();
-    let now = new Date().getTime();
     league.myRank = -1;
     league.playerCnt = 0;
-    if (league.ranking == "exp"){
-      let cutoff = now - 24*60*60*1000;
-      let sql1 = `UPDATE players SET score = (score - 1), ts = ${now} WHERE ts < ${cutoff} AND league_id = '${league.id}'`;
-      await this.app.storage.executeDatabase(sql1, {}, "league");
-      let sql2 = `UPDATE players SET score = 0 WHERE score < 0 AND league_id = '${league.id}'`;
-      await this.app.storage.executeDatabase(sql2, {}, "league");
-    }
+
     league.players = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC` ,
 

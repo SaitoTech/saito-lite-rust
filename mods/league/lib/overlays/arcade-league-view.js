@@ -57,6 +57,7 @@ module.exports = ArcadeLeagueView = {
    		}
    },
 
+  // TODO: Add functionality to CHALLENGE button 
   attachEvents(app, mod) {
     let joinBtn = document.getElementById("join-btn");
     if (joinBtn){
