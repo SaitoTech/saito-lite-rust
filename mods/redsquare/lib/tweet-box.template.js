@@ -13,7 +13,7 @@ module.exports = (app, mod, tweet) => {
         <p>${tweet.publickey}</p>
         <i class="fas fa-certificate redsquare-certificate"></i>
    </div>
-        <p class="saito-tweet-timestamp">3:46 PM - July 7, 2022 </p>
+        <p class="saito-tweet-timestamp">posted on: 3:46 PM - July 7, 2022 </p>
     </div>
     
     <div class="x">

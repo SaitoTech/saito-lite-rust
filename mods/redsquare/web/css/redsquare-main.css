@@ -291,3 +291,80 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     color: var(--saito-secondary-black);
 }
 
+
+.arcade-invite-slot {
+    height: 1em;
+    margin: 0.2em 0.3em;
+    float: left;
+}
+
+.identicon, .arcade-invite-slot {
+    max-width: 1em;
+    min-width: 1em;
+}
+
+.arcade-invite-game {
+  font-size: 1.5em;
+}
+
+
+.arcade-invite-options {
+    display: grid;
+    height: 100%;
+    align-content: center;
+    align-items: center;
+    justify-content: end;
+    font-size: 1em;
+    grid-template-columns: auto auto;
+    grid-column-gap: 1rem;
+    overflow: auto;
+    padding-right: 1rem;
+    min-width: 127px;
+    color: #222;
+    font-size: 12px;
+}
+
+.game-btn {
+    background: var(--saito-primary);
+    text-align: center;
+    padding: 1rem 1.2rem;
+    text-align: center;
+    letter-spacing: 1px;
+    margin: 2rem 0;
+    font-size: 1.8rem;
+    min-width: 14rem;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 0.5rem;
+    border: none;
+    border: 1px solid transparent;
+}
+
+
+.arcade-invite-options-key {
+    font-size: 14px;
+}
+
+.arcade-invite-options-value {
+    font-size: 12px;
+}
+
+.arcade-invite {
+    width: 100%;
+    min-height: 7rem;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 12em auto auto 12em;
+    border: solid 1px #c89af6;
+    background: linear-gradient(45deg, #444a 38%, #0002 100%);
+    background-size: cover;
+    background-position: center;
+    margin: 0.25rem;
+    height: 7em;
+    overflow: hidden;
+    align-items: center;
+    padding: 0px 10px;
+    color: whitesmoke;
+}
