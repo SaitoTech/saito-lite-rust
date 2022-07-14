@@ -4,8 +4,10 @@ const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 module.exports = AdminBox = {
 
   render(app, mod, games) {
-    app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
-    this.attachEvents(app, mod);
+    if (!document.getElementById("game-selector")){
+      app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
+      this.attachEvents(app, mod);
+    }
   },
 
 

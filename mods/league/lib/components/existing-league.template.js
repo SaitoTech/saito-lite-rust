@@ -1,7 +1,6 @@
 module.exports = (app, mod, league) => {
-  console.log(JSON.parse(JSON.stringify(league)));
   let html = `
-      <div class="league-component-existing-league-box">
+      <div class="league-component-existing-league-box" id="${league.id}">
         
         <h2>${league.name}</h2>
         <div>Type: ${league.type}</div>

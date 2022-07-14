@@ -1414,6 +1414,7 @@ span.rewards-row-name {
   text-transform: uppercase;
 }
 
+/* Invitation Link Popup overlay */
 .invite-link {
   max-width: 90vw;
   min-width: 25vw;
@@ -1730,7 +1731,9 @@ i.link_icon.private{
   color: whitesmoke;
 }
 
-/** Leaderboards **/
+/** Leaderboards 
+ *  duplicated in League/web/style.css
+ * **/
 
 .league-details-overlay{
   width: 100%;
@@ -1758,6 +1761,11 @@ i.link_icon.private{
 .league-leaderboard table td{
   text-align: center;
 }
+
+.league-leaderboard table tr{
+    height: 42px;
+}
+
 
 .league-overview-box .info-item{
   display: flex;

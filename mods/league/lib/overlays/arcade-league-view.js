@@ -37,15 +37,24 @@ module.exports = ArcadeLeagueView = {
    injectLeaderboard(app, mod, leaderboard){
    		let loader = document.querySelector(".leaderboard-spinner");
    		if (loader){ loader.remove();}
+      let myKey = app.wallet.returnPublicKey();
 
    		if (leaderboard.length > 0){
-   			let html = `<table><thead><tr><th>Rank</th><th>Player</th><th>Score</th><th>Games</th><th>Wins</th><th>Ties</th><th></th></tr></thead><tbody>`;
+   			let html = `<table><thead><tr><th>Rank</th><th>Player</th><th>Score</th><th>Games</th>`;
+        if (this.league.admin == myKey){
+          html += `<th>Games Started</th>`;
+        }
+        html += `<th>Wins</th><th>Ties</th><th></th></tr></thead><tbody>`;
    			let cnt = 1;
    			for (let r of leaderboard){
-   				html += `<tr><th>${cnt++}</th><td>${app.keys.returnUsername(r.pkey)}</td><td>${r.score}</td>`;
-          html += `<td>${r.games_finished}</td><td>${r.games_won}</td><td>${r.games_tied}</td><td>`;
-          if (r.pkey !== app.wallet.returnPublicKey()){
-            html += `<button class="button" data-id="${r.pkey}">CHALLENGE</button>`;
+   				html += `<tr><th>${cnt++}</th><td>${app.keys.returnUsername(r.pkey)}</td><td>${r.score}</td><td>${r.games_finished}</td>`;
+          if (this.league.admin == myKey){
+            html += `<td>${r.games_started}</td>`;
+          }
+          html += `<td>${r.games_won}</td><td>${r.games_tied}</td><td>`;
+
+          if (r.pkey !== myKey && r.league_id !== "SAITOLICIOUS"){
+            html += `<button class="button challenge-btn" data-id="${r.pkey}">CHALLENGE</button>`;
           }
           html += "</td></tr>";
    			}
@@ -69,5 +78,17 @@ module.exports = ArcadeLeagueView = {
     	}
     	
     }
+    let inviteBtn = document.getElementById("invite-btn");
+    if (inviteBtn){
+      inviteBtn.onclick = () => {
+        mod.showShareLink(this.league.id, app.modules.returnActiveModule());
+      }
+    }
+   Array.from(document.getElementsByClassName('challenge-btn')).forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        app.modules.returnActiveModule().overlay.show(app, mod, `<h2>Coming soon</h2><div class="warning">This feature is not supported yet</div>`);
+      }
+    });
   },
 }

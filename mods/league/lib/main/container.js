@@ -18,10 +18,9 @@ class Container {
     //
     // Wipe the main container and create a fresh build render main template
     //
-    if (document.getElementById("league-main-container")) {
-      document.getElementById("league-main-container").remove();
+    if (!document.getElementById("league-main-container")) {
+      app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
     }
-    app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
 
     //
     // render league creation boxes
@@ -31,12 +30,10 @@ class Container {
     //
     // render existing league componenets
     //
-    //if (template == "existing_leagues") { 
-      this.mod.leagues.forEach((game, i) => {
-        let league = new LeagueComponentExistingLeague(app, mod, game);
-        league.render(app, mod);
-      });
-    //}
+    let leagues_to_display = mod.filterLeagues(app);
+    leagues_to_display.forEach((game, i) => {
+      LeagueComponentExistingLeague.render(app, mod, game);
+    });
   }
 }
 

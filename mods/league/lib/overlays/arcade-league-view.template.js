@@ -18,12 +18,16 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     </div>
     <div id="league-leaderboard" class="league-leaderboard">
       <div class="leaderboard-spinner loader"></div>
-    </div>`;
+    </div>
+    <div class="btn-controls-box">`;
     if (league.myRank <=0){
-      html += `<div class="btn-controls-box">
-      <button class='button' id='join-btn'>JOIN</button>
-    </div>`;
+      html += `<button class='button' id='join-btn'>JOIN</button>`;
     }
+    if (app.wallet.returnPublicKey() == league.admin && (league.max_players == 0 || league.playerCnt < league.max_players)){
+     html += `<button class='button' id='invite-btn'>INVITE</button>`; 
+    }
+    html += `</div>`;
+    
     
   html += `</div>`;
 

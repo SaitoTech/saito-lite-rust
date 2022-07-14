@@ -27,15 +27,15 @@ module.exports = (app, mod, games) => {
             <option value="private">Private</option>
           </select>
           <select id="ranking">
-            <option value="unk" selected>Default</option>
-            <option value="elo">ELO</option>
             <option value="exp">EXP</option>
+            <option value="elo">ELO</option>
           </select>
           <input id="starting_score" type="number" value="0" min="0" max="2000" step="50" style="display:none;"/>
           <button type="submit">Create League</button>
         </form>
       </div>
   `;
+  //            <option value="unk" selected>Default</option>
 
   return html;
 }
