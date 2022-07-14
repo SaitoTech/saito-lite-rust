@@ -366,7 +366,7 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 
 
 .redsquare-games-heading-container h4{
-    color: #222
+    color: #222;
     font-size: 30px;
 }
 
@@ -408,7 +408,7 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     display: flex;
     flex-direction: row;
     flex-flow: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .rd-league-box {
