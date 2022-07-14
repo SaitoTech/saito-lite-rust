@@ -633,12 +633,12 @@ class League extends ModTemplate {
     for (let pk of players){
        sql += `'${pk}', `;
     }
-    sql = sql.substr(0, sql2.length - 2);
+    sql = sql.substr(0, sql.length - 2);
     sql += `) AND league_id = $lid`;
 
     let params = {
       $ts: now,
-      $lid: lid
+      $lid: league.id
     }
     console.log(sql);
     console.log(params);
