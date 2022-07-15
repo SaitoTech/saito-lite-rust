@@ -7,12 +7,11 @@ class TweetBox {
     }
 
     render(app, mod, container = "") {
-      app.browser.addElementToDom(TweetBoxTemplate(app, mod, this.tweet), document.getElementById('redsquare-list'));
+      app.browser.addElementToId(TweetBoxTemplate(app, mod, this.tweet), "redsquare-list");
       this.attachEvents(app, mod);
     }
 
     attachEvents(app, mod) { 
-
 
       $('.tweet-tool-like').click(function(e) {
         e.preventDefault();

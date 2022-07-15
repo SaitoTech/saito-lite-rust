@@ -1,15 +1,7 @@
 const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
-const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
-
-const RedSquareFriends = require('./lib/friends');
-const RedSquareMain = require('./lib/main/redsquare-main');
-const RedSquareMenu = require('./lib/menu');
-const RedSquarePostTweet = require('./lib/post-tweet');
-const RedSquareSidebar = require('./lib/sidebar');
-const RedSquareGamesSidebar = require('./lib/games-sidebar');
-const RedSquareGamesAppspace = require('./lib/games-appspace');
+const RedSquareMain = require('./lib/main');
 const JSON = require("json-bigint");
 
 class RedSquare extends ModTemplate {
@@ -35,42 +27,18 @@ class RedSquare extends ModTemplate {
   }
 
 
-  render(app, mod) {
+  render(app, mod, selector = "") {
 
     if (this.ui_initialized == false) {
 
-      this.main = new RedSquareMain(this.app);
-      this.header = new SaitoHeader(this.app);
-      this.menu = new RedSquareMenu(this.app);
-      this.games_appspace = new RedSquareGamesAppspace(this.app);
+      this.main = new RedSquareMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
 
-      this.contactlist = new RedSquareFriends(this.app, this);
+//      this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
+//      this.games_sidebar = new RedSquareGamesSidebar(this.app, this, ".saito-container");
 
-      this.lsidebar = new SaitoSidebar(this.app, this, ".saito-container");
-      this.lsidebar.align = "left";
-
-      this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
-      this.games_sidebar = new RedSquareGamesSidebar(this.app, this, ".saito-container");
-
-
-
-      //this.post_tweet = new RedSquarePostTweet(this.app);
-
-      //
-      // combine ui-components
-      //
-      this.addComponent(this.lsidebar);
       this.addComponent(this.main);
-      this.addComponent(this.wide_sidebar);
       this.addComponent(this.header);
-
-      //this.addComponent(this.post_tweet)
-
-      this.lsidebar.addComponent(this.menu);
-      this.app.modules.respondTo("chat-manager").forEach(mod => {
-	this.lsidebar.addComponent(mod.respondTo("chat-manager"));
-      });
-      //this.lsidebar.addComponent(this.chatBox);
 
       this.ui_initialized = true;
     }

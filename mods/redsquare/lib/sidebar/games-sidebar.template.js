@@ -1,4 +1,4 @@
-const SaitoArcadeInviteTemplate = require('./../../../lib/saito/new-ui/templates/saito-arcade-invite.template');
+const SaitoArcadeInviteTemplate = require('./../../../../lib/saito/new-ui/templates/saito-arcade-invite.template');
 
 
 module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
