@@ -1,33 +1,12 @@
+const SaitoUserWithTime = require('./../../../lib/saito/new-ui/templates/saito-user-with-time.template');
+
 module.exports = ChatManagerTemplate = (app, mod) => {
 
   return `
   <div class="chat-manager">
   <div>
       <div class="saito-list  saito-white-background  ">
-          <div class="saito-list-chatbox">
-              <div class="saito-list-user-image-box">
-                  <img class="saito-identicon" src="/saito/img/background.png" />
-              </div>
-              <div class="saito-list-user-content-box">
-                  <div class="saito-username">Saito Community Chat </div>
-                  <p> new chat</p>
-              </div>
-              <div class="saito-list-user-timestamp">
-
-              </div>
-          </div>
-          <div class="saito-list-chatbox">
-              <div class="saito-list-user-image-box">
-                  <img class="saito-identicon" src="/saito/img/background.png" />
-              </div>
-              <div class="saito-list-user-content-box">
-                  <div class="saito-username">Saito Community Chat </div>
-                  <p> new chat</p>
-              </div>
-              <div class="saito-list-user-timestamp">
-
-              </div>
-          </div>
+	${SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg...", new Date().getTime())}
       </div>
   </div>
 </div>
