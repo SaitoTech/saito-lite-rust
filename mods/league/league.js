@@ -149,6 +149,7 @@ class League extends ModTemplate {
     inserted into elem
   */
   renderArcade(app, mod, elem){
+    if (!this.doICare()) { return; }
     console.log("Rendering Leagues for Arcade");
     let leagues_to_display = this.filterLeagues(app);
 
@@ -179,8 +180,22 @@ class League extends ModTemplate {
     this.leagues = [];
   }
 
+  doICare(){
+    if (this.browser_active){
+      return true;
+    }
+    let am = this.app.modules.returnActiveModule().name;
+
+    if (am == "Arcade"){
+      return true;
+    }
+    return false;
+  }
+
+  //Lite clients only
   onPeerHandshakeComplete(app, peer) {
     if (app.BROWSER == 0){ return; }
+    
     let league_self = this;
 
     //If following an invite link, look for the game_id in question
@@ -192,7 +207,7 @@ class League extends ModTemplate {
       window.location = myLocation;
     }
 
-    console.log("Checking if I am a member of Saitolicious");
+    //Check if Player is registered in Saitolicious (yes, every time we connect)
     this.sendPeerDatabaseRequestWithFilter(
     "League",
     `SELECT * FROM players WHERE pkey = '${app.wallet.returnPublicKey()}' AND league_id = 'SAITOLICIOUS'`,
@@ -205,6 +220,10 @@ class League extends ModTemplate {
       league_self.sendJoinLeagueTransaction("SAITOLICIOUS");
     });  
 
+    //Only query the leagues if we are in an active module that will need them
+    if (!this.doICare()){
+      return;
+    }
 
     console.log("Refreshing list of leagues");
     this.sendPeerDatabaseRequestWithFilter(
@@ -250,14 +269,19 @@ class League extends ModTemplate {
           //Perform db ops
           this.receiveCreateLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          this.addLeague(tx); 
+          if (this.doICare()){
+            this.addLeague(tx);
+          } 
         }
 
         if (txmsg.request === "join league") {
           //Perform db ops
           this.receiveJoinLeagueTransaction(blk, tx, conf, app);
           //Update saito-lite, refresh UI
-          this.addPlayer(tx);
+          if (this.doICare()){
+            this.addPlayer(tx);  
+          }
+          
         }
       
         //Listen for gameovers
@@ -477,14 +501,16 @@ class League extends ModTemplate {
 
   /* Let's try this function as a service node only */
   async receiveGameOverTransaction(blk, tx, conf, app){
-    if (this.app.BROWSER == 1) { return; }
-    console.log("League Receive Gameover");
+    if (app.BROWSER == 1) { return; }
+    
+    //console.log("League Receive Gameover");
+    
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
 
     //Which leagues may this gameover affect?
     let sql = `SELECT * FROM leagues WHERE game = ? OR id='SAITOLICIOUS'`;
-    const relevantLeagues = await this.app.storage.queryDatabase(sql, [game], "league");
+    const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
 
 
     //Who are all the players in the game?
@@ -494,9 +520,6 @@ class League extends ModTemplate {
         publickeys.push(tx.transaction.to[i].add);
       }
     }
-
-    console.log(relevantLeagues);
-    console.log(publickeys);
 
     if (Array.isArray(txmsg.winner) && txmsg.winner.length == 1){
       txmsg.winner = txmsg.winner[0];
