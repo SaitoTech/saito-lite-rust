@@ -7,10 +7,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
   let modules_html = "Wallet Outdated - module selection not supported";
   try {
-    modules_html = app.options.modules
-      .map((mod, i) => {
-        let CHECKED = mod.active ? 'CHECKED' : '';
-        return `
+  modules_html = app.options.modules
+    .map((mod, i) => {
+      let CHECKED = mod.active ? 'CHECKED': '';
+      return `
         <div class="settings-app-select">
           <label class="s-container">${mod.name}
             <input
@@ -22,10 +22,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           </label>
          </div>
       `;
-      })
-      .join('');
+    })
+    .join('');
   } catch (err) {
-    if (err.message.startsWith("Cannot read property 'map'")) {
+    if(err.message.startsWith("Cannot read property 'map'")) {
       modules_html = "Initialization error. Refresh page should fix this.";
     } else {
       modules_html = `Unknown error<br/>${err}`;
@@ -83,13 +83,13 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div class="settings-app-management">
 
-        <h3>Installed Modules </h3> `;
+        <h3>Installed Modules: `;
 
-  if (app.modules.returnModule("AppStore") != null) {
-    html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
-  }
+      if (app.modules.returnModule("AppStore") != null) {
+	html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
+      }
 
-  html += `</h2>
+      html += `</h2>
         <div class="settings-app-list">
         ${modules_html}
         </div>

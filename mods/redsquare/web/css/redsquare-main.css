@@ -470,12 +470,12 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .settlers .rd-bg-img-cont {
-    background: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_bLZG16XydVxkyroT5bSkCSs7aGD1TEB39w&usqp=CAU);
+    background: url(https://saito.io/settlers/img/arcade/arcade.jpg);
     background-size: cover;
 }
 
-.chess .rd-bg-img-cont {
-    background: url(https://i.pinimg.com/originals/1f/08/b5/1f08b5946de1e2e0702c070375f26451.png);
+.twilight .rd-bg-img-cont {
+    background: url(https://saito.io/twilight/img/arcade/arcade.jpg);
     background-size: cover;
 }
 
