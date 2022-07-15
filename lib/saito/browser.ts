@@ -385,26 +385,89 @@ class Browser {
     }
   }
 
-  addElementToDom(html, id = null) {
+  addElementToDom(html, elemWhere = null) {
     const el = document.createElement("div");
-    if (id == null) {
+    if (elemWhere == null) {
       document.body.appendChild(el);
+      el.outerHTML = html;
     } else {
-      if (!document.getElementById(id)) {
-        document.body.appendChild(el);
+      elemWhere.insertAdjacentElement("beforeend", el);
+      el.outerHTML = html;
+    }
+  }
+
+  prependElementToDom(html, elemWhere = document.body) {
+    try {
+      const elem = document.createElement("div");
+      elemWhere.insertAdjacentElement("afterbegin", elem);
+      elem.outerHTML = html;
+    } catch (err) {
+      console.log("ERROR 582343: error in prependElementToDom");
+    }
+  }
+
+  addElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.addElementToDom(html, obj);
       } else {
-        document.getElementById(id).appendChild(el);
+	this.app.browser.addElementToDom(html);
       }
     }
-    el.outerHTML = html;
+  }
+
+  prependElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.prependElementToDom(html, obj);
+      } else {
+	this.app.browser.prependElementToDom(html);
+      }
+    }
   }
 
   // adds HTML element to class, or DOM if class does not exist
+  addElementToSelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToSelector(html, selector="") {
+
+    if (selector === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
+  }
+
   addElementToClass(html, classname="") {
 
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
+      classname = "." + classname;
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.addElementToElement(html, container);
@@ -420,6 +483,7 @@ class Browser {
     if (classname === "") {
       this.app.browser.prependElementToDom(html);
     } else {
+      classname = "." + classname;
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
@@ -428,16 +492,6 @@ class Browser {
       }
     }
 
-  }
-
-  prependElementToDom(html, elemWhere = document.body) {
-    try {
-      const elem = document.createElement("div");
-      elemWhere.insertAdjacentElement("afterbegin", elem);
-      elem.outerHTML = html;
-    } catch (err) {
-      console.log("ERROR 582343: error in prependElementToDom");
-    }
   }
 
   addElementToElement(html, elem = document.body) {

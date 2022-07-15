@@ -7,7 +7,7 @@ class TweetBox {
     }
 
     render(app, mod, container = "") {
-      app.browser.addElementToDom(TweetBoxTemplate(app, mod, this.tweet), 'redsquare-list');
+      app.browser.addElementToDom(TweetBoxTemplate(app, mod, this.tweet), document.getElementById('redsquare-list'));
       this.attachEvents(app, mod);
     }
 

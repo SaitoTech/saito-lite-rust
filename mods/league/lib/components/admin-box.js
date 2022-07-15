@@ -17,7 +17,7 @@ class AdminBox {
 
   render(app, mod) {
 
-    app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, this.game_mod), "league-main-container-games");
+    app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, this.game_mod), document.getElementById("league-main-container-games"));
     this.attachEvents(app, mod);
 
 

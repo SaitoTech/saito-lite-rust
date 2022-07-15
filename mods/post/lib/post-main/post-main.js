@@ -21,12 +21,12 @@ module.exports = PostMain = {
     }
 
     if (!document.getElementById("forum-main")) {
-      app.browser.addElementToDom('<div id="forum-main" class="forum-main"><div id="forum-mobile-helper"></div></div>','post-container');
+      app.browser.addElementToDom('<div id="forum-main" class="forum-main"><div id="forum-mobile-helper"></div></div>',document.getElementById('post-container'));
     }
 
     if (mod.forum === "") {
       if (!document.querySelector(".post-forums")) {
-        app.browser.addElementToDom(PostForumsTemplate(app, mod), "forum-main");
+        app.browser.addElementToDom(PostForumsTemplate(app, mod), document.getElementById("forum-main"));
         PostForums.render(app, mod);
         PostForums.attachEvents(app, mod);
       }
@@ -38,12 +38,12 @@ module.exports = PostMain = {
 
       if (!document.getElementById("post-mobile-header")){
         if (!document.getElementById("post-return-to-main")){
-          app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),"forum-mobile-helper");
+          app.browser.addElementToDom(PostMobileHelperTemplate(app.modules.returnModuleBySlug(mod.forum)),document.getElementById("forum-mobile-helper"));
         }
       }
 
       if (!document.querySelector(".post-main")) {
-        app.browser.addElementToDom(PostMainTemplate(app, mod), "forum-main");
+        app.browser.addElementToDom(PostMainTemplate(app, mod), document.getElementById("forum-main"));
       }
 
       document.getElementById("post-posts").innerHTML = ""; //Force reloading?  

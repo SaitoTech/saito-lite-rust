@@ -11,21 +11,15 @@ class SettingsEmailAppspace {
 
   render(app, mod) {
 
-console.log("A 1");
-
     if (!document.querySelector(".settings-email-appspace")) {
-      app.browser.addElementToClass(SettingsEmailAppspaceTemplate(app, mod), ".email-appspace");
+      app.browser.addElementToSelector(SettingsEmailAppspaceTemplate(app, mod), ".email-appspace");
     }
 
-console.log("A 2");
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
-console.log("A 3");
       for (let i = 0; i < app.modules.mods.length; i++) {
-console.log("A 3 " + i);
         if (app.modules.mods[i].respondTo("settings-appspace") != null) {
           let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
-console.log("rendering: " + mod_settings_obj.name);
           mod_settings_obj.render(app, mod);
         }
       }

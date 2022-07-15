@@ -7,7 +7,7 @@ class TweetBox {
     }
 
     render(app, mod, container = "") {
-      app.browser.addElementToDom(PostTweetTemplate(app, mod), 'redsquare-input-container');
+      app.browser.addElementToDom(PostTweetTemplate(app, mod), document.getElementById('redsquare-input-container'));
       this.attachEvents(app, mod);
     }
 

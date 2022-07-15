@@ -18,7 +18,7 @@ class Listeners {
     let key_index = app.keys.keys.findIndex(key => key.publickey === publicKey)
     const listeners = app.keys.keys[key_index].data?.stun?.listeners;
 
-    app.browser.addElementToDom(StunComponentListenersTemplate(app, mod, listeners), "stun-information");
+    app.browser.addElementToDom(StunComponentListenersTemplate(app, mod, listeners), document.getElementById("stun-information"));
     
     this.attachEvents(app, mod);
   }

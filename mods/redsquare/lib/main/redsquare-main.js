@@ -14,7 +14,7 @@ class RedSquareMain {
   render(app, mod) {
 
     if (document.getElementById("saito-container")) {
-      app.browser.addElementToDom(RedSquareMainTemplate(app, mod), "saito-container");
+      app.browser.addElementToDom(RedSquareMainTemplate(app, mod), document.getElementById("saito-container"));
     }
 
     app.connection.on("tweet-render-request", (tx) => {
