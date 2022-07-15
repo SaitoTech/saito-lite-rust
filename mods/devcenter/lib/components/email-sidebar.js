@@ -7,7 +7,7 @@ module.exports = EmailSidebar = {
 
   render(app, mod) {
     if (!document.getElementById("email-sidebar")) {
-      app.browser.addElementToDom(EmailSidebarTemplate(), "email-container");
+      app.browser.addElementToDom(EmailSidebarTemplate(), document.getElementById("email-container"));
 
     }
 

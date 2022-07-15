@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
+
 const RedSquareFriends = require('./lib/friends');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
@@ -45,7 +46,7 @@ class RedSquare extends ModTemplate {
 
       this.contactlist = new RedSquareFriends(this.app, this);
 
-      this.lsidebar = new SaitoSidebar(this.app);
+      this.lsidebar = new SaitoSidebar(this.app, this, ".saito-container");
       this.lsidebar.align = "left";
 
       this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
@@ -66,11 +67,9 @@ class RedSquare extends ModTemplate {
       //this.addComponent(this.post_tweet)
 
       this.lsidebar.addComponent(this.menu);
-console.log("A");
       this.app.modules.respondTo("chat-manager").forEach(mod => {
 	this.lsidebar.addComponent(mod.respondTo("chat-manager"));
       });
-console.log("B");
       //this.lsidebar.addComponent(this.chatBox);
 
       this.ui_initialized = true;

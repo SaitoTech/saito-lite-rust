@@ -14,7 +14,7 @@ class RedSquareMenu {
   render(app, mod, container="") {
 
     if (!document.querySelector(".redsquare-menu")) {
-      app.browser.addElementToClass(RedSquareMenuTemplate(app, mod), container);
+      app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
     }
 
     this.attachEvents(app, mod);

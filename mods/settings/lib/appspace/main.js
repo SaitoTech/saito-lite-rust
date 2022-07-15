@@ -9,7 +9,7 @@ class SettingsAppspace {
   render(app, mod) {
 
     if (!document.querySelector(".settings-appspace")) {
-      app.browser.addElementToClass(SettingsAppspaceTemplate(app, mod), ".appspace");
+      app.browser.addElementToSelector(SettingsAppspaceTemplate(app, mod), ".appspace");
     }
 
     let settings_appspace = document.querySelector(".settings-appspace");

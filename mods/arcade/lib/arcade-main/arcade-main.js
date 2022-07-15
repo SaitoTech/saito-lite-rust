@@ -50,7 +50,7 @@ module.exports = ArcadeMain = {
       app.browser.addElementToDom(ArcadeContainerTemplate(app, mod));
     }
     if (!document.querySelector(".arcade-main")) {
-      app.browser.addElementToDom(ArcadeMainTemplate(app, mod), "arcade-container");
+      app.browser.addElementToDom(ArcadeMainTemplate(app, mod), document.getElementById("arcade-container"));
     }
 
     //

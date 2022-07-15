@@ -19,7 +19,7 @@ module.exports = ChatRoom = {
       mod.renderMode = "chatroom";
 
       document.getElementById("chat-main").innerHTML = "";
-      app.browser.addElementToDom(ChatRoomTemplate(group), "chat-main");
+      app.browser.addElementToDom(ChatRoomTemplate(group), document.getElementById("chat-main"));
 
       let message_input = document.querySelector('#input.chat-room-input');
       let msg = message_input == null ? '' : message_input.value;

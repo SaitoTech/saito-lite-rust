@@ -14,15 +14,12 @@ class RedSquareMain {
   render(app, mod) {
 
     if (document.getElementById("saito-container")) {
-      app.browser.addElementToDom(RedSquareMainTemplate(app, mod), "saito-container");
+      app.browser.addElementToDom(RedSquareMainTemplate(app, mod), document.getElementById("saito-container"));
     }
 
     app.connection.on("tweet-render-request", (tx) => {
-console.log("ATB 1");
         let tweet = new TweetBox(app, mod, tx);
-console.log("ATB 2");
         tweet.render(app, mod); 
-console.log("ATB 3");
     });
 
   }

@@ -11,7 +11,7 @@ class RedSquareGamesAppspace {
   render(app, mod, container="") {
 
     document.querySelector(".appspace").innerHTML = "";
-    app.browser.addElementToClass(RedSquareGamesAppspaceTemplate(app, mod), ".appspace");
+    app.browser.addElementToSelector(RedSquareGamesAppspaceTemplate(app, mod), ".appspace");
     this.attachEvents(app, mod);
 
   }

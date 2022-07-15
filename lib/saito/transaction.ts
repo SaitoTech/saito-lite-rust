@@ -79,9 +79,6 @@ class Transaction {
         }
       }
 
-console.log("tmp 1");
-console.log("tmp 2");
-
       for (let i = 0; i < this.transaction.from.length; i++) {
         const fslip = this.transaction.from[i];
         this.transaction.from[i] = new Slip(
@@ -93,7 +90,6 @@ console.log("tmp 2");
           fslip.lc
         );
       }
-console.log("tmp 3");
       for (let i = 0; i < this.transaction.to.length; i++) {
         const fslip = this.transaction.to[i];
         this.transaction.to[i] = new Slip(

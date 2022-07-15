@@ -9,12 +9,12 @@ class InvitesAppspace {
   render(app, mod, container = "") {
 
     if (!document.querySelector(".invite-email-appspace")) {
-      app.browser.addElementToClass(InvitesAppspaceTemplate(app, mod), ".appspace");
+      app.browser.addElementToSelector(InvitesAppspaceTemplate(app, mod), ".appspace");
     }
 
     if (mod.invites) {
       for (let i = 0; i < mod.invites.length; i++) {
-        app.browser.addElementToClass(InvitesInvitationTemplate(app, mod, i), ".invites");
+        app.browser.addElementToSelector(InvitesInvitationTemplate(app, mod, i), ".invites");
       }
 
 

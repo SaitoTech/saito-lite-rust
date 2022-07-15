@@ -3,21 +3,20 @@ const SaitoCalendar = require("./../../../lib/saito/new-ui/saito-calendar/saito-
 
 class RedSquareGamesSidebar {
 
-  constructor(app, mod, container="") {
+  constructor(app, mod, selector = "") {
     this.name = "RedSquareGamesSidebar";
     this.mod = mod;
-    this.container = container;
+    this.selector = selector;
   }
 
-  render(app, mod, container="") {
+  render(app, mod, selector="") {
 
     if (!document.querySelector(".saito-sidebar.right")) {
 
-      if (container != "") {
-        app.browser.addElementToClass(RedSquareGamesSidebarTemplate(app, mod), container);
-	
+      if (selector != "") {
+        app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), selector);
       } else {
-        app.browser.addElementToClass(RedSquareGamesSidebarTemplate(app, mod), this.container);
+        app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), this.selector);
       }
 
     }

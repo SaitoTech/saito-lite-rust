@@ -2,8 +2,6 @@ const SaitoUserWithControls = require('./../../../lib/saito/new-ui/templates/sai
 
 module.exports = (app, mod, tx) => {
 
-console.log("AAA");
-
     let html = `
 
   <div class="redsquare-item">
@@ -35,8 +33,6 @@ console.log("AAA");
 
     </div>
   </div>`;
-
-console.log("BBB");
 
     return html;
 }
