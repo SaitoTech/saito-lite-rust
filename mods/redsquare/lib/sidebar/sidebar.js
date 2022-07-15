@@ -1,5 +1,5 @@
 const RedSquareSidebarTemplate = require("./sidebar.template");
-const SaitoCalendar = require("./../../../lib/saito/new-ui/saito-calendar/saito-calendar");
+const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
 
 class RedSquareSidebar {
 
@@ -11,10 +11,16 @@ class RedSquareSidebar {
 
   render(app, mod, selector="") {
 
+    //
+    // remove me if I exist
+    //
     if (document.querySelector(".saito-sidebar.right")) {
       document.querySelector(".saito-sidebar.right").remove();
     }
 
+    //
+    // and re-render me
+    //
     if (selector != "") {
       app.browser.addElementToSelector(RedSquareSidebarTemplate(app, mod), selector);
     } else {

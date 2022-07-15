@@ -8,10 +8,8 @@ class RedSquareAppspaceNotifications {
   }
 
   render(app, mod) {
-
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
-
   }
 
 }

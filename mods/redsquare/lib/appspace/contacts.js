@@ -8,10 +8,8 @@ class RedSquareAppspaceContacts {
   }
 
   render(app, mod, selector = "") {
-
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToSelector(RedSquareAppspaceContactsTemplate(app, mod), ".appspace");
-
   }
 
 }

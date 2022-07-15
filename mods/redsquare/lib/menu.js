@@ -1,7 +1,6 @@
-const RedSquareMainTemplate = require("./main/redsquare-main.template");
 const RedSquareMenuTemplate = require("./menu.template");
-const RedSquareWideSidebar = require("./sidebar");
-const RedSquareGamesSidebar = require("./games-sidebar");
+const RedSquareWideSidebar = require("./sidebar/sidebar");
+const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
 const GameCreateMenu = require("./../../arcade/lib/arcade-main/game-create-menu");
 const ArcadeMain = require("./../../arcade/lib/arcade-main/arcade-main");
 
@@ -29,7 +28,7 @@ class RedSquareMenu {
     obj.onclick = (e) => {
 
       mod.home.render(app, mod, ".appspace");
-      mod.rsidebar.render(app, mod);
+      mod.rsidebar.render(app, mod, ".saito-sidebar-right");
       for (let i = 0; i < mod.tweets.length; i++) {
         app.connection.emit('tweet-render-request', mod.tweets[i]);
       }
@@ -38,20 +37,15 @@ class RedSquareMenu {
 
     obj = document.querySelector('.redsquare-menu-notifications');
     obj.onclick = (e) => {
-
       mod.notifications.render(app, mod, ".appspace");
-      mod.rsidebar.render(app, mod);
-
-      //let invites_self = app.modules.returnModule("Invites");
-      //invites_self.respondTo("appspace").render(invites_self.app, invites_self);
+      mod.rsidebar.render(app, mod, ".saito-sidebar-right");
     }
 
     obj = document.querySelector('.redsquare-menu-settings');
     obj.onclick = (e) => {
 
       // re-render sidebar
-      document.querySelector(".saito-sidebar.right").remove();
-      mod.wide_sidebar.render(app, mod);
+      mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
       document.querySelector(".appspace").innerHTML = "";
       let settings_self = app.modules.returnModule("Settings");
@@ -60,17 +54,14 @@ class RedSquareMenu {
 
     obj = document.querySelector('.redsquare-menu-contacts');
     obj.onclick = (e) => {
-
       mod.contacts.render(app, mod, ".appspace");
-      mod.rsidebar.render(app, mod);
-
+      mod.rsidebar.render(app, mod, ".saito-sidebar-right");
     }
 
     obj = document.querySelector('.redsquare-menu-games');
     obj.onclick = (e) => {
-
       mod.games.render(app, mod, ".appspace");
-      mod.gsidebar.render(app, mod);
+      mod.gsidebar.render(app, mod, ".saito-sidebar-right");
 
       //
       // we need a good way to remove events

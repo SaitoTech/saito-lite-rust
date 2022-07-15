@@ -20,7 +20,7 @@ class RedSquareMain {
     //
     // left sidebar
     //
-    mod.lsidebar 	= new SaitoSidebar(app, mod, ".saito-container");
+    mod.lsidebar 	= new SaitoSidebar(app, mod, ".saito-sidebar-left");
     mod.lsidebar.align = "left";
     mod.menu           = new RedSquareMenu(app, mod);
     mod.lsidebar.addComponent(mod.menu);
@@ -35,12 +35,12 @@ class RedSquareMain {
     //
     // right sidebar
     //
-    mod.rsidebar 	= new RedSquareSidebar(app, mod, ".saito-container");
+    mod.rsidebar 	= new RedSquareSidebar(app, mod, ".saito-sidebar-right");
 
     //
     //
     //
-    mod.gsidebar 	= new RedSquareGamesSidebar(app, mod, ".saito-container");
+    mod.gsidebar 	= new RedSquareGamesSidebar(app, mod, ".saito-sidebar-right");
 
     //
     // main panels
@@ -49,7 +49,6 @@ class RedSquareMain {
     mod.games    	= new RedSquareAppspaceGames(app, mod, ".appspace");
     mod.notifications  	= new RedSquareAppspaceNotifications(app, mod, ".appspace");
     mod.contacts    	= new RedSquareAppspaceContacts(app, mod, ".appspace");
-
 
   }
 

@@ -8,10 +8,8 @@ class RedSquareAppspaceGames {
   }
 
   render(app, mod) {
-
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
-
   }
 
 }

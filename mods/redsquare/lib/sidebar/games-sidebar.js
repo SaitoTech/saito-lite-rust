@@ -1,5 +1,5 @@
 const RedSquareGamesSidebarTemplate = require("./games-sidebar.template");
-const SaitoCalendar = require("./../../../lib/saito/new-ui/saito-calendar/saito-calendar");
+const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
 
 class RedSquareGamesSidebar {
 
