@@ -17,13 +17,12 @@ class RedSquareMain {
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod), "saito-container");
     }
 
-    
-
-    app.connection.on("tweet-render-request", (tweet) => {
-        console.log('inside emit');
-        console.log(tweet);
-        let item = new TweetBox(app, mod, tweet);
-        item.render(app, mod); 
+    app.connection.on("tweet-render-request", (tx) => {
+console.log("ATB 1");
+        let tweet = new TweetBox(app, mod, tx);
+console.log("ATB 2");
+        tweet.render(app, mod); 
+console.log("ATB 3");
     });
 
   }

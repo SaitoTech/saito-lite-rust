@@ -1,3 +1,4 @@
+const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
@@ -8,6 +9,7 @@ const RedSquarePostTweet = require('./lib/post-tweet');
 const RedSquareSidebar = require('./lib/sidebar');
 const RedSquareGamesSidebar = require('./lib/games-sidebar');
 const RedSquareGamesAppspace = require('./lib/games-appspace');
+const JSON = require("json-bigint");
 
 class RedSquare extends ModTemplate {
 
@@ -20,6 +22,8 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
+
+    this.tweets = [];
 
     this.styles = [
       '/saito/saito.css',
@@ -62,9 +66,11 @@ class RedSquare extends ModTemplate {
       //this.addComponent(this.post_tweet)
 
       this.lsidebar.addComponent(this.menu);
+console.log("A");
       this.app.modules.respondTo("chat-manager").forEach(mod => {
 	this.lsidebar.addComponent(mod.respondTo("chat-manager"));
       });
+console.log("B");
       //this.lsidebar.addComponent(this.chatBox);
 
       this.ui_initialized = true;
@@ -137,13 +143,42 @@ class RedSquare extends ModTemplate {
 
 
   onPeerHandshakeComplete(app, peer) {
+
+    let redsquare_self = this;
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
       `SELECT * FROM tweets9 DESC LIMIT 100`,
       (res) => {
         if (res.rows) {
           res.rows.forEach(row => {
-            this.app.connection.emit('tweet-render-request', row);
+
+	    let new_tweet = 1;
+
+	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
+	      if (redsquare_self.tweets[i].optional.sig == row.sig) {
+		new_tweet = 0;
+	      }
+	    }
+
+	    if (new_tweet) {
+
+	      let tx = new saito.default.transaction(JSON.parse(row.tx));
+
+	      if (!tx.optional) { tx.optional = {}; }
+	      tx.optional.sig = tx.transaction.sig;
+	      tx.optional.content = row.content;
+	      tx.optional.created_at = row.created_at;
+	      tx.optional.flagged = row.flagged;
+	      tx.optional.identicon = row.identicon;
+	      tx.optional.moderated = row.moderated;
+	      tx.optional.parent_id = row.parent_id;
+	      tx.optional.thread_id = row.thread_id;
+	      tx.optional.updated_at = row.updated_at;
+
+  	      redsquare_self.tweets.push(tx);
+              app.connection.emit('tweet-render-request', tx);
+	    }
           });
         }
       }
@@ -174,12 +209,15 @@ class RedSquare extends ModTemplate {
   sendTweetTransaction(data) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
+    let thread_id = data.parent_id;
+    if (data.thread_id) { thread_id = data.thread_id; }
 
     newtx.msg = {
       module: this.name,
       content: data.content,
       img: data.img,
       parent_id: data.parent_id,
+      thread_id: thread_id,
       flagged: data.flagged,
       moderated: data.moderated,
       request: "create tweet",
@@ -188,13 +226,16 @@ class RedSquare extends ModTemplate {
 
     this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
+
   }
 
   receiveTweetTransaction(blk, tx, conf, app) {
+
     let txmsg = tx.returnMessage();
 
-    let txn = '';//JSON.stringify(tx); currently getting error when storing tx to db
-    let tx_sig = tx.transaction.sig;
+    let txn = JSON.stringify(tx.transaction);
+    let sig = tx.transaction.sig;
+    let thread_id = txmsg.thread_id;
     let parent_id = txmsg.parent_id;
     let publickey = tx.transaction.from[0].add;
     let flagged = txmsg.flagged;
@@ -206,8 +247,9 @@ class RedSquare extends ModTemplate {
 
     let sql = `INSERT INTO tweets9 (
                 tx,
-                tx_sig,
+                sig,
                 parent_id, 
+                thread_id, 
                 publickey,
                 flagged,
                 moderated,
@@ -217,8 +259,9 @@ class RedSquare extends ModTemplate {
                 updated_at
               ) VALUES (
                 $txn,
-                $tx_sig,
+                $sig,
                 $parent_id, 
+                $thread_id, 
                 $publickey,
                 $flagged,
                 $moderated,
@@ -230,8 +273,9 @@ class RedSquare extends ModTemplate {
 
     let params = {
       $txn: txn,
-      $tx_sig: tx_sig,
+      $sig: sig,
       $parent_id: parent_id,
+      $thread_id: thread_id,
       $publickey: publickey,
       $flagged: flagged,
       $moderated: moderated,

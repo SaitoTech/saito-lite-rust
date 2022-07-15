@@ -1,3 +1,4 @@
+const RedSquareMainTemplate = require("./main/redsquare-main.template");
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar");
 const RedSquareGamesSidebar = require("./games-sidebar");
@@ -31,8 +32,10 @@ class RedSquareMenu {
       document.querySelector(".saito-sidebar.right").remove();
       mod.wide_sidebar.render(app, mod);
 
-      document.querySelector(".appspace").innerHTML = "";
-      mod.main.render(app, mod);
+      document.querySelector(".appspace").innerHTML = RedSquareMainTemplate(app, mod);
+      for (let i = 0; i < mod.tweets.length; i++) {
+        app.connection.emit('tweet-render-request', mod.tweets[i]);
+      }
 
     }
 
