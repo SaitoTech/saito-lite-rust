@@ -11,14 +11,14 @@ class RedSquareGamesSidebar {
 
   render(app, mod, selector="") {
 
-    if (!document.querySelector(".saito-sidebar.right")) {
+    if (document.querySelector(".saito-sidebar.right")) {
+      document.querySelector(".saito-sidebar.right").remove();
+    }
 
-      if (selector != "") {
-        app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), selector);
-      } else {
-        app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), this.selector);
-      }
-
+    if (selector != "") {
+      app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), selector);
+    } else {
+      app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), this.selector);
     }
 
     this.attachEvents(app, mod);

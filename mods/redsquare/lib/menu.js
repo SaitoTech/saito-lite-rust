@@ -28,27 +28,22 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-home');
     obj.onclick = (e) => {
 
-      // re-render sidebar
-      document.querySelector(".saito-sidebar.right").remove();
-      mod.wide_sidebar.render(app, mod);
-
-      document.querySelector(".appspace").innerHTML = RedSquareMainTemplate(app, mod);
+      mod.home.render(app, mod, ".appspace");
+      mod.rsidebar.render(app, mod);
       for (let i = 0; i < mod.tweets.length; i++) {
         app.connection.emit('tweet-render-request', mod.tweets[i]);
       }
 
     }
 
-    obj = document.querySelector('.redsquare-menu-invites');
+    obj = document.querySelector('.redsquare-menu-notifications');
     obj.onclick = (e) => {
 
-      // re-render sidebar
-      document.querySelector(".saito-sidebar.right").remove();
-      mod.wide_sidebar.render(app, mod);
+      mod.notifications.render(app, mod, ".appspace");
+      mod.rsidebar.render(app, mod);
 
-      document.querySelector(".appspace").innerHTML = "";
-      let invites_self = app.modules.returnModule("Invites");
-      invites_self.respondTo("appspace").render(invites_self.app, invites_self);
+      //let invites_self = app.modules.returnModule("Invites");
+      //invites_self.respondTo("appspace").render(invites_self.app, invites_self);
     }
 
     obj = document.querySelector('.redsquare-menu-settings');
@@ -66,37 +61,16 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-contacts');
     obj.onclick = (e) => {
 
-      // re-render sidebar
-      document.querySelector(".saito-sidebar.right").remove();
-      mod.wide_sidebar.render(app, mod);
+      mod.contacts.render(app, mod, ".appspace");
+      mod.rsidebar.render(app, mod);
 
-      document.querySelector(".appspace").innerHTML = "";
-      mod.contactlist.render(app, mod);
     }
 
-    obj = document.querySelector('.redsquare-menu-arcade');
+    obj = document.querySelector('.redsquare-menu-games');
     obj.onclick = (e) => {
 
-      //
-      //let arcade_mod = app.modules.returnModule("Arcade");
-      //ArcadeMain.render(app, arcade_mod);
-      //ArcadeMain.attachEvents(app, arcade_mod);
-
-
-      // re-render element
-      mod.games_appspace.render(app, mod);
-
-      // re-render element
-      document.querySelector(".saito-sidebar.right").remove();
-      mod.games_sidebar.render(app, mod);
-
-
-/***
-      // remove appspace content and re-fill
-      document.querySelector(".appspace").innerHTML = "";
-      let arcade_self = app.modules.returnModule("Arcade");
-      arcade_self.respondTo("appspace").render(arcade_self.app, arcade_self);
-***/
+      mod.games.render(app, mod, ".appspace");
+      mod.gsidebar.render(app, mod);
 
       //
       // we need a good way to remove events

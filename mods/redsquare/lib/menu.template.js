@@ -14,11 +14,11 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="fas fa-home"></i>
                   <span> Home </span>
                 </li>
-                <li class="redsquare-menu-arcade">
+                <li class="redsquare-menu-games">
                   <i class="fas fa-gamepad"></i>
                   <span> Games</span>
                 </li>
-                <li class="redsquare-menu-invites">
+                <li class="redsquare-menu-notifications">
                   <i class="far fa-id-card"></i>
                   <span> Notifications</span>
                 </li>

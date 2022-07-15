@@ -1,6 +1,5 @@
-const SaitoGroupTemplate = require('./../../../lib/saito/new-ui/templates/saito-group.template');
-const SaitoUserTemplate = require('./../../../lib/saito/new-ui/templates/saito-user.template');
-
+const SaitoGroupTemplate = require('./../../../../lib/saito/new-ui/templates/saito-group.template');
+const SaitoUserTemplate = require('./../../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod) => {
 
