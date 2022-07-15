@@ -18,11 +18,8 @@ class RedSquareMain {
     }
 
     app.connection.on("tweet-render-request", (tx) => {
-console.log("ATB 1");
         let tweet = new TweetBox(app, mod, tx);
-console.log("ATB 2");
         tweet.render(app, mod); 
-console.log("ATB 3");
     });
 
   }

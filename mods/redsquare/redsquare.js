@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const SaitoSidebar = require('../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
+
 const RedSquareFriends = require('./lib/friends');
 const RedSquareMain = require('./lib/main/redsquare-main');
 const RedSquareMenu = require('./lib/menu');
