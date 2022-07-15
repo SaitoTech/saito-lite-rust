@@ -8,7 +8,7 @@
       ground_units	:	["infantry","infantry","infantry","infantry","infantry","spacedock"],
       tech		:	["neural-motivator","antimass-deflectors", "faction1-orbital-drop", "faction1-versatile", "faction1-flagship"],
       background	: 	"faction1.jpg",
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction1-promissary"],
       commodity_limit	:	4,
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the Sol Federation. a Terran faction under cellular military government. Your reinforced infantry and tactical flexibility will be important in your fight for the Imperial Throne. Good luck!</div>`
     });
@@ -185,5 +185,58 @@
 
     });
 
+
+
+
+    this.importPromissary("faction1-promissary", {
+      name        :       "Military Support" ,
+      faction     :       -1,
+      text        :       "Owner loses 1 strategy token. Redeemer may play 2 infantry on any planet they control" ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction1-promissary';
+          x.html = '<li class="option" id="faction1-promissary">Military Support (Sol Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction1") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction1-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+        let sol_player = imperium_self.returnPlayerOfFaction("faction1");
+        if (imperium_self.game.player == player) {
+	  let my_planets = imperium_self.returnPlayerPlanetCards(imperium_self.game.player);
+          imperium_self.playerSelectPlanetWithFilter(
+            "Sol Promissary - select planet on which to deploy 2 infantry: " ,
+            function(planet) {
+              if (my_planets.includes(planet)) { return 1; } return 0;
+            },
+            function(p) {
+	      let sol_player = imperium_self.returnPlayerOfFaction("faction1");
+	      let planet = imperium_self.game.players[p];
+
+              imperium_self.addMove("produce\t"+imperium_self.game.player+"\t"+"1"+"\t"+planet.idx+"\t"+"infantry"+"\t"+planet.sector);
+              imperium_self.addMove("produce\t"+imperium_self.game.player+"\t"+"1"+"\t"+planet.idx+"\t"+"infantry"+"\t"+planet.sector);
+              imperium_self.addMove("expend\t"+sol_player+"\t"+"strategy"+"\t"+"1");
+              imperium_self.addMove("NOTIFY\t" + imperium_self.returnFaction(imperium_self.game.player) + " drops 2 infantry onto " + planet.name);
+              imperium_self.addMove("give" + "\t" + player + "\t" + sol_player + "\t" + "promissary" + "\t"+"faction1-promissary");
+              imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems Sol Promissary");
+              imperium_self.endTurn();
+              return 0;
+            },
+            null
+          );
+          return 0;
+        }
+        return 0;
+      }
+    });
 
 

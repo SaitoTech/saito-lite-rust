@@ -1,23 +1,24 @@
-module.exports = (app, mod, game) => {
-
+module.exports = (app, mod, league) => {
   let html = `
-      <div class="league-component-existing-league-box">
+      <div class="league-component-existing-league-box" id="${league.id}">
         
-        <h2>${game.game}</h2>
-        <p>Type: ${game.type}</p>
-        <p>Admin: ${game.publickey}</p>
+        <h2>${league.name}</h2>
+        <div>Type: ${league.type}</div>
+        <div>Algo: ${league.ranking}</div>
+        <div>Players: ${league.playerCnt} / ${league.max_players}</div>
+        <div>Admin: ${league.admin.substring(0,10)+"..."}</div>
         
     `;
 
-    if (!game.admin) { 
-        html +=`<button class="league-component-existing-league-join" data-league-id="${game.id}">Join League</button>`;
-    } else {
-        html += '<a href="#" class="league-component-existing-league-invite">Invite</a>';
+    if (app.wallet.returnPublicKey() == league.admin) { 
+     html += `<button class="league-component-existing-league" data-cmd="invite" data-league-id="${league.id}">Invite</button>`;
     }
+    if (league.myRank == undefined || league.myRank < 0){
+     html +=`<button class="league-component-existing-league" data-cmd="join" data-league-id="${league.id}">Join</button>`; 
+    }
+    html +=`<button class="league-component-existing-league" data-cmd="view" data-league-id="${league.id}">View</button>`;
 
-  html += `
-      </div>
-  `;
+  html += `</div>`;
 
   return html;
 }

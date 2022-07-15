@@ -5,8 +5,6 @@
  	text : "When another player plays an action card, you may cancel that action card" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
-
 	  //
 	  // this runs in actioncard post...
 	  //
@@ -14,7 +12,6 @@ console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
 	    if (imperium_self.game.queue[i].indexOf("action_card_") >= 0) {
 	      let removed_previous = 0;
 	      if (imperium_self.game.queue[i].indexOf("action_card_post") == 0) { removed_previous = 1; }
-console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 	      if (imperium_self.game.queue[i].indexOf("sabotage") > 0) { removed_previous = 0; }
 	      if (imperium_self.game.queue[i].indexOf("resolve") != 0) {
 	        imperium_self.game.queue.splice(i, 1);
@@ -36,8 +33,6 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
  	text : "When another player plays an action card, you may cancel that action card" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
-
 	  //
 	  // this runs in actioncard post...
 	  //
@@ -45,7 +40,6 @@ console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
 	    if (imperium_self.game.queue[i].indexOf("action_card_") >= 0) {
 	      let removed_previous = 0;
 	      if (imperium_self.game.queue[i].indexOf("action_card_post") == 0) { removed_previous = 1; }
-console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 	      if (imperium_self.game.queue[i].indexOf("sabotage") > 0) { removed_previous = 0; }
 	      if (imperium_self.game.queue[i].indexOf("resolve") != 0) {
 	        imperium_self.game.queue.splice(i, 1);
@@ -67,8 +61,6 @@ console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
  	text : "When another player plays an action card, you may cancel that action card" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 
-console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
-
 	  //
 	  // this runs in actioncard post...
 	  //
@@ -76,7 +68,6 @@ console.log("QUEUE: " + JSON.stringify(imperium_self.game.queue));
 	    if (imperium_self.game.queue[i].indexOf("action_card_") >= 0) {
 	      let removed_previous = 0;
 	      if (imperium_self.game.queue[i].indexOf("action_card_post") == 0) { removed_previous = 1; }
-console.log("removing: " + JSON.stringify(imperium_self.game.queue[i]));
 	      if (imperium_self.game.queue[i].indexOf("sabotage") > 0) { removed_previous = 0; }
 	      if (imperium_self.game.queue[i].indexOf("resolve") != 0) {
 	        imperium_self.game.queue.splice(i, 1);

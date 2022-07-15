@@ -10,7 +10,7 @@
       tech		: 	["graviton-laser-system","faction3-peace-accords","faction3-quash","faction3-flagship"],
       background	: 	'faction3.jpg',
       commodity_limit	:	4,
-      promissary_notes	:	["trade","political","ceasefire","throne"],
+      promissary_notes	:	["trade","political","ceasefire","throne","faction3-promissary"],
       intro             :       `<div style="font-weight:bold">Welcome to Red Imperium!</div><div style="margin-top:10px;margin-bottom:15px;">You are playing as the XXCha Kingdom, a faction which excels in diplomacy and defensive weaponry. With the proper alliances and political maneuvers your faction you can be a contender for the Imperial Throne. Good luck!</div>`
     });
   
@@ -312,7 +312,7 @@
       type        :       "special" ,
       color	  :	  "yellow" ,
       prereqs	:	["yellow","yellow"] ,
-      text	:	  "Terminate the turn of active player who activates a system containing your ship" ,
+      text	:	  "Exhaust to terminate turn of player who activates system containing your ship" ,
       initialize  : function(imperium_self, player) {
         if (imperium_self.game.players_info[player-1].field_nullification == undefined) {
           imperium_self.game.players_info[player-1].field_nullification = 0;
@@ -391,5 +391,66 @@
 	return 1;
       }
     });
+
+
+
+    this.importPromissary("faction3-promissary", {
+      name        :       "Political Favor" ,
+      faction     :       -1,
+      text        :       "Redeemer discards an upcoming agenda, XXCha loses a strategy token." ,
+      menuOption  :       function(imperium_self, menu, player) {
+        let x = {};
+        if (menu == "main") {
+          x.event = 'faction3-promissary';
+          x.html = '<li class="option" id="faction3-promissary">Political Favour (XXCha Promissary)</li>';
+        }
+        return x;
+      },
+      menuOptionTriggers:  function(imperium_self, menu, player) {
+        if (menu != "main") { return 0; }
+        if (imperium_self.returnPlayerOfFaction("faction3") != player) {
+          if (imperium_self.doesPlayerHavePromissary(player, "faction3-promissary")) {
+            return 1;
+          }
+          return 0;
+        }
+	return 0;
+      },
+      menuOptionActivated:  function(imperium_self, menu, player) {
+
+        let xxcha_player = imperium_self.returnPlayerOfFaction("faction3");
+        if (imperium_self.game.player == player) {
+
+          let html = '';
+          html += 'Select one agenda to quash in the Galactic Senate.<ul>';
+          for (i = 0; i < imperium_self.game.state.agendas.length; i++) {
+            if (imperium_self.game.state.agendas[i] != "") {
+              html += '<li class="option" id="'+imperium_self.game.state.agendas[i]+'">' + imperium_self.agenda_cards[imperium_self.game.state.agendas[i]].name + '</li>';
+            }
+          }
+          html += '</ul>';
+
+          imperium_self.updateStatus(html);
+
+          $('.option').off();
+          $('.option').on('mouseenter', function() { let s = $(this).attr("id"); imperium_self.showAgendaCard(s); });
+          $('.option').on('mouseleave', function() { let s = $(this).attr("id"); imperium_self.hideAgendaCard(s); });
+          $('.option').on('click', function() {
+
+             let agenda_to_quash = $(this).attr('id');
+             imperium_self.updateStatus("Quashing Agenda");
+
+             imperium_self.addMove("quash\t"+agenda_to_quash+"\t"+"1"); // 1 = re-deal
+             imperium_self.addMove("expend\t"+xxcha_player+"\t"+"strategy"+"\t"+"1");
+             imperium_self.addMove("give" + "\t" + player + "\t" + xxcha_player + "\t" + "promissary" + "\t"+"faction3-promissary");
+             imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " redeems XXCha Promissary");
+             imperium_self.endTurn();
+          });
+        }
+        return 0;
+      },
+    });
+
+
 
 

@@ -8,6 +8,7 @@ const ArcadeGameSidebar = require("./lib/arcade-sidebar/arcade-game-sidebar");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ArcadeContainerTemplate = require("./lib/arcade-main/templates/arcade-container.template");
 const ArcadeLink = require("./lib/arcade-main/arcade-link");
+const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 
@@ -54,18 +55,16 @@ class Arcade extends ModTemplate {
           this.app.storage.saveOptions();
         }
         //this.renderSidebar();
-        try {
           let chat_mod = this.app.modules.returnModule("Chat");
-          if (
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
+          if (chat_mod){
+            if (chat_mod?.groups && 
+                chat_mod.groups.length > 0 &&
+                this.chat_open == 0 &&
+                this.app.options.auto_open_chat_box
+             ) {
+              this.chat_open = 1;
+              chat_mod.openChats();
           }
-        } catch (err) {
-          console.log("Err: " + err);
         }
       }
     }
@@ -130,6 +129,11 @@ class Arcade extends ModTemplate {
         browser_active: this.browser_active,
         slug: this.returnSlug(),
       };
+    }
+    if (type == "appspace") {
+      this.scripts['/arcade/new-style.css'];
+      super.render(this.app, this); // for scripts + styles
+      return new ArcadeAppspace(this.app, this);
     }
     return null;
   }

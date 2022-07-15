@@ -41,10 +41,30 @@
 
 
   givePromissary(sender, receiver, promissary) {
-    this.game.players_info[receiver-1].promissary_notes.push(promissary);
+
+    //
+    // the promissary may be
+    //
+    let actual_promissary_name = promissary;
+    if (!this.game.players_info[sender-1].promissary_notes.includes(promissary)) {
+      for (let i = 0; i < this.game.players_info[sender-1].promissary_notes.length; i++) {
+	let pm = this.game.players_info[sender-1].promissary_notes[i];
+	if (pm.indexOf(promissary) > 0) {
+	  let tmpar = pm.split("-");
+	  let tmpname = tmpar[1];
+	  for (let z = 2; z < tmpar.length; z++) {
+	    tmpname += '-';
+	    tmpname += tmpar[z];
+	  }
+	  actual_promissary_name = tmpname;
+	}
+      }
+    }
+
+    this.game.players_info[receiver-1].promissary_notes.push(actual_promissary_name);
 
     for (let k = 0; k < this.game.players_info[sender-1].promissary_notes.length; k++) {
-      if (this.game.players_info[sender-1].promissary_notes[k] === promissary) {
+      if (this.game.players_info[sender-1].promissary_notes[k] === actual_promissary_name) {
         this.game.players_info[sender-1].promissary_notes.splice(k, 1);
         k = this.game.players_info[sender-1].promissary_notes.length;
       }

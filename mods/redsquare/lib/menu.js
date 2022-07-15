@@ -18,11 +18,29 @@ class RedSquareMenu {
 
   attachEvents(app, mod) {
 
-    let obj = document.querySelector('.redsquare-menu-invites');
+    let obj;
+
+    obj = document.querySelector('.redsquare-menu-invites');
     obj.onclick = (e) => {
-      document.querySelector(".email-appspace").innerHTML = "";
+      document.querySelector(".appspace").innerHTML = "";
       let invites_self = app.modules.returnModule("Invites");
-      invites_self.respondTo("email-appspace").render(invites_self.app, invites_self);
+      invites_self.respondTo("appspace").render(invites_self.app, invites_self);
+    }
+
+    obj = document.querySelector('.redsquare-menu-settings');
+    obj.onclick = (e) => {
+      document.querySelector(".appspace").innerHTML = "";
+      let settings_self = app.modules.returnModule("Settings");
+      settings_self.respondTo("appspace").render(settings_self.app, settings_self);
+    }
+
+    obj = document.querySelector('.redsquare-menu-arcade');
+    obj.onclick = (e) => {
+      document.querySelector(".appspace").innerHTML = "";
+
+      let arcade_self = app.modules.returnModule("Arcade");
+      arcade_self.respondTo("appspace").render(arcade_self.app, arcade_self);
+
     }
 
   } 

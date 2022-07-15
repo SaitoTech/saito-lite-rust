@@ -115,6 +115,7 @@ class Solitrio extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.endGame();
         game_mod.newRound();
         game_mod.endTurn();
       }
@@ -571,6 +572,7 @@ class Solitrio extends GameTemplate {
 
       if (mv[0] === "win"){
         this.game.state.wins++;
+        this.endGame(this.app.wallet.returnPublicKey());
         this.newRound();
       }
 
@@ -716,6 +718,7 @@ no status atm, but this is to update the hud
         return;
       }
       if (action == "quit"){
+        solitrio_self.endGame();
         solitrio_self.newRound();
         solitrio_self.endTurn();
         return;
@@ -727,7 +730,6 @@ no status atm, but this is to update the hud
 
     });
   }
-
 
 
   returnCardImageHTML(name) {
@@ -869,6 +871,12 @@ no status atm, but this is to update the hud
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
   }
+
+  receiveGameoverRequest(blk, tx, conf, app) {
+    console.log("The game never ends in Solitrio");
+    return;
+  }
+
 
 }
 

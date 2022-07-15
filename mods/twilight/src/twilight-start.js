@@ -2399,7 +2399,7 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["romanian", "defectors", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["romanian", "indopaki", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 
