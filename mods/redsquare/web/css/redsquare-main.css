@@ -1,4 +1,17 @@
 
+.arcade-title {
+    padding-top: 0.5rem;
+}
+.arcade-intro {
+    font-size: 1.8rem;
+    line-height: 2.4rem;
+    clear: both;
+    padding-top: 1rem;
+}
+
+.how-to-play {
+  border-bottom: 1px dashed red;
+}
 
 .saito-leaderboard {
 }
@@ -24,10 +37,9 @@
 .saito-leaderboard-gamename {
   grid-column: 1;
 }
+
 .saito-leaderboard-rank {
-  padding-right: 4rem;
   grid-column: 2;
-  text-align: right;
 }
 .saito-leaderboard-change {
   grid-column: 3;
@@ -377,7 +389,7 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .redsquare-games-toolbar-container {
-    margin-top: 40px;
+    margin-top: 1.5rem;
     position: relative;
 } 
 
@@ -411,9 +423,16 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     justify-content: space-around;
 }
 
+.league-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem;
+}
 .rd-league-box {
     min-height: 370px;
     min-width: 44%;
+    display: grid;
+    grid-template-rows: min-content 1fr;
     position: relative;
     border-radius: 10px;
     border:  1px solid;
@@ -422,6 +441,10 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .rd-bg-img-cont {
+    grid-column: 1 span;
+    grid-row: 1 span;
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
     width: 100%;
     height: 248px;
     background-size: cover;
@@ -447,7 +470,6 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .league-join-btn {
-    margin-top: 10px;
     font-size: 19px;
     color: #ea462f;
     font-weight: bold;
@@ -459,9 +481,6 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .league-info-cont {
-    position: absolute;
-    left: 15px;
-    bottom: 10px;
 }
 
 .league-heading {
@@ -484,6 +503,42 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 
 .chess .rd-bg-img-cont {
     background: url(https://saito.io/chess/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.spider .rd-bg-img-cont {
+    background: url(https://saito.io/spider/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.imperium .rd-bg-img-cont {
+    background: url(https://saito.io/imperium/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.twilight .rd-bg-img-cont {
+    background: url(https://saito.io/twilight/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.wuziqi .rd-bg-img-cont {
+    background: url(https://saito.io/wuziqi/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.wordblocks .rd-bg-img-cont {
+    background: url(https://saito.io/wordblocks/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.scotland .rd-bg-img-cont {
+    background: url(https://saito.io/scotland/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.hereistand .rd-bg-img-cont {
+    background: url(https://saito.io/his/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.spider .rd-bg-img-cont {
+    background: url(https://saito.io/spider/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.solitrio .rd-bg-img-cont {
+    background: url(https://saito.io/solitrio/img/arcade/arcade.jpg);
     background-size: cover;
 }
 
@@ -525,7 +580,18 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .league-info-link {
-    text-decoration: underline;
+    color: #777777;
+    justify-self: end;
     cursor: pointer;
-    line-height: 25px;
+}
+.saito-leaderboard-row2 {
+display: grid;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    grid-template-columns: 1fr min-content;
+}
+.saito-leaderboard-row2.odd {
+    background-color: #fafafa;
 }

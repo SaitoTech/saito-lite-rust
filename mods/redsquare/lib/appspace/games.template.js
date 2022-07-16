@@ -4,57 +4,227 @@ module.exports = (app, mod) => {
 
     return `
 
-  <div class="redsquare-games-heading-container">
-    <h4 class="">PLAY A GAME</h4>
-    <p>Create a game by clicking on the boxes below, or join an game that is waiting for players by clicking on the invite in our right-hand sidebar.</p>
-  </div>
-  <div class="redsquare-games-toolbar-container">
-    <div class="saito-select">
-      <select class="saito-slct">
-        <option value="new">Newest</option>
-        <option value="popular">Popular</option>
-        <option value="joined">Joined</option>
-        <option value="not-joined">Not Joined</option>
-      </select>
-    </div>
-    <!--<div class="categories">
-      <div class="saito-button-primary small">All</div>
-      <div class="saito-button-secondary small">Chess</div>
-      <div class="saito-button-secondary small">Settlers</div>
-    </div>-->
+<div class="redsquare-games-heading-container">
+    <div class="saito-button-secondary small" style="
+    float: right;
+">Schedule for Later</div><div class="saito-button-secondary small" style="
+    float: right;
+">Play Game Now</div><h4 class="arcade-title">SAITO ARCADE</h4>
+    <p class="arcade-intro" style="
+    clear: both;
+">Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.</p>
   </div>
 
   <div class="rd-league-container">
 
     <div class="rd-league-box chess">
-      <div class="rd-bg-img-cont"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-      <h4 class="league-heading">Chess League</h4>
-      <div class="league-info-cont ranking">
-
-        <div class="item"><span>1.</span>khan@aito</div>
-        <div class="item"><span>2.</span>rnnmbeh91Aow9o9qnh...</div>
-        <div class="item"><span>3.</span>rnnmbeh91Aow9o9qnh...</div>
-        <div class="league-join-btn">Create Game</div>
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Chess</h4></div>
       </div>
-      <div class="league-info-cont right ranking">  
-          <div class="league-info-link">How to play?</div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
       </div>
     </div>
+
+
+
+    <div class="rd-league-box twilight">
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Twilight Struggle</h4></div>
+      </div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
+      </div>
+    </div>
+
+
+
+    <div class="rd-league-box spider">
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Spider Solitaire</h4></div>
+      </div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
+      </div>
+    </div>
+
+
+    <div class="rd-league-box imperium">
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Red Imperium</h4></div>
+      </div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
+      </div>
+    </div>
+
+
 
     <div class="rd-league-box settlers">
-      <div class="rd-bg-img-cont"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-      <h4 class="league-heading">Settlers League</h4>
-      <div class="league-info-cont ranking">
-
-        <div class="item"><span>1.</span>khan@aito</div>
-        <div class="item"><span>2.</span>rnnmbeh91Aow9o9qnh...</div>
-        <div class="item"><span>3.</span>rnnmbeh91Aow9o9qnh...</div>
-        <div class="league-join-btn">Create Game</div>
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Settlers of Saitoa</h4></div>
       </div>
-      <div class="league-info-cont right ranking">  
-          <div class="league-info-link">How to play?</div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
       </div>
     </div>
+
+
+
+    <div class="rd-league-box scotland">
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Scotland Yard</h4></div>
+      </div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
+      </div>
+    </div>
+
+
+
+    <div class="rd-league-box hereistand">
+      <div class="rd-bg-img-cont">
+	<div class="rd-bg-img-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
+	<div class="rd-bg-img-empty"></div>
+        <div class="rd-bg-img-title"><h4 class="league-heading">Here I Stand</h4></div>
+      </div>
+      <div class="league-info-cont ranking">
+        <div class="league-rankings">
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">david@saito</div>
+          <div class="saito-leaderboard-rank">1</div>
+</div>
+<div class="saito-leaderboard-row2">
+          <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+          <div class="saito-leaderboard-rank">2</div>
+</div>
+<div class="saito-leaderboard-row2 odd">
+          <div class="saito-leaderboard-gamename">richard@saito</div>
+          <div class="saito-leaderboard-rank">3</div>
+</div>
+        </div>
+	<div class="league-controls">
+          <div class="league-join-btn">Create Game</div>
+          <div class="league-info-link"><span class="how-to-play">how to play?</span></div>
+	</div>
+      </div>
+    </div>
+
+
 
   </div>
   `;

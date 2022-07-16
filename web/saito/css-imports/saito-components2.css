@@ -80,6 +80,7 @@ Saito Arcade Invite
 .saito-arcade-game-image {
   height: 100%;
   width: 100%;
+  opacity: 0.8;
 }
 
 .saito-arcade-invite-name-container {
