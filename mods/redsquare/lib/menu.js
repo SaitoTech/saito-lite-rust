@@ -26,13 +26,8 @@ class RedSquareMenu {
 
     obj = document.querySelector('.redsquare-menu-home');
     obj.onclick = (e) => {
-
       mod.home.render(app, mod, ".appspace");
       mod.rsidebar.render(app, mod, ".saito-sidebar-right");
-      for (let i = 0; i < mod.tweets.length; i++) {
-        app.connection.emit('tweet-render-request', mod.tweets[i]);
-      }
-
     }
 
     obj = document.querySelector('.redsquare-menu-notifications');
@@ -47,6 +42,7 @@ class RedSquareMenu {
       // re-render sidebar
       mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
+      // settings can render into appspace
       document.querySelector(".appspace").innerHTML = "";
       let settings_self = app.modules.returnModule("Settings");
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
@@ -62,18 +58,6 @@ class RedSquareMenu {
     obj.onclick = (e) => {
       mod.games.render(app, mod, ".appspace");
       mod.gsidebar.render(app, mod, ".saito-sidebar-right");
-
-      //
-      // we need a good way to remove events
-      //
-      let red_button = document.querySelector("#redsquare-red-button");
-      red_button.innerHTML = "Create Game";
-      red_button.addEventListener("click", (e) => {
-        let arcade_self = app.modules.returnModule("Arcade");
-        GameCreateMenu.render(app, arcade_self);
-        GameCreateMenu.attachEvents(app, arcade_self);
-      });
-
     }
 
   } 

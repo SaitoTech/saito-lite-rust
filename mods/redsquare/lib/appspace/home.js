@@ -1,5 +1,5 @@
 const RedSquareAppspaceHomeTemplate = require("./home.template");
-const TweetBox = require("./../tweet-box");
+const Tweet = require("./../tweet");
 
 
 class RedSquareAppspaceHome {
@@ -15,9 +15,13 @@ class RedSquareAppspaceHome {
     app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
 
     app.connection.on("tweet-render-request", (tx) => {
-        let tweet = new TweetBox(app, mod, tx);
-        tweet.render(app, mod); 
+        let tweet = new Tweet(app, mod, tx);
+        tweet.render(app, mod, ".redsquare-list"); 
     });
+
+    for (let i = 0; i < mod.tweets.length; i++) {
+        app.connection.emit('tweet-render-request', mod.tweets[i]);
+    }
 
   }
 

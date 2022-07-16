@@ -34,9 +34,6 @@ class RedSquare extends ModTemplate {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
 
-//      this.wide_sidebar = new RedSquareSidebar(this.app, this, ".saito-container");
-//      this.games_sidebar = new RedSquareGamesSidebar(this.app, this, ".saito-container");
-
       this.addComponent(this.main);
       this.addComponent(this.header);
 
@@ -144,6 +141,7 @@ class RedSquare extends ModTemplate {
 	      tx.optional.updated_at = row.updated_at;
 
   	      redsquare_self.tweets.push(tx);
+console.log("RENDER TWEET REQUEST");
               app.connection.emit('tweet-render-request', tx);
 	    }
           });

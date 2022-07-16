@@ -4,16 +4,15 @@ module.exports = (app, mod) => {
 
     return `
 
-<div class="redsquare-games-heading-container">
-    <div class="saito-button-secondary small" style="
-    float: right;
-">Schedule for Later</div><div class="saito-button-secondary small" style="
-    float: right;
-">Play Game Now</div><h4 class="arcade-title">SAITO ARCADE</h4>
-    <p class="arcade-intro" style="
-    clear: both;
-">Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.</p>
-  </div>
+      <div class="saito-page-header">
+        <div class="saito-button-secondary small" style="float: right;">Schedule for Later</div>
+        <div class="saito-button-secondary small" style="float: right;">Create New Game</div>
+        <div class="saito-page-header-title">SAITO ARCADE</div>
+        <div class="saito-page-header-text">
+Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.
+        </div>
+      </div>
+
 
   <div class="rd-league-container">
 

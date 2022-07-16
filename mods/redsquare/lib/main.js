@@ -1,6 +1,6 @@
 const SaitoSidebar = require('./../../../lib/saito/new-ui/saito-sidebar/saito-sidebar');
 const RedSquareMainTemplate = require("./main.template");
-const RedSquareTweetBox = require("./tweet-box");
+const RedSquareTweet = require("./tweet");
 const RedSquareSidebar = require("./sidebar/sidebar");
 const RedSquareMenu = require("./menu");
 const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
@@ -62,11 +62,13 @@ class RedSquareMain {
 
 
     mod.lsidebar.render(app, mod, ".saito-container");
+console.log("RENDER HOME");
     mod.home.render(app, mod, ".appspace");
+console.log("DONE HOME");
     mod.rsidebar.render(app, mod, ".saito-container");
 
     //app.connection.on("tweet-render-request", (tx) => {
-    //    let tweet = new RedSquareTweetBox(app, mod, tx);
+    //    let tweet = new RedSquareTweet(app, mod, tx);
     //    tweet.render(app, mod); 
     //});
 

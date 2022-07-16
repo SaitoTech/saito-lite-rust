@@ -1,13 +1,43 @@
 
-.arcade-title {
-    padding-top: 0.5rem;
+
+.redsquare-item {
+    padding: 2rem 3rem 2rem 1.5rem;
+    border-bottom: 1px solid #a5a5a533;
 }
-.arcade-intro {
-    font-size: 1.8rem;
-    line-height: 2.4rem;
-    clear: both;
-    padding-top: 1rem;
+
+.redsquare-item-contents {
+    padding-left: 6rem;
 }
+.redsquare-invite-participants {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 20rem 20rem;
+    row-gap: 2rem;
+    column-gap: 2rem;
+}
+.redsquare-invite-participants > .saito-user {
+    max-width: 20rem;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+}
+.redsquare-invite-title {
+  color: var(--saito-default-font-color);
+  background-color: white;
+  font-weight: bold;
+  font-size: 2.2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+
+
+
+
+
+
+
+
+
 
 .how-to-play {
   border-bottom: 1px dashed red;
@@ -94,18 +124,6 @@
     width: 150px;
 }
 
-
-#redsquare-list {
-    border: 1px solid #a5a5a533;
-    border-radius: .5rem;
-    padding-bottom: 1rem;
-
-}
-
-.redsquare-item {
-    padding: 2rem 3rem 2rem 1.5rem;
-    border-bottom: 1px solid #a5a5a533;
-}
 
 
 .redsquare-item:not(:last-child) {}

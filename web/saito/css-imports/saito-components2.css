@@ -40,6 +40,16 @@ Saito User
     font-size: 1.4rem;
 }
 
+.saito-user > div:nth-child(4).saito-user-alert , .saito-user-alert {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    font-size: 3rem;
+    background-color: var(--saito-primary);
+    color: white;
+    padding: 1rem;
+    white-space: nowrap;
+}
+
 .saito-user > div:nth-child(4) {
     cursor: pointer;
     grid-column-start: 3;
@@ -49,11 +59,40 @@ Saito User
     align-items: top;
 }
 
+
 .saito-user > .saito-datetime {
     align-items: top;
     grid-row-start: 2;
     grid-row-end: span 1;
 }
+
+
+/* ----------------------------------------------------------------
+Saito Page Header
+-----------------------------------------------------------------*/
+.saito-page-header {
+    padding-bottom: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.saito-page-header-title {
+    color: #222;
+    font-size: 3.25rem;
+    padding-top: 0.5rem;
+}
+.saito-page-header-button {
+    float: right;
+}
+.saito-page-header-text {
+    font-size: 1.8rem;
+    line-height: 2.4rem;
+    clear: both;
+    padding-top: 1rem;
+}
+
+
+
+
 
 
 
