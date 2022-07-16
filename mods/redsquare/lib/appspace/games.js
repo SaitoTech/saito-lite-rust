@@ -10,6 +10,14 @@ class RedSquareAppspaceGames {
   render(app, mod) {
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
+
+    attachEvents(app, mod);
+  }
+
+  attachEvents(app, mod) {
+    // this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`, ()=>{
+    //   this.restartQueue();
+    // });
   }
 
 }

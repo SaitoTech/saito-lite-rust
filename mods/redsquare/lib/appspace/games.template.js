@@ -35,9 +35,9 @@ module.exports = (app, mod) => {
       </div>
       <div class="league-info-cont right ranking">  
         <div class="heading">Top Players</div>
-        <div class="item"><span>1.</span> Khan</div>
-        <div class="item"><span>2.</span> David</div>
-        <div class="item"><span>3.</span> Richard</div>
+        <div class="item"><span>1.</span>khan@aito</div>
+        <div class="item"><span>2.</span>yuahasddakjdi12...</div>
+        <div class="item"><span>3.</span>yuahasddakjdi12...</div>
       </div>
     </div>
 
@@ -50,9 +50,9 @@ module.exports = (app, mod) => {
       </div>
       <div class="league-info-cont right ranking">  
         <div class="heading">Top Players</div>
-        <div class="item"><span>1.</span> Khan</div>
-        <div class="item"><span>2.</span> David</div>
-        <div class="item"><span>3.</span> Richard</div>
+        <div class="item"><span>1.</span>khan@aito</div>
+        <div class="item"><span>2.</span>yuahasddakjdi12...</div>
+        <div class="item"><span>3.</span>yuahasddakjdi12...</div>
       </div>
     </div>
 

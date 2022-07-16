@@ -442,6 +442,10 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     opacity: 0.1;
 }
 
+.rd-league-container:hover .rd-bg-img-cont {
+    //background-size: ;
+}
+
 .league-join-btn {
     margin-top: 15px;
     font-size: 19px;
