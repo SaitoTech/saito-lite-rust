@@ -29,30 +29,30 @@ module.exports = (app, mod) => {
     <div class="rd-league-box chess">
       <div class="rd-bg-img-cont"><i class="fas fa-solid fa-ellipsis-v"></i></div>
       <h4 class="league-heading">Chess League</h4>
-      <div class="league-info-cont">
-        <div class="league-info-link">How to play?</div>
+      <div class="league-info-cont ranking">
+
+        <div class="item"><span>1.</span>khan@aito</div>
+        <div class="item"><span>2.</span>rnnmbeh91Aow9o9qnh...</div>
+        <div class="item"><span>3.</span>rnnmbeh91Aow9o9qnh...</div>
         <div class="league-join-btn">Create Game</div>
       </div>
       <div class="league-info-cont right ranking">  
-        <div class="heading">Top Players</div>
-        <div class="item"><span>1.</span>khan@aito</div>
-        <div class="item"><span>2.</span>yuahasddakjdi12...</div>
-        <div class="item"><span>3.</span>yuahasddakjdi12...</div>
+          <div class="league-info-link">How to play?</div>
       </div>
     </div>
 
     <div class="rd-league-box settlers">
       <div class="rd-bg-img-cont"><i class="fas fa-solid fa-ellipsis-v"></i></div>
       <h4 class="league-heading">Settlers League</h4>
-      <div class="league-info-cont">
-        <div class="league-info-link">How to play?</div>
+      <div class="league-info-cont ranking">
+
+        <div class="item"><span>1.</span>khan@aito</div>
+        <div class="item"><span>2.</span>rnnmbeh91Aow9o9qnh...</div>
+        <div class="item"><span>3.</span>rnnmbeh91Aow9o9qnh...</div>
         <div class="league-join-btn">Create Game</div>
       </div>
       <div class="league-info-cont right ranking">  
-        <div class="heading">Top Players</div>
-        <div class="item"><span>1.</span>khan@aito</div>
-        <div class="item"><span>2.</span>yuahasddakjdi12...</div>
-        <div class="item"><span>3.</span>yuahasddakjdi12...</div>
+          <div class="league-info-link">How to play?</div>
       </div>
     </div>
 
