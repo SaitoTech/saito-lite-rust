@@ -439,7 +439,7 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     height: inherit;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    opacity: 0.4;
+    opacity: 0.1;
 }
 
 .league-join-btn {
@@ -455,18 +455,22 @@ h1, h2, h3, h4, h5, h6, .saito-username {
 }
 
 .league-info-cont {
-    margin-left: 15px;
-    margin-top: 30px;
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
 }
 
 .league-heading {
     color: #fff;
     font-size: 24px;
-    margin-top: -41px;
+    margin-top: -49px;
     position: absolute;
-    margin-left: 15px;
     font-weight: bold;
     z-index: 2;
+    background: rgba(0,0,0,0.5);
+    overflow: hidden;
+    width: 100%;
+    padding: 10px 15px;
 }
 
 .settlers .rd-bg-img-cont {
@@ -474,8 +478,8 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     background-size: cover;
 }
 
-.twilight .rd-bg-img-cont {
-    background: url(https://saito.io/twilight/img/arcade/arcade.jpg);
+.chess .rd-bg-img-cont {
+    background: url(https://saito.io/chess/img/arcade/arcade.jpg);
     background-size: cover;
 }
 
@@ -487,4 +491,30 @@ h1, h2, h3, h4, h5, h6, .saito-username {
     color: #fff;
     z-index: 2;
     font-size: 22px;
+    cursor: pointer;
+}
+
+
+.league-info-cont.right {
+    right: 15px;
+    left: inherit;
+    text-align: right;
+}
+
+.ranking .heading {
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.ranking .item {
+    font-size: 15px;
+}
+
+.ranking .item span {
+    margin-right: 5px;
+}
+
+.league-info-link {
+    text-decoration: underline;
+    cursor: pointer;
 }
