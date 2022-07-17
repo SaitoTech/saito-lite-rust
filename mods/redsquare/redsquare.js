@@ -174,17 +174,21 @@ console.log("RENDER TWEET REQUEST");
   sendTweetTransaction(data) {
 
     let newtx = this.app.wallet.createUnsignedTransaction();
-    let thread_id = data.parent_id;
+    let parent_id = "";
+    if (data.parent_id) { thread_id = data.parent_id; }
+    let thread_id = parent_id;
     if (data.thread_id) { thread_id = data.thread_id; }
+    let moderated = 0;
+    let flagged = 0;
 
     newtx.msg = {
       module: this.name,
       content: data.content,
       img: data.img,
-      parent_id: data.parent_id,
+      parent_id: parent_id,
       thread_id: thread_id,
-      flagged: data.flagged,
-      moderated: data.moderated,
+      flagged: flagged,
+      moderated: moderated,
       request: "create tweet",
       timestamp: new Date().getTime()
     };
