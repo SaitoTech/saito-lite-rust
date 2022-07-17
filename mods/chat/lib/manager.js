@@ -10,7 +10,7 @@ class ChatManager {
 
     render(app, mod, container = "") {
         if (!document.querySelector(".chat-manager")) {
-            app.browser.addElementToClass(ChatManagerTemplate(app, mod), container);
+            app.browser.addElementToSelector(ChatManagerTemplate(app, mod), container);
         }
         this.attachEvents(app, mod);
     }

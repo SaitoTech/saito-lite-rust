@@ -12858,7 +12858,7 @@ handleStrategyMenuItem() {
         <i class="fas fa-database white-stroke"></i>
         <span>${strategy_card_bonus}</span>
       </div>`;
-      this.app.browser.addElementToDom(strategy_card_bonus_html, s);
+      this.app.browser.addElementToDom(strategy_card_bonus_html, document.getElementById(s));
     }
 
     let thiscard = this.strategy_cards[s];
@@ -12881,7 +12881,7 @@ handleStrategyMenuItem() {
      `;
     }
 
-    this.app.browser.addElementToDom(card_html, s);   
+    this.app.browser.addElementToDom(card_html, document.getElementById(s));   
 
   }
 }
@@ -26686,12 +26686,12 @@ playerDiscardActionCards(num, mycallback=null) {
   ///////////////////////////////
   returnHomeworldSectors(players = 4) {
     if (players <= 2) {
-//      return ["1_1", "4_7"];
+      return ["1_1", "4_7"];
 //
 // for testing - place factions in fighting
 // position on start.
 //
-      return ["1_1", "2_1"];
+//      return ["1_1", "2_1"];
     }
 
     if (players <= 3) {

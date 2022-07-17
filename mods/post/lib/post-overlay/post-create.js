@@ -28,7 +28,7 @@ module.exports = PostCreate = {
       (file) => {
           console.log(file);
           this.new_post.images.push(file);
-          app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+          app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${file}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, document.getElementById("post-create-image-preview-container"));
           this.attachEvents(app, mod);
           document.querySelector(".post-create-title").style.display = "block";
           document.querySelector(".post-create-title").placeholder = "Give Your File a Title";
@@ -38,7 +38,7 @@ module.exports = PostCreate = {
 
     if (img_src != null) {
       this.new_post.images.push(img_src);
-      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${img_src}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, "post-create-image-preview-container");
+      app.browser.addElementToDom(`<div data-id="${this.new_post.images.length-1}" class="post-create-image-preview"><img src="${img_src}" style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;" /></div>`, document.getElementById("post-create-image-preview-container"));
       this.attachEvents(app, mod);
       document.querySelector(".post-create-title").style.display = "block";
       document.querySelector(".post-create-title").placeholder = "Give Your Screenshot a Title";

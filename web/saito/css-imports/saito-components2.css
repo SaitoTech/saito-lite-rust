@@ -2,6 +2,10 @@
 Saito User
 -----------------------------------------------------------------*/
 
+.saito-main {
+    width: 65rem;
+}
+
 .saito-user {
     display: grid;
     cursor: pointer;
@@ -40,6 +44,16 @@ Saito User
     font-size: 1.4rem;
 }
 
+.saito-user > div:nth-child(4).saito-user-alert , .saito-user-alert {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    font-size: 3rem;
+    background-color: var(--saito-primary);
+    color: white;
+    padding: 1rem;
+    white-space: nowrap;
+}
+
 .saito-user > div:nth-child(4) {
     cursor: pointer;
     grid-column-start: 3;
@@ -49,11 +63,193 @@ Saito User
     align-items: top;
 }
 
+
 .saito-user > .saito-datetime {
     align-items: top;
     grid-row-start: 2;
     grid-row-end: span 1;
 }
+
+
+/* ----------------------------------------------------------------
+Saito Page Header
+-----------------------------------------------------------------*/
+.saito-page-header {
+    padding-bottom: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.saito-page-header-title {
+    color: #222;
+    font-size: 3.25rem;
+    padding-top: 0.5rem;
+}
+.saito-page-header-button {
+    float: right;
+}
+.saito-page-header-text {
+    font-size: 1.8rem;
+    line-height: 2.4rem;
+    clear: both;
+    padding-top: 1rem;
+}
+
+
+
+
+/* ----------------------------------------------------------------
+Saito Leaderboard
+-----------------------------------------------------------------*/
+.saito-leaderboard-row {
+  background-color: #fff;
+}
+.saito-leaderboard-row.odd {
+  background-color: #fafafa;
+}
+.saito-leaderboard-row {
+    display: grid;
+    grid-template-columns: 1fr auto min-content;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+
+/* ----------------------------------------------------------------
+Saito Game Boxes
+-----------------------------------------------------------------*/
+.redsquare-games-container {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    justify-content: space-around;
+}
+.saito-game {
+    min-height: 370px;
+    min-width: 44%;
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    position: relative;
+    border-radius: 2rem;
+    border:  1px solid;
+    border-top: none;
+    margin-bottom: 2rem;
+}
+.saito-game-image {
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
+    width: 100%;
+    height: 248px;
+    background-size: cover;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    grid-column: span 1 / auto;
+    grid-row: span 1 / auto;
+}
+
+.saito-game-image:after {
+    content: "";
+    background-color: #000;
+    z-index: 1;
+    position: absolute;
+    width: 100%;
+    width: inherit;
+    height: inherit;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    opacity: 0.1;
+}
+.saito-game-image-controls {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #fff;
+    z-index: 2;
+    font-size: 22px;
+    cursor: pointer;
+    grid-row: 1;
+}
+.saito-game-image-title {
+    color: rgb(255, 255, 255);
+    font-size: 24px;
+    margin-top: -49px;
+    font-weight: bold;
+    z-index: 2;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    padding: 10px 15px;
+    grid-row: 3;
+}
+.saito-game-controls {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    padding: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+.saito-game-controls > div:nth-child(1) {
+    font-size: 19px;
+    color: #ea462f;
+    font-weight: bold;
+    cursor: pointer;
+}
+.saito-game-controls > div:nth-child(2) {
+    border-bottom: 1px dashed red;
+    white-space: nowrap;
+}
+
+.settlers .saito-game-image {
+    background: url(https://saito.io/settlers/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.chess .saito-game-image {
+    background: url(https://saito.io/chess/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.spider .saito-game-image {
+    background: url(https://saito.io/spider/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.imperium .saito-game-image {
+    background: url(https://saito.io/imperium/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.twilight .saito-game-image {
+    background: url(https://saito.io/twilight/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.wuziqi .saito-game-image {
+    background: url(https://saito.io/wuziqi/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.wordblocks .saito-game-image {
+    background: url(https://saito.io/wordblocks/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.scotland .saito-game-image {
+    background: url(https://saito.io/scotland/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.hereistand .saito-game-image {
+    background: url(https://saito.io/his/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.spider .saito-game-image {
+    background: url(https://saito.io/spider/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+.solitrio .saito-game-image {
+    background: url(https://saito.io/solitrio/img/arcade/arcade.jpg);
+    background-size: cover;
+}
+
+
 
 
 
@@ -80,6 +276,7 @@ Saito Arcade Invite
 .saito-arcade-game-image {
   height: 100%;
   width: 100%;
+  opacity: 0.8;
 }
 
 .saito-arcade-invite-name-container {

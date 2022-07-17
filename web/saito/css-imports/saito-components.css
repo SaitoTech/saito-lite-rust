@@ -222,7 +222,7 @@ Saito List,Saito User List and Saito User
     margin-bottom: 0;
 }
 
-.saito-userbox, 
+.saito-userbox,
 .saito-list-user,
 .saito-list-chatbox,
 .saito-list-game {
@@ -649,7 +649,7 @@ Saito searchbar
 Saito overlay
 -----------------------------------------------------------------*/
 
-.saito-overlay {
+.saito-overlay-container {
     position: fixed;
     z-index: 20;
     left: 0;
@@ -662,12 +662,12 @@ Saito overlay
     display: none;
 }
 
-.saito-overlay.show {
+.saito-overlay-container.show {
     display: flex;
 }
 
 
-.saito-overlay>div>i {
+.saito-overlay-container>div>i {
     position: absolute;
     right: 0;
     color: var(--saito-primary);
@@ -678,7 +678,7 @@ Saito overlay
     transition: all .2s;
 }
 
-.saito-overlay>div>i:hover {
+.saito-overlay-container>div>i:hover {
     transform: rotateZ(30deg) scale(1.3);
 }
 
@@ -697,4 +697,70 @@ Saito backdrop
 .saito-overlay-actions {
     display: flex;
     justify-content: flex-end;
+}
+
+
+
+/* Saito Slider */
+
+.saito-switch {
+    position: relative;
+    display: inline-block;
+    width: 5rem;
+    height: 2.822rem;
+}
+
+/* Hide default HTML checkbox */
+.saito-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.saito-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.saito-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 2.158rem;
+    width: 2.158rem;
+    left: .332rem;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.saito-switch-slider {
+    background-color: var(--saito-primary);
+}
+
+input:focus+.saito-switch-slider {
+    box-shadow: 0 0 1px var(--saito-primary);
+}
+
+input:checked+.saito-switch-slider:before {
+    -webkit-transform: translateX(2.158rem);
+    -ms-transform: translateX(2.158rem);
+    transform: translateX(2.158rem);
+}
+
+/* Rounded sliders */
+.saito-switch-slider.round {
+    border-radius: 34px;
+}
+
+.saito-switch-slider.round:before {
+    border-radius: 50%;
 }

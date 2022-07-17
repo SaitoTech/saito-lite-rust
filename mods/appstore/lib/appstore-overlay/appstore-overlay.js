@@ -89,7 +89,7 @@ module.exports = AppStoreAppspace = {
 	    //
             document.querySelector(".appstore-overlay-grid").innerHTML = "";
             for (let i = 0; i < res.rows.length; i++) {
-              app.browser.addElementToDom(AppStoreOverlayAppTemplate(app, res.rows[i]), "appstore-overlay-grid");
+              app.browser.addElementToDom(AppStoreOverlayAppTemplate(app, res.rows[i]), document.getElementById("appstore-overlay-grid"));
 	    }
 
     	    //

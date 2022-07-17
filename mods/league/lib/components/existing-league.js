@@ -10,7 +10,7 @@ class ExistingLeague {
   }
 
   render(app, mod) {
-    app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, this.game), "league-component-existing-league");
+    app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, this.game), document.getElementById("league-component-existing-league"));
     this.attachEvents(app, mod);
   }
 
