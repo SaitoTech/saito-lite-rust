@@ -386,11 +386,14 @@ class Browser {
   }
 
   addElementToDom(html, elemWhere = null) {
+console.log("isnerting: " + html);
     const el = document.createElement("div");
     if (elemWhere == null) {
+console.log("isnerting: 2 " + html);
       document.body.appendChild(el);
       el.outerHTML = html;
     } else {
+console.log("isnerting: 3 " + html);
       elemWhere.insertAdjacentElement("beforeend", el);
       el.outerHTML = html;
     }

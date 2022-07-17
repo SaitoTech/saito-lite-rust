@@ -1,5 +1,8 @@
 const saito = require('./../../../../../lib/saito/saito');
 const GameCreatorTemplate = require('./game-creator.template');
+const ArcadeGameDetails = require('./../../../../arcade/lib/arcade-game/arcade-game-details');
+
+
 
 class GameCreator {
 
@@ -13,24 +16,32 @@ class GameCreator {
     if (selector === "" || this.selector !== "") { selector = this.selector; }
     document.querySelector(selector).innerHTML = "";
     app.browser.addElementToSelector(GameCreatorTemplate(app, mod, "Select Game to Play"), selector);
+    this.attachEvents(app, mod);
   }
 
   
   attachEvents(app, mod) {
 
-/***
-    Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
-      game.addEventListener('click', (e) => {
-        let gameName = e.currentTarget.id;
-        app.browser.logMatomoEvent("Arcade", "GameListOverlayClick", gameName);
+    Array.from(document.querySelectorAll('.redsquare-game-container')).forEach(game => {
+
+      game.onclick = (e) => {
+
+        let modname = e.currentTarget.getAttribute("data-id");
+
         let tx = new saito.default.transaction();
-        tx.msg.game = gameName;
-        ArcadeGameDetails.render(app, mod, tx);
-        ArcadeGameDetails.attachEvents(app, mod, tx);
-      
-      });
+        tx.msg.game = modname;
+
+	//
+	// DEPRECATED -- 
+	//
+        let arcade_mod = app.modules.returnModule("Arcade");
+        ArcadeGameDetails.render(app, arcade_mod, tx);
+        ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
+
+      };
+
     });
-***/
+
   }
 
 }
