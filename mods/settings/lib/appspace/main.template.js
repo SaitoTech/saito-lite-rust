@@ -48,17 +48,12 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div>
 
-        <div class="saito-grid-1-1-1">
-          <div class="saito-button-primary">Backup Wallet</div>
-          <div class="saito-button-primary">Restore Wallet</div>
-          <div class="saito-button-primary">Import Private Key</div>
-          <input type="file" style="display:none;" />
-        </div>
+      
         ${balance_link}
 
 
   <div class="settings-appspace-user-details-container">
-	<h5>Wallet Information</h5>
+	<h6>Wallet</h6>
         <div class="settings-appspace-user-details">
           
           <div class="saito-black">Email:</div>
@@ -76,14 +71,21 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <i class="settings-appspace-see-password fas fa-eye"></i>
           </div>
 
-	</div>
+	       </div>
+         <div class="saito-grid-1-1-1">
+         <div class="saito-button-secondary">Backup</div>
+         <div class="saito-button-secondary">Restore</div>
+         <div class="saito-button-secondary">Import Private Key</div>
+         <input type="file" style="display:none;" />
+         </div>
+     
   </div>
 
       </div>
 
       <div class="settings-appspace-modules-container">
 
-        <h5>Installed Modules </h5> `;
+        <h6>Installed Modules </h6> `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
@@ -101,9 +103,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <p>${app.options.wallet.version}</p>
       </div>
 
-      <p  style="padding-bottom:40px;">
-        Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" >resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
-      </p>
+      <div class="settings-appspace-icons"  style="padding-bottom:40px;">
+      <i class="fas fa-wallet"></i>
+      <i class="far fa-trash-alt"></i>
+      <i class="fas fa-code-branch"></i>
+      </div>
 
     </div>
 

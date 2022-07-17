@@ -12,13 +12,16 @@
     display: inline-block;
 }
 
+.settings-appspace-user-details-container {
+    margin-bottom: 3rem;
+}
+
 .settings-appspace-user-details {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
     align-items: center;
-    margin-bottom: 3rem;
     padding: 1rem;
     border-radius: .5rem;
     max-width: 100%;
@@ -90,6 +93,14 @@
     margin-bottom: 2rem;
     grid-gap: 1rem;
 }
+
+
+.settings-appspace-icons {
+    display : grid;
+    grid-template-columns: 2rem 2rem 2rem;
+    grid-gap: 1rem;
+}
+
 
 @media only screen and (max-width: 600px) {
 

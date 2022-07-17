@@ -59,6 +59,7 @@ function reset_nonpersistent {
   rm -f ./web/saito/saito.js
 
   # we explicitly don't delete registry/balance databases
+  rm -f ./data/redsquare.sq3
   rm -f ./data/appstore.sq3
   #rm -f ./data/covid19.sq3
   #rm -f ./data/post.sq3
