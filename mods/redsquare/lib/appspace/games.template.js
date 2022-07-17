@@ -40,7 +40,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Chess">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -68,7 +68,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Twilight">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -96,7 +96,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Imperium">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -124,7 +124,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Settlers">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -152,7 +152,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Wuziqi">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -180,7 +180,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="HereIStand">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -208,7 +208,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Spider">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -236,7 +236,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Solitrio">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>
@@ -264,7 +264,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div>Create Game</div>
+              <div class="create-game-link" data-id="Wordblocks">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>

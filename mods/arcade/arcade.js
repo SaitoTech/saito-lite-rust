@@ -1692,13 +1692,16 @@ class Arcade extends ModTemplate {
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
+
+      //
+      // maybe someone else wants to render this (red square?)
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     }
   }
   addGamesToOpenList(txs) {
     let for_us = false;
     txs.forEach((tx, i) => {
-      //console.log("TX from SQL");
-      //console.log(JSON.parse(JSON.stringify(tx)));
       let valid_game = this.validateGame(tx);
       if (valid_game) {
         let this_game_is_for_us = this.isForUs(tx);
@@ -1707,6 +1710,11 @@ class Arcade extends ModTemplate {
         }
         for_us = for_us || this_game_is_for_us;
       }
+
+      //
+      // red square wanna render?
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     });
 
     //let removed_game = this.removeOldGames();

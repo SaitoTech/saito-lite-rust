@@ -18,8 +18,6 @@ class RedSquareSidebar {
       document.querySelector(".saito-sidebar.right").remove();
     }
 
-console.log("RENDERING SIDEBAR INTO: " + selector);
-
     //
     // and re-render me
     //

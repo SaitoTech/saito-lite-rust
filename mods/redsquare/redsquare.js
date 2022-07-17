@@ -21,6 +21,7 @@ class RedSquare extends ModTemplate {
     this.styles = [
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
+      '/redsquare/css/arcade.css',		// game creation overlays
     ];
 
     this.ui_initialized = false;

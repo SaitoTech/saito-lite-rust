@@ -1,3 +1,4 @@
+const saito = require('./../../../../lib/saito/saito');
 const RedSquareAppspaceGamesTemplate = require("./games.template");
 const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameCreator = require("./arcade/game-creator");
@@ -11,8 +12,10 @@ class RedSquareAppspaceGames {
   }
 
   render(app, mod) {
+
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
+
     this.attachEvents(app, mod);
   }
 
@@ -35,6 +38,30 @@ class RedSquareAppspaceGames {
       let gc = new GameCreator(app, mod, ".redsquare-game-creator");
       gc.render(app, mod, ".redsquare-game-creator");
     }
+
+    //
+    // create game direct-links
+    //
+    Array.from(document.querySelectorAll('.create-game-link')).forEach(game => {
+
+      game.onclick = (e) => {
+
+        let modname = e.currentTarget.getAttribute("data-id");
+
+        let tx = new saito.default.transaction();
+        tx.msg.game = modname;
+
+        //
+        // DEPRECATED --
+        //
+        let arcade_mod = app.modules.returnModule("Arcade");
+        ArcadeGameDetails.render(app, arcade_mod, tx);
+        ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
+
+      };
+
+    });
+
 
   }
 
