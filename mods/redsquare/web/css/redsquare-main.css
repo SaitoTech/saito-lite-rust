@@ -1,14 +1,17 @@
 
+
 img {
     max-width: 50rem;
 }
-
-.saito-sidebar.right {
+.saito-sidebar-right {
     width: 51rem;
 }
 .saito-main.appspace {
     width: 70rem;
 }
+
+
+
 
 
 .redsquare-item {
@@ -40,6 +43,74 @@ img {
   padding-bottom: 1rem;
 }
 
+
+
+.redsquare-game-creator {
+  padding: 3rem;
+  border-radius: 2rem;
+  background-color: #0009;
+  color: white;
+  max-height: 90vh;
+  max-width: 114rem;
+  overflow-y: scroll;
+}
+.redsquare-create-game-list {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
+}
+.redsquare-create-game-header {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background-color: #0008;
+  padding: 1rem;
+}
+.redsquare-game-container {
+  display: grid;
+  grid-template-columns: 10vw auto;
+  grid-template-rows: min-content 1fr;
+  max-width: 80vw;
+  column-gap: 2rem;
+  min-height: 10rem;
+  max-height: 10rem;
+  min-width: 51rem;
+  padding: 0.5rem
+}
+.redsquare-game-container:hover {
+  cursor: pointer;
+  background-color: #0009;
+}
+.redsquare-game-image {
+  grid-row: span 2;
+  width: 10vw;
+  height: auto;
+  max-height: 10rem;
+}
+.redsquare-game-image > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem
+}
+.redsquare-game-title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  font-size: 3rem;
+  font-weight: bolder;
+}
+.redsquare-game-description {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  overflow-y: hidden;
+  text-overflow: clip;
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+}
 
 
 

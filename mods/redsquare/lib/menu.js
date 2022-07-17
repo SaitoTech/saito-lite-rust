@@ -1,8 +1,6 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
 const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
-const GameCreateMenu = require("./../../arcade/lib/arcade-main/game-create-menu");
-const ArcadeMain = require("./../../arcade/lib/arcade-main/arcade-main");
 
 class RedSquareMenu {
 
