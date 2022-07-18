@@ -2,8 +2,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
   let email_registered = app.keys.returnEmail(app.wallet.returnPublicKey());
   let identifier_registered = app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
-  if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn">Register an email address</span>`; }
-  if (identifier_registered == "") { identifier_registered = `<span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn">Register a username</span>`; }
+  if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn settings-appspace-link">Register an email address</span>`; }
+  if (identifier_registered == "") { identifier_registered = `<span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>`; }
 
   let modules_html = "Wallet Outdated - module selection not supported";
   try {
@@ -12,10 +12,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         let CHECKED = mod.active ? 'CHECKED' : '';
         return `
         <div class="settings-appspace-app">
-        <input
-        type="checkbox"
-        value="modules_mods_${i}"
-        name="modules_mods_${i}" id="${i}" ${CHECKED}/>
+        <label class="saito-switch">
+          <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
+          <span class="saito-switch-slider round"></span>
+        </label>
           <label>${mod.name}
             <span></span>
           </label>
@@ -48,17 +48,12 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div>
 
-        <div class="saito-grid-1-1-1">
-          <div class="saito-button-primary">Backup Wallet</div>
-          <div class="saito-button-primary">Restore Wallet</div>
-          <div class="saito-button-primary">Import Private Key</div>
-          <input type="file" style="display:none;" />
-        </div>
+      
         ${balance_link}
 
 
   <div class="settings-appspace-user-details-container">
-	<h5>Wallet Information</h5>
+	<h6>Wallet</h6>
         <div class="settings-appspace-user-details">
           
           <div class="saito-black">Email:</div>
@@ -76,34 +71,58 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             <i class="settings-appspace-see-password fas fa-eye"></i>
           </div>
 
-	</div>
+	       </div>
+         <div class="saito-grid-1-1-1">
+         <div class="saito-button-secondary">Backup</div>
+         <div class="saito-button-secondary">Restore</div>
+         <div class="saito-button-secondary">Import Private Key</div>
+         <input type="file" style="display:none;" />
+         </div>
+     
   </div>
 
       </div>
 
       <div class="settings-appspace-modules-container">
 
-        <h5>Installed Modules </h5> `;
+        <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div> `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
   }
 
-  html += `</h2>
-        <div class="settings-appspace-modules">
-        ${modules_html}
-        </div>
+  html += `
+      <div class="saito-overlay-container">
+            <div class="saito-backdrop">
+              <div class="settings-appspace-modules">
+              ${modules_html}
+              </div>
+            </div>
       </div>
+      </div>
+      <div class="settings-appspace-versions-container">
+      <h6> Version </h6>
       <div class="settings-appspace-versions">
         <p class="saito-black">Code Version:</p>
         <p>${app.wallet.wallet.version}</p>
         <p class="saito-black">Wallet Version:</p>
         <p>${app.options.wallet.version}</p>
       </div>
+      </div>
 
-      <p  style="padding-bottom:40px;">
-        Having trouble? Try clearing your browser cache or <span style="cursor:pointer; border-bottom: 1px dashed" >resetting your account</span>. If that doesn't fix things, write to us at info@saito.tech.
-      </p>
+      <div class="settings-appspace-icons-container">
+      <h6> Help </h6>
+      <div class="settings-appspace-icons"  style="padding-bottom:40px;">
+      <div class="saito-black">Twitter:</div>
+      <div><i class="fab fa-twitter"></i></div>
+
+      <div class="saito-black">Telegram:</div>
+     <div><i class="fab fa-telegram"></i></div>
+
+      <div class="saito-black">Discord:</div>
+     <div><i class="fab fa-discord"></i></div>
+      </div>
+      </div>
 
     </div>
 

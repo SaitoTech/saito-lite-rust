@@ -1,7 +1,9 @@
-
-
 .settings-appspace .saito-grid-1-1-1 {
     margin-bottom: 2rem;
+}
+
+.settings-appspace-link {
+    text-decoration: underline;
 }
 
 .settings-appspace>button {
@@ -12,17 +14,34 @@
     display: inline-block;
 }
 
+.settings-appspace-user-details-container {
+    margin-bottom: 3rem;
+}
+
 .settings-appspace-user-details {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
     align-items: center;
-    margin-bottom: 3rem;
     padding: 1rem;
     border-radius: .5rem;
     max-width: 100%;
     overflow: auto;
+}
+
+.settings-appspace-user-details-container .saito-grid-1-1-1 {
+    grid-row-gap: .5rem;
+}
+
+.settings-appspace-user-actions {
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr)); */
+    grid-gap: .5rem;
+}
+
+.settings-appspace-modules-container>.saito-button-primary {
+    width: 5rem;
 }
 
 .settings-appspace-user-details-container>h4 {
@@ -38,7 +57,7 @@
     grid-gap: 1em;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     border-radius: .5rem;
-    padding: 1rem;
+    padding: 2rem;
 
 }
 
@@ -81,15 +100,47 @@
 .settings-appspace-app label {
     text-transform: none;
     font-size: 1.6rem;
+    margin-right: .5rem;
 }
+
+
+.settings-appspace-versions-container {
+    margin-bottom: 3rem;
+}
+
+.settings-appspace-versions-container {}
+
+
 
 .settings-appspace-versions {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
     margin-bottom: 2rem;
-    grid-gap: 1rem;
+    grid-column-gap: 1rem;
+    padding: 1rem;
+    grid-row-gap: 1.5rem;
 }
+
+
+.settings-appspace-icons {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-column-gap: 1.5rem;
+    grid-row-gap: 1.5rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: .5rem;
+    max-width: 100%;
+    overflow: auto;
+}
+
+.settings-appspace-icons i {
+    color: var(--saito-primary);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
 
 @media only screen and (max-width: 600px) {
 
