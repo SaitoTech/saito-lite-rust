@@ -1294,8 +1294,20 @@ class Arcade extends ModTemplate {
               GameLoader.render(arcade_self.app, arcade_self, game_id);
               GameLoader.attachEvents(arcade_self.app, arcade_self);
 
+              let hidden = "hidden";
+              if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+                hiddenTab = "hidden";
+              } else if (typeof document.msHidden !== "undefined") {
+                hiddenTab = "msHidden";
+              } else if (typeof document.webkitHidden !== "undefined") {
+                hiddenTab = "webkitHidden";
+              }
+
               arcade_self.startNotification("Game ready!", arcade_self.app.options.games[game_idx].module);
-              arcade_self.ringTone();
+
+              if (document[hidden]){
+                arcade_self.ringTone();
+              }
             }
           }
         }
