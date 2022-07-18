@@ -108,6 +108,7 @@ Saito Menu
     list-style: none;
     cursor: pointer;
     transition: all .2s;
+    align-items: center;
     font-size: 1.92rem;
 }
 
@@ -118,8 +119,9 @@ Saito Menu
 }
 
 .saito-menu>ul>li>i {
-    font-size: 2rem;
+    font-size: 2.6rem;
     width: 2rem;
+    padding-left: 1.2rem
 }
 
 .saito-menu>ul>li>span {
@@ -127,7 +129,7 @@ Saito Menu
 }
 
 .saito-menu>ul>li>i+span {
-    margin-left: 2rem;
+    margin-left: 3.8rem;
 }
 
 .saito-menu.dense>ul>li {
@@ -725,7 +727,7 @@ Saito backdrop
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #cbc6c69c;
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -743,7 +745,8 @@ Saito backdrop
 }
 
 input:checked+.saito-switch-slider {
-    background-color: var(--saito-primary);
+    border: 1px solid var(--saito-primary);
+
 }
 
 input:focus+.saito-switch-slider {
@@ -754,6 +757,7 @@ input:checked+.saito-switch-slider:before {
     -webkit-transform: translateX(2.158rem);
     -ms-transform: translateX(2.158rem);
     transform: translateX(2.158rem);
+    background-color: var(--saito-primary);
 }
 
 /* Rounded sliders */
