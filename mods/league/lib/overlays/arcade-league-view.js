@@ -22,7 +22,6 @@ module.exports = ArcadeLeagueView = {
         (res) => {
           if (res.rows) {
             for (let p of res.rows){
-              console.log(p);
               leaderboard.push(p);
             }
           }
@@ -54,7 +53,7 @@ module.exports = ArcadeLeagueView = {
           html += `<td>${r.games_won}</td><td>${r.games_tied}</td><td>`;
 
           if (r.pkey !== myKey && r.league_id !== "SAITOLICIOUS"){
-            html += `<button class="button challenge-btn" data-id="${r.pkey}">CHALLENGE</button>`;
+            html += `<button class="button challenge-btn" data-id="${r.pkey}" style="display:none">CHALLENGE</button>`;
           }
           html += "</td></tr>";
    			}
