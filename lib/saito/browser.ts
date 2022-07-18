@@ -223,6 +223,13 @@ class Browser {
     }
   }
 
+
+  returnInviteLink(email = "") {
+    let { protocol, host, port } = this.app.options.peers[0];
+    let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));
+    return `${protocol}://${host}:${port}/r?i=${url_payload}`;
+  }
+
   returnURLParameter(name) {
     try {
       this.urlParams = new URLSearchParams(window.location.search);
