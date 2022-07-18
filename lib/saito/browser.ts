@@ -393,14 +393,11 @@ class Browser {
   }
 
   addElementToDom(html, elemWhere = null) {
-console.log("isnerting: " + html);
     const el = document.createElement("div");
     if (elemWhere == null) {
-console.log("isnerting: 2 " + html);
       document.body.appendChild(el);
       el.outerHTML = html;
     } else {
-console.log("isnerting: 3 " + html);
       elemWhere.insertAdjacentElement("beforeend", el);
       el.outerHTML = html;
     }
@@ -413,6 +410,19 @@ console.log("isnerting: 3 " + html);
       elem.outerHTML = html;
     } catch (err) {
       console.log("ERROR 582343: error in prependElementToDom");
+    }
+  }
+
+  replaceElementById(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
     }
   }
 
@@ -442,7 +452,19 @@ console.log("isnerting: 3 " + html);
     }
   }
 
-  // adds HTML element to class, or DOM if class does not exist
+  replaceElementBySelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
   addElementToSelector(html, selector="") {
     if (selector === "") {
       this.app.browser.addElementToDom(html);
@@ -470,6 +492,21 @@ console.log("isnerting: 3 " + html);
       }
     }
 
+  }
+
+
+  replaceElementByClass(html, classname="") {
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let classname = "." + classname;
+      let obj = document.querySelector(classname);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
   }
 
   addElementToClass(html, classname="") {
