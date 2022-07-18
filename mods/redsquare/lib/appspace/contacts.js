@@ -20,11 +20,8 @@ class RedSquareAppspaceContacts {
     // "add contact"
     //
     document.getElementById("redsquare-add-contact").onclick = (e) => {
-console.log("A");
       let add_user_modal = new ModalAddContact(app, mod);
-console.log("B");
       add_user_modal.render(app, mod);
-console.log("C");
     }
 
   }

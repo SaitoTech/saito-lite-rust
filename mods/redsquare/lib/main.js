@@ -25,6 +25,7 @@ class RedSquareMain {
     mod.menu           = new RedSquareMenu(app, mod);
     mod.lsidebar.addComponent(mod.menu);
     mod.app.modules.respondTo("chat-manager").forEach(m => {
+console.log("ADDING CHAT MANAGER!");
       mod.lsidebar.addComponent(m.respondTo("chat-manager"));
     });
 

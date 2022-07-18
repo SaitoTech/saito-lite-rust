@@ -9,7 +9,7 @@ module.exports = RedSquareNotificationsAppspaceTemplate = (app, mod) => {
     <div class="redsquare-appspace-notifications">
 
       <div class="saito-page-header">
-        <div class="saito-button-secondary small" style="float: right;">Notification Settings</div>
+        <div id="redsquare-notifications-settings" class="redsquare-notifications-settings saito-button-secondary small" style="float: right;">Notification Settings</div>
         <div class="saito-page-header-title">NOTIFICATIONS</div>
         <div class="saito-page-header-text">
 This page shows invitations you have received from other users, as well as alerts flagged for your Red Square activity feed.
