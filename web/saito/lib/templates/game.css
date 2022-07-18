@@ -152,6 +152,38 @@ game-overlay-cardlist-button {
   margin: 0;
 }
 
+.game_warning_overlay{
+  background: #222b;
+  color: #fff;
+  padding: min(2vh,2vw);
+  min-width: min(400px,85vw);
+  max-width: 95vw;
+  min-height: min(240px, 50vh);
+  max-height: 70vh;
+  border-radius: min(2vh,2vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.game_warning_header{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game_warning_header i{
+  font-size: 2em;
+  color: yellow;
+}
+
+.game_warning_overlay h2{
+  font-size: 1.5em;
+  text-align: center;
+  width: 100%;
+}
 
 .popup-confirm-menu{
   padding: 10px;
