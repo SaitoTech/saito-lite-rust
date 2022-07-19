@@ -60,49 +60,28 @@ class RedSquare extends ModTemplate {
       {
         content: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
         img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-        parent_id: '',
-        flagged: 0,
-        moderated: 0
       },
       {
         content: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
-        img: '',
-        parent_id: '',
-        flagged: 0,
-        moderated: 0
       },
       {
         content: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
-        img: '',
-        parent_id: 'https://dmccdn.com/uploads/share/Saitonetwork-tn.png',
-        flagged: 0,
-        moderated: 0
       },
       {
         content: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
-        parent_id: '',
         img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080',
-        flagged: 0,
-        moderated: 0
       },
       {
         content: 'Etiam hendrerit ex ut neque bibendum porta.',
-        img: '',
-        parent_id: '',
-        flagged: 0,
-        moderated: 0
       },
       {
         content: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
         img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
-        parent_id: '',
-        flagged: 0,
-        moderated: 0
       }
     ];
 
     for (let i = 0; i < dummy_content.length; i++) {
-      this.sendTweetTransaction(dummy_content[i]);
+   //   this.sendTweetTransaction(dummy_content[i]);
     }
   }
 
@@ -113,8 +92,11 @@ class RedSquare extends ModTemplate {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets9 DESC LIMIT 100`,
+      `SELECT * FROM tweets11 DESC LIMIT 100`,
       (res) => {
+
+        console.log('res');
+        console.log(res);
         if (res.rows) {
           res.rows.forEach(row => {
 
@@ -130,20 +112,21 @@ class RedSquare extends ModTemplate {
 
 	      let tx = new saito.default.transaction(JSON.parse(row.tx));
 
+        console.log("transaction");
+        console.log(tx);
+
 	      if (!tx.optional) { tx.optional = {}; }
-	      tx.optional.sig = tx.transaction.sig;
-	      tx.optional.content = row.content;
-	      tx.optional.created_at = row.created_at;
-	      tx.optional.flagged = row.flagged;
-	      tx.optional.identicon = row.identicon;
-	      tx.optional.moderated = row.moderated;
-	      tx.optional.parent_id = row.parent_id;
-	      tx.optional.thread_id = row.thread_id;
-	      tx.optional.updated_at = row.updated_at;
+	      tx.optional.sig = row.sig;
+	      tx.optional.content = tx.msg.content;
+        tx.optional.img = tx.msg.img;
+	      tx.optional.flagged = tx.msg.flagged;
+	      tx.optional.moderated = tx.msg.moderated;
+	      tx.optional.parent_id = tx.msg.parent_id;
+	      tx.optional.thread_id = tx.msg.thread_id;
 
   	      redsquare_self.tweets.push(tx);
-console.log("RENDER TWEET REQUEST");
-              app.connection.emit('tweet-render-request', tx);
+          console.log("RENDER TWEET REQUEST");
+          app.connection.emit('tweet-render-request', tx);
 	    }
           });
         }
@@ -153,17 +136,24 @@ console.log("RENDER TWEET REQUEST");
 
 
   async onConfirmation(blk, tx, conf, app) {
+    let redsquare_self = this;
     let txmsg = tx.returnMessage();
 
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          this.receiveTweetTransaction(blk, tx, conf, app);
+          this.receiveTweetTransaction(blk, tx, conf, app).then(
+            function(value) {
+              redsquare_self.tweets.push(tx);
+              console.log('tweets array');
+              console.log(redsquare_self.tweets);
+              app.connection.emit('tweet-render-request', tx);
+            },
 
-          //
-          // TODO - update UI when tweet transaction is received
-          //
-          //this.app.connection.emit('redsquare-update-tweets', row);
+            function(error) {
+              console.log("ERROR in " + this.name + " onConfirmation: " + error);
+            }
+          );
         }
 
       }
@@ -174,85 +164,58 @@ console.log("RENDER TWEET REQUEST");
 
   sendTweetTransaction(data) {
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
-    let parent_id = "";
-    if (data.parent_id) { thread_id = data.parent_id; }
-    let thread_id = parent_id;
-    if (data.thread_id) { thread_id = data.thread_id; }
-    let moderated = 0;
-    let flagged = 0;
-
-    newtx.msg = {
+    // set defaults
+    let obj = {
       module: this.name,
-      content: data.content,
-      img: data.img,
-      parent_id: parent_id,
-      thread_id: thread_id,
-      flagged: flagged,
-      moderated: moderated,
       request: "create tweet",
-      timestamp: new Date().getTime()
+      content: "",
+      img: "",
+      parent_id: "",
+      thread_id: "",
+      moderated: 0,
+      flagged: 0,
     };
+
+    // set user defined values
+    for (let key in data) { 
+      obj[key] = data[key]; 
+    }
+
+    if ((data.parent_id != "undefined") && (data.thread_id == "undefined")) { 
+      obj.thread_id = data.parent_id; 
+    }
+
+    let newtx = this.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
 
     this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
-
   }
 
-  receiveTweetTransaction(blk, tx, conf, app) {
-
+  async receiveTweetTransaction(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
 
     let txn = JSON.stringify(tx.transaction);
     let sig = tx.transaction.sig;
-    let thread_id = txmsg.thread_id;
-    let parent_id = txmsg.parent_id;
     let publickey = tx.transaction.from[0].add;
-    let flagged = txmsg.flagged;
-    let moderated = txmsg.moderated;
-    let img = txmsg.img;
-    let content = txmsg.content;
-    let created_at = new Date().getTime();
-    let updated_at = new Date().getTime();
 
-    let sql = `INSERT INTO tweets9 (
+    console.log('inside receiveTweetTransaction');
+    console.log(txmsg);
+
+    let sql = `INSERT INTO tweets11 (
                 tx,
                 sig,
-                parent_id, 
-                thread_id, 
-                publickey,
-                flagged,
-                moderated,
-                img,
-                content,
-                created_at,
-                updated_at
+                publickey
               ) VALUES (
                 $txn,
                 $sig,
-                $parent_id, 
-                $thread_id, 
-                $publickey,
-                $flagged,
-                $moderated,
-                $img,
-                $content,
-                $created_at,
-                $updated_at
+                $publickey
               )`;
 
     let params = {
       $txn: txn,
       $sig: sig,
-      $parent_id: parent_id,
-      $thread_id: thread_id,
-      $publickey: publickey,
-      $flagged: flagged,
-      $moderated: moderated,
-      $img: img,
-      $content: content,
-      $created_at: created_at,
-      $updated_at: updated_at
+      $publickey: publickey
     };
     app.storage.executeDatabase(sql, params, "redsquare");
     return;

@@ -4,8 +4,8 @@ module.exports = (app, mod, publickey) => {
 
   return `
     ${SaitoUserTemplate(app, mod, publickey)}
-    <textarea class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening"></textarea>
-    <div class="saito-button-secondary post-tweet-button" id="post-tweet-button"> Tweet </div>
+    <textarea rows="10" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
+    <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> Tweet </div>
   `;
 
 }
