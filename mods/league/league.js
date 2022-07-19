@@ -41,13 +41,15 @@ class League extends ModTemplate {
 
     super.initialize(app);
 
-    //this.games.push({modname: "Saitolicious", img: "/saito/img/background.png"});
-
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
     });
 
     if (app.BROWSER == 0){
+      app.modules.getRespondTos("default-league").forEach((mod, i) =>{
+        this.createLeague(mod);
+      });
+
       this.insertSaitolicious();
       setInterval(this.collectRent, 12*60*60*1000, app);
     }
@@ -73,6 +75,25 @@ class League extends ModTemplate {
       }
     }
   }*/
+
+  //Create Default Leagues
+  async createLeague(modObj){
+
+   let sql = `INSERT OR REPLACE INTO leagues (id, game, type, admin, name, description, ranking, starting_score, max_players)
+                  VALUES ($id, $game, "public", "saito", $name, $desc, $rank, $start, 0)`;
+   
+   let params = {
+    $id: modObj.module.toUpperCase(),
+    $game: modObj.module,
+    $name: modObj.name,
+    $desc: modObj.desc,
+    $rank: modObj.type,
+    $start: (modObj.type == "exp") ? 0 : 1500,
+   };
+
+   await this.app.storage.executeDatabase(sql, params, "league");
+
+  }
 
   async insertSaitolicious(){
     let sql = `SELECT * from leagues WHERE id="SAITOLICIOUS"`;
@@ -208,6 +229,7 @@ class League extends ModTemplate {
       window.location = myLocation;
     }
 
+    /*
     //Check if Player is registered in Saitolicious (yes, every time we connect)
     this.sendPeerDatabaseRequestWithFilter(
     "League",
@@ -221,6 +243,7 @@ class League extends ModTemplate {
       console.log("Need to join Saitolicious");
       league_self.sendJoinLeagueTransaction("SAITOLICIOUS");
     });  
+    */
 
     //Only query the leagues if we are in an active module that will need them
     if (!this.doICare()){
@@ -289,7 +312,7 @@ class League extends ModTemplate {
         }
 
         //Keep track of how many games a player starts
-        if (txmsg.request === "accept"){
+        if (txmsg.request === "accept" || txmsg.request === "launch singleplayer"){
           this.receiveAcceptTransaction(blk, tx, conf, app);
         }
       }
@@ -459,13 +482,47 @@ class League extends ModTemplate {
     }
 
     for (let leag of relevantLeagues){
-      if (leag.ranking == "elo"){
-        //Is this a game we can rank?
-        if (!await this.isELOeligible(publickeys, leag)){
-          continue;
+      if (leag.admin !== "saito"){
+        if (leag.ranking == "elo"){
+          //Is this a game we can rank?
+          if (!await this.isELOeligible(publickeys, leag)){
+            continue;
+          }
+        }
+      }else{
+        for (let player of publickeys){
+          await this.autoJoinPublicLeague(player, leag);
         }
       }
       this.countGameStart(publickeys, leag);
+    }
+  }
+
+  async autoJoinPublicLeague(player_key, league){
+    let sql = `SELECT * from players WHERE pkey="${player_key}" AND league_id="${league.id}"`;
+    let rows = await this.app.storage.queryDatabase(sql, {}, "league");
+    //Add player if not found
+    if (!rows || !rows.length || rows.length == 0){
+      sql = `INSERT INTO players (
+                league_id,
+                pkey,
+                score,
+                ts
+              ) VALUES (
+                $league_id,
+                $publickey,
+                $score,
+                $timestamp
+              )`;
+
+      let params = {
+        $league_id: league.id,
+        $publickey: player_key,
+        $score: league.starting_score,
+        $timestamp: new Date().getTime(),
+      };
+
+      await this.app.storage.executeDatabase(sql, params, "league");
     }
   }
 
@@ -659,6 +716,7 @@ class League extends ModTemplate {
     );
 
   }
+
 
   async countGameStart(players, league){
     let now = new Date().getTime();

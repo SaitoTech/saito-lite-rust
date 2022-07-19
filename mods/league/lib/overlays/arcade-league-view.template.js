@@ -11,7 +11,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
     <p>${league.description}</p>
     <div class="league-overview-box">
       <div class="info-item"><div>Game:</div><div>${(league.game)?league.game:"All"}</div></div>
-      <div class="info-item"><div>Players:</div><div>${league.playerCnt} / ${league.max_players}</div></div>
+      <div class="info-item"><div>Players:</div><div>${league.playerCnt}${league.max_players > 0 ? ` / ${league.max_players}`:""}</div></div>
       <div class="info-item"><div>Type:</div><div>${league.type}</div></div>
       <div class="info-item"><div>Ranking Algo:</div><div>${league.ranking}</div></div>
       <div class="info-item"><div>Admin:</div><div>${app.keys.returnUsername(league.admin)}</div></div>
