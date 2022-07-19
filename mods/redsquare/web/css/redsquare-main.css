@@ -22,6 +22,15 @@ img {
   width: 70rem;
 }
 
+.redsquare-appspace-contacts > .saito-page-header {
+  padding-left: 0rem;
+}
+.redsquare-appspace-home > .saito-page-header {
+  padding-left: 0rem;
+}
+.redsquare-appspace-notifications > .saito-page-header {
+  padding-left: 0rem;
+}
 
 
 .redsquare-menu .saito-menu {
