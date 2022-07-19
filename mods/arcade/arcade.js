@@ -1219,6 +1219,15 @@ class Arcade extends ModTemplate {
       let arcade_self = this;
       GameLoader.render(app, arcade_self);
 
+      let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+
+      tx.msg = {};
+      tx.msg.request = "launch singleplayer";
+      tx.msg.module = gameobj.name;
+      tx = this.app.wallet.signTransaction(tx);
+      this.app.network.propagateTransaction(tx);
+
       let gameMod = app.modules.returnModule(gameobj.name);  
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 

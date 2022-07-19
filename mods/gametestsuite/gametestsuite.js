@@ -1052,27 +1052,13 @@ class GameTestSuite extends GameTemplate {
   // when it loads to determine which modules support interactions with users 
   // through the Arcade interface.
   //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
+  respondTo(type){
+    if (type == "default-league") {
+      return null;
     }
-
-    if (type == "arcade-create-game") {
-      return {
-        slug: this.slug,
-        title: this.name,
-        description: this.description,
-        publisher_message: "",
-        returnGameOptionsHTML: this.returnGameOptionsHTML.bind(this),
-        minPlayers: this.minPlayers,
-        maxPlayers: this.maxPlayers,
-      }
-    }
-
-    return null;
-
+    return super.respondTo(type);
   }
+
 
 
 

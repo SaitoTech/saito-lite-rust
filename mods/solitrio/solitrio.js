@@ -23,6 +23,17 @@ class Solitrio extends GameTemplate {
   }
 
 
+  // Create an exp league by default
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
+      return obj;
+    }
+    return super.respondTo(type);
+  }
+
+
   returnGameRulesHTML(){
     return `<div class="rules-overlay">
             <h1>Solitrio</h1>

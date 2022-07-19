@@ -24,6 +24,15 @@ class Spider extends GameTemplate {
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
   }
 
+  // Create an exp league by default
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
+      return obj;
+    }
+    return super.respondTo(type);
+  }
   
 
   returnGameRulesHTML(){

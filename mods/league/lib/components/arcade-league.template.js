@@ -55,7 +55,7 @@ let makeDescription = (app, league) => {
   let html = '';
 
   
-  if (league.game){
+  if (league.game && league.admin !== "saito"){
     html += `<div class="gameShortDescriptionRow"><div class="gameShortDescriptionKey">League: </div><div class="gameShortDescriptionValue">${league.game}</div></div>`;
   }
   if (league.max_players > 0){
