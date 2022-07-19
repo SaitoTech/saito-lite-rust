@@ -33,8 +33,13 @@ img {
 }
 
 
-.redsquare-menu .saito-menu {
+.redsquare-appspace-contacts-list {
+  padding-left: 2rem;
+  padding-top: 2rem;
+}
 
+.redsquare-appspace-contacts-list > h6 {
+  padding-bottom: 1rem;
 }
 
 
