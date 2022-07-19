@@ -6,8 +6,6 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const LeagueInvite = require("./lib/overlays/league-invite");
 
-const Elo = require('elo-rank');
-
 class League extends ModTemplate {
 
   constructor(app) {
@@ -472,8 +470,8 @@ class League extends ModTemplate {
   }
 
   async isELOeligible(players, league){
-    if (players.length != 2){
-      console.log(`This game will not be ELO rated because there are not 2 players`);
+    if (players.length < 2){
+      console.log(`This game will not be ELO rated because there are not at least 2 players`);
       return false;
     }
 
@@ -519,7 +517,6 @@ class League extends ModTemplate {
       txmsg.winner = txmsg.winner[0];
     }
 
-    var elo = new Elo(15);
 
     //Let's check each league
     for (let leag of relevantLeagues){
@@ -527,51 +524,41 @@ class League extends ModTemplate {
       if (leag.ranking == "elo"){
         //All players must belong to ELO league for points to change
         
-        if (Array.isArray(txmsg.winner) || txmsg.reason == "tie"){
-          console.log("This game will not be rated because we haven't implemented ELO for ties or multiple winners yet");
-          //But we still should tabulate that the game is finished
-          if (txmsg.reason == "tie"){
-            for (let player of publickeys){
-              await this.incrementPlayer(player, leag.id, 0, "games_tied");
-            }
-          }else{
-            let players = [...publickeys];
-            for (let i = players.length-1; i>=0; i--){
-              if (txmsg.winner.includes(players[i])){
-                await this.incrementPlayer(players[i], leag.id, 0, "games_won");
-                players.splice(i,1);
-              }
-            }
-            for (let i = 0; i < players.length; i++){
-              await this.incrementPlayer(players[i], leag.id, 0);
-            }            
-          }
-          continue;
-        }  
-
         let playerStats = await this.isELOeligible(publickeys, leag);
 
         if (!playerStats){
           continue;
         }
 
-        let winner, loser;
+        let winner = [], loser = [];
+        let qsum = 0;
         for (let player of playerStats){
-          if (player.pkey == txmsg.winner){
-            winner = player;
+          //Convert each players ELO rating into a logistic function
+          player.q = Math.pow(10, (player.score/400));
+          //Sum the denominator so that the Expected values add to 1
+          qsum += player.q;
+          //Dynamically calculate each player's K-factor
+          player.k = this.calculateK(player);
+
+          //Sort into winners and losers
+          if (player.pkey == txmsg.winner || txmsg.winner.includes(player.pkey)){
+            winner.push(player);
           }else{
-            loser = player;
+            loser.push(player);
           }
         }
 
         console.log(winner, loser);
-        winner.elo = elo.getExpected(winner.score, loser.score);
-        loser.elo = elo.getExpected(loser.score, winner.score);
-        winner.score = elo.updateRating(winner.elo, 1, winner.score);
-        loser.score = elo.updateRating(loser.elo, 0, loser.score);
-        await this.updatePlayerScore(winner, "games_won");
-        await this.updatePlayerScore(loser);
-        
+        for (let p of winner){
+          let outcome = (winner.length == 1) ? "games_won" : "games_tied";
+          p.score += p.k * ( (1/winner.length) - (p.q / qsum)); 
+          await this.updatePlayerScore(p, outcome);
+        }
+        for (let p of loser){
+          p.score -= (p.k * p.q / qsum); 
+          await this.updatePlayerScore(p); 
+        }
+
       }else if (leag.ranking == "exp"){
         let players = [...publickeys]; //Need to refresh this each loop (since we splice below)
 
@@ -607,6 +594,16 @@ class League extends ModTemplate {
     
   }
 
+  //Our native ELO system
+  calculateK(playerObj){
+    if (playerObj?.games_finished < 30 && playerObj?.score < 2300){
+      return 40;
+    }
+    if (playerObj?.score < 2400){
+      return 20;
+    }
+    return 10;
+  }
 
   /*
   * Some wrapper functions to query individual stats of the league
@@ -642,7 +639,7 @@ class League extends ModTemplate {
     league.playerCnt = 0;
 
     league.players = [];
-    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC` ,
+    this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
       (res) => {
         if (res.rows) {

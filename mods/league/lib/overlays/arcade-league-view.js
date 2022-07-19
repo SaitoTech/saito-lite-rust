@@ -18,7 +18,7 @@ module.exports = ArcadeLeagueView = {
   loadLeaderboard(app, mod, league){
   	let leaderboard = [];
   	let al = this;
-    mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC` ,
+    mod.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${league.id}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
         (res) => {
           if (res.rows) {
             for (let p of res.rows){
@@ -46,7 +46,7 @@ module.exports = ArcadeLeagueView = {
         html += `<th>Wins</th><th>Ties</th><th></th></tr></thead><tbody>`;
    			let cnt = 1;
    			for (let r of leaderboard){
-   				html += `<tr><th>${cnt++}</th><td>${app.keys.returnUsername(r.pkey)}</td><td>${r.score}</td><td>${r.games_finished}</td>`;
+   				html += `<tr class="${(r.pkey == myKey)?"mystats":""}"><th>${cnt++}</th><td id="${r.pkey}" class="${(r.pkey !== myKey)?"newfriend":""}">${app.keys.returnUsername(r.pkey)}</td><td>${Math.round(r.score)}</td><td>${r.games_finished}</td>`;
           if (this.league.admin == myKey){
             html += `<td>${r.games_started}</td>`;
           }
@@ -60,6 +60,10 @@ module.exports = ArcadeLeagueView = {
 
    			html += `</tbody></table>`;
    			app.browser.addElementToDom(html, "league-leaderboard");
+
+        //Need to attach events for clicking on players on the leaderboard
+
+
    		}else{
    			app.browser.addElementToDom(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
    		}
