@@ -19,7 +19,7 @@ module.exports = SaitoHeaderTemplate = (app, mod) => {
   let html = `
 
   <header id="saito-header">
-    <img class="saito-header-logo" alt="Logo" src="/saito/img/logo.svg" />
+    <img class="logo" alt="Logo" src="/saito/img/logo.svg" />
     <nav>
       <div class="relative" style="">
         <div id="header-menu-toggle">
@@ -30,40 +30,55 @@ module.exports = SaitoHeaderTemplate = (app, mod) => {
         <div class="header-hamburger-contents">
 
           <div class="header-profile">
-	    <div class="header-profile-identicon">
-              <img class="saito-identicon" src="${identicon}" />
-	    </div>
-	    <div class="header-profile-balance">
-              <select class="saito-new-select saito-select-border">
-                <option value="0">0.0000 SAITO</option>
-                <option value="1">0.0000 TRX</option>
-              </select>
-	    </div>
-            <div class="header-profile-address">
+            <img src="${identicon}" />
+            <div>
               <p>${publickey}</p>
               <i class="fas fa-copy"></i>
             </div>
           </div>
 
+          <select class="saito-new-select saito-select-border">
+            <option value="0">0.0000 SAITO</option>
+            <option value="1">0.0000 TRX</option>
+          </select>
 
           <div class="header-menu-section">
             <div class="saito-menu  saito-white-background">
               <ul>
-                <li class="saito-header-nuke-wallet">
+                <li class="no-icon">
+                  <i class="far fa-address-card saito-primary-color"> </i>
+                  <span> Create Game </span>
+                </li>
+                <li>
+                  <i class="far fa-address-card saito-primary-color"> </i>
+                  <span> Send Tokens</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="header-menu-section">
+            <div class="saito-menu  saito-white-background">
+              <ul>
+                <li class="no-icon">
                   <i class="far fa-address-card saito-primary-color"> </i>
                   <span> Reset/Nuke Wallet </span>
                 </li>
-                <li class="saito-header-settings">
+                <li>
+                  <i class="far fa-address-card saito-primary-color"> </i>
+                  <span> Backup Access Keys</span>
+                </li>
+                <li>
+                  <i class="far fa-address-card saito-primary-color"> </i>
+                  <span> Restore Access Keys</span>
+                </li>
+                <li>
                   <i class="far fa-address-card saito-primary-color"> </i>
                   <span> Settings</span>
                 </li>
-                <li class="saito-header-show-qrcode">
+                <li>
                   <i class="far fa-address-card saito-primary-color"> </i>
-                  <span> Show QRCode</span>
-                </li>
-                <li class="saito-header-scan-qrcode">
-                  <i class="far fa-address-card saito-primary-color"> </i>
-                  <span> Scan QRCode</span>
+                  <span>Scan</span>
                 </li>
               </ul>
             </div>
@@ -78,11 +93,15 @@ module.exports = SaitoHeaderTemplate = (app, mod) => {
                 </li>
                 <li>
                   <i class="far fa-address-card saito-primary-color"> </i>
-                  <span> Developers</span>
+                  <span> Chat</span>
                 </li>
-                <li class="no-icon">
+                <li>
                   <i class="far fa-address-card saito-primary-color"> </i>
-                  <span> Red Square </span>
+                  <span> Dev Center</span>
+                </li>
+                <li>
+                  <i class="far fa-address-card saito-primary-color"> </i>
+                  <span> Post</span>
                 </li>
               </ul>
             </div>
