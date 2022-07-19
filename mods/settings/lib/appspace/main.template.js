@@ -6,6 +6,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   if (identifier_registered == "") { identifier_registered = `<span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>`; }
 
   let modules_html = "Wallet Outdated - module selection not supported";
+  let modules_html_active = "Wallet Outdated - module selection not supported";
   try {
     modules_html = app.options.modules
       .map((mod, i) => {
@@ -16,6 +17,19 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <input type="checkbox"  id="${i}"  value="modules_mods_${i}" name="modules_mods_${i}" ${CHECKED}>
           <span class="saito-switch-slider round"></span>
         </label>
+          <label>${mod.name}
+            <span></span>
+          </label>
+         </div>
+      `;
+      })
+      .join('');
+
+    modules_html_active = app.options.modules
+      .map((mod, i) => {
+        let CHECKED = mod.active ? 'CHECKED' : '';
+        return `
+        <div class="settings-appspace-app">
           <label>${mod.name}
             <span></span>
           </label>
@@ -84,14 +98,18 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       </div>
 
       <div class="settings-appspace-modules-container">
-
-        <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div> `;
+        <h6> Modules </h6>
+        `;
 
   if (app.modules.returnModule("AppStore") != null) {
     html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
   }
 
   html += `
+  <div class="settings-appspace-modules">
+      ${modules_html_active}
+   </div>
+   <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div>
       <div class="saito-overlay-container">
             <div class="saito-backdrop">
               <div class="settings-appspace-modules">
@@ -113,14 +131,14 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div class="settings-appspace-icons-container">
       <h6> Help </h6>
       <div class="settings-appspace-icons"  style="padding-bottom:40px;">
-      <div class="saito-black">Twitter:</div>
-      <div><i class="fab fa-twitter"></i></div>
+      <div><a target="_blank" href="https://github.com/SaitoTech"><i class="fab fa-discord"></i></a></div>
+      <div class="saito-black">Discord</div>
 
-      <div class="saito-black">Telegram:</div>
-     <div><i class="fab fa-telegram"></i></div>
+      <div> <a target="_blank" href="https://github.com/SaitoTech"><i class="fab fa-telegram"></i></a></div>
+      <div class="saito-black">Telegram</div>
 
-      <div class="saito-black">Discord:</div>
-     <div><i class="fab fa-discord"></i></div>
+     <div> <a target="_blank" href="https://github.com/SaitoTech"> <i class="fab fa-github"></i></a></div>
+      <div class="saito-black">Github</div>
       </div>
       </div>
 
