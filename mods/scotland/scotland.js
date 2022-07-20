@@ -82,7 +82,6 @@ class Scotland extends GameTemplate {
     let html = `<div class="rules-overlay">
                 <h1>Scotland Yard</h1>
                 <p>A team of detectives is on the hunt for international terrorist Mr. X. Can London's finest trap him before their Oyster cards run out of credit?</p>     
-               </div>
                <h2>Players</h2>
                <p>One player controls Mr. X and competes against the rest of the players, who must work together as a team. Depending on the number of players, each player on the detective team may be responsible for moving one or more pawns on the board.</p>
                <h2>How to Win</h2>
@@ -572,6 +571,7 @@ class Scotland extends GameTemplate {
   disableBoardClicks() {
     $(".location").off();
     $(".location").css("border-color", "transparent");
+    $(".starting_pos").removeClass("starting_pos");
     this.showBoard();
   }
 
@@ -599,7 +599,7 @@ class Scotland extends GameTemplate {
     let html =  `<div class='status-icon-menu'>
 
             <div class="menu_icon ${(mylocation.taxi.length == 0 || this.game.state.tickets[pawn]["taxi"] == 0)? "unavailable":""}" id="taxi">
-              <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: yellow;"></i>
+              <i class="menu_icon_icon fas fa-taxi fa-border" style="background-color: gold;"></i>
               <div class="menu-text">
                Taxi: ${this.game.state.tickets[pawn]["taxi"]}
               </div>
@@ -689,7 +689,7 @@ class Scotland extends GameTemplate {
               let target_id = $(this).attr("id");
               scotland_self.movePlayer(player, pawn, target_id, "taxi");
             });
-            $(`#${z}`).css("border-color","yellow");
+            $(`#${z}`).css("border-color","gold");
             $(`#${z}`).addClass("highlight-available-move");
           }
         }
@@ -829,7 +829,8 @@ class Scotland extends GameTemplate {
       if (this.game.state.xmoves < 3) {
         for (let i = 0; i < this.game.state.starting_positions.length; i++) {
           let divname = "#" + this.game.state.starting_positions[i];
-          $(divname).css("border-color", "white");
+          //$(divname).css("border-color", "white");
+          $(divname).addClass("starting_pos");
         }
       }
     }
@@ -844,8 +845,13 @@ class Scotland extends GameTemplate {
           pawn.style.top = this.scale(this.game.state.locations[position].top+40) + "px";
           pawn.style.left = this.scale(this.game.state.locations[position].left+37) + "px";
           pawn.classList.remove("invisible");
+          //
+          if (i == this.game.state.numDetectives && this.game.player !== this.game.state.x){
+            pawn.classList.add("dancing");  
+          }
         }else{
           pawn.classList.add("invisible");
+          pawn.classList.remove("dancing");
         }
       }
     }    
@@ -951,6 +957,31 @@ class Scotland extends GameTemplate {
     return [13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198];
   }
 
+  drawRouteMap(transport, color){
+    const c = document.querySelector(".gameboard canvas");
+    if (!c){ return;}
+
+    let ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, 5135, 3829);
+    ctx.beginPath();
+    ctx.strokeStyle = "#be5e2f";
+    ctx.lineWidth = 30;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (let site_id in this.game.state.locations){
+      let site = this.game.state.locations[site_id];
+      if (site[transport].length > 0){
+        for (let neigh of site[transport]){
+          ctx.moveTo(site.left+37,site.top+40);
+          ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
+          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
+          ctx.stroke();
+        }
+      }
+    }
+
+  }
+
   drawUndergroundMap(){
     const c = document.querySelector(".gameboard canvas");
     if (!c){ return;}
@@ -968,6 +999,7 @@ class Scotland extends GameTemplate {
         for (let neigh of site.underground){
           ctx.moveTo(site.left+37,site.top+40);
           ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
+          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
           ctx.stroke();
         }
       }
@@ -992,6 +1024,7 @@ class Scotland extends GameTemplate {
         for (let neigh of site.bus){
           ctx.moveTo(site.left+37,site.top+40);
           ctx.lineTo(this.game.state.locations[neigh].left+37,this.game.state.locations[neigh].top+40);
+          ctx.arc(this.game.state.locations[neigh].left+37, this.game.state.locations[neigh].top+40, 30, 0, 2*Math.PI);
           ctx.stroke();
         }
       }
