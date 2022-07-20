@@ -110,11 +110,11 @@ module.exports = ArcadeGameDetails = {
     }
 
     //Query game instructions
-    //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
-    //   let options = getOptions();
-    //   let gamemod = app.modules.returnModule(options.game);
-    //   gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
-    //});
+    document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
+       let options = getOptions();
+       let gamemod = app.modules.returnModule(options.game);
+       gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+    });
 
     //
     // create game

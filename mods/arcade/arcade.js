@@ -41,6 +41,9 @@ class Arcade extends ModTemplate {
     this.description = "A place to find, play and manage games!";
     this.categories = "Games Utilities";
 
+    this.active_tab = "arcade";
+    this.manual_ordering = false; // Toggle this to either sort games by their categories or go by the module.config order
+
     this.header = null;
     this.overlay = null;
     this.debug = true;
@@ -55,18 +58,16 @@ class Arcade extends ModTemplate {
           this.app.storage.saveOptions();
         }
         //this.renderSidebar();
-        try {
           let chat_mod = this.app.modules.returnModule("Chat");
-          if (
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
+          if (chat_mod){
+            if (chat_mod?.groups && 
+                chat_mod.groups.length > 0 &&
+                this.chat_open == 0 &&
+                this.app.options.auto_open_chat_box
+             ) {
+              this.chat_open = 1;
+              chat_mod.openChats();
           }
-        } catch (err) {
-          console.log("Err: " + err);
         }
       }
     }
@@ -1220,6 +1221,15 @@ class Arcade extends ModTemplate {
      
       let arcade_self = this;
       GameLoader.render(app, arcade_self);
+
+      let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+
+      tx.msg = {};
+      tx.msg.request = "launch singleplayer";
+      tx.msg.module = gameobj.name;
+      tx = this.app.wallet.signTransaction(tx);
+      this.app.network.propagateTransaction(tx);
 
       let gameMod = app.modules.returnModule(gameobj.name);  
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);

@@ -12,8 +12,6 @@ const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypt
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 
-//let tabNames = ["arcade", "observables", "tournaments"];
-let tabNames = [];
 
 module.exports = ArcadeMain = {
   render(app, mod) {
@@ -54,37 +52,51 @@ module.exports = ArcadeMain = {
     }
 
     //
-    // add tabs
+    // add tabs if we have League installed
     //
-    /*
-    tabNames.forEach((tabButtonName, i) => {
-      document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
-        app.browser.logMatomoEvent(
-          "Arcade",
-          "ArcadeTabNavigationClick",
-          tabButtonName
-        );
+    let league = app.modules.returnModule("League");
+
+    let tabNames = (league)? ["arcade", "league"] : [];
+
+    if (tabNames.length > 0){
+      tabNames.forEach((tabButtonName, i) => {
+        //Add click event to tab
+        document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
+          app.browser.logMatomoEvent(
+            "Arcade",
+            "ArcadeTabNavigationClick",
+            tabButtonName
+          );
+          tabNames.forEach((tabName, i) => {
+            if (tabName === tabButtonName) {
+              mod.active_tab = tabName;
+              document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
+            } else {
+              document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
+            }
+          });
+        };
+
+        //Set default tab to display
         tabNames.forEach((tabName, i) => {
-          if (tabName === tabButtonName) {
-            document
-              .querySelector("#" + tabName + "-hero")
-              .classList.remove("arcade-tab-hidden");
-            document
-              .querySelector("#tab-button-" + tabName)
-              .classList.add("active-tab-button");
+          if (tabName === mod.active_tab) {
+            document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
           } else {
-            document
-              .querySelector("#" + tabName + "-hero")
-              .classList.add("arcade-tab-hidden");
-            document
-              .querySelector("#tab-button-" + tabName)
-              .classList.remove("active-tab-button");
+            document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
           }
         });
-      };
-    });
-    */
 
+      });
+    
+    }else{
+      //Hide Tabs
+      document.querySelector("#arcade-tab-buttons").style = "display: none";
+    }
+    
     if (mod.viewing_game_homepage) {
       //Events for this are same as side bar (and attached via arcade-game-sidebar.js)
       app.browser.addElementToElement(
@@ -96,13 +108,13 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
-    if (document.querySelector(".arcade-hero")) {
+    if (document.querySelector("#arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
             ArcadeInviteTemplate(app, mod, invite, i),
-            document.querySelector(".arcade-hero")
+            document.querySelector("#arcade-hero")
           );
         }
       });
@@ -113,6 +125,12 @@ module.exports = ArcadeMain = {
           document.querySelector(".observables-hero")
         );
       });*/
+
+      //insert leagues into hidden tab
+      if (league){
+        league.renderArcade(app, mod, document.querySelector("#league-hero")); 
+      }
+
     }
 
 
@@ -120,6 +138,12 @@ module.exports = ArcadeMain = {
       ArcadePosts.render(app, mod);
     } else {  //Add summary of game pages with latest post teaser
       ArcadeForums.render(app, mod);
+    }
+    // Insert Posts
+    let post = app.modules.returnModule("Post");
+    if (post){
+      post.renderMethod = "arcade";
+      post.render();
     }
 
     //ArcadeInfobox.render(app, mod); //Not doing anything right now
@@ -187,11 +211,11 @@ module.exports = ArcadeMain = {
               }*/
 
               if (game_cmd === "cancel") {
-            	let c = confirm("Are you sure you want to cancel this game?");
-            	if (c) {
-                  arcade_main_self.cancelGame(app, mod, game_sig);
-                  return;
-		}
+            	  let c = confirm("Are you sure you want to cancel this game?");
+              	if (c) {
+                    arcade_main_self.cancelGame(app, mod, game_sig);
+                    return;
+  		          }
               }
 
               if (game_cmd === "join") {
@@ -199,7 +223,7 @@ module.exports = ArcadeMain = {
             	if (c) {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
-		}
+		          }
               }
 
               if (game_cmd === "continue") {

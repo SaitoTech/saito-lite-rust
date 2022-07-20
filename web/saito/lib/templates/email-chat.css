@@ -276,7 +276,7 @@ p {
 .email-chat {
   margin-top: 0.5em;
   width: 100%;
-  min-height: 300px;
+  min-height: 250px;
   font-size: 0.8em;
   display: grid;
   grid-template-rows: auto 1fr;
