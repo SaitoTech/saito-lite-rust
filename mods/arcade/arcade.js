@@ -42,6 +42,8 @@ class Arcade extends ModTemplate {
     this.categories = "Games Utilities";
 
     this.active_tab = "arcade";
+    this.manual_ordering = false; // Toggle this to either sort games by their categories or go by the module.config order
+
     this.header = null;
     this.overlay = null;
     this.debug = true;

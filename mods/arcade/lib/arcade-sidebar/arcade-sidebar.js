@@ -27,7 +27,7 @@ module.exports = ArcadeSidebar = {
     });
 
     //Sort the games according to their categories...
-    if (false){
+    if (!mod.manual_ordering){
       gamelist.sort(function (a,b){
         if (a[0]>b[0]){ return 1;}
         if (a[0]<b[0]){ return -1;}

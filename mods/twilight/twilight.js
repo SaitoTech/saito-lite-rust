@@ -35,7 +35,7 @@ class Twilight extends GameTemplate {
     this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
       One player plays the United States (US), and the other plays the Soviet Union (USSR).`;
     this.publisher_message = "Twilight Struggle is owned by GMT Games. This module is made available under an open source license provided by GMT Games for usage in open source game engines. Publisher requirements is that at least one player per game has purchased a copy of the game.";
-    this.categories      = "Games Arcade Entertainment";
+    this.categories      = "Games Boardgame Strategy";
 
     this.boardWidth  = 5100; //Pieces originally scaled to 5100px wide board
     this.card_height_ratio = 1.39; // height is 1.39x width
@@ -51,8 +51,6 @@ class Twilight extends GameTemplate {
     
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
-    this.type       	 = "Strategy Boardgame";
-    this.categories 	 = "Boardgame Game"
     //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
