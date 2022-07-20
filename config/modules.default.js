@@ -16,12 +16,14 @@ module.exports = {
     'registry/registry.js',
     'saitolicious/saitolicious.js',
     'settings/settings.js',
-    'staking/staking.js',
+    // 'staking/staking.js',
     'settlers/settlers.js',
     'solitrio/solitrio.js',
     'wordblocks/wordblocks.js',
     'calendar/calendar.js',
     'website/website.js',
+    'stun/stun.js',
+    'video/video.js'
   ],
   lite: [
     'arcade/arcade.js',
@@ -40,12 +42,14 @@ module.exports = {
     'registry/registry.js',
     'saitolicious/saitolicious.js',
     'settings/settings.js',
-    'staking/staking.js',
+    // 'staking/staking.js',
     'email/email.js',
     'settlers/settlers.js',
     'solitrio/solitrio.js',
     'wordblocks/wordblocks.js',
     'calendar/calendar.js',
     'website/website.js',
+    'stun/stun.js',
+    'video/video.js'
   ]
 }
