@@ -869,7 +869,6 @@ console.log("adding stuff!");
 
 
 
-
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -953,14 +952,24 @@ console.log("adding stuff!");
       }
     });
     this.menu.addMenuOption({
-      text : "Cards",
+      text : "Info",
       id : "game-cards",
       class : "game-cards",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.handleCardsMenu();
+	game_mod.menu.showSubMenu("game-cards");
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Religion",
+      id : "game-religious-conflict",
+      class : "game-religious-conflict",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayReligiousConflictSheet();
+      }
+    });
+
     this.menu.addMenuOption({
       text : "Factions",
       id : "game-factions",
@@ -5267,14 +5276,12 @@ console.log("NEW WORLD PHASE!");
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.players == 2) {
-	    // reverse order as last added goes first
 	    this.game.queue.push("play\tprotestant");
 	    this.game.queue.push("play\tpapacy");
 	    return 1;
 	  }
 
 	  let io = this.returnImpulseOrder();
-	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }
@@ -7128,6 +7135,18 @@ console.log("faction: " + faction);
     }
     return null;
   }
+
+
+  displayReligiousConflictSheet() {
+
+    let html = `
+      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')"></div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+  }
+
 
 
   displayFactionSheet(faction) {
