@@ -1755,6 +1755,8 @@ i.link_icon.private{
   border-radius: 5px;
   background: black;
   padding: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .league-details-overlay h2{
@@ -1773,6 +1775,9 @@ i.link_icon.private{
 
 .league-leaderboard table td{
   text-align: center;
+  overflow-x: clip;
+  max-width: 5em;
+  text-overflow: ellipsis;
 }
 
 .league-leaderboard table tr{
@@ -1781,6 +1786,10 @@ i.link_icon.private{
 
 tr.mystats{
   font-weight: bold;
+}
+
+.newfriend{
+  cursor: crosshair;
 }
 
 .league-overview-box .info-item{
