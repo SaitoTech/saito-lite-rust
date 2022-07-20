@@ -60,6 +60,7 @@ module.exports = ArcadeMain = {
 
     if (tabNames.length > 0){
       tabNames.forEach((tabButtonName, i) => {
+        //Add click event to tab
         document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
           app.browser.logMatomoEvent(
             "Arcade",
@@ -68,24 +69,31 @@ module.exports = ArcadeMain = {
           );
           tabNames.forEach((tabName, i) => {
             if (tabName === tabButtonName) {
-              document
-                .querySelector("#" + tabName + "-hero")
-                .classList.remove("arcade-tab-hidden");
-              document
-                .querySelector("#tab-button-" + tabName)
-                .classList.add("active-tab-button");
+              mod.active_tab = tabName;
+              document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
             } else {
-              document
-                .querySelector("#" + tabName + "-hero")
-                .classList.add("arcade-tab-hidden");
-              document
-                .querySelector("#tab-button-" + tabName)
-                .classList.remove("active-tab-button");
+              document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
             }
           });
         };
+
+        //Set default tab to display
+        tabNames.forEach((tabName, i) => {
+          if (tabName === mod.active_tab) {
+            document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
+          } else {
+            document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
+          }
+        });
+
       });
+    
     }else{
+      //Hide Tabs
       document.querySelector("#arcade-tab-buttons").style = "display: none";
     }
     
@@ -130,6 +138,12 @@ module.exports = ArcadeMain = {
       ArcadePosts.render(app, mod);
     } else {  //Add summary of game pages with latest post teaser
       ArcadeForums.render(app, mod);
+    }
+    // Insert Posts
+    let post = app.modules.returnModule("Post");
+    if (post){
+      post.renderMethod = "arcade";
+      post.render();
     }
 
     //ArcadeInfobox.render(app, mod); //Not doing anything right now

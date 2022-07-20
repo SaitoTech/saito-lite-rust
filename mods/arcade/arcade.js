@@ -41,6 +41,7 @@ class Arcade extends ModTemplate {
     this.description = "A place to find, play and manage games!";
     this.categories = "Games Utilities";
 
+    this.active_tab = "arcade";
     this.header = null;
     this.overlay = null;
     this.debug = true;
