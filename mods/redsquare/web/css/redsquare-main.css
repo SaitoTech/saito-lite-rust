@@ -24,9 +24,7 @@ img {
 
 
 
-.redsquare-menu .saito-menu {
-
-}
+.redsquare-menu .saito-menu {}
 
 
 .redsquare-item {
@@ -136,4 +134,25 @@ img {
   text-overflow: clip;
   font-size: 1.5rem;
   line-height: 1.9rem;
+}
+
+.redsquare-tweet-tools {
+  display: grid;
+  grid-gap: 10rem;
+  align-items: center;
+  grid-template-columns: repeat(3, max-content);
+  margin-top: .9rem;
+  font-size: 1.6rem;
+
+}
+
+.redsquare-tweet-tools>div {
+  display: grid;
+  grid-template-columns: min-content min-content;
+  align-items: center;
+  grid-gap: .5rem
+}
+
+.redsquare-tweet-tools i {
+  /* font-size: 2rem; */
 }

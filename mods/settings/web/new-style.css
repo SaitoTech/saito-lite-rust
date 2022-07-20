@@ -61,6 +61,15 @@
 
 }
 
+.settings-appspace-modules-modal {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    border-radius: .5rem;
+    padding: 2rem 0 0 2rem;
+
+}
+
 .settings-appspace-modules-container {
     margin-bottom: 4rem;
 }
@@ -97,7 +106,20 @@
     align-items: center;
 }
 
+
 .settings-appspace-app label {
+    text-transform: none;
+    font-size: 1.6rem;
+    margin-right: .5rem;
+}
+
+.settings-appspace-installed-app {
+    line-height: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.settings-appspace-installed-app label {
     text-transform: none;
     font-size: 1.6rem;
     margin-right: .5rem;

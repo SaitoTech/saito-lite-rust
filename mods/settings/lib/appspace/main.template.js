@@ -29,7 +29,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       .map((mod, i) => {
         let CHECKED = mod.active ? 'CHECKED' : '';
         return `
-        <div class="settings-appspace-app">
+        <div class="settings-appspace-installed-app">
           <label>${mod.name}
             <span></span>
           </label>
@@ -98,7 +98,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       </div>
 
       <div class="settings-appspace-modules-container">
-        <h6> Modules </h6>
+        <h6> Installed Modules </h6>
         `;
 
   if (app.modules.returnModule("AppStore") != null) {
@@ -112,8 +112,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
    <div id="settings-appspace-manage-modules" class="saito-button-primary">Manage Modules</div>
       <div class="saito-overlay-container">
             <div class="saito-backdrop">
-              <div class="settings-appspace-modules">
+              <div class="settings-appspace-modules-modal">
               ${modules_html}
+              </div>
+              <div class="saito-overlay-actions">
+                <div id="settings-appspace-cancel-modules-modal" class="saito-button-secondary"> Cancel </div>
               </div>
             </div>
       </div>

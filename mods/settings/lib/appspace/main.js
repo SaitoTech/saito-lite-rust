@@ -40,6 +40,14 @@ class SettingsAppspace {
 
       })
 
+      document.querySelector("#settings-appspace-cancel-modules-modal").onclick = () => {
+        document.querySelector(".saito-overlay-container").classList.remove("show");
+      }
+
+
+
+
+
 
 
       /***

@@ -699,6 +699,7 @@ Saito backdrop
 .saito-overlay-actions {
     display: flex;
     justify-content: flex-end;
+    margin: 1rem;
 }
 
 
@@ -745,7 +746,7 @@ Saito backdrop
 }
 
 input:checked+.saito-switch-slider {
-    border: 1px solid var(--saito-primary);
+    /* border: 1px solid var(--saito-primary); */
 
 }
 
