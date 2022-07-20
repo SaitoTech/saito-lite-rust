@@ -15,10 +15,23 @@ module.exports = AdminBox = {
     let box = document.querySelector('.league-component-admin-box-form');
     if (!box) {return;}
     
+    let desc = document.getElementById("league-desc");
+    if (desc){
+      desc.addEventListener("focus", function(e){
+        let value = e.target.innerHTML;
+        if (value == desc.getAttribute("data-placeholder")){
+          e.target.innerHTML = "";
+        }
+      });
+    }
+
     box.onsubmit = (e) => {
       e.preventDefault();
       let leaguename = sanitize(document.getElementById("league-name")?.textContent || e.target.game.value);
-      let leaguedesc = sanitize(document.getElementById("league-desc")?.textContent || "");
+      let leaguedesc = sanitize(desc?.textContent) || "";
+      if (leaguedesc === desc.getAttribute("data-placeholder")){
+        leaguedesc = "";
+      }
       let newLeague = {
         game: e.target.game.value,
         type: e.target.type.value,
@@ -30,8 +43,6 @@ module.exports = AdminBox = {
         max_players: e.target.max_players.value
       };
       mod.sendCreateLeagueTransaction(newLeague);
-      salert('League created');
-      //mod.render(app,mod);
       return false;
     }
     
@@ -48,6 +59,9 @@ module.exports = AdminBox = {
             document.querySelector("#league-desc").textContent = "";
             document.querySelector("#game").value = gamename;
             document.getElementById("league-details").style.display = "block";
+            if (desc.innerHTML === ""){
+              desc.innerHTML = desc.getAttribute("data-placeholder");
+            }
           }else{
             document.getElementById("league-details").style.display = "none";
           }

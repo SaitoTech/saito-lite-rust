@@ -22,7 +22,7 @@ module.exports = ExistingLeague = {
         let cmd = btn.getAttribute('data-cmd');
         if (cmd == "join"){
           mod.sendJoinLeagueTransaction(league_id);
-          salert('League joined');
+          salert('Joining League... it may take a moment to update info');
         }
         if (cmd == "view"){
           for (let league of mod.leagues){
