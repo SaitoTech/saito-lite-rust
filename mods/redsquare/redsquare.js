@@ -57,31 +57,31 @@ class RedSquare extends ModTemplate {
     super.installModule(app);
 
     let dummy_content = [
+      // {
+      //   text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
+      //   img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+      // },
       {
-        content: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-        img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+        text: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
       },
-      {
-        content: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
-      },
-      {
-        content: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
-      },
-      {
-        content: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
-        img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080',
-      },
-      {
-        content: 'Etiam hendrerit ex ut neque bibendum porta.',
-      },
-      {
-        content: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
-        img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
-      }
+      // {
+      //   text: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
+      // },
+      // {
+      //   text: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
+      //   img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080',
+      // },
+      // {
+      //   text: 'Etiam hendrerit ex ut neque bibendum porta.',
+      // },
+      // {
+      //   text: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
+      //   img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
+      // }
     ];
 
     for (let i = 0; i < dummy_content.length; i++) {
-   //   this.sendTweetTransaction(dummy_content[i]);
+      this.sendTweetTransaction(dummy_content[i]);
     }
   }
 
@@ -115,8 +115,8 @@ class RedSquare extends ModTemplate {
 	      if (!tx.optional) { tx.optional = {}; }
               tx.optional.likes 	= tx.msg.likes;
               tx.optional.retweets 	= tx.msg.retweets;
-	      tx.optional.parent_id 	= tx.msg.parent_id;
-	      tx.optional.thread_id 	= tx.msg.thread_id;
+      	      tx.optional.parent_id 	= tx.msg.parent_id;
+      	      tx.optional.thread_id 	= tx.msg.thread_id;
 
   	      redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
@@ -184,7 +184,7 @@ class RedSquare extends ModTemplate {
     console.log('inside receiveTweetTransaction');
     console.log(txmsg);
 
-    let sql = `INSERT INTO tweets11 (
+    let sql = `INSERT INTO tweets (
                 tx,
                 sig,
                 publickey
