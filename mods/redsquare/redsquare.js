@@ -92,7 +92,7 @@ class RedSquare extends ModTemplate {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets11 DESC LIMIT 100`,
+      `SELECT * FROM tweets DESC LIMIT 100`,
       (res) => {
 
         console.log('res');
@@ -112,21 +112,14 @@ class RedSquare extends ModTemplate {
 
 	      let tx = new saito.default.transaction(JSON.parse(row.tx));
 
-        console.log("transaction");
-        console.log(tx);
-
 	      if (!tx.optional) { tx.optional = {}; }
-	      tx.optional.sig = row.sig;
-	      tx.optional.content = tx.msg.content;
-        tx.optional.img = tx.msg.img;
-	      tx.optional.flagged = tx.msg.flagged;
-	      tx.optional.moderated = tx.msg.moderated;
-	      tx.optional.parent_id = tx.msg.parent_id;
-	      tx.optional.thread_id = tx.msg.thread_id;
+              tx.optional.likes 	= tx.msg.likes;
+              tx.optional.retweets 	= tx.msg.retweets;
+	      tx.optional.parent_id 	= tx.msg.parent_id;
+	      tx.optional.thread_id 	= tx.msg.thread_id;
 
   	      redsquare_self.tweets.push(tx);
-          console.log("RENDER TWEET REQUEST");
-          app.connection.emit('tweet-render-request', tx);
+              app.connection.emit('tweet-render-request', tx);
 	    }
           });
         }
@@ -136,6 +129,7 @@ class RedSquare extends ModTemplate {
 
 
   async onConfirmation(blk, tx, conf, app) {
+
     let redsquare_self = this;
     let txmsg = tx.returnMessage();
 
@@ -168,31 +162,19 @@ class RedSquare extends ModTemplate {
     let obj = {
       module: this.name,
       request: "create tweet",
-      content: "",
-      img: "",
-      parent_id: "",
-      thread_id: "",
-      moderated: 0,
-      flagged: 0,
+      data : {} ,
     };
-
-    // set user defined values
-    for (let key in data) { 
-      obj[key] = data[key]; 
-    }
-
-    if ((data.parent_id != "undefined") && (data.thread_id == "undefined")) { 
-      obj.thread_id = data.parent_id; 
-    }
+    for (let key in data) { obj.data[key] = data[key]; }
 
     let newtx = this.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-
     this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
+
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
+
     let txmsg = tx.returnMessage();
 
     let txn = JSON.stringify(tx.transaction);
