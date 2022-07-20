@@ -137,7 +137,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       <div><a target="_blank" href="https://github.com/SaitoTech"><i class="fab fa-discord"></i></a></div>
       <div class="saito-black">Discord</div>
 
-      <div> <a target="_blank" href="https://github.com/SaitoTech"><i class="fab fa-telegram"></i></a></div>
+      <div> <a target="_blank" href="https://t.me/SaitoIO"><i class="fab fa-telegram"></i></a></div>
       <div class="saito-black">Telegram</div>
 
      <div> <a target="_blank" href="https://github.com/SaitoTech"> <i class="fab fa-github"></i></a></div>
