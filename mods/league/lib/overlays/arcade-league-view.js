@@ -62,7 +62,23 @@ module.exports = ArcadeLeagueView = {
    			app.browser.addElementToDom(html, "league-leaderboard");
 
         //Need to attach events for clicking on players on the leaderboard
+        const startKeyExchange = async (publickey) => {
+          console.log("pkey1: " + publickey);
+          publickey = app.keys.fetchPublicKey(publickey);
+          console.log("pkey2: " + publickey);
 
+          if (publickey) {
+            let encrypt_mod = app.modules.returnModule("Encrypt");
+            encrypt_mod.initiate_key_exchange(publickey);
+            console.log("done initiate key exchange");
+          } 
+        };
+        Array.from(document.querySelectorAll(".newfriend")).forEach((username)=>{
+          username.onclick = (e) =>{
+            console.log(e.target,e.target.getAttribute("id"));
+            startKeyExchange(e.target.getAttribute("id"));
+          }
+        });
 
    		}else{
    			app.browser.addElementToDom(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");

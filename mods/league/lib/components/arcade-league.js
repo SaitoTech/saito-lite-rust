@@ -31,7 +31,7 @@ class ArcadeLeague {
         }
         if (game_cmd == "join" && game_sig == league.id){
           mod.sendJoinLeagueTransaction(league.id);
-          salert('League joined');
+          salert('Joining League... it may take a moment to update info');
         }
       }
     });
