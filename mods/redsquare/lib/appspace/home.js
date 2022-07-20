@@ -17,11 +17,16 @@ class RedSquareAppspaceHome {
     app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
 
     app.connection.on("tweet-render-request", (tx) => {
+
+        console.log('inside render request');
+        console.log(tx);
         let tweet = new Tweet(app, mod, tx);
         tweet.render(app, mod, ".redsquare-list"); 
     });
 
     for (let i = 0; i < mod.tweets.length; i++) {
+        console.log('inside loop');
+        console.log(mod.tweets[i]);
         app.connection.emit('tweet-render-request', mod.tweets[i]);
     }
 

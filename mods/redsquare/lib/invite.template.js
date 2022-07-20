@@ -26,8 +26,7 @@ module.exports = (app, mod, tx) => {
 
              </div>
 
-	     <div class="redsquare-invite-additional-options">additional options</div>
-	     <div class="saito-button-secondary redsquare-invite-action">JOIN</div>
+	     <div class="saito-button-secondary redsquare-invite-action">ACCEPT</div>
 
            </div>
          </div>

@@ -384,6 +384,14 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
+  generateQRCode(data) {
+    const QRCode = require('./../helpers/qrcode');
+    return new QRCode(
+      document.getElementById("qrcode"),
+      data
+    );
+  }
+
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {

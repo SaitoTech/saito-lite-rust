@@ -11,6 +11,12 @@
   width: 100%;
 }
 
+.religious_conflict_sheet {
+  width: 1110px;
+  height: 820px;
+  background-size: auto;
+}
+
 .faction_sheet {
   width: 1240px;
   height: 800px;

@@ -22,9 +22,27 @@ img {
   width: 70rem;
 }
 
+.redsquare-appspace-contacts>.saito-page-header {
+  padding-left: 0rem;
+}
+
+.redsquare-appspace-home>.saito-page-header {
+  padding-left: 0rem;
+}
+
+.redsquare-appspace-notifications>.saito-page-header {
+  padding-left: 0rem;
+}
 
 
-.redsquare-menu .saito-menu {}
+.redsquare-appspace-contacts-list {
+  padding-left: 2rem;
+  padding-top: 2rem;
+}
+
+.redsquare-appspace-contacts-list>h6 {
+  padding-bottom: 1rem;
+}
 
 
 .redsquare-item {
@@ -39,7 +57,7 @@ img {
 .redsquare-invite-participants {
   padding: 2rem;
   display: grid;
-  grid-template-columns: 20rem 20rem;
+  grid-template-columns: 1fr 1fr;
   row-gap: 2rem;
   column-gap: 2rem;
 }
@@ -155,4 +173,29 @@ img {
 
 .redsquare-tweet-tools i {
   /* font-size: 2rem; */
+
+}
+
+.link-preview .section {
+  border: 1px solid #c1b6b6;
+  border-radius: 20px;
+  position: relative;
+  padding: 10px;
+  margin: 15px 0px;
+}
+
+.link-preview .box {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.link-image {
+  height: 80px;
+}
+
+.is-clipped {
+  margin-left: 20px;
+  font-size: 13px;
+  width: 100%;
 }

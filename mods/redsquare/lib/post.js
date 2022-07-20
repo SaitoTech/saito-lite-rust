@@ -21,7 +21,7 @@ console.log("TEMPLATE ADDED: " + selector);
 
     }
 
-    attachEvents() { 
+    attachEvents(app, mod) { 
 
       document.getElementById("post-tweet-button").onclick = (e) => {
 
@@ -30,6 +30,9 @@ console.log("TEMPLATE ADDED: " + selector);
         let data = {
           content: document.getElementById('post-tweet-textarea').value,
         };
+
+        console.log('inside tweet ');
+        console.log(data);
 
         mod.sendTweetTransaction(data);  
       }
