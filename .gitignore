@@ -13,7 +13,7 @@ logs/*
 
 config/options
 config/options.*
-# config/modules.config.js
+config/modules.config.js
 config/runtime.config.js
 config/mixin-credentials.js
 
@@ -28,7 +28,7 @@ test/
 
 data/*.sq3
 data/*/*.blk
-data/blocks/*.blk
+data/blocks/*.blkgit 
 data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
