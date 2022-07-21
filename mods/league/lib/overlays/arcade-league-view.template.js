@@ -20,7 +20,7 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
       <div class="leaderboard-spinner loader"></div>
     </div>
     <div class="btn-controls-box">`;
-    if (league.myRank <=0){
+    if (league.myRank <=0 && (league.max_players == 0 || league.playerCnt < league.max_players)){
       html += `<button class='button' id='join-btn'>JOIN</button>`;
     }
     if (app.wallet.returnPublicKey() == league.admin && (league.max_players == 0 || league.playerCnt < league.max_players)){

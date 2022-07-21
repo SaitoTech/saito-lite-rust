@@ -450,7 +450,7 @@ class Spider extends GameTemplate {
           spider_self.prependMove("draw");
           spider_self.endTurn();  
         }else{
-          salert("You cannot deal with open slots!");
+          spider_self.displayWarning("Error","You cannot deal with open slots!");
         }
       }else{
         spider_self.endGame();
@@ -550,7 +550,7 @@ class Spider extends GameTemplate {
             spider_self.displayBoard();
             spider_self.checkStack(parseInt(card_pos[0]));
           }else{
-            salert("Cannot move there");
+            spider_self.displayWarning("Illegal Move");
           }            
         }
       }else{

@@ -47,21 +47,21 @@
               twilight_self.addMove("dice\tburn\t"+player);
 
               if (opponent == "us") {
+                twilight_self.addMove(`NOTIFY\tOlympic Games: USSR rolls ${ussrroll} / US rolls ${usroll} (+2 hosting bonus)`);
                 usroll += 2;
               } else {
+                twilight_self.addMove(`NOTIFY\tOlympic Games: USSR rolls ${ussrroll} (+2 hosting bonus) / US rolls ${usroll}`);
                 ussrroll += 2;
               }
 
               if (ussrroll > usroll) {
                 twilight_self.addMove("vp\tussr\t2");
-                twilight_self.addMove("NOTIFY\tOlympic Games: USSR rolls "+ussrroll+" / US rolls "+usroll);
                 twilight_self.addMove("modal\t USSR wins the Olympics");
                 twilight_self.endTurn();
                 winner = 1;
               }
               if (usroll > ussrroll) {
                 twilight_self.addMove("vp\tus\t2");
-                twilight_self.addMove("NOTIFY\tOlympic Games: USSR rolls "+ussrroll+" / US rolls "+usroll);
                 twilight_self.addMove("modal\t US wins the Olympics");
                 twilight_self.endTurn();
                 winner = 2;

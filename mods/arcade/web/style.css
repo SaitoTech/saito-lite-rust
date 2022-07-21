@@ -64,8 +64,11 @@ body {
   height: 5em;
 }
 
-.arcade-announcement {
+.arcade-announcements {
   margin-top: 0.5em;
+}
+
+.arcade-announcement {
   border: 1px solid var(--saito-red);
   padding: 10px;
 }
@@ -781,8 +784,16 @@ button.add-games {
   font-size: 0.9em;
   margin-left: 10px;
   display: inline-block;
+  position: absolute;
+  right: calc(0.5em + 10px);
 }
+
 .game-home-link {
+  border-bottom: 1px dashed whitesmoke;
+  cursor: pointer;
+}
+
+.game-help-link {
   border-bottom: 1px dashed whitesmoke;
   cursor: pointer;
 }
@@ -802,6 +813,7 @@ button.add-games {
   grid-template-columns: 3fr 7fr;
 }
 .game-wizard-intro {
+  position: relative;
   padding: 10px;
 }
 .game-wizard-title {
@@ -811,7 +823,8 @@ button.add-games {
 }
 .game-wizard-description {
   font-size: 1.2em;
-  line-height: 1.5em;
+  line-height: 1.3em;
+  margin: 0.45em 0;
 }
 .game-wizard-status {
   display: inline-block;
@@ -1742,6 +1755,8 @@ i.link_icon.private{
   border-radius: 5px;
   background: black;
   padding: 10px;
+  user-select: none;
+  cursor: default;
 }
 
 .league-details-overlay h2{
@@ -1760,6 +1775,9 @@ i.link_icon.private{
 
 .league-leaderboard table td{
   text-align: center;
+  overflow-x: clip;
+  max-width: 5em;
+  text-overflow: ellipsis;
 }
 
 .league-leaderboard table tr{
@@ -1768,6 +1786,10 @@ i.link_icon.private{
 
 tr.mystats{
   font-weight: bold;
+}
+
+.newfriend{
+  cursor: crosshair;
 }
 
 .league-overview-box .info-item{
