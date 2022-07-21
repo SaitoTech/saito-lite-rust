@@ -1,13 +1,13 @@
 //main
-const StunMainContainer = require("./../email-appspace/email-appspace.template");
+const StunMainContainer = require("./email-appspace.template");
 
 // components
-const StunComponentMyStun = require("./../components/my-stun");
-const StunComponentListeners = require("./../components/listeners");
-const StunComponentPeers = require("./../components/peers");
+const StunComponentMyStun = require("../components/my-stun");
+const StunComponentListeners = require("../components/listeners");
+const StunComponentPeers = require("../components/peers");
 
-const {vanillaToast} = require("vanilla-toast");
-const VideoChat = require('./../../../../lib/saito/ui/video-chat/video-chat');
+const { vanillaToast } = require("vanilla-toast");
+const VideoChat = require('../../../../lib/saito/ui/video-chat/video-chat');
 
 
 class Container {
@@ -43,10 +43,10 @@ class Container {
     }
 
 
-    render(app = this.app , mod = this.mod) {
-        if (!document.querySelector('.stun-container')) 
+    render(app = this.app, mod = this.mod) {
+        if (!document.querySelector('.stun-container'))
             document.querySelector('#email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
-       
+
         // render the selected tab
         const Tab = this.mapTabToTemplate[this.selectedTab];
         Tab.render(app, mod);
@@ -86,7 +86,7 @@ class Container {
 
 
             // create new RTC connection 
-            const createPeerConnection = async() => {
+            const createPeerConnection = async () => {
                 const stun_mod = app.modules.returnModule('Stun');
                 let reply = {
                     answer: "",
@@ -303,7 +303,7 @@ class Container {
         // event listeners
 
         // change selected tab
-        $('.menu').on('click', function(e) {
+        $('.menu').on('click', function (e) {
 
             if ($(this).attr('data-id') === this.selectedTab) return;
             // add ui class to button
@@ -315,7 +315,7 @@ class Container {
         });
 
         //connect with peer
-        $(".stun-container").on('click', '#connectTo', function(e) {
+        $(".stun-container").on('click', '#connectTo', function (e) {
 
 
 
@@ -359,7 +359,7 @@ class Container {
 
             const createPeerConnection = new Promise((resolve, reject) => {
                 const stun_mod = app.modules.returnModule('Stun');
-                const execute = async() => {
+                const execute = async () => {
 
                     try {
                         const pc = new RTCPeerConnection({
