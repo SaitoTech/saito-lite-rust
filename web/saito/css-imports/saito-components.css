@@ -728,9 +728,10 @@ Saito backdrop
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbc6c69c;
+    background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
+    border: 1px solid gray;
 }
 
 .saito-switch-slider:before {
@@ -739,25 +740,27 @@ Saito backdrop
     height: 2.158rem;
     width: 2.158rem;
     left: .332rem;
-    bottom: 4px;
-    background-color: white;
+    bottom: 2.5px;
+    background-color: gray;
     -webkit-transition: .4s;
     transition: .4s;
+    border: 1px solid var(--saito-gray);
 }
 
 input:checked+.saito-switch-slider {
-    /* border: 1px solid var(--saito-primary); */
-
+    border: 1px solid var(--saito-primary);
+    background-color: var(--saito-white);
 }
 
 input:focus+.saito-switch-slider {
-    box-shadow: 0 0 1px var(--saito-primary);
+    /* box-shadow: 0 0 1px var(--saito-primary); */
+
 }
 
 input:checked+.saito-switch-slider:before {
-    -webkit-transform: translateX(2.158rem);
-    -ms-transform: translateX(2.158rem);
-    transform: translateX(2.158rem);
+    -webkit-transform: translateX(2rem);
+    -ms-transform: translateX(2rem);
+    transform: translateX(2rem);
     background-color: var(--saito-primary);
 }
 
