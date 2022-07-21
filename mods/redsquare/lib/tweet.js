@@ -47,8 +47,10 @@ class RedSquareTweet {
 
     async generateTweetProperties(app, mod) {
 
+      if (this.tweet.text == null) { return this; }
+
       let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-      let links = this.text.match(expression);
+      let links = this.tweet.text.match(expression);
 
       if (links.length > 0) {
 
@@ -74,7 +76,7 @@ class RedSquareTweet {
         //
         // normal link
         //
-        let res = await mod.fetchOpenGraphProperties(links[0]);
+        let res = await mod.fetchOpenGraphProperties(app, mod, links[0]);
         if (res != '') { this.link_properties = res; }
         return this;
 

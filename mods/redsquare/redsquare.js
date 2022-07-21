@@ -107,7 +107,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  async fetchOpenGraphInformation(link){
+  async fetchOpenGraphProperties(link){
 
     if (this.app.BROWSER == 0) {
       
@@ -171,7 +171,7 @@ class RedSquare extends ModTemplate {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets1 DESC LIMIT 100`,
+      `SELECT * FROM tweets DESC LIMIT 100`,
       (res) => {
 
         console.log('res');
@@ -216,7 +216,9 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
+
           this.receiveTweetTransaction(blk, tx, conf, app).then(
+
             function(value) {
               redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
@@ -251,32 +253,36 @@ class RedSquare extends ModTemplate {
     newtx.msg = obj;
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
 
-console.log("OBJ IS: " + JSON.stringify(newtx.msg));
-
     redsquare_self.app.network.propagateTransaction(newtx);
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
-    let txmsg     = tx.returnMessage();
     let tweet     = new Tweet(app, this, tx);
 
-console.log("RECEIVED TWEET");
-console.log("about to generate properties: ");
-console.log(JSON.stringify(tweet));
+    //
+    // browsers
+    //
+    if (app.BROWSER == 1) {
+      await tweet.generateTweetProperties(app, this);
+      tx.tweet      = tweet;
+      this.tweets.push(tx);
+      app.connection.emit("tweet-render-request", tx);
+      return;
+    } 
 
+
+    //
+    // servers
     //
     // fetch supporting link properties
     //
     await tweet.generateTweetProperties(app, this);
 
-console.log("done generating properties");
-console.log(JSON.stringify(tweet));
-
     //
     // insert the basic information
     //
-    let sql = `INSERT INTO tweets1 (
+    let sql = `INSERT INTO tweets (
                 tx,
                 sig,
                 publickey,
@@ -297,8 +303,6 @@ console.log(JSON.stringify(tweet));
       $link_properties: JSON.stringify(tweet.link_properties)
     };
     app.storage.executeDatabase(sql, params, "redsquare");    return;
-
-console.log("done insert");
 
   }
 
