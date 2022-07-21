@@ -26,15 +26,19 @@ console.log("TEMPLATE ADDED: " + selector);
       document.getElementById("post-tweet-button").onclick = (e) => {
 
         e.preventDefault();
+        let text = document.getElementById('post-tweet-textarea').value;
+        let data = { text : text };
 
-        let data = {
-          content: document.getElementById('post-tweet-textarea').value,
-        };
+console.log("TEXT IS: " + text);
 
-        console.log('inside tweet ');
-        console.log(data);
 
-        mod.sendTweetTransaction(data);  
+//        console.log('inside tweet ');
+//        console.log(data);
+
+console.log("about to send tweet");
+        mod.sendTweetTransaction(app, mod, data);  
+console.log("send tweet transaction");
+
       }
     }
 

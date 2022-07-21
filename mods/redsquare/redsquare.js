@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const RedSquareMain = require('./lib/main');
+const Tweet = require('./lib/tweet');
 const JSON = require("json-bigint");
 const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
@@ -50,6 +51,29 @@ class RedSquare extends ModTemplate {
   }
 
 
+
+  //
+  // server can accept requests for link properties and return them
+  // dynamically if needed. we may want to use this in the course of
+  // tweet creation.
+  //
+  async handlePeerRequest(app, message, peer, mycallback = null) {
+    
+    //
+    // this code doubles onConfirmation
+    //
+    if (message.request === "redsquare linkobj fetch") {
+
+      let link = message.data.link;
+      let link_properties = await this.fetchOpenGraphProperties(link);
+
+      mycallback(res);
+
+    }
+
+  }
+
+
   //
   // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
   // NEEDS TO BE REMOVED BEFORE CODE MERGE
@@ -61,88 +85,29 @@ class RedSquare extends ModTemplate {
     super.installModule(app);
 
     let dummy_content = [
-      // {
-      //   text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-      //   img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-      // },
-      {
+       {
+         text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
+         img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+       },
+       {
         text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
-      },
+       },
       {
         text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
-      },
-      // {
-      //   text: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
-      // },
-      // {
-      //   text: 'Nam tempor lacinia feugiat. Phasellus rutrum dui odio, eget condimentum ligula dictum at.',
-      //   img: 'https://image.cnbcfm.com/api/v1/image/106820278-1609972654383-hand-holding-a-bitcoin-in-front-of-a-computer-screen-with-a-dark-graph-blockchain-mining-bitcoin_t20_pRrrjP.jpg?v=1623438422&w=1920&h=1080',
-      // },
-      // {
-      //   text: 'Etiam hendrerit ex ut neque bibendum porta.',
-      // },
-      // {
-      //   text: 'Sed in magna tortor. Maecenas interdum malesuada tellus vel malesuada.',
-      //   img: 'https://tesla-cdn.thron.com/delivery/public/image/tesla/03e533bf-8b1d-463f-9813-9a597aafb280/bvlatuR/std/4096x2560/M3-Homepage-Desktop-LHD',
-      // }
+      }
     ];
 
     for (let i = 0; i < dummy_content.length; i++) {
-
-      // TO-DO
-      // add this to "Post Tweet"
-      // or make it generic and call it at both places
-
-      let links = this.extractLinks(dummy_content[i].text); // get all links from inside tweet text
-      console.log('links inisde tweet');
-      console.log(links);
-
-      if (links.length > 0) { // check if any link exists inside tweet text
-        // check if first link if for youtube
-        let youtube_link = links[0].search("youtube.com");
-
-        if (youtube_link != -1) {
-          // tweet contains youtube link
-          let link = new URL(links[0]);
-
-          // get youtube video id for iframe embed
-          let urlParams = new URLSearchParams(link.search);
-          let videoId = urlParams.get('v');
-
-          dummy_content[i].youtube_id =  videoId;
-          this.sendTweetTransaction(dummy_content[i]);
-        
-        } else {
-          
-          // else normal link - fetch preview  
-          this.fetchLinkPreview(links[0]).then(function(res){
-            if (res != '') {
-              dummy_content[i].link_properties = res;
-            } 
-          }).then(result=>{
-              this.sendTweetTransaction(dummy_content[i]);
-          });
-        }
-
-       } else {
-          // tweet doesnt contain any links
-          this.sendTweetTransaction(dummy_content[i]);
-       }
-
-  
+      this.sendTweetTransaction(app, this, dummy_content[i]);
     }
-  }
 
-  extractLinks(text) {
-    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-    return text.match(expression);
   }
 
 
-  fetchLinkPreview(link){
 
-    // TO-DO
-    // refactor this and move to somewhere else
+
+
+  async fetchOpenGraphInformation(link){
 
     if (this.app.BROWSER == 0) {
       
@@ -173,7 +138,6 @@ class RedSquare extends ModTemplate {
         // fetch meta element for og tags
         let meta_tags = dom.getElementsByTagName('meta');
 
-
         // loop each meta tag and fetch required og properties
         for (let i=0; i<meta_tags.length; i++) {
           let property = meta_tags[i].getAttribute('property');
@@ -193,8 +157,13 @@ class RedSquare extends ModTemplate {
 
         return og_tags;
       });
+    } else {
+      return {};
     }
   }
+
+
+
 
   onPeerHandshakeComplete(app, peer) {
 
@@ -250,8 +219,6 @@ class RedSquare extends ModTemplate {
           this.receiveTweetTransaction(blk, tx, conf, app).then(
             function(value) {
               redsquare_self.tweets.push(tx);
-              console.log('tweets array');
-              console.log(redsquare_self.tweets);
               app.connection.emit('tweet-render-request', tx);
             },
 
@@ -267,7 +234,8 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  sendTweetTransaction(data) {
+  sendTweetTransaction(app, mod, data) {
+
     let redsquare_self = this;
 
     let obj = {
@@ -275,40 +243,73 @@ class RedSquare extends ModTemplate {
       request: "create tweet",
       data : {} ,
     };
-    for (let key in data) { obj.data[key] = data[key]; }
+    for (let key in data) { 
+      obj.data[key] = data[key];
+    }
 
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    redsquare_self.app.wallet.signTransaction(newtx);
+    newtx = redsquare_self.app.wallet.signTransaction(newtx);
+
+console.log("OBJ IS: " + JSON.stringify(newtx.msg));
+
     redsquare_self.app.network.propagateTransaction(newtx);
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
 
-    let txn = JSON.stringify(tx.transaction);
-    let sig = tx.transaction.sig;
-    let publickey = tx.transaction.from[0].add;
+    let txmsg     = tx.returnMessage();
+    let tweet     = new Tweet(app, this, tx);
 
+console.log("RECEIVED TWEET");
+console.log("about to generate properties: ");
+console.log(JSON.stringify(tweet));
+
+    //
+    // fetch supporting link properties
+    //
+    await tweet.generateTweetProperties(app, this);
+
+console.log("done generating properties");
+console.log(JSON.stringify(tweet));
+
+    //
+    // insert the basic information
+    //
     let sql = `INSERT INTO tweets1 (
                 tx,
                 sig,
-                publickey
+                publickey,
+                link,
+		link_properties
               ) VALUES (
-                $txn,
+                $txjson,
                 $sig,
-                $publickey
+                $publickey,
+		$link,
+		$link_properties
               )`;
-
     let params = {
-      $txn: txn,
-      $sig: sig,
-      $publickey: publickey
+      $txn: JSON.stringify(tx.transaction),
+      $sig: tx.transaction.sig,
+      $publickey: tx.transaction.from[0].add,
+      $link: tweet.link,
+      $link_properties: JSON.stringify(tweet.link_properties)
     };
-    app.storage.executeDatabase(sql, params, "redsquare");
-    return;
+    app.storage.executeDatabase(sql, params, "redsquare");    return;
+
+console.log("done insert");
+
   }
 
+
+
+
+
+
+
+
+/***** WAIT TO IMPLEMENT *****
   sendLikeTweetTransaction(tweet_id) {
     let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -331,6 +332,7 @@ class RedSquare extends ModTemplate {
     let publickey = tx.transaction.from[0].add;
     let created_at = new Date().getTime();
     let updated_at = new Date().getTime();
+
 
     // TO-DO
     // add data into columns according to the tweets.sql
@@ -357,6 +359,8 @@ class RedSquare extends ModTemplate {
     app.storage.executeDatabase(sql, params, "redsquare");
     return;
   }
+***** WAIT TO IMPLEMENT *****/
+
 
 }
 

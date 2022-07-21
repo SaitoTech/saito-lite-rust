@@ -54,7 +54,6 @@ class RedSquareAppspaceHome {
       ptweet.render(app, mod, ".redsquare-new-tweet-overlay");
     }
 
-
   }
 
 }
