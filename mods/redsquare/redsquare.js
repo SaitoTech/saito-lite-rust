@@ -3,6 +3,10 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const RedSquareMain = require('./lib/main');
 const JSON = require("json-bigint");
+const fetch = require('node-fetch');
+const HTMLParser = require('node-html-parser');
+const prettify = require('html-prettify');
+
 
 class RedSquare extends ModTemplate {
 
@@ -62,7 +66,10 @@ class RedSquare extends ModTemplate {
       //   img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
       // },
       {
-        text: 'Aliquam rutrum consectetur neque, eu efficitur turpis volutpat sit amet.',
+        text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
+      },
+      {
+        text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
       },
       // {
       //   text: 'In molestie, turpis ac placerat consequat, nulla eros semper nisl, non auctor nibh ex non metus.',
@@ -81,10 +88,106 @@ class RedSquare extends ModTemplate {
     ];
 
     for (let i = 0; i < dummy_content.length; i++) {
-      this.sendTweetTransaction(dummy_content[i]);
+
+
+      let links = this.extractLinks(dummy_content[i].text); // get all links from inside tweet text
+      console.log('links inisde tweet');
+      console.log(links);
+
+      if (links.length > 0) { // check if any link exists inside tweet text
+        // check if first link if for youtube
+        let youtube_link = links[0].search("youtube.com");
+
+        if (youtube_link != -1) {
+          // tweet contains youtube link
+          let link = new URL(links[0]);
+
+          // get youtube video id for iframe embed
+          let urlParams = new URLSearchParams(link.search);
+          let videoId = urlParams.get('v');
+
+          dummy_content[i].youtube_id =  videoId;
+          this.sendTweetTransaction(dummy_content[i]);
+        
+        } else {
+          
+          // else normal link - fetch preview  
+          this.fetchLinkPreview(links[0]).then(function(res){
+            if (res != '') {
+              dummy_content[i].link_properties = res;
+            } 
+          }).then(result=>{
+              this.sendTweetTransaction(dummy_content[i]);
+          });
+        }
+
+       } else {
+          // tweet doesnt contain any links
+          this.sendTweetTransaction(dummy_content[i]);
+       }
+
+  
     }
   }
 
+  extractLinks(text) {
+    let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+    return text.match(expression);
+  }
+
+
+  fetchLinkPreview(link){
+    if (this.app.BROWSER == 0) {
+      
+      // required og properties for link preview
+      let og_tags = {
+        'og:exists': false,
+        'og:title': '',
+        'og:description': '',
+        'og:url': '',
+        'og:image': '',
+        'og:site_name': ''
+      };
+
+      // fetch source code for link inside tweet
+      // (sites which uses firewall like Cloudflare shows Cloudflare loading 
+      //  page when fetching page source)
+      //
+      return fetch(link)
+      .then(res => res.text())
+        .then(data => {
+
+        // prettify html - unminify html if minified
+        let html = prettify(data);
+
+        // parse string html to DOM html
+        let dom = HTMLParser.parse(html);
+
+        // fetch meta element for og tags
+        let meta_tags = dom.getElementsByTagName('meta');
+
+
+        // loop each meta tag and fetch required og properties
+        for (let i=0; i<meta_tags.length; i++) {
+          let property = meta_tags[i].getAttribute('property');
+          let content = meta_tags[i].getAttribute('content');
+        
+          console.log('property');
+          console.log(property);
+          console.log('content');
+          console.log(content);
+
+          // get required og properties only, discard others
+          if (property in og_tags) {
+            og_tags[property] = content;
+            og_tags['og:exists'] = true;
+          }
+        }
+
+        return og_tags;
+      });
+    }
+  }
 
   onPeerHandshakeComplete(app, peer) {
 
@@ -92,7 +195,7 @@ class RedSquare extends ModTemplate {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
       "RedSquare",
-      `SELECT * FROM tweets DESC LIMIT 100`,
+      `SELECT * FROM tweets1 DESC LIMIT 100`,
       (res) => {
 
         console.log('res');
@@ -117,6 +220,7 @@ class RedSquare extends ModTemplate {
               tx.optional.retweets 	= tx.msg.retweets;
       	      tx.optional.parent_id 	= tx.msg.parent_id;
       	      tx.optional.thread_id 	= tx.msg.thread_id;
+
 
   	      redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
@@ -157,20 +261,19 @@ class RedSquare extends ModTemplate {
   }
 
   sendTweetTransaction(data) {
+    let redsquare_self = this;
 
-    // set defaults
     let obj = {
-      module: this.name,
+      module: redsquare_self.name,
       request: "create tweet",
       data : {} ,
     };
     for (let key in data) { obj.data[key] = data[key]; }
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
-    this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
-
+    redsquare_self.app.wallet.signTransaction(newtx);
+    redsquare_self.app.network.propagateTransaction(newtx);
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
@@ -184,7 +287,7 @@ class RedSquare extends ModTemplate {
     console.log('inside receiveTweetTransaction');
     console.log(txmsg);
 
-    let sql = `INSERT INTO tweets (
+    let sql = `INSERT INTO tweets1 (
                 tx,
                 sig,
                 publickey

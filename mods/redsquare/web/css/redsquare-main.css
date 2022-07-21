@@ -176,26 +176,48 @@ img {
 
 }
 
-.link-preview .section {
-  border: 1px solid #c1b6b6;
-  border-radius: 20px;
-  position: relative;
-  padding: 10px;
+.link-preview {
   margin: 15px 0px;
 }
 
-.link-preview .box {
+.preview-img {
   width: 100%;
-  display: flex;
-  justify-content: space-around;
+  height: 250px;
+  background-size: cover!important;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-.link-image {
-  height: 80px;
+.preview-info {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
 }
 
-.is-clipped {
-  margin-left: 20px;
-  font-size: 13px;
+.preview-title {
+  color: #000;
+  margin: 3px 0px;
+}
+
+.preview-url {
+  font-size: 1.4rem;
+  color: #444;
+}
+
+.preview-description {
+  font-size: 1.6rem;
+  color: #444;
+}
+
+.youtube-embed-container {
   width: 100%;
+  margin: 15px 0px;
+}
+
+.youtube-embed {
+  width: 100%;
+  height: 300px;
 }

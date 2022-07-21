@@ -1,11 +1,11 @@
-CREATE TABLE IF NOT EXISTS tweets (
+CREATE TABLE IF NOT EXISTS tweets1 (
   id 			INTEGER,
   tx 			TEXT,
   sig 			VARCHAR(99),
   publickey 		VARCHAR(99),
   thread_id 		VARCHAR(99),
   parent_id 		VARCHAR(99),
-  text 			TEXT,
+  `text` 			TEXT,
   link			TEXT,
   link_data		TEXT,
   processed		INTEGER,

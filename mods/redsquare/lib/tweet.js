@@ -1,5 +1,7 @@
 const TweetTemplate = require("./tweet.template");
 const LinkPreview = require("./link-preview");
+const fetch = require('node-fetch');
+
 
 class RedSquareTweet {
 
@@ -12,7 +14,6 @@ class RedSquareTweet {
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
 
-      this.convertToHtml(app, mod, tx);
     }
 
     render(app, mod, selector = "") {
@@ -26,25 +27,6 @@ class RedSquareTweet {
         if (typeof obj[key] != 'undefined') 
           this.tweet[key] = obj[key];  
       }
-    }
-
-
-    convertToHtml(app, mod, tx){
-      var data = { key: "ac34f76a351cc3c6b1afedc3ea9beec5", q: "https://www.facebook.com" };
-
-      fetch("https://api.linkpreview.net", {
-        method: "POST",
-        mode: "cors",
-        body: JSON.stringify(data)
-        })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log(response);
-
-          let link = new LinkPreview(app, mod, response);
-          link.render(app, mod, "#link-preview-"+ tx.transaction.sig);
-        });
-      
     }
 
 
