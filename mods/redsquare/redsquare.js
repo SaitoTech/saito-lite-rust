@@ -58,18 +58,21 @@ class RedSquare extends ModTemplate {
   // tweet creation.
   //
   async handlePeerRequest(app, message, peer, mycallback = null) {
-    
+
     //
     // this code doubles onConfirmation
     //
     if (message.request === "redsquare linkobj fetch") {
 
       let link = message.data.link;
-      let link_properties = await this.fetchOpenGraphProperties(link);
+      let link_properties = await this.fetchOpenGraphProperties(app, mod, link);
 
       mycallback(res);
+      return;
 
     }
+
+    super.handlePeerRequest(app, message, peer, mycallback);
 
   }
 
@@ -107,7 +110,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  async fetchOpenGraphProperties(link){
+  async fetchOpenGraphProperties(app, mod, link){
 
     if (this.app.BROWSER == 0) {
 
@@ -178,15 +181,27 @@ return {};
 
     let redsquare_self = this;
 
+console.log("ABOUT TO RUN PEER HANDSHAKE REQUEST");
+
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
+
       "RedSquare",
+
       `SELECT * FROM tweets DESC LIMIT 100`,
+
       (res) => {
+
+console.log("HERE WE ARE FETCHING FROM SERVER!");
 
         console.log('res');
         console.log(res);
         if (res.rows) {
+
+console.log("RETURNED ROWS: " + res.rows.length);
+
           res.rows.forEach(row => {
+
+console.log("EACH ROW");
 
 	    let new_tweet = 1;
 
@@ -195,6 +210,8 @@ return {};
 		new_tweet = 0;
 	      }
 	    }
+
+console.log("is this a new tweet?" + new_tweet);
 
 	    if (new_tweet) {
 
@@ -205,7 +222,6 @@ return {};
               tx.optional.retweets 	= tx.msg.retweets;
       	      tx.optional.parent_id 	= tx.msg.parent_id;
       	      tx.optional.thread_id 	= tx.msg.thread_id;
-
 
   	      redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
@@ -273,7 +289,7 @@ return {};
     // browsers
     //
     if (app.BROWSER == 1) {
-      await tweet.generateTweetProperties(app, this);
+      tweet = await tweet.generateTweetProperties(app, this);
       tx.tweet      = tweet;
       this.tweets.push(tx);
       app.connection.emit("tweet-render-request", tx);
@@ -286,7 +302,8 @@ return {};
     //
     // fetch supporting link properties
     //
-    await tweet.generateTweetProperties(app, this);
+    tweet = await tweet.generateTweetProperties(app, this);
+
 
     //
     // insert the basic information
@@ -305,12 +322,15 @@ return {};
 		$link_properties
               )`;
     let params = {
-      $txn: JSON.stringify(tx.transaction),
+      $txjson: JSON.stringify(tx.transaction),
       $sig: tx.transaction.sig,
       $publickey: tx.transaction.from[0].add,
-      $link: tweet.link,
-      $link_properties: JSON.stringify(tweet.link_properties)
+      $link: tweet.tweet.link,
+      $link_properties: JSON.stringify(tweet.tweet.link_properties)
     };
+
+console.log("PARAMS: " + JSON.stringify(params));
+
     app.storage.executeDatabase(sql, params, "redsquare");    return;
 
   }

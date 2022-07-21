@@ -57,16 +57,17 @@ class RedSquareTweet {
 	//
 	// save the first link
 	//
-	this.link = links[0];
+        let link = new URL(links[0]);
+	this.tweet.link = link.toString();
 
-console.log("LINKS: " + JSON.stringify(links[0]));
+
+console.log("LINK: " + this.tweet.link);
 
         //
         // youtube link
         //
         if (links[0].search("youtube.com") != -1) {
 
-          let link = new URL(links[0]);
           let urlParams = new URLSearchParams(link.search);
           let videoId = urlParams.get('v');
 
@@ -78,8 +79,9 @@ console.log("LINKS: " + JSON.stringify(links[0]));
         //
         // normal link
         //
-        let res = await mod.fetchOpenGraphProperties(app, mod, links[0]);
-        if (res != '') { this.link_properties = res; }
+console.log("FETCH OPEN GRAPH PROPERTIES FOR: " + this.tweet.link);
+        let res = await mod.fetchOpenGraphProperties(app, mod, this.tweet.link);
+        if (res != '') { this.tweet.link_properties = res; }
         return this;
 
       }
