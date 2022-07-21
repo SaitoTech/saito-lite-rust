@@ -59,6 +59,8 @@ class RedSquareTweet {
 	//
 	this.link = links[0];
 
+console.log("LINKS: " + JSON.stringify(links[0]));
+
         //
         // youtube link
         //

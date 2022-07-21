@@ -110,7 +110,9 @@ class RedSquare extends ModTemplate {
   async fetchOpenGraphProperties(link){
 
     if (this.app.BROWSER == 0) {
-      
+
+console.log("Trying to fetch: " + link);      
+
       // required og properties for link preview
       let og_tags = {
         'og:exists': false,
@@ -125,9 +127,12 @@ class RedSquare extends ModTemplate {
       // (sites which uses firewall like Cloudflare shows Cloudflare loading 
       //  page when fetching page source)
       //
+      try {
       return fetch(link)
       .then(res => res.text())
         .then(data => {
+
+console.log("fetched!");
 
         // prettify html - unminify html if minified
         let html = prettify(data);
@@ -157,6 +162,10 @@ class RedSquare extends ModTemplate {
 
         return og_tags;
       });
+      } catch (err) {
+console.log("Error: returning nothing: ");
+return {};
+      }
     } else {
       return {};
     }
