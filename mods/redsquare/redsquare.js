@@ -210,7 +210,13 @@ return {};
               tx.optional.retweets 	  = tx.msg.retweets;
       	      tx.optional.parent_id 	  = tx.msg.parent_id;
       	      tx.optional.thread_id 	  = tx.msg.thread_id;
-	      tx.optional.link_properties = row.link_properties;
+	      tx.optional.link_properties = {};
+
+	      try {
+	        let x = JSON.parse(row.link_properties);
+	        tx.optional.link_properties = x;
+	      } catch (err) {
+	      }
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
 	      tx.tweet = tweet;
