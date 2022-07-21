@@ -372,6 +372,7 @@ button.button-active {
   background: none;
 }
 
+<<<<<<< HEAD
 
 /*  video chat */
 
@@ -379,6 +380,8 @@ button.button-active {
   max-width: 60vw;
 }
 
+=======
+>>>>>>> 4b76dcc2 (Test (#793))
 .body .disconnect_btn {
 
   /* left: 83.96%;

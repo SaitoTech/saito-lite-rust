@@ -18,10 +18,17 @@ module.exports = (app, mod, listeners) => {
                 <div class="my-stun-container-actions">
                 <div class="my-stun-container-create">
                 <p> Create </p>
+<<<<<<< HEAD
                 <button id="createInvite" class="saito-button-secondary"> Create Invite</button>
                 </div>
                 <div class="my-stun-container-join">
                    <p> Join an invite</p>
+=======
+                <button id="createInvite" class="saito-button-secondary"> Create Invite:</button>
+                </div>
+                <div class="my-stun-container-join">
+                   <p> Join an invite:</p>
+>>>>>>> 4b76dcc2 (Test (#793))
                   <div>
                   <input placeholder="Insert Room Code" id="inviteCode" />
                   <button id="joinInvite" class="saito-button-secondary">Join</button>
