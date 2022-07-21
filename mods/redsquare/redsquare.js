@@ -181,8 +181,6 @@ return {};
 
     let redsquare_self = this;
 
-console.log("ABOUT TO RUN PEER HANDSHAKE REQUEST");
-
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
       "RedSquare",
@@ -191,17 +189,9 @@ console.log("ABOUT TO RUN PEER HANDSHAKE REQUEST");
 
       (res) => {
 
-console.log("HERE WE ARE FETCHING FROM SERVER!");
-
-        console.log('res');
-        console.log(res);
         if (res.rows) {
 
-console.log("RETURNED ROWS: " + res.rows.length);
-
           res.rows.forEach(row => {
-
-console.log("EACH ROW");
 
 	    let new_tweet = 1;
 
@@ -210,8 +200,6 @@ console.log("EACH ROW");
 		new_tweet = 0;
 	      }
 	    }
-
-console.log("is this a new tweet?" + new_tweet);
 
 	    if (new_tweet) {
 
@@ -222,6 +210,10 @@ console.log("is this a new tweet?" + new_tweet);
               tx.optional.retweets 	= tx.msg.retweets;
       	      tx.optional.parent_id 	= tx.msg.parent_id;
       	      tx.optional.thread_id 	= tx.msg.thread_id;
+
+	      let tweet = new Tweet(app, redsquare_self, tx);
+	      tweet.generateTweetProperties(app, redsquare_self, 0);
+	      tx.tweet = tweet;
 
   	      redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
@@ -284,12 +276,12 @@ console.log("is this a new tweet?" + new_tweet);
   async receiveTweetTransaction(blk, tx, conf, app) {
 
     let tweet     = new Tweet(app, this, tx);
+        tweet     = await tweet.generateTweetProperties(app, this);
 
     //
     // browsers
     //
     if (app.BROWSER == 1) {
-      tweet = await tweet.generateTweetProperties(app, this);
       tx.tweet      = tweet;
       this.tweets.push(tx);
       app.connection.emit("tweet-render-request", tx);
@@ -302,7 +294,7 @@ console.log("is this a new tweet?" + new_tweet);
     //
     // fetch supporting link properties
     //
-    tweet = await tweet.generateTweetProperties(app, this);
+    tweet = await tweet.generateTweetProperties(app, this, 1);
 
 
     //

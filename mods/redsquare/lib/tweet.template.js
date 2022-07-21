@@ -5,12 +5,13 @@ module.exports = (app, mod, tweet) => {
     console.log('tweet');
     console.log(tweet);
 
-    let tweet_image = '';
-    if (typeof tweet.img != 'undefined' && tweet.img != "") {
-        tweet_image = `<div class="redsquare-image-container"><img src="${tweet.img}" /></div>`;
-    }
+    let tweet_img = "";
+    let tweet_text = "";
+    let youtube_preview = "";
 
-    let tweet_text = '';
+    if (typeof tweet.img != 'undefined' && tweet.img != "") {
+        tweet_img = `<div class="redsquare-image-container"><img src="${tweet.img}" /></div>`;
+    }
     if (typeof tweet.text != 'undefined' && tweet.text != "") {
       tweet_text = tweet.text;
     }
@@ -20,19 +21,20 @@ module.exports = (app, mod, tweet) => {
     // create separate templates for youtube embed and link preview
     // and import both templates here
  
-    let youtube_preview = '';
-    if (typeof tweet.youtube_id != 'undefined') {
-      youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}">
-      </iframe>`;
+    if (tweet.youtube_id != null) {
+      youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
     }
 
 
     let link_preview = '';
-    if (typeof tweet.link_properties != 'undefined' && tweet.link_properties['og:exists'] !== false) {
-      let d = tweet.link_properties;
+    if (tweet.link_properties != null) {
+      if (typeof tweet.link_properties != 'undefined') {
+        if (tweet.link_properties['og:exists'] !== false) {
 
-      let link = new URL(d['og:url']);
-      link_preview = `
+          let d = tweet.link_properties;
+
+          let link = new URL(d['og:url']);
+          link_preview = `
                       <a target="_blank" href="${d['og:url']}">
                       <div class="preview-container">
                           <div class='preview-img' style="background: url(${d['og:image']})"></div>
@@ -45,6 +47,8 @@ module.exports = (app, mod, tweet) => {
                       </div>
                       </a>
                       `;
+        }
+      }
     }
 
     return `
@@ -52,7 +56,7 @@ module.exports = (app, mod, tweet) => {
          ${SaitoUserWithControls(app, mod, tweet.tx.transaction.from[0].add)}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
-           ${tweet_image}
+           ${tweet_img}
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            <div class="redsquare-tweet-tools">

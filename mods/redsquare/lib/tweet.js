@@ -45,7 +45,7 @@ class RedSquareTweet {
     }
 
 
-    async generateTweetProperties(app, mod) {
+    async generateTweetProperties(app, mod, fetch_open_graph=0) {
 
       if (this.tweet.text == null) { return this; }
 
@@ -59,9 +59,6 @@ class RedSquareTweet {
 	//
         let link = new URL(links[0]);
 	this.tweet.link = link.toString();
-
-
-console.log("LINK: " + this.tweet.link);
 
         //
         // youtube link
@@ -79,9 +76,11 @@ console.log("LINK: " + this.tweet.link);
         //
         // normal link
         //
-console.log("FETCH OPEN GRAPH PROPERTIES FOR: " + this.tweet.link);
-        let res = await mod.fetchOpenGraphProperties(app, mod, this.tweet.link);
-        if (res != '') { this.tweet.link_properties = res; }
+	if (fetch_open_graph == 1) {
+          let res = await mod.fetchOpenGraphProperties(app, mod, this.tweet.link);
+          if (res != '') { this.tweet.link_properties = res; }
+	}
+
         return this;
 
       }
