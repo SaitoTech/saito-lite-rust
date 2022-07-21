@@ -221,3 +221,7 @@ img {
   width: 100%;
   height: 300px;
 }
+
+.post-tweet-textarea {
+  width: auto;
+}
