@@ -702,6 +702,12 @@ class League extends ModTemplate {
     let txmsg = tx.returnMessage();
     let game = txmsg.module;
 
+    //All games have a grace window where if a player "quits" within X moves
+    //it won't count as a win or loss for anyone
+    if (txmsg.reason == "cancellation"){
+      return;
+    }
+
     //Which leagues may this gameover affect?
     let sql = `SELECT * FROM leagues WHERE game = ? OR id='SAITOLICIOUS'`;
     const relevantLeagues = await app.storage.queryDatabase(sql, [game], "league");
