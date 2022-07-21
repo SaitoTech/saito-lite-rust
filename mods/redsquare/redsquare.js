@@ -241,10 +241,7 @@ return {};
         if (txmsg.request === "create tweet") {
 
           this.receiveTweetTransaction(blk, tx, conf, app).then(
-
             function(value) {
-              redsquare_self.tweets.push(tx);
-              app.connection.emit('tweet-render-request', tx);
             },
 
             function(error) {
@@ -280,6 +277,8 @@ return {};
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
+
+    console.log('inside receive tweet');
 
     let tweet     = new Tweet(app, this, tx);
         tweet     = await tweet.generateTweetProperties(app, this);

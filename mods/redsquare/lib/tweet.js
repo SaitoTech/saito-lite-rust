@@ -47,12 +47,17 @@ class RedSquareTweet {
 
     async generateTweetProperties(app, mod, fetch_open_graph=0) {
 
+      console.log('inisde generateTweetProperties');
+
       if (this.tweet.text == null) { return this; }
 
       let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
       let links = this.tweet.text.match(expression);
 
-      if (links.length > 0) {
+      console.log('links');
+      console.log(links);
+
+      if (links != null && links.length > 0) {
 
 console.log("save the first link...");
 
