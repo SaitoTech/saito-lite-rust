@@ -374,9 +374,9 @@ class Video extends ModTemplate {
 
         overlay.show(this.app, video_self, html);
 
-
-
     }
+
+
 
     createPeerConnectionOffer(publicKey) {
         const stun_mod = this.app.modules.returnModule('Stun');
