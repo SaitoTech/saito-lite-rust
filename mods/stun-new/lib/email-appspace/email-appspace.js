@@ -45,7 +45,7 @@ class Container {
 
     render(app = this.app, mod = this.mod) {
         if (!document.querySelector('.stun-container'))
-            document.querySelector('#email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
+            document.querySelector('.email-container').innerHTML = sanitize(StunMainContainer(app, mod));
 
         // render the selected tab
         const Tab = this.mapTabToTemplate[this.selectedTab];
@@ -67,7 +67,6 @@ class Container {
         const generate_button = document.querySelector('#generate');
         const update_button = document.querySelector('#update');
         const input = document.querySelector('#input_address');
-        let self = this;
 
         app.connection.on('stun-update', (app) => {
             console.log('stun update', app);
@@ -309,9 +308,11 @@ class Container {
             // add ui class to button
             $('.menu').removeClass('button-active');
             $(this).addClass('button-active');
-            self.selectedTab = $(this).attr('data-id');
+            this.selectedTab = $(this).attr('data-id');
 
-            self.render(app, mod);
+            this.render(app, mod);
+
+
         });
 
         //connect with peer

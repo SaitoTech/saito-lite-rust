@@ -28,7 +28,7 @@ test/
 
 data/*.sq3
 data/*/*.blk
-data/blocks/*.blk
+data/blocks/*.blkgit 
 data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
@@ -58,7 +58,10 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-
+mods/stun-new
+mods/stun-new/*
+mods/stun-works
+mods/stun-works/*
 mods/forge
 mods/forge/*
 mods/citysim

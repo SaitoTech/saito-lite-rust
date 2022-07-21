@@ -50,28 +50,26 @@ class Stun extends ModTemplate {
         this.stun.pc = "";
         this.stun.iceCandidates = [];
         this.stun.counter = 0;
-        this.servers = [
+        this.stun.servers = [
             {
-                urls: "stun:stun-sf.saito.io:3478"
+                urls: "stun:stun.l.google.com:19302",
             },
             {
-                urls: "turn:stun-sf.saito.io:3478",
-                username: "guest",
-                credential: "somepassword",
+                urls: "turn:openrelay.metered.ca:80",
+                username: "openrelayproject",
+                credential: "openrelayproject",
             },
-            // {
-            //   urls: "stun:stun-sf.saito.io:3478"
-            // },
-            // {
-            //   urls: "turn:stun-sf.saito.io:3478",
-            //   username: "guest",
-            //   credential: "somepassword",
-            // },
-
+            {
+                urls: "turn:openrelay.metered.ca:443",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+            },
+            {
+                urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+            },
         ];
-
-
-
     }
 
     saveStun() {
@@ -210,11 +208,12 @@ class Stun extends ModTemplate {
                 console.log('got public keys: ', tx.msg.pubKeys);
 
                 if (app.BROWSER !== 1) return;
-
                 // create peer connection offers
+
                 this.public_keys = tx.msg.pubKeys;
                 app.options.public_keys = this.public_keys;
                 app.storage.saveOptions();
+
                 this.createPeerConnectionOffers(app, app.options.public_keys);
                 break;
 
@@ -275,11 +274,10 @@ class Stun extends ModTemplate {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
-                const stun_mod = app.modules.returnModule("Stun")
-                console.log("these are the servers :", stun_mod.servers);
+
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: stun_mod.servers,
+                        iceServers: this.stun.servers,
                     });
 
 
@@ -648,10 +646,8 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-            const stun_mod = app.modules.returnModule("Stun");
-            console.log("these are the servers ", stun_mod.servers)
             const pc = new RTCPeerConnection({
-                iceServers: stun_mod.servers,
+                iceServers: this.stun.servers,
             });
             try {
 
@@ -668,6 +664,8 @@ class Stun extends ModTemplate {
                     };
 
                     reply.ice_candidates.push(ice.candidate);
+
+
 
 
 
