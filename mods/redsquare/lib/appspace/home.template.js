@@ -5,7 +5,6 @@ module.exports = (app, mod) => {
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
         <div class="saito-page-header">
-          <div id="redsquare-feed-settings" class="saito-button-secondary small" style="float: right;">Feed Settings</div>
           <div id="redsquare-new-tweet" class="saito-button-secondary small" style="float: right;">Create New Tweet</div>
           <div class="saito-page-header-title">RED SQUARE</div>
 	  <div class="saito-page-header-text">

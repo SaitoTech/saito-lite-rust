@@ -42,12 +42,6 @@ class RedSquareAppspaceHome {
     // if PostTweet was a template file, we could write it directly into the overlay
     // since it is a class, we put an element in the overlay and render into that.
     //
-    document.getElementById("redsquare-feed-settings").onclick = (e) => {
-      this.overlay.show(app, mod, '<div class="redsquare-new-tweet-overlay"></div>');
-      let ptweet = new PostTweet(app, mod, ".redsquare-new-tweet-overlay");
-      ptweet.render(app, mod, ".redsquare-new-tweet-overlay");
-    }
-
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
       this.overlay.show(app, mod, '<div class="redsquare-new-tweet-overlay"></div>');
       let ptweet = new PostTweet(app, mod, ".redsquare-new-tweet-overlay");

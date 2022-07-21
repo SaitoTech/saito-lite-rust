@@ -24,15 +24,6 @@ class RedSquareAppspaceNotifications {
 
   attachEvents(app, mod) {
 
-    //
-    // "notification settings"
-    //
-    document.getElementById("redsquare-notifications-settings").onclick = (e) => {
-      this.overlay = new SaitoOverlay(app, mod);
-      this.overlay.show(app, mod, '<div style="width:80px;height:80rem;background-color:whitesmoke">Settings</div>');
-    }
-
-
   }
 
 }
