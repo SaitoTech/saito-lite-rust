@@ -17,6 +17,14 @@
   background-size: auto;
 }
 
+.religious_conflict_sheet_tile {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+  background-image: url('/his/img/tiles/independent/Independent_key.svg');
+  background-color: yellow;
+}
+
 .faction_sheet {
   width: 1240px;
   height: 800px;

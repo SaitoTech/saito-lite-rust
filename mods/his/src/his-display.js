@@ -1,75 +1,32 @@
 
   displayReligiousConflictSheet() {
 
+    let num_protestant_spaces = 0;
+    let rcc = this.returnReligiousConflictChart();
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+    let cid = "s" + num_protestant_spaces;
+
     let html = `
       <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')">
+	<div class="religious_conflict_sheet_tile"></div>
 	<div class="papal_debaters"></div>
 	<div class="lutheran_debaters"></div>
 	<div class="calvinist_debaters"></div>
 	<div class="anglican_debaters"></div>
-	<div class="protestant_spaces_track">
-	  <div class="pst_0"></div>
-	  <div class="pst_1"></div>
-	  <div class="pst_2"></div>
-	  <div class="pst_3"></div>
-	  <div class="pst_4"></div>
-	  <div class="pst_5"></div>
-	  <div class="pst_6"></div>
-	  <div class="pst_7"></div>
-	  <div class="pst_8"></div>
-	  <div class="pst_9"></div>
-
-	  <div class="pst_10"></div>
-	  <div class="pst_11"></div>
-	  <div class="pst_12"></div>
-	  <div class="pst_13"></div>
-	  <div class="pst_14"></div>
-	  <div class="pst_15"></div>
-	  <div class="pst_16"></div>
-	  <div class="pst_17"></div>
-	  <div class="pst_18"></div>
-	  <div class="pst_19"></div>
-
-	  <div class="pst_20"></div>
-	  <div class="pst_21"></div>
-	  <div class="pst_22"></div>
-	  <div class="pst_23"></div>
-	  <div class="pst_24"></div>
-	  <div class="pst_25"></div>
-	  <div class="pst_26"></div>
-	  <div class="pst_27"></div>
-	  <div class="pst_28"></div>
-	  <div class="pst_29"></div>
-
-	  <div class="pst_30"></div>
-	  <div class="pst_31"></div>
-	  <div class="pst_32"></div>
-	  <div class="pst_33"></div>
-	  <div class="pst_34"></div>
-	  <div class="pst_35"></div>
-	  <div class="pst_36"></div>
-	  <div class="pst_37"></div>
-	  <div class="pst_38"></div>
-	  <div class="pst_39"></div>
-
-	  <div class="pst_40"></div>
-	  <div class="pst_41"></div>
-	  <div class="pst_42"></div>
-	  <div class="pst_43"></div>
-	  <div class="pst_44"></div>
-	  <div class="pst_45"></div>
-	  <div class="pst_46"></div>
-	  <div class="pst_47"></div>
-	  <div class="pst_48"></div>
-	  <div class="pst_49"></div>
-
-	  <div class="pst_50"></div>
-
-	</div>
+	<div class="protestant_spaces_track"></div>
       </div>
     `;
 
     this.overlay.showOverlay(this.app, this, html);
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
 
   }
 
