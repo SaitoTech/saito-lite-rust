@@ -58,7 +58,10 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-
+mods/stun-new
+mods/stun-new/*
+mods/stun-works
+mods/stun-works/*
 mods/forge
 mods/forge/*
 mods/citysim
