@@ -54,6 +54,8 @@ class RedSquareTweet {
 
       if (links.length > 0) {
 
+console.log("save the first link...");
+
 	//
 	// save the first link
 	//
@@ -63,12 +65,17 @@ class RedSquareTweet {
         //
         // youtube link
         //
-        if (links[0].search("youtube.com") != -1) {
+        if (this.tweet.link.indexOf("youtube.com") != -1) {
+
+console.log("HERE WE ARE: " + this.tweet.link);
 
           let urlParams = new URLSearchParams(link.search);
           let videoId = urlParams.get('v');
 
-          this.youtube_id = videoId;
+          this.tweet.youtube_id = videoId;
+
+console.log("video id: " + this.tweet.youtube_id);
+
           return this;
 
         }

@@ -177,7 +177,7 @@ return {};
 
 
 
-  onPeerHandshakeComplete(app, peer) {
+  async onPeerHandshakeComplete(app, peer) {
 
     let redsquare_self = this;
 
@@ -187,7 +187,7 @@ return {};
 
       `SELECT * FROM tweets DESC LIMIT 100`,
 
-      (res) => {
+      async (res) => {
 
         if (res.rows) {
 
@@ -206,17 +206,17 @@ return {};
 	      let tx = new saito.default.transaction(JSON.parse(row.tx));
 
 	      if (!tx.optional) { tx.optional = {}; }
-              tx.optional.likes 	= tx.msg.likes;
-              tx.optional.retweets 	= tx.msg.retweets;
-      	      tx.optional.parent_id 	= tx.msg.parent_id;
-      	      tx.optional.thread_id 	= tx.msg.thread_id;
+              tx.optional.likes 	  = tx.msg.likes;
+              tx.optional.retweets 	  = tx.msg.retweets;
+      	      tx.optional.parent_id 	  = tx.msg.parent_id;
+      	      tx.optional.thread_id 	  = tx.msg.thread_id;
+	      tx.optional.link_properties = row.link_properties;
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
-	      tweet.generateTweetProperties(app, redsquare_self, 0);
 	      tx.tweet = tweet;
-
   	      redsquare_self.tweets.push(tx);
               app.connection.emit('tweet-render-request', tx);
+
 	    }
           });
         }

@@ -20,11 +20,13 @@ module.exports = (app, mod, tweet) => {
     // TO-DO
     // create separate templates for youtube embed and link preview
     // and import both templates here
- 
+console.log("is youtube id still set: " + tweet.youtube_id); 
     if (tweet.youtube_id != null) {
+console.log("is youtube id still set: " + tweet.youtube_id + " YES"); 
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
+    } else {
+console.log("no it isn't!");
     }
-
 
     let link_preview = '';
     if (tweet.link_properties != null) {
