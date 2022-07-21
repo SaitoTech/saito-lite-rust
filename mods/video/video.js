@@ -31,12 +31,12 @@ class Video extends ModTemplate {
 
 
     respondTo(type) {
-        if (type == 'email-appspace') {
-            let obj = {};
-            obj.render = this.renderEmail;
-            obj.attachEvents = this.attachEmailEvents;
-            return obj;
-        }
+        // if (type == 'email-appspace') {
+        //     let obj = {};
+        //     obj.render = this.renderEmail;
+        //     obj.attachEvents = this.attachEmailEvents;
+        //     return obj;
+        // }
         return null;
     }
 
@@ -339,7 +339,9 @@ class Video extends ModTemplate {
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
            <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
-           <p> ${roomCode} </p>
+           <div style="display: flex; align-item: center;"> 
+           <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> <p style="margin-right: .5rem"> ${roomCode} </p> 
+           </div>
         </div>
         `
 
@@ -372,7 +374,13 @@ class Video extends ModTemplate {
 
         const overlay = new SaitoOverlay(this.app);
 
-        overlay.show(this.app, video_self, html);
+        overlay.show(this.app, video_self, html, null, () => {
+            console.log("attaching copy event")
+            document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
+                navigator.clipboard.writeText(roomCode);
+                document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
+            });
+        });
 
     }
 

@@ -470,15 +470,18 @@ button.button-active {
 /*  Stun */
 
 
-.my-stun-container h6 {
-  margin-bottom: 1rem;
+.my-stun-container h2 {
+  margin-bottom: .1rem;
 }
 
 .my-stun-container>p {
   margin-bottom: 1rem;
 }
 
-.my-stun-container-actions {}
+.my-stun-container-actions {
+  margin-bottom: 1rem;
+}
+
 
 
 .my-stun-container-join p {
@@ -487,15 +490,17 @@ button.button-active {
 
 }
 
+.my-stun-container-create {
+  margin-bottom: 1rem;
+}
+
 .my-stun-container-create p {
   font-size: 1rem;
   font-weight: bold;
 }
 
 
-.my-stun-container-join {
-  margin-top: 1rem;
-}
+.my-stun-container-join {}
 
 .my-stun-container-join>div {
   display: grid;

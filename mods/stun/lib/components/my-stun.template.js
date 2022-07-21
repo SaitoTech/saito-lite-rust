@@ -13,7 +13,7 @@ module.exports = (app, mod, listeners) => {
 
   return `<card class="appear my-stun-container">
 
-                <h2> Stun Video </h2>
+                <h2> Saito Video </h2>
                 <p>  Use Saito to start a peer-to-peer video chat!</p>
                 <div class="my-stun-container-actions">
                 <div class="my-stun-container-create">
@@ -29,6 +29,8 @@ module.exports = (app, mod, listeners) => {
             
                 </div>
                 </div>
+
+                <p> Saito uses the blockchain to negotiate peer-to-peer connections. Please note that connections can be more unstable and take longer to negotiate if you are on a mobile network or behind an aggressive firewall. </p>
          
     
           </card>`;
