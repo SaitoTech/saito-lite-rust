@@ -21,7 +21,7 @@ module.exports = (app, mod, listeners) => {
                 <button id="createInvite" class="saito-button-secondary"> Create Invite</button>
                 </div>
                 <div class="my-stun-container-join">
-                   <p> Join an invite:</p>
+                   <p> Join an invite</p>
                   <div>
                   <input placeholder="Insert Room Code" id="inviteCode" />
                   <button id="joinInvite" class="saito-button-secondary">Join</button>
