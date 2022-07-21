@@ -71,6 +71,7 @@ module.exports = (app, mod) => {
   </div>
 
 
+
 </card`;
 }
 
