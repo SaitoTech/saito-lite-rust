@@ -1944,12 +1944,22 @@ console.log(`missileenvy ${sender} ${card}`);
 
     }
 
-    // player | card | op
+    // player | card | op 
     if (mv[0] === "ops") {
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
 
-      this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);
+      //Don't want to log the original ops value ***** 
+      let orig_ops = parseInt(mv[3]);
+      let mod_ops = this.modifyOps(orig_ops, mv[2],mv[1], 0);
+      if (mod_ops > orig_ops){
+        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (+${mod_ops-orig_ops} bonus)`);
+      }else if (mod_ops < orig_ops){
+        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (-${orig_ops-mod_ops} penalty)`);
+      }else{
+        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);  
+      }
+      
 
       // stats
       if (mv[1] === "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
@@ -2395,9 +2405,9 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
+          this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
         } else {
-          this.game.deck[0].hand = ["romanian", "indopaki", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
+          this.game.deck[0].hand = ["indopaki", "fidel", "decolonization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
         }
       }
 
