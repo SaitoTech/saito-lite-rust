@@ -89,6 +89,9 @@ class RedSquare extends ModTemplate {
 
     for (let i = 0; i < dummy_content.length; i++) {
 
+      // TO-DO
+      // add this to "Post Tweet"
+      // or make it generic and call it at both places
 
       let links = this.extractLinks(dummy_content[i].text); // get all links from inside tweet text
       console.log('links inisde tweet');
@@ -137,6 +140,10 @@ class RedSquare extends ModTemplate {
 
 
   fetchLinkPreview(link){
+
+    // TO-DO
+    // refactor this and move to somewhere else
+
     if (this.app.BROWSER == 0) {
       
       // required og properties for link preview
@@ -277,15 +284,11 @@ class RedSquare extends ModTemplate {
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
-
     let txmsg = tx.returnMessage();
 
     let txn = JSON.stringify(tx.transaction);
     let sig = tx.transaction.sig;
     let publickey = tx.transaction.from[0].add;
-
-    console.log('inside receiveTweetTransaction');
-    console.log(txmsg);
 
     let sql = `INSERT INTO tweets1 (
                 tx,
@@ -328,6 +331,10 @@ class RedSquare extends ModTemplate {
     let publickey = tx.transaction.from[0].add;
     let created_at = new Date().getTime();
     let updated_at = new Date().getTime();
+
+    // TO-DO
+    // add data into columns according to the tweets.sql
+    //
 
     let sql = `INSERT INTO likes (
                 tweet_id,

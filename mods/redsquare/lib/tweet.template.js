@@ -15,8 +15,11 @@ module.exports = (app, mod, tweet) => {
       tweet_text = tweet.text;
     }
 
-    console.log(tweet.link_properties);
 
+    // TO-DO
+    // create separate templates for youtube embed and link preview
+    // and import both templates here
+ 
     let youtube_preview = '';
     if (typeof tweet.youtube_id != 'undefined') {
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}">

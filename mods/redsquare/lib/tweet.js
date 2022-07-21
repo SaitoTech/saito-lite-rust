@@ -1,7 +1,4 @@
 const TweetTemplate = require("./tweet.template");
-const LinkPreview = require("./link-preview");
-const fetch = require('node-fetch');
-
 
 class RedSquareTweet {
 
