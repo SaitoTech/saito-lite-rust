@@ -50,23 +50,46 @@ class Stun extends ModTemplate {
         this.stun.pc = "";
         this.stun.iceCandidates = [];
         this.stun.counter = 0;
+        // this.stun.servers = [
+        //     // {
+        //     //     urls: "stun:stun.davikstone.com:3478"
+        //     // },
+        //     // {
+        //     //     urls: "turn:turn.davikstone.com:3478",
+        //     //     username: "guest",
+        //     //     credential: "somepassword",
+        //     // },
+        //     {
+        //         urls: "stun:stun-sf.saito.io:3478"
+        //     },
+        //     // {
+        //     //     urls: "turn:stun-sf.saito.io:3478",
+        //     //     username: "guest",
+        //     //     credential: "somepassword",
+        //     // },
+        //     {
+        //         urls: "turn:openrelay.metered.ca:443",
+        //         username: "openrelayproject",
+        //         credential: "openrelayproject",
+        //     },
+        //     {
+        //         urls: "turn:openrelay.metered.ca:443?transport=tcp",
+        //         username: "openrelayproject",
+        //         credential: "openrelayproject",
+        //     },
+        // ];
         this.stun.servers = [
-            // {
-            //     urls: "stun:stun.davikstone.com:3478"
-            // },
-            // {
-            //     urls: "turn:turn.davikstone.com:3478",
-            //     username: "guest",
-            //     credential: "somepassword",
-            // },
             {
-                urls: "stun:stun-sf.saito.io:3478"
+                urls: "stun:openrelay.metered.ca:80",
             },
-            // {
-            //     urls: "turn:stun-sf.saito.io:3478",
-            //     username: "guest",
-            //     credential: "somepassword",
-            // },
+            {
+                urls: "stun1.l.google.com:19302"
+            },
+            {
+                urls: "turn:openrelay.metered.ca:80",
+                username: "openrelayproject",
+                credential: "openrelayproject",
+            },
             {
                 urls: "turn:openrelay.metered.ca:443",
                 username: "openrelayproject",
