@@ -321,7 +321,28 @@ class League extends ModTemplate {
           }
           
         }
-      
+
+        if (txmsg.request === "remove league") {
+          //Perform db ops
+          this.receiveDisbandLeagueTransaction(blk, tx, conf, app);
+          //Update saito-lite, refresh UI
+          if (this.doICare()){
+            console.log("Receive League Removal Request");
+            this.removeLeague(txmsg.request.league);  
+          }
+          
+        }
+
+        if (txmsg.request === "quit league") {
+          //Perform db ops
+          this.receiveQuitLeagueTransaction(blk, tx, conf, app);
+          //Update saito-lite, refresh UI
+          if (this.doICare()){
+            console.log("Receive Quit Request");
+            this.removePlayer(tx);  
+          }
+        }        
+
         //Listen for gameovers
         if (txmsg.request === "gameover"){
           this.receiveGameOverTransaction(blk, tx, conf, app);
@@ -431,6 +452,17 @@ class League extends ModTemplate {
     },1000);
   }
 
+  removeLeague(league_id){
+    if (!league_id){return;}
+
+    for (let i = this.leagues.length-1; i>=0; i--){
+      if (this.leagues[i].id === league_id){
+        this.leagues.splice(i,1);
+      }
+    }
+    this.renderLeagues(this.app, this);
+  }
+
   addPlayer(tx){
     let txmsg = tx.returnMessage();
     for (let league of this.leagues){
@@ -441,6 +473,19 @@ class League extends ModTemplate {
     setTimeout(()=>{
       this.renderLeagues(this.app, this);
     },1000); 
+  }
+
+  removePlayer(tx){
+    let txmsg = tx.returnMessage();
+    for (let league of this.leagues){
+      if (txmsg.league_id == league.id){
+        this.updateLeague(league);
+      }
+    }
+    setTimeout(()=>{
+      this.renderLeagues(this.app, this);
+    },1000); 
+
   }
 
   sendJoinLeagueTransaction(league_id="") {
@@ -493,6 +538,75 @@ class League extends ModTemplate {
     await app.storage.executeDatabase(sql, params, "league");
     return;
   }
+
+  sendQuitLeagueTransaction(pkey, league_id){
+    let newtx = this.app.wallet.createUnsignedTransaction();
+
+    newtx.msg = {
+      module:    "League",
+      league_id: league_id,
+      player_key: pkey,
+      request:   "quit league",
+      timestamp: new Date().getTime()
+    };
+
+    newtx = this.app.wallet.signTransaction(newtx);
+    this.app.network.propagateTransaction(newtx);
+
+    setTimeout(()=>{
+      this.removePlayer(newtx);  
+    },2500);
+    
+  }
+
+  async receiveQuitLeagueTransaction(blk, tx, conf, app){
+    if (this.app.BROWSER) { return; }
+
+    let txmsg = tx.returnMessage();
+
+    let params = {
+      $league : txmsg.league_id,
+      $player: txmsg.player_key,
+    }
+
+    let sql = `DELETE FROM players WHERE league_id=$league AND pkey=$player`;
+    await this.app.storage.executeDatabase(sql, params, "league");
+  }
+
+  sendDisbandLeagueTransaction(league_id){
+    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    tx.msg = {
+      module:  "League",
+      request: "remove league",
+      league:    league_id,
+    };
+
+    let newtx = this.app.wallet.signTransaction(tx);
+
+    this.app.network.propagateTransaction(newtx);
+
+    //Short circuit transaction to immediately process
+    this.removeLeague(newtx);
+  }
+
+
+  async receiveDisbandLeagueTransaction(blk, tx, conf, app){
+    if (this.app.BROWSER) { return; }
+
+    let txmsg = tx.returnMessage();
+
+    let params = {
+      $league : txmsg.league
+    }
+
+    let sql1 = `DELETE FROM leagues WHERE id=$league`;
+    await this.app.storage.executeDatabase(sql1, params, "league");
+
+    let sql2 = `DELETE FROM players WHERE id=$league`;
+    await this.app.storage.executeDatabase(sql2, params, "league");
+  }
+
 
   async receiveAcceptTransaction(blk, tx, conf, app){
     if (this.app.BROWSER) { return; }

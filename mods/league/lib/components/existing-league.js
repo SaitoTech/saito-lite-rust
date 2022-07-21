@@ -16,7 +16,7 @@ module.exports = ExistingLeague = {
   //Not good programming to nest loops like this, define functions then immediately overwriting them
   attachEvents(app, mod) {
     Array.from(document.getElementsByClassName('league-component-existing-league')).forEach(btn => {
-      btn.onclick = (e) => {
+      btn.onclick = async (e) => {
         e.preventDefault();
         let league_id = btn.getAttribute('data-league-id');
         let cmd = btn.getAttribute('data-cmd');
@@ -35,6 +35,13 @@ module.exports = ExistingLeague = {
         }
         if (cmd == "invite"){
          mod.showShareLink(league_id, mod); 
+        }
+        if (cmd == "delete"){
+          let confirm = await sconfirm("Are you sure you want to delete this league?");
+          if (confirm){
+            mod.sendDisbandLeagueTransaction(league_id);
+            salert("League Deleted");
+          }
         }
       }
     });

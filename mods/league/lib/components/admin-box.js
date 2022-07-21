@@ -42,6 +42,7 @@ module.exports = AdminBox = {
         starting_score: e.target.starting_score.value,
         max_players: e.target.max_players.value
       };
+      document.getElementById("league-details").style.display = "none";
       mod.sendCreateLeagueTransaction(newLeague);
       return false;
     }
