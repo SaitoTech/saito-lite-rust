@@ -164,6 +164,7 @@ game-overlay-cardlist-button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  text-align: center;
 }
 
 .game_warning_header{
@@ -172,6 +173,7 @@ game-overlay-cardlist-button {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
+  flex: 1;
 }
 
 .game_warning_header i{
@@ -180,9 +182,13 @@ game-overlay-cardlist-button {
 }
 
 .game_warning_overlay h2{
-  font-size: 1.5em;
-  text-align: center;
+  font-size: 1.6em;
   width: 100%;
+  flex: 1;
+}
+
+.game_warning_overlay p{
+  font-size: 1.5em;
 }
 
 .popup-confirm-menu{
