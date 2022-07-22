@@ -429,7 +429,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
-	this.app.browser.addElementToDom(html);
+	this.app.browser.addElementToDom(html, id);
       }
     }
   }

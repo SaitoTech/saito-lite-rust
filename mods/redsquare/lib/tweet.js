@@ -4,23 +4,22 @@ class RedSquareTweet {
 
     constructor(app, mod, tx) {
 
-      this.tweet = {};
-
       //
       // store tx
       //
-      this.tweet.tx = tx;
+      this.tx = tx;
 
-      this.tweet.sender     	 = tx.transaction.from[0].add;
-      this.tweet.created_at 	 = tx.transaction.ts;
-      this.tweet.sig 	    	 = tx.transaction.sig;
+      this.sender     	 = tx.transaction.from[0].add;
+      this.created_at 	 = tx.transaction.ts;
 
-      this.tweet.text 		 = null;
-      this.tweet.link 		 = null;
-      this.tweet.link_properties = null;
-      this.tweet.youtube_id 	 = null;
+      this.parent_id     = "";
+      this.thread_id     = "";
+      this.text 		 = null;
+      this.link 		 = null;
+      this.link_properties = null;
+      this.youtube_id 	 = null;
 
-      this.tweet.children 	 = [];
+      this.children 	 = [];
 
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
@@ -28,22 +27,49 @@ class RedSquareTweet {
       //
       // 0 = do not fetch open graph
       //
-      this.generateProperties(app, mod, 0);
+      this.generateTweetProperties(app, mod, 0);
 
+    }
+
+
+    addTweet(app, mod, tweet) {
+      if (tweet.parent_id == this.tx.transaction.sig) {
+        for (let i = 0; i < this.children.length; i++) {
+	  if (this.children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+	    return 1;
+	  }
+        }
+        this.children.push(tweet);
+      } else {
+        for (let i = 0; i < this.children.length; i++) {
+          return this.children[i].addTweet(app, mod, tweet); 
+        }
+      }
     }
 
     setKeys(obj) {
       for (let key in obj) { 
         if (typeof obj[key] != 'undefined') {
-          if (this.tweet[key] === "" || this.tweet[key] === null) {
-            this.tweet[key] = obj[key];  
+          if (this[key] === "" || this[key] === null) {
+            this[key] = obj[key];  
           }
         }
       }
     }
 
     render(app, mod, selector = "") {
-      app.browser.addElementToSelector(TweetTemplate(app, mod, this.tweet), selector);
+
+      let html = TweetTemplate(app, mod, this);
+      let tweet_id = this.tx.transaction.sig;
+      let obj = document.getElementById(tweet_id);
+      let my_selector = "#"+tweet_id;
+
+      app.browser.replaceElementById(html, tweet_id);
+
+      for (let i = 0; i < this.children.length; i++) {
+        this.children[i].render(app, mod, my_selector);        
+      }
+
       this.attachEvents(app, mod);
     }
 
@@ -51,15 +77,15 @@ class RedSquareTweet {
     }
 
     exportData(app, mod) {
-      return { text :  this.tweet.text };
+      return { text :  this.text };
     }
 
     async generateTweetProperties(app, mod, fetch_open_graph=0) {
 
-      if (this.tweet.text == null) { return this; }
+      if (this.text == null) { return this; }
 
       let expression = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-      let links = this.tweet.text.match(expression);
+      let links = this.text.match(expression);
 
       console.log('links');
       console.log(links);
@@ -70,17 +96,17 @@ class RedSquareTweet {
 	// save the first link
 	//
         let link = new URL(links[0]);
-	this.tweet.link = link.toString();
+	this.link = link.toString();
 
         //
         // youtube link
         //
-        if (this.tweet.link.indexOf("youtube.com") != -1) {
+        if (this.link.indexOf("youtube.com") != -1) {
 
           let urlParams = new URLSearchParams(link.search);
           let videoId = urlParams.get('v');
 
-          this.tweet.youtube_id = videoId;
+          this.youtube_id = videoId;
 
           return this;
 
@@ -90,8 +116,8 @@ class RedSquareTweet {
         // normal link
         //
 	if (fetch_open_graph == 1) {
-          let res = await mod.fetchOpenGraphProperties(app, mod, this.tweet.link);
-          if (res != '') { this.tweet.link_properties = res; }
+          let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
+          if (res != '') { this.link_properties = res; }
 	}
 
         return this;

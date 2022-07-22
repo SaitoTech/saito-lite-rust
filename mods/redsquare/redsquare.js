@@ -33,6 +33,38 @@ class RedSquare extends ModTemplate {
   }
 
 
+  addTweet(app, mod, tweet) {
+
+    //
+    // post-level
+    //
+    if (tweet.parent_id == "") {
+      let new_tweet = 1;
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
+	  new_tweet = 0;
+        }
+      }
+      if (new_tweet == 0) {
+        this.tweets.unshift(tweet);
+        app.connection.emit("tweet-render-request", tweet);
+      }
+    //
+    // comment-level
+    //
+    } else {
+      for (let i = 0; i < this.tweets.length; i++) {
+	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
+	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+	    app.connection.emit("tweet-render-request", tweet);
+	  }
+	}
+      }      
+    }
+  }
+
+
+
   render(app, mod, selector = "") {
 
     if (this.ui_initialized == false) {
@@ -114,8 +146,6 @@ class RedSquare extends ModTemplate {
 
     if (this.app.BROWSER == 0) {
 
-console.log("Trying to fetch: " + link);      
-
       // required og properties for link preview
       let og_tags = {
         'og:exists': false,
@@ -134,8 +164,6 @@ console.log("Trying to fetch: " + link);
       return fetch(link)
       .then(res => res.text())
         .then(data => {
-
-console.log("fetched!");
 
         // prettify html - unminify html if minified
         let html = prettify(data);
@@ -219,8 +247,7 @@ return {};
 	      }
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
-  	      redsquare_self.tweets.push(tweet);
-              app.connection.emit('tweet-render-request', tweet);
+  	      redsquare_self.addTweet(app, mod, tweet);
 
 	    }
           });
@@ -277,8 +304,8 @@ return {};
     // browsers
     //
     if (app.BROWSER == 1) {
-      this.tweets.push(tweet);
-      app.connection.emit("tweet-render-request", tweet);
+      let redsquare_self = app.modules.returnModule("RedSquare");
+      this.addTweet(app, redsquare_self, tweet);
       return;
     } 
 
@@ -311,8 +338,8 @@ return {};
       $txjson: JSON.stringify(tx.transaction),
       $sig: tx.transaction.sig,
       $publickey: tx.transaction.from[0].add,
-      $link: tweet.tweet.link,
-      $link_properties: JSON.stringify(tweet.tweet.link_properties)
+      $link: tweet.link,
+      $link_properties: JSON.stringify(tweet.link_properties)
     };
 
 console.log("PARAMS: " + JSON.stringify(params));

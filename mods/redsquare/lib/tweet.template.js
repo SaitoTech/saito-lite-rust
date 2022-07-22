@@ -20,12 +20,9 @@ module.exports = (app, mod, tweet) => {
     // TO-DO
     // create separate templates for youtube embed and link preview
     // and import both templates here
-console.log("is youtube id still set: " + tweet.youtube_id); 
     if (tweet.youtube_id != null) {
-console.log("is youtube id still set: " + tweet.youtube_id + " YES"); 
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
     } else {
-console.log("no it isn't!");
     }
 
     let link_preview = '';
@@ -54,7 +51,7 @@ console.log("no it isn't!");
     }
 
     return `
-       <div class="redsquare-item">
+       <div class="redsquare-item" id="${tweet.tx.transaction.sig}">
          ${SaitoUserWithControls(app, mod, tweet.tx.transaction.from[0].add)}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
