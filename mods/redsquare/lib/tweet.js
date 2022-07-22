@@ -57,19 +57,27 @@ class RedSquareTweet {
       });
 
 
-      $('#post-reply-tweet-button').on('click', function(e) {
-        // e.preventDefault();
-        // e.stopImmediatePropagation();
+      $('.tweet-reply-container').on('click', "#post-reply-tweet-button", function(e) {
+        console.log('inside post reply');
+        e.preventDefault();
+        e.stopImmediatePropagation();
       
-        // let text = $('#reply-tweet-textarea').val();
-        // let parent_id = $(this).parent().attr('data-id');
-        // let thread_id = $(this).parent().attr('data-thread-id') || parent_id;
+        let text = $('#reply-tweet-textarea').val();
+        let parent_id = $(this).parent().attr('data-id');
+        let thread_id = $(this).parent().attr('data-thread-id') || parent_id;
 
-        // let tweet = new Re
+        let data = { 
+          text: text,
+          parent_id: parent_id,
+          thread_id: thread_id 
+        };
 
+        console.log("about to send reply tweet");
+        console.log(data);
 
-
-      }
+        // CURRENTLY BROKEN
+        mod.sendTweetTransaction(app, mod, data);  
+      });
     }
 
 
