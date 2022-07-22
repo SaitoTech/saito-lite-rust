@@ -170,7 +170,7 @@ test("sign", () => {
   console.log(Buffer.from(result).toString("hex"));
 
   expect(tx.transaction.sig).toEqual(
-    "190738f6085516ca669935bb6baf33ce5682acdb0f3b21f930cb0ac8a02198632f1947e6b557f99e704040b4e104aeb4ebf38d9fc92ec02a0ee82fae67a6e728"
+    "9e49d33a16f8a7a7dd9507511b3ab102ca6fa509d28ee9c10d89f13ce1233e4f7ef2681b2bab8a9a3b8eb2d7786c5c1d4373d8803132af1e3b4aa026ac312b92"
   );
 
 });
