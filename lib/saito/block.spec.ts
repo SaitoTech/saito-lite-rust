@@ -121,7 +121,7 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
-    mockApp.hash = (data: string) => {
+    mockApp.hash = (data: Uint8Array) => {
       return blake3.hash(data).toString("hex");
     };
 
