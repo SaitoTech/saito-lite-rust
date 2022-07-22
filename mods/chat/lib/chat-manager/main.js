@@ -52,8 +52,6 @@ class ChatManager {
 	  }
 	}
 
-alert("ADDED");     
-
         this.attachEvents(app, mod);
     }
 
