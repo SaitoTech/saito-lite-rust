@@ -11,19 +11,25 @@ class SettingsEmailAppspace {
 
   render(app, mod) {
 
+console.log("1 - 1");
+
     if (!document.querySelector(".settings-email-appspace")) {
       app.browser.addElementToSelector(SettingsEmailAppspaceTemplate(app, mod), ".email-appspace");
     }
 
+console.log("1 - 2");
+
     let settings_appspace = document.querySelector(".settings-appspace");
     if (settings_appspace) {
-      for (let i = 0; i < app.modules.mods.length; i++) {
-        if (app.modules.mods[i].respondTo("settings-appspace") != null) {
-          let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
-          mod_settings_obj.render(app, mod);
-        }
-      }
+//      for (let i = 0; i < app.modules.mods.length; i++) {
+//        if (app.modules.mods[i].respondTo("settings-appspace") != null) {
+//          let mod_settings_obj = app.modules.mods[i].respondTo("settings-appspace");
+//          mod_settings_obj.render(app, mod);
+//        }
+//      }
     }
+
+console.log("1 - 3");
 
   }
 

@@ -64,20 +64,15 @@ class RedSquareTweet {
       let obj = document.getElementById(tweet_id);
       let my_selector = "#"+tweet_id;
 
-console.log("REPLACE ELEMENT BY ID: " + tweet_id);
-
       if (obj) {
         app.browser.replaceElementById(html, tweet_id);
       } else {
         app.browser.addElementToSelector(html, selector);
       }
 
-console.log("X");
-
       for (let i = 0; i < this.children.length; i++) {
         this.children[i].render(app, mod, my_selector);        
       }
-console.log("Y");
 
       this.attachEvents(app, mod);
     }

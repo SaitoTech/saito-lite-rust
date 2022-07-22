@@ -1,5 +1,5 @@
 const SettingsAppspace = require('./lib/appspace/main');
-const SettingsEmailAppspace = require('./lib/email-appspace/email-appspace');
+const SettingsEmailAppspace = require('./lib/email-appspace/settings-appspace');
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 
@@ -32,13 +32,12 @@ class Settings extends ModTemplate {
 
 
   respondTo(type) {
-    if (type == 'appspace') {
-      console.log("RENDERING SETTINGS EMAIL APPSPACE!");
+    if (type === 'appspace') {
       this.scripts['/settings/new-style.css'];
       super.render(this.app, this); // for scripts + styles
       return new SettingsAppspace(this.app, this);
     }
-    if (type == 'email-appspace') {
+    if (type === 'email-appspace') {
       let obj = {};
       obj.render = function (app, data) {
         SettingsEmailAppspace.render(app, data);

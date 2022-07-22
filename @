@@ -47,13 +47,11 @@ class ChatManager {
 	    } else {
               let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
               html = html.replace("saito-identicon\"", "saito-identicon small square\"");
-	      app.browser.addElementToSelector(html, ".chat-manager-list");
+	      app.browser.addElementToSelector(html, divid);
 	    }
 	  }
 	}
-
-alert("ADDED");     
-
+     
         this.attachEvents(app, mod);
     }
 

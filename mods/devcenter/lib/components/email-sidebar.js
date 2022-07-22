@@ -74,7 +74,7 @@ module.exports = EmailSidebar = {
   },
 
   renderAccordingToHash(app, mod) {
-    if (!this.welcome_space){
+    if (!this.welcome_space) {
       this.welcome_space = document.getElementById("email-appspace").innerHTML;
     }
     if (window.location.hash === "#welcome-nav-inbox") {
@@ -86,6 +86,7 @@ module.exports = EmailSidebar = {
       let module = mod.mods[i];
       if (modname === module.name) {
         let obj = module.respondTo("email-appspace");
+console.log("module.name: " + module.name);
         obj.render(mod.app, module);
         
         if ("attachEvents" in obj)        
