@@ -1,4 +1,5 @@
 const TweetTemplate = require("./tweet.template");
+const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 
 class RedSquareTweet {
 
@@ -29,6 +30,46 @@ class RedSquareTweet {
       //
       this.generateTweetProperties(app, mod, 0);
 
+    }
+
+    attachEvents(app, mod) { 
+
+
+      $('.tweet-reply').on('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        // fetch parent tweet clone and append it to overlay
+        let tweet_sig_id = $(this).parent().attr('data-id');
+        this.overlay = new SaitoOverlay(app, mod);
+        this.overlay.show(app, mod, '<div id="redsquare-reply-tweet-overlay"></div>');
+        
+        let parent_tweet = $('#tweet-box-'+tweet_sig_id).clone();
+        $('#redsquare-reply-tweet-overlay').append(parent_tweet);
+
+        $(parent_tweet).find('.redsquare-tweet-tools').hide();
+
+        // TO-DO move this to template file and append it from there
+        $(parent_tweet).append('<div class="tweet-reply-container" data-id="'+tweet_sig_id+'">' +  
+        '<textarea rows="5" class="reply-tweet-textarea" id="reply-tweet-textarea" name="post-tweet-textarea" placeholder="Type your reply" cols="60"></textarea>'+
+        '<div class="saito-button-primary post-reply-tweet-button" id="post-reply-tweet-button" style="display: inline-block;">Reply</div></div>');
+        
+      });
+
+
+      $('#post-reply-tweet-button').on('click', function(e) {
+        // e.preventDefault();
+        // e.stopImmediatePropagation();
+      
+        // let text = $('#reply-tweet-textarea').val();
+        // let parent_id = $(this).parent().attr('data-id');
+        // let thread_id = $(this).parent().attr('data-thread-id') || parent_id;
+
+        // let tweet = new Re
+
+
+
+      }
     }
 
 
@@ -80,9 +121,6 @@ console.log("X");
 console.log("Y");
 
       this.attachEvents(app, mod);
-    }
-
-    attachEvents(app, mod) { 
     }
 
     exportData(app, mod) {

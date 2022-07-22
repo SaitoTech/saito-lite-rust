@@ -51,15 +51,15 @@ module.exports = (app, mod, tweet) => {
     }
 
     return `
-       <div class="redsquare-item" id="${tweet.tx.transaction.sig}">
+       <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}">
          ${SaitoUserWithControls(app, mod, tweet.tx.transaction.from[0].add)}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
            ${tweet_img}
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
-           <div class="redsquare-tweet-tools">
-             <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="far fa-comment"></i></div>
+           <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
+             <div class="tweet-tool-like tweet-reply"><span class="tweet-like-count">0</span> <i class="far fa-comment"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="far fa-heart"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-retweet"></i></div>
            </div>

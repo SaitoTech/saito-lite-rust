@@ -31,10 +31,6 @@ console.log("TEMPLATE ADDED: " + selector);
 
 console.log("TEXT IS: " + text);
 
-
-//        console.log('inside tweet ');
-//        console.log(data);
-
 console.log("about to send tweet");
         mod.sendTweetTransaction(app, mod, data);  
 console.log("send tweet transaction");

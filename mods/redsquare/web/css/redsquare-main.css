@@ -225,3 +225,18 @@ img {
 .post-tweet-textarea {
   width: auto;
 }
+
+.tweet-tool-like {
+  cursor: pointer;
+}
+
+
+#redsquare-reply-tweet-overlay {
+  background-color: #fff;
+  width: 60vh;
+}
+
+#redsquare-reply-tweet-overlay .redsquare-item-contents{
+  border-left: 1px solid #b1b0b0;
+  margin: 30px 10px;
+}
