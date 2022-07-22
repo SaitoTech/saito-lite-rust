@@ -1041,6 +1041,7 @@ class Arcade extends ModTemplate {
 
   checkCloseQueue(game_id){
     if (this.game_close_interval_id){
+      console.log("Are we waiting on "+game_id);
       for (let i = this.game_close_interval_queue.length-1; i >=0; i--){
         if (this.game_close_interval_queue[i] == game_id){
           this.game_close_interval_queue.splice(i,1);
