@@ -39,13 +39,14 @@ class RedSquare extends ModTemplate {
     // post-level
     //
     if (tweet.parent_id == "") {
+console.log("NEW TWEET");
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
 	  new_tweet = 0;
         }
       }
-      if (new_tweet == 0) {
+      if (new_tweet == 1) {
         this.tweets.unshift(tweet);
         app.connection.emit("tweet-render-request", tweet);
       }
@@ -56,6 +57,7 @@ class RedSquare extends ModTemplate {
       for (let i = 0; i < this.tweets.length; i++) {
 	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
 	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+console.log("NEW TWEET 2");
 	    app.connection.emit("tweet-render-request", tweet);
 	  }
 	}
@@ -224,11 +226,15 @@ return {};
 
 	    let new_tweet = 1;
 
+console.log("TESTING A");
+
 	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
-	      if (redsquare_self.tweets[i].optional.sig == row.sig) {
+	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
 		new_tweet = 0;
 	      }
 	    }
+
+console.log("TESTING B");
 
 	    if (new_tweet) {
 
@@ -241,6 +247,8 @@ return {};
       	      tx.optional.thread_id 	  = tx.msg.thread_id;
 	      tx.optional.link_properties = {};
 
+console.log("TESTING C");
+
 	      try {
 	        let x = JSON.parse(row.link_properties);
 	        tx.optional.link_properties = x;
@@ -248,6 +256,9 @@ return {};
 	      }
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
+
+console.log("WE HAVE A NEW TWEET: " + JSON.stringify(tweet));
+
   	      redsquare_self.addTweet(app, redsquare_self, tweet);
 
 	    }

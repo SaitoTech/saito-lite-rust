@@ -429,6 +429,7 @@ class Browser {
       if (obj) {
         obj.outerHTML = html;
       } else {
+console.log("ADDING ELEMENT TO DOM: " + id);
 	this.app.browser.addElementToDom(html, id);
       }
     }

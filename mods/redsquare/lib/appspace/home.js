@@ -21,6 +21,8 @@ class RedSquareAppspaceHome {
     });
 
     for (let i = 0; i < mod.tweets.length; i++) {
+console.log("i: " + i);
+console.log(JSON.stringify(mod.tweets[i]));
         app.connection.emit('tweet-render-request', mod.tweets[i]);
     }
 
