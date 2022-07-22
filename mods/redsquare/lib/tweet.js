@@ -6,18 +6,29 @@ class RedSquareTweet {
 
       this.tweet = {};
 
+      //
+      // store tx
+      //
       this.tweet.tx = tx;
 
-      this.tweet.sender = tx.transaction.from[0].add;
-      this.tweet.created_at = tx.transaction.ts;
-      this.tweet.text = null;
-      this.tweet.html = null;
-      this.tweet.link = null;
+      this.tweet.sender     	 = tx.transaction.from[0].add;
+      this.tweet.created_at 	 = tx.transaction.ts;
+      this.tweet.sig 	    	 = tx.transaction.sig;
+
+      this.tweet.text 		 = null;
+      this.tweet.link 		 = null;
       this.tweet.link_properties = null;
-      this.tweet.youtube_id = null;
+      this.tweet.youtube_id 	 = null;
+
+      this.tweet.children 	 = [];
 
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
+
+      //
+      // 0 = do not fetch open graph
+      //
+      this.generateProperties(app, mod, 0);
 
     }
 
@@ -39,15 +50,11 @@ class RedSquareTweet {
     attachEvents(app, mod) { 
     }
 
-
     exportData(app, mod) {
       return { text :  this.tweet.text };
     }
 
-
     async generateTweetProperties(app, mod, fetch_open_graph=0) {
-
-      console.log('inisde generateTweetProperties');
 
       if (this.tweet.text == null) { return this; }
 
@@ -58,8 +65,6 @@ class RedSquareTweet {
       console.log(links);
 
       if (links != null && links.length > 0) {
-
-console.log("save the first link...");
 
 	//
 	// save the first link
@@ -72,14 +77,10 @@ console.log("save the first link...");
         //
         if (this.tweet.link.indexOf("youtube.com") != -1) {
 
-console.log("HERE WE ARE: " + this.tweet.link);
-
           let urlParams = new URLSearchParams(link.search);
           let videoId = urlParams.get('v');
 
           this.tweet.youtube_id = videoId;
-
-console.log("video id: " + this.tweet.youtube_id);
 
           return this;
 

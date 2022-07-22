@@ -219,9 +219,8 @@ return {};
 	      }
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
-	      tx.tweet = tweet;
-  	      redsquare_self.tweets.push(tx);
-              app.connection.emit('tweet-render-request', tx);
+  	      redsquare_self.tweets.push(tweet);
+              app.connection.emit('tweet-render-request', tweet);
 
 	    }
           });
@@ -239,17 +238,8 @@ return {};
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-
-          this.receiveTweetTransaction(blk, tx, conf, app).then(
-            function(value) {
-            },
-
-            function(error) {
-              console.log("ERROR in " + this.name + " onConfirmation: " + error);
-            }
-          );
+          redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
         }
-
       }
     } catch (err) {
       console.log("ERROR in " + this.name + " onConfirmation: " + err);
@@ -281,15 +271,14 @@ return {};
     console.log('inside receive tweet');
 
     let tweet     = new Tweet(app, this, tx);
-        tweet     = await tweet.generateTweetProperties(app, this);
+    //await tweet.generateTweetProperties(app, this);
 
     //
     // browsers
     //
     if (app.BROWSER == 1) {
-      tx.tweet      = tweet;
-      this.tweets.push(tx);
-      app.connection.emit("tweet-render-request", tx);
+      this.tweets.push(tweet);
+      app.connection.emit("tweet-render-request", tweet);
       return;
     } 
 
