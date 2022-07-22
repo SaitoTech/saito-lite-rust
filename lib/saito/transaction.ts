@@ -850,7 +850,7 @@ class Transaction {
     //
     if (
       !app.crypto.verifyHash(
-        app.crypto.hash(this.serializeForSignature(app).toString("hex")),
+        this.serializeForSignature(app),
         this.transaction.sig,
         this.transaction.from[0].add
       )

@@ -1507,7 +1507,7 @@ class Block {
     //
     if (
       !this.app.crypto.verifyHash(
-        this.app.crypto.hash(this.serializeForSignature().toString("hex")),
+        this.serializeForSignature(),
         this.block.signature,
         this.block.creator
       )

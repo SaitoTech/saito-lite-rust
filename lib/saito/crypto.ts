@@ -228,8 +228,9 @@ class Crypto {
    * @param {string} pubkey
    * @returns {boolean} is signature valid?
    */
-  verifyHash(hash: string, sig: string, pubkey: string) {
+  verifyHash(buffer: Buffer, sig: string, pubkey: string) {
     try {
+      let hash = this.hash(buffer);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return secp256k1.verify(
@@ -253,8 +254,8 @@ class Crypto {
    */
   verifyMessage(msg: string, sig: string, pubkey: string) {
     try {
-      const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
-      return this.verifyHash(hash, sig, pubkey);
+      // const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
+      return this.verifyHash(Buffer.from(msg, "utf-8"), sig, pubkey);
     } catch (err) {
       console.log(err);
       return false;

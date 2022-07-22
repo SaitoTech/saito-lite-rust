@@ -38,7 +38,7 @@ test("signBuffer", () => {
   );
 
   const verificationResult = crypto.verifyHash(
-    crypto.hash(testBuffer),
+    testBuffer,
     result,
     wallet.wallet.publickey
   );
