@@ -41,10 +41,11 @@ class Crypto {
    * initialization.
    */
 
-  hash(data: string) {
-    //
+  hash(data: string|Uint8Array) {
+    if (typeof data === "string") {
+     return this.app.hash(Buffer.from(data))
+    }
     // 64-bit hash
-    //
     return this.app.hash(data);
   }
 
@@ -216,7 +217,7 @@ class Crypto {
     // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return secp256k1.sign(Buffer.from(this.hash(buffer.toString("hex")), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
+    return secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
   }
 
   /**

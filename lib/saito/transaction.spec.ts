@@ -164,7 +164,13 @@ test("sign", () => {
   tx.transaction.to.push(output_slip);
 
   tx.sign(mockApp);
+
+  let result = tx.serialize(mockApp);
+
+  console.log(Buffer.from(result).toString("hex"));
+
   expect(tx.transaction.sig).toEqual(
     "190738f6085516ca669935bb6baf33ce5682acdb0f3b21f930cb0ac8a02198632f1947e6b557f99e704040b4e104aeb4ebf38d9fc92ec02a0ee82fae67a6e728"
   );
+
 });
