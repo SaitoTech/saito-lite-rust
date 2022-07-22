@@ -27,6 +27,7 @@ class RedSquare extends ModTemplate {
       '/saito/saito.css',
       '/redsquare/css/redsquare-main.css',
       '/redsquare/css/arcade.css',		// game creation overlays
+      '/redsquare/css/chat.css',		// game creation overlays
     ];
 
     this.ui_initialized = false;
@@ -39,7 +40,6 @@ class RedSquare extends ModTemplate {
     // post-level
     //
     if (tweet.parent_id == "") {
-console.log("NEW TWEET");
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -57,7 +57,6 @@ console.log("NEW TWEET");
       for (let i = 0; i < this.tweets.length; i++) {
 	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
 	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
-console.log("NEW TWEET 2");
 	    app.connection.emit("tweet-render-request", tweet);
 	  }
 	}
@@ -181,12 +180,6 @@ console.log("NEW TWEET 2");
         for (let i=0; i<meta_tags.length; i++) {
           let property = meta_tags[i].getAttribute('property');
           let content = meta_tags[i].getAttribute('content');
-        
-          console.log('property');
-          console.log(property);
-          console.log('content');
-          console.log(content);
-
           // get required og properties only, discard others
           if (property in og_tags) {
             og_tags[property] = content;
@@ -197,8 +190,7 @@ console.log("NEW TWEET 2");
         return og_tags;
       });
       } catch (err) {
-console.log("Error: returning nothing: ");
-return {};
+        return {};
       }
     } else {
       return {};
@@ -226,15 +218,11 @@ return {};
 
 	    let new_tweet = 1;
 
-console.log("TESTING A");
-
 	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
 	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
 		new_tweet = 0;
 	      }
 	    }
-
-console.log("TESTING B");
 
 	    if (new_tweet) {
 
@@ -247,8 +235,6 @@ console.log("TESTING B");
       	      tx.optional.thread_id 	  = tx.msg.thread_id;
 	      tx.optional.link_properties = {};
 
-console.log("TESTING C");
-
 	      try {
 	        let x = JSON.parse(row.link_properties);
 	        tx.optional.link_properties = x;
@@ -256,8 +242,6 @@ console.log("TESTING C");
 	      }
 
 	      let tweet = new Tweet(app, redsquare_self, tx);
-
-console.log("WE HAVE A NEW TWEET: " + JSON.stringify(tweet));
 
   	      redsquare_self.addTweet(app, redsquare_self, tweet);
 
