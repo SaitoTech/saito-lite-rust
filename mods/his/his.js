@@ -7367,7 +7367,7 @@ console.log("faction: " + faction);
 
     let html = `
       <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')">
-	<div class="religious_conflict_sheet_tile"></div>
+	<div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
 	<div class="papal_debaters"></div>
 	<div class="lutheran_debaters"></div>
 	<div class="calvinist_debaters"></div>
