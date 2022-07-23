@@ -17,12 +17,12 @@ class RedSquareAppspaceHome {
     app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
 
     app.connection.on("tweet-render-request", (tweet) => {
+console.log("tweetn render request pre");
         tweet.render(app, mod, ".redsquare-list"); 
+console.log("tweetn render request post");
     });
 
     for (let i = 0; i < mod.tweets.length; i++) {
-console.log("i: " + i);
-console.log(JSON.stringify(mod.tweets[i]));
         app.connection.emit('tweet-render-request', mod.tweets[i]);
     }
 
@@ -39,9 +39,8 @@ console.log(JSON.stringify(mod.tweets[i]));
     // since it is a class, we put an element in the overlay and render into that.
     //
     document.getElementById("redsquare-new-tweet").onclick = (e) => {
-      this.overlay.show(app, mod, '<div class="redsquare-new-tweet-overlay"></div>');
-      let ptweet = new PostTweet(app, mod, ".redsquare-new-tweet-overlay");
-      ptweet.render(app, mod, ".redsquare-new-tweet-overlay");
+      let ptweet = new PostTweet(app, mod);
+      ptweet.render(app, mod);
     }
 
   }

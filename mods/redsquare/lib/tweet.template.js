@@ -2,9 +2,7 @@ const SaitoUserWithControls = require('./../../../lib/saito/new-ui/templates/sai
 
 module.exports = (app, mod, tweet) => {
 
-    console.log('tweet');
-    console.log(tweet);
-
+    let publickey = "";   
     let tweet_img = "";
     let tweet_text = "";
     let youtube_preview = "";
@@ -15,14 +13,8 @@ module.exports = (app, mod, tweet) => {
     if (typeof tweet.text != 'undefined' && tweet.text != "") {
       tweet_text = tweet.text;
     }
-
-
-    // TO-DO
-    // create separate templates for youtube embed and link preview
-    // and import both templates here
     if (tweet.youtube_id != null) {
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
-    } else {
     }
 
     let link_preview = '';
@@ -59,7 +51,7 @@ module.exports = (app, mod, tweet) => {
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-             <div class="tweet-tool-like tweet-reply"><span class="tweet-like-count">0</span> <i class="far fa-comment"></i></div>
+             <div class="tweet-tool-like tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-like-count">0</span> <i class="far fa-comment"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="far fa-heart"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-retweet"></i></div>
            </div>

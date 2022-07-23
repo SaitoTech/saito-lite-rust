@@ -9,9 +9,27 @@
   z-index: 10;
 }
 
-/* HACK */
-img {
-  max-width: 50rem;
+
+
+.post-tweet-textarea {
+  width: auto;
+  margin-top: 1rem;
+}
+
+.post-tweet-button {
+    margin-left: 0rem;
+    margin-right: 0rem;
+    margin-top: 1rem;
+    width: 20rem;
+    text-align: center;
+    float: right;
+}
+
+.redsquare-tweet-overlay {
+  padding: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 2rem;
+  background-color: white;
 }
 
 .saito-sidebar.right {
@@ -220,10 +238,6 @@ img {
 .youtube-embed {
   width: 100%;
   height: 300px;
-}
-
-.post-tweet-textarea {
-  width: auto;
 }
 
 .tweet-tool-like {

@@ -3,10 +3,21 @@ const SaitoUserTemplate = require('./../../../lib/saito/new-ui/templates/saito-u
 module.exports = (app, mod, publickey) => {
 
   return `
+
     ${SaitoUserTemplate(app, mod, publickey)}
-    <textarea rows="10" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
+
+    <textarea rows="7" class="post-tweet-textarea" name="post-tweet-textarea" id="post-tweet-textarea" placeholder="What's happening" cols="60"></textarea>
+
+    <input type="hidden" name="parent_id" value="" />
+    <input type="hidden" name="thread_id" value="" />
+
     <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> Tweet </div>
+    <div style="clear:both"></div>
+
   `;
+
+//          $(parent_tweet).append('<div class="tweet-reply-container" data-id="'+tweet_sig_id+'">' +
+//          '<textarea rows="5" class="reply-tweet-textarea" id="reply-tweet-textarea" name="post-tweet-textarea" placeholder="Type your reply" cols="60"></textarea>';
 
 }
 

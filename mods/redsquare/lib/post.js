@@ -1,22 +1,17 @@
 const PostTemplate = require("./post.template");
+const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+
 
 class Post {
 
-    constructor(app, mod, selector = "") {
-      this.selector = selector;
+    constructor(app, mod) {
+      this.overlay = new SaitoOverlay(app, mod);
     }
 
-    render(app, mod, selector = "") {
+    render(app, mod) {
 
-console.log("RENDERING w/ THIS.SELECTOR: " + this.selector);
-      if (selector === "" || this.selector !== "") { selector = this.selector; }
-
-console.log("RENDERING POST INTO: " + selector);
-
-      app.browser.addElementToSelector(PostTemplate(app, mod), selector);  
-
-console.log("TEMPLATE ADDED: " + selector);
-
+      this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
+      app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey()), "#redsquare-tweet-overlay");
       this.attachEvents(app, mod);
 
     }
@@ -26,14 +21,12 @@ console.log("TEMPLATE ADDED: " + selector);
       document.getElementById("post-tweet-button").onclick = (e) => {
 
         e.preventDefault();
+
         let text = document.getElementById('post-tweet-textarea').value;
         let data = { text : text };
 
-console.log("TEXT IS: " + text);
-
-console.log("about to send tweet");
         mod.sendTweetTransaction(app, mod, data);  
-console.log("send tweet transaction");
+	this.overlay.hide();
 
       }
     }
