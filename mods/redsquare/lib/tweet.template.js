@@ -1,4 +1,4 @@
-const SaitoUserWithControls = require('./../../../lib/saito/new-ui/templates/saito-user-with-controls.template');
+const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
 
@@ -29,7 +29,6 @@ module.exports = (app, mod, tweet) => {
                       <a target="_blank" href="${d['og:url']}">
                       <div class="preview-container">
                           <div class='preview-img' style="background: url(${d['og:image']})"></div>
-                          
                           <div class="preview-info">  
                             <div class="preview-url">${link.hostname}</div>
                             <div class="preview-title">${d['og:title']}</div>
@@ -44,7 +43,7 @@ module.exports = (app, mod, tweet) => {
 
     return `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}">
-         ${SaitoUserWithControls(app, mod, tweet.tx.transaction.from[0].add)}
+         ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add)}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
            ${tweet_img}

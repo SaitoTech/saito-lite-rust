@@ -1,5 +1,5 @@
 const TweetTemplate = require("./tweet.template");
-const PostTemplate = require("./post.template");
+const PostTweet = require("./post");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 
 class RedSquareTweet {
@@ -43,6 +43,8 @@ class RedSquareTweet {
           e.preventDefault();
           e.stopImmediatePropagation();
 
+          let el = e.currentTarget;
+
           let tweet_sig_id = el.getAttribute("data-id");
 
           let ptweet = new PostTweet(app, mod);
@@ -50,17 +52,8 @@ class RedSquareTweet {
 	      ptweet.thread_id = this.thread_id;
           ptweet.render(app, mod);
 
-/*****
-          let parent_tweet = $('#tweet-box-'+tweet_sig_id).clone();
-          $('#redsquare-reply-tweet-overlay').append(parent_tweet);
-
-          $(parent_tweet).find('.redsquare-tweet-tools').hide();
-
-          // TO-DO move this to template file and append it from there
-          $(parent_tweet).append('<div class="tweet-reply-container" data-id="'+tweet_sig_id+'">' +  
-          '<textarea rows="5" class="reply-tweet-textarea" id="reply-tweet-textarea" name="post-tweet-textarea" placeholder="Type your reply" cols="60"></textarea>'+
-          '<div class="saito-button-primary post-reply-tweet-button" id="post-reply-tweet-button" style="display: inline-block;">Reply</div></div>');
-*****/
+	  let html = TweetTemplate(app, mod, this);
+	  app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
 
       };
 

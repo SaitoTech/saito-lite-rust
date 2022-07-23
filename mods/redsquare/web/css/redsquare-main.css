@@ -11,6 +11,19 @@
 
 
 
+.post-tweet-preview {
+  padding: 0rem;
+  padding-bottom: 2rem;
+}
+.post-tweet-preview .redsquare-item {
+  padding-left: 0rem;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+.post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
+  display: none;
+}
+
 .post-tweet-textarea {
   width: auto;
   margin-top: 1rem;

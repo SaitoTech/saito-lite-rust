@@ -16,8 +16,5 @@ module.exports = (app, mod, publickey) => {
 
   `;
 
-//          $(parent_tweet).append('<div class="tweet-reply-container" data-id="'+tweet_sig_id+'">' +
-//          '<textarea rows="5" class="reply-tweet-textarea" id="reply-tweet-textarea" name="post-tweet-textarea" placeholder="Type your reply" cols="60"></textarea>';
-
 }
 

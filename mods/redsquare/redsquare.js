@@ -36,8 +36,6 @@ class RedSquare extends ModTemplate {
 
   addTweet(app, mod, tweet) {
 
-console.log("add tweet");
-
     //
     // post-level
     //
