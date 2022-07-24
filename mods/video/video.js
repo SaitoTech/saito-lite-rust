@@ -381,11 +381,7 @@ class Video extends ModTemplate {
             });
         });
 
-<<<<<<< HEAD
-        vanillaToast.success("Room created successfully");
-=======
         siteMessage("Room created successfully", 5000);
->>>>>>> video-call
     }
 
 
@@ -514,11 +510,7 @@ class Video extends ModTemplate {
 
 
     async joinVideoInvite(roomCode) {
-<<<<<<< HEAD
-        if (!roomCode) return vanillaToast.error("Please insert a room code");
-=======
         if (!roomCode) return siteMessage("Please insert a room code", 5000);
->>>>>>> video-call
         const stun_mod = this.app.modules.returnModule("Stun");
         const video_self = this.app.modules.returnModule("Video");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
@@ -529,11 +521,7 @@ class Video extends ModTemplate {
 
         if (!room) {
             console.log('Invite does not exist');
-<<<<<<< HEAD
-            vanillaToast.error("This room does not exist");
-=======
             siteMessage("This room does not exist", 5000);
->>>>>>> video-call
         }
 
         if (room.isMaxCapicity) {
@@ -615,12 +603,8 @@ class Video extends ModTemplate {
                 video_self.videoChat.show(new RTCPeerConnection({}));
                 video_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
-<<<<<<< HEAD
-                vanillaToast.success("Room joined, you are the only participant in the room");
-=======
                 // vanillaToast.success("");
                 siteMessage("Room joined, you are the only participant in the room", 5000)
->>>>>>> video-call
             }
 
         } catch (error) {
@@ -653,12 +637,9 @@ class Video extends ModTemplate {
         newtx = this.app.wallet.signTransaction(newtx);
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
-<<<<<<< HEAD
-        vanillaToast.success("Room joined, Initialting connection");
-=======
         // vanillaToast.success("");
         siteMessage("Starting video connection", 5000)
->>>>>>> video-call
+
         // this.app.network.propagateTransaction(newtx);
 
 

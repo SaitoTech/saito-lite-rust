@@ -417,19 +417,10 @@ button.button-active {
 
 .body .box {
   border-radius: 1.92459px;
-<<<<<<< HEAD
-  background: white;
-
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-
-=======
   width: 100%;
   height: 100%;
   object-fit: cover;
   background-color: black;
->>>>>>> video-call
 }
 
 .body .box1 {
