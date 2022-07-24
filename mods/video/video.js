@@ -374,6 +374,8 @@ class Video extends ModTemplate {
 
         const overlay = new SaitoOverlay(this.app);
 
+
+
         overlay.show(this.app, video_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
@@ -382,6 +384,7 @@ class Video extends ModTemplate {
             });
         });
 
+        vanillaToast.success("Room created successfully");
     }
 
 
@@ -509,6 +512,7 @@ class Video extends ModTemplate {
 
 
     async joinVideoInvite(roomCode) {
+        if (!roomCode) return vanillaToast.error("Please insert a room code");
         const stun_mod = this.app.modules.returnModule("Stun");
         const video_self = this.app.modules.returnModule("Video");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
@@ -517,7 +521,10 @@ class Video extends ModTemplate {
         console.log('rooms :', this.app.options.rooms, 'result :', room, index);
 
 
-        if (!room) return console.log('Invite does not exist');
+        if (!room) {
+            console.log('Invite does not exist');
+            vanillaToast.error("This room does not exist");
+        }
 
         if (room.isMaxCapicity) {
             return console.log("Room has reached max capacity");
@@ -598,6 +605,7 @@ class Video extends ModTemplate {
                 video_self.videoChat.show(new RTCPeerConnection({}));
                 video_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
+                vanillaToast.success("Room joined, you are the only participant in the room");
             }
 
         } catch (error) {
@@ -630,7 +638,10 @@ class Video extends ModTemplate {
         newtx = this.app.wallet.signTransaction(newtx);
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
+        vanillaToast.success("Room joined, Initialting connection");
         // this.app.network.propagateTransaction(newtx);
+
+
 
 
 
