@@ -39,7 +39,14 @@ class RedSquare extends ModTemplate {
     //
     // post-level
     //
-    if (tweet.parent_id == "") {
+console.log(tweet.parent_id);
+console.log(tweet.thread_id);
+console.log(tweet.tx.transaction.sig);
+
+    if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
+
+console.log("A: " + tweet.parent_id + " and " + tweet.thread_id);
+
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -54,6 +61,7 @@ class RedSquare extends ModTemplate {
     // comment-level
     //
     } else {
+console.log("B comment level");
       for (let i = 0; i < this.tweets.length; i++) {
 	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
 	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
@@ -294,7 +302,6 @@ class RedSquare extends ModTemplate {
     console.log('inside receive tweet');
 
     let tweet     = new Tweet(app, this, tx);
-    //await tweet.generateTweetProperties(app, this);
 
     //
     // browsers
@@ -320,12 +327,16 @@ class RedSquare extends ModTemplate {
     let sql = `INSERT INTO tweets (
                 tx,
                 sig,
+		parent_id,
+		thread_id,
                 publickey,
                 link,
 		link_properties
               ) VALUES (
                 $txjson,
                 $sig,
+		$parent_id,
+		$thread_id,
                 $publickey,
 		$link,
 		$link_properties
@@ -333,6 +344,8 @@ class RedSquare extends ModTemplate {
     let params = {
       $txjson: JSON.stringify(tx.transaction),
       $sig: tx.transaction.sig,
+      $parent_id : tweet.parent_id,
+      $thread_id : tweet.thread_id,
       $publickey: tx.transaction.from[0].add,
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)

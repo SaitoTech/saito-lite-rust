@@ -27,6 +27,13 @@ class RedSquareTweet {
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
 
+      if (this.parent_id === "") {
+        this.parent_id = tx.transaction.sig;
+      }
+      if (this.thread_id === "") {
+        this.thread_id = tx.transaction.sig;
+      }
+
       //
       // 0 = do not fetch open graph
       //

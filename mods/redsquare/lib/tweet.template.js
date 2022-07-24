@@ -50,7 +50,7 @@ module.exports = (app, mod, tweet) => {
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-             <div class="tweet-tool-like tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-like-count">0</span> <i class="far fa-comment"></i></div>
+             <div class="tweet-tool-like tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-like-count">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="far fa-heart"></i></div>
              <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-retweet"></i></div>
            </div>
