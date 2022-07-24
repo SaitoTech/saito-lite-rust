@@ -35,7 +35,7 @@ class Twilight extends GameTemplate {
     this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
       One player plays the United States (US), and the other plays the Soviet Union (USSR).`;
     this.publisher_message = "Twilight Struggle is owned by GMT Games. This module is made available under an open source license provided by GMT Games for usage in open source game engines. Publisher requirements is that at least one player per game has purchased a copy of the game.";
-    this.categories      = "Games Boardgame Strategy";
+    this.categories      = "Games Arcade Entertainment";
 
     this.boardWidth  = 5100; //Pieces originally scaled to 5100px wide board
     this.card_height_ratio = 1.39; // height is 1.39x width
@@ -51,6 +51,8 @@ class Twilight extends GameTemplate {
     
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 2;
+    this.type       	 = "Strategy Boardgame";
+    this.categories 	 = "Boardgame Game"
     //this.hud.draggable = 0;
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -1944,22 +1946,12 @@ console.log(`missileenvy ${sender} ${card}`);
 
     }
 
-    // player | card | op 
+    // player | card | op
     if (mv[0] === "ops") {
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
 
-      //Don't want to log the original ops value ***** 
-      let orig_ops = parseInt(mv[3]);
-      let mod_ops = this.modifyOps(orig_ops, mv[2],mv[1], 0);
-      if (mod_ops > orig_ops){
-        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (+${mod_ops-orig_ops} bonus)`);
-      }else if (mod_ops < orig_ops){
-        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS (-${orig_ops-mod_ops} penalty)`);
-      }else{
-        this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);  
-      }
-      
+      this.updateLog(mv[1].toUpperCase() + ` plays ${this.game.state.event_name} for ${mv[3]} OPS`);
 
       // stats
       if (mv[1] === "us") { this.game.state.stats.us_ops += parseInt(mv[3]); }
@@ -2405,9 +2397,9 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
+          this.game.deck[0].hand = ["asknot", "redscare", "usjapan", "duckandcover", "teardown", "abmtreaty", "starwars", "howilearned", "marshall"];
         } else {
-          this.game.deck[0].hand = ["indopaki", "fidel", "decolonization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
+          this.game.deck[0].hand = ["romanian", "indopaki", "junta", "decolonization", "destalinization", "nato", "flowerpower", "glasnost", "KAL007", "china"];
         }
       }
 

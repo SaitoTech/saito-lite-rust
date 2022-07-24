@@ -155,7 +155,7 @@ class Settlers extends GameTemplate {
   <h3 style="text-transform:capitalize">${skin.card.name} cards</h3>
   <p>There are many kinds of ${skin.card.name} cards, though the aforementioned ${skin.s.name} is the most common type. Some allow the player to perform a special action (such as building additional ${skin.r.name} at no cost or collecting additional resources), while others give the player an extra ${skin.vp.name}. Players may play a ${skin.card.name} card at any time during their turn (including before the roll), but may only play one per turn and only on the turn after purchasing it. ${skin.card.name} cards which give +1 ${skin.vp.name} are exempt from these restrictions.</p> 
   <h2>Winning the Game</h2>
-  <p>${skin.vp.name} are important because the first player to accumulate 10 ${skin.vp.name} is declared the winner of the game. Players earn 1 ${skin.vp.name} per ${skin.c1.name} and 2 ${skin.vp.name}s for every ${skin.c2.name} they have built. There are also two special achievements worth 2 ${skin.vp.name}s each.</p>
+  <p>${skin.vp.name} are important because the first player to accumulate 10 ${skin.vp.name} is declared the winner of the game. Players earn 1 ${skin.vp.name} per ${skin.c1.name} and 2 ${skin.vp.name}s for every ${skin.c1.name} they have built. There are also two special achievements worth 2 ${skin.vp.name}s each.</p>
   <p> The player with the longest contiguous ${skin.r.name} of at least 5 is awarded the "${skin.longest.name}" badge. Similarly, if a player accumulates at least 3 ${skin.s.name}s, they are awarded the "${skin.largest.name}" badge. Only one player may hold either badge, and other players must surpass them to claim it for themselves.</p>
   <h2>FAQ</h2>
   <dl>

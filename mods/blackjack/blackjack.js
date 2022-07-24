@@ -106,27 +106,13 @@ class Blackjack extends GameTemplate {
     
   }
 
-  /* Opt out of letting League create a default*/
-  respondTo(type){
-    if (type == "default-league") {
-      return null;
-    }
-    return super.respondTo(type);
-  }
+
 
   initializeGame(game_id) {
     
     //
     // initialize
     //
-    if (this.game.options?.crypto){
-      this.game.crypto =  this.game.options.crypto || ""; 
-      this.game.stake = (this.game.options.stake)? parseFloat(this.game.options.stake) : 500; 
-    }else {
-      this.game.stake = 500;
-      this.game.crypto = "";
-    }
-
     if (this.game.deck.length == 0) {
       this.game.state = this.returnInitialState(this.game.players.length);
       this.updateStatus("Generating the Game");
@@ -139,6 +125,13 @@ class Blackjack extends GameTemplate {
     }
 
 
+    if (this.game.options){
+      this.game.stake = (this.game.options.stake)? parseFloat(this.game.options.stake) : 500;
+      this.game.crypto =  this.game.options.crypto || "";  
+    }else {
+      this.game.stake = 1000;
+      this.game.crypto = "";
+    }
     let minbet = (this.game.stake / 100).toString();
     if (minbet.includes(".")){
       this.decimal_precision = minbet.split(".")[1].length;
@@ -163,7 +156,7 @@ class Blackjack extends GameTemplate {
     //state.player contains { name, credit | wager, payout, hand, total, winner}
 
     for (let i = 0; i < num_of_players; i++) {
-      state.player[i] = { credit : this.game.stake,
+      state.player[i] = { credit : parseFloat(this.game.options.stake),
                           name : this.app.keys.returnIdentifierByPublicKey(this.game.players[i], 1)};           
       if (state.player[i].name.indexOf("@") > 0) {
         state.player[i].name = state.player[i].name.substring(0, state.player[i].name.indexOf("@"));
@@ -729,15 +722,14 @@ class Blackjack extends GameTemplate {
     let blackjack_self = this;
         
     //Should be tied to the stake, 1%, 5%, 10%, 20%
-    
+    let stake = parseFloat(this.game.options.stake);
     let fractions = [0.01, 0.05, 0.1];
     let myCredit = this.game.state.player[blackjack_self.game.player-1].credit
-
     let html = `<div class="status-info">How much would you like to wager? (Available credit: ${myCredit.toFixed(this.decimal_precision)})</div>`;
     html += '<ul>';
     for (let i = 0; i < fractions.length; i++){
-      if (fractions[i]*this.game.stake<myCredit)
-        html += `<li class="menu_option" id="${fractions[i]*this.game.stake}">${fractions[i]*this.game.stake} ${this.game.crypto}</li>`;
+      if (fractions[i]*stake<myCredit)
+        html += `<li class="menu_option" id="${fractions[i]*stake}">${fractions[i]*stake} ${this.game.crypto}</li>`;
     }
     //Add an all-in option when almost out of credit
     //if (fractions.slice(-1)*stake >= myCredit) html += `<li class="menu_option" id="${myCredit}">All In!</li>`;

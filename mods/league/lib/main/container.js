@@ -10,30 +10,42 @@ class Container {
     this.app = app;
     this.mod = mod;
 
+    this.leagues = [];
+    this.existingLeaguesComponents = [];
+
+    this.mod.games.forEach((game, i) => {
+        this.leagues.push(new LeagueComponentAdminBox(app, mod, game));
+    });
   }
 
 
   render(app, mod, template=null) {
 
     //
-    // Wipe the main container and create a fresh build render main template
+    // render main template
     //
     if (!document.getElementById("league-main-container")) {
       app.browser.addElementToDom(LeagueMainContainerTemplate(app, mod));
     }
 
     //
-    // render league creation boxes
+    // render league boxes
     //
-    LeagueComponentAdminBox.render(app, mod, this.mod.games);
+    //if (template == "container") {
+    for (let i = 0; i < this.leagues.length; i++) {
+      this.leagues[i].render(app, mod);
+    }
+    //}
 
     //
     // render existing league componenets
     //
-    let leagues_to_display = mod.filterLeagues(app);
-    leagues_to_display.forEach((game, i) => {
-      LeagueComponentExistingLeague.render(app, mod, game);
-    });
+    //if (template == "existing_leagues") { 
+      this.mod.leagues.forEach((game, i) => {
+        this.existingLeaguesComponents.push(new LeagueComponentExistingLeague(app, mod, game));
+        this.existingLeaguesComponents[i].render(app, mod);
+      });
+    //}
   }
 }
 

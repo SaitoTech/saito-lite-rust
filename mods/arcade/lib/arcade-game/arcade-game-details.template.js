@@ -24,9 +24,8 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
           <div class="game-wizard-image"><img class="game-image" src="${gamemod_url}"/></div>
           <div class="game-wizard-intro">
             <input type="hidden" name="game" value="${invite.msg.game}" />
-            <div class="game-wizard-title"><span class="game-home-link">${game_name}</span></div>
-            <div class="game-wizard-description">${mod.description} </div>
-            <div class="game-wizard-post-description">[<span id="game-rules-btn" class="game-help-link">how to play</span>]</div>
+            <div class="game-wizard-title">${game_name}</div>
+            <div class="game-wizard-description">${mod.description} <div class="game-wizard-post-description">[<span class="game-home-link">homepage</span>]</div></div>
           </div>
         </div>
         

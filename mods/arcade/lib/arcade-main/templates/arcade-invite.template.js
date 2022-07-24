@@ -3,10 +3,16 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log(invite);
 
   let gameModule = app.modules.returnModule(invite.msg.game);
-  if (!gameModule){
-    return "";
-  }  
+  /*for (let i = 0; i < app.modules.mods.length; i++) {
+    if (app.modules.mods[i].name === slug) { 
+      slug = app.modules.mods[i].returnSlug(); 
+    }
+  }*/
+  //
+  // gameslug given game
+  //
   let slug = gameModule.returnSlug();
+
 
   let inviteTypeClass = "open-invite";
 
