@@ -31,12 +31,12 @@ class Video extends ModTemplate {
 
 
     respondTo(type) {
-        if (type == 'email-appspace') {
-            let obj = {};
-            obj.render = this.renderEmail;
-            obj.attachEvents = this.attachEmailEvents;
-            return obj;
-        }
+        // if (type == 'email-appspace') {
+        //     let obj = {};
+        //     obj.render = this.renderEmail;
+        //     obj.attachEvents = this.attachEmailEvents;
+        //     return obj;
+        // }
         return null;
     }
 
@@ -66,7 +66,6 @@ class Video extends ModTemplate {
 
                 let my_pubkey = app.wallet.returnPublicKey();
                 if (tx.msg.answer) {
-
                     if (my_pubkey === tx.msg.answer.offer_creator) {
                         if (app.BROWSER !== 1) return;
                         console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
@@ -88,8 +87,6 @@ class Video extends ModTemplate {
                         } else {
                             console.log("peer connection not found");
                         }
-
-
                     }
                 }
                 if (tx.msg.rooms) {
@@ -101,14 +98,11 @@ class Video extends ModTemplate {
                     if (app.BROWSER !== 1) return;
 
                     const offer_creator = tx.msg.offers.offer_creator;
-
                     // offer creator should not respond
                     if (my_pubkey === offer_creator) return;
-                    console.log("offers received from ", tx.msg.offers.offer_creator, tx.msg.offers);
-
+                    console.log("offers received from ", tx.msg.offers.offer_creator);
                     // check if current instance is a recipent
                     const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
-
                     if (index !== -1) {
                         video_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
                     }
@@ -189,7 +183,6 @@ class Video extends ModTemplate {
         // lite clients are not allowed to run this
         if (this.app.BROWSER === 0) {
             let newtx2 = this.app.wallet.createUnsignedTransaction();
-
             // newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
 
             // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.rooms);
@@ -231,21 +224,12 @@ class Video extends ModTemplate {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
-
                         let video_mod = app.modules.returnModule("Video");
                         video_mod.peer_connections[offer_creator] = pc;
-
                         video_mod.broadcastAnswer(video_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
-
                     };
-
                     reply.ice_candidates.push(ice.candidate);
-
-
-
-
-
                 }
 
                 pc.onconnectionstatechange = e => {
@@ -286,7 +270,7 @@ class Video extends ModTemplate {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 localStream.getTracks().forEach(track => {
                     pc.addTrack(track, localStream);
-                    console.log('got local stream for answerer');
+                    console.log('got my local stream');
                 });
 
                 let video_self = app.modules.returnModule("Video");
@@ -298,7 +282,7 @@ class Video extends ModTemplate {
                 const remoteStream = new MediaStream();
                 pc.addEventListener('track', (event) => {
                     let video_self = app.modules.returnModule("Video");
-                    console.log('got remote stream ', event.streams);
+                    console.log('got remote stream from offer creator ', event.streams);
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
@@ -355,7 +339,9 @@ class Video extends ModTemplate {
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
            <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
-           <p> ${roomCode} </p>
+           <div style="display: flex; align-item: center;"> 
+           <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> <p style="margin-right: .5rem"> ${roomCode} </p> 
+           </div>
         </div>
         `
 
@@ -388,11 +374,19 @@ class Video extends ModTemplate {
 
         const overlay = new SaitoOverlay(this.app);
 
-        overlay.show(this.app, video_self, html);
 
+        overlay.show(this.app, video_self, html, null, () => {
+            console.log("attaching copy event")
+            document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
+                navigator.clipboard.writeText(roomCode);
+                document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
+            });
+        });
 
-
+        vanillaToast.success("Room created successfully");
     }
+
+
 
     createPeerConnectionOffer(publicKey) {
         const stun_mod = this.app.modules.returnModule('Stun');
@@ -415,7 +409,6 @@ class Video extends ModTemplate {
 
                             let offer_sdp = pc.localDescription;
                             resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
-                            // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
 
                             return;
                         } else {
@@ -518,6 +511,7 @@ class Video extends ModTemplate {
 
 
     async joinVideoInvite(roomCode) {
+        if (!roomCode) return vanillaToast.error("Please insert a room code");
         const stun_mod = this.app.modules.returnModule("Stun");
         const video_self = this.app.modules.returnModule("Video");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
@@ -526,7 +520,10 @@ class Video extends ModTemplate {
         console.log('rooms :', this.app.options.rooms, 'result :', room, index);
 
 
-        if (!room) return console.log('Invite does not exist');
+        if (!room) {
+            console.log('Invite does not exist');
+            vanillaToast.error("This room does not exist");
+        }
 
         if (room.isMaxCapicity) {
             return console.log("Room has reached max capacity");
@@ -603,15 +600,11 @@ class Video extends ModTemplate {
                 this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localStream.getTracks().forEach(track => {
-                    console.log('got local stream for answerer');
-                });
-
                 let video_self = this.app.modules.returnModule("Video");
-
                 video_self.videoChat.show(new RTCPeerConnection({}));
                 video_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
+                vanillaToast.success("Room joined, you are the only participant in the room");
             }
 
         } catch (error) {
@@ -644,7 +637,10 @@ class Video extends ModTemplate {
         newtx = this.app.wallet.signTransaction(newtx);
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
+        vanillaToast.success("Room joined, Initialting connection");
         // this.app.network.propagateTransaction(newtx);
+
+
 
 
 
@@ -658,12 +654,9 @@ class Video extends ModTemplate {
 
     broadcastOffers(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
-
-
         console.log('broadcasting offers');
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
-
         }
 
         newtx.msg.module = "Video";

@@ -12,22 +12,47 @@ module.exports = (app, mod, listeners) => {
   }
 
   return `<card class="appear my-stun-container">
-            <div class="row mb-4">
-              <div class="col-sm-4"><p class="name">Create Invite</p></div>
-              <div class="col-sm-8">
-                <div class="data d-flex">
-                <button id="createInvite" class="btn btn-primary ml-4"> Create Invite</button>
+
+                <h2> Saito Video </h2>
+                <p>  Use Saito to start a peer-to-peer video chat!</p>
+                <div class="my-stun-container-actions">
+                <div class="my-stun-container-create">
+                <p> Create </p>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
+                <button id="createInvite" class="saito-button-secondary"> Create Invite</button>
                 </div>
-              </div>
-            </div>
-              <div class="row mb-4">
-              <div class="col-sm-4"><p class="name">Join Call</p></div>
-              <div class="col-sm-8">
-                <div class="data d-flex">
-                <input placeholder="Insert Room Code" id="inviteCode" />
-                <button id="joinInvite" class="btn btn-primary ml-4">Join</button>
+                <div class="my-stun-container-join">
+                   <p> Join an invite</p>
+<<<<<<< HEAD
+=======
+                <button id="createInvite" class="saito-button-secondary"> Create Invite:</button>
                 </div>
-              </div>
-            </div>
+                <div class="my-stun-container-join">
+                   <p> Join an invite:</p>
+>>>>>>> 4b76dcc2 (Test (#793))
+                  <div>
+                  <input placeholder="Insert Room Code" id="inviteCode" />
+                  <button id="joinInvite" class="saito-button-secondary">Join</button>
+                  </div>
+            
+                </div>
+=======
+
+                  <div>
+                  <input placeholder="Insert Room Code" id="inviteCode" />
+                  <button id="joinInvite" class="saito-button-secondary">Join</button>
+                  </div>
+            
+                </div>
+>>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
+                </div>
+
+                <p> Saito uses the blockchain to negotiate peer-to-peer connections. Please note that connections can be more unstable and take longer to negotiate if you are on a mobile network or behind an aggressive firewall. </p>
+         
+    
           </card>`;
 }
