@@ -120,7 +120,6 @@ function reset_persistent {
   rm -f ./data/registry.sq3
   rm -f ./data/rewards.sq3
   rm -f ./data/forum.sq3
-  rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
   rm -f ./web/client.options
   mkdir -p data/blocks
