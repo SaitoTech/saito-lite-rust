@@ -1,4 +1,4 @@
-const saito = require("./../../lib/saito/saito");
+const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
 const Slip = require('../..//lib/saito/slip.ts');
@@ -50,26 +50,28 @@ class Stun extends ModTemplate {
         this.stun.pc = "";
         this.stun.iceCandidates = [];
         this.stun.counter = 0;
-        this.stun.servers = [
-          {
-            urls: "stun:stun.l.google.com:19302",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:80",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
-          {
-            urls: "turn:openrelay.metered.ca:443?transport=tcp",
-            username: "openrelayproject",
-            credential: "openrelayproject",
-          },
+        this.sergiers = [
+            {
+                urls: "stun:stun-sf.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-sf.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            },
+            // {
+            //   urls: "stun:stun-sf.saito.io:3478"
+            // },
+            // {
+            //   urls: "turn:stun-sf.saito.io:3478",
+            //   username: "guest",
+            //   credential: "somepassword",
+            // },
+
         ];
+
+
+
     }
 
     saveStun() {
@@ -79,10 +81,10 @@ class Stun extends ModTemplate {
 
 
     respondTo(type) {
-      if (type === 'email-appspace') {
-          return new StunEmailAppspace(this.app, this);
-      }
-      return null;
+        if (type === 'email-appspace') {
+            return new StunEmailAppspace(this.app, this);
+        }
+        return null;
     }
 
     onConfirmation(blk, tx, conf, app) {
@@ -91,7 +93,7 @@ class Stun extends ModTemplate {
             let my_pubkey = app.wallet.returnPublicKey();
 
             if (txmsg.module === this.appname) {
-            
+
                 if (tx.msg.stun) {
                     // check if key exists in key chain
                     let key_index = this.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
@@ -109,7 +111,8 @@ class Stun extends ModTemplate {
                             if (JSON.stringify(this.app.keys.keys[i].data.stun) != JSON.stringify(tx.msg.stun)) {
                                 let my_pubkey = app.wallet.returnPublicKey();
                                 console.log("stun changed, saving changes..", tx.msg.stun);
-                                this.app.keys.keys[i].data.stun = {...tx.msg.stun
+                                this.app.keys.keys[i].data.stun = {
+                                    ...tx.msg.stun
                                 };
 
                                 this.app.keys.saveKeys();
@@ -134,7 +137,7 @@ class Stun extends ModTemplate {
 
 
                 if (tx.msg.request === "offer") {
-                    this.receiveOfferTransaction(blk, tx, conf, app);   
+                    this.receiveOfferTransaction(blk, tx, conf, app);
                 }
 
                 if (tx.msg.request === "broadcast_details") {
@@ -142,7 +145,7 @@ class Stun extends ModTemplate {
                 }
 
                 if (tx.msg.request === "listeners") {
-                    this.receiveSendKeyToListenersTransaction(blk, tx, conf, app);                    
+                    this.receiveSendKeyToListenersTransaction(blk, tx, conf, app);
                 }
             }
         }
@@ -163,7 +166,7 @@ class Stun extends ModTemplate {
 
 
             console.log('instance ', instance_pubkey, ' pubkeys ', pubKeys)
-                // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
+            // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
 
             newtx.msg.module = "Stun";
             newtx.msg.pubKeys = {
@@ -207,23 +210,22 @@ class Stun extends ModTemplate {
                 console.log('got public keys: ', tx.msg.pubKeys);
 
                 if (app.BROWSER !== 1) return;
-                // create peer connection offers
 
+                // create peer connection offers
                 this.public_keys = tx.msg.pubKeys;
                 app.options.public_keys = this.public_keys;
                 app.storage.saveOptions();
-
                 this.createPeerConnectionOffers(app, app.options.public_keys);
                 break;
 
         }
 
     }
-    
+
 
     async createPeerConnectionOffers(app, pubKeys) {
         let peerConnectionOffers = [];
-        
+
 
         if (pubKeys.length > 1) {
 
@@ -268,15 +270,16 @@ class Stun extends ModTemplate {
 
 
     createPeerConnectionOffer(app, publicKey) {
-        
+
 
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
-            const execute = async() => {
-
+            const execute = async () => {
+                const stun_mod = app.modules.returnModule("Stun")
+                console.log("these are the servers :", stun_mod.servers);
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: this.stun.servers,
+                        iceServers: stun_mod.servers,
                     });
 
 
@@ -360,7 +363,7 @@ class Stun extends ModTemplate {
     }
 
     transmitMessage(app, sender, msg, callback, recipients = null) {
-        
+
         if (!recipients || recipients?.length === 0) {
             this.peer_connections.forEach(pc => {
                 if (pc.connectionState === "connected") {
@@ -591,7 +594,7 @@ class Stun extends ModTemplate {
         if (app.BROWSER !== 1) return;
 
         let my_pubkey = app.wallet.returnPublicKey();
-  
+
         if (my_pubkey === tx.msg.offer_creator) {
             console.log("current instance: ", my_pubkey, " answer room: ", tx.msg);
             console.log("peer connections: ", this.peer_connections, this);
@@ -635,18 +638,20 @@ class Stun extends ModTemplate {
 
     receiveOfferBroadcastAnswerTransaction(app, offer_creator, offer) {
         if (app.BROWSER !== 1) return;
-        
+
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
 
-        const createPeerConnection = async() => {
+        const createPeerConnection = async () => {
             let reply = {
                 answer: "",
                 ice_candidates: []
             }
+            const stun_mod = app.modules.returnModule("Stun");
+            console.log("these are the servers ", stun_mod.servers)
             const pc = new RTCPeerConnection({
-                iceServers: this.stun.servers,
+                iceServers: stun_mod.servers,
             });
             try {
 
@@ -654,7 +659,7 @@ class Stun extends ModTemplate {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
 
-                        
+
                         this.peer_connections[offer_creator] = pc;
 
                         this.sendAnswerTransaction(this.app.wallet.returnPublicKey(), offer_creator, reply);
@@ -666,13 +671,11 @@ class Stun extends ModTemplate {
 
 
 
-
-
                 }
 
                 pc.onconnectionstatechange = e => {
                     console.log("connection state ", pc.connectionState)
-                        // switch (pc.connectionState) {
+                    // switch (pc.connectionState) {
 
 
                     //     // case "connected":
