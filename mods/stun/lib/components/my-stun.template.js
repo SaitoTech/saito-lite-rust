@@ -19,10 +19,15 @@ module.exports = (app, mod, listeners) => {
                 <div class="my-stun-container-create">
                 <p> Create </p>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
                 <button id="createInvite" class="saito-button-secondary"> Create Invite</button>
                 </div>
                 <div class="my-stun-container-join">
                    <p> Join an invite</p>
+<<<<<<< HEAD
 =======
                 <button id="createInvite" class="saito-button-secondary"> Create Invite:</button>
                 </div>
@@ -35,6 +40,15 @@ module.exports = (app, mod, listeners) => {
                   </div>
             
                 </div>
+=======
+
+                  <div>
+                  <input placeholder="Insert Room Code" id="inviteCode" />
+                  <button id="joinInvite" class="saito-button-secondary">Join</button>
+                  </div>
+            
+                </div>
+>>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
                 </div>
 
                 <p> Saito uses the blockchain to negotiate peer-to-peer connections. Please note that connections can be more unstable and take longer to negotiate if you are on a mobile network or behind an aggressive firewall. </p>

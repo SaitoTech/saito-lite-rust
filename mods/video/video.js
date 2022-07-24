@@ -374,6 +374,7 @@ class Video extends ModTemplate {
 
         const overlay = new SaitoOverlay(this.app);
 
+
         overlay.show(this.app, video_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
