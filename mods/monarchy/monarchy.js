@@ -99,6 +99,9 @@ class Monarchy extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
+
+    this.menu.addChatMenu(app, this);
+
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
@@ -114,9 +117,17 @@ class Monarchy extends GameTemplate {
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.addCardType("handy-help", "", function(){});
     
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
+
+    let hh = document.querySelector(".hud-header");
+    if (!hh.querySelector(".handy-help")){
+      this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-compass hud-controls" aria-hidden="true""></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
+    }
+
 
     this.scoreboard.render(app, this);
     this.scoreboard.attachEvents(app, this);
@@ -1013,24 +1024,6 @@ initializeGame(game_id) {
     }
     html += "</div>";
 
-    //Draw and discard pile
-    let pooled_cards = 0;
-    if (this.game.pool?.length >= this.game.player){
-      if (this.game.pool[this.game.player-1]?.hand){
-        pooled_cards = this.game.pool[this.game.player-1].hand.length;
-      }
-    }
-    html += `<div id="mydecks">
-             <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
-             <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
-             <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
-             <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
-             <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
-    if (this.last_discard){
-      html += `<div>Last: ${this.cardToText(this.last_discard)}</div>`;
-    }
-    html += `</div>`;
-
     $(".gameboard").html(html);
     this.attachCardboxEvents();
     this.attachBoardEvents();
@@ -1526,11 +1519,32 @@ initializeGame(game_id) {
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
       return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
-    }else{
-      return ""; 
-    }
+    }else if (cardname === "my_hand"){
     
+      //Draw and discard pile
+      let pooled_cards = 0;
+      if (this.game.pool?.length >= this.game.player){
+        if (this.game.pool[this.game.player-1]?.hand){
+          pooled_cards = this.game.pool[this.game.player-1].hand.length;
+        }
+      }
+      let html = `<div id="mydecks">
+               <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
+               <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
+               <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
+               <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
+               <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
+      if (this.last_discard){
+        html += `<div>Last: ${this.cardToText(this.last_discard)}</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }else{
+      return ""
+    }
   }
+
+
 
   ////////////////////
   // Core Game Data //
@@ -1701,8 +1715,6 @@ initializeGame(game_id) {
     `;
     return html;
   }
-
-
 
 
 

@@ -25,31 +25,14 @@ class Poker extends GameTemplate {
     return this;
   }
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    /*Deprecated ? */
-    if (type == "arcade-create-game") {
-      return {
-        slug: this.slug,
-        title: this.name,
-        description: this.description,
-        publisher_message: this.publisher_message,
-        returnGameOptionsHTML: this.returnGameOptionsHTML.bind(this),
-        minPlayers: this.minPlayers,
-        maxPlayers: this.maxPlayers,
-      };
+  // Opt out of letting League create a default
+  respondTo(type){
+    if (type == "default-league") {
+      return null;
     }
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    return null;
+    return super.respondTo(type);
   }
 
- 
 
   initializeHTML(app) {
 

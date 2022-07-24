@@ -24,6 +24,15 @@ class Spider extends GameTemplate {
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
   }
 
+  // Create an exp league by default
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
+      return obj;
+    }
+    return super.respondTo(type);
+  }
   
 
   returnGameRulesHTML(){
@@ -243,6 +252,7 @@ class Spider extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.endGame();
         game_mod.newRound();
         game_mod.endTurn();
       }
@@ -440,9 +450,10 @@ class Spider extends GameTemplate {
           spider_self.prependMove("draw");
           spider_self.endTurn();  
         }else{
-          salert("You cannot deal with open slots!");
+          spider_self.displayWarning("Error","You cannot deal with open slots!");
         }
       }else{
+        spider_self.endGame();
         spider_self.newRound();
         spider_self.endTurn();  
       }
@@ -539,7 +550,7 @@ class Spider extends GameTemplate {
             spider_self.displayBoard();
             spider_self.checkStack(parseInt(card_pos[0]));
           }else{
-            salert("Cannot move there");
+            spider_self.displayWarning("Illegal Move");
           }            
         }
       }else{
@@ -828,6 +839,7 @@ class Spider extends GameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         this.displayModal("You Lose!", "Too many moves");
+        this.endGame();
         this.newRound();
         return 1;
       }
@@ -836,6 +848,7 @@ class Spider extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
         this.animateFinalVictory();
+        this.endGame(this.app.wallet.returnPublicKey());
         this.overlay.show(this.app, this, this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();
@@ -1024,6 +1037,12 @@ class Spider extends GameTemplate {
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
   }
+
+   receiveGameoverRequest(blk, tx, conf, app) {
+    console.log("The game never ends in Spider Solitaire");
+    return;
+  }
+
 
   preloadImages(){
     let suits = ["S","D","C","H"];
