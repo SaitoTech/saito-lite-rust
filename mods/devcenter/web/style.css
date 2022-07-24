@@ -372,10 +372,6 @@ button.button-active {
   background: none;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
 
 /*  video chat */
 
@@ -383,11 +379,7 @@ button.button-active {
   max-width: 60vw;
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> 4b76dcc2 (Test (#793))
-=======
->>>>>>> c0724803a9405507fd79d16cc6c4d7ae25d41dd6
+
 .body .disconnect_btn {
 
   /* left: 83.96%;
@@ -413,7 +405,7 @@ button.button-active {
 .body .wrapper {
   display: grid;
   grid-template-columns: repeat(2, minmax(150px, 30vw));
-  grid-template-rows: 30vh;
+  grid-template-rows: 30vh 30vh;
   grid-auto-rows: minmax(100px, 30vh);
   column-gap: 1rem;
   row-gap: 1rem;
