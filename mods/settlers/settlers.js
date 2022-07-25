@@ -658,15 +658,6 @@ class Settlers extends GameTemplate {
           this.game.state.players[player - 1].devcards++; //Add card for display
         }else{
           this.boughtCard = true; //So we display dev cards on next refresh
-        
-          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
-      
-          let html = `<span class="tip">${lastcard.card}
-                        <div class="tiptext">${this.skin.rules[lastcard.action]}</div>
-                      </span>`;
-        
-          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
-
         }
         return 1;
       }
@@ -2890,11 +2881,11 @@ class Settlers extends GameTemplate {
         );
       }
       if (id === "3") {
-        //have everyone update game state
-        settlers_self.addMove("buy_card\t" + settlers_self.game.player); 
+        settlers_self.addMove("buy_card\t" + settlers_self.game.player); //have everyone update game state
         // Deck #1 = deck[0] = devcard deck
-        //get card from deck
-        settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"); 
+        settlers_self.addMove(
+          "SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"
+        ); //get card from deck
       }
       let purchase = parseInt(id);
       if (purchase >= 0 && purchase <= 3) {

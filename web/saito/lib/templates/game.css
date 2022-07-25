@@ -164,7 +164,6 @@ game-overlay-cardlist-button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  text-align: center;
 }
 
 .game_warning_header{
@@ -173,7 +172,6 @@ game-overlay-cardlist-button {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  flex: 1;
 }
 
 .game_warning_header i{
@@ -182,13 +180,9 @@ game-overlay-cardlist-button {
 }
 
 .game_warning_overlay h2{
-  font-size: 1.6em;
-  width: 100%;
-  flex: 1;
-}
-
-.game_warning_overlay p{
   font-size: 1.5em;
+  text-align: center;
+  width: 100%;
 }
 
 .popup-confirm-menu{
@@ -504,13 +498,8 @@ ul li a {
   width:40px;
   height:40px;
   padding: 10px;
-  position: relative;
-  z-index: 1;
 }
 
-#back_button:hover{
-  background-color: rgba(0,0,0,0.25);
-}
 
 /*** Vertical alternate ***/
 .hud-vertical .status-header{

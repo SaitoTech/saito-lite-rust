@@ -31,7 +31,7 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = true;
+    this.is_testing = false;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
@@ -237,7 +237,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["adventurer", "cellar", "bureaucrat", "harbinger", "library", "bandit", "vassal", "witch", "spy", "thief"];
+          supply = ["adventurer", "chancellor", "bureaucrat", "harbinger", "library", "bandit", "vassal", "witch", "spy", "thief"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -1056,8 +1056,8 @@ initializeGame(game_id) {
         $(".showcard").removeClass("showcard");
         $(".cardpile").addClass("tip");
       }
-      we_self.cardbox.attachCardEvents();
-      //we_self.attachCardboxEvents();
+      
+      we_self.attachCardboxEvents();
     });
 
     $(".cardstacks").draggable();

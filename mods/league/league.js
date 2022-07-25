@@ -169,7 +169,7 @@ class League extends ModTemplate {
   */
   renderArcade(app, mod, elem){
     if (!this.doICare()) { return; }
-    //console.log("Rendering Leagues for Arcade");
+    console.log("Rendering Leagues for Arcade");
     let leagues_to_display = this.filterLeagues(app);
 
     for (let le of leagues_to_display){

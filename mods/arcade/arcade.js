@@ -46,14 +46,7 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = false;
-
-    //So we can keep track of games which we want to close but are waiting on game engine to process
-    this.game_close_interval_cnt = 0;
-    this.game_close_interval_queue = [];  
-    this.game_close_interval_id = null;
-
-
+    this.debug = true;
 
   }
 
@@ -1000,16 +993,8 @@ class Arcade extends ModTemplate {
       }
     }else{
       if (this.debug) {console.log("Game not found, cannot cancel");}
-      this.receiveCloseRequest(blk, tx, conf, app);
+      //this.receiveCloseRequest(blk, tx, conf, app);
     }
-    
-    //Force close in wallet if game was created
-    app.options.games.forEach(g => {
-      if (g.id === game_id){
-        console.log("Mark game closed in options");
-        g.over = 1;
-      }
-    });
 
     //Refresh Arcade Main
     if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
@@ -1023,7 +1008,6 @@ class Arcade extends ModTemplate {
 
   async receiveCloseRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    this.checkCloseQueue(txmsg.sig);
     if (this.debug) {console.log("Close game " + txmsg.sig);}
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
     let params = { $status: "close", $game_id: txmsg.sig };
@@ -1032,27 +1016,13 @@ class Arcade extends ModTemplate {
 
   async receiveGameoverRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    this.checkCloseQueue(txmsg.sig);
     if (this.debug) {console.log("Resign game " + JSON.stringify(txmsg));}
 
     let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${txmsg.sig}'`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
+
   }
 
-  checkCloseQueue(game_id){
-    if (this.game_close_interval_id){
-      console.log("Are we waiting on "+game_id);
-      for (let i = this.game_close_interval_queue.length-1; i >=0; i--){
-        if (this.game_close_interval_queue[i] == game_id){
-          this.game_close_interval_queue.splice(i,1);
-        }
-      }
-      if (this.game_close_interval_queue.length == 0){
-        clearInterval(this.game_close_interval_id);
-        this.game_close_interval_id = null;
-      }
-    }
-  }
   
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
