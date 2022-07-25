@@ -38,6 +38,7 @@ class RedSquare extends ModTemplate {
 
   addTweet(app, mod, tweet) {
 
+console.log("adding tweet: " + tweet.text);
     //
     // post-level
     //
@@ -53,11 +54,13 @@ class RedSquare extends ModTemplate {
 	let insertion_index = 0;
 	for (let i = 0; i < this.tweets.length; i++) {
 	  if (this.tweets[i].updated_at > tweet.updated_at) {
+	    insertion_index++;
 	    break;
 	  } else {
 	    insertion_index++;
 	  }
 	}
+console.log("inserting tweet at: " + insertion_index);
 	this.tweets.splice(insertion_index, 0, tweet);
         //this.tweets.unshift(tweet);
         //app.connection.emit("tweet-render-request", tweet);

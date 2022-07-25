@@ -23,6 +23,7 @@ class RedSquareTweet {
       this.youtube_id 	 = null;
       
       this.children 	 = [];
+      this.unknown_children = [];
 
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
@@ -174,6 +175,22 @@ console.log("rendering into: " + selector);
 
 
     addTweet(app, mod, tweet) {
+
+      //
+      // maybe we have some parentless children?
+      //
+      // this can happen when a sub-comment has a more recent updated_at timestamp than
+      // the parent comment it is replying to, and thus it gets fed to us out-of-order
+      // such that this algorithm has trouble reconstructing the chain.
+      //
+      for (let i = 0; i < this.unknown_children.length; i++) {
+	if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {	
+	  tweet.children.push(this.unknown_children[i]);
+	  this.unknown_children.splice(i, 0);
+	}
+      }
+
+
       if (tweet.parent_id == this.tx.transaction.sig) {
         for (let i = 0; i < this.children.length; i++) {
 	  if (this.children[i].tx.transaction.sig === tweet.tx.transaction.sig) {
@@ -184,18 +201,20 @@ console.log("rendering into: " + selector);
         if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
 
 	    this.children.unshift(tweet);
-	    let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    let obj = document.querySelector(qs);
-	    if (obj) { this.render(app, mod); }
+	    // do not render when adding
+	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
+	    //let obj = document.querySelector(qs);
+	    //if (obj) { this.render(app, mod); }
 
 	  return 1;
 
 	} else { 
 
 	    this.children.push(tweet);
-	    let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    let obj = document.querySelector(qs);
-	    if (obj) { this.render(app, mod); }
+	    // do not render when adding
+	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
+	    //let obj = document.querySelector(qs);
+	    //if (obj) { this.render(app, mod); }
 
 	  return 1;
 	}
@@ -205,14 +224,22 @@ console.log("rendering into: " + selector);
 	  if (x == 1) { 
 	    this.last_updated = tweet.last_updated; 
 
-	    let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    let obj = document.querySelector(qs);
-	    if (obj) { this.render(app, mod); }
+	    // do not render when adding
+	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
+	    //let obj = document.querySelector(qs);
+	    //if (obj) { this.render(app, mod); }
 
 	  }
 	  return x;
         }
+
+        //
+        // still here? add in unknown children
+        //
+	this.unknown_children.push(tweet);
+
       }
+
     }
 
     setKeys(obj) {
