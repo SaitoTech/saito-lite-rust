@@ -17,9 +17,7 @@ class RedSquareAppspaceHome {
     app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
 
     app.connection.on("tweet-render-request", (tweet) => {
-console.log("tweetn render request pre");
         tweet.render(app, mod, ".redsquare-list"); 
-console.log("tweetn render request post");
     });
 
     for (let i = 0; i < mod.tweets.length; i++) {

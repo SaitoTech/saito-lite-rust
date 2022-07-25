@@ -42,7 +42,7 @@ module.exports = (app, mod, tweet) => {
     }
 
     return `
-       <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}">
+       <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
          ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add)}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
@@ -50,11 +50,16 @@ module.exports = (app, mod, tweet) => {
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-             <div class="tweet-tool-like tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-like-count">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
-             <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="far fa-heart"></i></div>
-             <div class="tweet-tool-like"><span class="tweet-like-count">0</span> <i class="fas fa-retweet"></i></div>
+
+             <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
+
+             <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}"">0</span> <i class="far fa-heart"></i></div>
+
+             <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">0</span> <i class="fas fa-retweet"></i></div>
+
            </div>
          </div>
+         <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
       </div>
     `;
 

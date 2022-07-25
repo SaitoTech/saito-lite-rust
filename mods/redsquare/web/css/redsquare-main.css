@@ -10,6 +10,16 @@
 }
 
 
+.redsquare-item {
+  cursor: pointer;
+}
+
+.redsquare-item-children > .redsquare-item {
+  border-bottom: 0px;
+  margin-left: 0rem;
+  padding-left: 0rem;
+  padding-top: 3rem;
+}
 
 .post-tweet-preview {
   padding: 0rem;

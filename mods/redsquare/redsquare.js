@@ -34,18 +34,14 @@ class RedSquare extends ModTemplate {
   }
 
 
+  
+
   addTweet(app, mod, tweet) {
 
     //
     // post-level
     //
-console.log(tweet.parent_id);
-console.log(tweet.thread_id);
-console.log(tweet.tx.transaction.sig);
-
     if (tweet.parent_id === "" || (tweet.parent_id === tweet.thread_id && tweet.parent_id === tweet.tx.transaction.sig)) {
-
-console.log("A: " + tweet.parent_id + " and " + tweet.thread_id);
 
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
@@ -55,23 +51,39 @@ console.log("A: " + tweet.parent_id + " and " + tweet.thread_id);
       }
       if (new_tweet == 1) {
         this.tweets.unshift(tweet);
-        app.connection.emit("tweet-render-request", tweet);
+        //app.connection.emit("tweet-render-request", tweet);
       }
     //
     // comment-level
     //
     } else {
-console.log("B comment level");
       for (let i = 0; i < this.tweets.length; i++) {
 	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
 	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
-	    app.connection.emit("tweet-render-request", tweet);
+	    // do not render comment-level tweets at parent level
+	    //app.connection.emit("tweet-render-request", tweet);
 	  }
 	}
       }      
     }
   }
 
+
+  renderMainPage(app, mod) {
+    document.querySelector(".redsquare-list").innerHTML = "";
+    for (let i = 0; i < this.tweets.length; i++) {
+      this.tweets[i].render(app, mod, ".redsquare-list");
+    }
+  }
+
+  renderWithChildren(app, mod, sig) {
+    document.querySelector(".redsquare-list").innerHTML = "";
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].tx.transaction.sig === sig) {
+        this.tweets[i].renderWithChildren(app, mod, ".redsquare-list");
+      }
+    }
+  }
 
 
   render(app, mod, selector = "") {
@@ -90,6 +102,7 @@ console.log("B comment level");
     super.render(app, this);
 
   }
+
 
 
 
@@ -255,6 +268,10 @@ console.log("B comment level");
 
 	    }
           });
+
+
+	  redsquare_self.renderMainPage(app, redsquare_self);
+
         }
       }
     );
