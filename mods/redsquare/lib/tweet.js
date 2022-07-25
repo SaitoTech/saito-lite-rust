@@ -13,7 +13,7 @@ class RedSquareTweet {
 
       this.sender     	 = tx.transaction.from[0].add;
       this.created_at 	 = tx.transaction.ts;
-      this.last_updated  = tx.transaction.ts;
+      this.updated_at    = tx.transaction.ts;
 
       this.parent_id     = "";
       this.thread_id     = "";
@@ -33,6 +33,11 @@ class RedSquareTweet {
       if (this.thread_id === "") {
         this.thread_id = tx.transaction.sig;
       }
+      // prefer server-provided updated-info as it will have context for TX-order
+      if (tx.optional?.updated_at) {
+	this.updated_at = tx.optional.updated_at; 
+      }
+
 
       //
       // 0 = do not fetch open graph
@@ -40,6 +45,17 @@ class RedSquareTweet {
       this.generateTweetProperties(app, mod, 0);
 
     }
+
+    returnTweet(app, mod, sig) {
+      if (this.tx.transaction.sig === sig) { return this; }
+      for (let i = 0; i < this.children.length; i++) {
+        if (this.children[i].returnTweet(app, mod, sig) != null) {
+	  return this.children[i].returnTweet(app, mod, sig);
+	}
+      }
+      return null;
+    }
+
 
     render(app, mod, selector = "") {
 
@@ -124,12 +140,8 @@ console.log("rendering into: " + selector);
           e.preventDefault();
           e.stopImmediatePropagation();
 
-          let el = e.currentTarget;
-
-          let tweet_sig_id = el.getAttribute("data-id");
-
           let ptweet = new PostTweet(app, mod);
-	      ptweet.parent_id = tweet_sig_id;
+	      ptweet.parent_id = this.tx.transaction.sig;
 	      ptweet.thread_id = this.thread_id;
           ptweet.render(app, mod);
 

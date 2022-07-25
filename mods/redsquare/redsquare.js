@@ -50,7 +50,16 @@ class RedSquare extends ModTemplate {
         }
       }
       if (new_tweet == 1) {
-        this.tweets.unshift(tweet);
+	let insertion_index = 0;
+	for (let i = 0; i < this.tweets.length; i++) {
+	  if (this.tweets[i].updated_at > tweet.updated_at) {
+	    break;
+	  } else {
+	    insertion_index++;
+	  }
+	}
+	this.tweets.splice(insertion_index, 0, tweet);
+        //this.tweets.unshift(tweet);
         //app.connection.emit("tweet-render-request", tweet);
       }
     //
@@ -78,9 +87,20 @@ class RedSquare extends ModTemplate {
 
   renderWithChildren(app, mod, sig) {
     document.querySelector(".redsquare-list").innerHTML = "";
+    let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.transaction.sig === sig) {
+        tweet_shown = 1;
         this.tweets[i].renderWithChildren(app, mod, ".redsquare-list");
+      }
+    }
+    if (tweet_shown == 0) {
+      for (let i = 0; i < this.tweets.length; i++) {
+	if (this.tweets[i].returnTweet(app, mod, sig) != null) {
+	  let t = this.tweets[i].returnTweet(app, mod, sig);
+          tweet_shown = 1;
+          t.renderWithChildren(app, mod, ".redsquare-list");
+	}
       }
     }
   }
@@ -229,7 +249,8 @@ class RedSquare extends ModTemplate {
 
       "RedSquare",
 
-      `SELECT * FROM tweets DESC LIMIT 100`,
+      // ascending because we add one-by-one on receipt
+      `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
 
       async (res) => {
 
@@ -337,6 +358,8 @@ class RedSquare extends ModTemplate {
     //
     tweet = await tweet.generateTweetProperties(app, this, 1);
 
+    let created_at = tx.transaction.ts;
+    let updated_at = tx.transaction.ts;
 
     //
     // insert the basic information
@@ -344,6 +367,8 @@ class RedSquare extends ModTemplate {
     let sql = `INSERT INTO tweets (
                 tx,
                 sig,
+		created_at,
+		updated_at,
 		parent_id,
 		thread_id,
                 publickey,
@@ -352,6 +377,8 @@ class RedSquare extends ModTemplate {
               ) VALUES (
                 $txjson,
                 $sig,
+		$created_at,
+		$updated_at,
 		$parent_id,
 		$thread_id,
                 $publickey,
@@ -360,17 +387,27 @@ class RedSquare extends ModTemplate {
               )`;
     let params = {
       $txjson: JSON.stringify(tx.transaction),
-      $sig: tx.transaction.sig,
-      $parent_id : tweet.parent_id,
-      $thread_id : tweet.thread_id,
-      $publickey: tx.transaction.from[0].add,
-      $link: tweet.link,
+      $sig: tx.transaction.sig ,
+      $created_at : created_at ,
+      $updated_at : updated_at ,
+      $parent_id : tweet.parent_id ,
+      $thread_id : tweet.thread_id ,
+      $publickey: tx.transaction.from[0].add ,
+      $link: tweet.link ,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
+    app.storage.executeDatabase(sql, params, "redsquare");
 
-console.log("PARAMS: " + JSON.stringify(params));
 
-    app.storage.executeDatabase(sql, params, "redsquare");    return;
+    let ts = new Date().getTime();
+    let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
+    let params2 = {
+      $timestamp : ts,
+      $sig : tweet.thread_id,
+    }
+    app.storage.executeDatabase(sql2, params2, "redsquare");
+
+    return;
 
   }
 
