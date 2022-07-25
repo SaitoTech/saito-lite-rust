@@ -79,8 +79,14 @@ console.log("rendering into: " + selector);
         app.browser.addElementToSelector(html, selector);
       }
 
-      for (let i = 0; i < this.children.length; i++) {
-        this.children[i].render(app, mod, my_selector);        
+      if (this.children.length > 0) {
+        if (this.children[0].tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
+	  this.children[0].renderWithChildren(app, mod, my_selector);
+	} else {
+          for (let i = 0; i < this.children.length; i++) {
+            this.children[i].render(app, mod, my_selector);        
+          }
+        }
       }
 
       this.attachEvents(app, mod);
@@ -109,7 +115,9 @@ console.log("rendering into: " + selector);
       };
 
 
-
+      //
+      // reply to tweet
+      //
       sel = ".tweet-reply-" + this.tx.transaction.sig;
       document.querySelector(sel).onclick = (e) => {
 
@@ -121,7 +129,7 @@ console.log("rendering into: " + selector);
           let tweet_sig_id = el.getAttribute("data-id");
 
           let ptweet = new PostTweet(app, mod);
-	      ptweet.parent_id = this.parent_id;
+	      ptweet.parent_id = tweet_sig_id;
 	      ptweet.thread_id = this.thread_id;
           ptweet.render(app, mod);
 
@@ -130,7 +138,7 @@ console.log("rendering into: " + selector);
 
       };
 
-
+/*******
       $('.tweet-reply-container').on('click', "#post-reply-tweet-button", function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -148,6 +156,7 @@ console.log("rendering into: " + selector);
         // CURRENTLY BROKEN
         mod.sendTweetTransaction(app, mod, data);  
       });
+****/
     }
 
 

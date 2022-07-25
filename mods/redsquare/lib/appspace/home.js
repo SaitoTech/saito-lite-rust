@@ -20,9 +20,8 @@ class RedSquareAppspaceHome {
         tweet.render(app, mod, ".redsquare-list"); 
     });
 
-    for (let i = 0; i < mod.tweets.length; i++) {
-        app.connection.emit('tweet-render-request', mod.tweets[i]);
-    }
+    mod.renderMainPage(app, mod);
+
 
     this.attachEvents(app, mod);
 
