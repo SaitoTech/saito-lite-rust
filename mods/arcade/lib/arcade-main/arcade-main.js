@@ -557,6 +557,40 @@ module.exports = ArcadeMain = {
     console.log("Click to Cancel Game");
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
+
+    //
+    let createCloseTx = (game_id) =>{
+      let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+      let my_publickey = app.wallet.returnPublicKey();
+      let peers = [];
+      for (let i = 0; i < app.network.peers.length; i++) {
+        peers.push(app.network.peers[i].returnPublicKey());
+      }
+
+      for (let i = 0; i < players.length; i++) {
+        if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i]));
+      }
+
+      let msg = {
+        sig: game_id,
+        status: "close",
+        request: "close",
+        module: "Arcade",
+      };
+
+      newtx.msg = msg;
+      newtx = app.wallet.signTransaction(newtx);
+
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
+
+      app.network.propagateTransaction(newtx);
+    };
+
+
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
         testsig = app.options.games[i].transaction?.sig || app.options.games[i].id;
@@ -565,42 +599,31 @@ module.exports = ArcadeMain = {
           if (gamemod) {
             this.removeGameFromList(game_id);
             gamemod.resignGame(game_id);
-            //console.log(JSON.parse(JSON.stringify(gamemod.game)));
+
+            //Set a fallback interval if the opponent is no longer online
+            mod.game_close_interval_cnt += 5;
+            mod.game_close_interval_queue.push(game_id);  
+            if (!mod.game_close_interval_id){
+              mod.game_close_interval_id = setInterval(()=>{
+                console.log(mod.game_close_interval_cnt);
+                if (mod.game_close_interval_cnt<=0){
+                  console.log("Interval Timeout, closing game myself");
+                  for (let id of mod.game_close_interval_queue){
+                    createCloseTx(id);  
+                  }
+                  clearInterval(mod.game_close_interval_id);
+                }
+                mod.game_close_interval_cnt--;
+              },5*1000)
+            }
             return;
           }
         }
       }
     }
 
-    let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-    let my_publickey = app.wallet.returnPublicKey();
-    let peers = [];
-    for (let i = 0; i < app.network.peers.length; i++) {
-      peers.push(app.network.peers[i].returnPublicKey());
-    }
 
-    for (let i = 0; i < players.length; i++) {
-      if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i]));
-    }
-
-    let msg = {
-      sig: game_id,
-      status: "close",
-      request: "close",
-      winner: players[0] == my_publickey ? players[1] : players[0],
-      module: "Arcade",
-    };
-
-    newtx.msg = msg;
-    newtx = app.wallet.signTransaction(newtx);
-
-    let relay_mod = app.modules.returnModule("Relay");
-    if (relay_mod != null) {
-      relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-      relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-    }
-
-    app.network.propagateTransaction(newtx);
+    createCloseTx();
     this.removeGameFromList(game_id);
   },
 

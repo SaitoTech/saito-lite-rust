@@ -247,12 +247,13 @@ class Solitrio extends GameTemplate {
     this.displayUserInterface();
 
     if (this.scanBoard(false)) {
-      salert("Congratulations! You win!");
+      this.displayModal("Congratulations!", "You win the deal!");
       this.prependMove("win");
       this.endTurn();
     }else if (!this.hasAvailableMoves()){
       if (this.game.state.recycles_remaining == 0){
-        salert("No More Available Moves, you lose!");
+        this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+        //salert("No More Available Moves, you lose!");
       }else{
         this.shuffleFlash();
       }
@@ -276,7 +277,10 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
+      if (solitrio_self.game.board[card][0] === "E") {
+        solitrio_self.displayWarning("Invalid Move", "You need to select a card");
+        return;
+      }
 
       solitrio_self.toggleCard(card);
       let slot = solitrio_self.dynamicColoring(card);
@@ -301,7 +305,8 @@ class Solitrio extends GameTemplate {
         solitrio_self.checkBoardStatus();
 
         } else {
-          salert("<p>Sorry, You can't move that card anywhere");
+          solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
+          //salert("<p>Sorry, You can't move that card anywhere");
           solitrio_self.untoggleCard(card);
         }
       
@@ -319,7 +324,6 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
       if (selected === card) { //Selecting same card again
         solitrio_self.untoggleCard(card);
         selected = "";
@@ -370,12 +374,14 @@ class Solitrio extends GameTemplate {
           solitrio_self.displayUserInterface();
 
           if (solitrio_self.scanBoard(false)) {
-            salert("Congratulations! You win!");
+            //salert("Congratulations! You win!");
+            solitrio_self.displayModal("Congratulations!", "You win the deal!");
             solitrio_self.prependMove("win");
             solitrio_self.endTurn();
           }else if (!solitrio_self.hasAvailableMoves()){
             if (solitrio_self.game.state.recycles_remaining == 0){
-              salert("No More Available Moves, you lose!");
+              solitrio_self.displayWarning("Game over", "There are no more available moves to make.", 9000);
+              //salert("No More Available Moves, you lose!");
             }else{
               solitrio_self.shuffleFlash();
             }
@@ -395,7 +401,8 @@ class Solitrio extends GameTemplate {
             smartTip = "Hint: Try a 2 of any suit";
           }
           //Feedback
-          salert("<p>Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
+          solitrio_self.displayWarning("Invalid Move", "Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... ");
+          //salert("Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
           solitrio_self.untoggleCard(selected);
           selected = "";
           $("#rowbox").removeClass("selected");
@@ -878,6 +885,7 @@ no status atm, but this is to update the hud
     //Refresh Arcade if in it
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade){
+      arcade.checkCloseQueue(game_id);
       //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
