@@ -24,7 +24,7 @@ module.exports = (app, mod, listeners) => {
                    <p> Join an invite</p>
 
                   <div>
-                  <input placeholder="Insert Room Code" id="inviteCode" />
+                  <input type="text" placeholder="Insert Room Code" id="inviteCode" />
                   <button id="joinInvite" class="saito-button-secondary">Join</button>
                   </div>
             
