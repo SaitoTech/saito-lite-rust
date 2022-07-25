@@ -450,7 +450,7 @@ class Spider extends GameTemplate {
           spider_self.prependMove("draw");
           spider_self.endTurn();  
         }else{
-          spider_self.displayWarning("Error","You cannot deal with open slots!");
+          spider_self.displayWarning("Invalid Move","You cannot deal with open slots!");
         }
       }else{
         spider_self.endGame();
@@ -550,7 +550,7 @@ class Spider extends GameTemplate {
             spider_self.displayBoard();
             spider_self.checkStack(parseInt(card_pos[0]));
           }else{
-            spider_self.displayWarning("Illegal Move");
+            spider_self.displayWarning("Invalid Move");
           }            
         }
       }else{
@@ -1033,6 +1033,7 @@ class Spider extends GameTemplate {
     //Refresh Arcade if in it
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade){
+      arcade.checkCloseQueue(game_id);
       //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
