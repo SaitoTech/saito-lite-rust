@@ -155,7 +155,7 @@ class Settlers extends GameTemplate {
   <h3 style="text-transform:capitalize">${skin.card.name} cards</h3>
   <p>There are many kinds of ${skin.card.name} cards, though the aforementioned ${skin.s.name} is the most common type. Some allow the player to perform a special action (such as building additional ${skin.r.name} at no cost or collecting additional resources), while others give the player an extra ${skin.vp.name}. Players may play a ${skin.card.name} card at any time during their turn (including before the roll), but may only play one per turn and only on the turn after purchasing it. ${skin.card.name} cards which give +1 ${skin.vp.name} are exempt from these restrictions.</p> 
   <h2>Winning the Game</h2>
-  <p>${skin.vp.name} are important because the first player to accumulate 10 ${skin.vp.name} is declared the winner of the game. Players earn ${skin.vp.name} by building ${skin.c1.name}s (worth 1 ${skin.vp.name} each) and ${skin.c1.name}s (worth 2 ${skin.vp.name}s each). There are also two special achievements worth 2 ${skin.vp.name}s each.</p>
+  <p>${skin.vp.name} are important because the first player to accumulate 10 ${skin.vp.name} is declared the winner of the game. Players earn 1 ${skin.vp.name} per ${skin.c1.name} and 2 ${skin.vp.name}s for every ${skin.c2.name} they have built. There are also two special achievements worth 2 ${skin.vp.name}s each.</p>
   <p> The player with the longest contiguous ${skin.r.name} of at least 5 is awarded the "${skin.longest.name}" badge. Similarly, if a player accumulates at least 3 ${skin.s.name}s, they are awarded the "${skin.largest.name}" badge. Only one player may hold either badge, and other players must surpass them to claim it for themselves.</p>
   <h2>FAQ</h2>
   <dl>
@@ -658,6 +658,15 @@ class Settlers extends GameTemplate {
           this.game.state.players[player - 1].devcards++; //Add card for display
         }else{
           this.boughtCard = true; //So we display dev cards on next refresh
+        
+          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
+      
+          let html = `<span class="tip">${lastcard.card}
+                        <div class="tiptext">${this.skin.rules[lastcard.action]}</div>
+                      </span>`;
+        
+          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
+
         }
         return 1;
       }
@@ -2881,11 +2890,11 @@ class Settlers extends GameTemplate {
         );
       }
       if (id === "3") {
-        settlers_self.addMove("buy_card\t" + settlers_self.game.player); //have everyone update game state
+        //have everyone update game state
+        settlers_self.addMove("buy_card\t" + settlers_self.game.player); 
         // Deck #1 = deck[0] = devcard deck
-        settlers_self.addMove(
-          "SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"
-        ); //get card from deck
+        //get card from deck
+        settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"); 
       }
       let purchase = parseInt(id);
       if (purchase >= 0 && purchase <= 3) {

@@ -75,6 +75,7 @@ class Transaction {
           const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
           this.msg = JSON.parse(reconstruct);
         } catch (err) {
+          console.log(this.transaction);
           console.error(err);
         }
       }

@@ -823,9 +823,11 @@ class Chat extends ModTemplate {
         let options = this.app.storage.getOptions();
         let groups = [];
 
-        if (options != null && options != "") {
+        if (options) {
             options = JSON.parse(options);
-            groups = options.chat.groups;
+            if (options.chat?.groups){
+                groups = options.chat.groups;    
+            }
         }
 
         return groups;

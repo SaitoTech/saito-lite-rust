@@ -86,14 +86,14 @@ class Browser {
         document.addEventListener(
           "visibilitychange",
           () => {
-            console.log("document event listener visibility change");
+            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              console.log("document event listener visibility change");
+              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,

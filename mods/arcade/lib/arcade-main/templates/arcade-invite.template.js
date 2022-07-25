@@ -3,16 +3,10 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log(invite);
 
   let gameModule = app.modules.returnModule(invite.msg.game);
-  /*for (let i = 0; i < app.modules.mods.length; i++) {
-    if (app.modules.mods[i].name === slug) { 
-      slug = app.modules.mods[i].returnSlug(); 
-    }
-  }*/
-  //
-  // gameslug given game
-  //
+  if (!gameModule){
+    return "";
+  }  
   let slug = gameModule.returnSlug();
-
 
   let inviteTypeClass = "open-invite";
 
@@ -26,8 +20,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
       game_initialized = 1;
     }
   }
-  console.log("Arcade invite template");
-  console.log(JSON.parse(JSON.stringify(invite.msg)));
+
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load

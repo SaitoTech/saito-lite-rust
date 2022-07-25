@@ -12,8 +12,6 @@ const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypt
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
 
-//let tabNames = ["arcade", "observables", "tournaments"];
-let tabNames = [];
 
 module.exports = ArcadeMain = {
   render(app, mod) {
@@ -54,37 +52,51 @@ module.exports = ArcadeMain = {
     }
 
     //
-    // add tabs
+    // add tabs if we have League installed
     //
-    /*
-    tabNames.forEach((tabButtonName, i) => {
-      document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
-        app.browser.logMatomoEvent(
-          "Arcade",
-          "ArcadeTabNavigationClick",
-          tabButtonName
-        );
+    let league = app.modules.returnModule("League");
+
+    let tabNames = (league)? ["arcade", "league"] : [];
+
+    if (tabNames.length > 0){
+      tabNames.forEach((tabButtonName, i) => {
+        //Add click event to tab
+        document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
+          app.browser.logMatomoEvent(
+            "Arcade",
+            "ArcadeTabNavigationClick",
+            tabButtonName
+          );
+          tabNames.forEach((tabName, i) => {
+            if (tabName === tabButtonName) {
+              mod.active_tab = tabName;
+              document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
+            } else {
+              document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+              document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
+            }
+          });
+        };
+
+        //Set default tab to display
         tabNames.forEach((tabName, i) => {
-          if (tabName === tabButtonName) {
-            document
-              .querySelector("#" + tabName + "-hero")
-              .classList.remove("arcade-tab-hidden");
-            document
-              .querySelector("#tab-button-" + tabName)
-              .classList.add("active-tab-button");
+          if (tabName === mod.active_tab) {
+            document.querySelector(`#${tabName}-hero`).classList.remove("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.add("active-tab-button");
           } else {
-            document
-              .querySelector("#" + tabName + "-hero")
-              .classList.add("arcade-tab-hidden");
-            document
-              .querySelector("#tab-button-" + tabName)
-              .classList.remove("active-tab-button");
+            document.querySelector(`#${tabName}-hero`).classList.add("arcade-tab-hidden");
+            document.querySelector("#tab-button-"+tabName).classList.remove("active-tab-button");
           }
         });
-      };
-    });
-    */
 
+      });
+    
+    }else{
+      //Hide Tabs
+      document.querySelector("#arcade-tab-buttons").style = "display: none";
+    }
+    
     if (mod.viewing_game_homepage) {
       //Events for this are same as side bar (and attached via arcade-game-sidebar.js)
       app.browser.addElementToElement(
@@ -96,13 +108,13 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
-    if (document.querySelector(".arcade-hero")) {
+    if (document.querySelector("#arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           app.browser.addElementToElement(
             ArcadeInviteTemplate(app, mod, invite, i),
-            document.querySelector(".arcade-hero")
+            document.querySelector("#arcade-hero")
           );
         }
       });
@@ -113,6 +125,12 @@ module.exports = ArcadeMain = {
           document.querySelector(".observables-hero")
         );
       });*/
+
+      //insert leagues into hidden tab
+      if (league){
+        league.renderArcade(app, mod, document.querySelector("#league-hero")); 
+      }
+
     }
 
 
@@ -120,6 +138,12 @@ module.exports = ArcadeMain = {
       ArcadePosts.render(app, mod);
     } else {  //Add summary of game pages with latest post teaser
       ArcadeForums.render(app, mod);
+    }
+    // Insert Posts
+    let post = app.modules.returnModule("Post");
+    if (post){
+      post.renderMethod = "arcade";
+      post.render();
     }
 
     //ArcadeInfobox.render(app, mod); //Not doing anything right now
@@ -187,11 +211,11 @@ module.exports = ArcadeMain = {
               }*/
 
               if (game_cmd === "cancel") {
-            	let c = confirm("Are you sure you want to cancel this game?");
-            	if (c) {
-                  arcade_main_self.cancelGame(app, mod, game_sig);
-                  return;
-		}
+            	  let c = confirm("Are you sure you want to cancel this game?");
+              	if (c) {
+                    arcade_main_self.cancelGame(app, mod, game_sig);
+                    return;
+  		          }
               }
 
               if (game_cmd === "join") {
@@ -199,7 +223,7 @@ module.exports = ArcadeMain = {
             	if (c) {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
-		}
+		          }
               }
 
               if (game_cmd === "continue") {
@@ -533,6 +557,40 @@ module.exports = ArcadeMain = {
     console.log("Click to Cancel Game");
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
+
+    //
+    let createCloseTx = (game_id) =>{
+      let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+      let my_publickey = app.wallet.returnPublicKey();
+      let peers = [];
+      for (let i = 0; i < app.network.peers.length; i++) {
+        peers.push(app.network.peers[i].returnPublicKey());
+      }
+
+      for (let i = 0; i < players.length; i++) {
+        if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i]));
+      }
+
+      let msg = {
+        sig: game_id,
+        status: "close",
+        request: "close",
+        module: "Arcade",
+      };
+
+      newtx.msg = msg;
+      newtx = app.wallet.signTransaction(newtx);
+
+      let relay_mod = app.modules.returnModule("Relay");
+      if (relay_mod != null) {
+        relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
+        relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
+      }
+
+      app.network.propagateTransaction(newtx);
+    };
+
+
     if (app.options?.games) {
       for (let i = 0; i < app.options.games.length; i++) {
         testsig = app.options.games[i].transaction?.sig || app.options.games[i].id;
@@ -541,42 +599,31 @@ module.exports = ArcadeMain = {
           if (gamemod) {
             this.removeGameFromList(game_id);
             gamemod.resignGame(game_id);
-            //console.log(JSON.parse(JSON.stringify(gamemod.game)));
+
+            //Set a fallback interval if the opponent is no longer online
+            mod.game_close_interval_cnt += 5;
+            mod.game_close_interval_queue.push(game_id);  
+            if (!mod.game_close_interval_id){
+              mod.game_close_interval_id = setInterval(()=>{
+                console.log(mod.game_close_interval_cnt);
+                if (mod.game_close_interval_cnt<=0){
+                  console.log("Interval Timeout, closing game myself");
+                  for (let id of mod.game_close_interval_queue){
+                    createCloseTx(id);  
+                  }
+                  clearInterval(mod.game_close_interval_id);
+                }
+                mod.game_close_interval_cnt--;
+              },5*1000)
+            }
             return;
           }
         }
       }
     }
 
-    let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-    let my_publickey = app.wallet.returnPublicKey();
-    let peers = [];
-    for (let i = 0; i < app.network.peers.length; i++) {
-      peers.push(app.network.peers[i].returnPublicKey());
-    }
 
-    for (let i = 0; i < players.length; i++) {
-      if (players[i] != my_publickey) newtx.transaction.to.push(new saito.default.slip(players[i]));
-    }
-
-    let msg = {
-      sig: game_id,
-      status: "close",
-      request: "close",
-      winner: players[0] == my_publickey ? players[1] : players[0],
-      module: "Arcade",
-    };
-
-    newtx.msg = msg;
-    newtx = app.wallet.signTransaction(newtx);
-
-    let relay_mod = app.modules.returnModule("Relay");
-    if (relay_mod != null) {
-      relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
-      relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
-    }
-
-    app.network.propagateTransaction(newtx);
+    createCloseTx();
     this.removeGameFromList(game_id);
   },
 

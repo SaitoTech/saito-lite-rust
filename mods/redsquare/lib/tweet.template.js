@@ -41,9 +41,14 @@ module.exports = (app, mod, tweet) => {
       }
     }
 
+    let dt = app.browser.formatDate(tweet.tx.transaction.ts);
+    let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+
     return `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
-         ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add)}
+
+         ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline)}
+
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet">${tweet_text}</div>
            ${tweet_img}

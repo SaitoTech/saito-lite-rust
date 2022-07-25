@@ -18,6 +18,13 @@ class Midnight extends GameTemplate {
     this.minPlayers = 1;
   }
 
+  /* Opt out of letting League create a default*/
+  respondTo(type){
+    if (type == "default-league") {
+      return null;
+    }
+    return super.respondTo(type);
+  }
 
   returnGameRulesHTML(){
     return `<div class="rules-overlay">

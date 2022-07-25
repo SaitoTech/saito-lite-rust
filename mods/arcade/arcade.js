@@ -41,9 +41,19 @@ class Arcade extends ModTemplate {
     this.description = "A place to find, play and manage games!";
     this.categories = "Games Utilities";
 
+    this.active_tab = "arcade";
+    this.manual_ordering = false; // Toggle this to either sort games by their categories or go by the module.config order
+
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
+
+    //So we can keep track of games which we want to close but are waiting on game engine to process
+    this.game_close_interval_cnt = 0;
+    this.game_close_interval_queue = [];  
+    this.game_close_interval_id = null;
+
+
 
   }
 
@@ -55,18 +65,16 @@ class Arcade extends ModTemplate {
           this.app.storage.saveOptions();
         }
         //this.renderSidebar();
-        try {
           let chat_mod = this.app.modules.returnModule("Chat");
-          if (
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
+          if (chat_mod){
+            if (chat_mod?.groups && 
+                chat_mod.groups.length > 0 &&
+                this.chat_open == 0 &&
+                this.app.options.auto_open_chat_box
+             ) {
+              this.chat_open = 1;
+              chat_mod.openChats();
           }
-        } catch (err) {
-          console.log("Err: " + err);
         }
       }
     }
@@ -992,8 +1000,16 @@ class Arcade extends ModTemplate {
       }
     }else{
       if (this.debug) {console.log("Game not found, cannot cancel");}
-      //this.receiveCloseRequest(blk, tx, conf, app);
+      this.receiveCloseRequest(blk, tx, conf, app);
     }
+    
+    //Force close in wallet if game was created
+    app.options.games.forEach(g => {
+      if (g.id === game_id){
+        console.log("Mark game closed in options");
+        g.over = 1;
+      }
+    });
 
     //Refresh Arcade Main
     if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
@@ -1007,6 +1023,7 @@ class Arcade extends ModTemplate {
 
   async receiveCloseRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
+    this.checkCloseQueue(txmsg.sig);
     if (this.debug) {console.log("Close game " + txmsg.sig);}
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
     let params = { $status: "close", $game_id: txmsg.sig };
@@ -1015,13 +1032,27 @@ class Arcade extends ModTemplate {
 
   async receiveGameoverRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
+    this.checkCloseQueue(txmsg.sig);
     if (this.debug) {console.log("Resign game " + JSON.stringify(txmsg));}
 
     let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${txmsg.sig}'`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
-
   }
 
+  checkCloseQueue(game_id){
+    if (this.game_close_interval_id){
+      console.log("Are we waiting on "+game_id);
+      for (let i = this.game_close_interval_queue.length-1; i >=0; i--){
+        if (this.game_close_interval_queue[i] == game_id){
+          this.game_close_interval_queue.splice(i,1);
+        }
+      }
+      if (this.game_close_interval_queue.length == 0){
+        clearInterval(this.game_close_interval_id);
+        this.game_close_interval_id = null;
+      }
+    }
+  }
   
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -1221,6 +1252,15 @@ class Arcade extends ModTemplate {
       let arcade_self = this;
       GameLoader.render(app, arcade_self);
 
+      let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+      tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+
+      tx.msg = {};
+      tx.msg.request = "launch singleplayer";
+      tx.msg.module = gameobj.name;
+      tx = this.app.wallet.signTransaction(tx);
+      this.app.network.propagateTransaction(tx);
+
       let gameMod = app.modules.returnModule(gameobj.name);  
       let game_id = await gameMod.initializeSinglePlayerGame(gameobj);
 
@@ -1292,12 +1332,83 @@ class Arcade extends ModTemplate {
               clearInterval(arcade_self.initialization_timer);
               arcade_self.initialization_timer = null;
               GameLoader.render(arcade_self.app, arcade_self, game_id);
-              GameLoader.attachEvents(arcade_self.app, arcade_self);  
+              GameLoader.attachEvents(arcade_self.app, arcade_self);
+
+              let hidden = "hidden";
+              if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+                hiddenTab = "hidden";
+              } else if (typeof document.msHidden !== "undefined") {
+                hiddenTab = "msHidden";
+              } else if (typeof document.webkitHidden !== "undefined") {
+                hiddenTab = "webkitHidden";
+              }
+
+              arcade_self.startNotification("Game ready!", arcade_self.app.options.games[game_idx].module);
+
+              if (document[hidden]){
+                arcade_self.ringTone();
+              }
             }
           }
         }
       }, 1000);
     }
+  }
+
+  ringTone(){
+    var context = new AudioContext(),
+    gainNode = context.createGain(),
+    start = document.querySelector('#start'),
+    stop = document.querySelector("#stop"),
+    oscillator = null,
+    harmony = null;
+
+    var volume = context.createGain();
+    volume.connect(context.destination);
+    gainNode.connect(context.destination);
+
+    //Play first note
+    oscillator = context.createOscillator();
+    oscillator.type = "sine";
+    oscillator.frequency.setTargetAtTime(523.25, context.currentTime, 0.001);
+    gainNode.gain.setTargetAtTime(0.5, context.currentTime, 0.001);
+    oscillator.connect(gainNode);
+    oscillator.start(context.currentTime);
+
+    harmony = context.createOscillator();
+    //harmony.type = "sawtooth";
+    harmony.frequency.value = 440;
+    volume.gain.setTargetAtTime(0.6, context.currentTime,0.001);
+    harmony.start();
+    harmony.connect(volume);
+
+    //Play Second note
+    setTimeout(()=>{
+        oscillator.frequency.setTargetAtTime(659.25,context.currentTime,0.001);
+    },350);
+    //Play Third note
+    setTimeout(()=>{
+        oscillator.frequency.setTargetAtTime(329.63,context.currentTime,0.001);
+        gainNode.gain.setTargetAtTime(0.8,context.currentTime,0.01);
+    },750);
+    //Play fourth note
+    setTimeout(()=>{
+        oscillator.frequency.setTargetAtTime(415.3,context.currentTime,0.001);
+        harmony.frequency.setTargetAtTime(554.37, context.currentTime, 0.001);
+    },1100);
+    //Fade out
+    setTimeout(()=>{
+        volume.gain.setTargetAtTime(0,context.currentTime,0.25);
+        gainNode.gain.setTargetAtTime(0,context.currentTime,0.25);
+    },1300);
+    //To silence
+    setTimeout(()=>{
+      oscillator.stop(context.currentTime);
+      oscillator.disconnect();
+      harmony.stop(context.currentTime);
+      harmony.disconnect();
+    },3000);
+
   }
 
   webServer(app, expressapp, express) {
@@ -2248,6 +2359,20 @@ class Arcade extends ModTemplate {
     }
     return 0;
   }
+
+  startNotification(msg, game){
+    //If we haven't already started flashing the tab
+    if (!this.tabInterval){
+      this.tabInterval = setInterval(()=>{
+        if (document.title === game){
+          document.title = msg;
+        }else{
+          document.title = game;
+        }
+      }, 575);
+    } 
+  }
+
 
   updateIdentifier() {}
 
