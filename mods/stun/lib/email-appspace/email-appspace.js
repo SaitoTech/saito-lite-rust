@@ -3,10 +3,7 @@ const StunMainContainer = require("./email-appspace.template");
 
 // components
 const StunComponentMyStun = require("../components/my-stun");
-const StunComponentListeners = require("../components/listeners");
-const StunComponentPeers = require("../components/peers");
 
-const { vanillaToast } = require("vanilla-toast");
 const VideoChat = require('../../../../lib/saito/ui/video-chat/video-chat');
 
 
@@ -30,13 +27,10 @@ class Container {
         };
 
         this.myStun = new StunComponentMyStun(app, mod);
-        this.listeners = new StunComponentListeners(app, mod);
-        this.peers = new StunComponentPeers(app, mod);
+
 
         this.mapTabToTemplate = {
             "my-stun": this.myStun,
-            "listeners": this.listeners,
-            "peer-stun": this.peers
         };
 
         this.videoChat = new VideoChat(app, mod);

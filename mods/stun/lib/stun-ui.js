@@ -174,7 +174,7 @@ const StunUI = {
                               };
                               pc.dc.open = (e) => {
                                     console.log('connection opened');
-                                    $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
+                                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
                               }
 
                               // add tracks
@@ -279,7 +279,7 @@ const StunUI = {
                               StunUI.displayMessage(peer_b, e.data);
                         };
                         StunUI.peer_connection.dc.onopen = (e) => {
-                              $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
+                              // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_b}</p>`);
                               console.log("connection opened");
                         };
 
@@ -331,217 +331,214 @@ const StunUI = {
             // event listeners
 
             // change selected tab
-            $('.menu').on('click', function (e) {
+            // $('.menu').on('click', function (e) {
 
-                  if ($(this).attr('data-id') === StunUI.selectedTab) return;
-                  // add ui class to button
-                  $('.menu').removeClass('button-active');
-                  $(this).addClass('button-active');
-                  StunUI.selectedTab = $(this).attr('data-id');
+            //       if ($(this).attr('data-id') === StunUI.selectedTab) return;
+            //       // add ui class to button
+            //       $('.menu').removeClass('button-active');
+            //       $(this).addClass('button-active');
+            //       StunUI.selectedTab = $(this).attr('data-id');
 
-                  StunUI.render(app, mod);
+            //       StunUI.render(app, mod);
 
 
-            });
+            // });
 
             //connect with peer
-            $(".stun-container").on('click', '#connectTo', function (e) {
+            // $(".stun-container").on('click', '#connectTo', function (e) {
 
 
 
 
-                  let selected_option = $('#connectSelect option:selected');
-                  const stun_mod = app.modules.returnModule("Stun");
+            //       let selected_option = $('#connectSelect option:selected');
+            //       const stun_mod = app.modules.returnModule("Stun");
 
-                  if (StunUI.peer_connection && StunUI.peer_connection.connectionState === "connected") {
-                        console.log("Closing connection");
-                        StunUI.peer_connection.close();
-                        StunUI.displayConnectionClosed();
-                        StunUI.localStream = "";
-                        StunUI.remoteStream = "";
-                        // StunUI.peer_connection = "";
-                        vanillaToast.error('Disconnected', { duration: 4000, fadeDuration: 500 });
+            //       if (StunUI.peer_connection && StunUI.peer_connection.connectionState === "connected") {
+            //             console.log("Closing connection");
+            //             StunUI.peer_connection.close();
+            //             StunUI.displayConnectionClosed();
+            //             StunUI.localStream = "";
+            //             StunUI.remoteStream = "";
+            //             // StunUI.peer_connection = "";
+            //             vanillaToast.error('Disconnected', { duration: 4000, fadeDuration: 500 });
 
-                        return;
-                  } else {
-                        vanillaToast.show('Starting Video Call', { duration: 70000, fadeDuration: 500 });
-                  }
+            //             return;
+            //       } else {
+            //             vanillaToast.show('Starting Video Call', { duration: 70000, fadeDuration: 500 });
+            //       }
 
-                  const peer_key = selected_option.text().trim();
-                  const my_key = app.wallet.returnPublicKey();
-                  console.log("keys ", my_key, peer_key);
-                  let stun = {
-                        ip_address: "",
-                        port: "",
-                        offer_sdp: "",
-                        pc: "",
-                        listeners: [],
-                        iceCandidates: []
-                  };
-
-
-
-                  const createPeerConnection = new Promise((resolve, reject) => {
-                        const stun_mod = app.modules.returnModule('Stun');
-                        const execute = async () => {
-
-                              try {
-                                    const pc = new RTCPeerConnection({
-                                          iceServers: stun_mod.servers
-                                    });
+            //       const peer_key = selected_option.text().trim();
+            //       const my_key = app.wallet.returnPublicKey();
+            //       console.log("keys ", my_key, peer_key);
+            //       let stun = {
+            //             ip_address: "",
+            //             port: "",
+            //             offer_sdp: "",
+            //             pc: "",
+            //             listeners: [],
+            //             iceCandidates: []
+            //       };
 
 
 
-                                    pc.onicecandidate = (ice) => {
-                                          if (!ice || !ice.candidate || !ice.candidate.candidate) {
+            //       const createPeerConnection = new Promise((resolve, reject) => {
+            //             const stun_mod = app.modules.returnModule('Stun');
+            //             const execute = async () => {
 
-                                                // pc.close();
-
-                                                stun.offer_sdp = pc.localDescription;
-
-
-                                                stun.pc = pc;
-                                                StunUI.stun = stun;
-                                                StunUI.peer_connection = stun.pc;
-                                                console.log("ice candidates", stun.iceCandidates);
-
-                                                resolve({ offer_sdp: stun.offer_sdp, iceCandidates: stun.iceCandidates });
-                                                // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
-
-                                                return;
-                                          }
+            //                   try {
+            //                         const pc = new RTCPeerConnection({
+            //                               iceServers: stun_mod.servers
+            //                         });
 
 
 
-                                          let split = ice.candidate.candidate.split(" ");
-                                          if (split[7] === "host") {
-                                                // console.log(`Local IP : ${split[4]}`);
-                                                // stun.ip_address = split[4];
-                                                // console.log(split);
-                                          } else {
+            //                         pc.onicecandidate = (ice) => {
+            //                               if (!ice || !ice.candidate || !ice.candidate.candidate) {
 
-                                                stun.ip_address = split[4];
-                                                stun.port = split[5];
-                                                stun.iceCandidates.push(ice.candidate);
-                                                // resolve(stun);
-                                          }
-                                    };
+            //                                     // pc.close();
 
-                                    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                                    localStream.getTracks().forEach(track => {
-                                          pc.addTrack(track, localStream);
-
-                                    });
-                                    StunUI.localStream = localStream;
-
-                                    StunUI.videoChat.show(pc)
-                                    StunUI.videoChat.addLocalStream(localStream);
+            //                                     stun.offer_sdp = pc.localDescription;
 
 
+            //                                     stun.pc = pc;
+            //                                     StunUI.stun = stun;
+            //                                     StunUI.peer_connection = stun.pc;
+            //                                     console.log("ice candidates", stun.iceCandidates);
+
+            //                                     resolve({ offer_sdp: stun.offer_sdp, iceCandidates: stun.iceCandidates });
+            //                                     // stun_mod.broadcastIceCandidates(my_key, peer_key, ['savior']);
+
+            //                                     return;
+            //                               }
+
+
+
+            //                               let split = ice.candidate.candidate.split(" ");
+            //                               if (split[7] === "host") {
+            //                                     // console.log(`Local IP : ${split[4]}`);
+            //                                     // stun.ip_address = split[4];
+            //                                     // console.log(split);
+            //                               } else {
+
+            //                                     stun.ip_address = split[4];
+            //                                     stun.port = split[5];
+            //                                     stun.iceCandidates.push(ice.candidate);
+            //                                     // resolve(stun);
+            //                               }
+            //                         };
+
+            //                         const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            //                         localStream.getTracks().forEach(track => {
+            //                               pc.addTrack(track, localStream);
+
+            //                         });
+            //                         StunUI.localStream = localStream;
+
+            //                         StunUI.videoChat.show(pc)
+            //                         StunUI.videoChat.addLocalStream(localStream);
 
 
 
 
 
-                                    pc.LOCAL_STREAM = localStream;
-                                    const remoteStream = new MediaStream();
-                                    pc.addEventListener('track', (event) => {
 
 
-                                          console.log('got remote stream ', event.streams);
-                                          event.streams[0].getTracks().forEach(track => {
-                                                remoteStream.addTrack(track);
-                                          });
-
-                                          StunUI.remoteStream = remoteStream;
-
-                                          StunUI.videoChat.addRemoteStream(remoteStream, "remote");
-                                    });
-
-                                    const data_channel = pc.createDataChannel('channel');
-                                    pc.dc = data_channel;
-                                    pc.dc.onmessage = (e) => {
-
-                                          console.log('new message from client : ', e.data);
-                                          StunUI.displayMessage(peer_key, e.data);
-                                    };
-                                    pc.dc.open = (e) => console.log("connection opened");
-
-                                    const offer = await pc.createOffer();
-                                    pc.setLocalDescription(offer);
-
-                              } catch (error) {
-                                    console.log(error);
-                              }
-
-                        }
-                        execute();
-
-                  })
+            //                         pc.LOCAL_STREAM = localStream;
+            //                         const remoteStream = new MediaStream();
+            //                         pc.addEventListener('track', (event) => {
 
 
-                  createPeerConnection.then(offer => {
+            //                               console.log('got remote stream ', event.streams);
+            //                               event.streams[0].getTracks().forEach(track => {
+            //                                     remoteStream.addTrack(track);
+            //                               });
 
-                        stun_mod.broadcastOffer(my_key, peer_key, offer);
-                  });
+            //                               StunUI.remoteStream = remoteStream;
 
-            })
+            //                               StunUI.videoChat.addRemoteStream(remoteStream, "remote");
+            //                         });
+
+            //                         const data_channel = pc.createDataChannel('channel');
+            //                         pc.dc = data_channel;
+            //                         pc.dc.onmessage = (e) => {
+
+            //                               console.log('new message from client : ', e.data);
+            //                               StunUI.displayMessage(peer_key, e.data);
+            //                         };
+            //                         pc.dc.open = (e) => console.log("connection opened");
+
+            //                         const offer = await pc.createOffer();
+            //                         pc.setLocalDescription(offer);
+
+            //                   } catch (error) {
+            //                         console.log(error);
+            //                   }
+
+            //             }
+            //             execute();
+
+            //       })
+
+
+            //       createPeerConnection.then(offer => {
+
+            //             stun_mod.broadcastOffer(my_key, peer_key, offer);
+            //       });
+
+            // })
 
             // add listeners to stun module
-            $('.stun-container').on('click', '#add-to-listeners-btn', function (e) {
+            // document.body.addEventListener('click', (e) => {
+            //       if (e.target.id === "add-to-listeners-btn") {
+            //             let input = $('#listeners-input').val().split(',');
+            //             const listeners = input.map(listener => listener.trim());
+            //             let stun_mod = app.modules.returnModule("Stun");
+            //             stun_mod.addListeners(listeners);
+            //       }
 
-                  let input = $('#listeners-input').val().split(',');
-                  const listeners = input.map(listener => listener.trim());
-                  let stun_mod = app.modules.returnModule("Stun");
-                  stun_mod.addListeners(listeners);
-
-            })
-
-            $('.stun-container').on('click', '#createInvite', function (e) {
-                  let video_mod = app.modules.returnModule("Video");
-                  console.log(video_mod);
-                  video_mod.createVideoInvite();
-            })
-            $('.stun-container').on('click', '#joinInvite', function (e) {
-                  let video_mod = app.modules.returnModule("Video");
-                  // invite code hardcoded for dev purposes
-                  const inviteCode = $("#inviteCode").val();
-                  video_mod.joinVideoInvite(inviteCode.trim());
-            })
-
-            $('.stun-container').on('click', '#sendv-message-btn', (e) => {
-
-                  if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");
-                  const text = $('#message-text').val();
-                  // console.log('text message', text);
-                  StunUI.peer_connection.dc.send(text);
-
-            })
+            //       if (e.target.id === "createInvite") {
+            //             let video_mod = app.modules.returnModule("Video");
+            //             console.log(video_mod);
+            //             video_mod.createVideoInvite();
+            //       }
+            //       if (e.target.id === "joinInvite") {
+            //             let video_mod = app.modules.returnModule("Video");
+            //             // invite code hardcoded for dev purposes
+            //             const inviteCode = $("#inviteCode").val();
+            //             video_mod.joinVideoInvite(inviteCode.trim());
+            //       }
+            //       if (e.target.id === "sendv-message-btn") {
+            //             if (!StunUI.peer_connection) return console.log("Peer connection instance has not been created");
+            //             const text = $('#message-text').val();
+            //             // console.log('text message', text);
+            //             StunUI.peer_connection.dc.send(text);
+            //       }
+            // })
 
 
       },
 
 
 
-      displayMessage(sender, message) {
-            $('#connectTo').text(`Disconnect`);
-            $('#connectTo').removeClass('btn-primary');
-            $('#connectTo').addClass('btn-danger');
-            $('#address-origin').text(`Received Messages`);
-            $('#connection-status').html(` <p style="color: green" class="data">Connected to ${sender}</p>`);
-            $('#msg-display').append(`<p style="border-radius: 8px; color: red; font-size:.9rem" class="data p-2 w-100" >${message}</p>`);
-      },
+      // displayMessage(sender, message) {
+      //       $('#connectTo').text(`Disconnect`);
+      //       $('#connectTo').removeClass('btn-primary');
+      //       $('#connectTo').addClass('btn-danger');
+      //       $('#address-origin').text(`Received Messages`);
+      //       $('#connection-status').html(` <p style="color: green" class="data">Connected to ${sender}</p>`);
+      //       $('#msg-display').append(`<p style="border-radius: 8px; color: red; font-size:.9rem" class="data p-2 w-100" >${message}</p>`);
+      // },
 
-      displayConnectionClosed() {
-            console.log('closing connection')
+      // displayConnectionClosed() {
+      //       console.log('closing connection')
 
-            $('#connectTo').text("Connect")
-            $('#connectTo').removeClass('btn-danger');
-            $('#connectTo').addClass('btn-primary');
-            $('#connection-status').html(` <p style="color: green" class="data">Not connected to any peer</p>`);
-            document.querySelector('#localStream').srcObject = new MediaStream();
-            document.querySelector('#remoteStream1').srcObject = new MediaStream();
-      }
+      //       $('#connectTo').text("Connect")
+      //       $('#connectTo').removeClass('btn-danger');
+      //       $('#connectTo').addClass('btn-primary');
+      //       $('#connection-status').html(` <p style="color: green" class="data">Not connected to any peer</p>`);
+      //       document.querySelector('#localStream').srcObject = new MediaStream();
+      //       document.querySelector('#remoteStream1').srcObject = new MediaStream();
+      // }
 
 
 }
