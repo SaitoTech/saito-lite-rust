@@ -12,8 +12,11 @@ class MyStun {
     const key_index = app.keys.keys.findIndex(tk => tk.publickey === publicKey);
     let listeners = app.keys.keys[key_index].data.stun.listeners;
 
-    app.browser.addElementToDom(StunComponentMyStunTemplate(app, mod, listeners), "stun-information");
-    this.attachEvents(app, mod);
+    if (!document.querySelector(".my-stun-container")) {
+      app.browser.addElementToDom(StunComponentMyStunTemplate(app, mod, listeners), "stun-information");
+      this.attachEvents(app, mod);
+    }
+
 
   }
 
