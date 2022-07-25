@@ -8,6 +8,7 @@ class Post {
       this.overlay = new SaitoOverlay(app, mod);
       this.parent_id = "";
       this.thread_id = "";
+      this.images = [];
     }
 
     render(app, mod) {
@@ -19,6 +20,12 @@ class Post {
 
     attachEvents(app, mod) { 
 
+      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
+alert("image uploaded");
+        this.images.push(file);
+      }, false);
+
+
       document.getElementById("post-tweet-button").onclick = (e) => {
 
         e.preventDefault();
@@ -29,6 +36,9 @@ class Post {
         let data = { text : text };
         if (parent_id !== "") {
           data = { text : text , parent_id : parent_id , thread_id : thread_id };
+        }
+        if (this.images.length > 0) {
+          data['images'] = this.images;
         }
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  

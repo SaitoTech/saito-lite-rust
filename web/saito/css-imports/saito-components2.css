@@ -10,6 +10,10 @@ Saito User
     width: 65rem;
 }
 
+.saito-userline {
+  color: #888;
+}
+
 .saito-user {
     display: grid;
     cursor: pointer;

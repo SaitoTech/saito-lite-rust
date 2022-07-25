@@ -619,7 +619,7 @@ console.log("ADDING ELEMENT TO DOM: " + id);
     `;
 
     if (!document.getElementById(`hidden_file_element_${id}`)) {
-      this.addElementToDom(hidden_upload_form, id);
+      this.addElementToId(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
       if (!dropArea) {
         console.error("Undefined id in browser", id);
