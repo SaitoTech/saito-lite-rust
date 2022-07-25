@@ -441,7 +441,6 @@ button.button-active {
 
 .body .footer {
   display: grid;
-  grid-template-columns: 3rem 3rem 1fr;
   grid-gap: 1rem;
   padding: 20px;
   background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
@@ -450,7 +449,7 @@ button.button-active {
   transform: matrix(1, 0, 0, -1, 0, 0);
   color: white;
   align-items: center;
-  grid-template-columns: 2em 2em 1fr 1fr;
+  grid-template-columns: 2em 2em 1fr;
 }
 
 
@@ -527,4 +526,3 @@ button.button-active {
   outline: none;
 
 }
-
