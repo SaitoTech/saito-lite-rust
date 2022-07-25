@@ -1356,6 +1356,7 @@ initializeGame(game_id) {
       //Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards
       this.game.state.shuffled = false;
       this.game.queue.push(`library\t${player}`);
+      this.game.queue.push(`POOL\t${player}`);
     }
     //**
     if (card_to_play == "market"){
