@@ -121,14 +121,14 @@ describe("serializeForSignature", function () {
     mockApp.networkApi = networkApi;
     mockApp.crypto = crypto;
     mockApp.binary = binary;
-    mockApp.hash = (data: string) => {
+    mockApp.hash = (data: Uint8Array) => {
       return blake3.hash(data).toString("hex");
     };
 
     const block = new Block(mockApp);
 
     const buffer = block.serializeForSignature();
-    expect(buffer).toEqual(Buffer.alloc(145));
+    expect(buffer).toEqual(Buffer.alloc(177));
   });
 
   test("block with data", () => {

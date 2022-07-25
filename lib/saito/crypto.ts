@@ -41,10 +41,11 @@ class Crypto {
    * initialization.
    */
 
-  hash(data: string) {
-    //
+  hash(data: string|Uint8Array) {
+    if (typeof data === "string") {
+     return this.app.hash(Buffer.from(data))
+    }
     // 64-bit hash
-    //
     return this.app.hash(data);
   }
 
@@ -216,7 +217,7 @@ class Crypto {
     // prettier-ignore
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return secp256k1.sign(Buffer.from(this.hash(buffer.toString("hex")), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
+    return secp256k1.sign(Buffer.from(this.hash(buffer), "hex"),Buffer.from(privatekey, "hex")).signature.toString("hex");
   }
 
   /**
@@ -227,8 +228,9 @@ class Crypto {
    * @param {string} pubkey
    * @returns {boolean} is signature valid?
    */
-  verifyHash(hash: string, sig: string, pubkey: string) {
+  verifyHash(buffer: Buffer, sig: string, pubkey: string) {
     try {
+      let hash = this.hash(buffer);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return secp256k1.verify(
@@ -252,8 +254,8 @@ class Crypto {
    */
   verifyMessage(msg: string, sig: string, pubkey: string) {
     try {
-      const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
-      return this.verifyHash(hash, sig, pubkey);
+      // const hash = this.hash(Buffer.from(msg, "utf-8").toString("hex"));
+      return this.verifyHash(Buffer.from(msg, "utf-8"), sig, pubkey);
     } catch (err) {
       console.log(err);
       return false;
