@@ -338,12 +338,9 @@ button.button-active {
 }
 
 .body {
-  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%) !important;
-  border: 1px solid black;
+  border: 1px solid var(--saito-cyber-black-wash);
   z-index: 200;
-  width: 90vw;
   position: absolute !important;
-  top: 5rem;
 }
 
 .body section {
@@ -377,11 +374,13 @@ button.button-active {
 
 #video-chat-box {
   max-width: 60vw;
+
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 80vw;
   background-color: #ffffff;
+
 }
 
 
@@ -451,11 +450,14 @@ button.button-active {
   transform: matrix(1, 0, 0, -1, 0, 0);
   color: white;
   align-items: center;
+  grid-template-columns: 2em 2em 1fr 1fr;
 }
+
 
 .body p {
   margin: 0;
 }
+
 
 .disconnect_btn {
   margin-left: auto;
@@ -523,4 +525,6 @@ button.button-active {
 
 .my-stun-container-join input:focus {
   outline: none;
+
 }
+
