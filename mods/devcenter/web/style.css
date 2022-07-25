@@ -373,11 +373,8 @@ button.button-active {
 /*  video chat */
 
 #video-chat-box {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80vw;
-    background-color: #ffffff;
+  max-width: 60vw;
+
 }
 
 
@@ -405,20 +402,27 @@ button.button-active {
 
 .body .wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(150px, 30vw));
+  grid-template-rows: 30vh 30vh;
   grid-auto-rows: minmax(100px, 30vh);
-  grid-gap: 1rem;
-  padding: 1rem;
-  background: var(--saito-skyline-grey);
+  column-gap: 1rem;
+  row-gap: 1rem;
+  /* justify-items: stretch; */
+  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
+  /* max-width: 100vw; */
+  overflow-y: scroll;
 }
 
 .body .box {
-  border-radius: 0.1rem;
+  border-radius: 1.92459px;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid var(--saito-cyber-black-wash);
-  background-color: #fff;
+  background-color: black;
+}
+
+.body .box1 {
+  /* grid-row: 1/3; */
 }
 
 .body .b-btngrid {
@@ -432,14 +436,17 @@ button.button-active {
   cursor: pointer;
 }
 
-.body .heading {
-  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
-}
-
 .body .footer {
-  display: grid;
+  margin-top: 20px;
+  display: flex;
+
   padding: 20px;
-  background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  background: radial-gradient(100.52% 47851.24% at 0% 0%,
+      #f66659 0%,
+      #f21d3b 51.56%,
+      #f66659 100%)
+    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
+  ;
   transform: matrix(1, 0, 0, -1, 0, 0);
   color: white;
   align-items: center;
@@ -448,6 +455,10 @@ button.button-active {
 
 .body p  {
   margin: 0;
+}
+
+.disconnect_btn {
+  margin-left: auto;
 }
 
 .disconnect_btn {
@@ -517,4 +528,6 @@ button.button-active {
 
 .my-stun-container-join input:focus {
   outline: none;
+
 }
+
