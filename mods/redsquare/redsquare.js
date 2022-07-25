@@ -36,9 +36,13 @@ class RedSquare extends ModTemplate {
 
   
 
+  addTweetFromTransaction(app, mod, tx) {
+    let tweet = new Tweet(app, this, tx);
+    this.addTweet(app, this, tweet);
+  }
+
   addTweet(app, mod, tweet) {
 
-console.log("adding tweet: " + tweet.text);
     //
     // post-level
     //
@@ -60,7 +64,6 @@ console.log("adding tweet: " + tweet.text);
 	    insertion_index++;
 	  }
 	}
-console.log("inserting tweet at: " + insertion_index);
 	this.tweets.splice(insertion_index, 0, tweet);
         //this.tweets.unshift(tweet);
         //app.connection.emit("tweet-render-request", tweet);
@@ -336,11 +339,12 @@ console.log("inserting tweet at: " + insertion_index);
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
 
     redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
+
   }
 
   async receiveTweetTransaction(blk, tx, conf, app) {
-
-    console.log('inside receive tweet');
 
     let tweet     = new Tweet(app, this, tx);
 

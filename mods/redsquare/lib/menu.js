@@ -37,6 +37,10 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-settings');
     obj.onclick = (e) => {
 
+      let obj = document.querySelector(".overlay");
+      obj.classList.toggle("show");
+
+/***
       // re-render sidebar
       mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
@@ -44,6 +48,7 @@ class RedSquareMenu {
       document.querySelector(".appspace").innerHTML = "";
       let settings_self = app.modules.returnModule("Settings");
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
+***/
     }
 
     obj = document.querySelector('.redsquare-menu-contacts');

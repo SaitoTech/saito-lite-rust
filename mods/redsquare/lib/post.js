@@ -1,6 +1,6 @@
 const PostTemplate = require("./post.template");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-
+const JSON = require('json-bigint');
 
 class Post {
 
@@ -11,10 +11,6 @@ class Post {
     }
 
     render(app, mod) {
-
-console.log("rending post overlay");
-console.log("parent_id: " + this.parent_id);
-console.log("thread_id: " + this.thread_id);
 
       this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
       app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
@@ -35,7 +31,15 @@ console.log("thread_id: " + this.thread_id);
           data = { text : text , parent_id : parent_id , thread_id : thread_id };
         }
 
-        mod.sendTweetTransaction(app, mod, data);  
+        let newtx = mod.sendTweetTransaction(app, mod, data);  
+	mod.addTweetFromTransaction(app, mod, newtx);
+
+        if (thread_id !== "") {
+	  mod.renderMainPage(app, mod);
+	} else {
+  	  mod.renderWithChildren(app, mod, thread_id);
+	}
+
 	this.overlay.hide();
 
       }

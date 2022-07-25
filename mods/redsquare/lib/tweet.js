@@ -47,6 +47,7 @@ class RedSquareTweet {
 
     }
 
+
     returnTweet(app, mod, sig) {
       if (this.tx.transaction.sig === sig) { return this; }
       for (let i = 0; i < this.children.length; i++) {
@@ -65,7 +66,6 @@ class RedSquareTweet {
       let tweet_div = "#"+tweet_id;
       let obj = document.getElementById(tweet_div);
 //      let my_selector = "#tweet-box-"+
-console.log("rendering into: " + selector);
 
       if (obj) {
         app.browser.replaceElementById(html, tweet_id);
@@ -87,8 +87,6 @@ console.log("rendering into: " + selector);
       let tweet_div = "#"+tweet_id;
       let obj = document.getElementById(tweet_div);
       let my_selector = ".redsquare-item-children-"+this.tx.transaction.sig;
-
-console.log("rendering into: " + selector);
 
       if (obj) {
         app.browser.replaceElementById(html, tweet_id);
