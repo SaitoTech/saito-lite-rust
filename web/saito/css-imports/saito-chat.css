@@ -32,7 +32,13 @@
 .chat-header>i:last-child {
     margin-left: auto;
     cursor: pointer;
+    transition: all .2s;
 }
+
+.chat-header>i:last-child:hover {
+    transform: rotate(90deg) scale(1.1);
+}
+
 
 .chat-header>h5 {
     color: var(--saito-default-font-color);
@@ -75,6 +81,18 @@
     position: relative;
     width: 3.8rem;
 }
+
+
+.chat-item .chat-profile>img {
+    transition: all .2s;
+    cursor: pointer;
+}
+
+.chat-item .chat-profile>img:hover {
+    transform: scale(1.1);
+}
+
+
 
 .chat-item.other .chat-profile>img {
     position: absolute;
@@ -184,6 +202,12 @@
     color: var(--saito-primary);
     cursor: pointer;
     z-index: 2;
+    transition: all .2s;
+    font-size: 2rem;
+}
+
+.chat-footer i:hover {
+    transform: rotate(45deg);
 }
 
 
