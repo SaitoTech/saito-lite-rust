@@ -2,7 +2,7 @@
 module.exports = (app, mod) => {
 
   return `  
-    <div class="">
+    <div class="main">
         
       </div>
     `;

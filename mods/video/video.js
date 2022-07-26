@@ -71,6 +71,19 @@ class Video extends ModTemplate {
     }
 
 
+    async handleUrlParams(params) {
+        if (this.app.BROWSER === 0) return;
+        if (params.has('invite_code')) {
+            const invite_code = params.get('invite_code');
+            const video_mod = this.app.modules.returnModule('Video');
+            const result = await video_mod.joinVideoInvite(invite_code);
+            if (result) {
+                salert(result);
+            }
+
+
+        }
+    }
 
 
     onConfirmation(blk, tx, conf, app) {
@@ -132,9 +145,6 @@ class Video extends ModTemplate {
     }
 
 
-    handleUrlParams(urlparams) {
-        console.log("video module handling url params ", urlparams);
-    }
 
     handlePeerRequest(app, req, peer, mycallback) {
         if (req.request == null) {
@@ -398,7 +408,7 @@ class Video extends ModTemplate {
         overlay.show(this.app, video_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(roomCode);
+                navigator.clipboard.writeText(`${window.location.host}/video?invite_code=${roomCode}`);
                 document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
             });
         });
@@ -540,13 +550,11 @@ class Video extends ModTemplate {
 
 
         if (!room) {
-            console.log('Invite does not exist');
-            siteMessage("This room does not exist", 5000);
-            return "This room does not exist";
+            console.log('Invite code is invalid');
+            return "Invite code is invalid";
         }
 
         if (room.isMaxCapicity) {
-            siteMessage("This has reached it's max capacity", 5000);
             console.log("Room has reached max capacity");
             return "Room has reached max capacity";
 
@@ -613,9 +621,7 @@ class Video extends ModTemplate {
                         recipient: offer.recipient,
                     })
                 })
-
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
-
                 this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });

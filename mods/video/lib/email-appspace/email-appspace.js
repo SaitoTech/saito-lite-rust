@@ -46,7 +46,7 @@ class Container {
             } else {
                 if (!document.querySelector('#videocall-main')) {
                     app.browser.addElementToDom(sanitize(videocallMainTemplate(app, mod)));
-                    app.browser.addElementToDom(sanitize(StunMainContainer(app, mod), 'videocall-main'));
+                    app.browser.addElementToDom(sanitize(StunMainContainer(app, mod)), 'videocall-main');
                 }
 
             }
