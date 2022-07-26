@@ -13,10 +13,13 @@ class Invites extends InviteTemplate {
     this.description    = "Demo module with UI for invite display and acceptance";
     this.categories     = "Utilities Education Demo";
 
+    this.icon		= "fas fa-envelope-open-text";
     this.invites        = [];
     this.scripts	= [];
     this.styles		= ['/invites/style.css'];
+
     return this;
+
   }
 
 

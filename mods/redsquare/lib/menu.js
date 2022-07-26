@@ -14,9 +14,24 @@ class RedSquareMenu {
       app.browser.addElementToSelector(RedSquareMenuTemplate(app, mod), container);
     }
 
+    //
+    // appspace modules
+    //
+    for (let i = 0; i < app.modules.mods.length; i++) {
+      let x = app.modules.mods[i].respondTo("appspace");
+      if (x) {
+	let html = `
+                <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
+                  <i class="${app.modules.mods[i].icon}"></i>
+                  <span> ${app.modules.mods[i].name}</span>
+                </li>
+	`;
+	app.browser.addElementToSelector(html, ".saito-menu-list");
+      }
+    }
     this.attachEvents(app, mod);
-
   }
+
 
   attachEvents(app, mod) {
 
@@ -37,10 +52,6 @@ class RedSquareMenu {
     obj = document.querySelector('.redsquare-menu-settings');
     obj.onclick = (e) => {
 
-      let obj = document.querySelector(".overlay");
-      obj.classList.toggle("show");
-
-/***
       // re-render sidebar
       mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
@@ -48,7 +59,7 @@ class RedSquareMenu {
       document.querySelector(".appspace").innerHTML = "";
       let settings_self = app.modules.returnModule("Settings");
       settings_self.respondTo("appspace").render(settings_self.app, settings_self);
-***/
+
     }
 
     obj = document.querySelector('.redsquare-menu-contacts');
@@ -61,6 +72,22 @@ class RedSquareMenu {
     obj.onclick = (e) => {
       mod.games.render(app, mod, ".appspace");
       mod.gsidebar.render(app, mod, ".saito-sidebar-right");
+    }
+
+
+    //
+    // appspace modules
+    //
+    for (let i = 0; i < app.modules.mods.length; i++) {
+      let x = app.modules.mods[i].respondTo("appspace");
+      if (x) {
+	let qs = ".redsquare-menu-"+app.modules.mods[i].returnSlug();
+        obj = document.querySelector(qs);
+        obj.onclick = (e) => {
+	  document.querySelector(".appspace").innerHTML = "";
+          x.render(app, mod, ".appspace");
+        }
+      }
     }
 
   } 

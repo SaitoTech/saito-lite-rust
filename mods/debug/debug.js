@@ -1,6 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 const DebugAppspace = require('./lib/email-appspace/debug-appspace');
+const DebugAppspaceMain = require('./lib/appspace/main');
 
 
 
@@ -13,6 +14,7 @@ class Debug extends ModTemplate {
     this.name           = "Debug";
     this.description    = "Email plugin that allows visual exploration and debugging of the Saito wallet.";
     this.categories     = "Utilities Core";
+    this.icon		= "fas fa-code"
 
     this.description = "A debug configuration dump for Saito";
     this.categories  = "Dev Utilities";
@@ -24,7 +26,11 @@ class Debug extends ModTemplate {
 
   respondTo(type) {
 
-    if (type == 'email-appspace') {
+    if (type === "appspace") {
+       return new DebugAppspaceMain(this.app, this);
+    }
+
+    if (type === 'email-appspace') {
       let obj = {};
 	  obj.render = this.renderEmail;
 	  obj.attachEvents = this.attachEventsEmail;
@@ -34,8 +40,11 @@ class Debug extends ModTemplate {
     return null;
   }
 
-  renderEmail(app, mod) {
+
+  renderEmail(app, mod, selector = "") {
+
      DebugAppspace.render(app, this);
+
   }
 
   attachEventsEmail(app, mod) {

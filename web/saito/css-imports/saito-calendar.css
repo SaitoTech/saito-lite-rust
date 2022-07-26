@@ -8,6 +8,14 @@
     min-width: var(--calendar-minwidth);
 }
 
+.saito-calendar-popup {
+    min-width: 30rem;
+    min-height: 30rem;
+    background-color: whitesmoke;
+    border-radius: 2rem;
+    padding: 2rem;
+}
+
 .saito-calendar {
     border-radius: .5rem;
     width: 100%;

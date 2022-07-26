@@ -12,6 +12,7 @@ class Settings extends ModTemplate {
     this.description = "Convenient Email plugin for managing Saito account settings";
     this.utilities = "Core Utilities";
     this.link = "/email?module=settings";
+    this.icon = "fas fa-cog";
     this.description = "User settings module.";
     this.categories = "Admin Users";
     return this;

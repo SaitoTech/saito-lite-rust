@@ -140,11 +140,12 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
-    if (type == "appspace") {
-      this.scripts['/arcade/new-style.css'];
-      super.render(this.app, this); // for scripts + styles
-      return new ArcadeAppspace(this.app, this);
-    }
+
+//    if (type == "appspace") {
+//      this.scripts['/arcade/new-style.css'];
+//      super.render(this.app, this); // for scripts + styles
+//      return new ArcadeAppspace(this.app, this);
+//    }
     return null;
   }
 
