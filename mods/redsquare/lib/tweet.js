@@ -125,6 +125,14 @@ class RedSquareTweet {
           let tweet_sig_id = el.getAttribute("data-id");
 
 	  document.querySelector(".redsquare-list").innerHTML = "";
+
+	  let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
+	  app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title"><i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE</div>`, "saito-page-header-title");
+	  document.querySelector(".saito-back-button").onclick = (e) => {
+	    app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
+	    mod.renderMainPage(app, mod);
+	  }
+
 	  mod.renderWithChildren(app, mod, tweet_sig_id);
 
       };
