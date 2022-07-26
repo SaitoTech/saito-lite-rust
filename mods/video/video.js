@@ -5,7 +5,6 @@ const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
-const { vanillaToast } = require("vanilla-toast");
 
 
 class Video extends ModTemplate {
@@ -236,12 +235,11 @@ class Video extends ModTemplate {
 
 
                         case "connected":
-                            // vanillaToast.cancelAll();
-                            // vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
+
                             break;
 
                         case "disconnected":
-                            // vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
+
                             break;
 
                         default:
@@ -272,8 +270,7 @@ class Video extends ModTemplate {
                 });
 
                 let video_self = app.modules.returnModule("Video");
-
-                video_self.videoChat.show(pc);
+                video_self.videoChat.show(pc, app, video_self);
                 video_self.videoChat.addLocalStream(localStream);
 
 
@@ -421,13 +418,11 @@ class Video extends ModTemplate {
 
 
                             case "connected":
-                                // vanillaToast.cancelAll();
-                                // vanillaToast.success(`${publicKey} Connected`, { duration: 3000, fadeDuration: 500 });
+
                                 // siteMessage("Connected");
                                 break;
 
                             case "disconnecting":
-                                // vanillaToast.error(`${publicKey} Disconnected`, { duration: 3000, fadeDuration: 500 });
                                 break;
 
                             default:
@@ -443,8 +438,8 @@ class Video extends ModTemplate {
                     });
 
 
-
-                    this.videoChat.show(pc);
+                    const video_self = this.app.modules.returnModule('Video');
+                    this.videoChat.show(pc, this.app, video_self);
                     this.videoChat.addLocalStream(localStream)
 
 
@@ -600,10 +595,9 @@ class Video extends ModTemplate {
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 let video_self = this.app.modules.returnModule("Video");
-                video_self.videoChat.show(new RTCPeerConnection({}));
+                video_self.videoChat.show(new RTCPeerConnection({}), this.app, video_self);
                 video_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
-                // vanillaToast.success("");
                 siteMessage("Room joined, you are the only participant in the room", 5000)
             }
 
@@ -637,7 +631,6 @@ class Video extends ModTemplate {
         newtx = this.app.wallet.signTransaction(newtx);
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
-        // vanillaToast.success("");
         siteMessage("Starting video connection", 5000)
         // this.app.network.propagateTransaction(newtx);
 

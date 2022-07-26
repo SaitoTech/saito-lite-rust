@@ -59,19 +59,7 @@ class Stun extends ModTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
-            // {
-            //   urls: "stun:stun-sf.saito.io:3478"
-            // },
-            // {
-            //   urls: "turn:stun-sf.saito.io:3478",
-            //   username: "guest",
-            //   credential: "somepassword",
-            // },
-
         ];
-
-
-
     }
 
     saveStun() {
@@ -679,12 +667,11 @@ class Stun extends ModTemplate {
 
 
                     //     // case "connected":
-                    //     //     vanillaToast.cancelAll();
-                    //     //     vanillaToast.success(`${offer_creator} Connected`, { duration: 3000, fadeDuration: 500 });
+
                     //     //     break;
 
                     //     // case "disconnected":
-                    //     //     vanillaToast.error(`${offer_creator} Disconnected`, { duration: 3000, fadeDuration: 500 });
+
                     //     //     break;
 
                     //     // default:
