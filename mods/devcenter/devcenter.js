@@ -53,6 +53,22 @@ class DevCenter extends ModTemplate {
     this.emails.inbox.push(tx);
   }
 
+  async handleUrlParams(params) {
+    if (params.has('invite_code')) {
+      const invite_code = params.get('invite_code');
+      const video_mod = this.app.modules.returnModule('Video');
+      const result = await video_mod.joinVideoInvite(invite_code);
+      console.log(result)
+      if (result) {
+        siteMessage(result);
+      }
+
+    } else {
+      siteMessage("Invalid Invite code");
+      console.log("No invite code in url params");
+    }
+
+  }
 
   render(app) {
     if (app.BROWSER != 1 || this.browser_active != 1) {
@@ -109,6 +125,7 @@ class DevCenter extends ModTemplate {
   }
 
 
+
   //
   // load transactions into interface when the network is up
   //
@@ -121,7 +138,7 @@ class DevCenter extends ModTemplate {
 
      this.app.storage.loadTransactions("Dev", 50, (txs) => {
       for (let i = 0; i < txs.length; i++) {
-	txs[i].decryptMessage(app);
+  txs[i].decryptMessage(app);
         this.addTransaction(txs[i]);
       }
       let readyCount = app.browser.getValueFromHashAsNumber(window.location.hash, "ready")

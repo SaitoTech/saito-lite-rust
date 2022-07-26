@@ -3,7 +3,6 @@ const StunUITemplate = require("./stun-ui-template");
 const MyStunTemplate = require("./MyStunTemplate");
 const ListenersTemplate = require("./ListenersTemplate");
 const PeersTemplate = require("./PeersTemplate");
-const Stun = require("../stun");
 const { vanillaToast } = require("vanilla-toast");
 const VideoChat = require('../../../lib/saito/ui/video-chat/video-chat');
 

@@ -5,6 +5,9 @@ const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
+const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
+const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+const VideoCallMain = require('./lib/main/videocall-main.template');
 
 
 class Video extends ModTemplate {
@@ -25,18 +28,37 @@ class Video extends ModTemplate {
 
         this.overlay = new SaitoOverlay(app, this);
 
+        this.styles = [
+            '/video/css/videocall-main.css',
+        ];
+
+
     }
 
 
 
+
     respondTo(type) {
-        // if (type == 'email-appspace') {
-        //     let obj = {};
-        //     obj.render = this.renderEmail;
-        //     obj.attachEvents = this.attachEmailEvents;
-        //     return obj;
-        // }
+        if (type === 'email-appspace') {
+            return new StunEmailAppspace(this.app, this);
+        }
         return null;
+    }
+
+
+
+    render(app, mod) {
+        if (app.BROWSER != 1 || this.browser_active != 1) {
+            return;
+        }
+        if (this.header == null) {
+            this.header = new SaitoHeader(app, this);
+        }
+
+        this.header.render(app, this);
+        this.header.attachEvents(app, this);
+        new StunEmailAppspace(this.app, this).render(this.app, this);
+        super.render(app, mod);
     }
 
 
@@ -56,7 +78,6 @@ class Video extends ModTemplate {
         let txmsg = tx.returnMessage();
 
         if (conf === 0) {
-
             if (txmsg.module === 'Video') {
                 let video_self = app.modules.returnModule("Video");
                 let stun_mod = app.modules.returnModule('Stun');
@@ -110,6 +131,10 @@ class Video extends ModTemplate {
         }
     }
 
+
+    handleUrlParams(urlparams) {
+        console.log("video module handling url params ", urlparams);
+    }
 
     handlePeerRequest(app, req, peer, mycallback) {
         if (req.request == null) {
@@ -203,7 +228,7 @@ class Video extends ModTemplate {
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
-        let stun_mod = app.modules.returnModule("Stun");
+        let stun_mod = app.modules.returnModule("stun");
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
@@ -254,7 +279,7 @@ class Video extends ModTemplate {
                 pc.dc.onmessage = (e) => {
 
                     console.log('new message from client : ', e.data);
-                    // StunUI.displayMessage(peer_key, e.data);
+
                 };
                 pc.dc.open = (e) => {
                     console.log('connection opened');
@@ -506,7 +531,7 @@ class Video extends ModTemplate {
 
     async joinVideoInvite(roomCode) {
         if (!roomCode) return siteMessage("Please insert a room code", 5000);
-        const stun_mod = this.app.modules.returnModule("Stun");
+        const stun_mod = this.app.modules.returnModule("stun");
         const video_self = this.app.modules.returnModule("Video");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
         const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
@@ -517,14 +542,20 @@ class Video extends ModTemplate {
         if (!room) {
             console.log('Invite does not exist');
             siteMessage("This room does not exist", 5000);
+            return "This room does not exist";
         }
 
         if (room.isMaxCapicity) {
-            return console.log("Room has reached max capacity");
+            siteMessage("This has reached it's max capacity", 5000);
+            console.log("Room has reached max capacity");
+            return "Room has reached max capacity";
+
         }
 
         if (Date.now() < room.startTime) {
-            return console.log("Video call time is not yet reached");
+            siteMessage("Video call time is not yet reached", 5000);
+            console.log("Video call time is not yet reached");
+            return "Video call time is not yet reached";
         }
 
 
@@ -554,12 +585,8 @@ class Video extends ModTemplate {
 
         }
 
-
-
         let peerConnectionOffers = [];
-
         if (room.peers.length > 1) {
-
             // send connection to other peers if they exit
             for (let i = 0; i < room.peers.length; i++) {
                 if (room.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
@@ -571,8 +598,6 @@ class Video extends ModTemplate {
 
         try {
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
-
-
             if (peerConnectionOffers.length > 0) {
 
                 const offers = [];

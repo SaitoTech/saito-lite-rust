@@ -1,6 +1,6 @@
 module.exports = (app, mod) => {
 
-  const stun_self = app.modules.returnModule('Stun');
+  const stun_self = app.modules.returnModule('videocall');
   const preferred_crypto = app.wallet.returnPreferredCrypto();
   let publicKey = preferred_crypto.returnAddress();
   let key_index = app.keys.keys.findIndex(key => key.publickey === publicKey)

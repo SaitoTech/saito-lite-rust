@@ -5,6 +5,7 @@ const StunMainContainer = require("./email-appspace.template");
 const StunComponentMyStun = require("../components/my-stun");
 
 const VideoChat = require('../../../../lib/saito/ui/video-chat/video-chat');
+const videocallMainTemplate = require("../main/videocall-main.template");
 
 
 class Container {
@@ -43,7 +44,11 @@ class Container {
             if (document.querySelector('#email-appspace')) {
                 document.querySelector('#email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
             } else {
-                app.browser.addElementToDom(sanitize(StunMainContainer(app, mod)));
+                if (!document.querySelector('#videocall-main')) {
+                    app.browser.addElementToDom(sanitize(videocallMainTemplate(app, mod)));
+                    app.browser.addElementToDom(sanitize(StunMainContainer(app, mod), 'videocall-main'));
+                }
+
             }
 
 
