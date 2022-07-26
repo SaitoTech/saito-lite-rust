@@ -478,7 +478,7 @@ button.button-active {
 
 
 .my-stun-container h2 {
-  margin-bottom: .1rem;
+  margin-bottom: 1rem;
 }
 
 .my-stun-container>p {
@@ -487,9 +487,42 @@ button.button-active {
 
 .my-stun-container-actions {
   margin-bottom: 1rem;
+  border-top: 1px solid #ddd;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
 }
 
+.my-stun-container .saito-badge {
+  color: var(--saito-white);
+  background: var(--saito-red);
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1em;
+  vertical-align: super;
+}
 
+.my-stun-container .saito-info-text {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.2rem;
+}
+
+.my-stun-container button {
+  height: 2rem;
+  line-height: 0rem;
+  font-size: 1rem;
+  width: 10rem;
+}
+
+.my-stun-container-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  height: 2rem;
+  font-size: 1rem;
+}
 
 .my-stun-container-join p {
   font-size: 1rem;
@@ -525,4 +558,8 @@ button.button-active {
 .my-stun-container-join input:focus {
   outline: none;
 
+}
+
+.saito-overlay {
+  min-width: 25rem;
 }
