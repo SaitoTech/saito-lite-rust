@@ -23,9 +23,9 @@
 }
 
 .chat-header>i {
-    margin-right: 1rem;
+    margin-right: .5rem;
     color: var(--saito-primary);
-    font-size: 3rem;
+    font-size: 2rem;
     display: inline-block;
 }
 
@@ -40,7 +40,7 @@
 }
 
 
-.chat-header>h5 {
+.chat-header>h6 {
     color: var(--saito-default-font-color);
 }
 

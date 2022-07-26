@@ -6,7 +6,7 @@ module.exports = (app, mod, chat_popup_id) => {
   <div class="chat-container chat-popup-${chat_popup_id}" id="chat-popup-${chat_popup_id}">
   <div class="chat-header">
   <i class="far fa-comment-dots"></i>
-  <h5>Community Chat</h5>
+  <h6>Community Chat</h6>
   <i id="chat-container-close-${chat_popup_id}" class="chat-container-close fas fa-times"></i>
 </div>
 <div class="chat-body">
