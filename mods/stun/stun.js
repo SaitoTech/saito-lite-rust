@@ -1,9 +1,9 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
-const Slip = require('../..//lib/saito/slip.ts');
-var serialize = require('serialize-javascript');
-const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+// const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
+// const Slip = require('../..//lib/saito/slip.ts');
+// var serialize = require('serialize-javascript');
+// const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 
 class Stun extends ModTemplate {
 

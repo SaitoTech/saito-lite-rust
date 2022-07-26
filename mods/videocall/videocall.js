@@ -1,4 +1,4 @@
-const saito = require("./../../lib/saito/saito");
+const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const EmailUI = require('./lib/email-ui');
 const Slip = require('../..//lib/saito/slip.ts');
@@ -10,7 +10,7 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const VideoCallMain = require('./lib/main/videocall-main.template');
 
 
-class Video extends ModTemplate {
+class VideoCall extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
@@ -716,5 +716,5 @@ class Video extends ModTemplate {
 
 }
 
-module.exports = Video;
+module.exports = VideoCall;
 
