@@ -14,8 +14,8 @@ class VideoCall extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
-        this.appname = "Video";
-        this.name = "Video";
+        this.appname = "VideoCall";
+        this.name = "VideoCall";
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
@@ -29,7 +29,7 @@ class VideoCall extends ModTemplate {
         this.overlay = new SaitoOverlay(app, this);
 
         this.styles = [
-            '/video/css/videocall-main.css',
+            '/videocall/css/videocall-main.css',
         ];
 
 
@@ -408,7 +408,7 @@ class VideoCall extends ModTemplate {
         overlay.show(this.app, video_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(`${window.location.host}/video?invite_code=${roomCode}`);
+                navigator.clipboard.writeText(`${window.location.host}/videocall?invite_code=${roomCode}`);
                 document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
             });
         });
