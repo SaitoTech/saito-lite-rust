@@ -20,7 +20,7 @@ class VideoCall extends ModTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.videoChat = new VideoChat(app, mod);
-
+        this.icon = "fas fa-video"
         this.overlay = new SaitoOverlay(app, this);
 
 

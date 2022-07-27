@@ -18,7 +18,7 @@
 
 .videocall-chatbox .disconnect_btn {
     transform: matrix(1, 0, 0, -1, 0, 0);
-
+    background-color: var(--saito-white);
 }
 
 
