@@ -86,6 +86,14 @@ class RedSquareMenu {
         obj.onclick = (e) => {
 	  document.querySelector(".appspace").innerHTML = "";
           x.render(app, mod, ".appspace");
+	  // has sidebar
+          let y = app.modules.mods[i].respondTo("appspace-sidebar");
+          if (y) {
+	    document.querySelector(".appspace-sidebar").innerHTML = "";
+            y.render(app, mod, ".appspace-sidebar");
+	  } else {
+            mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+	  }
         }
       }
     }
