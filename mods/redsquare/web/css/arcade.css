@@ -282,7 +282,7 @@ option {
 
 .scheduler-overlay-container {
   background-color: #fff;
-  width: 55vh;
+  width: 58vh;
   height: 70vh;
   border-radius: 15px;
   padding: 20px;
@@ -360,8 +360,6 @@ option {
 }
 
 .saito-select, .saito-select-wrapper {
-  //display: inline-block;
-  //float: left;
   width: min-content;
   min-width: 15rem;
 }
@@ -404,4 +402,22 @@ option {
   border: 1px solid var(--saito-border);
   padding: 0px 1rem;
   border-radius: 0.4rem;
+}
+
+.schedule-input-container.contact-list {
+  max-height: 13rem;
+  overflow-y: scroll;
+}
+
+.schedule-input-container.contact-list .saito-user {
+  max-height: 7rem;
+}
+
+.schedule-input-container.contact-list .saito-username{
+  max-width: 100%;
+}
+
+.schedule-input-container.contact-list .invite-btn {
+  margin-left: 2.5rem; 
+  display: inline-block;
 }
