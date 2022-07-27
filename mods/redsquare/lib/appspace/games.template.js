@@ -1,6 +1,9 @@
+const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/saito-module.template');
 
 
 module.exports = (app, mod) => {
+
+  let twilight_mod = app.modules.returnModule("Twilight");
 
   return `
 
@@ -18,25 +21,25 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
       <div class="redsquare-games-container">
 
-        <div class="saito-game chess">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Chess</div>
-          </div>
+        <div class="saito-game">
+
+	  ${SaitoModuleTemplate(app, mod, "Chess", "chess")}
+
           <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
+            <div class="saito-leaderboard">
+	      <div class="saito-table">
+                <div class="saito-table-row odd">
+                  <div class="saito-leaderboard-gamename">david@saito</div>
+                  <div class="saito-leaderboard-rank">1</div>
+                </div>
+                <div class="saito-table-row">
+                  <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+                  <div class="saito-leaderboard-rank">2</div>
+                </div>
+                <div class="saito-table-row odd">
+                  <div class="saito-leaderboard-gamename">richard@saito</div>
+                  <div class="saito-leaderboard-rank">3</div>
+                </div>
               </div>
             </div>
 	    <div class="saito-game-controls">
@@ -46,225 +49,29 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
           </div>
         </div>
 
-        <div class="saito-game twilight">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Twilight</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Twilight">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
+        <div class="saito-game">
 
-        <div class="saito-game imperium">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Red Imperium</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Imperium">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
+	  ${SaitoModuleTemplate(app, mod, "Twilight Struggle", "twilight")}
 
-        <div class="saito-game settlers">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Settlers of Saitoa</div>
-          </div>
           <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
+            <div class="saito-leaderboard">
+	      <div class="saito-table">
+                <div class="saito-table-row odd">
+                  <div class="saito-leaderboard-gamename">david@saito</div>
+                  <div class="saito-leaderboard-rank">1</div>
+                </div>
+                <div class="saito-table-row">
+                  <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+                  <div class="saito-leaderboard-rank">2</div>
+                </div>
+                <div class="saito-table-row odd">
+                  <div class="saito-leaderboard-gamename">richard@saito</div>
+                  <div class="saito-leaderboard-rank">3</div>
+                </div>
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Settlers">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
-        <div class="saito-game wuziqi">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Wuziqi</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Wuziqi">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
-        <div class="saito-game hereistand">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Here I Stand</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="HereIStand">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
-        <div class="saito-game spider">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Spider Solitaire</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Spider">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
-        <div class="saito-game solitrio">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Solitrio</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Solitrio">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
-        <div class="saito-game wordblocks">
-          <div class="saito-game-image">
-	    <div class="saito-game-image-controls"><i class="fas fa-solid fa-ellipsis-v"></i></div>
-	    <div></div>
-            <div class="saito-game-image-title">Wordblocks</div>
-          </div>
-          <div class="saito-game-content">
-            <div class="saito-game-leaderboard">
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">david@saito</div>
-                <div class="saito-leaderboard-rank">1</div>
-              </div>
-              <div class="saito-leaderboard-row">
-                <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                <div class="saito-leaderboard-rank">2</div>
-              </div>
-              <div class="saito-leaderboard-row odd">
-                <div class="saito-leaderboard-gamename">richard@saito</div>
-                <div class="saito-leaderboard-rank">3</div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Wordblocks">Create Game</div>
+              <div class="create-game-link" data-id="Chess">Create Game</div>
               <div>how to play?</div>
 	    </div>
           </div>

@@ -1,9 +1,5 @@
-var moment = require('moment-timezone');
 
 module.exports = (app, mod) => {
-
-  // console.log('all timezones');
-  // console.log(moment.tz.names());
 
    return `
     <div class="scheduler-overlay-container">

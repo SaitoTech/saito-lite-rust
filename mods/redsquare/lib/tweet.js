@@ -65,17 +65,12 @@ class RedSquareTweet {
       let tweet_id = "tweet-box-" + this.tx.transaction.sig;
       let tweet_div = "#"+tweet_id;
       let obj = document.getElementById(tweet_div);
-//      let my_selector = "#tweet-box-"+
 
       if (obj) {
         app.browser.replaceElementById(html, tweet_id);
       } else {
         app.browser.addElementToSelector(html, selector);
       }
-
-//      for (let i = 0; i < this.children.length; i++) {
-//        this.children[i].render(app, mod, my_selector);        
-//      }
 
       this.attachEvents(app, mod);
     }
@@ -205,23 +200,10 @@ class RedSquareTweet {
         }
         this.last_updated = tweet.last_updated;
         if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
-
-	    this.children.unshift(tweet);
-	    // do not render when adding
-	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    //let obj = document.querySelector(qs);
-	    //if (obj) { this.render(app, mod); }
-
+	  this.children.unshift(tweet);
 	  return 1;
-
 	} else { 
-
-	    this.children.push(tweet);
-	    // do not render when adding
-	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    //let obj = document.querySelector(qs);
-	    //if (obj) { this.render(app, mod); }
-
+	  this.children.push(tweet);
 	  return 1;
 	}
       } else {
@@ -229,12 +211,6 @@ class RedSquareTweet {
           let x = this.children[i].addTweet(app, mod, tweet); 
 	  if (x == 1) { 
 	    this.last_updated = tweet.last_updated; 
-
-	    // do not render when adding
-	    //let qs = "#tweet-box-"+this.tx.transaction.sig;
-	    //let obj = document.querySelector(qs);
-	    //if (obj) { this.render(app, mod); }
-
 	  }
 	  return x;
         }
@@ -242,6 +218,11 @@ class RedSquareTweet {
         //
         // still here? add in unknown children
         //
+	// this means we know the comment is supposed to be somewhere in this thread/parent
+	// but its own parent doesn't yet exist, so we are simply going to store it here 
+	// until we possibly add the parent (where we will check all unknown children) for
+	// placement then.
+	//
 	this.unknown_children.push(tweet);
 
       }
@@ -287,6 +268,11 @@ class RedSquareTweet {
 
           this.youtube_id = videoId;
 
+	  //
+	  // and cut the link from the tweet
+	  //
+	  this.text = this.text.replace(this.link, '');
+
           return this;
 
         }
@@ -296,7 +282,17 @@ class RedSquareTweet {
         //
 	if (fetch_open_graph == 1) {
           let res = await mod.fetchOpenGraphProperties(app, mod, this.link);
-          if (res != '') { this.link_properties = res; }
+          if (res != '') { 
+
+	    this.link_properties = res; 
+
+	    //
+	    // and cut the link from the tweet
+	    //
+	    this.text = this.text.replace(this.link, '');
+
+	  }
+
 	}
 
         return this;
