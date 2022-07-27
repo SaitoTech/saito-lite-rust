@@ -260,7 +260,6 @@ class Stun extends ModTemplate {
             let ice_candidates = [];
             const execute = async () => {
                 const stun_mod = app.modules.returnModule("Stun")
-                console.log("these are the servers :", stun_mod.servers);
                 try {
                     const pc = new RTCPeerConnection({
                         iceServers: stun_mod.servers,
@@ -633,7 +632,6 @@ class Stun extends ModTemplate {
                 ice_candidates: []
             }
             const stun_mod = app.modules.returnModule("Stun");
-            console.log("these are the servers ", stun_mod.servers)
             const pc = new RTCPeerConnection({
                 iceServers: stun_mod.servers,
             });

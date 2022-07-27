@@ -1,13 +1,12 @@
 const videoChatTemplate = () => {
   return `
-    <div id="video-chat-box" style="left:50%; top: 50%; transform: translate(-50%, -50%)"  class="video body">
+    <div class="videocall-chatbox" id="videocall-chatbox">
       <main>
         <section>
-        <p class="heading" style="color: white;">Video Chat </p>
-          
+        <h6 class="heading" style="color: white;">Video Chat </h6>
         </section>
         <section class="wrapper">
-          <video id="localStream" muted="true"  autoplay class="box">
+          <video id="localStream" muted="true"  class="box" style="display: block" autoplay>
             <button class="b-btngrid">2h5dt6dd678s..</button>
           </video>
           <video id="remoteStream1"   autoplay class="box">
@@ -22,13 +21,12 @@ const videoChatTemplate = () => {
           <video id="remoteStream4" style="display: none"   autoplay class="box">
             <button class="b-btngrid">2h5dt6dd678s..</button>
           </video>
-
         </section>
 
         <section class="footer">
           <i class="audio_control fa fa-microphone" aria-hidden="true"></i>
-          <i class="video_control fa fa-video-camera" aria-hidden="true"></i>
-          <button class="disconnect_btn">Disconnect</button>
+          <i class="video_control fas fa-video" aria-hidden="true"></i>
+          <button class="disconnect_btn saito-button-secondary">Disconnect</button>
         </section>
       </main>
 

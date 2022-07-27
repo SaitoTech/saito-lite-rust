@@ -1,5 +1,5 @@
 
-const videoChatTemplate = require('./templates/video-chat-template');
+const videoChatTemplate = require('./video-chat-template');
 class VideoChat {
 
     // peers = {};
@@ -22,7 +22,7 @@ class VideoChat {
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("video-chat-box");
+        app.browser.makeDraggable("videocall-chatbox");
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
             this.my_pc.forEach(pc => pc.close());
             this.hide();
@@ -51,7 +51,7 @@ class VideoChat {
 
     hide() {
         console.log('hiding')
-        document.querySelector('.body').parentElement.removeChild(document.querySelector('.body'));
+        document.querySelector('#videocall-chatbox').parentElement.removeChild(document.querySelector('#videocall-chatbox'));
 
     }
 
@@ -107,12 +107,16 @@ class VideoChat {
             })
 
             this.videoEnabled = false
+            document.querySelector('.video_control').classList.remove('fa-video')
+            document.querySelector('.video_control').classList.add('fa-video-slash')
         } else {
             this.localStreams.forEach(localStream => {
                 localStream.getVideoTracks()[0].enabled = true;
             })
 
             this.videoEnabled = true;
+            document.querySelector('.video_control').classList.remove('fa-video-slash')
+            document.querySelector('.video_control').classList.add('fa-video')
         }
 
     }

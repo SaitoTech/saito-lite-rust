@@ -1,7 +1,7 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
-const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
+const VideoChat = require('./lib/components/video-chat/video-chat');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const VideoCallAppspace = require('./lib/appspace/main');
 
@@ -53,7 +53,7 @@ class VideoCall extends ModTemplate {
             const videocall_mod = this.app.modules.returnModule('VideoCall');
             const result = await videocall_mod.joinVideoInvite(invite_code);
             if (result) {
-                salert(result);
+                salertNew(result);
             }
         }
     }
@@ -278,7 +278,7 @@ class VideoCall extends ModTemplate {
                 });
 
                 let videocall_self = app.modules.returnModule("VideoCall");
-                videocall_self.videoChat.show(pc, app, videocall_self);
+                // videocall_self.videoChat.show(pc, app, videocall_self);
                 videocall_self.videoChat.addLocalStream(localStream);
 
 
@@ -393,7 +393,7 @@ class VideoCall extends ModTemplate {
             });
         });
 
-        siteMessage("Room created successfully", 5000);
+        siteMessageNew("Room created successfully", 5000);
     }
 
 
@@ -434,7 +434,7 @@ class VideoCall extends ModTemplate {
 
                             case "connected":
 
-                                // siteMessage("Connected");
+                                // siteMessageNew("Connected");
                                 break;
 
                             case "disconnecting":
@@ -520,7 +520,7 @@ class VideoCall extends ModTemplate {
 
 
     async joinVideoInvite(roomCode) {
-        if (!roomCode) return siteMessage("Please insert a room code", 5000);
+        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         const stun_mod = this.app.modules.returnModule("stun");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
         const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
@@ -540,7 +540,7 @@ class VideoCall extends ModTemplate {
         }
 
         if (Date.now() < room.startTime) {
-            siteMessage("Video call time is not yet reached", 5000);
+            siteMessageNew("Video call time is not yet reached", 5000);
             console.log("Video call time is not yet reached");
             return "Video call time is not yet reached";
         }
@@ -608,7 +608,7 @@ class VideoCall extends ModTemplate {
                 videocall_self.videoChat.show(new RTCPeerConnection({}), this.app, videocall_self);
                 videocall_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
-                siteMessage("Room joined, you are the only participant in the room", 5000)
+                siteMessageNew("Room joined, you are the only participant in the room", 5000)
             }
 
         } catch (error) {
@@ -641,7 +641,7 @@ class VideoCall extends ModTemplate {
         newtx = this.app.wallet.signTransaction(newtx);
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
-        siteMessage("Starting video connection", 5000)
+        siteMessageNew("Starting video connection", 5000)
         // this.app.network.propagateTransaction(newtx);
 
 

@@ -2,20 +2,12 @@ const VideoCallAppspaceTemplate = require('./main.template.js');
 
 class VideoCallAppspace {
 
-    constructor(app) {
-        this.private_key_visible = 0;
-    }
 
     render(app, mod) {
 
         if (!document.querySelector(".videocall-appspace")) {
             app.browser.addElementToSelector(VideoCallAppspaceTemplate(app, mod), ".appspace");
         }
-        let videocall_appspace = document.querySelector(".videocall-appspace");
-        // if (videocall_appspace) {
-
-        // }
-
         this.attachEvents(app, mod);
     }
 

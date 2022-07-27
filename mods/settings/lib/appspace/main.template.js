@@ -130,6 +130,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
         <p>${app.options.wallet.version}</p>
       </div>
       </div>
+      
       <div class="settings-appspace-icons-container">
       <h6> Help </h6>
       <div class="settings-appspace-icons"  style="padding-bottom:40px;">

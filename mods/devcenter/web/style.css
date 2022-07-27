@@ -368,3 +368,203 @@ button.button-active {
   transform: matrix(1, 0, 0, -1, 0, 0);
   background: none;
 }
+
+
+/*  video chat */
+
+#video-chat-box {
+  max-width: 60vw;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  background-color: #ffffff;
+
+}
+
+
+.body .disconnect_btn {
+
+  /* left: 83.96%;
+  right: 3.33%;
+  top: 16.87%;
+  bottom: 16.87%; */
+
+  background: #ffffff;
+  /* border: 2px solid #be0000; */
+
+  box-sizing: border-box;
+  /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25); */
+  border-radius: 4px;
+
+  transform: matrix(1, 0, 0, -1, 0, 0);
+}
+
+
+.body .disconnect_btn:hover {
+  color: black
+}
+
+.body .wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(100px, 30vh);
+  grid-gap: 1rem;
+  padding: 1rem;
+  background: var(--saito-skyline-grey);
+}
+
+.body .box {
+  border-radius: 0.1rem;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  border: 1px solid var(--saito-cyber-black-wash);
+  background-color: #fff;
+}
+
+#localStream {
+  display: block;
+}
+
+.body .b-btngrid {
+  border: none;
+  margin-left: 1rem;
+  margin-top: 250px;
+  width: 160px;
+  height: 38px;
+  border-radius: 4px;
+  left: 51px;
+  cursor: pointer;
+}
+
+.body .heading {
+  background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
+}
+
+.body .footer {
+  display: grid;
+  grid-gap: 1rem;
+  padding: 20px;
+  background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
+    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */
+  ;
+  transform: matrix(1, 0, 0, -1, 0, 0);
+  color: white;
+  align-items: center;
+  grid-template-columns: 2em 2em 1fr;
+}
+
+
+.body p {
+  margin: 0;
+}
+
+
+.disconnect_btn {
+  margin-left: auto;
+}
+
+.footer .fa {
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  transform: matrix(1, 0, 0, -1, 0, 0);
+  margin-right: 3rem;
+}
+
+/* video chat */
+
+
+
+/*  Stun */
+
+
+.my-stun-container h2 {
+  margin-bottom: 1rem;
+}
+
+.my-stun-container>p {
+  margin-bottom: 1rem;
+}
+
+.my-stun-container-actions {
+  margin-bottom: 1rem;
+  border-top: 1px solid #ddd;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.my-stun-container .saito-badge {
+  color: var(--saito-white);
+  background: var(--saito-red);
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1em;
+  vertical-align: super;
+}
+
+.my-stun-container .saito-info-text {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.2rem;
+}
+
+.my-stun-container button {
+  height: 2rem;
+  line-height: 0rem;
+  font-size: 1rem;
+  width: 10rem;
+}
+
+.my-stun-container-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  height: 2rem;
+  font-size: 1rem;
+}
+
+.my-stun-container-join p {
+  font-size: 1rem;
+  font-weight: bold;
+
+}
+
+.my-stun-container-create {
+  margin-bottom: 1rem;
+}
+
+.my-stun-container-create p {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+
+.my-stun-container-join {}
+
+.my-stun-container-join>div {
+  display: grid;
+  grid-template-columns: 13rem 13rem;
+  align-items: center;
+}
+
+.my-stun-container-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  height: 50.798px;
+
+}
+
+.my-stun-container-join input:focus {
+  outline: none;
+
+}
+
+.saito-overlay {
+  min-width: 25rem;
+}
