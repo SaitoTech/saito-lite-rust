@@ -30,23 +30,10 @@ class RedSquareAppspaceGames {
     // since it is a class, we put an element in the overlay and render into that.
     //
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
-      let scheduleOptions = {
-        "firstStepHeading": "Schedule Game",
-        "secondStepHeading": "Send Scheduled Game Invite",
-        "type": "game",
-        "games": [ // to be fetched dynamically from arcade respondTo
-        ]
-      };
-      // fetch arcade games
-      app.modules.respondTo("arcade-games").forEach(module => {
-        let title = (module.gamename)? module.gamename: module.name;
-        let slug = (module.returnSlug())? module.slug: module.name.toLowerCase();
-        let description = module.description;
-        scheduleOptions.games.push({"title": title, "description": description, "image": "https://saito.io/"+slug+"/img/arcade/arcade.jpg"})
-      });
-
-      let EventScheduler = new SchedulerOverlay(app, mod, scheduleOptions);
-      EventScheduler.render(app, mod);    
+    
+      this.overlay.show(app, mod, '<div class="redsquare-game-scheduler"></div>');
+      let sc = new SchedulerOverlay(app, mod, ".redsquare-game-scheduler");
+      sc.render(app, mod, ".redsquare-game-scheduler");
 
     }
 
