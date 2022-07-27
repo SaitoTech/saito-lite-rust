@@ -75,8 +75,8 @@ class VideoCall extends ModTemplate {
         if (this.app.BROWSER === 0) return;
         if (params.has('invite_code')) {
             const invite_code = params.get('invite_code');
-            const video_mod = this.app.modules.returnModule('Video');
-            const result = await video_mod.joinVideoInvite(invite_code);
+            const videocall_mod = this.app.modules.returnModule('VideoCall');
+            const result = await videocall_mod.joinVideoInvite(invite_code);
             if (result) {
                 salert(result);
             }
@@ -92,7 +92,7 @@ class VideoCall extends ModTemplate {
 
         if (conf === 0) {
             if (txmsg.module === 'Video') {
-                let video_self = app.modules.returnModule("Video");
+                let videocall_self = app.modules.returnModule("VideoCall");
                 let stun_mod = app.modules.returnModule('Stun');
 
                 let my_pubkey = app.wallet.returnPublicKey();
@@ -100,18 +100,18 @@ class VideoCall extends ModTemplate {
                     if (my_pubkey === tx.msg.answer.offer_creator) {
                         if (app.BROWSER !== 1) return;
                         console.log("current instance: ", my_pubkey, " answer room: ", tx.msg.answer);
-                        console.log("peer connections: ", video_self.peer_connections);
+                        console.log("peer connections: ", videocall_self.peer_connections);
                         const reply = tx.msg.answer.reply;
 
-                        if (video_self.peer_connections[tx.msg.answer.answer_creator]) {
-                            video_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
-                                console.log('setting remote description of ', video_self.peer_connections[tx.msg.answer.answer_creator]);
+                        if (videocall_self.peer_connections[tx.msg.answer.answer_creator]) {
+                            videocall_self.peer_connections[tx.msg.answer.answer_creator].setRemoteDescription(reply.answer).then(result => {
+                                console.log('setting remote description of ', videocall_self.peer_connections[tx.msg.answer.answer_creator]);
 
-                            }).catch(error => console.log(" An error occured with setting remote description for :", video_self.peer_connections[tx.msg.answer.answer_creator], error));
+                            }).catch(error => console.log(" An error occured with setting remote description for :", videocall_self.peer_connections[tx.msg.answer.answer_creator], error));
                             if (reply.ice_candidates.length > 0) {
                                 console.log("Adding answer candidates");
                                 for (let i = 0; i < reply.ice_candidates.length; i++) {
-                                    video_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
+                                    videocall_self.peer_connections[tx.msg.answer.answer_creator].addIceCandidate(reply.ice_candidates[i]);
                                 }
                             }
 
@@ -121,8 +121,8 @@ class VideoCall extends ModTemplate {
                     }
                 }
                 if (tx.msg.rooms) {
-                    video_self.rooms = tx.msg.rooms.rooms
-                    console.log("rooms ", video_self.rooms);
+                    videocall_self.rooms = tx.msg.rooms.rooms
+                    console.log("rooms ", videocall_self.rooms);
                 }
 
                 if (tx.msg.offers && app.BROWSER === 1) {
@@ -135,7 +135,7 @@ class VideoCall extends ModTemplate {
                     // check if current instance is a recipent
                     const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
                     if (index !== -1) {
-                        video_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+                        videocall_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
                     }
 
 
@@ -154,12 +154,12 @@ class VideoCall extends ModTemplate {
             return;
         }
         let tx = req.data;
-        let video_self = app.modules.returnModule("Video");
+        let videocall_self = app.modules.returnModule("VideoCall");
         switch (req.request) {
 
             case "onboard_rooms":
                 console.log('room onboarded: ', tx.msg.rooms.rooms);
-                video_self.rooms = tx.msg.rooms.rooms
+                videocall_self.rooms = tx.msg.rooms.rooms
                 app.options.rooms = tx.msg.rooms.rooms
                 app.storage.saveOptions();
                 break;
@@ -172,7 +172,7 @@ class VideoCall extends ModTemplate {
 
                 app.options.rooms.push(tx.msg.room.room);
                 app.storage.saveOptions();
-                console.log("rooms: ", video_self.rooms);
+                console.log("rooms: ", videocall_self.rooms);
                 break;
 
             case "update_rooms":
@@ -180,7 +180,7 @@ class VideoCall extends ModTemplate {
                 console.log('room updated: ', tx.msg.rooms.rooms);
                 app.options.rooms = tx.msg.rooms.rooms;
                 app.storage.saveOptions();
-                // video_self.rooms = tx.msg.rooms.rooms
+                // videocall_self.rooms = tx.msg.rooms.rooms
 
                 break;
 
@@ -219,7 +219,7 @@ class VideoCall extends ModTemplate {
 
             // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.rooms);
             const recipient = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
-            newtx2.msg.module = "Video";
+            newtx2.msg.module = "VideoCall";
             newtx2.msg.rooms = {
                 rooms: this.rooms
             };
@@ -238,7 +238,7 @@ class VideoCall extends ModTemplate {
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
-        let stun_mod = app.modules.returnModule("stun");
+        let stun_mod = app.modules.returnModule("Stun");
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
@@ -256,9 +256,9 @@ class VideoCall extends ModTemplate {
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
-                        let video_mod = app.modules.returnModule("Video");
-                        video_mod.peer_connections[offer_creator] = pc;
-                        video_mod.broadcastAnswer(video_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        let videocall_mod = app.modules.returnModule("VideoCall");
+                        videocall_mod.peer_connections[offer_creator] = pc;
+                        videocall_mod.broadcastAnswer(videocall_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
                     };
                     reply.ice_candidates.push(ice.candidate);
@@ -304,19 +304,19 @@ class VideoCall extends ModTemplate {
                     console.log('got my local stream');
                 });
 
-                let video_self = app.modules.returnModule("Video");
-                video_self.videoChat.show(pc, app, video_self);
-                video_self.videoChat.addLocalStream(localStream);
+                let videocall_self = app.modules.returnModule("VideoCall");
+                videocall_self.videoChat.show(pc, app, videocall_self);
+                videocall_self.videoChat.addLocalStream(localStream);
 
 
                 const remoteStream = new MediaStream();
                 pc.addEventListener('track', (event) => {
-                    let video_self = app.modules.returnModule("Video");
+                    let videocall_self = app.modules.returnModule("VideoCall");
                     console.log('got remote stream from offer creator ', event.streams);
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-                    video_self.videoChat.addRemoteStream(remoteStream, offer_creator);
+                    videocall_self.videoChat.addRemoteStream(remoteStream, offer_creator);
 
                 });
 
@@ -365,7 +365,7 @@ class VideoCall extends ModTemplate {
 
         let roomCode = this.generateString(6);
         roomCode = roomCode.trim();
-        const video_self = this.app.modules.returnModule("Video");
+        const videocall_self = this.app.modules.returnModule("VideoCall");
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
            <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
@@ -392,7 +392,7 @@ class VideoCall extends ModTemplate {
 
 
 
-        newtx.msg.module = "Video";
+        newtx.msg.module = "VideoCall";
         newtx.msg.room = {
             room
         };
@@ -405,7 +405,7 @@ class VideoCall extends ModTemplate {
         const overlay = new SaitoOverlay(this.app);
 
 
-        overlay.show(this.app, video_self, html, null, () => {
+        overlay.show(this.app, videocall_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
                 navigator.clipboard.writeText(`${window.location.host}/videocall?invite_code=${roomCode}`);
@@ -473,8 +473,8 @@ class VideoCall extends ModTemplate {
                     });
 
 
-                    const video_self = this.app.modules.returnModule('Video');
-                    this.videoChat.show(pc, this.app, video_self);
+                    const videocall_self = this.app.modules.returnModule('Video');
+                    this.videoChat.show(pc, this.app, videocall_self);
                     this.videoChat.addLocalStream(localStream)
 
 
@@ -542,7 +542,6 @@ class VideoCall extends ModTemplate {
     async joinVideoInvite(roomCode) {
         if (!roomCode) return siteMessage("Please insert a room code", 5000);
         const stun_mod = this.app.modules.returnModule("stun");
-        const video_self = this.app.modules.returnModule("Video");
         const room = this.app.options.rooms.find(room => room.code === roomCode);
         const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
 
@@ -625,9 +624,9 @@ class VideoCall extends ModTemplate {
                 this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                let video_self = this.app.modules.returnModule("Video");
-                video_self.videoChat.show(new RTCPeerConnection({}), this.app, video_self);
-                video_self.videoChat.addLocalStream(localStream);
+                let videocall_self = this.app.modules.returnModule("VideoCall");
+                videocall_self.videoChat.show(new RTCPeerConnection({}), this.app, videocall_self);
+                videocall_self.videoChat.addLocalStream(localStream);
                 console.log("you are the only participant in the room");
                 siteMessage("Room joined, you are the only participant in the room", 5000)
             }
@@ -654,7 +653,7 @@ class VideoCall extends ModTemplate {
 
         // }
 
-        newtx.msg.module = "Video";
+        newtx.msg.module = "VideoCall";
         newtx.msg.rooms = {
             rooms: this.app.options.rooms
         };
@@ -684,7 +683,7 @@ class VideoCall extends ModTemplate {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }
 
-        newtx.msg.module = "Video";
+        newtx.msg.module = "VideoCall";
         newtx.msg.offers = {
             offer_creator,
             offers
@@ -702,7 +701,7 @@ class VideoCall extends ModTemplate {
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
 
-        newtx.msg.module = "Video";
+        newtx.msg.module = "VideoCall";
         newtx.msg.answer = {
             answer_creator,
             offer_creator,
