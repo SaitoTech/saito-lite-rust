@@ -473,7 +473,7 @@ class VideoCall extends ModTemplate {
                     });
 
 
-                    const videocall_self = this.app.modules.returnModule('Video');
+                    const videocall_self = this.app.modules.returnModule('VideoCall');
                     this.videoChat.show(pc, this.app, videocall_self);
                     this.videoChat.addLocalStream(localStream)
 
