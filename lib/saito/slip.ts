@@ -102,7 +102,7 @@ class Slip {
     this.uuid = Buffer.from(buffer.slice(33, 65)).toString("hex");
     this.amt = app.binary.u64FromBytes(buffer.slice(65, 73)).toString();
     this.sid = app.binary.u8FromByte(buffer[73]);
-    this.type = app.binary.u32FromBytes(buffer.slice(74, 78));
+    this.type = app.binary.u8FromByte(buffer[74]);
 
     // convert to BigInts
     this.amt = BigInt(this.amt.toString());
@@ -155,7 +155,7 @@ class Slip {
 
     const amount = app.binary.u64AsBytes(this.amt.toString());
     const slip_ordinal = app.binary.u8AsByte(this.sid);
-    const slip_type = app.binary.u32AsBytes(this.type);
+    const slip_type = [this.type as number];
 
     return new Uint8Array([...publickey, ...uuidx, ...amount, slip_ordinal, ...slip_type]);
   }

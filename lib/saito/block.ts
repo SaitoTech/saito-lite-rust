@@ -277,7 +277,7 @@ class Block {
     //
     // hash random number to pick routing node
     //
-    const rn = this.app.crypto.hash(random_number);
+    const rn = this.app.crypto.hash(random_number.toString());
 
     //
     // and pick from path, if exists
@@ -427,12 +427,11 @@ class Block {
                   STAKING_SUBSIDY
                 );
 
-                //
+
                 // update cryptographic hash of all ATRs
-                //
                 cv.rebroadcast_hash = this.app.crypto.hash(
-                  cv.rebroadcast_hash +
-                    rebroadcast_transaction.serializeForSignature(this.app).toString("hex")
+                  Buffer.concat([Buffer.from(cv.rebroadcast_hash,"hex") ,
+                    rebroadcast_transaction.serializeForSignature(this.app)])
                 );
               } else {
                 //
@@ -1176,8 +1175,11 @@ class Block {
     if (this.hash) {
       return this.hash;
     }
-    this.prehash = this.app.crypto.hash(this.serializeForSignature().toString("hex"));
-    this.hash = this.app.crypto.hash(this.prehash + this.block.previous_block_hash);
+    this.prehash = this.app.crypto.hash(this.serializeForSignature());
+    let previous = this.app.binary.hexToSizedArray(this.block.previous_block_hash,32);
+    let prehash = this.app.binary.hexToSizedArray(this.prehash,32);
+    let hashed_buffer = Buffer.concat([previous,prehash]);
+    this.hash = this.app.crypto.hash(hashed_buffer);
     return this.hash;
   }
 
@@ -1226,7 +1228,7 @@ class Block {
         txs.push(this.transactions[i].transaction.sig);
       } else {
         txs.push(
-          this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app).toString("hex"))
+          this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app))
         );
       }
     }
@@ -1286,7 +1288,7 @@ class Block {
         spv.transaction.r = 1;
         // the sig contains the hash of this TX
         spv.transaction.sig = this.app.crypto.hash(
-          this.transactions[i].serializeForSignature(this.app).toString("hex")
+          this.transactions[i].serializeForSignature(this.app)
         );
 
         //delete spv.transaction.to;
@@ -1729,7 +1731,7 @@ class Block {
       cv.fee_transaction.generateMetadata(this.returnCreator());
 
       const hash1 = this.app.crypto.hash(
-        fee_transaction.serializeForSignature(this.app).toString("hex")
+        fee_transaction.serializeForSignature(this.app)
       );
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
 
