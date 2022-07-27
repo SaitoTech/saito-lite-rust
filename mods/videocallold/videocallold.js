@@ -1,9 +1,14 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
+const EmailUI = require('./lib/email-ui');
+const Slip = require('../..//lib/saito/slip.ts');
 var serialize = require('serialize-javascript');
 const VideoChat = require('../../lib/saito/ui/video-chat/video-chat');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
-const VideoCallAppspace = require('./lib/appspace/main');
+const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
+const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
+const VideoCallMain = require('./lib/main/videocall-main.template');
+
 
 class VideoCall extends ModTemplate {
 
@@ -23,27 +28,47 @@ class VideoCall extends ModTemplate {
 
         this.overlay = new SaitoOverlay(app, this);
 
+        this.styles = [
+            '/videocall/css/videocall-main.css',
+        ];
 
 
     }
 
 
 
+
     respondTo(type) {
-        if (type === 'appspace') {
-            this.styles = [
-                '/videocall/css/style.css',
-            ];
-            // for scripts + styles
-            super.render(this.app, this);
-            return new VideoCallAppspace(this.app, this);
+        if (type === 'email-appspace') {
+            return new StunEmailAppspace(this.app, this);
         }
         return null;
     }
 
 
 
+    render(app, mod) {
+        if (app.BROWSER != 1 || this.browser_active != 1) {
+            return;
+        }
+        if (this.header == null) {
+            this.header = new SaitoHeader(app, this);
+        }
 
+        this.header.render(app, this);
+        this.header.attachEvents(app, this);
+        new StunEmailAppspace(this.app, this).render(this.app, this);
+        super.render(app, mod);
+    }
+
+
+    renderEmail(app, mod) {
+        EmailUI.render(app, mod);
+    }
+
+    attachEmailEvents(app, mod) {
+        EmailUI.attachEvents(app, mod);
+    }
 
 
     async handleUrlParams(params) {
@@ -55,6 +80,8 @@ class VideoCall extends ModTemplate {
             if (result) {
                 salert(result);
             }
+
+
         }
     }
 

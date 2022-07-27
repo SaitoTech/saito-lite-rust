@@ -14,18 +14,18 @@ class RedSquareMain {
 
   constructor(app, mod, selector) {
 
-    this.app 		= app;
-    this.name 		= "RedSquareMain";
+    this.app = app;
+    this.name = "RedSquareMain";
 
     //
     // left sidebar
     //
-    mod.lsidebar 	= new SaitoSidebar(app, mod, ".saito-sidebar-left");
+    mod.lsidebar = new SaitoSidebar(app, mod, ".saito-sidebar-left");
     mod.lsidebar.align = "left";
-    mod.menu           = new RedSquareMenu(app, mod);
+    mod.menu = new RedSquareMenu(app, mod);
     mod.lsidebar.addComponent(mod.menu);
     mod.app.modules.respondTo("chat-manager").forEach(m => {
-console.log("ADDING CHAT MANAGER!");
+      console.log("ADDING CHAT MANAGER!");
       mod.lsidebar.addComponent(m.respondTo("chat-manager"));
     });
 
@@ -36,24 +36,24 @@ console.log("ADDING CHAT MANAGER!");
     //
     // right sidebar
     //
-    mod.rsidebar 	= new RedSquareSidebar(app, mod, ".saito-sidebar-right");
+    mod.rsidebar = new RedSquareSidebar(app, mod, ".saito-sidebar-right");
 
     //
     //
     //
-    mod.gsidebar 	= new RedSquareGamesSidebar(app, mod, ".saito-sidebar-right");
+    mod.gsidebar = new RedSquareGamesSidebar(app, mod, ".saito-sidebar-right");
 
     //
     // main panels
     //
-    mod.home    	= new RedSquareAppspaceHome(app, mod, ".appspace");
-    mod.games    	= new RedSquareAppspaceGames(app, mod, ".appspace");
-    mod.notifications  	= new RedSquareAppspaceNotifications(app, mod, ".appspace");
-    mod.contacts    	= new RedSquareAppspaceContacts(app, mod, ".appspace");
+    mod.home = new RedSquareAppspaceHome(app, mod, ".appspace");
+    mod.games = new RedSquareAppspaceGames(app, mod, ".appspace");
+    mod.notifications = new RedSquareAppspaceNotifications(app, mod, ".appspace");
+    mod.contacts = new RedSquareAppspaceContacts(app, mod, ".appspace");
 
   }
 
-  render(app, mod, selector="") {
+  render(app, mod, selector = "") {
 
     if (selector === "") { selector = ".saito-container"; }
 
@@ -63,9 +63,9 @@ console.log("ADDING CHAT MANAGER!");
 
 
     mod.lsidebar.render(app, mod, ".saito-sidebar-left");
-console.log("RENDER HOME");
+    console.log("RENDER HOME");
     mod.home.render(app, mod, ".appspace");
-console.log("DONE HOME");
+    console.log("DONE HOME");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
     //app.connection.on("tweet-render-request", (tx) => {
