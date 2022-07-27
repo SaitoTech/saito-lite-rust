@@ -17,7 +17,7 @@ if (process.argv.includes("web3")) {
 }
 webpack({
   optimization: {
-    minimize: true,
+    minimize: false,
   },
   target: "web",
   // node: {
