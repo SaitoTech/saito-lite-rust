@@ -1293,11 +1293,12 @@ console.log("---------------------");
     ticker
   ) {
     return this.app.crypto.hash(
-      JSON.stringify(senders) +
+      Buffer.from(
+          JSON.stringify(senders) +
         JSON.stringify(receivers) +
         JSON.stringify(amounts) +
         unique_hash +
-        ticker
+        ticker,"utf-8")
     );
   }
   savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {

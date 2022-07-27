@@ -184,7 +184,7 @@ class Transaction {
     const r = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data + 88, start_of_transaction_data + 92)
     );
-    const transaction_type = buffer[start_of_transaction_data + 92];
+    const transaction_type = Number(buffer[start_of_transaction_data + 92]) as TransactionType;
     const start_of_inputs = start_of_transaction_data + TRANSACTION_SIZE;
     const start_of_outputs = start_of_inputs + inputs_len * SLIP_SIZE;
     const start_of_message = start_of_outputs + outputs_len * SLIP_SIZE;

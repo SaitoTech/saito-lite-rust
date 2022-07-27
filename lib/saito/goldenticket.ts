@@ -12,7 +12,7 @@ class GoldenTicket {
       previous_block_hash = "00000000000000000000000000000000";
     }
 
-    const solution = this.app.crypto.hash(previous_block_hash + random_hash + publickey);
+    const solution = this.app.crypto.hash(Buffer.from(previous_block_hash + random_hash + publickey,"hex"));
     const leading_zeroes_required = Math.floor(difficulty / 16);
     const final_digit = 15 - (difficulty % 16);
 

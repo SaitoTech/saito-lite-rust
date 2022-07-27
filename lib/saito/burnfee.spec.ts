@@ -26,3 +26,10 @@ test("burnfee routing work needed tests", () => {
   expect(bf3.toString()).toEqual(BigInt(100_000_000).toString());
   expect(bf4.toString()).toEqual(bf4out.toString());
 });
+
+test("burnfee test against rust",()=>{
+  let bf = new BurnFee();
+  let fee = bf.returnBurnFeeForBlockProducedAtCurrentTimestampInNolan(50000000,1658821423410,1658821412997);
+
+  expect(fee).toEqual(BigInt(34647115));
+});

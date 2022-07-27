@@ -6,6 +6,7 @@ import Crypto from "./crypto";
 import Binary from "./binary";
 import Wallet from "./wallet";
 import Slip from "./slip";
+import {SLIP_SIZE} from "./transaction";
 
 test("slip serialize deserialze", () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -81,6 +82,6 @@ describe("serializeForSignature", () => {
 
     const buffer = slip.serializeInputForSignature(mockApp);
 
-    expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(78)));
+    expect(buffer).toEqual(Uint8Array.from(Buffer.alloc(SLIP_SIZE)));
   });
 });
