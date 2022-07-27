@@ -72,7 +72,7 @@ class VideoCall extends ModTemplate {
 
 
     async handleUrlParams(params) {
-        if (this.app.BROWSER === 0) return;
+        // if (this.app.BROWSER === 0) return;
         if (params.has('invite_code')) {
             const invite_code = params.get('invite_code');
             const videocall_mod = this.app.modules.returnModule('VideoCall');
@@ -91,7 +91,7 @@ class VideoCall extends ModTemplate {
         let txmsg = tx.returnMessage();
 
         if (conf === 0) {
-            if (txmsg.module === 'Video') {
+            if (txmsg.module === 'VideoCall') {
                 let videocall_self = app.modules.returnModule("VideoCall");
                 let stun_mod = app.modules.returnModule('Stun');
 
@@ -368,12 +368,15 @@ class VideoCall extends ModTemplate {
         const videocall_self = this.app.modules.returnModule("VideoCall");
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
-           <p style="font-weight: bold; margin-bottom: 3px;">  Invite Code: </p>
-           <div style="display: flex; align-item: center;"> 
-           <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> <p style="margin-right: .5rem"> ${roomCode} </p> 
+           <p style= margin-bottom: 1.5rem;">  Invite Created </p>
+           <div style="display: grid; align-item: center; grid-template-columns:max-content 1fr;"> 
+           <p style="margin-right: .5rem;  color: var(--saito-red)"> ${roomCode} </p>   <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> 
+           <p style="margin-right: .5rem;  color: var(--saito-red);"> ${window.location.host}/videocall?invite_code=${roomCode} </p>  <div style="margin-right: .5rem" id="copyVideoInviteLink"> <i class="fa fa-copy"> </i> </div>
            </div>
+           
         </div>
         `
+        document.querySelector('#inviteCode').value = roomCode;
 
 
         // prevent dupicate room code creation -- for development purposes
@@ -408,8 +411,12 @@ class VideoCall extends ModTemplate {
         overlay.show(this.app, videocall_self, html, null, () => {
             console.log("attaching copy event")
             document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(`${window.location.host}/videocall?invite_code=${roomCode}`);
+                navigator.clipboard.writeText(`${roomCode}`);
                 document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
+            });
+            document.querySelector('#copyVideoInviteLink i').addEventListener('click', (e) => {
+                navigator.clipboard.writeText(`${window.location.host}/videocall?invite_code=${roomCode}`);
+                document.querySelector("#copyVideoInviteLink").textContent = "Copied to clipboard";
             });
         });
 
