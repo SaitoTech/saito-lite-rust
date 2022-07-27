@@ -29,17 +29,38 @@ module.exports = (app, mod, options) => {
       
 
       <div class="step"  id="first-step">
-        <h5>${options.firstStepHeading}</h5>
 
         <div class="overlay-content-container first-step">
-          <div class="overlay-content-item scheduled-item">
-            ${content}
+          <div class="overlay-content">
+            <div>Invite:</div> 
+            <select id="schedule-person">
+              <option value="1">1 person</option>
+              <option value="2">2 person</option>
+              <option value="3">3 person</option>
+              <option value="4">4 person</option>
+              <option value="5">5 person</option>
+              <option value="6">6 person</option>
+            </select>
+
+            <div>To:</div>
+            <select id="schedule-type">
+              <option value="game">Game</option>
+              <option value="league">League</option>
+              <option value="video-call">Video Call</option>
+            </select>            
+          
+
+            Select datetime:
+            <input type="datetime-local" id="schedule-datetime" name="schedule-datetime">
           </div>
 
           <div class="overlay-content-item scheduled-timestamp">
-            <p>Set date time</p>
-            <input type="datetime-local" id="schedule-datetime" name="schedule-datetime">
-            <input type="hidden" value="${options.type}" class="schedule-type" name="schedule-type" >
+            <p>Set timezone</p>
+            <select id="schedule-timezone">
+              <option value="game">Game</option>
+              <option value="league">League</option>
+              <option value="video-call">Video Call</option>
+            </select>  
           </div>
         </div>
 
@@ -49,7 +70,6 @@ module.exports = (app, mod, options) => {
       </div>
 
       <div class="step hide" id="second-step">
-        <h5>${options.secondStepHeading}</h5>
         <div class="overlay-content">
           <p class="schedule-msg"></p>
           <a href="#">Send Game Invite To Friends</a>
