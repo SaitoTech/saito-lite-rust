@@ -17,19 +17,6 @@ class GameScheduler {
 
   
   attachEvents(app, mod) {
-/***
-    Array.from(document.getElementsByClassName('arcade-navigator-item')).forEach(game => {
-      game.addEventListener('click', (e) => {
-        let gameName = e.currentTarget.id;
-        app.browser.logMatomoEvent("Arcade", "GameListOverlayClick", gameName);
-        let tx = new saito.default.transaction();
-        tx.msg.game = gameName;
-        ArcadeGameDetails.render(app, mod, tx);
-        ArcadeGameDetails.attachEvents(app, mod, tx);
-      
-      });
-    });
-***/
   }
 
 }

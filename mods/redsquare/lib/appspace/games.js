@@ -4,6 +4,8 @@ const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-o
 const GameCreator = require("./arcade/game-creator");
 const GameScheduler = require("./arcade/game-scheduler");
 
+const Scheduler = require("./../../../scheduler/scheduler");
+
 class RedSquareAppspaceGames {
 
   constructor(app) {
@@ -28,9 +30,23 @@ class RedSquareAppspaceGames {
     // since it is a class, we put an element in the overlay and render into that.
     //
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
-      this.overlay.show(app, mod, '<div class="redsquare-game-creator"></div>');
-      let gs = new GameScheduler(app, mod, ".redsquare-game-creator");
-      gs.render(app, mod, ".redsquare-game-creator");
+      let scheduleOptions = {
+        "firstStepHeading": "Schedule Game",
+        "secondStepHeading": "Send Scheduled Game Invite",
+        "type": "game",
+        "games": [ // to be fetched dynamically from arcade respondTo
+        ]
+      };
+      // fetch arcade games
+      app.modules.respondTo("arcade-games").forEach(module => {
+        let title = (module.gamename)? module.gamename: module.name;
+        let slug = (module.returnSlug())? module.slug: module.name.toLowerCase();
+        let description = module.description;
+        scheduleOptions.games.push({"title": title, "description": description, "image": "https://saito.io/"+slug+"/img/arcade/arcade.jpg"})
+      });
+
+      let EventScheduler = new Scheduler(app, scheduleOptions);
+      EventScheduler.createOverlay(app);
     }
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
