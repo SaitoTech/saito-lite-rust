@@ -1,10 +1,5 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-// const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
-// const Slip = require('../..//lib/saito/slip.ts');
-// var serialize = require('serialize-javascript');
-// const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-
 class Stun extends ModTemplate {
 
     constructor(app) {
@@ -12,12 +7,12 @@ class Stun extends ModTemplate {
         this.app = app;
         this.appname = "Stun";
         this.name = "Stun";
-        this.description = "";
+        this.description = "Session Traversal Utilitiesf for NAT (STUN)";
         this.categories = "Utility Networking";
-        this.header = null;
+
         this.stun = {};
         this.peer_connections = {};
-    }
+    } git
 
     async initialize(app) {
         this.loadStun();
@@ -69,12 +64,11 @@ class Stun extends ModTemplate {
     }
 
 
-
     respondTo(type) {
-        // if (type === 'email-appspace') {
-        //     return new StunEmailAppspace(this.app, this);
-        // }
-        // return null;
+        if (type === 'email-appspace') {
+            return new StunEmailAppspace(this.app, this);
+        }
+        return null;
     }
 
     onConfirmation(blk, tx, conf, app) {
@@ -265,10 +259,11 @@ class Stun extends ModTemplate {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
-                const Stun_mod = app.modules.returnModule("Stun")
+                const stun_mod = app.modules.returnModule("Stun")
+                console.log("these are the servers :", stun_mod.servers);
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: Stun_mod.servers,
+                        iceServers: stun_mod.servers,
                     });
 
 
@@ -637,9 +632,10 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-            const Stun_mod = app.modules.returnModule("Stun")
+            const stun_mod = app.modules.returnModule("Stun");
+            console.log("these are the servers ", stun_mod.servers)
             const pc = new RTCPeerConnection({
-                iceServers: Stun_mod.servers,
+                iceServers: stun_mod.servers,
             });
             try {
 
