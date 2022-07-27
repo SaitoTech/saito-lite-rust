@@ -7,6 +7,7 @@ const SchedulerOverlay = require('./lib/schedule-overlay');
 class Scheduler extends ModTemplate {
 
     constructor(app, options) {
+
         super(app);
 
         this.appname = "Scheduler";
