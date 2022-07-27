@@ -341,10 +341,10 @@ class VideoCall extends ModTemplate {
         const videocall_self = this.app.modules.returnModule("VideoCall");
         const html = `
         <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
-           <p style= margin-bottom: 1.5rem;">  Invite Created </p>
+           <p style= margin-bottom:2rem;">  Invite Created </p>
            <div style="display: grid; align-item: center; grid-template-columns:max-content 1fr;"> 
-           <p style="margin-right: .5rem;  color: var(--saito-red)"> ${roomCode} </p>   <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> 
-           <p style="margin-right: .5rem;  color: var(--saito-red);"> ${window.location.host}/videocall?invite_code=${roomCode} </p>  <div style="margin-right: .5rem" id="copyVideoInviteLink"> <i class="fa fa-copy"> </i> </div>
+           <p style="margin-right: .5rem;  color: var(--saito-primary)"> ${roomCode} </p>   <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> 
+           <p style="margin-right: .5rem;  color: var(--saito-primary);"> ${window.location.host}/videocall?invite_code=${roomCode} </p>  <div style="margin-right: .5rem" id="copyVideoInviteLink"> <i class="fa fa-copy"> </i> </div>
            </div>
            
         </div>
