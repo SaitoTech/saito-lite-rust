@@ -1,7 +1,7 @@
 const GameTemplate = require("../../lib/templates/gametemplate");
 const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const PandemicOriginalSkin = require("./lib/pandemicOriginal.skin.js");
-const PandemicNewSkin = require("./lib/pandemicNew.skin.js");
+const PandemicRetroSkin = require("./lib/pandemicNew.skin.js");
 
 class Pandemic extends GameTemplate {
 
@@ -125,7 +125,7 @@ class Pandemic extends GameTemplate {
     super.initializeHTML(app);
       
     if (!this.skin){
-      this.skin = new PandemicOriginalSkin(this.app, this);
+      this.skin = new PandemicRetroSkin(this.app, this);
     }
     this.skin.render();
     this.boardWidth = this.skin.boardWidth;
@@ -815,19 +815,15 @@ class Pandemic extends GameTemplate {
   sortHand(cards){
     let order = ["blue", "yellow", "black", "red", ""];
     let newHand = [];
-    console.log(JSON.parse(JSON.stringify(this.game.deck[1].cards)));
+//    console.log(JSON.parse(JSON.stringify(this.game.deck[1].cards)));
     for (let c of order){
       for (let i = 0; i < cards.length; i++) {
-        if (this.game.deck[1].cards[cards[i]] != undefined) {
-          if (this.game.deck[1].cards[cards[i]].virus === c){
-            newHand.push(cards[i]);
-          }
-        }else{
-          console.log("HEY!" + cards[i]);
+        if (this.skin.cities[cards[i]]?.virus === c){
+          newHand.push(cards[i]);
         }
       }
     }
-    console.log(JSON.stringify(cards),JSON.stringify(newHand));
+//    console.log(JSON.stringify(cards),JSON.stringify(newHand));
     return newHand;   
   }
 
@@ -848,7 +844,7 @@ class Pandemic extends GameTemplate {
 
     for (let i = 0; i < cards.length; i++) {
       if (this.game.deck[1].cards[cards[i]] != undefined) {
-        cardColors[this.game.deck[1].cards[cards[i]].virus]++;
+        cardColors[this.skin.cities[cards[i]].virus]++;
       }
     }
     for (let color in cardColors){
@@ -1063,7 +1059,7 @@ class Pandemic extends GameTemplate {
 
     for (let i = 0; i < cards.length; i++) {
       if (this.game.deck[1].cards[cards[i]] != undefined) {
-        cardColors[this.game.deck[1].cards[cards[i]].virus]++;
+        cardColors[this.skin.cities[cards[i]].virus]++;
       }
     }
     
@@ -1086,11 +1082,9 @@ class Pandemic extends GameTemplate {
       let cards =  pandemic_self.game.players_info[pandemic_self.game.player - 1].cards;
 
       for (let i = 0, k = 0; k < research_limit && i < cards.length; i++) {
-        if (pandemic_self.game.deck[1].cards[cards[i]] != undefined) {
-          if (pandemic_self.game.deck[1].cards[cards[i]].virus == c) {
-            pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${cards[i]}`);
-            k++;
-          }
+        if (pandemic_self.skin.cities[cards[i]]?.virus == c) {
+          pandemic_self.addMove(`discard\t${pandemic_self.game.player}\t${cards[i]}`);
+          k++;
         }
       }
       
@@ -1414,7 +1408,7 @@ class Pandemic extends GameTemplate {
 
   acknowledgeInfectionCard(city, actionType, mycallback) {
     let pandemic_self = this;
-    let virus = this.game.deck[0].cards[city].virus;
+    let virus = this.skin.cities[city].virus;
     let msg;
     this.outbreaks = [];
     switch (actionType){
@@ -1681,7 +1675,7 @@ class Pandemic extends GameTemplate {
 
         this.outbreaks = [];
         let city = this.drawInfectionCardFromBottomOfDeck();
-        let virus = this.game.deck[0].cards[city].virus;
+        let virus = this.skin.cities[city].virus;
         this.updateLog(`Epidemic in ${this.skin.cities[city].name}`);
         if (this.isEradicated(virus)){
           this.displayModal("Epidemic Averted",`${virus} virus already eradicated`);
@@ -1747,7 +1741,7 @@ class Pandemic extends GameTemplate {
 
           for (let i = 0; i < infection_cards; i++) {
             let city = this.drawInfectionCard();
-            let virus = this.game.deck[0].cards[city].virus;
+            let virus = this.skin.cities[city].virus;
             let outcome = 0;
             if (this.isEradicated(virus)) { 
               outcome = 2;
@@ -1782,7 +1776,7 @@ class Pandemic extends GameTemplate {
         for (let i = 3; i > 0; i--) {
           for (let k = 0; k < 3; k++) {
             let newcard = this.drawInfectionCard();
-            let virus = this.game.deck[0].cards[newcard].virus || this.game.deck[0].discards[newcard].virus;
+            let virus = this.skin.cities[newcard].virus;
             this.game.state.cities[newcard].virus[virus] = i;
             this.game.state.active[virus] += i;
             //console.log(this.game.state.cities[newcard].virus);
@@ -2268,7 +2262,12 @@ displayDisease() {
          }
         }
       }
+      try{
        document.querySelector(divname).innerHTML = cubedeath;
+      }catch(err){
+        console.error(err);
+        console.log(divname);
+      }
     }
     let html = "";
     for (let v in this.game.state.active){
@@ -2569,11 +2568,11 @@ displayDisease() {
       let deck = player.cards;
 
       for (let i = 0; i < deck.length; i++) {
-        let city = this.game.deck[1].cards[deck[i]];
+        //let city = this.game.deck[1].cards[deck[i]];
         if (i > 0) {
           cards_overview += ", ";
         }
-        cards_overview += city.name;
+        cards_overview += this.skin.cities[deck[i]].name;
       }
 
       html += `
