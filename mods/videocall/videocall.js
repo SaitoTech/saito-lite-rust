@@ -72,7 +72,7 @@ class VideoCall extends ModTemplate {
 
 
     async handleUrlParams(params) {
-        // if (this.app.BROWSER === 0) return;
+        if (this.app.BROWSER !== 1) return;
         if (params.has('invite_code')) {
             const invite_code = params.get('invite_code');
             const videocall_mod = this.app.modules.returnModule('VideoCall');
@@ -80,7 +80,6 @@ class VideoCall extends ModTemplate {
             if (result) {
                 salert(result);
             }
-
 
         }
     }
