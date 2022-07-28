@@ -30,7 +30,7 @@ class Transaction {
     path: [],
     r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
     type: TransactionType.Normal,
-    m: "",
+    m: Buffer.alloc(0),
   };
   public fees_total: bigint;
   public work_available_to_me: bigint;
@@ -72,7 +72,7 @@ class Transaction {
       this.transaction = jsonobj;
       if (this.transaction.type === TransactionType.Normal) {
         try {
-          const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+          const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
           this.msg = JSON.parse(reconstruct);
         } catch (err) {
           console.log(this.transaction);
@@ -163,7 +163,7 @@ class Transaction {
    * @param {number} start_of_transaction_data - where in the buffer does the tx data begin
    * @returns {Transaction}
    */
-  deserialize(app: Saito, buffer, start_of_transaction_data) {
+  deserialize(app: Saito, buffer:Uint8Array, start_of_transaction_data) {
     const inputs_len = app.binary.u32FromBytes(
       buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
     );
@@ -226,11 +226,11 @@ class Transaction {
     this.transaction.path = path;
     this.transaction.r = Number(r);
     this.transaction.type = transaction_type;
-    this.transaction.m = Buffer.from(message).toString();
+    this.transaction.m = Buffer.from(message);
 
     try {
       if (this.transaction.type === TransactionType.Normal) {
-        const reconstruct = app.crypto.base64ToString(Buffer.from(this.transaction.m).toString());
+        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
         this.msg = JSON.parse(reconstruct);
       }
       //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
@@ -394,7 +394,7 @@ class Transaction {
       return this.msg;
     }
     try {
-      const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
+      const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
       this.msg = JSON.parse(reconstruct);
     } catch (err) {
       console.error(err);
@@ -543,7 +543,7 @@ class Transaction {
    * @returns {array} raw bytes
    * @param app
    */
-  serialize(app: Saito) {
+  serialize(app: Saito):Uint8Array {
     //console.log("tx.serialize", this.transaction);
 
     const inputs_len = app.binary.u32AsBytes(this.transaction.from.length);
@@ -627,7 +627,7 @@ class Transaction {
     // binary requires 1/2 length of hex string
     const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
 
-    ret.set(tm, start_of_message);
+    ret.set(this.transaction.m, start_of_message);
 
     for (let i = 0; i < this.transaction.path.length; i++) {
       const serialized_hop = this.transaction.path[i].serialize(app);
@@ -685,8 +685,8 @@ class Transaction {
     //
     // transaction message
     //
-    if (this.transaction.m == "") {
-      this.transaction.m = app.crypto.stringToBase64(JSON.stringify(this.msg));
+    if (this.transaction.m.length===0) {
+      this.transaction.m = Buffer.from(app.crypto.stringToBase64(JSON.stringify(this.msg)),"base64");
     }
   }
   sign(app) {

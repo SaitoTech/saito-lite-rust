@@ -873,7 +873,7 @@ console.log("---------------------");
         tx.msg = this.app.keys.encryptMessage(tx.transaction.to[0].add, tx.msg);
       }
       // nov 30 - set in tx.sign() now
-      tx.transaction.m = this.app.crypto.stringToBase64(JSON.stringify(tx.msg));
+      tx.transaction.m = Buffer.from(this.app.crypto.stringToBase64(JSON.stringify(tx.msg)),"base64");
     } catch (err) {
       console.log("####################");
       console.log("### OVERSIZED TX ###");

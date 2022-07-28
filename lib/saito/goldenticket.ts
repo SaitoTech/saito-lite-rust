@@ -9,9 +9,12 @@ class GoldenTicket {
 
   validate(previous_block_hash, random_hash, publickey, difficulty) {
     if (previous_block_hash === "") {
-      previous_block_hash = "00000000000000000000000000000000";
+      previous_block_hash = "0000000000000000000000000000000000000000000000000000000000000000";
     }
-
+  let buffer=Buffer.concat([ this.app.binary.hexToSizedArray(previous_block_hash,32),
+      this.app.binary.hexToSizedArray(random_hash,32),
+      this.app.binary.hexToSizedArray(publickey,33)
+  ]);
     const solution = this.app.crypto.hash(Buffer.from(previous_block_hash + random_hash + publickey,"hex"));
     const leading_zeroes_required = Math.floor(difficulty / 16);
     const final_digit = 15 - (difficulty % 16);
@@ -52,7 +55,7 @@ class GoldenTicket {
     const rh = Buffer.from(random_hash, "hex");
     const cr = Buffer.from(this.app.crypto.fromBase58(this.app.wallet.returnPublicKey()), "hex");
 
-    return Buffer.concat([th, rh, cr]).toString("base64");
+    return Buffer.concat([th, rh, cr]);
     // let th2 = this.app.binary.hexToSizedArray(th.toString('hex'), 32);
     // let rh2 = this.app.binary.hexToSizedArray(rh.toString('hex'), 32);
     //
