@@ -367,7 +367,7 @@ class Chat extends ModTemplate {
         let msg = {};
         msg.message = "";
         try {
-          const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
+          const reconstruct = Buffer.from(txs.transaction.m).toString("utf-8");
           msg = JSON.parse(reconstruct);
         } catch (err) {
           console.error(err);
@@ -819,7 +819,7 @@ class Chat extends ModTemplate {
         if (options) {
             options = JSON.parse(options);
             if (options.chat?.groups){
-                groups = options.chat.groups;    
+                groups = options.chat.groups;
             }
         }
 

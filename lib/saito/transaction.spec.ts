@@ -146,7 +146,7 @@ test("sign", () => {
   const tx = new Transaction();
   tx.transaction.ts = 1637034582666;
   tx.transaction.type = TransactionType.ATR;
-  tx.transaction.m = "abc";
+  tx.transaction.m = Buffer.from("abc","hex");
 
   const input_slip = new Slip(wallet.wallet.publickey);
   input_slip.uuid = "dcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";
@@ -170,7 +170,7 @@ test("sign", () => {
   console.log(Buffer.from(tx1_buffer).toString("hex"));
 
   expect(tx.transaction.sig).toEqual(
-    "dc9f23b0d0feb6609170abddcd5a1de249432b3e6761b8aac39b6e1b5bcb6bef73c1b8af4f394e2b3d983b81ba3e0888feaab092fa1754de8896e22dcfbeb4ec"
+    "fc0f76d12be1a36406e2dbfa7a4e7134ff691bc823bd59a5dcce1204982c4efc1aa42677c82c9c2f49968aee683d818ed7f34269a4dd8268d6f14dd90ef09a73"
   );
 
   expect(tx.validateSignature(mockApp)).toBeTruthy();
@@ -184,7 +184,7 @@ test("sign", () => {
   console.log("tx = ",tx);
   console.log("slip = ",tx.transaction.from[0]);
 
-console.log("ser = "+tx.serializeForSignature(mockApp).toString("hex"));
+  console.log("ser = "+tx.serializeForSignature(mockApp).toString("hex"));
   let tx2_buffer = tx2.serialize(mockApp);
   tx2.generateMetadata();
   expect(tx1_buffer).toEqual(tx2_buffer);
