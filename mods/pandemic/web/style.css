@@ -1,4 +1,14 @@
+body{
+   font-family: arial, helvetica, sans-serif;
+   font-size: 1.1em;
+   padding:0px;
+   margin:0px;
 
+  background: -webkit-linear-gradient(top, #0a2942, #010204);
+  background: -moz-linear-gradient(top, #0a2942, #010204);
+  background: linear-gradient(to top, #0a2942, #010204);
+  background-attachment: fixed;
+}
 
 .status-message {
   padding-left: 0;
@@ -252,12 +262,6 @@
   cursor: pointer;
 }
 
-body {
- font-family: arial, helvetica, sans-serif;
- font-size: 1.1em;
- padding:0px;
- margin:0px;
-}
 .link {
  border-bottom: 1px dashed;
 }
@@ -370,12 +374,11 @@ body {
   top: 75px;
   left: 2055px;
 }
+
 .gameboard {
-  background-image: url("/pandemic/img/Board.jpg");
-  background-size: cover;
-  width: 2602px;
-  height: 1812px;
+  position: relative;
 }
+
 .city {
   position: absolute;
   cursor: pointer;
@@ -384,6 +387,12 @@ body {
   z-index: 40;
 }
 
+.dyanmic_city{
+  background-size: 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+ /* box-shadow: 0 0 5px 5px whitesmoke;*/
+}
 
 /*** Player Cards ***/
 
