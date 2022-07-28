@@ -3,7 +3,7 @@ const RedSquareAppspaceGamesTemplate = require("./games.template");
 const SaitoOverlay = require("../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameCreator = require("./arcade/game-creator");
 const GameScheduler = require("./arcade/game-scheduler");
-const SchedulerOverlay = require("./arcade/schedule-overlay");
+const SaitoScheduler = require("../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler");
 
 class RedSquareAppspaceGames {
 
@@ -30,7 +30,7 @@ class RedSquareAppspaceGames {
     //
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
     
-      let sc = new SchedulerOverlay(app, mod);
+      let sc = new SaitoScheduler(app, mod);
       sc.render(app, mod, function(data) {
         let gc = new GameCreator(app, mod);
         gc.render(app, mod);

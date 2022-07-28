@@ -2,7 +2,7 @@ const saito = require('./../../../lib/saito/saito');
 const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 const Tweet = require('./tweet');
 
-module.exports = (app, mod, tweet) => {
+module.exports = (app, mod, tweet, include_controls = 1) => {
 
     let publickey = "";   
     let tweet_img = "";
@@ -19,28 +19,26 @@ module.exports = (app, mod, tweet) => {
     if (tweet.youtube_id != null) {
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
     }
+
+
     if (tweet.retweet_html != null) {
-console.log("IS THERE RETWEET HTML: " + tweet.retweet_html);
-      let link_preview = tweet.retweet_html;
-    }
+      link_preview = tweet.retweet_html;
+    } else {
 
+      if (tweet.link_properties != null) {
 
+        //
+        // if link properties
+        //
+        tweet_text = tweet_text.replace(tweet.link, '');
 
+        if (typeof tweet.link_properties != 'undefined') {
+          if (tweet.link_properties['og:exists'] !== false) {
 
-    if (tweet.link_properties != null) {
-
-      //
-      // if link properties
-      //
-      tweet_text = tweet_text.replace(tweet.link, '');
-
-      if (typeof tweet.link_properties != 'undefined') {
-        if (tweet.link_properties['og:exists'] !== false) {
-
-          let d = tweet.link_properties;
-
-          let link = new URL(d['og:url']);
-          link_preview = `
+            let d = tweet.link_properties;
+ 
+            let link = new URL(d['og:url']);
+            link_preview = `
                       <a target="_blank" href="${d['og:url']}">
                       <div class="preview-container">
                           <div class='preview-img' style="background: url(${d['og:image']})"></div>
@@ -52,14 +50,18 @@ console.log("IS THERE RETWEET HTML: " + tweet.retweet_html);
                       </div>
                       </a>
                       `;
+          }
         }
       }
     }
 
     let dt = app.browser.formatDate(tweet.tx.transaction.ts);
     let userline = "posted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    if (tweet.retweet_html != null) { 
+       userline = "retweeted on " + dt.month + " " + dt.day + ", " + dt.year + " at  " + dt.hours + ":" + dt.minutes;
+    }
 
-    return `
+    let html = `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
 
          ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline)}
@@ -69,6 +71,9 @@ console.log("IS THERE RETWEET HTML: " + tweet.retweet_html);
            ${tweet_img}
            <div class="youtube-embed-container">${youtube_preview}</div>
            <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
+    `;
+    if (include_controls == 1) {
+      html += `
            <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
 
              <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
@@ -78,10 +83,15 @@ console.log("IS THERE RETWEET HTML: " + tweet.retweet_html);
              <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">0</span> <i class="fas fa-retweet"></i></div>
 
            </div>
+      `;
+    }
+    html += `
          </div>
          <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
       </div>
     `;
+
+    return html;
 
 }
 

@@ -33,9 +33,8 @@ class RedSquareTweet {
       this.retweet       = null;
       this.retweet_tx    = null;
       this.retweet_html  = null;
-
-console.log("IS THIS A RETWEET? TX DUMP: ");
-console.log(JSON.stringify(tx.msg));
+      this.retweet_link_properties = null;
+      this.retweet_link = null;
 
 
       this.children 	 = [];
@@ -44,25 +43,20 @@ console.log(JSON.stringify(tx.msg));
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
 
-if (this.retweet_tx != null) {
-console.log("THIS RETWEET_TX: " + JSON.stringify(this.retweet_tx));
-} else {
-console.log("RETWEET_TX IS NULL");
-}
-
-console.log("ABOUT TO TEST");
-
       if (this.retweet_tx != null) {
-console.log("is retweet tw 1");
+
 	let tx = new saito.default.transaction(JSON.parse(this.retweet_tx));
-console.log("is retweet tw 2");
         this.retweet = new RedSquareTweet(app, mod, tx);
-console.log("is retweet tw 3");
+
+	if (this.retweet_link != null) {
+	  this.retweet.link = this.retweet_link;
+	}
+	if (this.retweet_link_properties != null) {
+	  this.retweet.link_properties = this.retweet_link_properties;
+	}
+
         this.generateTweetProperties(app, mod, 0);
-console.log("is retweet tw 4");
-	this.retweet_html = this.retweet.returnHTML(app, mod);
-console.log("retweet_html set to: " + this.retweet_html);
-console.log("is retweet tw 5");
+	this.retweet_html = this.retweet.returnHTML(app, mod, 0);
       }
       if (this.parent_id === "") {
         this.parent_id = tx.transaction.sig;
@@ -84,8 +78,8 @@ console.log("is retweet tw 5");
     }
 
 
-    returnHTML(app, mod) {
-      return TweetTemplate(app, mod, this);
+    returnHTML(app, mod, include_controls = 1) {
+      return TweetTemplate(app, mod, this, 0);
     }
 
     returnTweet(app, mod, sig) {

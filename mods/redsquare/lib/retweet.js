@@ -25,17 +25,12 @@ class Retweet {
 
         let text = document.getElementById('post-tweet-textarea').value;
         let retweet_tx = JSON.stringify(this.tweet.tx.transaction);
-        let data = { text : text , retweet_tx : retweet_tx };
-
-console.log("A");
+        let data = { text : text , retweet_tx : retweet_tx , retweet_link_properties : this.tweet.link_properties , retweet_link : this.tweet.link };
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  
-console.log("B");
 
 	mod.addTweetFromTransaction(app, mod, newtx);
-console.log("C");
 	mod.renderMainPage(app, mod);
-console.log("D");
 
 	this.overlay.hide();
 
