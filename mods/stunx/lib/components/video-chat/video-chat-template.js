@@ -1,6 +1,6 @@
 const videoChatTemplate = () => {
   return `
-    <div class="videocall-chatbox" id="videocall-chatbox">
+    <div class="stunx-chatbox" id="stunx-chatbox">
       <main>
         <section>
         <h6 class="heading" style="color: white;">Video Chat </h6>

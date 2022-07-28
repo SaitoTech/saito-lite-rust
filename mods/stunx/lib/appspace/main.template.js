@@ -1,15 +1,15 @@
-module.exports = VideoCallAppspaceTemplate = (app) => {
+module.exports = StunxAppspaceTemplate = (app) => {
 
-    return `<div class="videocall-appspace"> 
-    <card class="appear videocall-appspace-card">
+    return `<div class="stunx-appspace"> 
+    <card class="appear stunx-appspace-card">
 
         <h2> Saito Video <span class="saito-badge">α</span></h2>
         <p>  Use Saito to start a peer-to-peer video chat!</p>
-        <div class="videocall-appspace-actions">
-        <div class="videocall-appspace-create">
+        <div class="stunx-appspace-actions">
+        <div class="stunx-appspace-create">
         <div class="saito-button-secondary" id="createInvite"> Create Invite</div>
         </div>
-        <div class="videocall-appspace-join">
+        <div class="stunx-appspace-join">
         <div class="saito-button-secondary" id="joinInvite">Join</div>
         <input type="text" placeholder="Insert Room Code" id="inviteCode" />
         </div>

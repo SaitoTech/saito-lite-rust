@@ -1,6 +1,6 @@
 /*  video chat */
 
-.videocall-chatbox {
+.stunx-chatbox {
     max-width: 60vw;
     top: 50%;
     left: 50%;
@@ -12,21 +12,21 @@
 }
 
 
-.videocall-chatbox .heading {
+.stunx-chatbox .heading {
     padding: 1rem;
 }
 
-.videocall-chatbox .disconnect_btn {
+.stunx-chatbox .disconnect_btn {
     transform: matrix(1, 0, 0, -1, 0, 0);
     background-color: var(--saito-white);
 }
 
 
-.videocall-chatbox .disconnect_btn:hover {
+.stunx-chatbox .disconnect_btn:hover {
     color: black
 }
 
-.videocall-chatbox .wrapper {
+.stunx-chatbox .wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: minmax(100px, 30vh);
@@ -35,7 +35,7 @@
     background: var(--saito-skyline-grey);
 }
 
-.videocall-chatbox .box {
+.stunx-chatbox .box {
     border-radius: 0.1rem;
     width: 100%;
     height: 100%;
@@ -49,7 +49,7 @@
     display: block;
 }
 
-.videocall-chatbox .b-btngrid {
+.stunx-chatbox .b-btngrid {
     border: none;
     margin-left: 1rem;
     margin-top: 250px;
@@ -60,11 +60,11 @@
     cursor: pointer;
 }
 
-.videocall-chatbox .heading {
+.stunx-chatbox .heading {
     background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
 }
 
-.videocall-chatbox .footer {
+.stunx-chatbox .footer {
     display: grid;
     grid-gap: 1rem;
     padding: 20px;
@@ -78,16 +78,16 @@
 }
 
 
-.videocall-chatbox p {
+.stunx-chatbox p {
     margin: 0;
 }
 
 
-.videocall-chatbox .disconnect_btn {
+.stunx-chatbox .disconnect_btn {
     margin-left: auto;
 }
 
-.videocall-chatbox .footer .fa {
+.stunx-chatbox .footer .fa {
     color: white;
     font-size: 2rem;
     cursor: pointer;
@@ -105,22 +105,22 @@
 /* Appspace css */
 
 
-.videocall-appspace-card h2 {
+.stunx-appspace-card h2 {
     margin-bottom: 1rem;
 }
 
-.videocall-appspace-card>p {
+.stunx-appspace-card>p {
     margin-bottom: 1rem;
 }
 
-.videocall-appspace-actions {
+.stunx-appspace-actions {
     margin-bottom: 1rem;
     border-top: 1px solid #ddd;
     padding: 1rem;
     border-bottom: 1px solid #ddd;
 }
 
-.videocall-appspace-card .saito-badge {
+.stunx-appspace-card .saito-badge {
     color: var(--saito-white);
     background: var(--saito-primary);
     width: 1em;
@@ -132,29 +132,29 @@
     vertical-align: super;
 }
 
-.videocall-appspace-card .saito-info-text {
+.stunx-appspace-card .saito-info-text {
     color: #666;
     line-height: 1.2rem;
 }
 
 
-.videocall-appspace-actions .saito-button-secondary {
+.stunx-appspace-actions .saito-button-secondary {
     width: 18rem;
 }
 
 
-.videocall-appspace-join {
+.stunx-appspace-join {
     display: flex;
 }
 
-.videocall-appspace-join input {
+.stunx-appspace-join input {
     margin-right: 1rem;
     padding-left: 1rem;
     height: 2rem;
     width: 18rem;
 }
 
-.videocall-appspace-join p {
+.stunx-appspace-join p {
     font-weight: bold;
 
 }
@@ -162,31 +162,31 @@
 
 
 
-.videocall-appspace-create {
+.stunx-appspace-create {
     margin-bottom: 1rem;
 }
 
-.videocall-appspace-create p {
+.stunx-appspace-create p {
     font-weight: bold;
 }
 
 
-.videocall-appspace-join {}
+.stunx-appspace-join {}
 
-.videocall-appspace-join>div {
+.stunx-appspace-join>div {
     display: grid;
     grid-template-columns: 13rem 13rem;
     align-items: center;
 }
 
-.videocall-appspace-join input {
+.stunx-appspace-join input {
     margin-right: 1rem;
     padding-left: 1rem;
     height: 50.798px;
 
 }
 
-.videocall-appspace-join input:focus {
+.stunx-appspace-join input:focus {
     outline: none;
 
 }

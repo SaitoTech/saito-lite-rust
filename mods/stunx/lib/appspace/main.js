@@ -1,12 +1,12 @@
-const VideoCallAppspaceTemplate = require('./main.template.js');
+const StunxAppspaceTemplate = require('./main.template.js');
 
-class VideoCallAppspace {
+class StunxAppspace {
 
 
     render(app, mod) {
 
-        if (!document.querySelector(".videocall-appspace")) {
-            app.browser.addElementToSelector(VideoCallAppspaceTemplate(app, mod), ".appspace");
+        if (!document.querySelector(".stunx-appspace")) {
+            app.browser.addElementToSelector(StunxAppspaceTemplate(app, mod), ".appspace");
         }
         this.attachEvents(app, mod);
     }
@@ -21,12 +21,12 @@ class VideoCallAppspace {
             }
 
             if (e.target.id === "createInvite") {
-                let video_mod = app.modules.returnModule("VideoCall");
+                let video_mod = app.modules.returnModule("Stunx");
                 console.log(video_mod);
                 video_mod.createVideoInvite();
             }
             if (e.target.id === "joinInvite") {
-                let video_mod = app.modules.returnModule("VideoCall");
+                let video_mod = app.modules.returnModule("Stunx");
                 const inviteCode = document.querySelector("#inviteCode").value;
                 video_mod.joinVideoInvite(inviteCode.trim());
             }
@@ -36,6 +36,6 @@ class VideoCallAppspace {
 }
 
 
-module.exports = VideoCallAppspace;
+module.exports = StunxAppspace;
 
 

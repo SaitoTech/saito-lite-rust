@@ -75,9 +75,8 @@ class Stun extends ModTemplate {
         if (conf == 0) {
             let txmsg = tx.returnMessage();
             let my_pubkey = app.wallet.returnPublicKey();
-
+            if (txmsg.module !== "Stun") return;
             if (txmsg.module === this.appname) {
-
                 if (tx.msg.stun) {
                     // check if key exists in key chain
                     let key_index = this.app.keys.keys.findIndex((key) => key.publickey === tx.transaction.from[0].add);
@@ -194,7 +193,6 @@ class Stun extends ModTemplate {
                 console.log('got public keys: ', tx.msg.pubKeys);
 
                 if (app.BROWSER !== 1) return;
-
                 // create peer connection offers
                 this.public_keys = tx.msg.pubKeys;
                 app.options.public_keys = this.public_keys;
@@ -223,8 +221,6 @@ class Stun extends ModTemplate {
 
         try {
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
-
-
             if (peerConnectionOffers.length > 0) {
 
                 const offers = [];
@@ -514,8 +510,6 @@ class Stun extends ModTemplate {
 
     sendOffersTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
-
-
         console.log('broadcasting offers now');
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
