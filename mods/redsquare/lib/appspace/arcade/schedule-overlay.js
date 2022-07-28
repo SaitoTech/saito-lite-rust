@@ -6,37 +6,35 @@ class SchedulerOverlay {
   constructor(app, mod) {
     this.app 		= app;
     this.name 		= "SchedulerOverlay";
-    this.overlay = new SaitoOverlay(this.app);
+    this.overlay        = new SaitoOverlay(this.app);
+    this.mycallback     = null;
   }
 
-  render(app, mod, selector="") {
-    if (selector === "") { selector = ".saito-container"; }
+  render(app, mod, mycallback=null) {
+    if (mycallback != null) { this.mycallback = mycallback; }
+    this.overlay.show(app, mod, ScheduleOverlayTemplate(app, mod));
 
-    app.browser.addElementToSelector(ScheduleOverlayTemplate(app, mod), selector);
-    this.attachEvents(app, mod);
+    //
+    // identify modules that support InviteModTemplate and insert them 
+    // into the select somehow.
+    //
+
+
+
+    this.attachEvents(app, mod, this.mycallback);
   }
 
-  attachEvents(app, mod){
-    document.body.addEventListener( 'click', function ( event ) {
-      // if( event.target.id == 'scheduler-overlay-next-btn' ) {
-      //   // get input values
-      //   let eventDatetime = document.getElementById("schedule-datetime").value;
-      //   let eventType = document.querySelector('input[name="schedule-type"]').value;
-      //   let eventGame = document.querySelector('input[name="game"]:checked').value;
-       
-      //   let msg = eventGame + " scheduled for: " + eventDatetime;
-      //   app.browser.addElementToClass(msg, 'schedule-msg');
 
-      //   document.getElementById("first-step").classList.add("hide");
-      //   document.getElementById("second-step").classList.remove("hide");
+  attachEvents(app, mod, mycallback){
 
-      // } else if (event.target.id == 'scheduler-overlay-back-btn') {
-      //     console.log('inisde back btn click');
-      //     document.getElementById("first-step").classList.remove("hide");
-      //     document.getElementById("second-step").classList.add("hide");
-      // }
+    document.getElementById("").onclick = (e) => {
 
-    });
+      let data = { timestamp : (new Date().getTime()) };
+      if (this.mycallback != null) { this.mycallback(app, mod, data); }
+      this.overlay.hide();
+
+    }
+
   }
 
 }

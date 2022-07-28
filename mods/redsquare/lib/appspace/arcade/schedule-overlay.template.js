@@ -3,47 +3,33 @@ module.exports = (app, mod) => {
 
    return `
     <div class="scheduler-overlay-container">
-      
 
       <div class="step"  id="first-step">
         <div class="overlay-content-container first-step">
-          <div class="overlay-content-item scheduled-item">
-            <h5>Schedule Event</h5>
-            <p>Create and event and share it with your contacts/friends</p>
-          </div>
+          <div class="overlay-content-item scheduled-item" style="width:100%">
 
-          <div class="overlay-content-item scheduled-icon">
-            <!--<i class="fa fa-duetone fa-clipboard-list"></i>-->
-          </div>
-        </div>
+            <h5 style="float:left">Schedule:</h5>
 
-        <div class="schedule-input-container">
-          <div class="input-title">Event Name</div>
-          <input type="text" name="event-name" id="event-name">
-        </div>
-
-        <div class="schedule-input-container">
-          <div class="input-title">Event Type</div>
-
-          <div class="event-type-container">
-            <div class="event-type-input-container">
-              <select class="saito-new-select" id="schedule-type">
-                <option value="game">Game</option>
-                <option value="game">League</option>
-              </select>
+            <div style="float:right" class="event-type-container">
+              <div class="event-type-input-container">
+                <select class="saito-new-select" id="schedule-type">
+                  <option value="game">Event</option>
+                  <option value="game">Game</option>
+                </select>
+              </div>
             </div>
-            <div class="event-type-input-container">
-              <select class="saito-new-select" id="schedule-event-type">
-                <option value="poker">Poker</option>
-                <option value="chess">Chess</option>
-                <option value="settler">Settler</option>
-              </select>
-            </div>
+
           </div>
         </div>
 
+
         <div class="schedule-input-container">
-          <div class="input-title">Event Datetime</div>
+          <textarea name="event-name" placeholder="optional description?" id="event-name"></textarea>
+        </div>
+
+
+        <div class="schedule-input-container">
+          <div class="input-title">When?</div>
           <div class="event-type-container datetime">
             <div class="event-type-input-container">
               <input type="datetime-local" id="schedule-datetime-input" name="schedule-datetime" class="scheduler-datetime-input">
@@ -142,40 +128,22 @@ module.exports = (app, mod) => {
         </div>
 
         <div class="schedule-input-container">
-          <div class="input-title">Add Event Participants</div>
-          <input placeholder="Search from your contact list" type="text" name="event-name" id="event-name">
-        </div>
 
-        <div class="schedule-input-container contact-list">
+          <div class="input-title">Add Friends?</div>
 
-          <div class="saito-user saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" id="saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" data-id="dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgyMTcsMzgsNTMsMSk7IHN0cm9rZTpyZ2JhKDIxNywzOCw1MywxKTsgc3Ryb2tlLXdpZHRoOjIuMTsnPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4="></div>
-            <div class="saito-username"><span>dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG<span> <div class="saito-button-secondary small invite-btn">Invite</div></div>
-          </div>
-
-          <div class="saito-user saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" id="saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" data-id="dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgxNjksMzgsMjE3LDEpOyBzdHJva2U6cmdiYSgxNjksMzgsMjE3LDEpOyBzdHJva2Utd2lkdGg6Mi4xOyc+PHJlY3QgIHg9JzE2OCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScxNjgnIHk9JzE2OCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzE2OCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9JzAnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMTY4JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScxNjgnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9JzE2OCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48L2c+PC9zdmc+"></div>
-            <div class="saito-username"><span>dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG<span> <div class="saito-button-secondary small invite-btn">Invite</div></div>
-          </div>
-
-          <div class="saito-user saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" id="saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" data-id="dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSg1MywzOCwyMTcsMSk7IHN0cm9rZTpyZ2JhKDUzLDM4LDIxNywxKTsgc3Ryb2tlLXdpZHRoOjIuMTsnPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nODQnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScyNTInIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzAnIHk9JzI1Micgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzMzNicgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48L2c+PC9zdmc+"></div>
-            <div class="saito-username"><span>dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG<span> <div class="saito-button-secondary small invite-btn">Invite</div></div>
-          </div>
-
-          <div class="saito-user saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" id="saito-user-dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG" data-id="dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG">
-            <div class="saito-identicon-box"><img class="saito-identicon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MjAnIGhlaWdodD0nNDIwJyBzdHlsZT0nYmFja2dyb3VuZC1jb2xvcjpyZ2JhKDI0MCwyNDAsMjQwLDEpOyc+PGcgc3R5bGU9J2ZpbGw6cmdiYSgyMTcsMzgsNTMsMSk7IHN0cm9rZTpyZ2JhKDIxNywzOCw1MywxKTsgc3Ryb2tlLXdpZHRoOjIuMTsnPjxyZWN0ICB4PScxNjgnIHk9JzMzNicgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9Jzg0JyB5PSc4NCcgd2lkdGg9Jzg0JyBoZWlnaHQ9Jzg0Jy8+PHJlY3QgIHg9JzI1MicgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSc4NCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMjUyJyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PScwJyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScwJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nODQnIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjxyZWN0ICB4PSczMzYnIHk9Jzg0JyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMCcgeT0nMjUyJyB3aWR0aD0nODQnIGhlaWdodD0nODQnLz48cmVjdCAgeD0nMzM2JyB5PScyNTInIHdpZHRoPSc4NCcgaGVpZ2h0PSc4NCcvPjwvZz48L3N2Zz4="></div>
-            <div class="saito-username"><span>dwXnitmo4Q2Z4mfxB9tvTL3gViwJjzkox3autqNJ4PSG<span> <div class="saito-button-secondary small invite-btn">Invite</div></div>
-          </div>
+	  <div class="saito-user">
+	    <div class="saito-identicon-container">
+	      <img class="saito-identicon" src="/saito/img/no-profile.png" />
+	    </div>
+	    <div class="saito-username">add a friend</div>
+	    <div class="saito-userline">and make this an invite</div>
+	  </div>
 
         </div>
 
         <div class="scheduler-controls-container">
-          <div id="scheduler-overlay-next-btn" class="saito-button-secondary small scheduler-overlay-control-btn">
-            Cancel
-          </div>
           <div id="scheduler-overlay-next-btn" class="saito-button-primary small scheduler-overlay-control-btn">
-            Save Event
+            Next
           </div>
         </div>
       </div>

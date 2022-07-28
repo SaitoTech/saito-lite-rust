@@ -19,6 +19,12 @@ module.exports = (app, mod, tweet) => {
 
     let link_preview = '';
     if (tweet.link_properties != null) {
+
+      //
+      // if link properties
+      //
+      tweet_text = tweet_text.replace(tweet.link, '');
+
       if (typeof tweet.link_properties != 'undefined') {
         if (tweet.link_properties['og:exists'] !== false) {
 
