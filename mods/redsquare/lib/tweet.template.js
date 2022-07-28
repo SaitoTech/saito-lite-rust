@@ -1,10 +1,13 @@
+const saito = require('./../../../lib/saito/saito');
 const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
+const Tweet = require('./tweet');
 
 module.exports = (app, mod, tweet) => {
 
     let publickey = "";   
     let tweet_img = "";
     let tweet_text = "";
+    let link_preview = '';
     let youtube_preview = "";
 
     if (typeof tweet.img != 'undefined' && tweet.img != "") {
@@ -16,8 +19,14 @@ module.exports = (app, mod, tweet) => {
     if (tweet.youtube_id != null) {
       youtube_preview = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${tweet.youtube_id}"></iframe>`;
     }
+    if (tweet.retweet_html != null) {
+console.log("IS THERE RETWEET HTML: " + tweet.retweet_html);
+      let link_preview = tweet.retweet_html;
+    }
 
-    let link_preview = '';
+
+
+
     if (tweet.link_properties != null) {
 
       //

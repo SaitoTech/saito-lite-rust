@@ -30,16 +30,17 @@ class RedSquareAppspaceGames {
     //
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
     
-      this.overlay.show(app, mod, '<div class="redsquare-game-scheduler"></div>');
-      let sc = new SchedulerOverlay(app, mod, ".redsquare-game-scheduler");
-      sc.render(app, mod, ".redsquare-game-scheduler");
+      let sc = new SchedulerOverlay(app, mod);
+      sc.render(app, mod, function(data) {
+        let gc = new GameCreator(app, mod);
+        gc.render(app, mod);
+      });
 
     }
 
     document.getElementById("redsquare-create-game").onclick = (e) => {
-      this.overlay.show(app, mod, '<div class="redsquare-game-creator"></div>');
-      let gc = new GameCreator(app, mod, ".redsquare-game-creator");
-      gc.render(app, mod, ".redsquare-game-creator");
+      let gc = new GameCreator(app, mod);
+      gc.render(app, mod);
     }
 
     //

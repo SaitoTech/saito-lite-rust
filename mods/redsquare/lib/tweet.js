@@ -1,5 +1,7 @@
+const saito = require("./../../../lib/saito/saito");
 const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
+const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 
 class RedSquareTweet {
@@ -22,12 +24,46 @@ class RedSquareTweet {
       this.link_properties = null;
       this.youtube_id 	 = null;
       
+      //
+      // retweet
+      //
+      // if there is a retweet, we want to put it into a separate object
+      // so it can be rendered separately into the tweet as a subcomponent
+      //
+      this.retweet       = null;
+      this.retweet_tx    = null;
+      this.retweet_html  = null;
+
+console.log("IS THIS A RETWEET? TX DUMP: ");
+console.log(JSON.stringify(tx.msg));
+
+
       this.children 	 = [];
       this.unknown_children = [];
 
       this.setKeys(tx.msg.data);
       this.setKeys(tx.optional);
 
+if (this.retweet_tx != null) {
+console.log("THIS RETWEET_TX: " + JSON.stringify(this.retweet_tx));
+} else {
+console.log("RETWEET_TX IS NULL");
+}
+
+console.log("ABOUT TO TEST");
+
+      if (this.retweet_tx != null) {
+console.log("is retweet tw 1");
+	let tx = new saito.default.transaction(JSON.parse(this.retweet_tx));
+console.log("is retweet tw 2");
+        this.retweet = new RedSquareTweet(app, mod, tx);
+console.log("is retweet tw 3");
+        this.generateTweetProperties(app, mod, 0);
+console.log("is retweet tw 4");
+	this.retweet_html = this.retweet.returnHTML(app, mod);
+console.log("retweet_html set to: " + this.retweet_html);
+console.log("is retweet tw 5");
+      }
       if (this.parent_id === "") {
         this.parent_id = tx.transaction.sig;
       }
@@ -47,6 +83,10 @@ class RedSquareTweet {
 
     }
 
+
+    returnHTML(app, mod) {
+      return TweetTemplate(app, mod, this);
+    }
 
     returnTweet(app, mod, sig) {
       if (this.tx.transaction.sig === sig) { return this; }
@@ -152,6 +192,29 @@ class RedSquareTweet {
 
       };
 
+
+
+      //
+      // retweet
+      //
+      sel = ".tweet-retweet-" + this.tx.transaction.sig;
+      document.querySelector(sel).onclick = (e) => {
+
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          let rtweet = new RetweetTweet(app, mod);
+	      rtweet.tweet_id = this.tx.transaction.sig;
+	      rtweet.parent_id = this.parent_id;
+	      rtweet.thread_id = this.thread_id;
+          rtweet.render(app, mod, this);
+
+	  let html = TweetTemplate(app, mod, this);
+	  app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
+
+      };
+
+
 /*******
       $('.tweet-reply-container').on('click', "#post-reply-tweet-button", function(e) {
         e.preventDefault();
@@ -171,6 +234,8 @@ class RedSquareTweet {
         mod.sendTweetTransaction(app, mod, data);  
       });
 ****/
+
+
     }
 
 
@@ -233,6 +298,7 @@ class RedSquareTweet {
       for (let key in obj) { 
         if (typeof obj[key] != 'undefined') {
           if (this[key] === "" || this[key] === null) {
+console.log("setting " + key);
             this[key] = obj[key];  
           }
         }

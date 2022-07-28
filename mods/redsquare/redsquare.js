@@ -66,8 +66,6 @@ class RedSquare extends ModTemplate {
 	  }
 	}
 	this.tweets.splice(insertion_index, 0, tweet);
-        //this.tweets.unshift(tweet);
-        //app.connection.emit("tweet-render-request", tweet);
       }
     //
     // comment-level

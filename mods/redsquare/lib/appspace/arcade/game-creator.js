@@ -1,21 +1,20 @@
 const saito = require('./../../../../../lib/saito/saito');
 const GameCreatorTemplate = require('./game-creator.template');
 const ArcadeGameDetails = require('./../../../../arcade/lib/arcade-game/arcade-game-details');
-
+const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 
 class GameCreator {
 
-  constructor(app, mod, selector = "") {
+  constructor(app, mod) {
     this.app = app;
     this.name = "GameCreator";
+    this.overlay = new SaitoOverlay(app, mod);
     this.selector = selector;
   }
 
-  render(app, mod, selector = "") {
-    if (selector === "" || this.selector !== "") { selector = this.selector; }
-    document.querySelector(selector).innerHTML = "";
-    app.browser.addElementToSelector(GameCreatorTemplate(app, mod, "Select Game to Play"), selector);
+  render(app, mod) {
+    this.overlay.show(GameCreatorTemplate(app, mod, "Select Game to Play"));
     this.attachEvents(app, mod);
   }
 
@@ -37,6 +36,8 @@ class GameCreator {
         let arcade_mod = app.modules.returnModule("Arcade");
         ArcadeGameDetails.render(app, arcade_mod, tx);
         ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
+
+	this.overlay.hide();
 
       };
 
