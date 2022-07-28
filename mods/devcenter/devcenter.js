@@ -56,6 +56,7 @@ returnBaseHTML(app){
   }
 
 
+
   render(app) {
     if (app.BROWSER != 1 || this.browser_active != 1) {
       return;
@@ -109,6 +110,7 @@ returnBaseHTML(app){
     }
     return null;
   }
+
 
 
   //

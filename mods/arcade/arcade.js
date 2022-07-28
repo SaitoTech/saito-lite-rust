@@ -764,7 +764,11 @@ class Arcade extends ModTemplate {
       //
       if (txmsg.module == "Arcade" && txmsg.request == "close") {
         // try to give game over message
-        if (this.debug) {console.log("handlePeerRequest: close request received");}
+        if (this.debug) {
+          console.log("handlePeerRequest: close request received");
+          console.log(JSON.parse(JSON.stringify(txmsg)));
+        }
+        
         this.closeGameInvite(blk, tx, conf, app);
         
         if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
@@ -993,8 +997,8 @@ class Arcade extends ModTemplate {
   */
   closeGameInvite(blk, tx, conf, app){
     let found_game = false;
-    let game_id = tx.returnMessage().sig;
-    console.log("Arcade receiving close request");
+    let game_id = tx.returnMessage().game_id;
+    console.log("Arcade receiving close request for "+game_id);
 
     let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
     if (accepted_game){
@@ -1031,19 +1035,21 @@ class Arcade extends ModTemplate {
 
   async receiveCloseRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    this.checkCloseQueue(txmsg.sig);
-    if (this.debug) {console.log("Close game " + txmsg.sig);}
+    let id = txmsg.sig || txmsg.game_id;
+    this.checkCloseQueue(id);
+    if (this.debug) {console.log("Close game " + id);}
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
-    let params = { $status: "close", $game_id: txmsg.sig };
+    let params = { $status: "close", $game_id: id };
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
   async receiveGameoverRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    this.checkCloseQueue(txmsg.sig);
-    if (this.debug) {console.log("Resign game " + JSON.stringify(txmsg));}
-
-    let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${txmsg.sig}'`;
+    let id = txmsg.sig || txmsg.game_id;
+    this.checkCloseQueue(id);
+    if (this.debug) {console.log("Resign game " + JSON.stringify(id));}
+    //let params = { $status: "close", $game_id: id };
+    let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${id}'`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
   }
 
@@ -1775,7 +1781,7 @@ class Arcade extends ModTemplate {
     } 
 
     let txmsg = tx.returnMessage();
-    let game_id = txmsg.sig;
+    let game_id = txmsg.sig || txmsg.game_id;
     console.log(`Player ${tx.transaction.from[0].add} wants out of game ${game_id}`);
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i]?.transaction.sig == game_id) {
