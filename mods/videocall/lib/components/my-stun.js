@@ -32,12 +32,12 @@ class MyStun {
       }
 
       if (e.target.id === "createInvite") {
-        let video_mod = app.modules.returnModule("Video");
+        let video_mod = app.modules.returnModule("VideoCall");
         console.log(video_mod);
         video_mod.createVideoInvite();
       }
       if (e.target.id === "joinInvite") {
-        let video_mod = app.modules.returnModule("Video");
+        let video_mod = app.modules.returnModule("VideoCall");
         // invite code hardcoded for dev purposes
         const inviteCode = document.querySelector("#inviteCode").value;
         video_mod.joinVideoInvite(inviteCode.trim());
