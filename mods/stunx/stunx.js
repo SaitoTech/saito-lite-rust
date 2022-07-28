@@ -2,8 +2,8 @@ const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const VideoChat = require('./lib/components/video-chat/video-chat');
-const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const StunxAppspace = require('./lib/appspace/main');
+const InviteOverlay = require("./lib/components/invite-overlay");
 
 class Stunx extends ModTemplate {
 
@@ -20,8 +20,9 @@ class Stunx extends ModTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.videoChat = new VideoChat(app, mod);
+        this.InviteOverlay = new InviteOverlay(app, mod);
         this.icon = "fas fa-video"
-        this.overlay = new SaitoOverlay(app, this);
+
 
 
 
@@ -126,7 +127,6 @@ class Stunx extends ModTemplate {
                     }
 
                 })
-
                 // update server 
                 if (tx.msg.room) {
                     this.rooms.push(tx.msg.room.room);
@@ -218,11 +218,18 @@ class Stunx extends ModTemplate {
                 };
                 pc.dc.open = (e) => {
                     console.log('connection opened');
-                    // $('#connection-status').html(` <p style="color: green" class="data">Connected to ${peer_key}</p>`);
                 }
 
+                // add local stream tracks to send
+                const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
 
                 let stunx_self = app.modules.returnModule("Stunx");
+                this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
+                this.app.connection.emit('add-local-stream-request', localStream);
+
                 const remoteStream = new MediaStream();
                 pc.addEventListener('track', (event) => {
                     let stunx_self = app.modules.returnModule("Stunx");
@@ -260,18 +267,12 @@ class Stunx extends ModTemplate {
 
                 // console.log("peer connection ", pc);
 
-
-
-
-
             } catch (error) {
                 console.log("error", error);
             }
 
         }
-
         createPeerConnection();
-
     }
 
 
@@ -281,17 +282,6 @@ class Stunx extends ModTemplate {
         let roomCode = this.generateString(6);
         roomCode = roomCode.trim();
         const stunx_self = this.app.modules.returnModule("Stunx");
-        const html = `
-        <div style="background-color: white; padding: 2rem 3rem; border-radius: 8px; display:flex; flex-direction: column; align-items: center; justify-content: center; align-items:center">
-           <p style= margin-bottom:2rem;">  Invite Created </p>
-           <div style="display: grid; align-item: center; grid-template-columns:max-content 1fr;"> 
-           <p style="margin-right: .5rem;  color: var(--saito-primary)"> ${roomCode} </p>   <div style="margin-right: .5rem" id="copyVideoInviteCode"> <i class="fa fa-copy"> </i> </div> 
-           <p style="margin-right: .5rem;  color: var(--saito-primary);"> ${window.location.host}/stunx?invite_code=${roomCode} </p>  <div style="margin-right: .5rem" id="copyVideoInviteLink"> <i class="fa fa-copy"> </i> </div>
-           </div>
-           
-        </div>
-        `
-        document.querySelector('#inviteCode').value = roomCode;
 
 
         // prevent dupicate room code creation -- for development purposes
@@ -319,21 +309,9 @@ class Stunx extends ModTemplate {
 
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
+        this.app.connection.emit('show-invite-overlay-request', roomCode);
 
-        const overlay = new SaitoOverlay(this.app);
 
-
-        overlay.show(this.app, stunx_self, html, null, () => {
-            console.log("attaching copy event")
-            document.querySelector('#copyVideoInviteCode i').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(`${roomCode}`);
-                document.querySelector("#copyVideoInviteCode").textContent = "Copied to clipboard";
-            });
-            document.querySelector('#copyVideoInviteLink i').addEventListener('click', (e) => {
-                navigator.clipboard.writeText(`${window.location.host}/stunx?invite_code=${roomCode}`);
-                document.querySelector("#copyVideoInviteLink").textContent = "Copied to clipboard";
-            });
-        });
 
         siteMessageNew("Room created successfully", 5000);
     }
@@ -388,8 +366,8 @@ class Stunx extends ModTemplate {
 
                     });
                     const stunx_self = this.app.modules.returnModule('Stunx');
-                    this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self, localStream);
-
+                    this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
+                    this.app.connection.emit('add-local-stream-request', localStream);
                     pc.LOCAL_STREAM = localStream;
                     const remoteStream = new MediaStream();
                     pc.addEventListener('track', (event) => {
@@ -469,8 +447,6 @@ class Stunx extends ModTemplate {
         }
 
 
-
-
         // check if peer  already exists
 
         let publicKey = this.app.wallet.returnPublicKey();
@@ -521,11 +497,13 @@ class Stunx extends ModTemplate {
                     })
                 })
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
+
                 this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 let stunx_self = this.app.modules.returnModule("Stunx");
-                this.app.connection.emit('show-video-chat-request', new RTCPeerConnection({}), this.app, stunx_self, localStream);
+                this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, stunx_self);
+                this.app.connection.emit('add-local-stream-request', localStream);
                 console.log("you are the only participant in the room");
                 siteMessageNew("Room joined, you are the only participant in the room", 5000)
             }
