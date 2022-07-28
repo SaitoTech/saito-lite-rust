@@ -104,6 +104,10 @@
 
 }
 
+.schedule-type-container .saito-select-btn{
+  margin-right: 0px;
+}
+
 .event-type-container.datetime .saito-select-btn{
   min-width: 20rem;
   margin-top: -2rem;
