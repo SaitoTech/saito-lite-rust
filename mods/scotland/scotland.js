@@ -235,6 +235,25 @@ class Scotland extends GameTemplate {
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
 
+
+    let hh = document.querySelector(".hud-header");
+    if (!hh.querySelector(".handy-help")){
+      this.app.browser.addElementToElement(`<i id="hud_zoom" class="handy-help hud-controls fas fa-search" aria-hidden="true""></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_clues" class="handy-help hud-controls fas fa-shoe-prints" aria-hidden="true"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_bus" class="handy-help hud-controls fas fa-bus" aria-hidden="true""></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="hud_underground" class="handy-help hud-controls fas fa-subway" aria-hidden="true"></i>`, hh);  
+      this.app.browser.addElementToElement(`<i id="hud_clear" class="handy-help hud-controls far fa-map" aria-hidden="true"></i>`, hh);  
+    }
+    try{
+      document.getElementById("hud_zoom").onclick = this.magnifyingGlass.bind(this);
+      document.getElementById("hud_clues").onclick = this.handleCluesMenuItem.bind(this);
+      document.getElementById("hud_bus").onclick = this.drawBusMap.bind(this);
+      document.getElementById("hud_underground").onclick = this.drawUndergroundMap.bind(this);
+      document.getElementById("hud_clear").onclick = this.clearMap.bind(this);
+    }catch(err){
+      console.error(err);
+    }
+
     try {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hammer.render(this.app, this);
@@ -2035,7 +2054,7 @@ class Scotland extends GameTemplate {
       left: 1175,
       taxi: ["122", "124", "137", "148", "149"],
       underground: [],
-      bus: ["124", "122", "185", "144"],
+      bus: ["124", "122", "165", "144"],
       ferry: [],
     };
     locations["124"] = {

@@ -554,7 +554,7 @@ module.exports = ArcadeMain = {
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];
-    console.log("Click to Cancel Game");
+    console.log("Click to Cancel Game: " + game_id);
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
 
@@ -572,14 +572,15 @@ module.exports = ArcadeMain = {
       }
 
       let msg = {
-        sig: game_id,
-        status: "close",
         request: "close",
         module: "Arcade",
       };
 
       newtx.msg = msg;
+      newtx.msg.game_id = game_id;
       newtx = app.wallet.signTransaction(newtx);
+
+      console.log(JSON.parse(JSON.stringify(newtx)));
 
       let relay_mod = app.modules.returnModule("Relay");
       if (relay_mod != null) {
@@ -623,7 +624,7 @@ module.exports = ArcadeMain = {
     }
 
 
-    createCloseTx();
+    createCloseTx(game_id);
     this.removeGameFromList(game_id);
   },
 
