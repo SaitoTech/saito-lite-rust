@@ -370,15 +370,6 @@ console.log("NUM LIKES: " + row.num_likes);
   }
 
 
-
-
-
-
-
-
-
-
-
   sendTweetTransaction(app, mod, data) {
 
     let redsquare_self = this;
