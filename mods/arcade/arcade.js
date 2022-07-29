@@ -15,7 +15,6 @@ const fetch = require("node-fetch");
 class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
-
     this.name = "Arcade";
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";

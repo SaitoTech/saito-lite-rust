@@ -10,6 +10,9 @@ const path = require('path');
 const JSON = require('json-bigint');
 
 
+const AppStoreAppspace = require('./lib/appspace/main');
+
+
 class AppStore extends ModTemplate {
 
   constructor(app) {
@@ -22,6 +25,7 @@ class AppStore extends ModTemplate {
     this.categories    = "Utilities Dev";
     this.featured_apps = ['Polkadot','Kusama', 'Westend', 'Design', 'Debug', 'Midnight', 'Hearts', 'Settlers', 'President', 'Scotland'];
     this.header        = null;
+    this.icon	       = "fas fa-window-restore";
 
     this.bundling_timer = null;
     this.renderMode    = "none";
@@ -34,6 +38,11 @@ class AppStore extends ModTemplate {
   // appstore upload is in email
   //
   respondTo(type) {
+    if (type == 'appspace') {
+      this.styles = ['/appstore/css/email-appspace.css'];
+      super.render(this.app, this);
+      return new AppStoreAppspace(this.app, this);
+    }
     if (type == 'email-appspace') {
       let obj = {};
       obj.render = this.renderEmail;
@@ -205,6 +214,8 @@ console.log("##########################");
 	  // on start, particularly with Red Imperium.
 	  //
 	  if (zip.length <= 30000000) {
+
+console.log("submitting: " + mod_zip_filename);
 
             newtx.msg = {
               module: "AppStore",
@@ -506,6 +517,7 @@ console.log("server is starting app insert");
 
 console.log("-----------------------------");
 console.log("--INSERTING INTO APPSTORE --- " + name);
+console.log(description);
 console.log("-----------------------------");
 if (name == "Unknown") {
   console.log(`TROUBLE EXTRACTING: mods/module-${sig}-${ts}.zip`);
