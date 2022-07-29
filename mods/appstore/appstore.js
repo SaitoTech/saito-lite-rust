@@ -39,7 +39,7 @@ class AppStore extends ModTemplate {
   //
   respondTo(type) {
     if (type == 'appspace') {
-      this.styles = ['/appstore/css/email-appspace.css'];
+      this.styles = ['/appstore/css/appspace.css'];
       super.render(this.app, this);
       return new AppStoreAppspace(this.app, this);
     }
@@ -989,6 +989,19 @@ console.log("Bundle __dirname: " + __dirname);
     AppStoreOverlay.attachEvents(this.app, this);
   }
 
+
+  sendSubmitModuleTransaction(app, mod, data) {
+    let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+    let { name, description, zip } = data;
+    newtx.msg = {
+      module: "AppStore",
+      request: "submit module",
+      module_zip: zip,
+    };
+    newtx = app.wallet.signTransaction(newtx);
+    app.network.propagateTransaction(newtx);
+    return newtx;
+  }
 
 }
 module.exports = AppStore;
