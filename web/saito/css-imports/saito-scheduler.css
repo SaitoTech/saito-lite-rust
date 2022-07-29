@@ -1,3 +1,7 @@
+.schedule-datetime-input {
+  cursor: pointer;
+}
+
 .scheduler-overlay-container {
   background-color: #fff;
   width: 58vh;
@@ -102,6 +106,10 @@
 .event-type-container.datetime {
   margin-top: 0px;
 
+}
+
+.schedule-type-container .saito-select-btn{
+  margin-right: 0px;
 }
 
 .event-type-container.datetime .saito-select-btn{
