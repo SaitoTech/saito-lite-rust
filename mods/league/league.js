@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueMainContainer = require('./lib/main/container');
 const ArcadeLeague = require('./lib/components/arcade-league');
+const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const LeagueInvite = require("./lib/overlays/league-invite");
@@ -156,6 +157,8 @@ class League extends ModTemplate {
 
     //sort leagues
     leagues_to_display.sort((a, b) =>{ 
+      if (a.id === "SAITOLICIOUS") { return -1};
+      if (b.id === "SAITOLICIOUS") { return 1};
       if (a.myRank < 0) {return 1;}
       if (b.myRank < 0) {return -1;}
       return b.myRank - a.myRank
@@ -173,8 +176,16 @@ class League extends ModTemplate {
     let leagues_to_display = this.filterLeagues(app);
 
     for (let le of leagues_to_display){
-      let al = new ArcadeLeague(app, this, le);
-      al.render(app, this, elem);
+      if (le.admin === "saito"){
+        let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
+        let al = new ForumLeague(app, this, le);
+        al.render(app, this, altElm);
+      }
+
+      if (le.myRank > 0 || le.admin !== "saito"){
+        let al = new ArcadeLeague(app, this, le);
+        al.render(app, this, elem);
+      }
     }
   }
 
