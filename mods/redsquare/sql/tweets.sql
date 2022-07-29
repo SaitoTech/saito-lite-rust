@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS tweets (
   moderated 		INTEGER,
   num_likes 		INTEGER,
   num_retweets 		INTEGER,
+  num_replies 		INTEGER,
   created_at 		INTEGER,
   updated_at 		INTEGER,
   UNIQUE 		(id),

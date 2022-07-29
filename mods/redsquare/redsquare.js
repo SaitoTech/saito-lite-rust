@@ -36,7 +36,6 @@ class RedSquare extends ModTemplate {
 
 
   
-
   addTweetFromTransaction(app, mod, tx) {
     let tweet = new Tweet(app, this, tx);
     this.addTweet(app, this, tweet);
@@ -265,36 +264,33 @@ class RedSquare extends ModTemplate {
 
 	    let new_tweet = 1;
 
-	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
-	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
-		new_tweet = 0;
-	      }
-	    }
+//	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
+//	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
+//		new_tweet = 0;
+//	      }
+//	    }
 
 	    if (new_tweet) {
-
 	      let tx = new saito.default.transaction(JSON.parse(row.tx));
 
-	      if (!tx.optional) { tx.optional = {}; }
-              tx.optional.likes 	  = tx.msg.likes;
-              tx.optional.retweets 	  = tx.msg.retweets;
-      	      tx.optional.parent_id 	  = tx.msg.parent_id;
-      	      tx.optional.thread_id 	  = tx.msg.thread_id;
-	      tx.optional.link_properties = {};
+console.log("NUM LIKES: " + row.num_likes);
 
-	      try {
-	        let x = JSON.parse(row.link_properties);
-	        tx.optional.link_properties = x;
-	      } catch (err) {
-	      }
+              if (!tx.optional) { tx.optional = {}; }
+    	      tx.optional.parent_id       = tx.msg.parent_id;
+    	      tx.optional.thread_id       = tx.msg.thread_id;
+    	      tx.optional.num_replies     = row.num_replies;
+    	      tx.optional.num_retweets    = row.num_retweets;
+    	      tx.optional.num_likes       = row.num_likes;
+    	      tx.optional.link_properties = {};
 
-	      let tweet = new Tweet(app, redsquare_self, tx);
-
-  	      redsquare_self.addTweet(app, redsquare_self, tweet);
-
+  	      try {
+    	        let x = JSON.parse(row.link_properties);
+   	        tx.optional.link_properties = x;
+    	      } catch (err) {}
+     
+	      this.addTweetFromTransaction(app, redsquare_self, tx);
 	    }
           });
-
 
 	  redsquare_self.renderMainPage(app, redsquare_self);
 
@@ -314,11 +310,74 @@ class RedSquare extends ModTemplate {
         if (txmsg.request === "create tweet") {
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
         }
+        if (txmsg.request === "like tweet") {
+          redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
+        }
       }
     } catch (err) {
       console.log("ERROR in " + this.name + " onConfirmation: " + err);
     }
   }
+
+
+
+
+  sendLikeTransaction(app, mod, data) {
+
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "like tweet",
+      data : {} ,
+    };
+    for (let key in data) { 
+      obj.data[key] = data[key];
+    }
+
+    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    newtx = redsquare_self.app.wallet.signTransaction(newtx);
+    redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
+
+  }
+
+  async receiveLikeTransaction(blk, tx, conf, app) {
+
+    //
+    // browsers
+    //
+    if (app.BROWSER == 1) {
+      return;
+    } 
+
+
+    //
+    // servers
+    //
+    let txmsg = tx.returnMessage();
+
+    let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
+    let params = {
+      $sig: txmsg.data.sig,
+    };
+    app.storage.executeDatabase(sql, params, "redsquare");
+
+    return;
+
+  }
+
+
+
+
+
+
+
+
+
+
 
   sendTweetTransaction(app, mod, data) {
 
@@ -336,7 +395,6 @@ class RedSquare extends ModTemplate {
     let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
     newtx.msg = obj;
     newtx = redsquare_self.app.wallet.signTransaction(newtx);
-
     redsquare_self.app.network.propagateTransaction(newtx);
 
     return newtx;
@@ -379,7 +437,10 @@ class RedSquare extends ModTemplate {
 		thread_id,
                 publickey,
                 link,
-		link_properties
+		link_properties,
+		num_replies,
+		num_retweets,
+		num_likes
               ) VALUES (
                 $txjson,
                 $sig,
@@ -389,7 +450,10 @@ class RedSquare extends ModTemplate {
 		$thread_id,
                 $publickey,
 		$link,
-		$link_properties
+		$link_properties,
+		0,
+		0,
+		0
               )`;
     let params = {
       $txjson: JSON.stringify(tx.transaction),

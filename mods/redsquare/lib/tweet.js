@@ -23,7 +23,7 @@ class RedSquareTweet {
       this.link 	 = null;
       this.link_properties = null;
       this.youtube_id 	 = null;
-      
+
       //
       // retweet
       //
@@ -36,6 +36,11 @@ class RedSquareTweet {
       this.retweet_link_properties = null;
       this.retweet_link = null;
 
+      //
+      // 
+      //
+      this.num_likes = 0;
+      this.num_retweets = 0;
 
       this.children 	 = [];
       this.unknown_children = [];
@@ -146,8 +151,8 @@ class RedSquareTweet {
       let sel = "#tweet-box-" + this.tx.transaction.sig;
       document.querySelector(sel).onclick = (e) => {
 
-          e.preventDefault();
-          e.stopImmediatePropagation();
+          //e.preventDefault();
+          //e.stopImmediatePropagation();
 
           let el = e.currentTarget;
 
@@ -184,6 +189,11 @@ class RedSquareTweet {
 	  let html = TweetTemplate(app, mod, this);
 	  app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
 
+	  // increase num likes
+	  sel = ".tweet-tool-reply-count-"+this.tx.transaction.sig;
+	  let obj = document.querySelector(sel);
+	  obj.innerHTML = parseInt(obj.innerHTML) + 1;
+
       };
 
 
@@ -206,28 +216,31 @@ class RedSquareTweet {
 	  let html = TweetTemplate(app, mod, this);
 	  app.browser.prependElementToSelector(`<div class="post-tweet-preview">${html}</div>`, ".redsquare-tweet-overlay");
 
+	  // increase num likes
+	  sel = ".tweet-tool-retweet-count-"+this.tx.transaction.sig;
+	  let obj = document.querySelector(sel);
+	  obj.innerHTML = parseInt(obj.innerHTML) + 1;
+
       };
 
 
-/*******
-      $('.tweet-reply-container').on('click', "#post-reply-tweet-button", function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      
-        let text = $('#reply-tweet-textarea').val();
-        let parent_id = $(this).parent().attr('data-id');
-        let thread_id = $(this).parent().attr('data-thread-id') || parent_id;
+      //
+      // like
+      //
+      sel = ".tweet-like-" + this.tx.transaction.sig;
+      document.querySelector(sel).onclick = (e) => {
 
-        let data = { 
-          text: text,
-          parent_id: parent_id,
-          thread_id: thread_id 
-        };
+          e.preventDefault();
+          e.stopImmediatePropagation();
 
-        // CURRENTLY BROKEN
-        mod.sendTweetTransaction(app, mod, data);  
-      });
-****/
+	  mod.sendLikeTransaction(app, mod, { sig : this.tx.transaction.sig});
+
+	  // increase num likes
+	  sel = ".tweet-tool-like-count-"+this.tx.transaction.sig;
+	  let obj = document.querySelector(sel);
+	  obj.innerHTML = parseInt(obj.innerHTML) + 1;
+
+      };
 
 
     }
@@ -290,9 +303,8 @@ class RedSquareTweet {
 
     setKeys(obj) {
       for (let key in obj) { 
-        if (typeof obj[key] != 'undefined') {
-          if (this[key] === "" || this[key] === null) {
-console.log("setting " + key);
+        if (typeof obj[key] !== 'undefined') {
+          if (this[key] === 0 || this[key] === "" || this[key] === null) {
             this[key] = obj[key];  
           }
         }

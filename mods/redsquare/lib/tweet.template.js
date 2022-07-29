@@ -78,9 +78,9 @@ module.exports = (app, mod, tweet, include_controls = 1) => {
 
              <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
 
-             <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}"">0</span> <i class="far fa-heart"></i></div>
+             <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}"">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
 
-             <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">0</span> <i class="fas fa-retweet"></i></div>
+             <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fas fa-retweet"></i></div>
 
            </div>
       `;
