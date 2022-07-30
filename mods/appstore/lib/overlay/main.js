@@ -1,6 +1,6 @@
 const AppStoreOverlayTemplate = require('./main.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-const AppDetails = require('./details.js');
+const AppstoreAppDetails = require('./details.js');
 const AppBoxTemplate = require('./appbox.template.js');
 const JSON = require('json-bigint');
 
@@ -49,18 +49,19 @@ console.log(JSON.stringify(rows));
         installbtn.onclick = (e) => {
 alert("clicked install");
 
-          let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.id));
-	  let app_img = null;
-	  for (var i = 0; i < this_btn.childNodes.length; i++) {
-    	    if (this_btn.childNodes[i].className == "appstore-overlay-app-image") {
-	      app_img = this_btn.childNodes[i].style.background;
-    	    }    
-    	  }    
+console.log("current target: " + e.currentTarget.id);
 
-          module_obj.image = app_img;          
+          // appbox is 3 above us
+          let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.parentElement.parentElement.parentElement.id));
+	  module_obj.image = e.currentTarget.parentElement.parentElement.style.background;
 
-          AppStoreAppDetails.render(app, mod, data);
-          AppStoreAppDetails.attachEvents(app, mod, data);
+alert("clicked install 2");
+
+console.log("about to render app details... 1");
+          AppstoreAppDetails.render(app, mod, module_obj);
+console.log("about to render app details... 2");
+          AppstoreAppDetails.attachEvents(app, mod, module_obj);
+console.log("about to render app details... 3");
 
 	};
       });

@@ -1,22 +1,15 @@
-let AppstoreAppDetailsTemplate = require('./details.template.js');
+const AppstoreAppDetailsTemplate = require('./details.template.js');
+
 
 module.exports = AppstoreAppDetails = {
 
   render(app, mod, data) {
-
-    if (!document.getElementById("appstore-app-install-overlay")) {
-      app.browser.addElementToDom('<div id="appstore-app-install-overlay" class="appstore-app-install-overlay"></div>');
-    }
-
-    document.querySelector('.appstore-app-install-overlay').innerHTML = AppstoreAppDetailsTemplate(app, mod, data);
-    document.querySelector('.appstore-app-install-overlay').style.display = "block";
-
-    //this should not be here - but - it works.
-    fitty('.appstore-app-install-name');
+    document.querySelector('.appstore-overlay').innerHTML = AppstoreAppDetailsTemplate(app, mod, data);
   },
 
 
   attachEvents(app, mod, data) {
+return;
 
     // remove event listeners
     try {

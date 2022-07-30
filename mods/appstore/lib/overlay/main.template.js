@@ -17,12 +17,7 @@ module.exports = AppStoreAppspaceTemplate = (app, mod, search_options) => {
         </div>
       </div>
       <div class="appstore-overlay-apps" id="appstore-overlay-apps">
-        <div class="appstore-app">A</div>
-        <div class="appstore-app">B</div>
-        <div class="appstore-app">C</div>
-        <div class="appstore-app">D</div>
-        <div class="appstore-app">E</div>
-        <div class="saito-loader" id="saito-loader"></div>
+	<div class="saito-loader" id="saito-loader"></div>
       </div>
     </div>
   `;

@@ -33,7 +33,8 @@
 
 .appstore-overlay {
   display: grid;
-  height: 80vh;
+  max-height: 80vh;
+  height: min-content;
   width: 80vw;
   overflow-y: scroll;
   grid-template-rows: min-content auto;
@@ -95,4 +96,61 @@
 }
 
 
+
+.saito-module-intro {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+}
+.saito-module-intro-image {
+  padding-top: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+}
+.saito-module-intro-details > div:nth-child(1) {
+  border-bottom: 1px dashed var(--saito-primary);
+  font-size: 2.5rem;
+  width: min-content;
+  white-space: nowrap;
+}
+.saito-module-intro > div:nth-child(2) {
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+  margin-top: 0.5rem;
+}
+.saito-module-intro-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  position: relative;
+}
+.saito-module-intro-description {
+  font-size: 1.2em;
+  line-height: 1.3em;
+  margin: 0.45em 0;
+}
+
+.appstore-appbox-image {
+}
+.appstore-appbox-details {
+}
+.appstore-appbox-title {
+}
+.appstore-appbox-description {
+}
+.appstore-appbox-version {
+}
+.appstore-appbox-publisher {
+}
+.appstore-appbox-datetime {
+}
+.appstore-appbox-blockchain {
+  display: grid;
+  grid-template-rows: 2;
+  row-gap: 2 rem;
+}
+.appstore-appbox-blockchain-hash {
+}
+.appstore-appbox-blockchain-block-id {
+}
+.appstore-install-confirm-button {
+}
 
