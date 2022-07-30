@@ -190,6 +190,51 @@ Saito Module Boxes
     padding: 10px 15px;
     grid-row: 3;
 }
+.saito-module-title-text {
+    margin-top: 0.3rem;
+    display: block;
+    float: left;
+}
+
+
+/* ----------------------------------------------------------------
+Saito Module Boxes
+-----------------------------------------------------------------*/
+.saito-loader {
+  animation: spin;
+  width: 100px;
+  height: 115px;
+  animation-name: spin;
+  animation-duration: 4000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  background-image: url(/saito/img/logo-color.svg);
+  background-size: contain;
+} 
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+
+
+.saito-button-secondary .small .saito-module-install-button {
+  width: min-content;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  float: right;
+  background-color: white;
+  margin: 0px;
+}
+
+
+
+
+
 
 
 

@@ -23,7 +23,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, "Chess", "chess")}
+	  ${SaitoModuleTemplate(app, mod, "Chess", "/chess/img/arcade/arcade.jpg")}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
@@ -51,7 +51,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, "Twilight Struggle", "twilight")}
+	  ${SaitoModuleTemplate(app, mod, "Twilight Struggle", "/twilight/img/arcade/arcade.jpg")}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
