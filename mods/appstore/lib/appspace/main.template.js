@@ -11,7 +11,6 @@ The Saito Appstore lets you install or upload new applications. Visit our <a hre
         </div>
       </div>
 
-
     <div class="appstore-publish" id="appstore-publish">
       <div id="appstore-publish-inner">
        Drag-and-Drop Application ZIP

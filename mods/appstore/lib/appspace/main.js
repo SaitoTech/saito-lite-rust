@@ -1,6 +1,6 @@
 const AppStoreAppspaceTemplate = require('./main.template');
 const AppStorePublishSuccess = require('./success');
-const AppStoreOverlay = require('./../appstore-overlay/appstore-overlay');
+const AppStoreOverlay = require('./../overlay/main');
 
 
 class AppStoreAppspace {
@@ -31,20 +31,14 @@ class AppStoreAppspace {
 
 
     document.querySelector('#appstore-install-button').onclick = (e) => {
-alert("search 1");
-      let search_options = {};
-      search_options.featured = 1;
-alert("search 2");
-      AppStoreOverlay.render(app, mod, search_options);
-      AppStoreOverlay.attachEvents(app, mod);
-alert("search 3");
+      let search_options = { featured : 1 };
+      let overlay = new AppStoreOverlay(app, mod);
+      overlay.render(app, mod, search_options);
       try {
         let obj = document.querySelector('.appstore-header-featured');
         obj.style.display = "block";
       } catch (err) {
-alert("Search 4");
-}
-alert("search 5");
+      }
     }
 
 

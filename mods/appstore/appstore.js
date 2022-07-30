@@ -104,6 +104,8 @@ class AppStore extends ModTemplate {
 
     if (message.request === "appstore search modules") {
 
+console.log("HANDLE SEARCH MODULES");
+
       let squery1 = "%" + message.data + "%";
       let squery2 = message.data;
 
@@ -1002,6 +1004,89 @@ console.log("Bundle __dirname: " + __dirname);
     app.network.propagateTransaction(newtx);
     return newtx;
   }
+
+
+
+  /////////////////////
+  // Database Search //
+  /////////////////////
+  searchForApps(search_options = {}, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    //
+    // there are server-side checks, but perform basic ones
+    //
+    let where_clause = "";
+    if (search_options.category != "" && search_options.category != undefined) {
+      where_clause = " WHERE categories LIKE \"%" + search_options.category.replace(/\W/, '') + "%\"";
+    }
+    if (search_options.search != "" && search_options.search != undefined) {
+      if (where_clause == "") {
+        where_clause = " WHERE ";
+      } else {
+        where_clause += " AND ";
+      }
+      where_clause += " (name LIKE \"%" + search_options.search.replace(/\W/, '') + "%\" OR description LIKE \"%" + search_options.search.replace(/\W/, '') + "%\" OR version LIKE \"%" + search_options.search + "%\")";
+    }
+    if (search_options.version != "" && search_options.version != undefined) {
+      if (where_clause == "") {
+        where_clause = " WHERE ";
+      } else {
+        where_clause += " AND ";
+      }
+      where_clause += " version = \"" + search_options.version + "\"";
+    }
+    let featured = 0;
+    if (search_options.featured == 1) { featured = 1; }
+    if (where_clause == "") {
+      where_clause = " WHERE ";
+    } else {
+      where_clause += " AND ";
+    }
+    if (featured == 1) {
+      where_clause += " featured = 1";
+    } else {
+      where_clause += " (featured = 1 OR featured = 0) ";
+    }
+
+    //
+    // form sql query
+    //
+    let sql_query = ("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
+    console.log("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
+    console.log(sql_query);
+
+    if (this.app.BROWSER === 1) {
+
+console.log("this is a browser, so fetching peer database request...");
+
+      this.sendPeerDatabaseRequestWithFilter(
+        this.name ,
+        sql_query ,
+        (res) => {
+          if (res.rows != undefined) {
+console.log("FETCHED APPS: " );
+console.log(JSON.stringify(res.rows));
+
+            mycallback(res.rows);
+          } else {
+            mycallback([]);
+	  }  
+        }
+      );
+
+    } else {
+
+      //
+      // TODO - does server need implementation
+      //
+      mycallback([]);
+
+    }
+
+  }
+
 
 }
 module.exports = AppStore;

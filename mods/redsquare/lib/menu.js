@@ -85,14 +85,14 @@ class RedSquareMenu {
         obj = document.querySelector(qs);
         obj.onclick = (e) => {
 	  document.querySelector(".appspace").innerHTML = "";
-          x.render(app, mod, ".appspace");
+          x.render(app, app.modules.mods[i], ".appspace");
 	  // has sidebar
           let y = app.modules.mods[i].respondTo("appspace-sidebar");
           if (y) {
 	    document.querySelector(".appspace-sidebar").innerHTML = "";
-            y.render(app, mod, ".appspace-sidebar");
+            y.render(app, app.modules.mods[i], ".appspace-sidebar");
 	  } else {
-            mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+            mod.rsidebar.render(app, app.modules.mods[i], ".saito-sidebar-right");
 	  }
         }
       }
