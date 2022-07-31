@@ -111,6 +111,9 @@ Saito Table
   display:grid;
   grid-template-columns: auto;
 }
+.saito-table-row {
+    align-items: center;
+}
 .saito-table-row.odd {
   background-color: #fafafa;
 }

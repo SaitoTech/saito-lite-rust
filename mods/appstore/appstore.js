@@ -1,16 +1,13 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const EmailAppStore = require('./lib/email-appspace/appstore-appspace');
-const AppStoreOverlay = require('./lib/appstore-overlay/appstore-overlay');
+const AppStoreAppspace = require('./lib/appspace/main');
 const AppStoreBundleConfirm = require('./lib/overlay/appstore-bundle-confirm');
-const AppStoreModuleIndexedConfirm = require('./lib/appstore-overlay/appstore-module-indexed-confirm');
+const AppStoreModuleIndexedConfirm = require('./lib/overlay/appstore-module-indexed-confirm');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const fs = require('fs');
 const path = require('path');
 const JSON = require('json-bigint');
 
-
-const AppStoreAppspace = require('./lib/appspace/main');
 
 
 class AppStore extends ModTemplate {
@@ -43,22 +40,7 @@ class AppStore extends ModTemplate {
       super.render(this.app, this);
       return new AppStoreAppspace(this.app, this);
     }
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = this.renderEmail;
-      obj.attachEvents = this.attachEventsEmail;
-      obj.script = '<link ref="stylesheet" href="/appstore/css/email-appspace.css" />';
-      return obj;
-    }
     return null;
-  }
-  renderEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.render(app, appstore_mod);
-  }
-  attachEventsEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.attachEvents(app, appstore_mod);
   }
 
 
@@ -85,12 +67,6 @@ class AppStore extends ModTemplate {
 	  search_options.version = i;
       this.search_options = search_options;
       this.renderMode = "standalone";
-    }
-  }
-  onPeerHandshakeComplete(app, mod) {
-    if (this.renderMode == "standalone") {
-      AppStoreOverlay.render(this.app, this, this.search_options);
-      AppStoreOverlay.attachEvents(this.app, this);
     }
   }
 
@@ -205,6 +181,7 @@ console.log("##########################");
           let mod_zip_filename = path.basename(this.path);
           let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
           let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+console.log("mod path is: " + mod_path);
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
