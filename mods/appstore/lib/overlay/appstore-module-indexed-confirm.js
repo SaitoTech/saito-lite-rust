@@ -5,7 +5,7 @@ module.exports = AppStoreModuleIndexedConfirm = {
 
     render(app, mod) {
       document.querySelector(".appstore-loading-text").innerHTML = AppStoreModuleIndexedConfirmTemplate();
-      try {document.querySelector(".loader").parentElement.innerHTML = '<i style="font-size: 3em;" class="installed fas fa-check-circle"></i>';} catch (err) {}
+      try {document.querySelector(".saito-loader").parentElement.innerHTML = '<i style="font-size: 3em;" class="installed fas fa-check-circle"></i>';} catch (err) {}
     },
 
     attachEvents(app, mod) {

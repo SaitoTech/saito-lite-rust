@@ -5,51 +5,27 @@ module.exports = AppstoreAppDetails = {
 
   render(app, mod, data) {
     document.querySelector('.appstore-overlay').innerHTML = AppstoreAppDetailsTemplate(app, mod, data);
+    document.querySelector(".saito-module-intro-image > img").src = data.image;
+    this.attachEvents(app, mod, data);
   },
 
 
   attachEvents(app, mod, data) {
-return;
+ 
+    // data is module = dm
+    let dm = data;
 
-    // remove event listeners
-    try {
-    document.querySelector('#email-form-back-button').onclick = () => {
-
-      document.querySelector('.appstore-app-install-overlay').style.display = "none";
-      document.querySelector('.appspace-appstore-container').style.display = "grid";
-
-      //document.querySelector('.email-detail-left-options').innerHTML = document.querySelector('.email-detail-left-options').innerHTML;
-
-      let emailmod = app.modules.returnModule("Email");
-      if (emailmod) {
-
-        if (!data) { data = {}; }
-        data.email = emailmod;
-        data.mods = emailmod.mods;
-        emailmod.renderMain(app, data);
-        emailmod.renderSidebar(app, data);
-
-      }
-    }
-    } catch (err) {}
-
-    document.querySelector('.appstore-app-install-overlay').onclick = () => {
-      document.querySelector('.appstore-app-install-overlay').style.display = 'none';
-    }
-
-    let dm = data.module;
-
-    document.querySelector('.appstore-app-install-confirm-btn').onclick = () => {
+    document.querySelector('.appstore-install-confirm-button').onclick = () => {
 
       //remove close event on shim until finished.
-      document.querySelector('.appstore-app-install-overlay').onclick = () => { return false;}
+      document.querySelector('.saito-overlay-closebox-btn').remove();
+      document.querySelector('.saito-overlay-closebox').remove();
+      document.querySelector('.saito-overlay-backdrop').onclick = (e) => {};
 
       let module_list = [];
       module_list.push(dm);
 
       let dmname = dm.name;
-
-      console.log("MODULE LIST IS: " + JSON.stringify(module_list));
 
       let mods_to_include = [];
       if (app.options.modules) {
@@ -87,6 +63,7 @@ return;
       if (app.options?.appstore?.default) {
         if (app.options.appstore.default != "") { have_specified_appstore = 1; }
       }
+
       //
       // READY TO SUBMIT
       //
@@ -102,23 +79,23 @@ return;
           newtx = app.wallet.signTransaction(newtx);
           app.network.propagateTransaction(newtx);
 
-          document.querySelector('.appstore-app-install-overlay').innerHTML = `
+          document.querySelector('.appstore-overlay').innerHTML = `
             <div class="appstore-bundler-install-notice">
               <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
-              <center><div class="loader" id="game_spinner"></div></center>
+              <center><div class="saito-loader" id="saito-loader"></div></center>
             </div>
           `;
 
         } else {
 
-          document.querySelector(".appstore-app-install-overlay").innerHTML = `
+          document.querySelector(".appstore-overlay").innerHTML = `
             <div class="appstore-bundler-install-notice">
               <center style="margin-bottom:20pxpadding:20px;">
 		Your wallet is not setup to use this AppStore. Use this AppStore? 
 	        <p></p>
-	        <div class="button" id="appstore-compile-btn">yes please</div>
+	        <div class="saito-button-secondary" id="appstore-compile-btn">yes please</div>
 	        <p></p>
-	        <div class="button" id="appstore-end-compile-btn">no thanks</div>
+	        <div class="saito-button-secondary" id="appstore-end-compile-btn">no thanks</div>
 	      </center>
             </div>
           `;
@@ -132,6 +109,8 @@ return;
 
 	   document.getElementById("appstore-compile-btn").onclick = (e) => {
 
+	     document.querySelector(".appstore-bundler-install-notice").innerHTML = "Please wait...";
+
 	     app.options.appstore = {};
 	     app.options.appstore.default = app.network.peers[0].peer.publickey;
 	     app.storage.saveOptions();
@@ -144,17 +123,17 @@ return;
              newtx = app.wallet.signTransaction(newtx);
              app.network.propagateTransaction(newtx);
  
-             document.querySelector('.appstore-app-install-overlay').innerHTML = `
+             document.querySelector('.appstore-overlay').innerHTML = `
                <div class="appstore-bundler-install-notice">
                  <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
-                 <center><div class="loader" id="game_spinner"></div></center>
+                 <center><div class="saito-loader" id="saito-loader"></div></center>
                </div>
              `;
 	   };
         }
       } else {
 
-        document.querySelector(".appstore-app-install-overlay").innerHTML = `
+        document.querySelector(".appstore-overlay").innerHTML = `
           <div class="appstore-bundler-install-notice">
             <center style="margin-bottom:20px">
 	      Your wallet does not have a default AppStore. Use this AppStore? 
@@ -186,7 +165,7 @@ return;
            newtx = app.wallet.signTransaction(newtx);
            app.network.propagateTransaction(newtx);
  
-           document.querySelector('.appstore-app-install-overlay').innerHTML = `
+           document.querySelector('.appstore-overlay').innerHTML = `
              <div class="appstore-bundler-install-notice">
                <center class="appstore-loading-text" style="margin-bottom:20px">Your custom Saito bundle is being compiled. Please do not leave this page -- estimated time to completion 60 seconds.</center>
                <center><div class="loader" id="game_spinner"></div></center>

@@ -14,7 +14,7 @@ module.exports = AppStoreBundleConfirm = {
           app.options.bundle = data.appstore_bundle;
           app.storage.saveOptions();
 
-	  let email_redirect = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/dev";
+	  let email_redirect = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/redsquare";
           window.location = email_redirect;
 
         });

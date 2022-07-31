@@ -79,6 +79,26 @@
   border-top: none;
   margin-bottom: 2rem;
 }
+.appstore-appbox-details {
+  margin-bottom: 1rem;
+}
+.appstore-appbox-details .saito-table .saito-table-row {
+  display: grid;
+  grid-template-columns: minmax(10rem, min-content) 1fr;
+  column-gap: 10rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.appstore-install-confirm-button {
+  margin-left: 0;
+  margin-right: 0;
+}
+.appstore-appbox-details .saito-table .saito-table-row > div:nth-child(1) {
+  width: min-content;
+  white-space: nowrap;
+}
 
 .saito-button-secondary.small.saito-module-install-button {
   width: min-content;
@@ -97,6 +117,19 @@
 
 
 
+.appstore-bundler-install-notice {
+  font-size: 1.2em;
+  display: block;
+  border: 1px solid var(--saito-red);
+  background-color: var(--saito-cyber-black);
+  color: #fff;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  padding: 2rem;
+  color: black;
+}
+
+
+
 .saito-module-intro {
   display: grid;
   grid-template-columns: 3fr 7fr;
@@ -107,10 +140,12 @@
   padding-bottom: 1rem;
 }
 .saito-module-intro-details > div:nth-child(1) {
-  border-bottom: 1px dashed var(--saito-primary);
+  border-bottom: 1px dashed var(--saito-default-font-color);
   font-size: 2.5rem;
   width: min-content;
   white-space: nowrap;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
 }
 .saito-module-intro > div:nth-child(2) {
   font-size: 1.8rem;
@@ -126,31 +161,5 @@
   font-size: 1.2em;
   line-height: 1.3em;
   margin: 0.45em 0;
-}
-
-.appstore-appbox-image {
-}
-.appstore-appbox-details {
-}
-.appstore-appbox-title {
-}
-.appstore-appbox-description {
-}
-.appstore-appbox-version {
-}
-.appstore-appbox-publisher {
-}
-.appstore-appbox-datetime {
-}
-.appstore-appbox-blockchain {
-  display: grid;
-  grid-template-rows: 2;
-  row-gap: 2 rem;
-}
-.appstore-appbox-blockchain-hash {
-}
-.appstore-appbox-blockchain-block-id {
-}
-.appstore-install-confirm-button {
 }
 
