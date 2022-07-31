@@ -1,4 +1,10 @@
 
+.email-list .saito-table-row {
+    grid-template-columns: 3.5rem 15rem auto 4rem;
+    width: 100%;
+    display: grid;
+    cursor: pointer;
+}
 
 .email-list .saito-table-row {
     grid-template-columns: 3.5rem 15rem auto 4rem;
@@ -7,4 +13,17 @@
     cursor: pointer;
 }
 
+.email-header {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr min-content;
+  padding-bottom:0.5rem;
+  border-bottom: 1px solid #555d  border-bottom: 1px solid #555d;;
+}
+.email-boxname {
+}
+.email-icons {
+}
+.email-delete-icon {
+}
 

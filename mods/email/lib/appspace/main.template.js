@@ -10,9 +10,11 @@ module.exports = EmailTemplate = (app, mod) => {
         <div id="email-outbox" class="saito-button-secondary small" style="float: right;">outbox</div>
         <div id="email-inbox" class="saito-button-secondary small" style="float: right;">inbox</div>
         <div id="saito-page-header-title" class="saito-page-header-title">SAITO EMAIL</div>
-        <div id="saito-page-header-text" class="saito-page-header-text">Saito supports key-to-key email messaging. If you have a shared secret with recipient all communications will be encrypted in-transit.</div>
       </div>
 
+      <div class="email-header">
+
+      </div>
       <div class="email-list saito-table">
 
       </div>
