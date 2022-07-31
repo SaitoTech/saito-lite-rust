@@ -206,6 +206,10 @@ console.log("submitting: " + mod_zip_filename);
             newtx = app.wallet.signTransaction(newtx);
             app.network.propagateTransaction(newtx);
 
+	  } else {
+
+console.log("ZIP TOO BIG: " + dir);
+
 	  }
 
         });
