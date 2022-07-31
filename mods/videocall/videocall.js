@@ -31,8 +31,6 @@ class VideoCall extends ModTemplate {
         this.styles = [
             '/videocall/css/videocall-main.css',
         ];
-
-
     }
 
 
@@ -54,7 +52,6 @@ class VideoCall extends ModTemplate {
         if (this.header == null) {
             this.header = new SaitoHeader(app, this);
         }
-
         this.header.render(app, this);
         this.header.attachEvents(app, this);
         new StunEmailAppspace(this.app, this).render(this.app, this);
@@ -70,7 +67,6 @@ class VideoCall extends ModTemplate {
         EmailUI.attachEvents(app, mod);
     }
 
-
     async handleUrlParams(params) {
         if (this.app.BROWSER !== 1) return;
         if (params.has('invite_code')) {
@@ -80,20 +76,16 @@ class VideoCall extends ModTemplate {
             if (result) {
                 salert(result);
             }
-
         }
     }
 
 
     onConfirmation(blk, tx, conf, app) {
-
         let txmsg = tx.returnMessage();
-
         if (conf === 0) {
             if (txmsg.module === 'VideoCall') {
                 let videocall_self = app.modules.returnModule("VideoCall");
                 let stun_mod = app.modules.returnModule('Stun');
-
                 let my_pubkey = app.wallet.returnPublicKey();
                 if (tx.msg.answer) {
                     if (my_pubkey === tx.msg.answer.offer_creator) {
@@ -126,7 +118,6 @@ class VideoCall extends ModTemplate {
 
                 if (tx.msg.offers && app.BROWSER === 1) {
                     if (app.BROWSER !== 1) return;
-
                     const offer_creator = tx.msg.offers.offer_creator;
                     // offer creator should not respond
                     if (my_pubkey === offer_creator) return;
@@ -136,8 +127,6 @@ class VideoCall extends ModTemplate {
                     if (index !== -1) {
                         videocall_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
                     }
-
-
                 }
             }
         }
@@ -162,31 +151,26 @@ class VideoCall extends ModTemplate {
                 app.options.rooms = tx.msg.rooms.rooms
                 app.storage.saveOptions();
                 break;
-
             case "create_new_room":
 
 
 
                 console.log('new room created: ', tx.msg.room.room);
-
                 app.options.rooms.push(tx.msg.room.room);
                 app.storage.saveOptions();
                 console.log("rooms: ", videocall_self.rooms);
                 break;
 
             case "update_rooms":
-
                 console.log('room updated: ', tx.msg.rooms.rooms);
                 app.options.rooms = tx.msg.rooms.rooms;
                 app.storage.saveOptions();
                 // videocall_self.rooms = tx.msg.rooms.rooms
-
                 break;
 
             case "videochat_broadcast":
                 app.network.peers.forEach(peer => {
                     console.log('sending to: ', peer.returnPublicKey());
-
                     if (tx.msg.room) {
                         peer.sendRequest('create_new_room', tx);
                     }
