@@ -2,9 +2,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let mixin_mod = app.modules.returnModule("Mixin");
 
-  console.log('mixin mod');
-  console.log(mixin_mod);
-
   let html = `
 
   <div class="email-appspace-mixin">
@@ -56,7 +53,7 @@ module.exports = MixinAppspaceTemplate = (app) => {
       </div>
     </div>
 
-    <h2 class="transaction-header transaction-item">Transaction History</h2>
+    <h5 class="transaction-header transaction-item">Transaction History</h5>
     <div class="activity_container" id="activity_container">
         <div class="history_container transaction-item">
             <div class='item item-header'>Time</div>
@@ -69,126 +66,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
     </div>
 
   </div>
-
-  <style>
-
-    .hide-btn {
-        display: none;
-    }
-
-    .transaction-header {
-        margin-top: 40px;
-    }
-
-    .history_container {
-      border-radius: 8px;
-      position: relative;
-      border: 1px solid #e7ebed;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      text-align: center;
-      line-height: 50px;
-      flex-wrap: wrap; 
-    }
-
-    .item {
-      height: 50px;
-      width: calc(100% * (1/5));
-      flex-grow: 1;
-    }
-
-    .item-header {
-      background-color: #e7ebed;
-      font-weight: 700;
-    }
-
-
-.activity_button {
-  margin-top: 20px;
-  max-width: 200px;
-  text-align: center;
-}
-.balances_container {
-    box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 1.5rem;
-    font-weight: 400;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    line-height: 1.35417em;
-    padding: 15px;
-}
-.balances_header {
-    display: flex;
-}
-.balances_header_title {
-    flex: 1 1 auto;
-}
-.balances_header_icons {
-}
-.balances_header_icon {
-    fill: currentColor;
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    font-size: 24px;
-    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    user-select: none;
-    flex-shrink: 0;
-    display: none;
-}
-.balances_table {
-    width: 100%;
-    display: table;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    border-spacing: 0;
-    border-collapse: collapse;
-}
-.balances_tablehead {
-    display: table-header-group;
-}
-.balances_tablerow {
-    color: inherit;
-    height: 48px;
-    display: table-row;
-    outline: none;
-    vertical-align: middle;
-    box-sizing: inherit;
-}
-.balances_tablerow:hover {
-    background-color: #e7e7e7;
-}
-.balances_tablecell {
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 1.2rem;
-    font-weight: 400;
-    display: table-cell;
-    padding: 4px 56px 4px 24px;
-    text-align: left;
-    border-bottom: 1px solid rgba(224, 224, 224, 1);
-    vertical-align: inherit;
-}
-.balances_link {
-    font-size: 1.2rem;
-    font-weight: 400;
-}
-.balances_withdraw {
-}
-.balances_deposit {
-}
-
-.deposit {
-    color: #14b214;
-}
-
-.withdrawal {
-    color: #e34927;
-}
-  </style>
 
   `;
 
