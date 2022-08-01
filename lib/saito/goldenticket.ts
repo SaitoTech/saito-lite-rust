@@ -13,21 +13,26 @@ class GoldenTicket {
         }
         let buffer = Buffer.concat([this.app.binary.hexToSizedArray(previous_block_hash, 32),
             this.app.binary.hexToSizedArray(random_hash, 32),
-            this.app.binary.hexToSizedArray(publickey, 33)
+            this.app.binary.hexToSizedArray(this.app.crypto.fromBase58(publickey), 33)
         ]);
         const solution = this.app.crypto.hash(buffer);
-        const leading_zeroes_required = Math.floor(difficulty / 16);
 
         // create our target hash
         let target_hash = GoldenTicket.generateHash(difficulty);
 
         // anything lower than target hash acceptable
-        for (let i = 0; i < leading_zeroes_required + 1 && i < 64; i++) {
+        for (let i = 0; i < 64; i++) {
             if (parseInt(solution[i], 16) > parseInt(target_hash[i], 16)) {
                 return false;
             }
         }
 
+        console.log("target hash = " + target_hash);
+        console.log("previous block hash = " + previous_block_hash);
+        console.log("random hash = " + random_hash);
+        console.log("public key = " + this.app.crypto.fromBase58(publickey));
+        console.log("generated hash = " + solution);
+        console.log("difficulty = " + difficulty);
         // if we hit here, true
         return true;
     }
