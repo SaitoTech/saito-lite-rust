@@ -67,16 +67,19 @@ class VideoCall extends ModTemplate {
         EmailUI.attachEvents(app, mod);
     }
 
-    async handleUrlParams(params) {
+    handleUrlParams(params) {
         if (this.app.BROWSER !== 1) return;
-        if (params.has('invite_code')) {
-            const invite_code = params.get('invite_code');
-            const videocall_mod = this.app.modules.returnModule('VideoCall');
-            const result = await videocall_mod.joinVideoInvite(invite_code);
-            if (result) {
-                salert(result);
+        setTimeout(async () => {
+            if (params.has('invite_code')) {
+                const invite_code = params.get('invite_code');
+                const videocall_mod = this.app.modules.returnModule('VideoCall');
+                const result = await videocall_mod.joinVideoInvite(invite_code);
+                if (result) {
+                    salert(result);
+                }
             }
-        }
+        }, 2500)
+
     }
 
 
