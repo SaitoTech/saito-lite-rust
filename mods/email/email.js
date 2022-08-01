@@ -1,4 +1,4 @@
-const ModTemplate = require('../../lib/templates/modtemplate');
+const ModTemplate = require('./../../lib/templates/modtemplate');
 const EmailAppspace = require('./lib/appspace/main');
 
 

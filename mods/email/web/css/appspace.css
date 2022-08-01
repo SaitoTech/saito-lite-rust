@@ -18,12 +18,34 @@
   width: 100%;
   grid-template-columns: 1fr min-content;
   padding-bottom:0.5rem;
-  border-bottom: 1px solid #555d  border-bottom: 1px solid #555d;;
+  border-bottom: 1px solid #555d;
 }
 .email-boxname {
 }
 .email-icons {
 }
 .email-delete-icon {
+}
+
+
+
+
+.email-compose {
+}
+.email-compose-header {
+
+}
+.email-from-address {
+}
+.email-to-address {
+}
+.email-compose-body {
+
+}
+.email-compose-title {
+}
+.email-compose-text {
+}
+.email-compose-submit {
 }
 
