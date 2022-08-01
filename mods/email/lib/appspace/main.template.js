@@ -13,10 +13,8 @@ module.exports = EmailTemplate = (app, mod) => {
       </div>
 
       <div class="email-header">
-
       </div>
       <div class="email-list saito-table">
-
       </div>
 
     </div>
