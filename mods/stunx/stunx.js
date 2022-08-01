@@ -1,7 +1,7 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
-const VideoChat = require('./lib/components/video-chat/video-chat');
+const VideoChatManager = require('./lib/components/video-chat-manager');
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 
@@ -16,16 +16,12 @@ class Stunx extends ModTemplate {
         this.app = app;
         this.rooms = [];
         this.remoteStreamPosition = 0;
-
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
-        this.videoChat = new VideoChat(app, mod);
-        this.InviteOverlay = new InviteOverlay(app, mod);
+        this.VideoChatManager = new VideoChatManager(app, this);
+        this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
-
-
-
-
+        this.localStream = null;
     }
 
 
@@ -64,15 +60,10 @@ class Stunx extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (conf === 0) {
             if (txmsg.module === 'Stunx') {
-                if (tx.msg.answer) {
+                if (tx.msg.request === "send_answer_transaction") {
                     this.receiveAnswerTransaction(blk, tx, conf, app)
                 }
-                if (tx.msg.rooms) {
-                    let stunx_self = app.modules.returnModule("Stunx");
-                    stunx_self.rooms = tx.msg.rooms.rooms
-                }
-
-                if (tx.msg.offers) {
+                if (tx.msg.request === "send_offer_transaction") {
                     this.receiveOffersTransaction(blk, tx, conf, app)
                 }
             }
@@ -107,7 +98,6 @@ class Stunx extends ModTemplate {
                 break;
 
             case "update_rooms":
-
                 console.log('room updated: ', tx.msg.rooms.rooms);
                 app.options.rooms = tx.msg.rooms.rooms;
                 app.storage.saveOptions();
@@ -125,7 +115,6 @@ class Stunx extends ModTemplate {
                     if (tx.msg.rooms) {
                         peer.sendRequest('update_rooms', tx);
                     }
-
                 })
                 // update server 
                 if (tx.msg.room) {
@@ -183,7 +172,7 @@ class Stunx extends ModTemplate {
                         console.log('ice candidate check closed');
                         let stunx_mod = app.modules.returnModule("Stunx");
                         stunx_mod.peer_connections[offer_creator] = pc;
-                        stunx_mod.broadcastAnswer(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
+                        stunx_mod.sendAnswerTransaction(stunx_mod.app.wallet.returnPublicKey(), offer_creator, reply);
                         return;
                     };
                     reply.ice_candidates.push(ice.candidate);
@@ -221,15 +210,12 @@ class Stunx extends ModTemplate {
                 }
 
                 // add local stream tracks to send
-                const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const localStream = this.localStream;
                 localStream.getTracks().forEach(track => {
                     pc.addTrack(track, localStream);
                 });
 
                 let stunx_self = app.modules.returnModule("Stunx");
-                this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
-                this.app.connection.emit('add-local-stream-request', localStream);
-
                 const remoteStream = new MediaStream();
                 pc.addEventListener('track', (event) => {
                     let stunx_self = app.modules.returnModule("Stunx");
@@ -301,6 +287,7 @@ class Stunx extends ModTemplate {
 
 
         newtx.msg.module = "Stunx";
+        newtx.msg.request = "b"
         newtx.msg.room = {
             room
         };
@@ -360,15 +347,19 @@ class Stunx extends ModTemplate {
                         }
                     }
 
-                    const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    localStream.getTracks().forEach(track => {
+                    const stunx_self = this.app.modules.returnModule('Stunx');
+
+                    let localStream = stunx_self.localStream;
+                    if (!localStream) return console.log('there is no localstream');
+                    stunx_self.localStream.getTracks().forEach(track => {
                         pc.addTrack(track, localStream);
 
                     });
-                    const stunx_self = this.app.modules.returnModule('Stunx');
                     this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
-                    this.app.connection.emit('add-local-stream-request', localStream);
-                    pc.LOCAL_STREAM = localStream;
+
+
+                    // pc.LOCAL_STREAM = localStream;
+                    // this.localStream = localStream;
                     const remoteStream = new MediaStream();
                     pc.addEventListener('track', (event) => {
                         console.log('current peer connection ', this.peer_connections);
@@ -471,6 +462,10 @@ class Stunx extends ModTemplate {
 
         }
 
+        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        this.localStream = localStream;
+        this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, this);
+        this.app.connection.emit('add-local-stream-request', localStream);
         let peerConnectionOffers = [];
         if (room.peers.length > 1) {
             // send connection to other peers if they exit
@@ -498,12 +493,14 @@ class Stunx extends ModTemplate {
                 })
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
 
-                this.broadcastOffers(this.app.wallet.returnPublicKey(), offers);
+                this.sendOfferTransaction(this.app.wallet.returnPublicKey(), offers);
             } else {
                 const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                this.localStream = localStream;
                 let stunx_self = this.app.modules.returnModule("Stunx");
                 this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, stunx_self);
                 this.app.connection.emit('add-local-stream-request', localStream);
+
                 console.log("you are the only participant in the room");
                 siteMessageNew("Room joined, you are the only participant in the room", 5000)
             }
@@ -521,13 +518,6 @@ class Stunx extends ModTemplate {
         let newtx = this.app.wallet.createUnsignedTransaction();
 
         let recipient = this.app.network.peers[0].returnPublicKey();
-        // for (let i = 0; i < this.app.network.peers.length; i++) {
-        //     if (this.app.wallet.returnPublicKey() !== this.app.network.peers[i].returnPublicKey()) {
-        //         newtx.transaction.to.push(new saito.default.slip(this.app.network.peers[i].returnPublicKey()));
-        //     }
-
-        // }
-
         newtx.msg.module = "Stunx";
         newtx.msg.rooms = {
             rooms: this.app.options.rooms
@@ -537,7 +527,6 @@ class Stunx extends ModTemplate {
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
         siteMessageNew("Starting video connection", 5000)
-        // this.app.network.propagateTransaction(newtx);
 
 
 
@@ -551,7 +540,7 @@ class Stunx extends ModTemplate {
 
 
 
-    broadcastOffers(offer_creator, offers) {
+    sendOfferTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting offers');
         for (let i = 0; i < offers.length; i++) {
@@ -559,6 +548,7 @@ class Stunx extends ModTemplate {
         }
 
         newtx.msg.module = "Stunx";
+        newtx.msg.request = "send_offer_transaction"
         newtx.msg.offers = {
             offer_creator,
             offers
@@ -571,12 +561,13 @@ class Stunx extends ModTemplate {
 
 
 
-    broadcastAnswer(answer_creator, offer_creator, reply) {
+    sendAnswerTransaction(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
 
         newtx.msg.module = "Stunx";
+        newtx.msg.request = "send_answer_transaction"
         newtx.msg.answer = {
             answer_creator,
             offer_creator,
