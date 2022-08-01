@@ -257,7 +257,7 @@ hr {
 
 .saito-overlay,
 .game-overlay {
-  position: absolute;
+  position: fixed;
   display: inline-block;
   left: 50%;
   top: 50%;

@@ -67,6 +67,7 @@ class VideoCall extends ModTemplate {
         EmailUI.attachEvents(app, mod);
     }
 
+
     handleUrlParams(params) {
         if (this.app.BROWSER !== 1) return;
         setTimeout(async () => {
@@ -79,7 +80,7 @@ class VideoCall extends ModTemplate {
                 }
             }
         }, 2500)
-
+        }
     }
 
 
