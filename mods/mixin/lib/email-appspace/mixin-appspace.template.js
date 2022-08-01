@@ -2,6 +2,9 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let mixin_mod = app.modules.returnModule("Mixin");
 
+  console.log('mixin mod');
+  console.log(mixin_mod);
+
   let html = `
 
   <div class="email-appspace-mixin">

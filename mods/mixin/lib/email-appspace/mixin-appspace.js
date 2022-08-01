@@ -6,7 +6,7 @@ const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-ove
 module.exports = MixinAppspace = {
 
   render(app, mod) {
-    document.querySelector(".email-appspace").innerHTML = MixinAppspaceTemplate(app);
+    document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(app);
   },
 
   attachEvents(app, mod) {
