@@ -3,6 +3,7 @@ import { Saito } from "../../apps/core";
 import saito from "./saito";
 
 import * as blake3 from "blake3";
+import GoldenTicket from "./goldenticket";
 
 test("golden ticket serialization", () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -27,8 +28,16 @@ test("golden ticket serialization", () => {
   const random_hash = "03bf1a4714cfc7ae33d3f6e860c23191ddea07bcb1bfa6c85bc124151ad8d4ce";
   const golden_ticket = new saito.goldenticket(mockApp);
   const buffer = golden_ticket.serialize(target_hash, random_hash);
+  console.log("gt = "+buffer.toString("hex"));
   const result = golden_ticket.deserialize(buffer);
   expect(result.target_hash).toEqual(target_hash);
   expect(result.random_hash).toEqual(random_hash);
   expect(result.creator).toEqual(wallet.wallet.publickey);
+});
+
+test("difficulty test",()=>{
+  expect(GoldenTicket.generateHash(0)).toEqual("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+  expect(GoldenTicket.generateHash(1)).toEqual("8FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+  expect(GoldenTicket.generateHash(16)).toEqual("0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+  expect(GoldenTicket.generateHash(17)).toEqual("08FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 });

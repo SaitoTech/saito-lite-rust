@@ -2,6 +2,8 @@ import * as JSON from "json-bigint";
 import Slip, { SlipType } from "./slip";
 import Transaction, { HOP_SIZE, SLIP_SIZE, TRANSACTION_SIZE, TransactionType } from "./transaction";
 import { Saito } from "../../apps/core";
+import Goldenticket from "./goldenticket";
+import GoldenTicket from "./goldenticket";
 
 const BLOCK_HEADER_SIZE = 245;
 
@@ -1641,9 +1643,19 @@ class Block {
         const golden_ticket_transaction = this.transactions[cv.gt_idx];
         const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
-        //
-        // TODO : validate golden ticket
-        //
+        const solution = new GoldenTicket(this.app);
+        if (!solution.validate(previous_block.returnHash(),
+            gt.random_hash,
+            gt.creator,
+            previous_block.returnDifficulty())
+        )
+        {
+            console.error(
+              "ERROR 801923: golden ticket included in block is invalid"
+            );
+            return false;
+          }
+
         // const solution = this.app.goldenticket.generateSolution(
         //   previous_block.returnHash(),
         //   gt.target_hash,
