@@ -17,9 +17,10 @@ class PandemicOriginalSkin {
   constructor(app, mod){
   	this.app = app;
   	this.mod = mod;
-	this.boardWidth = 2602;
+	  this.boardWidth = 2602;
    	this.card_height_ratio = 1.41;
   	this.cities = this.returnCities();
+    this.cards = this.returnPlayerCards();
 
   }
 
@@ -50,14 +51,18 @@ class PandemicOriginalSkin {
           console.log(`Error with positioning cities`,err);
         }
       }
-
   }
+
+  returnDisease(color){
+    return `/pandemic/img/cube_${color}.png`;
+  }
+
 
   queryPlayer(role){
     let player = {};
         if (role === "generalist") {
-        player.role = "Generalist";
-        player.pawn = "Pawn%20Generalist.png";
+        player.name = "Generalist";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Generalist.png"/>`;
         player.card = "Role%20-%20Generalist.jpg";
         player.desc =
           "The Generalist may take an extra move every turn, performing 5 actions instead of 4";
@@ -65,44 +70,45 @@ class PandemicOriginalSkin {
         player.type = 1;
       }
       if (role === "scientist") {
-        player.role = "Scientist";
-        player.pawn = "Pawn%20Scientist.png";
+        player.name = "Scientist";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Scientist.png"/>`;
         player.card = "Role%20-%20Scientist.jpg";
         player.desc =
           "The Scientist may research a vaccine with only 4 cards instead of 5";
         player.type = 2;
       }
       if (role === "medic") {
-        player.role = "Medic";
-        player.pawn = "Pawn%20Medic.png";
+        player.name = "Medic";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Medic.png"/>`;
         player.card = "Role%20-%20Medic.jpg";
         player.desc =
           "The Medic may remove all disease cubes in a city when they treat disease. Once a disease has been cured, the medic removes cubes of that color merely by being in the city.";
         player.type = 3;
       }
       if (role === "operationsexpert") {
-        player.role = "Operations Expert";
-        player.pawn = "Pawn%20Operations%20Expert.png";
+        player.name = "Operations Expert";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Operations%20Expert.png"/>`;
         player.card = "Role%20-%20Operations%20Expert.jpg";
         player.desc =
           "The Operations Expert may build a research center in their current city as an action, or may discard a card to move from a research center to any other city.";
         player.type = 4;
       }
       if (role === "quarantinespecialist"){
-        player.role = "Quarantine Specialist";
-        player.pawn = "Pawn%20Quarantine%20Specialist.png";
+        player.name = "Quarantine Specialist";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Quarantine%20Specialist.png"/>`;
         player.card = "Role%20-%20Quarantine%20Specialist.jpg";
         player.desc =
           "The Quarantine Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
         player.type = 5; 
       }
       if (role === "researcher"){
-        player.role = "Researcher";
-        player.pawn = "Pawn%20Researcher.png";
+        player.name = "Researcher";
+        player.pawn = `<img src="/pandemic/img/Pawn%20Researcher.png"/>`;
         player.card = "Role%20-%20Researcher.jpg";
         player.desc = "The Researcher may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
         player.type = 6;
       }
+    player.role = role;
     return player;
   }
 
@@ -834,6 +840,29 @@ class PandemicOriginalSkin {
       }
     }
   }
+
+  displayResearchStations(station_list) {
+    try{
+      for (let i = 0; i < station_list.length; i++) {
+        let divname = "#station_" + (i + 1);
+        if (!document.querySelector(divname)){
+          this.app.browser.addElementToElement(`<div id="station_${i+1}" class="research_station"></div>`,document.getElementById("gameboard"));
+        }
+
+        let city = station_list[i];
+
+        let t = this.cities[city].top + 25;
+        let l = this.cities[city].left + 25;
+
+        $(divname).css("top", this.mod.scale(t) + "px");
+        $(divname).css("left", this.mod.scale(l) + "px");
+        $(divname).css("display", "block");
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
+
 
   displayInfectionRate(infection_rate) {
   	    

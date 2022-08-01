@@ -4,6 +4,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 	constructor(app, mod){
 		super(app, mod);
 		this.boardWidth = 2730;
+    this.boardHeight = 1536;
 	}
 
   render(){
@@ -11,23 +12,29 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 	$("#gameboard").css({
 	  'background-image': 'url("/pandemic/img/alt/pandemic_map.jpg")',
 	  'background-size': 'cover',
-	  width: '2730px',
-	  height: '1536px',
+	  width: this.boardWidth+'px',
+	  height: this.boardHeight+'px',
 	  "border-radius": "500px", 
 	});
 
 	if (!document.getElementById("myCanvas")){
-		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="2730" height="1536"></canvas>`, document.getElementById("gameboard"));
+		this.app.browser.addElementToElement(`<canvas id="myCanvas" width="${this.boardWidth}" height="${this.boardHeight}"></canvas>`, document.getElementById("gameboard"));
 	}
 
   }
 
+  returnDisease(color){
+    return `/pandemic/img/alt/cube_${color}.png`;
+  }
+
 
   queryPlayer(role){
-    let player = {};
+    let player = {
+      role: role
+    };
         if (role === "generalist") {
-        player.role = "Pantologist";
-        player.pawn = "Pawn%20Generalist.png";
+        player.name = "Pantologist";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn1.png"/>`;
         player.card = "alt/role1.png";
         player.desc =
           "The Pantologist may take an extra move every turn, performing 5 actions instead of 4";
@@ -35,40 +42,40 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         player.type = 1;
       }
       if (role === "scientist") {
-        player.role = "Experimenter";
-        player.pawn = "Pawn%20Scientist.png";
+        player.name = "Experimenter";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn2.png"/>`;
         player.card = "alt/role2.png";
         player.desc =
           "The Experimenter may research a vaccine with only 4 cards instead of 5";
         player.type = 2;
       }
       if (role === "medic") {
-        player.role = "Physician";
-        player.pawn = "Pawn%20Medic.png";
+        player.name = "Physician";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn3.png"/>`;
         player.card = "alt/role3.png";
         player.desc =
           "The Physician may remove all disease cubes in a city when they treat disease. Once a disease has been cured, the medic removes cubes of that color merely by being in the city.";
         player.type = 3;
       }
       if (role === "operationsexpert") {
-        player.role = "Field Expert";
-        player.pawn = "Pawn%20Operations%20Expert.png";
+        player.name = "Field Expert";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn4.png"/>`;
         player.card = "alt/role4.png";
         player.desc =
           "The Field Expert may build a research center in their current city as an action, or may discard a card to move from a research center to any other city.";
         player.type = 4;
       }
       if (role === "quarantinespecialist"){
-        player.role = "Contamination Specialist";
-        player.pawn = "Pawn%20Quarantine%20Specialist.png";
+        player.name = "Contamination Specialist";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn5.png"/>`;
         player.card = "alt/role5.png";
         player.desc =
           "The Contamination Specialist prevents both the placement of disease cubes and outbreaks in her present city and all neighboring cities. Initial placement of disease cubes is not affected by the Quarantine Specialist.";
         player.type = 5; 
       }
       if (role === "researcher"){
-        player.role = "Investigator";
-        player.pawn = "Pawn%20Researcher.png";
+        player.name = "Investigator";
+        player.pawn = `<img class="scotland_pawn" src="/pandemic/img/alt/pawn6.png"/>`;
         player.card = "alt/role6.png";
         player.desc = "The Investigator may give any City card to another player in the same city as them. The transfer must go from the Researcher to the other player.";
         player.type = 6;
@@ -86,7 +93,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     if (!c){ return;}
 
     let ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, 5135, 3829);
+    ctx.clearRect(0, 0, this.boardWidth, this.boardHeight);
     ctx.beginPath();
     ctx.strokeStyle = "#C0C0C0";
     ctx.lineWidth = 5;
@@ -102,20 +109,33 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
      			city = document.getElementById(i);
      		}
      	 	
-			city.style.top = this.mod.scale(cities[i].top) + "px";
-			city.style.left = this.mod.scale(cities[i].left) + "px";        
-          	city.style.backgroundImage = `url("/pandemic/img/alt/city-${cities[i].virus}.png")`;
+  			city.style.width = "80px";
+        city.style.height = "80px";
+        city.style.top = this.mod.scale(cities[i].top) + "px";
+  			city.style.left = this.mod.scale(cities[i].left) + "px";        
+        city.style.backgroundImage = `url("/pandemic/img/alt/city-${cities[i].virus}.png")`;
 
+        let label = city.querySelector(".name");
+        if (!label){
+          this.app.browser.addElementToElement(`<div class="name">${cities[i].name}</div>`, city);
+        }
 
         for (let neigh of cities[i].neighbours){
         	if (exceptions.includes(i+neigh)){
-
+            if (cities[i].left > cities[neigh].left){
+              //City is in the east
+              ctx.moveTo(cities[i].left+50,cities[i].top+50);
+              ctx.lineTo(this.boardWidth, (cities[i].top + cities[neigh].top) / 2 + 50);    
+            }else{
+              //City is in the west
+              ctx.moveTo(cities[i].left+50,cities[i].top+50);
+              ctx.lineTo(0, (cities[i].top + cities[neigh].top) / 2 + 50);    
+            }
         	}else{
-		      ctx.moveTo(cities[i].left+50,cities[i].top+50);
-	          ctx.lineTo(cities[neigh].left+50,cities[neigh].top+50);
-	          ctx.stroke();
-
+	   	      ctx.moveTo(cities[i].left+50,cities[i].top+50);
+  	        ctx.lineTo(cities[neigh].left+50,cities[neigh].top+50);
         	}
+          ctx.stroke();
         }
 
         } catch (err) {
@@ -123,8 +143,6 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         }
       }
   }
-
-
 
 
   returnCities() {
@@ -728,6 +746,19 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
 
     return deck;
+  }
+
+  displayResearchStations(station_list) {
+    try{
+      $(".research_station_city").removeClass("research_station_city");
+
+      for (let i = 0; i < station_list.length; i++) {
+        let city = station_list[i];
+        $("#"+city).addClass("research_station_city");
+      }
+    }catch(err){
+      console.log(err);
+    }
   }
 
 
