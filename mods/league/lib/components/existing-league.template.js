@@ -9,7 +9,7 @@ module.exports = (app, mod, league) => {
         <div>Admin: ${league.admin.substring(0,10)+"..."}</div>
         
     `;
-
+    html += `<div class="newline"></div>`;
     if ((league.myRank == undefined || league.myRank < 0) && (league.max_players == 0 || league.playerCnt < league.max_players)){
      html +=`<button class="league-component-existing-league" data-cmd="join" data-league-id="${league.id}">Join</button>`; 
     }
