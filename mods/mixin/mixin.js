@@ -12,6 +12,8 @@ const { sharedKey: sharedKey } = require('curve25519-js');
 const LittleEndian = require('int64-buffer');
 const JSON = require("json-bigint");
 
+const MixinAppspaceSidebar = require('./lib/appspace-sidebar/main');
+
 class Mixin extends ModTemplate {
 
   constructor(app) {
@@ -22,6 +24,7 @@ class Mixin extends ModTemplate {
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
+    this.icon = "fas fa-wallet";
 
     this.mixin = {};
     this.mixin.app_id 		= "";    
@@ -51,18 +54,13 @@ class Mixin extends ModTemplate {
 
   
   respondTo(type = "") {
-
     let mixin_self = this;
 
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = function (app, mixin_self) {
-        MixinAppspace.render(app, mixin_self);
-      }
-      obj.attachEvents = function (app, mixin_self) {
-        MixinAppspace.attachEvents(app, mixin_self);
-      }
-      return obj;
+    if (type === 'appspace') {
+      this.scripts['/mixin/css/appspace.css'];
+      super.render(this.app, this); // for scripts + styles
+    
+      return new MixinAppspace(this.app, this);
     }
 
     return null;
