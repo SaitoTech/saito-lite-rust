@@ -68,7 +68,7 @@ module.exports = MixinAppspaceTemplate = (app) => {
              <div class='item item-header'>Amount</div>
              <div class='item item-header'>Status</div>
         </div>
-      <div class="activity_button button" id="activity_button">load account history</div>
+      <div class="saito-button-secondary small activity_button" id="activity_button" >Load Account History</div>
     </div>
 
   </div>
@@ -95,6 +95,7 @@ module.exports = MixinAppspaceTemplate = (app) => {
   text-align: center;
   line-height: 50px;
   flex-wrap: wrap; 
+  font-size: 1.4rem;
 }
 
 .item {

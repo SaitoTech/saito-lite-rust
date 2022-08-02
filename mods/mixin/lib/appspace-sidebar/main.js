@@ -23,6 +23,6 @@ class MixinAppspaceSidebar {
 }
 
 
-module.exports = MixinAppspace;
+module.exports = MixinAppspaceSidebar;
 
 

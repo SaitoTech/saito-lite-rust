@@ -3,11 +3,16 @@ const MixinDepositTemplate = require('./mixin-deposit.template.js');
 const MixinWithdrawTemplate = require('./mixin-withdraw.template.js');
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 
-module.exports = MixinAppspace = {
+class MixinAppspace {
+
+  constructor(app) {
+  }
 
   render(app, mod) {
     document.querySelector(".appspace").innerHTML = MixinAppspaceTemplate(app);
-  },
+  
+    this.attachEvents(app, mod);
+  }
 
   attachEvents(app, mod) {
 
@@ -20,7 +25,8 @@ module.exports = MixinAppspace = {
     } catch (err) {}
 
     try {
-      document.querySelector(".activity_button").onclick = (e) => {
+      document.querySelector("#activity_button").onclick = (e) => {
+
         document.getElementById('activity_button').innerHTML = 'fetching history...';
         
         mod.fetchSnapshots("", 20, "DESC", (d) => { 
@@ -162,10 +168,7 @@ module.exports = MixinAppspace = {
       );
 
     }
-
-
-
-
-  },
-
+  }
 }
+
+module.exports = MixinAppspace;

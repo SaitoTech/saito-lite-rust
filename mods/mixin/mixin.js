@@ -54,32 +54,13 @@ class Mixin extends ModTemplate {
 
   
   respondTo(type = "") {
-
     let mixin_self = this;
 
     if (type === 'appspace') {
       this.scripts['/mixin/css/appspace.css'];
       super.render(this.app, this); // for scripts + styles
     
-      let obj = {};
-      obj.render = function (app, mixin_self) {
-        MixinAppspace.render(app, mixin_self);
-      }
-      obj.attachEvents = function (app, mixin_self) {
-        MixinAppspace.attachEvents(app, mixin_self);
-      }
-      return obj;
-    }
-
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = function (app, mixin_self) {
-        MixinAppspace.render(app, mixin_self);
-      }
-      obj.attachEvents = function (app, mixin_self) {
-        MixinAppspace.attachEvents(app, mixin_self);
-      }
-      return obj;
+      return new MixinAppspace(this.app, this);
     }
 
     return null;
