@@ -1,3 +1,8 @@
+:root {
+    --saito-invite-height: 8rem;
+    --saito-redsquare-right-sidebar-width: 51rem;
+}
+
 /* ----------------------------------------------------------------
 Saito User
 -----------------------------------------------------------------*/
@@ -11,7 +16,7 @@ Saito User
 }
 
 .saito-userline {
-  color: #888;
+    color: #888;
 }
 
 .saito-user {
@@ -23,7 +28,8 @@ Saito User
     margin-bottom: 1px;
     width: 100%;
 }
-.saito-user > div:nth-child(1) {
+
+.saito-user>div:nth-child(1) {
     margin-right: 1rem;
     grid-column-start: 1;
     grid-column-end: span 1;
@@ -33,18 +39,18 @@ Saito User
 /* this hack is required in chrome to force */
 /* the name to steal the upper row from the */
 /* timebox, so the name does not cut off    */
-.saito-user > .saito-username-long:nth-child(2) {
+.saito-user>.saito-username-long:nth-child(2) {
     grid-column-end: 4;
 }
 
-.saito-user > div:nth-child(2) {
+.saito-user>div:nth-child(2) {
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-start: 1;
     grid-row-end: span 1;
 }
 
-.saito-user > div:nth-child(3) {
+.saito-user>div:nth-child(3) {
     grid-column-start: 2;
     grid-column-end: span 1;
     grid-row-start: 2;
@@ -52,7 +58,8 @@ Saito User
     font-size: 1.4rem;
 }
 
-.saito-user > div:nth-child(4).saito-user-alert , .saito-user-alert {
+.saito-user>div:nth-child(4).saito-user-alert,
+.saito-user-alert {
     grid-row-start: 1;
     grid-row-end: 3;
     font-size: 3rem;
@@ -62,7 +69,7 @@ Saito User
     white-space: nowrap;
 }
 
-.saito-user > div:nth-child(4) {
+.saito-user>div:nth-child(4) {
     cursor: pointer;
     grid-column-start: 3;
     grid-column-end: span 1;
@@ -72,7 +79,7 @@ Saito User
 }
 
 
-.saito-user > .saito-datetime {
+.saito-user>.saito-datetime {
     align-items: top;
     grid-row-start: 2;
     grid-row-end: span 1;
@@ -87,14 +94,17 @@ Saito Page Header
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
+
 .saito-page-header-title {
     color: #222;
     font-size: 3.25rem;
     padding-top: 0.5rem;
 }
+
 .saito-page-header-button {
     float: right;
 }
+
 .saito-page-header-text {
     font-size: 1.6rem;
     line-height: 2.1rem;
@@ -107,12 +117,13 @@ Saito Page Header
 Saito Table
 -----------------------------------------------------------------*/
 .saito-table {
-  background-color: #fff;
-  display:grid;
-  grid-template-columns: auto;
+    background-color: #fff;
+    display: grid;
+    grid-template-columns: auto;
 }
+
 .saito-table-row.odd {
-  background-color: #fafafa;
+    background-color: #fafafa;
 }
 
 
@@ -151,23 +162,21 @@ Saito Module Boxes
     grid-template-rows: min-content 1fr;
     position: relative;
     border-radius: 2rem;
-    border:  1px solid;
+    border: 1px solid;
     border-top: none;
     margin-bottom: 2rem;
 }
+
 .saito-module-image {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
     width: 100%;
     height: 100%;
     background-size: cover;
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
-    /* border-bottom-left-radius: inherit; */
-    /* border-bottom-right-radius: inherit; */
     grid-column: span 1 / auto;
     grid-row: span 1 / auto;
 }
+
 .saito-module-controls {
     position: absolute;
     right: 15px;
@@ -178,6 +187,7 @@ Saito Module Boxes
     cursor: pointer;
     grid-row: 1;
 }
+
 .saito-module-title {
     color: rgb(255, 255, 255);
     font-size: 1.6em;
@@ -190,6 +200,7 @@ Saito Module Boxes
     padding: 10px 15px;
     grid-row: 3;
 }
+
 .saito-module-title-text {
     margin-top: 0.3rem;
     display: block;
@@ -201,42 +212,37 @@ Saito Module Boxes
 Saito Module Boxes
 -----------------------------------------------------------------*/
 .saito-loader {
-  animation: spin;
-  width: 100px;
-  height: 115px;
-  animation-name: spin;
-  animation-duration: 4000ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-  background-image: url(/saito/img/logo-color.svg);
-  background-size: contain;
-} 
+    animation: spin;
+    width: 100px;
+    height: 115px;
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    background-image: url(/saito/img/logo-color.svg);
+    background-size: contain;
+}
+
 @keyframes spin {
     from {
-        transform:rotate(0deg);
+        transform: rotate(0deg);
     }
+
     to {
-        transform:rotate(360deg);
+        transform: rotate(360deg);
     }
 }
 
 
 
 .saito-button-secondary .small .saito-module-install-button {
-  width: min-content;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  float: right;
-  background-color: white;
-  margin: 0px;
+    width: min-content;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    float: right;
+    background-color: white;
+    margin: 0px;
 }
-
-
-
-
-
-
-
 
 .saito-game {
     min-height: 370px;
@@ -245,12 +251,11 @@ Saito Module Boxes
     grid-template-rows: 1fr min-content;
     position: relative;
     border-radius: 2rem;
-    border:  1px solid;
-    border-top: none;
+    border: 1px solid var(--saito-border);
+    overflow: hidden;
     margin-bottom: 2rem;
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
 }
+
 .saito-game-controls {
     display: grid;
     grid-template-columns: 1fr min-content;
@@ -258,13 +263,15 @@ Saito Module Boxes
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
-.saito-game-controls > div:nth-child(1) {
+
+.saito-game-controls>div:nth-child(1) {
     font-size: 1.1em;
     color: #ea462f;
     font-weight: bold;
     cursor: pointer;
 }
-.saito-game-controls > div:nth-child(2) {
+
+.saito-game-controls>div:nth-child(2) {
     border-bottom: 1px dashed red;
     white-space: nowrap;
 }
@@ -273,42 +280,52 @@ Saito Module Boxes
     background: url(https://saito.io/settlers/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .chess .saito-game-image {
     background: url(https://saito.io/chess/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .spider .saito-game-image {
     background: url(https://saito.io/spider/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .imperium .saito-game-image {
     background: url(https://saito.io/imperium/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .twilight .saito-game-image {
     background: url(https://saito.io/twilight/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .wuziqi .saito-game-image {
     background: url(https://saito.io/wuziqi/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .wordblocks .saito-game-image {
     background: url(https://saito.io/wordblocks/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .scotland .saito-game-image {
     background: url(https://saito.io/scotland/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .hereistand .saito-game-image {
     background: url(https://saito.io/his/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .spider .saito-game-image {
     background: url(https://saito.io/spider/img/arcade/arcade.jpg);
     background-size: cover;
 }
+
 .solitrio .saito-game-image {
     background: url(https://saito.io/solitrio/img/arcade/arcade.jpg);
     background-size: cover;
@@ -323,62 +340,111 @@ Saito Arcade Invite
 -----------------------------------------------------------------*/
 
 .saito-arcade-invite {
-  display: grid;
-  grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: 1fr;
-  padding: 1rem;
-  column-gap: 0.0rem;
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    column-gap: 0rem;
+    overflow: hidden;
+    margin: 1rem;
 }
 
 .saito-arcade-invite-graphic {
-  grid-column-start: 1;
-  grid-column-end: span 1;
-  max-width: 10rem;
-  max-height: 8rem;
-  height: 8rem;
-  width: 10rem;
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    height: var(--saito-invite-height);
+    width: 10rem;
 }
+
 .saito-arcade-game-image {
-  height: 100%;
-  width: 100%;
-  opacity: 0.8;
+    height: 100%;
+    width: 100%;
+    opacity: 0.8;
 }
 
 .saito-arcade-invite-name-container {
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  padding-top: 0.5rem;
-  display: grid;
-  font-size: 3rem;
-  padding-left: 1rem;
-  background-image: url('/redsquare/images/orange_left.png');
-  background-repeat: no-repeat;
-  background-position-x: right;
+    grid-column-start: 2;
+    grid-column-end: span 1;
+    padding-top: 0.5rem;
+    display: grid;
+    font-size: 2rem;
+    padding-left: 1rem;
+    z-index: 9;
 }
+
 .saito-arcade-invite-details {
-  grid-column-start: 3;
-  grid-column-end: span 1;
-  display: grid;
-  background-image: url('/redsquare/images/orange_right.png');
-  background-size: cover;
-  min-width: 10rem;
-  color: white;
-  font-weight: bold;
+    display: grid;
+    min-width: 10rem;
+    color: white;
+    position: relative;
+
 }
-.saito-arcade-invite-details-summary {
-    font-size: 1.7rem;
-    padding-top: 2rem;
+
+.saito-arcade-invite-detail-content {
+    position: absolute;
+    width: var(--saito-redsquare-right-sidebar-width);
+    display: grid;
+    grid-template-columns: 7em 1fr;
+    background: var(--saito-secondary);
+    transition: transform 200ms ease-in-out;
+    z-index: 1;
+}
+
+.saito-arcade-invite-detail-content::after {
+    background-color: var(--saito-secondary);
+    height: 100%;
+    width: 200%;
+    position: absolute;
+    left: -30px;
+    content: "";
+    transform: skewx(-15deg);
+    z-index: -1;
+}
+
+.saito-arcade-invite-options {
+    display: grid;
+    grid-template-columns: 10rem 1fr 10rem 1fr;
+    padding: 1rem 0;
+    overflow: auto;
+}
+
+.saito-arcade-invite-options div {
+    text-overflow: clip;
+}
+
+
+.saito-arcade-invite-details:hover .saito-arcade-invite-detail-content {
+    transform: translate(calc(4em - 100%));
+    z-index: 101;
+}
+
+.saito-arcade-invite-slots {
+    display: flex;
+    flex-direction: row;
+}
+
+.saito-arcade-invite-slot i {
+    font-size: 2.2rem;
+    line-height: 3rem;
+    width: 3rem;
     text-align: center;
-    padding-right: 2rem;
 }
+
+.saito-arcade-invite-slot i:hover {
+    transform: scale(1.1);
+}
+
+
+.saito-arcade-invite-details-summary {
+    font-size: 2.5rem;
+    line-height: var(--saito-invite-height);
+}
+
 .saito-arcade-invite-controls {
-  grid-column-start: 3;
-  grid-column-end: span 1;
-  grid-row-start: 2;
-  grid-row-end: span 1;
+    grid-column-start: 3;
+    grid-column-end: span 1;
+    grid-row-start: 2;
+    grid-row-end: span 1;
 }
-.saito-arcade-invite-controls-button {
-}
+
 .saito-arcade-invite-controls-button.saito-button-secondary.small {
     height: 2.5rem;
     width: 6rem;
@@ -387,23 +453,18 @@ Saito Arcade Invite
     min-width: 6.5rem;
     float: right;
 }
-.saito-arcade-invite-slots {
-}
+
 .saito-arcade-invite-slot {
     height: 3rem;
-    margin: 0.0em 0.2em;
-    float: left;
     width: 3rem;
+    background-color: #8884;
+    border: 1px solid var(--saito-border);
+    margin-right: 1rem;
+    overflow: hidden;
 }
+
 .saito-identicon.small {
-    width: 3.8rem;
-    height: 3.8rem;
-}
-.saito-identicon.smaller {
     width: 3rem;
     height: 3rem;
 }
-.saito-identicon.empty {
-    background-color: #8884;
-    box-shadow: 1px 1px #ccc, 1px 1px #333 inset;
-}
+
