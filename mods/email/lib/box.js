@@ -1,11 +1,7 @@
-const EmailAppspaceTemplate = require('./main.template');
-const EmailLineTemplate = require('./../line.template');
-const BodyTemplate = require('./../body.template');
-const HeaderTemplate = require('./../header.template');
-const ComposeTemplate = require('./../compose.template');
-const JSON = require('json-bigint');
+const EmailBoxTemplate = require('./box.template');
+const EmailLineTemplate = require('./line.template');
 
-class EmailAppspace {
+class EmailBox {
 
   constructor(app, mod) {
   }
@@ -15,8 +11,7 @@ class EmailAppspace {
     //
     // add template
     //
-    document.querySelector(".appspace").innerHTML = EmailAppspaceTemplate(app, mod, boxname);
-    document.querySelector(".email-header").innerHTML = HeaderTemplate(app, mod, "inbox");
+    document.querySelector(".email-body").innerHTML = EmailBoxTemplate(app, mod, boxname);
 
     let box = mod.inbox;
     if (boxname === "outbox") { box = mod.outbox; }
@@ -25,7 +20,8 @@ class EmailAppspace {
     // add emails
     //
     for (let i = 0; i < box.length; i++) {
-      app.browser.addElementToSelector(EmailLineTemplate(app, mod, box[i]), ".email-list");
+      let emailline = new EmailLine(app, mod);
+      emailline.render(app, mod, box[i]);
     }
 
     let line_self = this;
@@ -82,6 +78,6 @@ class EmailAppspace {
 
 }
 
-module.exports = EmailAppspace;
+module.exports = EmailBox;
 
 
