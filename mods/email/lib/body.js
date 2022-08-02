@@ -1,4 +1,4 @@
-const BodyTemplate = require('./../body.template');
+const BodyTemplate = require('./body.template');
 
 class EmailBody {
 

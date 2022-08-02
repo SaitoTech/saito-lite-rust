@@ -6,7 +6,7 @@ module.exports = EmailTemplate = (app, mod) => {
     <div class="email-appspace">
 
       <div class="saito-page-header">
-        <div id="email-compose" class="saito-button-primary small" style="float: right;">compose</div>
+        <div id="email-compose" class="saito-button-secondary small" style="float: right;">compose</div>
         <div id="email-outbox" class="saito-button-secondary small" style="float: right;">outbox</div>
         <div id="email-inbox" class="saito-button-secondary small" style="float: right;">inbox</div>
         <div id="saito-page-header-title" class="saito-page-header-title">SAITO EMAIL</div>

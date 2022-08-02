@@ -1,5 +1,5 @@
 const EmailBoxTemplate = require('./box.template');
-const EmailLineTemplate = require('./line.template');
+const EmailLine = require('./line');
 
 class EmailBox {
 
@@ -59,20 +59,6 @@ class EmailBox {
     }
 
     document.querySelector(".appspace").innerHTML = BodyTemplate(app, mod, email);
-
-  }
-
-  attachEvents(app, mod) {
-
-    document.getElementById("email-compose").onclick = (e) => {
-      document.querySelector(".email-list").innerHTML = ComposeTemplate(app, mod);
-    };
-    document.getElementById("email-outbox").onclick = (e) => {
-      this.render(app, mod, "outbox");
-    };
-    document.getElementById("email-inbox").onclick = (e) => {
-      this.render(app, mod);
-    };
 
   }
 

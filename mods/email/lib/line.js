@@ -1,14 +1,12 @@
-const EmailLineTemplate = require('./../line.template');
+const EmailLineTemplate = require('./line.template');
 
 class EmailLine {
 
   constructor(app, mod) {
   }
 
-  render(app, mod, boxname, tx) {
-
+  render(app, mod, tx) {
     app.browser.addElementToSelector(EmailLineTemplate(app, mod, tx), ".email-list");
-
   }
 
 

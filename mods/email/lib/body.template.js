@@ -21,7 +21,7 @@ module.exports = EmailDetailTemplate = (app, mod, email) => {
         </div>
       `;
 
-      html += `
+    html += `
           <div>
             <div class="email-detail-timestamp">${datetime.hours}:${datetime.minutes}</div>
             <div class="email-detail-subject">${subject}</div>
@@ -33,17 +33,6 @@ module.exports = EmailDetailTemplate = (app, mod, email) => {
       </div>
     `;
     return html;
-  } else {
-    let html = `
-      <div>
-        <div class="email-detail-addresses">
-          <div>
-            <h4 class="email-detail-subject">Loading...</h4>
-          </div>
-          </div>
-        </div>
-      `;
-    return html;
-  }
+
 }
 

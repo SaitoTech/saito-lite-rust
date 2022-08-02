@@ -16,7 +16,7 @@
 .email-header {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr min-content;
+  grid-template-columns: 1fr auto;
   padding-bottom:0.5rem;
   border-bottom: 1px solid #555d;
 }
@@ -31,10 +31,34 @@
 
 
 .email-compose {
+    display: grid;
+    grid-template-columns: auto;
+    width: 100%;
+    font-size: rem;
 }
-.email-compose-header {
 
+.email-compose > input[type="text"] {
+    width: 100%;
+    padding: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-radius: 0rem;
 }
+.email-to-address input[type="text"] {
+    border-radius: 0rem;
+}
+.email-subject input[type="text"] {
+    border-radius: 0rem;
+}
+.email-compose-text {
+    padding: 1rem 1.5rem;
+}
+.email-compose > * {
+    border-radius: 0rem;
+    border-top: 0px;
+}
+
+
 .email-from-address {
 }
 .email-to-address {
@@ -47,5 +71,7 @@
 .email-compose-text {
 }
 .email-compose-submit {
+    width: 20rem;
+    float: right;
 }
 

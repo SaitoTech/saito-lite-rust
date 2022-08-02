@@ -1,24 +1,13 @@
-module.exports = EmailFormTemplate = (address, title, msg) => {
+module.exports = EmailComposeTemplate = (app, mod) => {
 
   return `
     <div class="email-compose">
-
-      <div class="email-compose-header">
-        <div>From:</div>
-        <div><input id="email-from-address" class="email-from-address" type="text" readonly></div>
-        <div>To:</div>
-        <div><input id="email-to-address" class="email-to-address" type="text" placeholder="recipient address" value="${address}">
-      </div>
-
-      <div class="email-compose-body">
-        <input class="email-compose-title" type="text" placeholder="Subject" value="${title}">
-        <div id="email-compose-text" class="email-text markdown" placeholder="Message">${msg}</div>
-      </div>
-
+      <input id="email-to-address" class="email-to-address" type="text" placeholder="To: " value="" placeholder="To: ">
+      <input id="email-subject" class="email-subject" type="text" placeholder="Subject: " value="">
+      <textarea rows="5" class="email-compose-text" placeholder="" value=""></textarea>
       <div class="email-compose-controls">
-        <div class="saito-button-secondary email-compose-submit">Send</div>
+        <div class="saito-button-secondary small email-compose-submit">Send</div>
       </div>
-
     </div>
   `
 };
