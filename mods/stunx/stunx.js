@@ -43,28 +43,17 @@ class Stunx extends ModTemplate {
 
 
 
-    // async handleUrlParams(params) {
-    //     // if (this.app.BROWSER === 0) return;
-    //     if (params.has('invite_code')) {
-    //         const invite_code = params.get('invite_code');
-    //         const stunx_mod = this.app.modules.returnModule('Stunx');
-    //         const result = await stunx_mod.joinVideoInvite(invite_code);
-    //         if (result) {
-    //             salertNew(result);
-    //         }
-    //     }
-    // }
 
 
     onConfirmation(blk, tx, conf, app) {
         let txmsg = tx.returnMessage();
         if (conf === 0) {
             if (txmsg.module === 'Stunx') {
-                if (tx.msg.request === "send_answer_transaction") {
+                if (tx.msg.request === "answer") {
                     this.receiveAnswerTransaction(blk, tx, conf, app)
                 }
-                if (tx.msg.request === "send_offer_transaction") {
-                    this.receiveOffersTransaction(blk, tx, conf, app)
+                if (tx.msg.request === "offer") {
+                    this.receiveOfferTransaction(blk, tx, conf, app)
                 }
             }
         }
@@ -72,82 +61,67 @@ class Stunx extends ModTemplate {
 
 
 
-    handlePeerRequest(app, req, peer, mycallback) {
-        if (req.request == null) {
+    handlePeerRequest(app, message, peer, mycallback) {
+        if (message.request == null) {
             return;
         }
-        if (req.data == null) {
+        if (message.data == null) {
             return;
         }
-        let tx = req.data;
+
         let stunx_self = app.modules.returnModule("Stunx");
-        switch (req.request) {
-            case "onboard_rooms":
-                console.log('room onboarded: ', tx.msg.rooms.rooms);
-                stunx_self.rooms = tx.msg.rooms.rooms
-                app.options.rooms = tx.msg.rooms.rooms
-                app.storage.saveOptions();
-                break;
 
-            case "create_new_room":
-                console.log('new room created: ', tx.msg.room.room);
 
-                app.options.rooms.push(tx.msg.room.room);
-                app.storage.saveOptions();
-                console.log("rooms: ", stunx_self.rooms);
-                break;
+        if (message.request === "stunx offchain update") {
+            let tx = message.data.tx;
+            if (tx.msg.request === "create room") {
+                this.receiveCreateRoomTransaction(app, tx);
 
-            case "update_rooms":
-                console.log('room updated: ', tx.msg.rooms.rooms);
-                app.options.rooms = tx.msg.rooms.rooms;
-                app.storage.saveOptions();
-                // stunx_self.rooms = tx.msg.rooms.rooms
-
-                break;
-
-            case "videochat_broadcast":
-                app.network.peers.forEach(peer => {
-                    console.log('sending to: ', peer.returnPublicKey());
-
-                    if (tx.msg.room) {
-                        peer.sendRequest('create_new_room', tx);
-                    }
-                    if (tx.msg.rooms) {
-                        peer.sendRequest('update_rooms', tx);
-                    }
-                })
-                // update server 
-                if (tx.msg.room) {
-                    this.rooms.push(tx.msg.room.room);
-                }
-                if (tx.msg.rooms) {
-                    this.rooms = tx.msg.rooms.rooms;
-                }
-
-            // app.network.(tx);
+            }
+            if (tx.msg.request === "update room") {
+                this.receiveUpdateRoomTransaction(app, tx);
+            }
         }
+        super.handlePeerRequest(app, message, peer, mycallback)
+
     }
 
 
-    onPeerHandshakeComplete() {
-        // send latest copy of rooms to this peer
-        // lite clients are not allowed to run this
-        if (this.app.BROWSER === 0) {
-            let newtx2 = this.app.wallet.createUnsignedTransaction();
-            // newtx2.transaction.to.push(new saito.default.slip(this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey()));
-            // console.log('sending to ', this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey(), this.rooms);
-            const recipient = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
-            newtx2.msg.module = "Stunx";
-            newtx2.msg.rooms = {
-                rooms: this.rooms
-            };
-            console.log('get rooms from server :', recipient, this.rooms);
-            console.log(newtx2)
-            newtx2 = this.app.wallet.signTransaction(newtx2);
-            let relay_mod = this.app.modules.returnModule('Relay');
-            relay_mod.sendRelayMessage(recipient, 'onboard_rooms', newtx2);
 
-        }
+    async receiveCreateRoomTransaction(app, tx) {
+        let room = tx.msg.room.room;
+        let sql = `INSERT INTO rooms (
+            room_code,
+            peers,
+            peer_count,
+            is_max_capacity,
+            start_time,
+            created_at,
+            validity_period
+          ) VALUES (
+            $room_code,
+            $peers,
+            $peer_count,
+            $is_max_capacity,
+            $start_time,
+            $created_at,
+            $validity_period
+          )`;
+
+        let params = {
+            $room_code: room.code,
+            $peers: room.peers,
+            $peer_count: room.peerCount,
+            $is_max_capacity: room.isMaxCapicity,
+            $start_time: room.startTime,
+            $created_at: Date.now(),
+            $validity_period: room.validityPeriod,
+        };
+        const result = await app.storage.executeDatabase(sql, params, "stunx");
+        console.log('db result ', result, app.storage.executeDatabase);
+    }
+
+    receiveUpdateRoomTransaction(app, tx) {
 
     }
 
@@ -262,40 +236,29 @@ class Stunx extends ModTemplate {
     }
 
 
-    createVideoInvite() {
-        // room code hardcoded here for dev purposes
-
+    async createVideoInvite() {
         let roomCode = this.generateString(6);
-        roomCode = roomCode.trim();
-        const stunx_self = this.app.modules.returnModule("Stunx");
-
-
-        // prevent dupicate room code creation -- for development purposes
-        let room = this.rooms.find(room => room.code === roomCode);
-        if (room) return console.log('room already created');
-
-
-        room = { code: roomCode, peers: [], peerCount: 0, isMaxCapicity: false, validityPeriod: 86400, startTime: Date.now(), checkpoint: 0 };
-
-
+        let room = { code: roomCode, peers: "", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         let newtx = this.app.wallet.createUnsignedTransaction();
 
         // get recipient -- server in this case
-        let recipient = this.app.network.peers[0].peer.publickey;
-        newtx.transaction.to.push(new saito.default.slip(recipient));
-
-
-
+        let server_pub_key = this.app.network.peers[0].peer.publicKey;
+        let server = this.app.network.peers[0];
+        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
         newtx.msg.module = "Stunx";
-        newtx.msg.request = "b"
+        newtx.msg.request = "create room"
         newtx.msg.room = {
             room
         };
         newtx = this.app.wallet.signTransaction(newtx);
 
+        let message = {
+            data: {}
+        };
+        message.request = "stunx offchain update";
+        message.data.tx = newtx;
+        server.sendRequest(message.request, message.data);
 
-        let relay_mod = this.app.modules.returnModule('Relay');
-        relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
         this.app.connection.emit('show-invite-overlay-request', roomCode);
 
 
@@ -412,12 +375,26 @@ class Stunx extends ModTemplate {
 
 
     async joinVideoInvite(roomCode) {
-        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
-        const stun_mod = this.app.modules.returnModule("stun");
-        const room = this.app.options.rooms.find(room => room.code === roomCode);
-        const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
 
-        console.log('rooms :', this.app.options.rooms, 'result :', room, index);
+        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
+
+
+        let sql = `SELECT * FROM rooms WHERE room_code = ${roomCode}`;
+        let room = null
+        this.sendPeerDatabaseRequestWithFilter('Stunx', sql, async (res) => {
+            console.log('call back');
+            console.log(res);
+        })
+
+        let params = { $room_code: roomCode };
+
+
+
+
+        // const room = this.app.options.rooms.find(room => room.code === roomCode);
+        // const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
+
+        // console.log('rooms :', this.app.options.rooms, 'result :', room, index);
 
 
         if (!room) {
@@ -527,14 +504,6 @@ class Stunx extends ModTemplate {
         let relay_mod = this.app.modules.returnModule('Relay');
         relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
         siteMessageNew("Starting video connection", 5000)
-
-
-
-
-
-
-
-
     }
 
 
@@ -548,7 +517,7 @@ class Stunx extends ModTemplate {
         }
 
         newtx.msg.module = "Stunx";
-        newtx.msg.request = "send_offer_transaction"
+        newtx.msg.request = "offer"
         newtx.msg.offers = {
             offer_creator,
             offers
@@ -567,7 +536,7 @@ class Stunx extends ModTemplate {
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
 
         newtx.msg.module = "Stunx";
-        newtx.msg.request = "send_answer_transaction"
+        newtx.msg.request = "answer"
         newtx.msg.answer = {
             answer_creator,
             offer_creator,
@@ -606,7 +575,7 @@ class Stunx extends ModTemplate {
         }
     }
 
-    receiveOffersTransaction(blk, tx, conf, app) {
+    receiveOfferTransaction(blk, tx, conf, app) {
         if (app.BROWSER !== 1) return;
         let stunx_self = app.modules.returnModule("Stunx");
         let my_pubkey = app.wallet.returnPublicKey();

@@ -71,6 +71,7 @@ function reset_nonpersistent {
   rm -f ./data/earlybirds.sq3
   rm -f ./data/arcade.sq3
   rm -f ./data/chat.sq3
+  rm -f ./data/stunx.sq3
   rm -f ./data/database.sq3
   rm -f ./data/bank.sq3
   rm -f ./data/escrow.sq3
