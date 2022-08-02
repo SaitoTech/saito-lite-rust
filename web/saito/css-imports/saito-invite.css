@@ -12,4 +12,8 @@
 
 .invite-seperator {
 	margin: 15px 15px;
+}	
+
+.invite-private-input-container {
+	display: none;
 }

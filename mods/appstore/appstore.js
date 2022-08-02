@@ -1,16 +1,13 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const EmailAppStore = require('./lib/email-appspace/appstore-appspace');
-const AppStoreOverlay = require('./lib/appstore-overlay/appstore-overlay');
-const AppStoreBundleConfirm = require('./lib/appstore-overlay/appstore-bundle-confirm');
-const AppStoreModuleIndexedConfirm = require('./lib/appstore-overlay/appstore-module-indexed-confirm');
+const AppStoreAppspace = require('./lib/appspace/main');
+const AppStoreBundleConfirm = require('./lib/overlay/appstore-bundle-confirm');
+const AppStoreModuleIndexedConfirm = require('./lib/overlay/appstore-module-indexed-confirm');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const fs = require('fs');
 const path = require('path');
 const JSON = require('json-bigint');
 
-
-const AppStoreAppspace = require('./lib/appspace/main');
 
 
 class AppStore extends ModTemplate {
@@ -43,22 +40,7 @@ class AppStore extends ModTemplate {
       super.render(this.app, this);
       return new AppStoreAppspace(this.app, this);
     }
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = this.renderEmail;
-      obj.attachEvents = this.attachEventsEmail;
-      obj.script = '<link ref="stylesheet" href="/appstore/css/email-appspace.css" />';
-      return obj;
-    }
     return null;
-  }
-  renderEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.render(app, appstore_mod);
-  }
-  attachEventsEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.attachEvents(app, appstore_mod);
   }
 
 
@@ -85,12 +67,6 @@ class AppStore extends ModTemplate {
 	  search_options.version = i;
       this.search_options = search_options;
       this.renderMode = "standalone";
-    }
-  }
-  onPeerHandshakeComplete(app, mod) {
-    if (this.renderMode == "standalone") {
-      AppStoreOverlay.render(this.app, this, this.search_options);
-      AppStoreOverlay.attachEvents(this.app, this);
     }
   }
 
@@ -205,6 +181,7 @@ console.log("##########################");
           let mod_zip_filename = path.basename(this.path);
           let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
           let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+console.log("mod path is: " + mod_path);
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
@@ -229,6 +206,10 @@ console.log("submitting: " + mod_zip_filename);
             newtx = app.wallet.signTransaction(newtx);
             app.network.propagateTransaction(newtx);
 
+	  } else {
+
+console.log("ZIP TOO BIG: " + dir);
+
 	  }
 
         });
@@ -249,8 +230,6 @@ console.log("submitting: " + mod_zip_filename);
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-
-console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 
       switch (txmsg.request) {
         case 'submit module':
@@ -311,14 +290,15 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
+console.log("##### - RECEIVE BUNDLE 1");
           if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
             console.log("##### BUNDLE RECEIVED #####");
-            //
-            // 
-            //
             if (app.options.appstore) {
+console.log("##### - RECEIVE BUNDLE 2");
               if (app.options.appstore.default != "") {
+console.log("##### - RECEIVE BUNDLE 3");
                 if (tx.isFrom(app.options.appstore.default)) {
+console.log("##### - RECEIVE BUNDLE 4");
                   this.receiveBundle(blk, tx);
                 }
               }
@@ -391,7 +371,6 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 	  if (/this.name/.test(zip_lines[i]) && found_name == 0) {
 	    found_name = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-//console.log("FP: " + file.path);
 	      name = zip_lines[i].substring(zip_lines[i].indexOf("="));
 	      name = cleanString(name);
 	      name = name.replace(/^\s+|\s+$/gm,'');
@@ -468,7 +447,6 @@ console.log("we are browser submit module...");
 console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
 
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
-
 
         let newtx = this.app.wallet.createUnsignedTransaction();
             newtx.msg.module       = "Email";
@@ -715,6 +693,8 @@ console.log("now making a bundle 4!");
     newtx.msg = msg;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
+
+console.log("FINISHED MAKING BUNDLE!");
 
   }
 
@@ -1059,16 +1039,11 @@ console.log("Bundle __dirname: " + __dirname);
 
     if (this.app.BROWSER === 1) {
 
-console.log("this is a browser, so fetching peer database request...");
-
       this.sendPeerDatabaseRequestWithFilter(
         this.name ,
         sql_query ,
         (res) => {
           if (res.rows != undefined) {
-console.log("FETCHED APPS: " );
-console.log(JSON.stringify(res.rows));
-
             mycallback(res.rows);
           } else {
             mycallback([]);

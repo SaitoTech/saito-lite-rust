@@ -8,7 +8,8 @@ class AppStoreOverlay {
 
   constructor(app, mod) {
     this.app = app;
-    this.overlay = new SaitoOverlay(app);
+    this.overlay = new SaitoOverlay(app, mod);
+    mod.overlay = this.overlay;
   }
 
   render(app, mod, search_options={}) {
@@ -31,9 +32,6 @@ class AppStoreOverlay {
         }
       }
 
-console.log("WHAT APPS ARE LEFT? ");
-console.log(JSON.stringify(rows));
-
       //
       //
       //
@@ -47,21 +45,16 @@ console.log(JSON.stringify(rows));
       //
       Array.from(document.getElementsByClassName("saito-module-install-button")).forEach(installbtn => {
         installbtn.onclick = (e) => {
-alert("clicked install");
-
-console.log("current target: " + e.currentTarget.id);
 
           // appbox is 3 above us
           let module_obj = JSON.parse(app.crypto.base64ToString(e.currentTarget.parentElement.parentElement.parentElement.id));
-	  module_obj.image = e.currentTarget.parentElement.parentElement.style.background;
+          let img = e.currentTarget.parentElement.parentElement.style.background;
+	      img = img.substring(5);
+              img = img.substring(0, img.indexOf('")')-1);
+          module_obj.image = img;
 
-alert("clicked install 2");
-
-console.log("about to render app details... 1");
           AppstoreAppDetails.render(app, mod, module_obj);
-console.log("about to render app details... 2");
           AppstoreAppDetails.attachEvents(app, mod, module_obj);
-console.log("about to render app details... 3");
 
 	};
       });

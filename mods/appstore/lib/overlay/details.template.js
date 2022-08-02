@@ -6,28 +6,34 @@ module.exports = AppstoreAppDetailsTemplate = (app, mod, module) => {
 
   let html = `
 
-    <div class="appstore-overlay-header">
-      <div class="appstore-overlay-header-title">
-        Install Module?
-      </div>
-    </div>
-
-    ${SaitoModuleIntroTemplate(app, mod)} 
+    ${SaitoModuleIntroTemplate(app, mod, "", module.name, module.description )} 
 
   `;
-    //${SaitoModuleIntroTemplate(app, mod, "", module.name, module.description)} 
 
   html += `
 
-    <div class="appstore-appbox-version">${module.version}</div>
-    <div class="appstore-appbox-publisher">${module.publickey}</div>
-    <div class="appstore-appbox-datetime">${unixtime.toUTCString()}</div>
-    <div class="appstore-appbox-blockchain">
-      <div class="appstore-appbox-blockchain-hash">${module.bsh}</div>
-      <div class="appstore-appbox-blockchain-block-id">${module.bid}</div>
+    <div class="appstore-appbox-details">
+      <div class="saito-table">
+        <div class="saito-table-row odd">
+	  <div>date</div>
+	  <div>${unixtime.toUTCString()}</div>
+        </div>
+        <div class="saito-table-row">
+	  <div>publisher</div>
+	  <div>${module.publickey}</div>
+        </div>
+        <div class="saito-table-row odd">
+	  <div>version</div>
+	  <div>${module.version}</div>
+        </div>
+        <div class="saito-table-row">
+	  <div>block hash</div>
+	  <div>${module.bsh}</div>
+        </div>
+      </div>
     </div>
 
-    <button id="appstore-install-confirm-button" class="appstore-install-confirm-button saito-button-primary">confirm</button>
+    <button id="appstore-install-confirm-button" class="appstore-install-confirm-button saito-button-primary">confirm install</button>
   
   `;
 

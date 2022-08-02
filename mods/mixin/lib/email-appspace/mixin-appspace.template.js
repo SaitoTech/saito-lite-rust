@@ -4,8 +4,14 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let html = `
 
-  <div class="email-appspace-mixin">
+  <div class="saito-page-header">
+    <div class="saito-page-header-title">Mixin Wallet</div>
+    <div class="saito-page-header-text">
+        Keep track of your wallet balance, deposit and withdrawls. Send or receive coins from your mixin wallet for in-game bet with other players.
+    </div>
+  </div>
 
+  <div class="email-appspace-mixin">
     <div class="balances_container" id="balances_container">
 
   `;
@@ -53,7 +59,7 @@ module.exports = MixinAppspaceTemplate = (app) => {
       </div>
     </div>
 
-    <h2 class="transaction-header transaction-item">Transaction History</h2>
+    <h5 class="transaction-header transaction-item">Transaction History</h5>
     <div class="activity_container" id="activity_container">
         <div class="history_container transaction-item">
             <div class='item item-header'>Time</div>
@@ -62,52 +68,53 @@ module.exports = MixinAppspaceTemplate = (app) => {
              <div class='item item-header'>Amount</div>
              <div class='item item-header'>Status</div>
         </div>
-      <div class="activity_button button" id="activity_button">load account history</div>
+      <div class="saito-button-secondary small activity_button" id="activity_button" >Load Account History</div>
     </div>
 
   </div>
 
   <style>
 
-    .hide-btn {
-        display: none;
-    }
+  .hide-btn {
+    display: none;
+}
 
-    .transaction-header {
-        margin-top: 40px;
-    }
+.transaction-header {
+    margin-top: 40px;
+}
 
-    .history_container {
-      border-radius: 8px;
-      position: relative;
-      border: 1px solid #e7ebed;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      text-align: center;
-      line-height: 50px;
-      flex-wrap: wrap; 
-    }
+.history_container {
+  border-radius: 8px;
+  position: relative;
+  border: 1px solid #e7ebed;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  line-height: 50px;
+  flex-wrap: wrap; 
+  font-size: 1.4rem;
+}
 
-    .item {
-      height: 50px;
-      width: calc(100% * (1/5));
-      flex-grow: 1;
-    }
+.item {
+  height: 50px;
+  width: calc(100% * (1/5));
+  flex-grow: 1;
+}
 
-    .item-header {
-      background-color: #e7ebed;
-      font-weight: 700;
-    }
-
+.item-header {
+  background-color: #e7ebed;
+  font-weight: 700;
+}
 
 .activity_button {
   margin-top: 20px;
   max-width: 200px;
   text-align: center;
 }
+
 .balances_container {
     box-shadow: 0px 1px 3px 0px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 2px 1px -1px rgb(0 0 0 / 12%);
     border-radius: 4px;
@@ -185,8 +192,8 @@ module.exports = MixinAppspaceTemplate = (app) => {
 .withdrawal {
     color: #e34927;
 }
-  </style>
 
+  </style>
   `;
 
   return html;
