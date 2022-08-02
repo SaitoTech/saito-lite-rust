@@ -386,7 +386,8 @@ Saito Arcade Invite
     display: grid;
     grid-template-columns: 7em 1fr;
     background: var(--saito-secondary);
-    transition: transform 200ms ease-in-out;
+    transition: transform 400ms ease-in-out;
+    cursor: pointer;
     z-index: 1;
 }
 
