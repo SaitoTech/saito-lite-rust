@@ -263,19 +263,29 @@ body{
   font-size: 24px;
 }
 
-.virus-count+img.cube{
+.scoreboard_virus_group{
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+}
+
+.virus-count+img.cube, .virus-count+i{
   margin-left: 10px;
 }
 
 .virus-count{
   margin: 0 2px;
+  text-shadow: 0 0 2px whitesmoke;
 }
 
 .safe{
   color: darkgreen;
 }
 .caution{
-  color: darkorange; 
+  color: orange;
+  text-shadow: 0 0 2px black;
 }
 .danger{
   color: darkred;
@@ -498,4 +508,32 @@ body{
   40%, 100% {
     transform: rotateZ(0);
   }
+}
+
+.infection_highlight{
+  position: absolute;
+  border-radius: 100%;
+  background-color: rgba(0, 0, 0);
+  opacity: 0.9;
+  width: 300px;
+  height: 300px;
+  transition: width 2s, height 2s, opacity 2s;
+  transform: translate(-50%,-50%);
+}
+
+.infection_highlight.animateit{
+  width: 50px;
+  height: 50px;
+  opacity: 0.1;
+}
+
+.city .name{
+ position: relative; 
+ top: -10px;
+ left: -10px;
+ color: whitesmoke;
+ text-shadow: 2px 2px black;
+ max-width: 150%;
+ white-space: nowrap;
+ overflow-x: visible;
 }

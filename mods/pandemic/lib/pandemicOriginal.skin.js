@@ -41,7 +41,7 @@ class PandemicOriginalSkin {
      	try {
         let city = document.getElementById(i);
      		if (!city){
-     			this.app.browser.addElementToElement(`<div class="city" id="${i}"></div>`, board);
+     			this.app.browser.addElementToElement(`<div class="city" id="${i}"><div class="infectionCubes"></div></div>`, board);
           city = document.getElementById(i);	
      		}
      	 	        
@@ -789,56 +789,75 @@ class PandemicOriginalSkin {
   displayDecks() {
     //console.log(this.mod.game.deck);
     let html = "";
+    let board = document.getElementById("gameboard");
 
     for (let i = 0; i < this.mod.game.deck[0].discards.length; i++){
       html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/pandemic/img/${this.mod.game.deck[0].cards[this.mod.game.deck[0].discards[i]].img}" />`;
     }
-    document.querySelector(".infection_discard_pile").innerHTML = html;
+    if (document.querySelector(".infection_discard_pile")){
+      document.querySelector(".infection_discard_pile").innerHTML = html;
+    }else{
+      this.app.browser.addElementToElement(`<div class="deck infection_discard_pile">${html}</div>`, board);
+    }
 
     html = "";
     for (let i = 0; i < this.mod.game.deck[1].discards.length; i++){
       html += `<img style="bottom:${2*i}px; right:${2*i}px;" src="/pandemic/img/${this.mod.game.deck[1].cards[this.mod.game.deck[1].discards[i]].img}" />`;
     }
-    document.querySelector(".player_discard_pile").innerHTML = html;
+    if (document.querySelector(".player_discard_pile")){
+      document.querySelector(".player_discard_pile").innerHTML = html;
+    }else{
+      this.app.browser.addElementToElement(`<div class="deck player_discard_pile">${html}</div>`, board);
+    }
 
     html = "";    
     for (let i = 0; i < this.mod.game.deck[0].crypt.length; i++){
       html += `<img src="/pandemic/img/Back%20Infection.gif" style="bottom:${i}px;right:${i}px"/>`;
     }
-    document.querySelector(".back_infection_card").innerHTML = html;
+    if (document.querySelector(".back_infection_card")){
+      document.querySelector(".back_infection_card").innerHTML = html;
+    }else{
+      this.app.browser.addElementToElement(`<div class="deck back_infection_card">${html}</div>`, board);
+    }
 
     html = "";
     for (let i = 0; i < this.mod.game.deck[1].crypt.length; i++){
       html += `<img src="/pandemic/img/Back%20Player%20Card.gif" style="bottom:${i}px;right:${i}px"/>`;
     }
-    document.querySelector(".back_player_card").innerHTML = html;    
+    if (document.querySelector(".back_player_card")){
+      document.querySelector(".back_player_card").innerHTML = html;    
+    }else{
+      this.app.browser.addElementToElement(`<div class="deck back_player_card">${html}</div>`, board);
+    }
 
   }
 
   displayVials() {
-    let w = 82;
-    let h = 102;
 
-    $(".vial").css("top", this.mod.scale(1703) + "px");
-    $(".vial").css("opacity", "0.6");
+    for (let v in this.mod.game.state.cures){
+      let div = document.querySelector(".vial_"+v);
+      if (!div){
+        this.app.browser.addElementToElement(`<div class="vial vial_${v}"></div>`, document.getElementById('gameboard'));
+        div = document.querySelector(".vial_"+v);
+      }
+      
+      if (this.mod.game.state.cures[v]){
+        div.style.top = this.mod.scale(1570) + "px";
+        div.style.opacity = "1";
+        if (this.mod.isEradicated(v)){
+          let virus_string = v.charAt(0).toUpperCase()+v.slice(1);
+          div.style.backgroundImage = `url("/pandemic/img/Vial%20${virus_string}%20Eradicated.png")`;
+        }
+      }else{
+        div.style.top = this.mod.scale(1703) + "px";
+        div.style.opacity = "0.6";
+      }
+    }
     $(".vial_yellow").css("left", this.mod.scale(816) + "px");
     $(".vial_red").css("left", this.mod.scale(940) + "px");
     $(".vial_blue").css("left", this.mod.scale(1068) + "px");
     $(".vial_black").css("left", this.mod.scale(1182) + "px");
 
-    for (let v in this.mod.game.state.cures){
-      if (this.mod.game.state.cures[v]){
-        let div = ".vial_"+v;
-        $(div).css("top", this.mod.scale(1570) + "px");
-        $(div).css("opacity", "1");
-        if (this.mod.isEradicated(v)){
-          let virus_string = v.charAt(0).toUpperCase()+v.slice(1);
-          $(div).css("background-image",
-              `url("/pandemic/img/Vial%20${virus_string}%20Eradicated.png")`
-            );
-        }
-      }
-    }
   }
 
   displayResearchStations(station_list) {
@@ -887,6 +906,51 @@ class PandemicOriginalSkin {
     
   }
 
+  animateInfection(city, msg, mycallback){
+    let pandemic_self = this.mod;
+
+    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
+
+    pandemic_self.defaultDeck = 0;
+    pandemic_self.card_height_ratio = 0.709;
+    pandemic_self.cardbox.show(city);
+    document.getElementById("game-cardbox").style.pointerEvents = "unset";
+    document.getElementById("game-cardbox").classList.add("confirmit");
+    try {
+      pandemic_self.updateStatusWithOptions(msg, html);
+      $(".confirmit").on("click", async (e) => {
+        $(".confirmit").off();
+        $(".textchoice.confirmit").addClass("confirmed");
+        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
+        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
+        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
+        document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
+        document.getElementById("game-cardbox").style.transformOrigin= "left top";
+        document.getElementById("game-cardbox").classList.remove("confirmit");
+        //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
+        //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
+        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%)`;
+        document.getElementById("game-cardbox").style.top = `${dp.top}`;
+        document.getElementById("game-cardbox").style.left = `${dp.left}`;
+        
+        setTimeout(()=>{
+          pandemic_self.defaultDeck = 1;
+          pandemic_self.card_height_ratio = 1.41;
+          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
+          document.getElementById("game-cardbox").style.transition = "";
+          document.getElementById("game-cardbox").style.transform = "";
+          document.getElementById("game-cardbox").style.top = "";
+          document.getElementById("game-cardbox").style.left = "";  
+          document.getElementById("game-cardbox").style.transformOrigin = "";
+          pandemic_self.cardbox.hide();
+          mycallback();
+        }, 1200);
+      });
+    } catch (err) {
+      console.error("Error with ACKWNOLEDGE notice!: " + err);
+    }
+
+  }
 
 };
 

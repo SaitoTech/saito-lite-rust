@@ -2,6 +2,7 @@ const GameTemplate = require("../../lib/templates/gametemplate");
 const GameScoreboard = require("../../lib/saito/ui/game-scoreboard/game-scoreboard");
 const PandemicOriginalSkin = require("./lib/pandemicOriginal.skin.js");
 const PandemicRetroSkin = require("./lib/pandemicRetro.skin.js");
+const PandemicNewSkin = require("./lib/pandemicNew.skin.js");
 
 class Pandemic extends GameTemplate {
 
@@ -129,7 +130,12 @@ class Pandemic extends GameTemplate {
     super.initializeHTML(app);
       
     if (!this.skin){
-      this.skin = new PandemicRetroSkin(this.app, this);
+      switch(this.game.options.theme){
+        case "classic": this.skin = new PandemicOriginalSkin(this.app, this); break;
+        case "retro": this.skin = new PandemicRetroSkin(this.app, this); break;
+        case "modern": this.skin = new PandemicNewSkin(this.app, this); break;
+        default: this.skin = new PandemicRetroSkin(this.app, this);
+      }
     }
     this.skin.render();
     this.boardWidth = this.skin.boardWidth;
@@ -166,6 +172,50 @@ class Pandemic extends GameTemplate {
         };
       },
     });
+    this.menu.addSubMenuOption("game-game", {
+      text: "Theme",
+      id: "game-theme",
+      class: "game-theme",
+      callback: function (app, game_mod) {
+        game_mod.menu.showSubSubMenu("game-theme"); 
+      },
+    });
+    this.menu.addSubMenuOption("game-theme",{
+      text: `Classic ${(this.game.options.theme=="classic")?"✔":""}`,
+      id:"game-confirm-easy",
+      class:"game-confirm-easy",
+      callback: function(app,game_mod){
+        game_mod.game.options.theme = "classic";
+        game_mod.saveGame(game_mod.game.id);
+        setTimeout(()=>{window.location.reload();},1000);
+
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-theme",{
+      text: `Retro ${(this.game.options.theme=="retro")?"✔":""}`,
+      id:"game-confirm-medium",
+      class:"game-confirm-medium",
+      callback: function(app,game_mod){
+        game_mod.game.options.theme = "retro";
+        game_mod.saveGame(game_mod.game.id);
+        setTimeout(()=>{window.location.reload();},1000);
+      }
+    });
+
+    this.menu.addSubMenuOption("game-theme",{
+      text: `Modern ${(this.game.options.theme=="modern")?"✔":""}`,
+      id:"game-confirm-hard",
+      class:"game-confirm-hard",
+      callback: function(app,game_mod){
+        game_mod.game.options.theme = "modern";
+        game_mod.saveGame(game_mod.game.id);
+        setTimeout(()=>{window.location.reload();},1000);
+      }
+    });
+
+
+
     this.menu.addSubMenuOption("game-game", {
       text: "Log",
       id: "game-log",
@@ -1427,46 +1477,7 @@ class Pandemic extends GameTemplate {
         msg = `Infection: 1 ${virus} added to ${this.skin.cities[city].name}`
     } 
     
-    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
-
-    this.defaultDeck = 0;
-    this.card_height_ratio = 0.709;
-    this.cardbox.show(city);
-    document.getElementById("game-cardbox").style.pointerEvents = "unset";
-    document.getElementById("game-cardbox").classList.add("confirmit");
-    try {
-      this.updateStatusWithOptions(msg, html);
-      $(".confirmit").on("click", async (e) => {
-        $(".confirmit").off();
-        $(".textchoice.confirmit").addClass("confirmed");
-        let cb = window.getComputedStyle(document.querySelector("#game-cardbox"));
-        let dp = document.querySelector(".infection_discard_pile").getBoundingClientRect();
-        let sizedif = Math.round(100*dp.width / parseInt(cb.width));
-        document.getElementById("game-cardbox").style.transition = "transform 1.5s, left 1.5s, top 1.5s";
-        document.getElementById("game-cardbox").style.transformOrigin= "left top";
-        document.getElementById("game-cardbox").classList.remove("confirmit");
-        //console.log(`++Cardbox++ Left: ${cb.left}, Top: ${cb.top}`);
-        //console.log(`++Discard++ Left: ${dp.left}, Top: ${dp.top}, Right: ${dp.right}, Bottom: ${dp.bottom}`);
-        document.getElementById("game-cardbox").style.transform = `scale(${sizedif}%)`;
-        document.getElementById("game-cardbox").style.top = `${dp.top}`;
-        document.getElementById("game-cardbox").style.left = `${dp.left}`;
-        
-        setTimeout(()=>{
-          pandemic_self.defaultDeck = 1;
-          pandemic_self.card_height_ratio = 1.41;
-          //document.getElementById("game-cardbox").classList.remove("move-to-discard");
-          document.getElementById("game-cardbox").style.transition = "";
-          document.getElementById("game-cardbox").style.transform = "";
-          document.getElementById("game-cardbox").style.top = "";
-          document.getElementById("game-cardbox").style.left = "";  
-          document.getElementById("game-cardbox").style.transformOrigin = "";
-          pandemic_self.cardbox.hide();
-          mycallback();
-        }, 1200);
-      });
-    } catch (err) {
-      console.error("Error with ACKWNOLEDGE notice!: " + err);
-    }
+    pandemic_self.skin.animateInfection(city, msg, mycallback);
 
     return 0;
   }
@@ -1501,21 +1512,19 @@ class Pandemic extends GameTemplate {
         this.game.state.welcome = 0;
       }
       if (mv[0] === "lose"){
-        this.game.over = 1;
-        this.game.queue = [];
         salert("GAME OVER: " + mv[1]);
         this.updateStatus("Players lose to the virus!");
         this.updateLog("The game is over");
+        this.endGame([], mv[1]);
         return 0;
       }
 
       if (mv[0] === "win"){
         let winningPlayer = mv[1];
-        this.game.over = 1;
         this.updateLog(`Player ${winningPlayer} discovered the final cure and the pandemic ended. Everyone stopped wearing masks and had a big party to celebrate.`);
         this.updateStatus("Players win the game!");
         salert("Players Win! Humanity survives");
-        this.game.queue = [];
+        this.endGame(this.game.players, "All vaccines discovered!");
         return 0;
       }
       if (mv[0] === "forecast") {
@@ -1566,6 +1575,7 @@ class Pandemic extends GameTemplate {
 
       if (mv[0] === "endturn"){
         let player = parseInt(mv[1]);
+        $(`.player`).removeClass("active_player");
         this.game.queue.splice(qe-1, 2);
         this.game.queue.push("turn\t" + this.returnNextPlayer(player) + "\tnew");
         this.game.queue.push("infect");
@@ -1585,7 +1595,6 @@ class Pandemic extends GameTemplate {
             this.game.state.current_player = player;
             this.game.state.one_quiet_night = 0;
          }
-          $(`.player`).removeClass("active_player");
           $(`#player${player}`).addClass("active_player");
            
           $(".player.active_player .move_counter").html(this.game.state.active_moves);
@@ -1827,12 +1836,7 @@ class Pandemic extends GameTemplate {
           console.log(JSON.stringify(pandemic_self.game.queue));
           console.log(JSON.stringify(pandemic_self.moves));
 
-          pandemic_self.game.halted = 0;
-          let cont = pandemic_self.runQueue();
-          if (cont == 0) {
-            pandemic_self.processFutureMoves();
-          }
-
+          pandemic_self.restartQueue();
           return 1;
         });
 
@@ -2101,6 +2105,7 @@ class Pandemic extends GameTemplate {
       if (!this.outbreaks.includes(this.skin.cities[city].neighbours[i])) {
         msg += this.skin.cities[this.skin.cities[city].neighbours[i]].name + ", ";
         this.addDiseaseCube(this.skin.cities[city].neighbours[i], virus);
+        this.skin.animateInfection(this.skin.cities[city].neighbours[i], msg, ()=>{});
       }
     }
     msg = msg.substr(0, msg.length-2);
@@ -2202,7 +2207,7 @@ displayDisease() {
   let cubeCounts = {"black":0, "red":0, "yellow":0, "blue":0};
 
     for (var i in this.game.state.cities) {
-      let divname = "#" + i;
+      let divname = "#" + i + " > .infectionCubes";
       let width = 100;
       let cubedeath = ""; //html for the cubes
       let cubes = 0;
@@ -2282,7 +2287,10 @@ displayDisease() {
       let threat_level = "safe";
       if (cubeCounts[v]>9) threat_level = "caution";
       if (cubeCounts[v]>16) threat_level = "danger";
-      html += `<img class="cube" src="${this.skin.returnDisease(v)}"><div class="virus-count ${threat_level}">: ${24-cubeCounts[v]}</div>`;
+      html += `<div id="${v}-count" class="scoreboard_virus_group">
+                <img class="cube" src="${this.skin.returnDisease(v)}">
+                <div class="virus-count ${threat_level}">: ${24-cubeCounts[v]}</div>
+              </div>`;
     }
     this.scoreboard.update(html);
   }
@@ -2352,11 +2360,7 @@ displayDisease() {
 
   refreshPlayers(){
     for (let i = 0; i < this.game.players_info.length; i++){
-      console.log(this.game.players_info[i].role);
-      console.log(JSON.parse(JSON.stringify(this.game.players_info[i])));
-      console.log(JSON.parse(JSON.stringify(this.skin.queryPlayer(this.game.players_info[i].role))));
       Object.assign(this.game.players_info[i], this.skin.queryPlayer(this.game.players_info[i].role));
-      console.log(JSON.parse(JSON.stringify(this.game.players_info[i])));
     }
   }
 
@@ -2384,10 +2388,10 @@ displayDisease() {
     if (this.browser_active == 0) {
       return;
     }
-    this.skin.displayInfectionRate(this.game.state.infection_rate);
-    this.skin.displayOutbreaks(this.game.state.outbreaks);
     this.displayDisease();
     this.displayPlayers();
+    this.skin.displayInfectionRate(this.game.state.infection_rate);
+    this.skin.displayOutbreaks(this.game.state.outbreaks);
     this.skin.displayResearchStations(this.game.state.research_stations);
 
     this.skin.displayDecks();
@@ -2412,8 +2416,8 @@ displayDisease() {
       return `<img class="cardimg" src="/pandemic/img/${player.card}" />`;
     }
 
-    //console.log(cardname,ctype);
-    //console.log(this.game.deck)
+    console.log(cardname,ctype);
+    console.log(this.game.deck)
     let c = this.game.deck[ctype].cards[cardname];
     if (c == undefined || c == null || c === "") {
       return null;
@@ -2504,6 +2508,17 @@ displayDisease() {
               <li><input type="checkbox" name="quarantinespecialist" selected/>Quarantine Specialist</li>
               <li><input type="checkbox" name="researcher" selected/>Researcher</li>
             </ul><p>Player roles will be selected at random from the checked boxes. If there are more players than selected roles, player roles will be assigned at random from any available option</p>`;
+    
+
+    html += ` <div class="overlay-input">
+          <label for="theme">Theme:</label>
+          <select name="theme">
+            <option value="retro">Retro</option>
+            <option value="classic" selected default>Classic</option>
+            <option value="modern">Modern</option>
+          </select>
+        </div>`;
+
     html += `
      
      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>

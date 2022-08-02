@@ -103,9 +103,9 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
 
      for (var i in cities) {
      	try {
-     		let city = document.getElementById(i);
+     		let city = document.querySelector(`#${i}.city`);
      		if (!city){
-     			this.app.browser.addElementToElement(`<div class="city dyanmic_city" id="${i}"></div>`, board);	
+     			this.app.browser.addElementToElement(`<div class="city dyanmic_city" id="${i}"><div class="infectionCubes"></div></div>`, board);	
      			city = document.getElementById(i);
      		}
      	 	
@@ -124,16 +124,16 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         	if (exceptions.includes(i+neigh)){
             if (cities[i].left > cities[neigh].left){
               //City is in the east
-              ctx.moveTo(cities[i].left+50,cities[i].top+50);
-              ctx.lineTo(this.boardWidth, (cities[i].top + cities[neigh].top) / 2 + 50);    
+              ctx.moveTo(cities[i].left+40,cities[i].top+40);
+              ctx.lineTo(this.boardWidth, (cities[i].top + cities[neigh].top) / 2 + 40);    
             }else{
               //City is in the west
-              ctx.moveTo(cities[i].left+50,cities[i].top+50);
-              ctx.lineTo(0, (cities[i].top + cities[neigh].top) / 2 + 50);    
+              ctx.moveTo(cities[i].left+40,cities[i].top+40);
+              ctx.lineTo(0, (cities[i].top + cities[neigh].top) / 2 + 40);    
             }
         	}else{
-	   	      ctx.moveTo(cities[i].left+50,cities[i].top+50);
-  	        ctx.lineTo(cities[neigh].left+50,cities[neigh].top+50);
+	   	      ctx.moveTo(cities[i].left+40,cities[i].top+40);
+  	        ctx.lineTo(cities[neigh].left+40,cities[neigh].top+40);
         	}
           ctx.stroke();
         }
@@ -218,9 +218,9 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["miami"] = {
       top: 735,
-      left: 705,
+      left: 735,
       neighbours: ["washington", "atlanta", "mexicocity", "bogota"],
-      name: "Miami",
+      name: "Santo Domingo",
       virus: "yellow",
     };
     cities["bogota"] = {
@@ -253,7 +253,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["saopaulo"] = {
       top: 1070,
-      left: 935,
+      left: 985,
       neighbours: ["bogota", "buenosaires", "madrid", "lagos"],
       name: "Sao Paulo",
       virus: "yellow",
@@ -274,7 +274,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["kinshasa"] = {
       top: 1080,
-      left: 1275,
+      left: 1340,
       neighbours: ["lagos", "khartoum", "johannesburg"],
       name: "Luanda",
       virus: "yellow",
@@ -287,7 +287,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "yellow",
     };
     cities["london"] = {
-      top: 390,
+      top: 425,
       left: 1150,
       neighbours: ["newyork", "madrid", "essen", "paris"],
       name: "London",
@@ -315,7 +315,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "blue",
     };
     cities["stpetersburg"] = {
-      top: 320,
+      top: 365,
       left: 1480,
       neighbours: ["essen", "moscow", "istanbul"],
       name: "St. Petersburg",
@@ -330,9 +330,9 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     };
     cities["algiers"] = {
       top: 685,
-      left: 1220,
+      left: 1250,
       neighbours: ["madrid", "paris", "cairo", "milan"],
-      name: "Algiers",
+      name: "Casablanca",
       virus: "black",
     };
     cities["cairo"] = {
@@ -348,7 +348,6 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       neighbours: [
         "stpetersburg",
         "milan",
-        "algiers",
         "cairo",
         "baghdad",
         "moscow",
@@ -433,7 +432,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "red",
     };
     cities["jakarta"] = {
-      top: 1000,
+      top: 995,
       left: 2000,
       neighbours: ["chennai", "bangkok", "hochiminhcity", "sydney"],
       name: "Jakarta",
@@ -483,25 +482,25 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       top: 660,
       left: 2030,
       neighbours: ["shanghai", "hongkong", "beijing"],
-      name: "Taipei",
+      name: "Chongqing",
       virus: "red",
     };
     cities["shanghai"] = {
       top: 685,
       left: 2205,
-      neighbours: ["beijing", "hongkong", "taipei", "seoul", "tokyo"],
+      neighbours: ["hongkong", "taipei", "seoul", "tokyo", "osaka"],
       name: "Shanghai",
       virus: "red",
     };
     cities["beijing"] = {
-      top: 500,
+      top: 545,
       left: 2085,
-      neighbours: ["shanghai", "seoul", "taipei"],
+      neighbours: ["seoul", "taipei"],
       name: "Beijing",
       virus: "red",
     };
     cities["seoul"] = {
-      top: 500,
+      top: 530,
       left: 2185,
       neighbours: ["beijing", "shanghai", "tokyo"],
       name: "Seoul",
@@ -517,7 +516,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     cities["osaka"] = {
       top: 710,
       left: 2325,
-      neighbours: ["taipei", "tokyo"],
+      neighbours: ["shanghai", "tokyo"],
       name: "Osaka",
       virus: "red",
     };
@@ -761,17 +760,63 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     }
   }
 
-
+  displayVials(){
+    for (let v in this.mod.game.state.cures){
+      if (this.mod.game.state.cures[v]){
+        for (let c in this.cities){
+          if (this.cities[c].virus == v){
+            $(`#${c}`).css("background-image",`url("/pandemic/img/alt/cure-${v}.png")`);
+          }
+        }
+        if (this.mod.isEradicated(v)){
+          $(`#${v}-count`).remove();
+        }
+      }
+    }
+  }
 
   displayOutbreaks(outbreaks) {
+      let threat_level = "safe";
+      if (outbreaks>2) threat_level = "caution";
+      if (outbreaks>6) threat_level = "danger";
+      this.mod.scoreboard.append(`<i class="fas fa-skull"></i><div class="virus-count ${threat_level}">: ${8-outbreaks}</div>`);
   }
 
   displayDecks() {
+      let threat_level = "safe";
+      if (this.mod.game.deck[1].crypt.length < 20) threat_level = "caution";
+      if (this.mod.game.deck[1].crypt.length < 5) threat_level = "danger";
+  
+      this.mod.scoreboard.append(`<i class="fas fa-layer-group"></i><div class="virus-count ${threat_level}">:${this.mod.game.deck[1].crypt.length}</div>`);
   }
 
   displayInfectionRate(infection_rate){
 
   }
+
+  animateInfection(city, msg, mycallback){
+    let pandemic_self = this.mod;
+
+    let html = `<ul><li class="textchoice confirmit" id="confirmit">I understand...</li></ul>`;
+
+    try {
+      this.app.browser.addElementToElement(`<div class="infection_highlight" style="top: ${this.mod.scale(this.cities[city].top+40)}px; left: ${this.mod.scale(this.cities[city].left+40)}px;"></div>`,document.getElementById("gameboard"));
+      $(".confirmit").off();
+      pandemic_self.updateStatusWithOptions(msg, html);
+      $(".confirmit").on("click", async (e) => {
+        $(".confirmit").off();
+        $(".infection_highlight").addClass("animateit");
+        pandemic_self.showBoard();
+        setTimeout(()=>{
+          document.querySelector(".infection_highlight").remove();
+        },2500);
+        mycallback();
+      });
+    }catch(err){
+      console.log(err);
+    }
+  }
+
 
 
 };
