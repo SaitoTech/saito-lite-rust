@@ -66,7 +66,10 @@ class Peer {
     const hop = new Hop();
     hop.from = this.app.crypto.fromBase58(this.app.wallet.returnPublicKey());
     hop.to = this.app.crypto.fromBase58(this.returnPublicKey());
-    hop.sig = this.app.crypto.signBuffer(Buffer.from(hop.to,"hex"), this.app.wallet.returnPrivateKey());
+    let buffer = Buffer.concat([Buffer.from(tx.transaction.sig, "hex"), Buffer.from(hop.to, "hex")]);
+    let hash = this.app.crypto.hash(buffer);
+
+    hop.sig = this.app.crypto.signBuffer(Buffer.from(hash,"hex"), this.app.wallet.returnPrivateKey());
 
     tmptx.transaction.path.push(hop);
     return tmptx;

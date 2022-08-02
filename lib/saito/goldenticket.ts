@@ -63,18 +63,16 @@ class GoldenTicket {
     }
 
     public static generateHash(difficulty: number): string {
-        const leading_zeroes_required = Math.floor(difficulty / 16);
-        const final_digit = 16 >> (difficulty % 16);
+        const leading_zeroes_required = Math.floor(difficulty / 4);
+        const final_digit = 15 >> (difficulty % 4);
 
-        //
         // create our target hash
-        //
         let target_hash = "";
         for (let i = 0; i < 64; i++) {
             if (i < leading_zeroes_required) {
                 target_hash += "0";
             } else {
-                if (i === leading_zeroes_required && final_digit > 0 && final_digit < 16) {
+                if (i === leading_zeroes_required) {
                     target_hash += final_digit.toString(16);
                 } else {
                     target_hash += "F";
