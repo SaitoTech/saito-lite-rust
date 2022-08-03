@@ -6,22 +6,15 @@ module.exports = InvitesAppspaceTemplate = (app, mod) => {
 
   <div class="invites-appspace">
 
-    Invite
+    <div class="saito-page-header">
+      <div id="invites-new-invite" class="saito-button-secondary small" style="float: right;">Create Invite</div>
+      <div id="saito-page-header-title" class="saito-page-header-title">INVITATIONS</div>
+      <div id="saito-page-header-text" class="saito-page-header-text">Saito supports on-chain invitations to games, events, video-calls and more. Create a new invitation or accept invites sent to you by others.
+      </div>
+    </div>
 
-    <select class="saito-new-select">
-      <option>1 person</option>
-      <option>2 people</option>
-      <option>3 people</option>
-      <option>4 people</option>
-    </select>
-
-    to a
-
-    <select class="saito-new-select">
-      <option>video call</option>
-      <option>arcade game</option>
-      <option>other event</option>
-    </select>
+    <div id="invites-list class="invites-list">
+    </div>
 
   </div>
 

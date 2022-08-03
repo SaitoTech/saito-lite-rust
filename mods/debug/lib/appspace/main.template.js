@@ -1,16 +1,12 @@
 module.exports = DebugAppspaceMainTemplate = () => {
   return `
   
-  <h3>Wallet Configuration:</h3> 
+    <div class="saito-page-header">
+      <div id="saito-page-header-title" class="saito-page-header-title">DEBUG WALLET</div>
+      <div id="saito-page-header-text" class="saito-page-header-text">This module permits exploring the contents of your Saito Wallet. Please remember to backup your wallet if you wish to keep it over time.</div>
+    </div>
+
   <div style="clear:both;padding-top:10px;padding-bottom:10px;" id="appspace-debug" class="appspace-debug"></div>
-  <div class="send-wallet-info tip">
-    <button class="sent-wallet">Send the Saito Team Your Wallet for Debug</button>
-    <i class="fas fa-info-circle"></i>
-    <div class="tiptext">This is a debug-only feature and sends your whole wallet including PRIVATE KEY.</div>
-  </div>
-  <p>
-    <textarea class="debug-message" placeholder="Please tell us who you are and why you sent this wallet."></textarea>
-  </p>
-    <hr />
+
   `;
 }

@@ -1,5 +1,6 @@
 const InvitesAppspaceTemplate = require('./main.template.js');
-const InvitesInvitationTemplate = require('./../invitation.template.js');
+const InviteTemplate = require('./invite.template.js');
+const SaitoScheduler = require('./../../../../lib/saito/new-ui/saito-scheduler/saito-scheduler');
 
 class InvitesAppspace {
 
@@ -12,11 +13,12 @@ class InvitesAppspace {
       app.browser.addElementToSelector(InvitesAppspaceTemplate(app, mod), ".appspace");
     }
 
+
     if (mod.invites) {
+
       for (let i = 0; i < mod.invites.length; i++) {
         app.browser.addElementToSelector(InvitesInvitationTemplate(app, mod, i), ".invites");
       }
-
 
       for (let i = 0; i < mod.invites.length; i++) {
         if (mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
@@ -41,16 +43,27 @@ class InvitesAppspace {
 
   attachEvents(app, mod) {
 
+    document.getElementById("invites-new-invite").onclick = (e) => {
+
+      let sc = new SaitoScheduler(app, mod);
+      sc.render(app, mod, function(data) {
+        let gc = new GameCreator(app, mod);
+        gc.render(app, mod);
+      });
+
+    }
+
+
     //
     // button to initiate invites
     //
     // document.getElementById("invite_btn").onclick = (e) => {
-
+    //
     //   let recipient = document.getElementById("invite_address").value;
     //   if (recipient === "") { recipient = app.wallet.returnPublicKey(); }
-
+    //
     //   mod.createOpenTransaction(recipient, { from: app.wallet.returnPublicKey(), to: recipient });
-
+    //
     // }
 
     //
@@ -69,12 +82,6 @@ class InvitesAppspace {
     //   }
     // });
 
-    const elems = document.querySelectorAll('input[name="datepicker"]');
-
-    elems.forEach(elem => {
-      let datepicker = new Datepicker(elem, {});
-    })
-
     // expand height 
     // const additionalInfoButtonContainer = document.querySelector('.invites-appspace-additional-info');
     // const additionalInfoButton = document.querySelector('.invites-appspace-additional-info i');
@@ -92,18 +99,6 @@ class InvitesAppspace {
 
     //   }
     // })
-
-    document.body.addEventListener('click', (e) => {
-      if (e.target.classList.contains("close-overlay")) {
-        document.querySelector('.saito-overlay').classList.remove('show');
-      }
-
-      if (e.target.classList.contains("invites-appspace-create-invite-button")) {
-        document.querySelector('.saito-overlay').classList.add('show');
-      }
-
-    })
-
 
   }
 

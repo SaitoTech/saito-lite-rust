@@ -30,7 +30,6 @@ class RedSquare extends ModTemplate {
       '/redsquare/css/redsquare-main.css',
       '/redsquare/css/arcade.css',		// game creation overlays
       '/redsquare/css/chat.css',		// game creation overlays
-      '/scheduler/css/scheduler-main.css',
     ];
 
     this.ui_initialized = false;

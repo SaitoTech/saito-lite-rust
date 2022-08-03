@@ -75,13 +75,13 @@
 
 
 .redsquare-item {
-  padding: 2rem 3rem 2rem 1.5rem;
+  padding: 2rem 3rem 2rem 1rem;
   border-bottom: 1px solid #a5a5a533;
 }
 
 .redsquare-item-contents {
   display: grid;
-  grid-template-columns: 3.5em 1fr;
+  grid-template-columns: 4.5rem 1fr;
 }
 
 
