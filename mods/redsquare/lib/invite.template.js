@@ -7,6 +7,7 @@ module.exports = (app, mod, tx) => {
        <div class="redsquare-item">
          ${SaitoUserWithAlert(app, mod, tx.transaction.from[0].add, "received recently", new Date().getTime())}
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tx.transaction.sig}" data-id="${tx.transaction.sig}">
+	   <div></div>
            <div class="redsquare-invite">
 
 	     <div class="redsquare-invite-title">

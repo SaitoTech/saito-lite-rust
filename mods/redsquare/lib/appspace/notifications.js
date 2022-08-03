@@ -1,6 +1,6 @@
 const RedSquareAppspaceNotificationsTemplate = require("./notifications.template");
 const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const Invite = require("./../invite");
+const Notification = require("./../notification");
 
 
 class RedSquareAppspaceNotifications {
@@ -15,8 +15,8 @@ class RedSquareAppspaceNotifications {
     app.browser.addElementToClass(RedSquareAppspaceNotificationsTemplate(app, mod), "appspace");
 
     let tx = app.wallet.createUnsignedTransaction();
-    let invite = new Invite(app, mod, tx);
-    invite.render(app, mod, ".redsquare-list");
+    let notification = new Notification(app, mod, tx);
+    notification.render(app, mod, ".redsquare-list");
 
     this.attachEvents(app, mod);
 

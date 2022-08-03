@@ -61,7 +61,7 @@ class RedSquareTweet {
       }
 
       this.generateTweetProperties(app, mod, 0);
-      this.retweet_html = this.retweet.returnHTML(app, mod, 0);
+      this.retweet_html = this.retweet.returnHTML(app, mod, 0, 1);
     }
     if (this.parent_id === "") {
       this.parent_id = tx.transaction.sig;
@@ -83,8 +83,8 @@ class RedSquareTweet {
   }
 
 
-  returnHTML(app, mod, include_controls = 1) {
-    return TweetTemplate(app, mod, this, 0);
+  returnHTML(app, mod, include_controls = 0, include_header = 0) {
+    return TweetTemplate(app, mod, this, include_controls, include_header);
   }
 
   returnTweet(app, mod, sig) {

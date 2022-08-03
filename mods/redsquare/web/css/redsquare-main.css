@@ -1,4 +1,3 @@
-/* HACK -- displays game image in arcade */
 .background-shim {
   background-image: url('/chess/img/arcade/arcade.jpg');
   top: 0;
@@ -64,19 +63,6 @@
 .saito-main.appspace {
   width: 70rem;
 }
-
-.redsquare-appspace-contacts>.saito-page-header {
-  padding-left: 0rem;
-}
-
-.redsquare-appspace-home>.saito-page-header {
-  padding-left: 0rem;
-}
-
-.redsquare-appspace-notifications>.saito-page-header {
-  padding-left: 0rem;
-}
-
 
 .redsquare-appspace-contacts-list {
   padding-left: 2rem;

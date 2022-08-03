@@ -2,7 +2,7 @@ const saito = require('./../../../lib/saito/saito');
 const SaitoUser = require('./../../../lib/saito/new-ui/templates/saito-user.template');
 const Tweet = require('./tweet');
 
-module.exports = (app, mod, tweet, include_controls = 1) => {
+module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => {
 
     let publickey = "";   
     let tweet_img = "";
@@ -71,9 +71,11 @@ module.exports = (app, mod, tweet, include_controls = 1) => {
 
     let html = `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
-
-         ${SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline)}
-
+    `;
+    if (include_header == 1) {
+      html += SaitoUser(app, mod, tweet.tx.transaction.from[0].add, userline);
+    }
+    html += `
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
     `;
     if (include_controls == 1) {

@@ -21,6 +21,8 @@ class RedSquare extends ModTemplate {
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
 
+    this.redsquare = {}; // where settings go, saved to options file
+
     this.tweets = [];
 
     this.styles = [
@@ -34,6 +36,10 @@ class RedSquare extends ModTemplate {
     this.ui_initialized = false;
   }
 
+
+  initialize(app) {
+    this.loadRedSquare();
+  }
 
   
   addTweetFromTransaction(app, mod, tx) {
@@ -350,15 +356,18 @@ console.log("NUM LIKES: " + row.num_likes);
     // browsers
     //
     if (app.BROWSER == 1) {
+      if (tx.transaction.from[0] === app.wallet.returnPublicKey()) {
+        this.redsquare.lik
+
+
+      }
       return;
     } 
-
 
     //
     // servers
     //
     let txmsg = tx.returnMessage();
-
     let sql = `UPDATE tweets SET num_likes = num_likes + 1 WHERE sig = $sig`;
     let params = {
       $sig: txmsg.data.sig,
@@ -473,63 +482,25 @@ console.log("NUM LIKES: " + row.num_likes);
   }
 
 
+  loadRedSquare() {
+
+        if (this.app.options.redsquare) {
+            this.redsquare = this.app.options.redsquare;
+            return;
+        }
+
+        this.redsquare = {};
+        this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
+	this.redsquare.last_liked_tweets = [];
+    }
+
+    saveStun() {
+        this.app.options.redsquare = this.redsquare;
+        this.app.options.saveOptions();
+    }
 
 
 
-
-
-
-/***** WAIT TO IMPLEMENT *****
-  sendLikeTweetTransaction(tweet_id) {
-    let newtx = this.app.wallet.createUnsignedTransaction();
-
-    newtx.msg = {
-      module: this.name,
-      tweet_id: tweet_id,
-      request: "like tweet",
-      timestamp: new Date().getTime()
-    };
-
-    this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransaction(newtx);
-  }
-
-
-  receiveLikeTweetTransaction(blk, tx, conf, app) {
-    let txmsg = tx.returnMessage();
-
-    let tweet_id = txmsg.tweet_id;
-    let publickey = tx.transaction.from[0].add;
-    let created_at = new Date().getTime();
-    let updated_at = new Date().getTime();
-
-
-    // TO-DO
-    // add data into columns according to the tweets.sql
-    //
-
-    let sql = `INSERT INTO likes (
-                tweet_id,
-                publickey,
-                created_at,
-                updated_at,
-              ) VALUES (
-                $tweet_id, 
-                $publickey,
-                $created_at,
-                $updated_at
-              )`;
-
-    let params = {
-      $tweet_id: tweet_id,
-      $publickey: publickey,
-      $created_at: created_at,
-      $updated_at: updated_at
-    };
-    app.storage.executeDatabase(sql, params, "redsquare");
-    return;
-  }
-***** WAIT TO IMPLEMENT *****/
 
 
 }
