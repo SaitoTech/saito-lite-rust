@@ -21,6 +21,16 @@ class Stunx extends ModTemplate {
         this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
         this.localStream = null;
+        this.servers = [
+            {
+                urls: "stun:stun-sf.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-sf.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            },
+        ];
     }
 
 
@@ -143,7 +153,6 @@ class Stunx extends ModTemplate {
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
-        let stun_mod = app.modules.returnModule("Stun");
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
@@ -156,7 +165,7 @@ class Stunx extends ModTemplate {
                 ice_candidates: []
             }
             const pc = new RTCPeerConnection({
-                iceServers: stun_mod.servers,
+                iceServers: this.servers,
             });
             try {
 
@@ -252,7 +261,7 @@ class Stunx extends ModTemplate {
 
 
     async sendCreateRoomRequest() {
-        let roomCode = this.generateString(6);
+        let roomCode = this.app.crypto.hash(Math.random()).substring(0, 6);
         let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -280,7 +289,6 @@ class Stunx extends ModTemplate {
 
     async sendUpdateRoomRequest(room_code, data) {
         const { peers_in_room, peer_count, is_max_capacity } = data;
-        console.log('updating room');
         let newtx = this.app.wallet.createUnsignedTransaction();
         // get recipient -- server in this case
         let server_pub_key = this.app.network.peers[0].peer.publicKey;
@@ -307,13 +315,12 @@ class Stunx extends ModTemplate {
 
 
     createPeerConnectionOffer(publicKey) {
-        const stun_mod = this.app.modules.returnModule('Stun');
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: stun_mod.servers,
+                        iceServers: this.servers,
                     });
 
                     pc.onicecandidate = (ice) => {
@@ -395,16 +402,6 @@ class Stunx extends ModTemplate {
 
     }
 
-    generateString(length) {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = ' ';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-
-        return result.trim();
-    }
 
 
 
@@ -500,7 +497,6 @@ class Stunx extends ModTemplate {
 
     receiveAnswerTransaction(blk, tx, conf, app) {
         let stunx_self = app.modules.returnModule("Stunx");
-        let stun_mod = app.modules.returnModule('Stun');
         let my_pubkey = app.wallet.returnPublicKey();
         if (my_pubkey === tx.msg.answer.offer_creator) {
             if (app.BROWSER !== 1) return;
