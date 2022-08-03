@@ -111,6 +111,9 @@ body {
   margin: auto;
   width: 100%;
   padding: 1em;
+  max-height: 60vh;
+  overflow-y: scroll;
+
 }
 
 .league-leaderboard table{
