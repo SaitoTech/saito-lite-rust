@@ -208,7 +208,20 @@ class Crypto {
   }
 
   /**
-   * Signs a message buffer
+   * Signs a message buffer without generating a hash value of the buffer
+   * @param {Buffer} buffer
+   * @param {String} privatekey
+   * @returns {string}
+   */
+  signBufferWithoutHashing(buffer: Buffer, privatekey: string) {
+    // prettier-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return secp256k1.sign(buffer,Buffer.from(privatekey, "hex")).signature;
+  }
+
+  /**
+   * Signs a message buffer after generating a hash value of the buffer
    * @param {Buffer} buffer
    * @param {String} privatekey
    * @returns {string}
@@ -222,7 +235,31 @@ class Crypto {
 
   /**
    * Confirms that a message was signed by the private
-   * key associated with a providded public key
+   * key associated with a provided public key
+   * @param buffer
+   * @param {string} sig
+   * @param {string} pubkey
+   * @returns {boolean} is signature valid?
+   */
+  verify(buffer: Buffer, sig: string, pubkey: string) {
+    try {
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return secp256k1.verify(
+          buffer,
+          Buffer.from(sig, "hex"),
+          Buffer.from(this.fromBase58(pubkey), "hex")
+      );
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  /**
+   * Confirms that a message was signed by the private
+   * key associated with a provided public key
    * @param hash
    * @param {string} sig
    * @param {string} pubkey

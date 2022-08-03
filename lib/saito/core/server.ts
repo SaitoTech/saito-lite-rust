@@ -30,6 +30,7 @@ class Server {
     publickey: "",
     protocol: "",
     name: "",
+    block_fetch_url : "",
     endpoint: {
       host: "",
       port: 0,
@@ -137,6 +138,15 @@ class Server {
       console.log("SAVE OPTIONS IN SERVER");
       this.app.storage.saveOptions();
     }
+
+    let url = this.server.endpoint.protocol;
+    url += "://";
+    url += this.server.endpoint.host;
+    url += ":";
+    url += this.server.endpoint.port
+    url += "/block/";
+
+    this.server.endpoint.block_fetch_url = url;
 
     //
     // save options

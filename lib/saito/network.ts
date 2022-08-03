@@ -1,10 +1,11 @@
 import * as JSON from "json-bigint";
-import { Saito } from "../../apps/core";
+import {Saito} from "../../apps/core";
 import Peer from "./peer";
 import WSWebSocket from "ws";
 import fetch from "node-fetch";
 import Transaction from "./transaction";
 import Block from "./block";
+import {MessageType} from "./networkapi";
 
 class Network {
   public app: Saito;
@@ -293,9 +294,9 @@ class Network {
       peer.socket.onmessage = async (event) => {
         const data = await event.data.arrayBuffer();
         const api_message = this.app.networkApi.deserializeAPIMessage(data);
-        if (api_message.message_name === "RESULT__") {
+        if (api_message.message_type == MessageType.Result) {
           this.app.networkApi.receiveAPIResponse(api_message);
-        } else if (api_message.message_name === "ERROR___") {
+        } else if (api_message.message_type == MessageType.Error) {
           this.app.networkApi.receiveAPIError(api_message);
         } else {
           await this.receiveRequest(peer, api_message);
@@ -347,9 +348,9 @@ class Network {
 
     peer.socket.on("message", async (data) => {
       const api_message = this.app.networkApi.deserializeAPIMessage(data);
-      if (api_message.message_name === "RESULT__") {
+      if (api_message.message_type == MessageType.Result) {
         this.app.networkApi.receiveAPIResponse(api_message);
-      } else if (api_message.message_name === "ERROR___") {
+      } else if (api_message.message_type == MessageType.Error) {
         this.app.networkApi.receiveAPIError(api_message);
       } else {
         //console.debug("handling peer command - receiving peer id " + peer.socket.peer.id, api_message);
@@ -547,18 +548,29 @@ class Network {
     let fork_id;
     let block_id;
     let bytes;
-    let challenge;
+    let response;
     let is_block_indexed;
     let tx;
     let publickey;
 
-    switch (message.message_name) {
-      case "SHAKINIT": {
-        challenge = await this.app.handshake.handleIncomingHandshakeRequest(
-          peer,
-          message.message_data
+    switch (message.message_type) {
+      case MessageType.HandshakeChallenge: {
+        // response = await this.app.handshake.handleIncomingHandshakeChallenge(
+        //   peer,
+        //   message.message_data
+        // );
+        // await peer.sendResponse(message.message_id, response);
+
+        await this.app.handshake.handleIncomingHandshakeChallenge(
+            peer,
+            message.message_data
         );
-        await peer.sendResponse(message.message_id, challenge);
+
+        break;
+      }
+
+      case MessageType.HandshakeResponse: {
+        await this.app.handshake.handleHandshakeResponse(peer, message.message_data);
 
         //
         // prune older peers
@@ -574,23 +586,41 @@ class Network {
             i--;
           }
         }
-
         break;
       }
-      case "PINGPING":
+      case MessageType.HandshakeCompletion: {
+        await this.app.handshake.handleHandshakeCompletion(peer, message.message_data);
+
+        //
+        // prune older peers
+        //
+        const publickey = peer.peer.publickey;
+        let count = 0;
+        for (let i = this.peers.length - 1; i >= 0; i--) {
+          if (this.peers[i].peer.publickey === publickey) {
+            count++;
+          }
+          if (count > 1) {
+            this.cleanupDisconnectedPeer(this.peers[i], 1);
+            i--;
+          }
+        }
+        break;
+      }
+      case MessageType.Ping:
         // console.log("received ping...");
         // job already done!
         break;
 
-      case "REQBLOCK":
-        // NOT YET IMPLEMENTED -- send FULL block
-        break;
+      // case "REQBLOCK":
+      //   // NOT YET IMPLEMENTED -- send FULL block
+      //   break;
+      //
+      // case "REQBLKHD":
+      //   // NOT YET IMPLEMENTED -- send HEADER block
+      //   break;
 
-      case "REQBLKHD":
-        // NOT YET IMPLEMENTED -- send HEADER block
-        break;
-
-      case "SPVCHAIN": {
+      case MessageType.SPVChain: {
         //if (this.debugging) { console.log("RECEIVED SPVCHAIN"); }
 
         const buffer = Buffer.from(message.message_data, "utf8");
@@ -600,7 +630,7 @@ class Network {
         break;
       }
 
-      case "SERVICES": {
+      case MessageType.Services: {
         const buffer = Buffer.from(message.message_data, "utf8");
 
         try {
@@ -612,7 +642,7 @@ class Network {
         break;
       }
 
-      case "GSTCHAIN": {
+      case MessageType.GhostChain: {
         const buffer = Buffer.from(message.message_data, "utf8");
         const syncobj = JSON.parse(buffer.toString("utf8"));
 
@@ -651,7 +681,7 @@ class Network {
         break;
       }
 
-      case "REQCHAIN": {
+      case MessageType.BlockchainRequest: {
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -691,7 +721,7 @@ class Network {
         break;
       }
 
-      case "REQGSTCN": {
+      case MessageType.GhostChainRequest: {
         block_id = 0;
         block_hash = "";
         fork_id = "";
@@ -756,14 +786,14 @@ class Network {
         }
         //console.log("ABOUT TO SEND GSTCHAIN");
 
-        this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
+        this.sendRequest(MessageType.GhostChain, Buffer.from(JSON.stringify(syncobj)), peer);
         break;
       }
 
       //
       // this delivers the block as BlockType.Header
       //
-      case "SNDBLOCK":
+      case MessageType.Block:
         block = new Block(this.app);
         block.deserialize(message.message_data);
         block_hash = block.returnHash();
@@ -779,7 +809,7 @@ class Network {
       //
       // this delivers the block as block_hash
       //
-      case "SNDBLKHH":
+      case MessageType.BlockHeaderHash:
         block_hash = Buffer.from(message.message_data, "hex").toString("hex");
 
         is_block_indexed = this.app.blockchain.isBlockIndexed(block_hash);
@@ -788,17 +818,17 @@ class Network {
         }
         break;
 
-      case "SNDTRANS":
+      case MessageType.Transaction:
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         await this.app.mempool.addTransaction(tx);
         break;
 
-      case "SNDKYLST":
-        //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
-        break;
+      // case "SNDKYLST":
+      //   //await this.app.networkApi.sendAPIResponse(this.socket, "ERROR___", message.message_id, Buffer.from("UNHANDLED COMMAND", "utf-8"));
+      //   break;
 
-      case "SENDMESG": {
+      case MessageType.ApplicationMessage: {
         let mdata;
         let reconstructed_obj;
         let reconstructed_message = "";
@@ -832,7 +862,7 @@ class Network {
           );
         };
 
-        switch (message.message_name) {
+        switch (message.message_type) {
           default:
             if (reconstructed_data) {
               if (reconstructed_data.transaction) {
@@ -851,11 +881,11 @@ class Network {
       }
       default:
         if (this.debugging) {
-          console.error("Unhandled command received by client... " + message.message_name);
+          console.error("Unhandled command received by client... " + message.message_type);
         }
         await this.app.networkApi.sendAPIResponse(
           this.socket,
-          "ERROR___",
+          MessageType.Error,
           message.message_id,
           Buffer.from("NO SUCH", "utf-8")
         );
