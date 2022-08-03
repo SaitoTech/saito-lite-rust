@@ -459,7 +459,8 @@ Saito Arcade Invite
 .saito-arcade-invite-slot {
     height: 3rem;
     width: 3rem;
-    background-color: #8884;
+    background-image: url(/saito/img/no-profile.png);
+    background-size: 100%;
     border: 1px solid var(--saito-border);
     margin-right: 1rem;
     overflow: hidden;
