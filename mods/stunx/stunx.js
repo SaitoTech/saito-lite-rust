@@ -122,6 +122,20 @@ class Stunx extends ModTemplate {
     }
 
     receiveUpdateRoomTransaction(app, tx) {
+        let peersInRoom = tx.msg.data.peersInRoom;
+        let room_code = tx.msg.data.room_code;
+
+        let sql = "UPDATE rooms SET peers = $peersInRoom WHERE room_code = $room_code";
+
+        let params = {
+            $peersInRoom: peersInRoom,
+            $room_code: room_code
+        }
+        app.storage.executeDatabase(sql, params, "stunx");
+
+        return;
+
+
 
     }
 
@@ -189,10 +203,8 @@ class Stunx extends ModTemplate {
                     pc.addTrack(track, localStream);
                 });
 
-                let stunx_self = app.modules.returnModule("Stunx");
                 const remoteStream = new MediaStream();
                 pc.addEventListener('track', (event) => {
-                    let stunx_self = app.modules.returnModule("Stunx");
                     console.log('got remote stream from offer creator ', event.streams);
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
@@ -216,13 +228,8 @@ class Stunx extends ModTemplate {
 
 
                 console.log('remote description  is set');
-
-
                 reply.answer = await pc.createAnswer();
-
                 console.log("answer ", reply.answer);
-
-
                 pc.setLocalDescription(reply.answer);
 
                 // console.log("peer connection ", pc);
@@ -236,9 +243,12 @@ class Stunx extends ModTemplate {
     }
 
 
-    async createVideoInvite() {
+
+
+
+    async sendCreateRoomRequest() {
         let roomCode = this.generateString(6);
-        let room = { code: roomCode, peers: "", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
+        let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         let newtx = this.app.wallet.createUnsignedTransaction();
 
         // get recipient -- server in this case
@@ -263,11 +273,33 @@ class Stunx extends ModTemplate {
         siteMessageNew("Room created successfully", 5000);
     }
 
+    async sendUpdateRoomRequest(room_code, peersInRoom) {
+        console.log('updating room');
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        // get recipient -- server in this case
+        let server_pub_key = this.app.network.peers[0].peer.publicKey;
+        let server = this.app.network.peers[0];
+        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "update room"
+        newtx.msg.data = {
+            room_code,
+            peersInRoom
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+
+        let message = {
+            data: {}
+        };
+        message.request = "stunx offchain update";
+        message.data.tx = newtx;
+        server.sendRequest(message.request, message.data);
+    }
+
 
 
     createPeerConnectionOffer(publicKey) {
         const stun_mod = this.app.modules.returnModule('Stun');
-
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
@@ -288,7 +320,6 @@ class Stunx extends ModTemplate {
                         }
 
                     };
-
                     pc.onconnectionstatechange = e => {
                         console.log("connection state ", pc.connectionState)
                         switch (pc.connectionState) {
@@ -318,11 +349,9 @@ class Stunx extends ModTemplate {
                     this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
 
 
-                    // pc.LOCAL_STREAM = localStream;
-                    // this.localStream = localStream;
+
                     const remoteStream = new MediaStream();
                     pc.addEventListener('track', (event) => {
-                        console.log('current peer connection ', this.peer_connections);
                         console.log('got remote stream', event.streams);
                         event.streams[0].getTracks().forEach(track => {
                             remoteStream.addTrack(track);
@@ -335,7 +364,6 @@ class Stunx extends ModTemplate {
                     const data_channel = pc.createDataChannel('channel');
                     pc.dc = data_channel;
                     pc.dc.onmessage = (e) => {
-
                         console.log('new message from client : ', e.data);
 
                     };
@@ -373,67 +401,16 @@ class Stunx extends ModTemplate {
 
 
 
-    async createStunConnectionIfNotExists(peers) {
+    async createStunConnectionWithPeers(public_keys) {
 
 
 
-
-
-
-
-        if (!room) {
-            console.log('Invite code is invalid');
-            return "Invite code is invalid";
-        }
-
-        if (room.isMaxCapicity) {
-            console.log("Room has reached max capacity");
-            return "Room has reached max capacity";
-
-        }
-
-        if (Date.now() < room.startTime) {
-            siteMessageNew("Video call time is not yet reached", 5000);
-            console.log("Video call time is not yet reached");
-            return "Video call time is not yet reached";
-        }
-
-
-        // check if peer  already exists
-
-        let publicKey = this.app.wallet.returnPublicKey();
-        let peerPosition = room.peerCount + 1;
-
-        const peer_data = {
-            publicKey,
-            peerPosition,
-        }
-
-
-        // check if publicKey is already in list of peers
-        const keyIndex = room.peers.findIndex(peer => peer.publicKey === this.app.wallet.returnPublicKey())
-
-        if (keyIndex === -1) {
-            console.log("key doesn't exist in room list, adding now...");
-            room.peers.push(peer_data);
-            room.peerCount = room.peerCount + 1;
-            if (room.peerCount === this.videoMaxCapacity) {
-                room.isMaxCapicity = true;
-            }
-
-        }
-
-        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        this.localStream = localStream;
-        this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, this);
-        this.app.connection.emit('add-local-stream-request', localStream);
         let peerConnectionOffers = [];
-        if (room.peers.length > 1) {
+        if (public_keys.length > 0) {
             // send connection to other peers if they exit
-            for (let i = 0; i < room.peers.length; i++) {
-                if (room.peers[i].publicKey !== this.app.wallet.returnPublicKey()) {
-                    peerConnectionOffers.push(this.createPeerConnectionOffer(room.peers[i].publicKey));
-                }
+            for (let i = 0; i < public_keys.length; i++) {
+                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]));
+
             }
         }
 
@@ -455,41 +432,21 @@ class Stunx extends ModTemplate {
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
 
                 this.sendOfferTransaction(this.app.wallet.returnPublicKey(), offers);
-            } else {
-                const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                this.localStream = localStream;
-                let stunx_self = this.app.modules.returnModule("Stunx");
-                this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, stunx_self);
-                this.app.connection.emit('add-local-stream-request', localStream);
-
-                console.log("you are the only participant in the room");
-                siteMessageNew("Room joined, you are the only participant in the room", 5000)
             }
 
         } catch (error) {
             console.log('an error occurred with peer connection creation', error);
         }
 
-
-
         console.log("peer connections ", this.peer_connections);
-        // update rooms 
-        this.app.options.rooms[index] = room;
-        this.app.storage.saveOptions();
-        let newtx = this.app.wallet.createUnsignedTransaction();
 
-        let recipient = this.app.network.peers[0].returnPublicKey();
-        newtx.msg.module = "Stunx";
-        newtx.msg.rooms = {
-            rooms: this.app.options.rooms
-        };
-
-        newtx = this.app.wallet.signTransaction(newtx);
-        let relay_mod = this.app.modules.returnModule('Relay');
-        relay_mod.sendRelayMessage(recipient, 'videochat_broadcast', newtx);
-        siteMessageNew("Starting video connection", 5000)
+        siteMessageNew("Starting video connection", 5000);
     }
 
+
+    setLocalStream(localStream) {
+        this.localStream = localStream;
+    }
 
 
 

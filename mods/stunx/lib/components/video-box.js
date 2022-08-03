@@ -13,7 +13,6 @@ class VideoBox {
 
     render(stream, streamId, containerClass) {
         if (!containerClass) return console.log("Please insert a container class to render the stream");
-        if (!stream) return console.log("No stream was found");
         this.stream_id = streamId
         if (!streamId) {
             this.stream_id = this.app.crypto.hash(Math.random()).substring(0, 6);

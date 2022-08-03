@@ -13,14 +13,13 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (pc, app, mod) => {
-            this.show(pc, app, mod);
+        this.app.connection.on('show-video-chat-request', (app, mod) => {
+            this.show(app, mod);
         })
         this.app.connection.on('add-local-stream-request', (localStream) => {
             this.addLocalStream(localStream)
         })
         this.app.connection.on('add-remote-stream-request', (remoteStream, publicKey, pc, type) => {
-            console.log('adding remote stream')
             console.log(type);
             if (type === "fromCreator") {
                 console.log('from offer creator')
@@ -70,7 +69,7 @@ class VideoChatManager {
         })
     }
 
-    show(pc, app, mod) {
+    show(app, mod) {
         if (!document.querySelector('.stunx-chatbox')) {
             this.render();
             this.attachEvents(app, mod);
