@@ -260,9 +260,6 @@ class Stunx extends ModTemplate {
         server.sendRequest(message.request, message.data);
 
         this.app.connection.emit('show-invite-overlay-request', roomCode);
-
-
-
         siteMessageNew("Room created successfully", 5000);
     }
 
@@ -374,27 +371,14 @@ class Stunx extends ModTemplate {
     }
 
 
-    async joinVideoInvite(roomCode) {
-
-        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
 
 
-        let sql = `SELECT * FROM rooms WHERE room_code = ${roomCode}`;
-        let room = null
-        this.sendPeerDatabaseRequestWithFilter('Stunx', sql, async (res) => {
-            console.log('call back');
-            console.log(res);
-        })
-
-        let params = { $room_code: roomCode };
+    async createStunConnectionIfNotExists(peers) {
 
 
 
 
-        // const room = this.app.options.rooms.find(room => room.code === roomCode);
-        // const index = this.app.options.rooms.findIndex(room => room.code === roomCode);
 
-        // console.log('rooms :', this.app.options.rooms, 'result :', room, index);
 
 
         if (!room) {

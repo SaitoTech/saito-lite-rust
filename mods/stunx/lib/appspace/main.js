@@ -3,8 +3,13 @@ const StunxAppspaceTemplate = require('./main.template.js');
 class StunxAppspace {
 
 
-    render(app, mod) {
 
+    constructor(app, mod) {
+        this.app = app;
+        this.mod = mod;
+    }
+
+    render(app, mod) {
         if (!document.querySelector(".stunx-appspace")) {
             app.browser.addElementToSelector(StunxAppspaceTemplate(app, mod), ".appspace");
         }
@@ -21,16 +26,29 @@ class StunxAppspace {
             }
 
             if (e.target.id === "createInvite") {
-                let video_mod = app.modules.returnModule("Stunx");
-                console.log(video_mod);
-                video_mod.createVideoInvite();
+                let stunx_mod = app.modules.returnModule("Stunx");
+                stunx_mod.createVideoInvite();
             }
             if (e.target.id === "joinInvite") {
-                let video_mod = app.modules.returnModule("Stunx");
                 const inviteCode = document.querySelector("#inviteCode").value;
-                video_mod.joinVideoInvite(inviteCode.trim());
+                this.joinVideoInvite(inviteCode.trim());
             }
         })
+    }
+
+
+    joinVideoInvite(roomCode) {
+        if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
+        let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
+        let room = null;
+        const stunx_mod = this.app.modules.returnModule('Stunx');
+
+        stunx_mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, async (res) => {
+            console.log('call back');
+            console.log(res);
+        })
+
+
     }
 
 }

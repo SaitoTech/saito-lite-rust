@@ -141,7 +141,6 @@ class RedSquare extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message.request === "redsquare linkobj fetch") {
-
       let redsquare_self = app.modules.returnModule("RedSquare");
       let link = message.data.link;
       let link_properties = await this.fetchOpenGraphProperties(app, mod, link);
