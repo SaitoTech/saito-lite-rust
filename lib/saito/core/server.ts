@@ -146,7 +146,7 @@ class Server {
     url += this.server.endpoint.port
     url += "/block/";
 
-    this.server.endpoint.block_fetch_url = url;
+    this.server.block_fetch_url = url;
 
     //
     // save options
