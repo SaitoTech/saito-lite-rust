@@ -30,6 +30,16 @@ body {
     flex-wrap: wrap;
 }
 
+.league-component-existing-league-box div{
+  min-width: 80px;
+}
+
+.league-component-existing-league-box .newline{
+  margin: 0;
+  height: 0;
+  width: 100%;
+}
+
 .league-component-admin-box {
 	width: 90%;
     min-width: 250px;
