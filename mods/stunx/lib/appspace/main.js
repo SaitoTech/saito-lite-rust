@@ -1,9 +1,6 @@
 const StunxAppspaceTemplate = require('./main.template.js');
 
 class StunxAppspace {
-
-
-
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
@@ -24,10 +21,9 @@ class StunxAppspace {
                 let stun_mod = app.modules.returnModule("Stun");
                 stun_mod.addListeners(listeners);
             }
-
             if (e.target.id === "createInvite") {
                 let stunx_mod = app.modules.returnModule("Stunx");
-                stunx_mod.sendCreateRoomRequest();
+                stunx_mod.sendCreateRoomTransaction();
             }
             if (e.target.id === "joinInvite") {
                 const inviteCode = document.querySelector("#inviteCode").value;
@@ -40,9 +36,7 @@ class StunxAppspace {
     joinVideoInvite(roomCode) {
         if (!roomCode) return siteMessageNew("Please insert a room code", 5000);
         let sql = `SELECT * FROM rooms WHERE room_code = "${roomCode}"`;
-        let room = null;
         const stunx_mod = this.app.modules.returnModule('Stunx');
-
         let requestCallback = async (res) => {
             let room = res.rows[0];
             console.log(room);
@@ -50,24 +44,18 @@ class StunxAppspace {
                 console.log('Invite code is invalid');
                 return siteMessageNew("Invite code is invalid");
             }
-
             if (room.isMaxCapicity) {
                 console.log("Room has reached max capacity");
                 return siteMessageNew("Room has reached max capacity");
-
             }
-
             if (Date.now() < room.startTime) {
                 siteMessageNew("Video call time is not yet reached", 5000);
                 console.log("Video call time is not yet reached");
                 return "Video call time is not yet reached";
             }
 
-
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             stunx_mod.setLocalStream(localStream);
-
-
             let my_public_key = this.app.wallet.returnPublicKey();
             let peers_in_room = JSON.parse(room.peers);
 
@@ -83,7 +71,7 @@ class StunxAppspace {
                     peer_count,
                     is_max_capacity
                 }
-                stunx_mod.sendUpdateRoomRequest(roomCode, data);
+                stunx_mod.sendUpdateRoomTransaction(roomCode, data);
                 this.app.connection.emit('show-video-chat-request', this.app, this);
                 this.app.connection.emit('add-local-stream-request', localStream);
                 siteMessageNew("You are the only participant in this room");
@@ -104,32 +92,20 @@ class StunxAppspace {
                     is_max_capacity
                 }
 
-                stunx_mod.sendUpdateRoomRequest(roomCode, data);
+                stunx_mod.sendUpdateRoomTransaction(roomCode, data);
 
                 // filter my public key
                 peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
                 stunx_mod.createStunConnectionWithPeers(peers_in_room);
                 this.app.connection.emit('show-video-chat-request', this.app, this);
                 this.app.connection.emit('add-local-stream-request', localStream);
-
                 peers_in_room.forEach(peer => {
                     this.app.connection.emit('add-remote-stream-request', null, peer, null, 'fromRecipient');
                 });
             }
-
-
-
-
-
-
-
-
         }
-
         stunx_mod.sendPeerDatabaseRequestWithFilter('Stunx', sql, requestCallback)
-
     }
-
 }
 
 

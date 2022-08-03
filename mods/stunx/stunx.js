@@ -77,10 +77,6 @@ class Stunx extends ModTemplate {
         if (message.data == null) {
             return;
         }
-
-        let stunx_self = app.modules.returnModule("Stunx");
-
-
         if (message.request === "stunx offchain update") {
             let tx = message.data.tx;
             if (tx.msg.request === "create room") {
@@ -92,13 +88,12 @@ class Stunx extends ModTemplate {
             }
         }
         super.handlePeerRequest(app, message, peer, mycallback)
-
     }
 
 
 
     async sendCreateRoomTransaction() {
-        let roomCode = this.app.crypto.hash(Math.random()).substring(0, 6);
+        let roomCode = this.app.crypto.generateRandomNumber().substring(0, 6);
         let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
         let newtx = this.app.wallet.createUnsignedTransaction();
 
@@ -112,7 +107,6 @@ class Stunx extends ModTemplate {
             room
         };
         newtx = this.app.wallet.signTransaction(newtx);
-
         let message = {
             data: {}
         };
@@ -189,9 +183,7 @@ class Stunx extends ModTemplate {
         let room_code = tx.msg.data.room_code;
         let peer_count = tx.msg.data.peer_count;
         let is_max_capacity = tx.msg.data.is_max_capacity;
-
         let sql = "UPDATE rooms SET peers = $peers_in_room, peer_count = $peer_count, is_max_capacity = $is_max_capacity WHERE room_code = $room_code";
-
         let params = {
             $peers_in_room: peers_in_room,
             $room_code: room_code,
@@ -210,9 +202,7 @@ class Stunx extends ModTemplate {
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
-
         this.app.connection.emit('add-remote-stream-request', null, offer_creator, null, 'fromCreator');
-
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -222,7 +212,6 @@ class Stunx extends ModTemplate {
                 iceServers: this.servers,
             });
             try {
-
                 pc.onicecandidate = (ice) => {
                     if (!ice || !ice.candidate || !ice.candidate.candidate) {
                         console.log('ice candidate check closed');
@@ -233,20 +222,13 @@ class Stunx extends ModTemplate {
                     };
                     reply.ice_candidates.push(ice.candidate);
                 }
-
                 pc.onconnectionstatechange = e => {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
-
-
                         case "connected":
-
                             break;
-
                         case "disconnected":
-
                             break;
-
                         default:
                             ""
                             break;
@@ -277,14 +259,9 @@ class Stunx extends ModTemplate {
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-
                     this.app.connection.emit('add-remote-stream-request', remoteStream, offer_creator, pc, 'fromCreator');
-
                 });
-
-
                 await pc.setRemoteDescription(offer.offer_sdp);
-
                 const offer_ice_candidates = offer.ice_candidates;
                 // console.log('peer ice candidates', offer_ice_candidates);
                 if (offer_ice_candidates.length > 0) {
@@ -293,28 +270,16 @@ class Stunx extends ModTemplate {
                         pc.addIceCandidate(offer_ice_candidates[i]);
                     }
                 }
-
-
                 console.log('remote description  is set');
                 reply.answer = await pc.createAnswer();
                 console.log("answer ", reply.answer);
                 pc.setLocalDescription(reply.answer);
-
-                // console.log("peer connection ", pc);
-
             } catch (error) {
                 console.log("error", error);
             }
-
         }
         createPeerConnection();
     }
-
-
-
-
-
-
 
     createPeerConnectionOffer(publicKey) {
         const createPeerConnection = new Promise((resolve, reject) => {
@@ -327,10 +292,8 @@ class Stunx extends ModTemplate {
 
                     pc.onicecandidate = (ice) => {
                         if (!ice || !ice.candidate || !ice.candidate.candidate) {
-                            // pc.close();
                             let offer_sdp = pc.localDescription;
                             resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
-
                             return;
                         } else {
                             ice_candidates.push(ice.candidate);
@@ -340,8 +303,6 @@ class Stunx extends ModTemplate {
                     pc.onconnectionstatechange = e => {
                         console.log("connection state ", pc.connectionState)
                         switch (pc.connectionState) {
-
-
                             case "connected":
                                 // siteMessageNew("Connected");
                                 break;
@@ -356,16 +317,12 @@ class Stunx extends ModTemplate {
                     }
 
                     const stunx_self = this.app.modules.returnModule('Stunx');
-
                     let localStream = stunx_self.localStream;
                     if (!localStream) return console.log('there is no localstream');
                     stunx_self.localStream.getTracks().forEach(track => {
                         pc.addTrack(track, localStream);
 
                     });
-
-
-
 
                     const remoteStream = new MediaStream();
                     pc.addEventListener('track', (event) => {
@@ -374,7 +331,6 @@ class Stunx extends ModTemplate {
                             remoteStream.addTrack(track);
                             this.remoteStreamPosition += 1;
                         });
-
                         this.app.connection.emit('add-remote-stream-request', remoteStream, publicKey, pc, 'fromRecipient');
                     });
 
@@ -382,10 +338,8 @@ class Stunx extends ModTemplate {
                     pc.dc = data_channel;
                     pc.dc.onmessage = (e) => {
                         console.log('new message from client : ', e.data);
-
                     };
                     pc.dc.open = (e) => console.log("connection opened");
-
                     const offer = await pc.createOffer();
                     pc.setLocalDescription(offer);
 
@@ -409,15 +363,11 @@ class Stunx extends ModTemplate {
 
 
     async createStunConnectionWithPeers(public_keys) {
-
-
-
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
             for (let i = 0; i < public_keys.length; i++) {
                 peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]));
-
             }
         }
 
@@ -437,16 +387,13 @@ class Stunx extends ModTemplate {
                     })
                 })
                 // const offers = peerConnectionOffers.map(item => item.offer_sdp);
-
                 this.sendOfferTransaction(this.app.wallet.returnPublicKey(), offers);
             }
 
         } catch (error) {
             console.log('an error occurred with peer connection creation', error);
         }
-
         console.log("peer connections ", this.peer_connections);
-
         siteMessageNew("Starting video connection", 5000);
     }
 
@@ -455,22 +402,18 @@ class Stunx extends ModTemplate {
         this.localStream = localStream;
     }
 
-
-
     sendOfferTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting offers');
         for (let i = 0; i < offers.length; i++) {
             newtx.transaction.to.push(new saito.default.slip(offers[i].recipient));
         }
-
         newtx.msg.module = "Stunx";
         newtx.msg.request = "offer"
         newtx.msg.offers = {
             offer_creator,
             offers
         }
-
         newtx = this.app.wallet.signTransaction(newtx);
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
@@ -482,7 +425,6 @@ class Stunx extends ModTemplate {
         let newtx = this.app.wallet.createUnsignedTransaction();
         console.log('broadcasting answer to ', offer_creator);
         newtx.transaction.to.push(new saito.default.slip(offer_creator));
-
         newtx.msg.module = "Stunx";
         newtx.msg.request = "answer"
         newtx.msg.answer = {
@@ -495,7 +437,21 @@ class Stunx extends ModTemplate {
         this.app.network.propagateTransaction(newtx);
     }
 
+    receiveOfferTransaction(blk, tx, conf, app) {
+        if (app.BROWSER !== 1) return;
+        let stunx_self = app.modules.returnModule("Stunx");
+        let my_pubkey = app.wallet.returnPublicKey();
+        const offer_creator = tx.msg.offers.offer_creator;
 
+        // offer creator should not respond
+        if (my_pubkey === offer_creator) return;
+        console.log("offer received from ", tx.msg.offers.offer_creator);
+        // check if current instance is a recipent
+        const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
+        if (index !== -1) {
+            stunx_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
+        }
+    }
 
     receiveAnswerTransaction(blk, tx, conf, app) {
         let stunx_self = app.modules.returnModule("Stunx");
@@ -522,21 +478,7 @@ class Stunx extends ModTemplate {
         }
     }
 
-    receiveOfferTransaction(blk, tx, conf, app) {
-        if (app.BROWSER !== 1) return;
-        let stunx_self = app.modules.returnModule("Stunx");
-        let my_pubkey = app.wallet.returnPublicKey();
-        const offer_creator = tx.msg.offers.offer_creator;
 
-        // offer creator should not respond
-        if (my_pubkey === offer_creator) return;
-        console.log("offer received from ", tx.msg.offers.offer_creator);
-        // check if current instance is a recipent
-        const index = tx.msg.offers.offers.findIndex(offer => offer.recipient === my_pubkey);
-        if (index !== -1) {
-            stunx_self.acceptOfferAndBroadcastAnswer(app, offer_creator, tx.msg.offers.offers[index]);
-        }
-    }
 
 }
 
