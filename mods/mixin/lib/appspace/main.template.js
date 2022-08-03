@@ -5,15 +5,14 @@ module.exports = MixinAppspaceTemplate = (app) => {
   let html = `
 
   <div class="saito-page-header">
-    <div class="saito-page-header-title">Mixin Wallet</div>
+    <div class="saito-page-header-title">Crypto Wallet</div>
     <div class="saito-page-header-text">
-        Keep track of your wallet balance, deposit and withdrawls. Send or receive coins from your mixin wallet for in-game bet with other players.
+      Saito supports third-party crypto balances. Send and receive tokens to your Saito wallet, or transfer them using applications on the Saito network. Please note this service is in BETA. And be sure to backup your entire wallet to avoid losing access to your funds.
     </div>
   </div>
 
   <div class="email-appspace-mixin">
     <div class="balances_container" id="balances_container">
-
   `;
 
   html += `

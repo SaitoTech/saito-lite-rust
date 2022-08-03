@@ -1,7 +1,7 @@
 const saito = require('./../../lib/saito/saito');
 const MixinModule = require('./lib/mixinmodule');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const MixinAppspace = require('./lib/email-appspace/mixin-appspace');
+const MixinAppspace = require('./lib/appspace/main');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const fetch = require('node-fetch');
 const forge = require('node-forge');
@@ -59,7 +59,6 @@ class Mixin extends ModTemplate {
     if (type === 'appspace') {
       this.scripts['/mixin/css/appspace.css'];
       super.render(this.app, this); // for scripts + styles
-    
       return new MixinAppspace(this.app, this);
     }
 
