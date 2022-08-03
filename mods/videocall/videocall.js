@@ -71,19 +71,22 @@ class VideoCall extends ModTemplate {
     }
 
 
-    async handleUrlParams(params) {
-        // if (this.app.BROWSER === 0) return;
-        if (params.has('invite_code')) {
-            const invite_code = params.get('invite_code');
-            const videocall_mod = this.app.modules.returnModule('VideoCall');
-            const result = await videocall_mod.joinVideoInvite(invite_code);
-            if (result) {
-                salert(result);
+
+    handleUrlParams(params) {
+        if (this.app.BROWSER !== 1) return;
+        setTimeout(async () => {
+            if (params.has('invite_code')) {
+                const invite_code = params.get('invite_code');
+                const videocall_mod = this.app.modules.returnModule('VideoCall');
+                const result = await videocall_mod.joinVideoInvite(invite_code);
+                if (result) {
+                    salert(result);
+                }
             }
+        }, 2500)
 
-
-        }
     }
+
 
 
     onConfirmation(blk, tx, conf, app) {

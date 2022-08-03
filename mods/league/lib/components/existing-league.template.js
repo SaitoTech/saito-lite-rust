@@ -8,10 +8,8 @@ module.exports = (app, mod, league) => {
           <div>Players: ${league.playerCnt}${league.max_players > 0 ? ` / ${league.max_players}`:""}</div>
           <div>Admin: ${league.admin.substring(0,10)+"..."}</div>
         </div>
-        <div class="league-component-existing-league-controls">
-    `;
-    html += `<div class="league-component-existing-league-controls">
-    `;
+        <div class="league-component-existing-league-controls">`;
+
     if ((league.myRank == undefined || league.myRank < 0) && (league.max_players == 0 || league.playerCnt < league.max_players)){
      html +=`<button class="league-component-existing-league" data-cmd="join" data-league-id="${league.id}">Join</button>`; 
     }

@@ -42,6 +42,16 @@ body {
   margin-left: 2em;
 }
 
+.league-component-existing-league-box div{
+  min-width: 80px;
+}
+
+.league-component-existing-league-box .newline{
+  margin: 0;
+  height: 0;
+  width: 100%;
+}
+
 .league-component-admin-box {
   width: 90%;
   min-width: 250px;
@@ -108,6 +118,9 @@ body {
   margin: auto;
   width: 100%;
   padding: 1em;
+  max-height: 60vh;
+  overflow-y: scroll;
+
 }
 
 .league-leaderboard table {

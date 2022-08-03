@@ -27,7 +27,7 @@ module.exports = ChatSidebar = {
     document.querySelectorAll(".chat-row").forEach(row => {
       row.onclick = (e) => {
         try {
-          let chatName = document.querySelector(`#${e.currentTarget.id} .chat-group-name`).innerHTML;
+          let chatName = e.currentTarget.querySelector(`.chat-group-name`).innerHTML;
           app.browser.logMatomoEvent("Chat", "ArcadeSidebarChatOpenedClick", chatName);
         } catch (err) {
           console.error(err);
