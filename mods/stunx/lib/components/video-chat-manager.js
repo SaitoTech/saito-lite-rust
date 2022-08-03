@@ -7,7 +7,8 @@ class VideoChatManager {
     localStream;
     my_pc = [];
     video_boxes = {}
-
+    videoEnabled = true;
+    audioEnabled = true;
 
 
     constructor(app, mod) {
@@ -31,8 +32,7 @@ class VideoChatManager {
             }
         })
     }
-    videoEnabled = true;
-    audioEnabled = true;
+
 
 
     render() {

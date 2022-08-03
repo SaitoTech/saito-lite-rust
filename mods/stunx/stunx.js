@@ -14,7 +14,6 @@ class Stunx extends ModTemplate {
         this.description = "Dedicated Video chat Module";
         this.categories = "Video Call"
         this.app = app;
-        this.rooms = [];
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
@@ -122,14 +121,18 @@ class Stunx extends ModTemplate {
     }
 
     receiveUpdateRoomTransaction(app, tx) {
-        let peersInRoom = tx.msg.data.peersInRoom;
+        let peers_in_room = tx.msg.data.peers_in_room;
         let room_code = tx.msg.data.room_code;
+        let peer_count = tx.msg.data.peer_count;
+        let is_max_capacity = tx.msg.data.is_max_capacity;
 
-        let sql = "UPDATE rooms SET peers = $peersInRoom WHERE room_code = $room_code";
+        let sql = "UPDATE rooms SET peers = $peers_in_room, peer_count = $peer_count, is_max_capacity = $is_max_capacity WHERE room_code = $room_code";
 
         let params = {
-            $peersInRoom: peersInRoom,
-            $room_code: room_code
+            $peers_in_room: peers_in_room,
+            $room_code: room_code,
+            $peer_count: peer_count,
+            $is_max_capacity: is_max_capacity
         }
         app.storage.executeDatabase(sql, params, "stunx");
 
@@ -144,6 +147,8 @@ class Stunx extends ModTemplate {
 
         console.log('accepting offer');
         console.log('from:', offer_creator, offer)
+
+        this.app.connection.emit('add-remote-stream-request', null, offer_creator, null, 'fromCreator');
 
         const createPeerConnection = async () => {
             let reply = {
@@ -273,7 +278,8 @@ class Stunx extends ModTemplate {
         siteMessageNew("Room created successfully", 5000);
     }
 
-    async sendUpdateRoomRequest(room_code, peersInRoom) {
+    async sendUpdateRoomRequest(room_code, data) {
+        const { peers_in_room, peer_count, is_max_capacity } = data;
         console.log('updating room');
         let newtx = this.app.wallet.createUnsignedTransaction();
         // get recipient -- server in this case
@@ -284,7 +290,9 @@ class Stunx extends ModTemplate {
         newtx.msg.request = "update room"
         newtx.msg.data = {
             room_code,
-            peersInRoom
+            peers_in_room,
+            peer_count,
+            is_max_capacity
         };
         newtx = this.app.wallet.signTransaction(newtx);
 
@@ -346,7 +354,7 @@ class Stunx extends ModTemplate {
                         pc.addTrack(track, localStream);
 
                     });
-                    this.app.connection.emit('show-video-chat-request', pc, this.app, stunx_self);
+
 
 
 

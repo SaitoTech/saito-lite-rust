@@ -45,6 +45,7 @@ class StunxAppspace {
 
         let requestCallback = async (res) => {
             let room = res.rows[0];
+            console.log(room);
             if (!room) {
                 console.log('Invite code is invalid');
                 return siteMessageNew("Invite code is invalid");
@@ -65,30 +66,53 @@ class StunxAppspace {
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             stunx_mod.setLocalStream(localStream);
+
+
             let my_public_key = this.app.wallet.returnPublicKey();
-            let peersInRoom = JSON.parse(room.peers);
+            let peers_in_room = JSON.parse(room.peers);
 
             // first to join the room?
-            if (peersInRoom.length === 0) {
+            if (peers_in_room.length === 0) {
                 // add to the room list and save
-                peersInRoom.push(my_public_key);
-                stunx_mod.sendUpdateRoomRequest(roomCode, JSON.stringify(peersInRoom));
-                this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, this);
+                peers_in_room.push(my_public_key);
+                let peer_count = 1;
+                let is_max_capacity = false;
+
+                const data = {
+                    peers_in_room: JSON.stringify(peers_in_room),
+                    peer_count,
+                    is_max_capacity
+                }
+                stunx_mod.sendUpdateRoomRequest(roomCode, data);
+                this.app.connection.emit('show-video-chat-request', this.app, this);
                 this.app.connection.emit('add-local-stream-request', localStream);
                 siteMessageNew("You are the only participant in this room");
                 return;
 
             } else {
-                peersInRoom.push(my_public_key);
-                stunx_mod.sendUpdateRoomRequest(roomCode, JSON.stringify(peersInRoom));
+                // add to the room list and save
+                peers_in_room.push(my_public_key);
+                let peer_count = peers_in_room.length;
+                let is_max_capacity = false;
+                if (peer_count === 4) {
+                    is_max_capacity = true;
+                }
+
+                const data = {
+                    peers_in_room: JSON.stringify(peers_in_room),
+                    peer_count,
+                    is_max_capacity
+                }
+
+                stunx_mod.sendUpdateRoomRequest(roomCode, data);
 
                 // filter my public key
-                peersInRoom = peersInRoom.filter(public_key => public_key !== my_public_key);
-                stunx_mod.createStunConnectionWithPeers(peersInRoom);
-                this.app.connection.emit('show-video-chat-request', new RTCPeerConnection(), this.app, this);
+                peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
+                stunx_mod.createStunConnectionWithPeers(peers_in_room);
+                this.app.connection.emit('show-video-chat-request', this.app, this);
                 this.app.connection.emit('add-local-stream-request', localStream);
 
-                peersInRoom.forEach(peer => {
+                peers_in_room.forEach(peer => {
                     this.app.connection.emit('add-remote-stream-request', null, peer, null, 'fromRecipient');
                 });
             }
