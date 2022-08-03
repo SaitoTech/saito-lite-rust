@@ -97,6 +97,60 @@ class Stunx extends ModTemplate {
 
 
 
+    async sendCreateRoomTransaction() {
+        let roomCode = this.app.crypto.hash(Math.random()).substring(0, 6);
+        let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
+        let newtx = this.app.wallet.createUnsignedTransaction();
+
+        // get recipient -- server in this case
+        let server_pub_key = this.app.network.peers[0].peer.publicKey;
+        let server = this.app.network.peers[0];
+        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "create room"
+        newtx.msg.room = {
+            room
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+
+        let message = {
+            data: {}
+        };
+        message.request = "stunx offchain update";
+        message.data.tx = newtx;
+        server.sendRequest(message.request, message.data);
+
+        this.app.connection.emit('show-invite-overlay-request', roomCode);
+        siteMessageNew("Room created successfully", 5000);
+    }
+
+    async sendUpdateRoomTransaction(room_code, data) {
+        const { peers_in_room, peer_count, is_max_capacity } = data;
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        // get recipient -- server in this case
+        let server_pub_key = this.app.network.peers[0].peer.publicKey;
+        let server = this.app.network.peers[0];
+        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "update room"
+        newtx.msg.data = {
+            room_code,
+            peers_in_room,
+            peer_count,
+            is_max_capacity
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+
+        let message = {
+            data: {}
+        };
+        message.request = "stunx offchain update";
+        message.data.tx = newtx;
+        server.sendRequest(message.request, message.data);
+    }
+
+
+
     async receiveCreateRoomTransaction(app, tx) {
         let room = tx.msg.room.room;
         let sql = `INSERT INTO rooms (
@@ -259,58 +313,6 @@ class Stunx extends ModTemplate {
 
 
 
-
-    async sendCreateRoomRequest() {
-        let roomCode = this.app.crypto.hash(Math.random()).substring(0, 6);
-        let room = { code: roomCode, peers: "[]", peerCount: 0, isMaxCapicity: 0, validityPeriod: 86400, startTime: Date.now() };
-        let newtx = this.app.wallet.createUnsignedTransaction();
-
-        // get recipient -- server in this case
-        let server_pub_key = this.app.network.peers[0].peer.publicKey;
-        let server = this.app.network.peers[0];
-        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stunx";
-        newtx.msg.request = "create room"
-        newtx.msg.room = {
-            room
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-
-        let message = {
-            data: {}
-        };
-        message.request = "stunx offchain update";
-        message.data.tx = newtx;
-        server.sendRequest(message.request, message.data);
-
-        this.app.connection.emit('show-invite-overlay-request', roomCode);
-        siteMessageNew("Room created successfully", 5000);
-    }
-
-    async sendUpdateRoomRequest(room_code, data) {
-        const { peers_in_room, peer_count, is_max_capacity } = data;
-        let newtx = this.app.wallet.createUnsignedTransaction();
-        // get recipient -- server in this case
-        let server_pub_key = this.app.network.peers[0].peer.publicKey;
-        let server = this.app.network.peers[0];
-        newtx.transaction.to.push(new saito.default.slip(server_pub_key));
-        newtx.msg.module = "Stunx";
-        newtx.msg.request = "update room"
-        newtx.msg.data = {
-            room_code,
-            peers_in_room,
-            peer_count,
-            is_max_capacity
-        };
-        newtx = this.app.wallet.signTransaction(newtx);
-
-        let message = {
-            data: {}
-        };
-        message.request = "stunx offchain update";
-        message.data.tx = newtx;
-        server.sendRequest(message.request, message.data);
-    }
 
 
 
