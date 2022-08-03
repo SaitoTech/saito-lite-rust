@@ -22,16 +22,6 @@ class VideoBox {
 
 
 
-        // if (document.querySelector(`#stream${this.stream_id}`)) {
-        //     if(stream === null){
-
-        //     }
-        //     const streamDom = document.querySelector(`#stream${this.stream_id}`);
-        //     streamDom.srcObject = stream;
-        //     return;
-        // }
-
-
         let muted = false;
         if (streamId === 'local') {
             muted = true
@@ -52,10 +42,10 @@ class VideoBox {
             }
 
             const videoBoxContainer = document.querySelector(`#stream${this.stream_id}`);
-            // videoBoxContainer.style.backgroundColor = 'transparent';
-            // videoBoxContainer.innerHTML = videoBoxTemplate(muted);
-            // videoBoxContainer.firstElementChild.srcObject = stream;
-            // console.log(videoBoxContainer.firstElementChild)
+            videoBoxContainer.style.backgroundColor = 'transparent';
+            videoBoxContainer.innerHTML = videoBoxTemplate(muted);
+            videoBoxContainer.firstElementChild.srcObject = stream;
+            console.log(videoBoxContainer.firstElementChild);
 
 
         }
