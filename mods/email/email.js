@@ -24,9 +24,7 @@ class Email extends ModTemplate {
   }
 
   initialize(app) {
-
     let welcometx = app.wallet.createUnsignedTransaction();
-
     welcometx.msg.module   = "Email";
     welcometx.msg.title    = "Welcome to Saito";
     welcometx.msg.message  = `Saito is an open network that runs applications in your browser!
@@ -35,10 +33,7 @@ class Email extends ModTemplate {
       <br/><br/>
       Have questions? Why not join us on <a href="">Saito Telegram</a>?
     `;
-console.log("pre add email");
     this.addEmail(welcometx);
-console.log("post add email");
-
   }
 
   respondTo(type) {
@@ -67,15 +62,20 @@ console.log("post add email");
   }
 
   onConfirmation(blk, tx, conf, app) {
+
     if (conf == 0) {
       let txmsg = tx.returnMessage();
       if (txmsg.request === "email") {
+
+console.log("RECEIVE EMAIL TRANSACTION: " + JSON.stringify(txmsg));
+
 	this.receiveEmailTransaction(tx);
       }
     }
+
   }
 
-  sendEmailTransaction(data) {
+  sendEmailTransaction(recipient, data) {
 
     let obj = {
       module: "Email",
@@ -86,7 +86,7 @@ console.log("post add email");
       obj.data[key] = data[key];
     }
 
-    let newtx = this.app.wallet.createUnsignedTransaction();
+    let newtx = this.app.wallet.createUnsignedTransaction(recipient);
     newtx.msg = obj;
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);

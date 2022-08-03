@@ -3,7 +3,7 @@ const EmailLine = require('./../line');
 const EmailBody = require('./../body');
 const EmailBox = require('./../box');
 const HeaderTemplate = require('./../header.template');
-const ComposeTemplate = require('./../compose.template');
+const EmailCompose = require('./../compose');
 const JSON = require('json-bigint');
 
 class EmailAppspace {
@@ -29,9 +29,10 @@ class EmailAppspace {
 
   attachEvents(app, mod) {
 
-    document.getElementById("email-compose").onclick = (e) => {
+    document.getElementById("email-compose-button").onclick = (e) => {
       document.getElementById("email-header").style.visibility = "hidden";
-      document.querySelector(".email-body").innerHTML = ComposeTemplate(app, mod, app.wallet.returnPublicKey(), "", "");
+      let composer = new EmailCompose(app, mod);
+      composer.render(app, mod, "outbox");
     };
     document.getElementById("email-outbox").onclick = (e) => {
       document.getElementById("email-header").style.visibility = "visible";
