@@ -346,6 +346,7 @@ Saito Arcade Invite
     column-gap: 0rem;
     overflow: hidden;
     margin: 1rem;
+    cursor: pointer;
 }
 
 .saito-arcade-invite-graphic {
