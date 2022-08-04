@@ -7,6 +7,7 @@ const JSON = require("json-bigint");
 const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
+const GameCreator = require("./lib/appspace/arcade/game-creator");
 
 
 class RedSquare extends ModTemplate {
@@ -113,6 +114,18 @@ class RedSquare extends ModTemplate {
       }
     }
   }
+
+
+
+
+  respondTo(type) {
+    if (type === "scheduler-overlay") {
+      return new GameCreator(this.app, this);
+    }
+    return null;
+  }
+
+
 
 
   render(app, mod, selector = "") {

@@ -6,13 +6,6 @@
     cursor: pointer;
 }
 
-.email-list .saito-table-row {
-    grid-template-columns: 3.5rem 15rem auto 4rem;
-    width: 100%;
-    display: grid;
-    cursor: pointer;
-}
-
 .email-header {
   display: grid;
   width: 100%;
