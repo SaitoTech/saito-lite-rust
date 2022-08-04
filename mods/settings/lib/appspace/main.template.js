@@ -146,6 +146,9 @@ module.exports = SettingsAppspaceTemplate = (app) => {
       </div>
 
     </div>
+  
+  </select>
+
 
   </div>
 </div>

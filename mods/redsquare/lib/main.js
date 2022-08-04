@@ -61,12 +61,28 @@ console.log("ADDING CHAT MANAGER!");
       app.browser.addElementToDom(RedSquareMainTemplate(app, mod));
     }
 
+  // check the url for an anchor hash
+  // if one exists ask the menu to render it
+  // if that fails render home
+  
+  var hash = new URL(document.URL).hash.split('#')[1];
+  var hash_matched = 0;
 
-    mod.lsidebar.render(app, mod, ".saito-sidebar-left");
-console.log("RENDER HOME");
-    mod.home.render(app, mod, ".appspace");
+  mod.lsidebar.render(app, mod, ".saito-sidebar-left");
+
+
+  console.log("RENDER HOME");
+  mod.home.render(app, mod, ".appspace");
 console.log("DONE HOME");
-    mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+  mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+
+  if (hash != "") {
+    let hash_matched = mod.menu.renderItem(app, mod, hash);
+    if (hash_matched == 1) {
+      return 1;
+    }
+  }
+
 
     //app.connection.on("tweet-render-request", (tx) => {
     //    let tweet = new RedSquareTweet(app, mod, tx);
