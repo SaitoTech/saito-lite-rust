@@ -6,7 +6,6 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
   return `
 
 <div class="saito-sidebar right">
-
   <div class="saito-arcade-invite-list">
     <div>
       ${SaitoArcadeInviteTemplate(app, mod)}

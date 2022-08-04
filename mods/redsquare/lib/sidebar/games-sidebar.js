@@ -1,10 +1,13 @@
 const RedSquareGamesSidebarTemplate = require("./games-sidebar.template");
 const SaitoCalendar = require("./../../../../lib/saito/new-ui/saito-calendar/saito-calendar");
+const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const GameInvite = require("./../game");
+const GameInviteDetails = require("./../appspace/arcade/game-invite-details");
 
 class RedSquareGamesSidebar {
 
   constructor(app, mod, selector = "") {
+    this.app = app;
     this.name = "RedSquareGamesSidebar";
     this.mod = mod;
     this.selector = selector;
@@ -50,6 +53,13 @@ console.log("EMITTING INVITE ");
   }
 
   attachEvents(app, mod) {
+    document.querySelector('.saito-arcade-invite').onclick = (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
+      gameInviteDetails.render(this.app, this.mod);
+    }
 
   } 
 

@@ -25,7 +25,7 @@ module.exports = EmailSidebar = {
       if (module.name === "MyQRCode") {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" style="display:none" id="email-nav-${module.name}">${modulename}</li>`;
       }
-      else if (modulename === "VideoCall") {
+      else if (modulename === "Stunx") {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">Video Call</li>`;
       }
       else {
@@ -90,7 +90,7 @@ module.exports = EmailSidebar = {
       let module = mod.mods[i];
       if (modname === module.name) {
         let obj = module.respondTo("email-appspace");
-console.log("module.name: " + module.name);
+        console.log("module.name: " + module.name);
         obj.render(mod.app, module);
 
         if ("attachEvents" in obj)
