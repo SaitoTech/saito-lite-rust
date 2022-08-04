@@ -120,14 +120,14 @@ class Handshake {
 
     const r = this.newHandshakeResponse();
     peer.challenge = h2.challenge;
-    r.signature = this.app.crypto.signBufferWithoutHashing(h2.challenge, this.app.wallet.returnPrivateKey());
+    r.signature = Buffer.from(this.app.crypto.signBuffer(h2.challenge, this.app.wallet.returnPrivateKey()), "hex");
     this.app.networkApi.send(peer.socket, MessageType.HandshakeResponse, this.serializeHandshakeResponse(r));
   }
 
   async handleHandshakeResponse(peer: Peer, buffer: Buffer) {
     const r = this.deserializeHandshakeResponse(buffer);
 
-    if (this.app.crypto.verify(peer.challenge, r.signature.toString("hex"), r.publickey)) {
+    if (this.app.crypto.verifyHash(peer.challenge, r.signature.toString("hex"), r.publickey)) {
       peer.peer.publickey = r.publickey;
       if (r.lite === 1) {
         peer.peer.synctype = "lite";
@@ -138,7 +138,7 @@ class Handshake {
       this.app.connection.emit("handshake_complete", peer);
 
       const c = this.newHandshakeCompletion();
-      c.signature = this.app.crypto.signBufferWithoutHashing(r.challenge, this.app.wallet.returnPrivateKey());
+      c.signature = Buffer.from(this.app.crypto.signBuffer(r.challenge, this.app.wallet.returnPrivateKey()), "hex");
       this.app.networkApi.send(peer.socket, MessageType.HandshakeCompletion, this.serializeHandshakeCompletion(c));
     }
   }
@@ -146,7 +146,7 @@ class Handshake {
   async handleHandshakeCompletion(peer: Peer, buffer: Buffer) {
     const c = this.deserializeHandshakeCompletion(buffer);
 
-    if (this.app.crypto.verify(peer.challenge, c.signature.toString("hex"), peer.peer.publickey)) {
+    if (this.app.crypto.verifyHash(peer.challenge, c.signature.toString("hex"), peer.peer.publickey)) {
       this.app.connection.emit("handshake_complete", peer);
     }
   }
