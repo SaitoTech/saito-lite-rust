@@ -47,18 +47,19 @@ class MixinAppspace {
           let amount = trans.amount;
           let indicator = (type == 'Deposit') ? '+' : '';
 
-          html = "<div class='item'>"+ created_at +"</div>" +
+          html = "<div class='item mixin-his-created-at'>"+ created_at +"</div>" +
           "<div class='item'>"+ type +"</div>" +
           "<div class='item'>"+ ticker +"</div>" +
           "<div class='item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
           "<div class='item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
           
           document.getElementById('activity_button').setAttribute("class", "hide-btn");
-          document.querySelector(".history_container").innerHTML += html;
+          document.querySelector("#mixin-txn-his-container").innerHTML += html;
+          document.querySelector("#mixin-txn-his-container").style.display = 'flex';
           }
         });
 
-        document.getElementById('activity_button').innerHTML = 'load account history';
+        document.getElementById('activity_button').innerHTML = 'Fetching history...';
       }
     } catch (err) {}
 
