@@ -3,9 +3,7 @@ const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/sa
 
 module.exports = (app, mod) => {
 
-  let twilight_mod = app.modules.returnModule("Twilight");
-
-  return `
+  let html = `
 
     <div class="redsquare-appspace-games">
 
@@ -21,9 +19,21 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
       <div class="redsquare-games-container">
 
+    `;
+
+    let mods = app.modules.respondTo("arcade-game");
+    for (let i = 0; i < mods.length; i++) {
+
+      let modname = mods[i].name;
+      if (mods[i].appname) { modname = mods[i].appname; }
+      if (mods[i].gamename) { modname = mods[i].gamename; }
+
+      let modimage = "/" + mods[i].returnSlug() + "/img/arcade/arcade.jpg";
+
+      html += `;
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, "Chess", "/chess/img/arcade/arcade.jpg")}
+	  ${SaitoModuleTemplate(app, mod, modname, modimage)};
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
@@ -48,39 +58,16 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 	    </div>
           </div>
         </div>
+      `;
 
-        <div class="saito-game">
+    }
 
-	  ${SaitoModuleTemplate(app, mod, "Twilight Struggle", "/twilight/img/arcade/arcade.jpg")}
-
-          <div class="saito-game-content">
-            <div class="saito-leaderboard">
-	      <div class="saito-table">
-                <div class="saito-table-row odd">
-                  <div class="saito-leaderboard-gamename">david@saito</div>
-                  <div class="saito-leaderboard-rank">1</div>
-                </div>
-                <div class="saito-table-row">
-                  <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                  <div class="saito-leaderboard-rank">2</div>
-                </div>
-                <div class="saito-table-row odd">
-                  <div class="saito-leaderboard-gamename">richard@saito</div>
-                  <div class="saito-leaderboard-rank">3</div>
-                </div>
-              </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Chess">Create Game</div>
-              <div>how to play?</div>
-	    </div>
-          </div>
-        </div>
-
+    html += `
       </div>
     </div>
 
   `;
 
+   return html;
 }
 
