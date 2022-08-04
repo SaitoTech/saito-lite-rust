@@ -994,6 +994,20 @@ class League extends ModTemplate {
     return 0;
   }
 
+  //API Function
+  isLeagueMember(league_id){
+    for (let leag of this.leagues){
+      if (leag.id == league_id){
+        if (leag.myRank > 0){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
 
 }
 
