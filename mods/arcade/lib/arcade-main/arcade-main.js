@@ -108,14 +108,28 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
+    let numGamesDisplayed = 0;
     if (document.querySelector("#arcade-hero")) {
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
-          app.browser.addElementToElement(
-            ArcadeInviteTemplate(app, mod, invite, i),
-            document.querySelector("#arcade-hero")
-          );
+          let includeGame = true;
+          if (league){
+            //Do some extra checking to see if we should make this game invite visible based on leagues
+            if (invite.msg.options.league){
+              includeGame = false;
+              let visibleLeagues = league.filterLeagues(app);
+              for (let l of visibleLeagues){
+                if (l.id == invite.msg.options.league){
+                  includeGame = true;
+                }
+              }
+            }
+          }
+          if (includeGame){
+            numGamesDisplayed++;
+            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), document.querySelector("#arcade-hero"));    
+          }
         }
       });
 
@@ -148,7 +162,7 @@ module.exports = ArcadeMain = {
 
     //ArcadeInfobox.render(app, mod); //Not doing anything right now
 
-    if (mod.games.length == 0) {
+    if (numGamesDisplayed == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
       carousel.attachEvents(app, mod);
@@ -297,9 +311,10 @@ module.exports = ArcadeMain = {
     // if this requires "crypto" we need to check that the mod is installed
     // and the minimum required amount is available
     //
+    let txmsg = accepted_game.msg;
+    let game_options = txmsg.options;
+
     try {
-      let txmsg = accepted_game.msg;
-      let game_options = txmsg.options;
 
       //
       // check we have module
@@ -359,6 +374,20 @@ module.exports = ArcadeMain = {
      console.log("ERROR checking if crypto-required: " + err);
       return;
     }
+
+    //Check if League Member
+    if (game_options.league){
+      let leag = app.modules.returnModule("League");
+      if (!leag.isLeagueMember(game_options.league)){
+        let conf = await sconfirm("You need to be a member to join a League-only game, join?");
+        if (conf){
+          leag.sendJoinLeagueTransaction(game_options.league);
+          salert("Joining League... It may take a minute to take effect");
+        }
+        return;
+      }
+    }
+
 
     //
     // not enough players? join not accept
