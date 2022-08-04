@@ -56,7 +56,7 @@ class RedSquare extends ModTemplate {
       let new_tweet = 1;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.transaction.sig === tweet.tx.transaction.sig) {
-	  new_tweet = 0;
+          new_tweet = 0;
         }
       }
       if (new_tweet == 1) {
@@ -71,18 +71,18 @@ class RedSquare extends ModTemplate {
 	}
 	this.tweets.splice(insertion_index, 0, tweet);
       }
-    //
-    // comment-level
-    //
+      //
+      // comment-level
+      //
     } else {
       for (let i = 0; i < this.tweets.length; i++) {
-	if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
-	  if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
-	    // do not render comment-level tweets at parent level
-	    //app.connection.emit("tweet-render-request", tweet);
-	  }
-	}
-      }      
+        if (this.tweets[i].tx.transaction.sig === tweet.thread_id) {
+          if (this.tweets[i].addTweet(app, mod, tweet) == 1) {
+            // do not render comment-level tweets at parent level
+            //app.connection.emit("tweet-render-request", tweet);
+          }
+        }
+      }
     }
   }
 
@@ -105,11 +105,11 @@ class RedSquare extends ModTemplate {
     }
     if (tweet_shown == 0) {
       for (let i = 0; i < this.tweets.length; i++) {
-	if (this.tweets[i].returnTweet(app, mod, sig) != null) {
-	  let t = this.tweets[i].returnTweet(app, mod, sig);
+        if (this.tweets[i].returnTweet(app, mod, sig) != null) {
+          let t = this.tweets[i].returnTweet(app, mod, sig);
           tweet_shown = 1;
           t.renderWithChildren(app, mod, ".redsquare-list");
-	}
+        }
       }
     }
   }
@@ -121,10 +121,8 @@ class RedSquare extends ModTemplate {
 
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
-
       this.addComponent(this.main);
       this.addComponent(this.header);
-
       this.ui_initialized = true;
     }
 
@@ -146,7 +144,6 @@ class RedSquare extends ModTemplate {
     // this code doubles onConfirmation
     //
     if (message.request === "redsquare linkobj fetch") {
-
       let redsquare_self = app.modules.returnModule("RedSquare");
       let link = message.data.link;
       let link_properties = await this.fetchOpenGraphProperties(app, mod, link);
@@ -172,13 +169,13 @@ class RedSquare extends ModTemplate {
     super.installModule(app);
 
     let dummy_content = [
-       {
-         text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-         img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-       },
-       {
+      {
+        text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
+        img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+      },
+      {
         text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
-       },
+      },
       {
         text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
       }
@@ -194,7 +191,7 @@ class RedSquare extends ModTemplate {
 
 
 
-  async fetchOpenGraphProperties(app, mod, link){
+  async fetchOpenGraphProperties(app, mod, link) {
 
     if (this.app.BROWSER == 0) {
 
@@ -213,32 +210,32 @@ class RedSquare extends ModTemplate {
       //  page when fetching page source)
       //
       try {
-      return fetch(link)
-      .then(res => res.text())
-        .then(data => {
+        return fetch(link)
+          .then(res => res.text())
+          .then(data => {
 
-        // prettify html - unminify html if minified
-        let html = prettify(data);
+            // prettify html - unminify html if minified
+            let html = prettify(data);
 
-        // parse string html to DOM html
-        let dom = HTMLParser.parse(html);
+            // parse string html to DOM html
+            let dom = HTMLParser.parse(html);
 
-        // fetch meta element for og tags
-        let meta_tags = dom.getElementsByTagName('meta');
+            // fetch meta element for og tags
+            let meta_tags = dom.getElementsByTagName('meta');
 
-        // loop each meta tag and fetch required og properties
-        for (let i=0; i<meta_tags.length; i++) {
-          let property = meta_tags[i].getAttribute('property');
-          let content = meta_tags[i].getAttribute('content');
-          // get required og properties only, discard others
-          if (property in og_tags) {
-            og_tags[property] = content;
-            og_tags['og:exists'] = true;
-          }
-        }
+            // loop each meta tag and fetch required og properties
+            for (let i = 0; i < meta_tags.length; i++) {
+              let property = meta_tags[i].getAttribute('property');
+              let content = meta_tags[i].getAttribute('content');
+              // get required og properties only, discard others
+              if (property in og_tags) {
+                og_tags[property] = content;
+                og_tags['og:exists'] = true;
+              }
+            }
 
-        return og_tags;
-      });
+            return og_tags;
+          });
       } catch (err) {
         return {};
       }
@@ -267,7 +264,7 @@ class RedSquare extends ModTemplate {
 
           res.rows.forEach(row => {
 
-	    let new_tweet = 1;
+            let new_tweet = 1;
 
 //	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
 //	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
@@ -385,9 +382,9 @@ console.log("NUM LIKES: " + row.num_likes);
     let obj = {
       module: redsquare_self.name,
       request: "create tweet",
-      data : {} ,
+      data: {},
     };
-    for (let key in data) { 
+    for (let key in data) {
       obj.data[key] = data[key];
     }
 
@@ -402,7 +399,7 @@ console.log("NUM LIKES: " + row.num_likes);
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
-    let tweet     = new Tweet(app, this, tx);
+    let tweet = new Tweet(app, this, tx);
 
     //
     // browsers
@@ -411,7 +408,7 @@ console.log("NUM LIKES: " + row.num_likes);
       let redsquare_self = app.modules.returnModule("RedSquare");
       this.addTweet(app, redsquare_self, tweet);
       return;
-    } 
+    }
 
 
     //
@@ -456,13 +453,13 @@ console.log("NUM LIKES: " + row.num_likes);
               )`;
     let params = {
       $txjson: JSON.stringify(tx.transaction),
-      $sig: tx.transaction.sig ,
-      $created_at : created_at ,
-      $updated_at : updated_at ,
-      $parent_id : tweet.parent_id ,
-      $thread_id : tweet.thread_id ,
-      $publickey: tx.transaction.from[0].add ,
-      $link: tweet.link ,
+      $sig: tx.transaction.sig,
+      $created_at: created_at,
+      $updated_at: updated_at,
+      $parent_id: tweet.parent_id,
+      $thread_id: tweet.thread_id,
+      $publickey: tx.transaction.from[0].add,
+      $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
     app.storage.executeDatabase(sql, params, "redsquare");
@@ -471,8 +468,8 @@ console.log("NUM LIKES: " + row.num_likes);
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
     let params2 = {
-      $timestamp : ts,
-      $sig : tweet.thread_id,
+      $timestamp: ts,
+      $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
 
@@ -497,10 +494,6 @@ console.log("NUM LIKES: " + row.num_likes);
         this.app.options.redsquare = this.redsquare;
         this.app.options.saveOptions();
     }
-
-
-
-
 
 }
 

@@ -4,8 +4,8 @@ const StunMainContainer = require("./email-appspace.template");
 // components
 const StunComponentMyStun = require("../components/my-stun");
 
-const VideoChat = require('../../../../lib/saito/ui/video-chat/video-chat');
-const videocallMainTemplate = require("../main/videocall-main.template");
+const VideoChat = require('../../../stunx/lib/components/video-chat/video-chat');
+const stunxMainTemplate = require("../main/stunx-main.template");
 
 
 class Container {
@@ -44,9 +44,9 @@ class Container {
             if (document.querySelector('#email-appspace')) {
                 document.querySelector('#email-appspace').innerHTML = sanitize(StunMainContainer(app, mod));
             } else {
-                if (!document.querySelector('#videocall-main')) {
-                    app.browser.addElementToDom(sanitize(videocallMainTemplate(app, mod)));
-                    app.browser.addElementToDom(sanitize(StunMainContainer(app, mod)), 'videocall-main');
+                if (!document.querySelector('#stunx-main')) {
+                    app.browser.addElementToDom(sanitize(stunxMainTemplate(app, mod)));
+                    app.browser.addElementToDom(sanitize(StunMainContainer(app, mod)), 'stunx-main');
                 }
 
             }
