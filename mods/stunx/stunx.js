@@ -3,7 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const VideoChatManager = require('./lib/components/video-chat-manager');
 const StunxAppspace = require('./lib/appspace/main');
-const InviteOverlay = require("./lib/components/invite-overlay");
+const InviteOverlay = require("./lib/invite/main");
 
 class Stunx extends ModTemplate {
 
@@ -36,11 +36,13 @@ class Stunx extends ModTemplate {
 
 
     respondTo(type) {
+        if (type === 'invite') {
+            this.styles = ['/stunx/css/style.css',];
+            super.render(this.app, this);
+	    return new StunInvite(this.app, this);
+        }
         if (type === 'appspace') {
-            this.styles = [
-                '/stunx/css/style.css',
-            ];
-            // for scripts + styles
+            this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
