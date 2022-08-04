@@ -200,7 +200,7 @@ module.exports = ArcadeGameDetails = {
             ts: new Date().getTime(),
             name: gamemod.name,
             slug: gamemod.returnSlug(),
-            options: gamemod.returnFormattedGameOptions(options),
+            options: options,
             players_needed: players_needed,
             invitation_type: "public",
           };
