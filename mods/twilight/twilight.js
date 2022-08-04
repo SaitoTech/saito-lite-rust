@@ -8484,30 +8484,6 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
 
   
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "player1") {
-        if (options[index] == "random") {
-          new_options[index] = options[index];
-        } else {
-	  if (options[index] === "ussr") {
-	    new_options[index] = "ussr";
-	  } else {
-	    new_options[index] = "us";
-	  }
-        }
-      } else {
-        new_options[index] = options[index]
-      }
-    }
-    return new_options;
-  }
-
-
-
-
-
   
 
   displayChinaCard() {

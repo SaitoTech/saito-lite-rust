@@ -1220,18 +1220,6 @@ class Blackjack extends GameTemplate {
     }
   }
 
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "stake") {
-        new_options[index] = options[index];
-      }
-      if (index == "crypto") {
-        new_options[index] = options[index];
-      }
-    }
-    return new_options;
-  }
 
   payWinners(winner){
     return 0;
