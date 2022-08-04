@@ -3,7 +3,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const VideoChatManager = require('./lib/components/video-chat-manager');
 const StunxAppspace = require('./lib/appspace/main');
-const InviteOverlay = require("./lib/invite/main");
+const StunxInvite = require('./lib/invite/main');
 
 class Stunx extends ModTemplate {
 
@@ -18,7 +18,6 @@ class Stunx extends ModTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.VideoChatManager = new VideoChatManager(app, this);
-        this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
         this.localStream = null;
         this.servers = [
@@ -37,9 +36,9 @@ class Stunx extends ModTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = ['/stunx/css/style.css',];
+            this.styles = ['/stunx/css/invite.css',];
             super.render(this.app, this);
-	    return new StunInvite(this.app, this);
+	    return new StunxInvite(this.app, this);
         }
         if (type === 'appspace') {
             this.styles = ['/stunx/css/style.css',];
