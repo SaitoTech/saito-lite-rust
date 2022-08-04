@@ -119,7 +119,7 @@ class RedSquare extends ModTemplate {
 
 
   respondTo(type) {
-    if (type === "scheduler-overlay") {
+    if (type === "invite") {
       return new GameCreator(this.app, this);
     }
     return null;

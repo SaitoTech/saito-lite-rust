@@ -11,6 +11,9 @@ const ArcadeLink = require("./lib/arcade-main/arcade-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
+const GameInvite = require('./lib/invite/game-creator');
+
+
 
 class Arcade extends ModTemplate {
   constructor(app) {
@@ -111,6 +114,11 @@ class Arcade extends ModTemplate {
 
   respondTo(type = "") {
     let arcade_mod = this;
+    if (type === "invite") {
+console.log("A A A");
+      return new GameInvite(this.app, this);
+console.log("B B B");
+    }
     if (type == "header-menu") {
       if (this.browser_active) {
         return {

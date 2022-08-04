@@ -1,8 +1,7 @@
-const saito = require('./../../../../../lib/saito/saito');
-const GameCreatorTemplate = require('./game-creator.template');
-const ArcadeGameDetails = require('./../../../../arcade/lib/arcade-game/arcade-game-details');
-const SaitoOverlay = require('./../../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
-
+const saito = require('./../../../../lib/saito/saito');
+const GameCreatorTemplate = require('./main.template');
+const ArcadeGameDetails = require('./../arcade-game/arcade-game-details');
+const SaitoOverlay = require('./../../../../lib/saito/new-ui/saito-overlay/saito-overlay');
 
 class GameCreator {
 
@@ -13,11 +12,7 @@ class GameCreator {
   }
 
   render(app, mod) {
-console.log("about to attach to overlay: ");
-console.log(GameCreatorTemplate(app, mod, "Select Game to Play"));
-
     this.overlay.show(app, mod, GameCreatorTemplate(app, mod, "Select Game to Play"));
-alert("and done rendering!");
     this.attachEvents(app, mod);
   }
 
