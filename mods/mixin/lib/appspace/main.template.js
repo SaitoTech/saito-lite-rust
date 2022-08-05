@@ -5,26 +5,25 @@ module.exports = MixinAppspaceTemplate = (app) => {
   let html = `
 
   <div class="saito-page-header">
-    <div class="saito-button-secondary small" style="float: right;">Backup Wallet</div>
+    <div class="saito-button-secondary small" style="float: right;" id="mixin-backup-btn">Backup Wallet</div>
     <div class="saito-page-header-title">CRYPTO WALLET</div>
     <div class="saito-page-header-text">
       Saito supports third-party crypto balances. Send and receive tokens to your Saito wallet, or transfer them using applications on the Saito network. Please note this service is in BETA. And be sure to backup your entire wallet to avoid losing access to your funds.
     </div>
   </div>
 
-  <div class="email-appspace-mixin">
+  <div class="mixin-appspace">
   `;
 
   html += `
 
-    <h5 class="transaction-header transaction-item">Balances</h5>
-    <div class="history_container transaction-item" id="mixin-balance-container">
-        <div class='item item-header'>Token</div>
-        <div class='item item-header'>Balance</div>
-        <div class='item item-header'></div>
-        <div class='item item-header'></div>
+    <h5 class="mixin-balances-header">Balances</h5>
+    <div class="mixin-items-container" id="mixin-balance-container">
+        <div class='mixin-item mixin-item-header'>Token</div>
+        <div class='mixin-item mixin-item-header'>Balance</div>
+        <div class='mixin-item mixin-item-header'></div>
+        <div class='mixin-item mixin-item-header'></div>
     `;
-
 
 
  for (let i = 0; i < mixin_mod.mods.length; i++) {
@@ -32,16 +31,16 @@ module.exports = MixinAppspaceTemplate = (app) => {
     let xmod = mixin_mod.mods[i];
 
     html += `
-        <div class='item'>${xmod.ticker}</div>
-        <div class='item'>${xmod.balance}</div>
-        <div class='item'>
-            <a href="#" class="balances_deposit" data-assetid="${xmod.asset_id}" 
+        <div class='mixin-item'>${xmod.ticker}</div>
+        <div class='mixin-item'>${xmod.balance}</div>
+        <div class='mixin-item'>
+            <a href="#" class="mixin-balances_deposit" data-assetid="${xmod.asset_id}" 
                 data-confs="${xmod.confirmations}" data-address="${xmod.returnAddress()}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}">
                 Deposit
             </a>
         </div>
-        <div class='item'>
-            <a href="#" class="balances_withdraw" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" data-sender="${xmod.returnAddress()}">
+        <div class='mixin-item'>
+            <a href="#" class="mixin-balances_withdraw" data-assetid="${xmod.asset_id}" data-ticker="${xmod.ticker}" data-balance="${xmod.balance}" data-sender="${xmod.returnAddress()}">
             Withdraw
             </a>
         </div>
@@ -53,16 +52,16 @@ html += `
     </div>
       
 
-    <h5 class="transaction-header transaction-item">Transaction History</h5>
+    <h5 class="transaction-header">Transaction History</h5>
     <div class="mixin-txn-his-container">
-        <div class="history_container transaction-item" id="mixin-txn-his-container">
-            <div class='item item-header'>Time</div>
-             <div class='item item-header'>Type</div>
-             <div class='item item-header'>Asset</div>
-             <div class='item item-header'>Amount</div>
-             <div class='item item-header'>Status</div>
+        <div class="mixin-items-container" id="mixin-txn-his-container">
+            <div class='mixin-item mixin-item-header'>Time</div>
+             <div class='mixin-item mixin-item-header'>Type</div>
+             <div class='mixin-item mixin-item-header'>Asset</div>
+             <div class='mixin-item mixin-item-header'>Amount</div>
+             <div class='mixin-item mixin-item-header'>Status</div>
         </div>
-      <div class="saito-button-secondary small activity_button" id="activity_button" >Load Account History</div>
+      <div class="saito-button-secondary small mixin-history-button" id="mixin-history-button" >Load Account History</div>
     </div>
 
   </div>
@@ -77,11 +76,11 @@ html += `
     display: none;
 }
 
-.transaction-header {
+.mixin-balances-header, .transaction-header {
     margin-top: 40px;
 }
 
-.history_container {
+.mixin-items-container {
   border-radius: 8px;
   position: relative;
   border: 1px solid #e7ebed;
@@ -96,18 +95,18 @@ html += `
   font-size: 1.4rem;
 }
 
-.item {
+.mixin-item {
   height: 50px;
   width: calc(100% * (1/5));
   flex-grow: 1;
 }
 
-.item-header {
+.mixin-item-header {
   background-color: #e7ebed;
   font-weight: 700;
 }
 
-.activity_button {
+.mixin-history-button {
   margin-top: 20px;
   max-width: 200px;
   text-align: center;
@@ -178,20 +177,14 @@ html += `
     font-size: 1.2rem;
     font-weight: 400;
 }
-.balances_withdraw {
-}
-.balances_deposit {
-}
-
 .deposit {
     color: #14b214;
 }
-
 .withdrawal {
     color: #e34927;
 }
 
-#mixin-balance-container .item {
+#mixin-balance-container .mixin-item {
     width: calc(100% * (1/4));
 }
 

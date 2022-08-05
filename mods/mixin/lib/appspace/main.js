@@ -17,6 +17,14 @@ class MixinAppspace {
   attachEvents(app, mod) {
 
     try {
+      document.querySelector("#mixin-backup-btn").onclick = (e) => {
+        app.wallet.backupWallet();
+      }
+    } catch (err) {
+      console.log("Err in Mixin backup wallet");
+    }
+
+    try {
       document.querySelector(".create_account").onclick = (e) => {
         mod.createAccount((res) => { 
   	  document.getElementById("create_account").innerHTML = JSON.stringify(res.data);;
@@ -25,9 +33,9 @@ class MixinAppspace {
     } catch (err) {}
 
     try {
-      document.querySelector("#activity_button").onclick = (e) => {
+      document.querySelector("#mixin-history-button").onclick = (e) => {
 
-        document.getElementById('activity_button').innerHTML = 'fetching history...';
+        document.getElementById('mixin-history-button').innerHTML = 'fetching history...';
         
         mod.fetchSnapshots("", 20, "DESC", (d) => { 
           let html = "";
@@ -47,23 +55,23 @@ class MixinAppspace {
           let amount = trans.amount;
           let indicator = (type == 'Deposit') ? '+' : '';
 
-          html = "<div class='item mixin-his-created-at'>"+ created_at +"</div>" +
-          "<div class='item'>"+ type +"</div>" +
-          "<div class='item'>"+ ticker +"</div>" +
-          "<div class='item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
-          "<div class='item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
+          html = "<div class='mixin-item mixin-his-created-at'>"+ created_at +"</div>" +
+          "<div class='mixin-item'>"+ type +"</div>" +
+          "<div class='mixin-item'>"+ ticker +"</div>" +
+          "<div class='mixin-item "+ type.toLowerCase() +"'>"+ indicator + " " + amount +"</div>" +
+          "<div class='mixin-item'>Success</div>"; /* right now we dont get `status` in /snapshot api, all trans are `success`*/
           
-          document.getElementById('activity_button').setAttribute("class", "hide-btn");
+          document.getElementById('mixin-history-button').setAttribute("class", "hide-btn");
           document.querySelector("#mixin-txn-his-container").innerHTML += html;
           document.querySelector("#mixin-txn-his-container").style.display = 'flex';
           }
         });
 
-        document.getElementById('activity_button').innerHTML = 'Fetching history...';
+        document.getElementById('mixin-history-button').innerHTML = 'Fetching history...';
       }
     } catch (err) {}
 
-    document.querySelector(".balances_withdraw").onclick = (e) => {
+    document.querySelector(".mixin-balances_withdraw").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);
       let ticker = event.target.getAttribute("data-ticker");
@@ -141,7 +149,7 @@ class MixinAppspace {
 
     }
 
-    document.querySelector(".balances_deposit").onclick = (e) => {
+    document.querySelector(".mixin-balances_deposit").onclick = (e) => {
 
       let overlay = new SaitoOverlay(app);
       let address = event.target.getAttribute("data-address").split("|")[0];
