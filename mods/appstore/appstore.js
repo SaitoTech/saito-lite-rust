@@ -80,7 +80,7 @@ class AppStore extends ModTemplate {
 
     if (message.request === "appstore search modules") {
 
-console.log("HANDLE SEARCH MODULES");
+////console.log("HANDLE SEARCH MODULES");
 
       let squery1 = "%" + message.data + "%";
       let squery2 = message.data;
@@ -91,8 +91,8 @@ console.log("HANDLE SEARCH MODULES");
         $squery2: squery2,
       };
 
-console.log(sql);
-console.log(JSON.stringify(params));
+//console.log(sql);
+//console.log(JSON.stringify(params));
 
       let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
@@ -143,9 +143,9 @@ console.log(JSON.stringify(params));
       //
       dirs.forEach(dir => {
 
-console.log("##########################");
-console.log("processing: " + dir);
-console.log("##########################");
+////console.log("##########################");
+////console.log("processing: " + dir);
+////console.log("##########################");
 
         let mod_path = path.resolve(__dirname, `mods/${dir}.zip`);
         let output = fs.createWriteStream(mod_path);
@@ -181,7 +181,7 @@ console.log("##########################");
           let mod_zip_filename = path.basename(this.path);
           let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
           let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
-console.log("mod path is: " + mod_path);
+////console.log("mod path is: " + mod_path);
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
@@ -194,7 +194,7 @@ console.log("mod path is: " + mod_path);
 	  //
 	  if (zip.length <= 30000000) {
 
-console.log("submitting: " + mod_zip_filename);
+////console.log("submitting: " + mod_zip_filename);
 
             newtx.msg = {
               module: "AppStore",
@@ -208,7 +208,7 @@ console.log("submitting: " + mod_zip_filename);
 
 	  } else {
 
-console.log("ZIP TOO BIG: " + dir);
+////console.log("ZIP TOO BIG: " + dir);
 
 	  }
 
@@ -290,15 +290,15 @@ console.log("ZIP TOO BIG: " + dir);
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
-console.log("##### - RECEIVE BUNDLE 1");
+////console.log("##### - RECEIVE BUNDLE 1");
           if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
-            console.log("##### BUNDLE RECEIVED #####");
+            ////console.log("##### BUNDLE RECEIVED #####");
             if (app.options.appstore) {
-console.log("##### - RECEIVE BUNDLE 2");
+////console.log("##### - RECEIVE BUNDLE 2");
               if (app.options.appstore.default != "") {
-console.log("##### - RECEIVE BUNDLE 3");
+////console.log("##### - RECEIVE BUNDLE 3");
                 if (tx.isFrom(app.options.appstore.default)) {
-console.log("##### - RECEIVE BUNDLE 4");
+////console.log("##### - RECEIVE BUNDLE 4");
                   this.receiveBundle(blk, tx);
                 }
               }
@@ -423,7 +423,7 @@ console.log("##### - RECEIVE BUNDLE 4");
 
       await Promise.all(promises);
     } catch (err) {
-      console.log("ERROR UNZIPPING: " + err);
+      ////console.log("ERROR UNZIPPING: " + err);
     }
 
     //
@@ -443,8 +443,8 @@ console.log("##### - RECEIVE BUNDLE 4");
 
     if (this.app.BROWSER == 1) { 
 
-console.log("we are browser submit module...");
-console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
+////console.log("we are browser submit module...");
+//console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
 
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
 
@@ -484,7 +484,7 @@ console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transacti
     }
 
 
-console.log("server is starting app insert");
+////console.log("server is starting app insert");
 
     let sql = `INSERT OR IGNORE INTO modules (name, description, version, image, categories, publickey, unixtime, bid, bsh, tx, featured) VALUES ($name, $description, $version, $image, $categories, $publickey, $unixtime, $bid, $bsh, $tx, $featured)`;
 
@@ -495,13 +495,13 @@ console.log("server is starting app insert");
 
     let { name, image, description, categories } = await this.getNameAndDescriptionFromZip(module_zip, `mods/module-${sig}-${ts}.zip`);
 
-console.log("-----------------------------");
-console.log("--INSERTING INTO APPSTORE --- " + name);
-console.log(description);
-console.log("-----------------------------");
+////console.log("-----------------------------");
+////console.log("--INSERTING INTO APPSTORE --- " + name);
+//console.log(description);
+////console.log("-----------------------------");
 if (name == "Unknown") {
-  console.log(`TROUBLE EXTRACTING: mods/module-${sig}-${ts}.zip`);
-  //console.log("ZIP: " + module_zip);
+  //console.log(`TROUBLE EXTRACTING: mods/module-${sig}-${ts}.zip`);
+  //////console.log("ZIP: " + module_zip);
   //process.exit();
 }
 
@@ -514,7 +514,7 @@ if (name == "Unknown") {
       }
     }
 
-console.log(name + " is included? " + featured_app);
+//console.log(name + " is included? " + featured_app);
 
     let params = {
       $name: name,
@@ -569,7 +569,7 @@ console.log(name + " is included? " + featured_app);
 
     if (this.app.BROWSER == 1) { return; }
 
-console.log("now making a bundle!");
+////console.log("now making a bundle!");
 
     let sql = '';
     let params = '';
@@ -600,7 +600,7 @@ console.log("now making a bundle!");
       }
     }
 
-console.log("now making a bundle 2!");
+////console.log("now making a bundle 2!");
 
     //
     // unversioned apps (first as default)
@@ -624,7 +624,7 @@ console.log("now making a bundle 2!");
       }
     }
 
-console.log("now making a bundle 3!");
+////console.log("now making a bundle 3!");
 
     //
     // versioned apps (second as overrules default)
@@ -647,7 +647,7 @@ console.log("now making a bundle 3!");
       }
     }
 
-console.log("now making a bundle 4!");
+////console.log("now making a bundle 4!");
 
     //
     // WEBPACK
@@ -694,7 +694,7 @@ console.log("now making a bundle 4!");
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
-console.log("FINISHED MAKING BUNDLE!");
+////console.log("FINISHED MAKING BUNDLE!");
 
   }
 
@@ -704,7 +704,7 @@ console.log("FINISHED MAKING BUNDLE!");
 
   async bundler(modules) {
 
-console.log("into bundler!");
+////console.log("into bundler!");
 
     //
     // shell access
@@ -727,7 +727,7 @@ console.log("into bundler!");
     
     let newappdir = `${ts}-${hash}`;
 
-console.log("into new app dir: " + newappdir);
+////console.log("into new app dir: " + newappdir);
 
     let bash_script_content = '';
     let bash_script_delete = '';
@@ -748,7 +748,7 @@ console.log("into new app dir: " + newappdir);
       let createdir_command = 'sh ' + bash_script_create;
       const { stdout, stderr } = await exec(createdir_command, { cwd: cwdir, maxBuffer: 4096 * 2048 });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
 
     bash_script_content += 'cd ' + __dirname + '/mods' + "\n";
@@ -759,7 +759,7 @@ console.log("into new app dir: " + newappdir);
     //
     let module_paths = modules.map(mod => {
 
-console.log("processing mod: " + mod.name);
+////console.log("processing mod: " + mod.name);
 
       let mod_name = mod.name;
       let mod_path = `mods/${returnSlug(mod_name)}-${ts}-${hash}.zip`;
@@ -776,7 +776,7 @@ console.log("processing mod: " + mod.name);
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/install.sh` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/license` + "\n";
 
-console.log("still ok");
+////console.log("still ok");
 
       bash_script_delete += `rm -rf ${returnSlug(mod_name)}-${ts}-${hash}.zip` + "\n";
       bash_script_delete += `rm -rf ../../bundler/${newappdir}/mods/${returnSlug(mod_name)}` + "\n";
@@ -821,7 +821,7 @@ console.log("still ok");
     bash_script_content += 'cd ../../' + "\n";
     bash_script_content += `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`;
 
-console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`);
+////console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`);
 
     bash_script_content += "\n";
     bash_script_content += bash_script_delete;
@@ -832,10 +832,10 @@ console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filen
       let bash_command = 'sh ' + bash_script;
       const { stdout, stderr } = await exec(bash_command, { cwd: cwdir, maxBuffer: 4096 * 2048 });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
 
-console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
+//console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
 
     //
     // create tx
@@ -843,8 +843,8 @@ console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     let bundle_bin = "";
 
-console.log("Bundle Filename: " + bundle_filename);
-console.log("Bundle __dirname: " + __dirname);
+////console.log("Bundle Filename: " + bundle_filename);
+////console.log("Bundle __dirname: " + __dirname);
 
     if (fs) { bundle_bin = fs.readFileSync(path.resolve(__dirname, `./bundler/dist/${bundle_filename}`), { encoding: 'binary' }); }
     newtx.msg = { module: "AppStore", request: "add bundle", bundle: bundle_bin };
@@ -855,7 +855,7 @@ console.log("Bundle __dirname: " + __dirname);
     // cleanup
     //
     await fs.rmdir(path.resolve(__dirname, `../../bundler/${newappdir}/`), function () {
-      console.log("Appstore Compilation Files Removed!");
+      ////console.log("Appstore Compilation Files Removed!");
     });
 
     return bundle_filename;
@@ -1034,8 +1034,8 @@ console.log("Bundle __dirname: " + __dirname);
     // form sql query
     //
     let sql_query = ("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
-    console.log("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
-    console.log(sql_query);
+    ////console.log("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
+    //console.log(sql_query);
 
     if (this.app.BROWSER === 1) {
 
