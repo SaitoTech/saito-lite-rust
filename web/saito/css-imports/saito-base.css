@@ -63,6 +63,7 @@ h4,
 h5,
 h6 {
   color: var(--saito-primary);
+  font-weight: normal;
 }
 
 h1 {
@@ -83,6 +84,7 @@ h4 {
 
 h5 {
   font-size: 3rem;
+
 }
 
 h6 {

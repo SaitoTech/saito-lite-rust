@@ -1,11 +1,11 @@
 const saito = require("../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
+const InviteTemplate = require("../../lib/templates/invitetemplate");
 var serialize = require('serialize-javascript');
 const VideoChatManager = require('./lib/components/video-chat-manager');
 const StunxAppspace = require('./lib/appspace/main');
-const InviteOverlay = require("./lib/components/invite-overlay");
+const StunxInvite = require('./lib/invite/main');
 
-class Stunx extends ModTemplate {
+class Stunx extends InviteTemplate {
 
     constructor(app, mod) {
         super(app);
@@ -18,7 +18,6 @@ class Stunx extends ModTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.VideoChatManager = new VideoChatManager(app, this);
-        this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
         this.localStream = null;
         this.servers = [
@@ -33,26 +32,19 @@ class Stunx extends ModTemplate {
         ];
     }
 
-
-
     respondTo(type) {
+        if (type === 'invite') {
+            this.styles = ['/stunx/css/invite.css',];
+            super.render(this.app, this);
+	    return new StunxInvite(this.app, this);
+        }
         if (type === 'appspace') {
-            this.styles = [
-                '/stunx/css/style.css',
-            ];
-            // for scripts + styles
+            this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
         return null;
     }
-
-
-
-
-
-
-
 
     onConfirmation(blk, tx, conf, app) {
         let txmsg = tx.returnMessage();
@@ -67,8 +59,6 @@ class Stunx extends ModTemplate {
             }
         }
     }
-
-
 
     handlePeerRequest(app, message, peer, mycallback) {
         if (message.request == null) {
@@ -89,8 +79,6 @@ class Stunx extends ModTemplate {
         }
         super.handlePeerRequest(app, message, peer, mycallback)
     }
-
-
 
     async sendCreateRoomTransaction() {
         let roomCode = this.app.crypto.generateRandomNumber().substring(0, 6);
@@ -143,8 +131,6 @@ class Stunx extends ModTemplate {
         server.sendRequest(message.request, message.data);
     }
 
-
-
     async receiveCreateRoomTransaction(app, tx) {
         let room = tx.msg.room.room;
         let sql = `INSERT INTO rooms (
@@ -191,10 +177,7 @@ class Stunx extends ModTemplate {
             $is_max_capacity: is_max_capacity
         }
         app.storage.executeDatabase(sql, params, "stunx");
-
         return;
-
-
 
     }
 
@@ -354,13 +337,7 @@ class Stunx extends ModTemplate {
 
         return createPeerConnection;
 
-
-
     }
-
-
-
-
 
     async createStunConnectionWithPeers(public_keys) {
         let peerConnectionOffers = [];
@@ -370,7 +347,6 @@ class Stunx extends ModTemplate {
                 peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]));
             }
         }
-
 
         try {
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
@@ -397,7 +373,6 @@ class Stunx extends ModTemplate {
         siteMessageNew("Starting video connection", 5000);
     }
 
-
     setLocalStream(localStream) {
         this.localStream = localStream;
     }
@@ -418,8 +393,6 @@ class Stunx extends ModTemplate {
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
     }
-
-
 
     sendAnswerTransaction(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -477,10 +450,8 @@ class Stunx extends ModTemplate {
             }
         }
     }
-
-
-
 }
 
 module.exports = Stunx;
+
 
