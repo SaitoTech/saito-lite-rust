@@ -13,7 +13,7 @@ module.exports = AdminBox = {
       console.log("ADMIN BOX RECEIVES EVENT -- re-renders?");
     });
 
-  }
+  },
 
   render(app, mod, games) {
     if (!document.getElementById("game-selector")) {
