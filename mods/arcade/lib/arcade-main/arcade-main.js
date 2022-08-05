@@ -110,15 +110,20 @@ module.exports = ArcadeMain = {
     //
     let numGamesDisplayed = 0;
     if (document.querySelector("#arcade-hero")) {
+      //On initial load of Arcade, it takes a while for Leagues array to get populated
+      //so need some way to refresh the arcade game invites...
+      let visibleLeagues = (league) ? league.filterLeagues(app) : "";
+
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
           let includeGame = true;
-          if (league){
+          
+          //Only filter if there are leagues to compare against
+          if (league && league.leagues.length > 0){
             //Do some extra checking to see if we should make this game invite visible based on leagues
             if (invite.msg.options.league){
               includeGame = false;
-              let visibleLeagues = league.filterLeagues(app);
               for (let l of visibleLeagues){
                 if (l.id == invite.msg.options.league){
                   includeGame = true;
@@ -126,7 +131,13 @@ module.exports = ArcadeMain = {
               }
             }
           }
-          if (includeGame){
+          //console.log("ARCADE_MAIN");
+          //console.log(JSON.parse(JSON.stringify(invite.msg)));
+          //console.log("Include for display? "+includeGame);
+          //console.log(JSON.parse(JSON.stringify(visibleLeagues)));
+
+          //isMyGame is a decent safety catch for ongoing games
+          if (includeGame || mod.isMyGame(invite, app)){
             numGamesDisplayed++;
             app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), document.querySelector("#arcade-hero"));    
           }
