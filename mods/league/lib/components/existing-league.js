@@ -8,7 +8,7 @@ module.exports = ExistingLeague = {
     this.app = app;
     this.mod = mod;
     this.game = game;
-  }
+  },
 
   render(app, mod, league) {
     if (!document.getElementById(league.id)){
