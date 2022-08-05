@@ -875,7 +875,7 @@ class League extends ModTemplate {
           }
           league.playerCnt = cnt;
         }
-        console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
+        //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
         league_self.renderLeagues(league_self.app, league_self);
       }
 
