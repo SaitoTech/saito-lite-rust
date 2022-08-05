@@ -56,6 +56,17 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   let html = `
+
+
+  <div class="saito-page-header">
+    <div class="saito-button-secondary small" style="float: right;">Backup Wallet</div>
+    <div class="saito-page-header-title">SETTINGS</div>
+    <div class="saito-page-header-text">
+      Configure and personalise your Saito experience. Add/remove modules, setup wallet. 
+      Get informed on latest versions. Reach out to us on social media platforms in case of any queries.
+    </div>
+  </div>
+
   <div class="settings-appspace">
 
     <div>
@@ -87,7 +98,6 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 	       </div>
          <div class="saito-grid-1-1-1">
-         <div class="saito-button-secondary">Backup</div>
          <div class="saito-button-secondary">Restore</div>
          <div class="saito-button-secondary">Import Private Key</div>
          <input type="file" style="display:none;" />
