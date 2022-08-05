@@ -1,4 +1,5 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
+const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const AdvancedOverlay = require("./advanced-overlay"); // game-overlay
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
@@ -30,6 +31,10 @@ module.exports = ArcadeGameDetails = {
    */
   render(app, mod, invite) {
     let gamemod = app.modules.returnModule(invite.msg.game);
+
+    if (mod.overlay == null) {
+      mod.overlay = new SaitoOverlay(app);
+    }
 
     if (!document.getElementById("background-shim")) {
       app.browser.addElementToDom(
@@ -121,6 +126,7 @@ module.exports = ArcadeGameDetails = {
     //
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
+        mod.active_tab = "arcade"; //So it refreshes to show the new game invite
         e.stopPropagation();
         try {
           let options = getOptions();
@@ -178,6 +184,16 @@ module.exports = ArcadeGameDetails = {
              console.log("ERROR checking crypto: " + err);
             return;
           }
+
+          //Check League Membership
+          if (options.league){
+            let leag = app.modules.returnModule("League");
+            if (!leag.isLeagueMember(options.league)){
+              salert("You need to be a member of the League to create a League-only game invite");
+              return;
+            }
+          }
+
           let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {
@@ -190,7 +206,7 @@ module.exports = ArcadeGameDetails = {
             ts: new Date().getTime(),
             name: gamemod.name,
             slug: gamemod.returnSlug(),
-            options: gamemod.returnFormattedGameOptions(options),
+            options: options,
             players_needed: players_needed,
             invitation_type: "public",
           };

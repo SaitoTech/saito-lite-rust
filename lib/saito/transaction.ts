@@ -21,6 +21,7 @@ export enum TransactionType {
 }
 
 class Transaction {
+
   public transaction = {
     to: [],
     from: [],
@@ -78,6 +79,7 @@ class Transaction {
           console.error(err);
         }
       }
+
       for (let i = 0; i < this.transaction.from.length; i++) {
         const fslip = this.transaction.from[i];
         this.transaction.from[i] = new Slip(

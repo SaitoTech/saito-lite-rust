@@ -7,7 +7,7 @@ module.exports = EmailSidebar = {
 
   render(app, mod) {
     if (!document.getElementById("email-sidebar")) {
-      app.browser.addElementToDom(EmailSidebarTemplate(), "email-container");
+      app.browser.addElementToDom(EmailSidebarTemplate(), document.getElementById("email-container"));
 
     }
 
@@ -24,7 +24,11 @@ module.exports = EmailSidebar = {
 
       if (module.name === "MyQRCode") {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" style="display:none" id="email-nav-${module.name}">${modulename}</li>`;
-      } else {
+      }
+      else if (modulename === "Stunx") {
+        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">Video Call</li>`;
+      }
+      else {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">${modulename}</li>`;
       }
     }
@@ -74,7 +78,7 @@ module.exports = EmailSidebar = {
   },
 
   renderAccordingToHash(app, mod) {
-    if (!this.welcome_space){
+    if (!this.welcome_space) {
       this.welcome_space = document.getElementById("email-appspace").innerHTML;
     }
     if (window.location.hash === "#welcome-nav-inbox") {
@@ -86,9 +90,10 @@ module.exports = EmailSidebar = {
       let module = mod.mods[i];
       if (modname === module.name) {
         let obj = module.respondTo("email-appspace");
+        console.log("module.name: " + module.name);
         obj.render(mod.app, module);
-        
-        if ("attachEvents" in obj)        
+
+        if ("attachEvents" in obj)
           obj.attachEvents(mod.app, module);
       }
     }

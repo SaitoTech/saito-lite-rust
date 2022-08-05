@@ -421,7 +421,10 @@ button.button-active {
   height: 100%;
   object-fit: cover;
   border: 1px solid var(--saito-cyber-black-wash);
-  background-color: #fff;
+}
+
+#localStream {
+  display: block;
 }
 
 .body .b-btngrid {
@@ -441,7 +444,6 @@ button.button-active {
 
 .body .footer {
   display: grid;
-  grid-template-columns: 3rem 3rem 1fr;
   grid-gap: 1rem;
   padding: 20px;
   background: radial-gradient(100.52% 47851.24% at 0% 0%, #f66659 0%, #f21d3b 51.56%, #f66659 100%)
@@ -450,7 +452,7 @@ button.button-active {
   transform: matrix(1, 0, 0, -1, 0, 0);
   color: white;
   align-items: center;
-  grid-template-columns: 2em 2em 1fr 1fr;
+  grid-template-columns: 2em 2em 1fr;
 }
 
 
@@ -479,7 +481,7 @@ button.button-active {
 
 
 .my-stun-container h2 {
-  margin-bottom: .1rem;
+  margin-bottom: 1rem;
 }
 
 .my-stun-container>p {
@@ -488,9 +490,42 @@ button.button-active {
 
 .my-stun-container-actions {
   margin-bottom: 1rem;
+  border-top: 1px solid #ddd;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
 }
 
+.my-stun-container .saito-badge {
+  color: var(--saito-white);
+  background: var(--saito-red);
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 1em;
+  vertical-align: super;
+}
 
+.my-stun-container .saito-info-text {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.2rem;
+}
+
+.my-stun-container button {
+  height: 2rem;
+  line-height: 0rem;
+  font-size: 1rem;
+  width: 10rem;
+}
+
+.my-stun-container-join input {
+  margin-right: 1rem;
+  padding-left: 1rem;
+  height: 2rem;
+  font-size: 1rem;
+}
 
 .my-stun-container-join p {
   font-size: 1rem;
@@ -528,3 +563,6 @@ button.button-active {
 
 }
 
+.saito-overlay {
+  min-width: 25rem;
+}

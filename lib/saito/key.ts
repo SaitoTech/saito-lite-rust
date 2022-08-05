@@ -18,7 +18,6 @@ class Key {
     this.aes_publickey = "";
     this.aes_privatekey = "";
     this.aes_secret = "";
-    this.identifiers = [];
     this.data = {};
   }
 

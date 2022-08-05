@@ -19,7 +19,6 @@ module.exports = ArcadeSidebarTemplate = () => {
     <div class="arcade-announcements" id="arcade-announcements">
       <div class="arcade-announcement">Looking for an opponent? Drop an invite on our gamers' <a href="https://t.me/SaitoArcadeChat">Telegram Channel</a>.</div>
       <div class="arcade-announcement">Like large multiplayer games? See our upcoming <a href="https://docs.google.com/spreadsheets/d/1f1QrDFd8f6RaIJhV5m-pQFBoAO9WZGxpCoJmdKBaQwI/edit#gid=0" target="_community">Community Games and Events</a>.</div>
-      <div class="arcade-announcement">Leagues and Leaderboards <em>coming soon</em>!</div>
     </div>
 
   `;

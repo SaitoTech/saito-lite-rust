@@ -4408,22 +4408,6 @@ console.log("SHOULD PLACE: " + player);
   }
 
 
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "player1") {
-        if (options[index] == "random") {
-          new_options[index] = options[index];
-        } else {
-          new_options[index] = options[index] == "ussr" ? "ussr" : "us";
-        }
-      } else {
-        new_options[index] = options[index];
-      }
-    }
-    return new_options;
-  }
-
 
 
   returnUnplayedCards() {

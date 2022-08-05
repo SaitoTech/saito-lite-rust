@@ -1,0 +1,46 @@
+.saito-overlay-backdrop {
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #444;
+  opacity: 0.4;
+  z-index: 100;
+}
+
+.saito-overlay {
+  position: fixed;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: auto;
+  margin-right: auto;
+  background-color: transparent;
+  z-index: 1000;
+  min-width: 10%;
+  min-height: 10%;
+  height: min-content;
+  width: min-content;
+}
+
+.saito-overlay-closebox {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  right: -13px;
+  border-radius: 50%;
+  top: -15px;
+  background-color: white;
+  z-index: 100;
+}
+
+.saito-overlay-closebox-btn {
+  display: block;
+  height: 32px;
+  width: 32px;
+  color: red;
+  font-size: 31px;
+}

@@ -15,8 +15,11 @@ module.exports = ArcadeLeagueTemplate = (app, mod, league) => {
       <div class="info-item"><div>Type:</div><div>${league.type}</div></div>
       <div class="info-item"><div>Ranking Algo:</div><div>${league.ranking}</div></div>
       <div class="info-item"><div>Admin:</div><div>${app.keys.returnUsername(league.admin)}</div></div>
-    </div>
-    <div id="league-leaderboard" class="league-leaderboard">
+    </div>`;
+    if (app.modules.returnActiveModule().name == "Arcade" && league.game && league.myRank > 0 && league.admin !== "saito"){
+      html += `<div><button type="button" id="game-invite-btn" class="game-invite-btn" >Create Game</button></div>`;
+    }
+    html += `<div id="league-leaderboard" class="league-leaderboard">
       <div class="leaderboard-spinner loader"></div>
     </div>
     <div class="btn-controls-box">`;

@@ -2733,35 +2733,6 @@ class Poker extends GameTemplate {
     }
   }
 
-  /*
-    Only use the following options when creating the game invite TX
-   */
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "crypto") {
-        new_options[index] = options[index];
-      }
-      if (index == "chip") {
-        new_options[index] = options[index];
-      }
-      if (index == "stake"){
-        new_options[index] = options[index]; 
-      }
-      if (index == "num_chips") {
-        new_options[index] = options[index];
-      }
-      if (index == "blind_mode") {
-        new_options[index] = options[index];
-      }
-      if (index == "chip_graphics"){
-        new_options[index] = options[index]; 
-      }
-    }
- 
-    return new_options;
-  }
-
   returnShortGameOptionsArray(options) {
     let sgoa = super.returnShortGameOptionsArray(options);
     let ngoa = {};

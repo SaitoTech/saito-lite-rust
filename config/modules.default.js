@@ -13,6 +13,7 @@ module.exports = {
     'post/post.js',
     'qrscanner/qrscanner.js',
     'relay/relay.js',
+    'redsquare/redsquare.js',
     'registry/registry.js',
     'saitolicious/saitolicious.js',
     'settings/settings.js',
@@ -21,8 +22,8 @@ module.exports = {
     'wordblocks/wordblocks.js',
     'calendar/calendar.js',
     'website/website.js',
-    'stun/stun.js',
-    'video/video.js',
+//    'stun/stun.js',
+//    'video/video.js',
   ],
   lite: [
     'arcade/arcade.js',
@@ -37,6 +38,7 @@ module.exports = {
     'qrscanner/qrscanner.js',
     'poker/poker.js',
     'post/post.js',
+    'redsquare/redsquare.js',
     'relay/relay.js',
     'registry/registry.js',
     'saitolicious/saitolicious.js',
@@ -47,7 +49,7 @@ module.exports = {
     'wordblocks/wordblocks.js',
     'calendar/calendar.js',
     'website/website.js',
-    'stun/stun.js',
-    'video/video.js',
+  //  'stun/stun.js',
+  //  'video/video.js',
   ]
 }

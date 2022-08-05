@@ -248,6 +248,8 @@ class QRScanner extends ModTemplate {
   //
   handleDecodedMessage(msg) {
 
+console.log("HANDLE DECODED MESSAGE");
+
     if (this.scanner_callback != null) {
       this.decoder.terminate();
       this.scanner_callback(msg);

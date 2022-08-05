@@ -4468,6 +4468,7 @@ playerTurnHeadlineSelected(card, player) {
   
   revertTurn() {
     let twilight_self = this;
+    let unintervention = (twilight_self.game.state.events.unintervention);
     if (start_turn_game_state == null || start_turn_game_state == undefined) {} else {
       twilight_self.game.state = start_turn_game_state;
     }
@@ -4476,16 +4477,18 @@ playerTurnHeadlineSelected(card, player) {
       if (tmpar[0] === "discard") {
       	if (tmpar[1] === "ussr" && twilight_self.game.player == 1) {
 	        if (tmpar[2] != "ops") {
-            twilight_self.updateLog("USSR second-guesses themselves...");
 	          twilight_self.addCardToHand(tmpar[2]);
 	        }
 	      }
       	if (tmpar[1] === "us" && twilight_self.game.player == 2) {
       	  if (tmpar[2] != "ops") {
-                  twilight_self.updateLog("US second-guesses themselves...");
       	    twilight_self.addCardToHand(tmpar[2]);
       	  }
       	}
+       if (unintervention && tmpar[2] !== "unintervention"){
+        twilight_self.game.state.events.unintervention = 1;
+       }
+       twilight_self.updateLog(`${tmpar[1].toUpperCase()} second-guesses themselves and takes back their ${twilight_self.cardToText(tmpar[2])}...`);
       }
       if (tmpar[0] === "play") {
         twilight_self.displayBoard();
@@ -4520,6 +4523,7 @@ playerTurnHeadlineSelected(card, player) {
       }
     }
 
+    twilight_self.game.state.event_before_ops = 0;
 
     if (twilight_self.game.deck[0].cards[card].player == opponent) {
         let html = '<ul><li class="card" id="before_ops">event before ops</li><li class="card" id="after_ops">event after ops</li></ul>';
@@ -4529,7 +4533,6 @@ playerTurnHeadlineSelected(card, player) {
 
         twilight_self.attachCardboxEvents(function(action2) {
 
-          twilight_self.game.state.event_before_ops = 0;
           twilight_self.game.state.event_name = twilight_self.cardToText(card);
 
           if (action2 === "before_ops") {
@@ -8481,30 +8484,6 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
 
   
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "player1") {
-        if (options[index] == "random") {
-          new_options[index] = options[index];
-        } else {
-	  if (options[index] === "ussr") {
-	    new_options[index] = "ussr";
-	  } else {
-	    new_options[index] = "us";
-	  }
-        }
-      } else {
-        new_options[index] = options[index]
-      }
-    }
-    return new_options;
-  }
-
-
-
-
-
   
 
   displayChinaCard() {
@@ -10362,7 +10341,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       	// make DEFCON boxes clickable
       	//
         for (let i = 1; i <= 5; i ++){
-          twilight_self.app.browser.addElementToDom(`<div id="${i}" class="set_defcon_box set_defcon_box_${i}"></div>`, "gameboard");  
+          twilight_self.app.browser.addElementToDom(`<div id="${i}" class="set_defcon_box set_defcon_box_${i}"></div>`, document.getElementById("gameboard"));  
           $('.set_defcon_box_'+i).css('top', twilight_self.scale(twilight_self.game.state.defcon_ps[5-i].top)+"px");
           $('.set_defcon_box_'+i).css('left', twilight_self.scale(twilight_self.game.state.defcon_ps[5-i].left)+"px");
 

@@ -1,4 +1,5 @@
 var ModTemplate = require('../../lib/templates/modtemplate');
+var DesignAppspace = require('./lib/appspace/main');
 
 class Design extends ModTemplate {
 
@@ -8,7 +9,9 @@ class Design extends ModTemplate {
     this.app            = app;
     this.name           = "Design";
     this.description    = "Visual exploration and reference guide to Saito's standard design elements";
-    this.categories     = "Dev Utilities"
+    this.categories     = "Dev Utilities";
+    this.icon           = "fas fa-pen";
+
     return this;
   }
 
@@ -17,6 +20,9 @@ class Design extends ModTemplate {
 
   respondTo(type) {
 
+    if (type == 'appspace') {
+      return new DesignAppspace(this.app, this);
+    }
     if (type == 'email-appspace') {
       let obj = {};
 	  obj.render = this.renderEmail;
