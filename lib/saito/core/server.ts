@@ -73,7 +73,7 @@ class Server {
 
     server.on("connection", (wsocket, request) => {
       //console.log("new connection received by server", request);
-      this.app.network.addRemotePeer(wsocket);
+      this.app.network.addRemotePeer(wsocket).then(r => {return;});
     });
   }
 
@@ -353,7 +353,7 @@ class Server {
     app.get("/block/:hash", async (req, res) => {
       try {
         const hash = req.params.hash;
-        console.debug("server giving out block : " + hash);
+        console.log("server giving out block : " + hash);
         if (!hash) {
           console.warn("hash not provided");
           return res.sendStatus(400); // Bad request
