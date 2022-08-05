@@ -1,8 +1,9 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
-const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
-const Slip = require('../..//lib/saito/slip.ts');
-var serialize = require('serialize-javascript');
+// const StunEmailAppspace = require('./lib/email-appspace/email-appspace');
+// const Slip = require('../..//lib/saito/slip.ts');
+// var serialize = require('serialize-javascript');
+// const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 
 class Stun extends ModTemplate {
 
@@ -11,9 +12,9 @@ class Stun extends ModTemplate {
         this.app = app;
         this.appname = "Stun";
         this.name = "Stun";
-        this.description = "Session Traversal Utilitiesf for NAT (STUN)";
+        this.description = "";
         this.categories = "Utility Networking";
-
+        this.header = null;
         this.stun = {};
         this.peer_connections = {};
     }
@@ -68,11 +69,12 @@ class Stun extends ModTemplate {
     }
 
 
+
     respondTo(type) {
-        if (type === 'email-appspace') {
-            return new StunEmailAppspace(this.app, this);
-        }
-        return null;
+        // if (type === 'email-appspace') {
+        //     return new StunEmailAppspace(this.app, this);
+        // }
+        // return null;
     }
 
     onConfirmation(blk, tx, conf, app) {
@@ -139,46 +141,46 @@ class Stun extends ModTemplate {
         }
     }
 
-    onPeerHandshakeComplete() {
-        if (this.app.BROWSER === 0) {
+    // onPeerHandshakeComplete() {
+    //     if (this.app.BROWSER === 0) {
 
-            // browser instance's public key
-            const instance_pubkey = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
+    //         // browser instance's public key
+    //         const instance_pubkey = this.app.network.peers[this.app.network.peers.length - 1].returnPublicKey();
 
-            let newtx = this.app.wallet.createUnsignedTransaction();
+    //         let newtx = this.app.wallet.createUnsignedTransaction();
 
-            const pubKeys = [];
-            this.app.network.peers.forEach(peer => {
-                pubKeys.push(peer.returnPublicKey());
-            })
+    //         const pubKeys = [];
+    //         this.app.network.peers.forEach(peer => {
+    //             pubKeys.push(peer.returnPublicKey());
+    //         })
 
 
-            console.log('instance ', instance_pubkey, ' pubkeys ', pubKeys)
-            // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
+    //         console.log('instance ', instance_pubkey, ' pubkeys ', pubKeys)
+    //         // newtx.transaction.to.push(new saito.default.slip(instance_pubkey));
 
-            newtx.msg.module = "Stun";
-            newtx.msg.pubKeys = {
-                pubKeys
-            };
+    //         newtx.msg.module = "Stun";
+    //         newtx.msg.pubKeys = {
+    //             pubKeys
+    //         };
 
-            newtx.msg = {
-                module: this.appname,
-                request: "listener",
-                listeners: pubKeys,
-                pubKeys
-            };
+    //         newtx.msg = {
+    //             module: this.appname,
+    //             request: "listener",
+    //             listeners: pubKeys,
+    //             pubKeys
+    //         };
 
-            console.log(newtx.msg);
+    //         console.log(newtx.msg);
 
-            newtx = this.app.wallet.signTransaction(newtx);
-            this.app.network.propagateTransaction(newtx);
+    //         newtx = this.app.wallet.signTransaction(newtx);
+    //         this.app.network.propagateTransaction(newtx);
 
-            let relay_mod = this.app.modules.returnModule('Relay');
+    //         let relay_mod = this.app.modules.returnModule('Relay');
 
-            relay_mod.sendRelayMessage(instance_pubkey, 'get_public_keys', newtx);
-        }
+    //         relay_mod.sendRelayMessage(instance_pubkey, 'get_public_keys', newtx);
+    //     }
 
-    }
+    // }
 
     handlePeerRequest(app, req, peer, mycallback) {
 
@@ -263,11 +265,10 @@ class Stun extends ModTemplate {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
             const execute = async () => {
-                const stun_mod = app.modules.returnModule("Stun")
-                console.log("these are the servers :", stun_mod.servers);
+                const Stun_mod = app.modules.returnModule("Stun")
                 try {
                     const pc = new RTCPeerConnection({
-                        iceServers: stun_mod.servers,
+                        iceServers: Stun_mod.servers,
                     });
 
 
@@ -636,10 +637,9 @@ class Stun extends ModTemplate {
                 answer: "",
                 ice_candidates: []
             }
-            const stun_mod = app.modules.returnModule("Stun");
-            console.log("these are the servers ", stun_mod.servers)
+            const Stun_mod = app.modules.returnModule("Stun")
             const pc = new RTCPeerConnection({
-                iceServers: stun_mod.servers,
+                iceServers: Stun_mod.servers,
             });
             try {
 

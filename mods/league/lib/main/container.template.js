@@ -4,9 +4,10 @@ module.exports = (app, mod) => {
   let html = `
     <div class="league-main-container" id="league-main-container">
       <div id="league-main-container-header" class="container-header">
-        <h2>Saito League</h2>
+        <h1>Saito League</h1>
         <p>Create leagues to compete against other players, through rankings, and win prizes</p>
       </div>
+      <div></div>
       
       <div class="league-main-container-games" id="league-main-container-games">
         <h2>Create a New League</h2>

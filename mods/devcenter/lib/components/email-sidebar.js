@@ -25,8 +25,8 @@ module.exports = EmailSidebar = {
       if (module.name === "MyQRCode") {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" style="display:none" id="email-nav-${module.name}">${modulename}</li>`;
       }
-      else if (modulename === "Stun") {
-        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">Video Chat</li>`;
+      else if (modulename === "VideoCall") {
+        email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">Video Call</li>`;
       }
       else {
         email_apps.innerHTML += `<li class="email-apps-item email-apps-item-${i}" id="email-nav-${module.name}">${modulename}</li>`;
@@ -94,9 +94,6 @@ module.exports = EmailSidebar = {
 
         if ("attachEvents" in obj)
           obj.attachEvents(mod.app, module);
-      } else if (modname === 'stun' && module.name === "stun") {
-        let obj = module.respondTo("email-appspace");
-        obj.render(mod.app, module);
       }
     }
   }

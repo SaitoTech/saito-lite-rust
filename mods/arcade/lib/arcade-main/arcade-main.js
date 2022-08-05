@@ -108,14 +108,39 @@ module.exports = ArcadeMain = {
     //
     // add games
     //
+    let numGamesDisplayed = 0;
     if (document.querySelector("#arcade-hero")) {
+      //On initial load of Arcade, it takes a while for Leagues array to get populated
+      //so need some way to refresh the arcade game invites...
+      let visibleLeagues = (league) ? league.filterLeagues(app) : "";
+
       mod.games.forEach((invite, i) => {
         if (!mod.viewing_game_homepage || invite.msg.game.toLowerCase() === mod.viewing_game_homepage) {
           //console.log("INVITE: " + JSON.stringify(invite) + " -- " + mod.name);
-          app.browser.addElementToElement(
-            ArcadeInviteTemplate(app, mod, invite, i),
-            document.querySelector("#arcade-hero")
-          );
+          let includeGame = true;
+          
+          //Only filter if there are leagues to compare against
+          if (league && league.leagues.length > 0){
+            //Do some extra checking to see if we should make this game invite visible based on leagues
+            if (invite.msg.options.league){
+              includeGame = false;
+              for (let l of visibleLeagues){
+                if (l.id == invite.msg.options.league){
+                  includeGame = true;
+                }
+              }
+            }
+          }
+          //console.log("ARCADE_MAIN");
+          //console.log(JSON.parse(JSON.stringify(invite.msg)));
+          //console.log("Include for display? "+includeGame);
+          //console.log(JSON.parse(JSON.stringify(visibleLeagues)));
+
+          //isMyGame is a decent safety catch for ongoing games
+          if (includeGame || mod.isMyGame(invite, app)){
+            numGamesDisplayed++;
+            app.browser.addElementToElement(ArcadeInviteTemplate(app, mod, invite, i), document.querySelector("#arcade-hero"));    
+          }
         }
       });
 
@@ -148,7 +173,7 @@ module.exports = ArcadeMain = {
 
     //ArcadeInfobox.render(app, mod); //Not doing anything right now
 
-    if (mod.games.length == 0) {
+    if (numGamesDisplayed == 0) {
       let carousel = new SaitoCarousel(app);
       carousel.render(app, mod, "arcade", "arcade-hero");
       carousel.attachEvents(app, mod);
@@ -297,9 +322,10 @@ module.exports = ArcadeMain = {
     // if this requires "crypto" we need to check that the mod is installed
     // and the minimum required amount is available
     //
+    let txmsg = accepted_game.msg;
+    let game_options = txmsg.options;
+
     try {
-      let txmsg = accepted_game.msg;
-      let game_options = txmsg.options;
 
       //
       // check we have module
@@ -359,6 +385,20 @@ module.exports = ArcadeMain = {
      console.log("ERROR checking if crypto-required: " + err);
       return;
     }
+
+    //Check if League Member
+    if (game_options.league){
+      let leag = app.modules.returnModule("League");
+      if (!leag.isLeagueMember(game_options.league)){
+        let conf = await sconfirm("You need to be a member to join a League-only game, join?");
+        if (conf){
+          leag.sendJoinLeagueTransaction(game_options.league);
+          salert("Joining League... It may take a minute to take effect");
+        }
+        return;
+      }
+    }
+
 
     //
     // not enough players? join not accept
@@ -554,7 +594,7 @@ module.exports = ArcadeMain = {
   cancelGame(app, mod, game_id) {
     var testsig = "";
     let players = [];
-    console.log("Click to Cancel Game");
+    console.log("Click to Cancel Game: " + game_id);
     console.log(JSON.parse(JSON.stringify(mod.games)));
     console.log(JSON.parse(JSON.stringify(app.options.games)));
 
@@ -572,14 +612,15 @@ module.exports = ArcadeMain = {
       }
 
       let msg = {
-        sig: game_id,
-        status: "close",
         request: "close",
         module: "Arcade",
       };
 
       newtx.msg = msg;
+      newtx.msg.game_id = game_id;
       newtx = app.wallet.signTransaction(newtx);
+
+      console.log(JSON.parse(JSON.stringify(newtx)));
 
       let relay_mod = app.modules.returnModule("Relay");
       if (relay_mod != null) {
@@ -623,7 +664,7 @@ module.exports = ArcadeMain = {
     }
 
 
-    createCloseTx();
+    createCloseTx(game_id);
     this.removeGameFromList(game_id);
   },
 
