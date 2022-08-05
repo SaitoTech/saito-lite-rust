@@ -93,7 +93,7 @@ export default class Blockring {
       let index = (idx + this.ring_buffer_length) % this.ring_buffer_length;
       if (this.ring[index].block_hashes.length > 0) {
         console.log(
-          "block " +
+          "------- block " +
             this.ring[index].block_ids[this.ring[index].lc_pos] +
             ": " +
             this.ring[index].block_hashes[this.ring[index].lc_pos]

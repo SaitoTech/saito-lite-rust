@@ -27,12 +27,6 @@ class GoldenTicket {
             }
         }
 
-        console.log("target hash = " + target_hash);
-        console.log("previous block hash = " + previous_block_hash);
-        console.log("random hash = " + random_hash);
-        console.log("public key = " + this.app.crypto.fromBase58(publickey));
-        console.log("generated hash = " + solution);
-        console.log("difficulty = " + difficulty);
         // if we hit here, true
         return true;
     }

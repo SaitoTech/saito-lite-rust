@@ -149,7 +149,7 @@ class Network {
   //
   // server sends us a websocket
   //
-  addRemotePeer(socket) {
+  async addRemotePeer(socket) {
     // deny excessive connections
     if (this.peers_connected >= this.peers_connected_limit) {
       if (this.debugging) {
@@ -197,7 +197,7 @@ class Network {
     // done for remote-sockets created int he server, so we manually
     // do it here. this adds the message emission events to the socket
     //
-    this.app.handshake.initiateHandshake(socket);
+    await this.app.handshake.initiateHandshake(socket);
 
     return peer;
   }
@@ -541,7 +541,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    //console.debug("network.receiveRequest : ", message);
+    console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
