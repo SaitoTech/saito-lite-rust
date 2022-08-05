@@ -59,7 +59,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   <div class="saito-page-header">
-    <div class="saito-button-secondary small" style="float: right;">Backup Wallet</div>
+    <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
     <div class="saito-page-header-title">SETTINGS</div>
     <div class="saito-page-header-text">
       Configure and personalise your Saito experience. Add/remove modules, setup wallet. 
@@ -81,10 +81,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 	<h6>Wallet</h6>
         <div class="settings-appspace-user-details">
           
-          <div class="saito-black">Email:</div>
+          <div id="register-email-btn" class="saito-black">Email:</div>
           <div >${email_registered}</div>
 
-          <div class="saito-black">Username:</div>
+          <div id="register-identifier-btn" class="saito-black">Username:</div>
          <div>${identifier_registered}</div>
 
           <div class="saito-black">Public Key:</div>
@@ -92,15 +92,15 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
           <div class="saito-black">Private Key:</div>
           <div class="settings-appspace-privatekey">
-            <div class="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
-            <i class="settings-appspace-see-password fas fa-eye"></i>
+             <div class="settings-appspace-password" id="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
+            <i class="settings-appspace-see-password fas fa-eye" id="settings-appspace-see-password"></i>
           </div>
 
 	       </div>
          <div class="saito-grid-1-1-1">
-         <div class="saito-button-secondary">Restore</div>
-         <div class="saito-button-secondary">Import Private Key</div>
-         <input type="file" style="display:none;" />
+         <div class="saito-button-secondary" id="restore-account-btn">Restore</div>
+         <div class="saito-button-secondary" id="restore-privatekey-btn">Import Private Key</div>
+         <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
          </div>
      
   </div>
