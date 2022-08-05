@@ -3,7 +3,9 @@ buttons
 -----------------------------------------------------------------*/
 
 @import url("./saito-colors.css");
-button, .saito-button-primary {
+
+button,
+.saito-button-primary {
   background: var(--saito-primary);
   text-align: center;
   padding: 1rem 1.5rem;
@@ -22,13 +24,21 @@ button, .saito-button-primary {
 }
 
 .saito-button-secondary {
-  border: 1px solid var(--saito-primary);
-  display: inline-block;
-  font-weight: 500;
   text-align: center;
-  line-height: 1.2;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  margin: 2rem 0;
+  font-size: 1.8rem;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin: .5rem;
+  border: none;
+  border: 1px solid var(--saito-primary);
   color: var(--saito-primary);
-  background: transparent;
+
 }
 
 .saito-button-gradient {
@@ -46,13 +56,19 @@ button, .saito-button-primary {
   color: var(--saito-white);
 }
 
-button.small, .saito-button-primary.small, .saito-button-secondary.small, .saito-button-gradient.small {
+button.small,
+.saito-button-primary.small,
+.saito-button-secondary.small,
+.saito-button-gradient.small {
   padding: .75rem .7rem;
   font-size: 1.4rem;
   min-width: 4rem;
 }
 
-button.large, .saito-button-primary.large, .saito-button-secondary.large, .saito-button-grandient.large {
+button.large,
+.saito-button-primary.large,
+.saito-button-secondary.large,
+.saito-button-grandient.large {
   padding: 1.5rem 2rem;
   min-width: 27rem;
   font-size: 2.2rem;

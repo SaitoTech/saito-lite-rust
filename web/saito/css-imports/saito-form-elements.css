@@ -33,7 +33,7 @@ input[type="password"] {
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
-  color: var(--saito-default);
+  color: var(--saito-default-font-color);
   border-radius: .5rem;
 }
 
@@ -295,6 +295,7 @@ Selects
 .saito-select-btn {
   background-color: var(--saito-white);
   display: flex;
+  width: 20rem;
   align-items: center;
   height: 4.5rem;
   position: relative;
@@ -332,8 +333,9 @@ Selects
 }
 
 .saito-select-content {
+
   position: absolute;
-  width: calc(100% - 5rem);
+  width: 20rem;
   background-color: var(--saito-white);
   justify-content: start;
   display: none;

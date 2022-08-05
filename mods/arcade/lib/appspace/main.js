@@ -12,7 +12,7 @@ class ArcadeAppspace {
   render(app, mod, container = "") {
 
     if (!document.querySelector(".arcade-appspace")) {
-      app.browser.addElementToClass(ArcadeAppspaceTemplate(app, mod), ".appspace");
+      app.browser.addElementToClass(ArcadeAppspaceTemplate(app, mod), "appspace");
     }
 
     app.browser.addElementToElement(HARDCODED_GAME_INVITE_TEMPLATE(app, mod, {}, 0), document.querySelector(".arcade-hero"));
