@@ -264,7 +264,8 @@ class RedSquare extends ModTemplate {
 
     let redsquare_self = this;
 
-    if (this.BROWSER == 1) {
+    if (this.app.BROWSER == 1) {
+
       if (document.querySelector(".redsquare-list")) {
         app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
   
@@ -273,52 +274,48 @@ class RedSquare extends ModTemplate {
           // ascending because we add one-by-one on receipt
           `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
     
-          async (res) => {
-    
+          async (res) => {    
+
             if (res.rows) {
     
               res.rows.forEach(row => {
     
-          let new_tweet = 1;
+                let new_tweet = 1;
+      
+       	        for (let i = 0; i < redsquare_self.tweets.length; i++) {
+                  if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
+    	            new_tweet = 0;
+    	          }
+                }
     
-    //	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
-    //	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
-    //		new_tweet = 0;
-    //	      }
-    //	    }
-    
-          if (new_tweet) {
-            let tx = new saito.default.transaction(JSON.parse(row.tx));
-    
-    console.log("NUM LIKES: " + row.num_likes);
+                if (new_tweet) {
+
+                  let tx = new saito.default.transaction(JSON.parse(row.tx));
     
                   if (!tx.optional) { tx.optional = {}; }
-                tx.optional.parent_id       = tx.msg.parent_id;
-                tx.optional.thread_id       = tx.msg.thread_id;
-                tx.optional.num_replies     = row.num_replies;
-                tx.optional.num_retweets    = row.num_retweets;
-                tx.optional.num_likes       = row.num_likes;
-                tx.optional.link_properties = {};
+                  tx.optional.parent_id       = tx.msg.parent_id;
+                  tx.optional.thread_id       = tx.msg.thread_id;
+                  tx.optional.num_replies     = row.num_replies;
+                  tx.optional.num_retweets    = row.num_retweets;
+                  tx.optional.num_likes       = row.num_likes;
+                  tx.optional.link_properties = {};
     
-              try {
-                  let x = JSON.parse(row.link_properties);
-                 tx.optional.link_properties = x;
-                } catch (err) {}
-         
-            this.addTweetFromTransaction(app, redsquare_self, tx);
-          }
+                  try {
+                    let x = JSON.parse(row.link_properties);
+                    tx.optional.link_properties = x;
+                  } catch (err) {}
+
+                  this.addTweetFromTransaction(app, redsquare_self, tx);
+                }
               });
-    
-        redsquare_self.renderMainPage(app, redsquare_self);
+
+              redsquare_self.renderMainPage(app, redsquare_self);
     
             }
           }
         );
-    
-      }
-    
+      } 
     }
-
   }
 
 
@@ -482,6 +479,7 @@ class RedSquare extends ModTemplate {
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
+console.log("INSERTING SQL: " + sql);
     app.storage.executeDatabase(sql, params, "redsquare");
 
 

@@ -24,18 +24,14 @@ class RedSquareAppspaceGames {
 
     this.overlay = new SaitoOverlay(app, mod);
 
-    //
-    // if GameCreator was a template file, we could write it directly into the overlay
-    // since it is a class, we put an element in the overlay and render into that.
-    //
     document.getElementById("redsquare-schedule-game").onclick = (e) => {
-    
+
       let sc = new SaitoScheduler(app, mod);
-      sc.render(app, mod, function(data) {
+      // callback is on submit
+      sc.render(app, mod, function(options) {
         let gc = new GameCreator(app, mod);
         gc.render(app, mod);
       });
-
     }
 
     document.getElementById("redsquare-create-game").onclick = (e) => {

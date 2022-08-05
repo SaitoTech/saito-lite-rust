@@ -21,7 +21,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
     `;
 
-    let mods = app.modules.respondTo("arcade-game");
+    let mods = app.modules.respondTo("arcade-games");
     for (let i = 0; i < mods.length; i++) {
 
       let modname = mods[i].name;
@@ -30,7 +30,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
 
       let modimage = "/" + mods[i].returnSlug() + "/img/arcade/arcade.jpg";
 
-      html += `;
+      html += `
         <div class="saito-game">
 
 	  ${SaitoModuleTemplate(app, mod, modname, modimage)};

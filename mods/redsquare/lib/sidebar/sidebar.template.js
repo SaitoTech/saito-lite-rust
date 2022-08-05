@@ -57,32 +57,6 @@ module.exports = RedSquareSidebarTemplate = (app, mod) => {
       </div>
   </div>
 
-  <div id="redsquare-follow-container">
-      <h6> Who to follow </h6>
-      <div>
-          <div class="saito-list">
-              <div class="saito-list-user">
-                  <div class="saito-list-user-image-box">
-                      <img class="saito-idenitcon" src="/redsquare/images/david.jpeg" />
-                  </div>
-                  <div class="saito-list-user-content-box">
-                      <div class="saito-username">David Lancashire
-                      </div>
-                      <p> @trevelyan </p>
-                  </div>
-              </div>
-              <div class="saito-list-user">
-                  <div class="saito-list-user-image-box">
-                      <img class="saito-idenitcon" src="/redsquare/images/richard.jpeg" />
-                  </div>
-                  <div class="saito-list-user-content-box">
-                      <div class="saito-username">Richard Parris</div>
-                      <p> @arpee</p>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
 </div>
 
 

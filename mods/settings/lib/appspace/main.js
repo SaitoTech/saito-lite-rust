@@ -45,13 +45,6 @@ class SettingsAppspace {
       }
 
 
-
-
-
-
-
-      /***
-      
           try {
           let settings_appspace = document.querySelector(".settings-appspace");
           if (settings_appspace) {
@@ -227,7 +220,6 @@ class SettingsAppspace {
       
           };
           } catch (err) {}
-      ***/
 
     } catch (err) {
       console.log("Error in Settings Appspace: " + JSON.stringify(err));

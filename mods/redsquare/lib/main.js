@@ -62,9 +62,7 @@ class RedSquareMain {
     }
 
     mod.lsidebar.render(app, mod, ".saito-sidebar-left");
-    console.log("RENDER HOME");
     mod.home.render(app, mod, ".appspace");
-    console.log("DONE HOME");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
   // check the url for an anchor hash
