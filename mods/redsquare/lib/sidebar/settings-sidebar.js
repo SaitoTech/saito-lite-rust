@@ -24,9 +24,6 @@ class RedSquareGamesSidebar {
       app.browser.addElementToSelector(RedSquareSettingsSidebarTemplate(app, mod), this.selector);
     }
 
-    let sidebar_calendar = new SaitoCalendar(app, mod);
-    sidebar_calendar.render(app, mod, ".redsquare-sidebar-calendar");
-
     this.attachEvents(app, mod);
 
   }

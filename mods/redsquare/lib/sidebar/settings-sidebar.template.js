@@ -3,9 +3,6 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
   return `
 
 <div class="saito-sidebar right">
-  
-  <div class="redsquare-sidebar-calendar">
-  </div>
 
   <div class="settings-appspace-versions-container">
     <h6> Version </h6>
