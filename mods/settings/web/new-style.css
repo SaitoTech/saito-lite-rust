@@ -196,10 +196,8 @@
   grid-template-columns: 6fr 1fr;*/
   font-size: 1.5em;
   font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-  background-image: url(/saito/img/dreamscape.png);
-  background-position: 0em;
-  background-size: cover;
-  
+  background-color: #fff;
+  color: #444;
 }
 
 .welcome-modal__input-container {
@@ -239,29 +237,12 @@
   margin: 1em;
 }
 
-.welcome-modal-exit {
-  padding: 1.5em;
-  background: #333d;
-  color: var(--saito-skyline-grey);
-  position: relative;
-  cursor: pointer;
-}
-
-.welcome-modal-exit .fa-arrow-right {
-  margin: auto;
-  font-size: 5vw;
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  text-align: center;
-  position: absolute;
-}
-
 .welcome-modal-header {
   font-size: 2em;
 }
 
-.welcome-modal-main {
+.welcome-modal-main p {
+    font-size: 1.8rem;
 }
 
 .welcome-modal-info {
@@ -270,7 +251,7 @@
 
 .welcome-modal-action {
   padding: 1.5em;
-  color: var(--saito-skyline-grey);
+  color: #444;
 }
 
 .welcome-modal-action p {
@@ -311,13 +292,6 @@
   .modal-content-blank {
     width: 100%;
   }
-  .welcome-modal-exit{
-    display: none;
-  }
-  /*.welcome-modal-exit .fa-arrow-right {
-    font-size: 80px;
-    bottom: 2px;
-  }*/
   .welcome-modal-action {
     padding: 0.81em;
   }
@@ -331,4 +305,65 @@
     width: 95vw;
   }
 
+}
+
+
+#alert-shim {
+  z-index: 2000;
+  background-color: #0008;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+
+#alert-box {
+  width: 75vw;
+  max-width: 700px;
+  transition: all 333ms ease-in-out;
+  background: rgb(234, 234, 239);
+  margin: auto;
+  position: relative;
+  top: -500px;
+  border: 1px solid var(--saito-red);
+  border-radius: 0 0 5px 5px;
+  padding: 1em 1em 3.5em 1em;
+}
+
+#alert-buttons {
+  float: right;
+  margin: 0 0 0 1em;
+  margin-top: 0.5rem;
+}
+
+#alert-box button {
+  margin: 0 0 0 1em;
+}
+
+#alert-ok {
+  margin: 0 0 0 1em;
+}
+
+#alert-box p {
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  font-size: 1.4em;
+  text-align: center;
+  align-self: center;
+  font-weight: bold;
+  display: block;
+  margin: 1em 0;
+  overflow-wrap: break-word;
+}
+
+div#message-wrapper {
+  border: 2px solid var(--saito-red);
+  min-width: 500px;
+  padding: 1em;
+  font-size: 2em;
+  background: var(--saito-red);
+  position: fixed;
+  bottom: 1em;
+  left: 1em;
+  color: #fff;
+  z-index: 200;
 }
