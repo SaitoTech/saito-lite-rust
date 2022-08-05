@@ -121,6 +121,7 @@ module.exports = ArcadeGameDetails = {
     //
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
+        mod.active_tab = "arcade"; //So it refreshes to show the new game invite
         e.stopPropagation();
         try {
           let options = getOptions();

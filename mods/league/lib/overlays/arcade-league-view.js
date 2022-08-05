@@ -122,13 +122,11 @@ module.exports = ArcadeLeagueView = {
       createGameBtn.onclick = () => {
         let tx = new saito.default.transaction();
         tx.msg.game = this.league.game;
-        tx.msg.league = this.league.id;
-        let arcade = app.modules.returnModule("Arcade");
-        if (arcade){
-          ArcadeGameDetails.render(app, arcade, tx);
-          ArcadeGameDetails.attachEvents(app, arcade, tx);
-          arcade.active_tab = "arcade"; //So it refreshes to the new game invite
+        if (this.league.admin !== "saito"){
+          tx.msg.league = this.league.id;
         }
+        ArcadeGameDetails.render(app, app.modules.returnActiveModule(), tx);
+        ArcadeGameDetails.attachEvents(app, app.modules.returnActiveModule(), tx);
       }
     }
 

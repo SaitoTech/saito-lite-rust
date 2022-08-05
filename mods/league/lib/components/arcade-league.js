@@ -30,13 +30,11 @@ class ArcadeLeague {
         if (game_cmd == "play" && game_sig == league.id){
           let tx = new saito.default.transaction();
           tx.msg.game = league.game;
-          tx.msg.league = league.id;
-          let arcade = app.modules.returnModule("Arcade");
-          if (arcade){
-            ArcadeGameDetails.render(app, arcade, tx);
-            ArcadeGameDetails.attachEvents(app, arcade, tx);
-            arcade.active_tab = "arcade"; //So it refreshes to show the new game invite
+          if (league.admin !== "saito"){
+            tx.msg.league = league.id;
           }
+          ArcadeGameDetails.render(app, app.modules.returnActiveModule(), tx);
+          ArcadeGameDetails.attachEvents(app, app.modules.returnActiveModule(), tx);
 
         }
 
