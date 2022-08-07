@@ -4,7 +4,7 @@ const SaitoScheduler = require('./../../../../lib/saito/new-ui/saito-scheduler/s
 
 class InvitesAppspace {
 
-  constructor(app) {
+  constructor(app, mod) {
   }
 
   render(app, mod, container = "") {
@@ -13,25 +13,22 @@ class InvitesAppspace {
       app.browser.addElementToSelector(InvitesAppspaceTemplate(app, mod), ".appspace");
     }
 
-
-    if (mod.invites) {
-
+    if (mod.invites.length > 0) {
       for (let i = 0; i < mod.invites.length; i++) {
-        app.browser.addElementToSelector(InvitesInvitationTemplate(app, mod, i), ".invites");
+        app.browser.addElementToSelector(InviteTemplate(app, mod, mod.invites[i]), ".invites-list");
       }
-
       for (let i = 0; i < mod.invites.length; i++) {
-        if (mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
-          let qs = `#invites-invitation-${i} > invites-invitation-accept`;
-          document.querySelectorAll(qs).forEach((el) => {
-            el.style.display = "none";
-          });
+        if (mod.invites[i].adds.includes(app.wallet.returnPublicKey())) {
+console.log("HELLO: address includes...");
+          let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
+console.log("QS: " + qs);
+          document.querySelector(qs).style.display = "none";
         }
-        if (mod.isPendingOthers(mod.invites[i], app.wallet.returnPublicKey())) {
-          let qs = `#invites-invitation-${i} > invites-invitation-accept`;
-          document.querySelectorAll(qs).forEach((el) => {
-            el.style.display = "none";
-          });
+        if (!mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
+console.log("I AM NOT PENDING...");
+          let qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
+console.log("QS: " + qs);
+          document.querySelector(qs).style.display = "none";
         }
       }
     }
@@ -52,7 +49,6 @@ class InvitesAppspace {
       });
 
     }
-
 
     //
     // button to initiate invites

@@ -13,7 +13,7 @@ module.exports = InvitesAppspaceTemplate = (app, mod) => {
       </div>
     </div>
 
-    <div id="invites-list class="invites-list">
+    <div id="invites-list" class="invites-list">
     </div>
 
   </div>

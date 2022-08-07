@@ -22,12 +22,9 @@ class Invites extends InviteTemplate {
 
   }
 
-
   initialize(app) {
-    this.load();
+    this.loadInvites();
   }
-
-
 
   respondTo(type) {
 
@@ -39,16 +36,11 @@ class Invites extends InviteTemplate {
     return null;
   }
 
-
-  //
-  // InviteTemplate handles
-  //
   async onConfirmation(blk, tx, conf, app) {
     super.onConfirmation(blk, tx, conf, app);
   }
 
 }
-
 
 module.exports = Invites;
 
