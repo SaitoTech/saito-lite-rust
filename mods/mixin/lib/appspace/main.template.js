@@ -1,6 +1,6 @@
 module.exports = MixinAppspaceTemplate = (app) => {
 
-  let mixin_mod = app.modules.returnModule("Mixin");
+  let mixin_mod = app.modules.returnModule("Crypto Wallet");
 
   let html = `
 
