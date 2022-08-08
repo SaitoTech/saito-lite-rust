@@ -27,16 +27,15 @@ module.exports = (app, mod) => {
     let mods = app.modules.respondTo("arcade-games");
     for (let i = 0; i < mods.length; i++) {
 
-      let modname = mods[i].name;
-      if (mods[i].appname) { modname = mods[i].appname; }
-      if (mods[i].gamename) { modname = mods[i].gamename; }
+      let modname = mods[i].name; //Arcade Game Details and stuff works on .name, NOT .gamename (human readable)
+      let modtitle = mods[i].gamename || mods[i].appname || modname;
 
       let modimage = "/" + mods[i].returnSlug() + "/img/arcade/arcade.jpg";
 
       html += `
         <div class="saito-game">
 
-	        ${SaitoModuleTemplate(app, mod, modname, modimage)}
+	        ${SaitoModuleTemplate(app, mod, modtitle, modimage)}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">

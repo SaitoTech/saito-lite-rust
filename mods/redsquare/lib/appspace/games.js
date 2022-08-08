@@ -62,6 +62,23 @@ class RedSquareAppspaceGames {
 
     });
 
+    Array.from(document.querySelectorAll(".load-game-instructions")).forEach(game => {
+      game.onclick = (e) => {
+        e.stopPropagation();
+        let gameName = e.currentTarget.getAttribute("data-id");
+        console.log(gameName);
+        let gamemod = app.modules.returnModule(gameName);
+        if (gamemod){
+          gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+        }else{
+          console.log("Module not found");
+        }
+      };
+
+    });
+        
+
+
 
   }
 

@@ -17,6 +17,7 @@ class RedSquareGamesSidebar {
         console.log(tx);
         let gi = new GameInvite(app, mod, tx);
         gi.render(app, mod, ".saito-arcade-invite-list");
+        this.attachEvents(app, mod);
     });
 
 
@@ -46,24 +47,34 @@ class RedSquareGamesSidebar {
         console.log("EMITTING INVITE: "+ arcade_mod.games[i]?.msg.game);
         app.connection.emit('game-invite-render-request', arcade_mod.games[i]);
       }
-    };
+    }
 
-    this.attachEvents(app, mod);
 
   }
 
 
   attachEvents(app, mod) {
-    document.querySelector('.saito-arcade-invite').onclick = (e) => {
-      e.preventDefault();
-      e.stopImmediatePropagation();
+    Array.from(document.querySelectorAll('.saito-arcade-invite')).forEach(game => {
+      console.log("Adding invite",game);
+      game.onclick = (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-      let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
-      gameInviteDetails.render(this.app, this.mod);
-    }
+        let game_id = e.currentTarget.getAttribute("data-id");
+        console.log("Click on invite for game:" + game_id);
+        let arcade_mod = app.modules.returnModule("Arcade");
+        if (arcade_mod) {
+          for (let i = 0; i < arcade_mod.games.length; i++) {
+            if (arcade_mod.games[i].transaction.sig == game_id){
+              let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
+              gameInviteDetails.render(this.app, this.mod, arcade_mod.games[i]);
+            }
+          }    
+        }
+      };
 
-  } 
-
+    }); 
+  }
 }
 
 module.exports = RedSquareGamesSidebar;
