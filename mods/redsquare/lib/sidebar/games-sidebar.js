@@ -60,13 +60,12 @@ class RedSquareGamesSidebar {
         e.stopImmediatePropagation();
 
         let game_id = e.currentTarget.getAttribute("data-id");
-
         let arcade_mod = app.modules.returnModule("Arcade");
         if (arcade_mod) {
           for (let i = 0; i < arcade_mod.games.length; i++) {
             if (arcade_mod.games[i].transaction.sig == game_id){
-              let gameInviteDetails = new GameInviteDetails(this.app, this.mod, arcade_mod.games[i]);
-              gameInviteDetails.render(this.app, this.mod);
+              let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
+              gameInviteDetails.render(this.app, this.mod, arcade_mod.games[i]);
             }
           }    
         }

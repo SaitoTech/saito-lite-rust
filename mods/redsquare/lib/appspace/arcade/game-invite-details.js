@@ -14,8 +14,8 @@ class GameInviteDetails {
     this.invite = invite;
   }
 
-  render(app, mod) {
-    this.overlay.show(this.app, this.mod, GameInviteDetailsTemplate(app, mod, this.invite));
+  render(app, mod, invite = null) {
+    this.overlay.show(this.app, this.mod, GameInviteDetailsTemplate(app, mod, invite));
     this.attachEvents(app, mod);
   }
 
