@@ -292,7 +292,8 @@ class Network {
         }
       };
       peer.socket.onmessage = async (event) => {
-        const data = await event.data.arrayBuffer();
+        const data = new Uint8Array(await event.data.arrayBuffer());
+        console.log("data buffer 2 first: ", data[0]);
         const api_message = this.app.networkApi.deserializeAPIMessage(data);
         if (api_message.message_type == MessageType.Result) {
           this.app.networkApi.receiveAPIResponse(api_message);
@@ -347,7 +348,13 @@ class Network {
     }
 
     peer.socket.on("message", async (data) => {
-      const api_message = this.app.networkApi.deserializeAPIMessage(data);
+      // if (data.length === 0) {
+      //   console.log("received message buffer with 0 length");
+      //   return;
+      // }
+      console.log("data buffer 1 first: ", data[0]);
+
+      const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
       if (api_message.message_type == MessageType.Result) {
         this.app.networkApi.receiveAPIResponse(api_message);
       } else if (api_message.message_type == MessageType.Error) {
@@ -786,7 +793,7 @@ class Network {
         }
         //console.log("ABOUT TO SEND GSTCHAIN");
 
-        this.sendRequest(MessageType.GhostChain, Buffer.from(JSON.stringify(syncobj)), peer);
+        this.sendRequest("GSTCHAIN", Buffer.from(JSON.stringify(syncobj)), peer);
         break;
       }
 
@@ -835,8 +842,10 @@ class Network {
         let reconstructed_data: any = {};
 
         try {
-          mdata = message.message_data.toString();
+          mdata = Buffer.from(message.message_data).toString("utf-8");
+          console.log("mdata = ",mdata);
           reconstructed_obj = JSON.parse(mdata);
+          console.log("obj = ",reconstructed_obj);
           reconstructed_message = reconstructed_obj.message;
           reconstructed_data = reconstructed_obj.data;
         } catch (err) {
@@ -1153,7 +1162,7 @@ class Network {
     }
   }
 
-  sendRequest(message, data: any = "", peer: Peer = null) {
+  sendRequest(message : string, data: any = "", peer: Peer = null) {
     if (peer !== null) {
       peer.sendRequest(message, data);
     } else {
@@ -1163,7 +1172,7 @@ class Network {
     }
   }
 
-  sendRequestWithCallback(message, data = "", callback, peer = null) {
+  sendRequestWithCallback(message : string, data = "", callback, peer = null) {
     if (peer !== null) {
       for (let x = this.peers.length - 1; x >= 0; x--) {
         if (this.peers[x] === peer) {
