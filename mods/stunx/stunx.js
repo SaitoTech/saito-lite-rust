@@ -37,6 +37,22 @@ class Stunx extends ModTemplate {
                 username: "guest",
                 credential: "somepassword",
             },
+            {
+                urls: "stun:stun-sg.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-sg.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            },
+            {
+                urls: "stun:stun-de.saito.io:3478"
+            },
+            {
+                urls: "turn:stun-de.saito.io:3478",
+                username: "guest",
+                credential: "somepassword",
+            }
         ];
     }
 
@@ -44,12 +60,12 @@ class Stunx extends ModTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = ['/stunx/css/style.css',];
+            this.styles = ['/' + this.returnSlug() + '/css/style.css',];
             super.render(this.app, this);
             // return new StunInvite(this.app, this);
         }
         if (type === 'appspace') {
-            this.styles = ['/stunx/css/style.css',];
+            this.styles = ['/' + this.returnSlug() + '/css/style.css',];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }

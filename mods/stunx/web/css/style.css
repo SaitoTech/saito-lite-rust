@@ -233,14 +233,13 @@
     font-weight: bold;
 }
 
+.stunx-appspace-actions>div {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: 20rem 1fr;
+}
 
 .stunx-appspace-join {}
-
-.stunx-appspace-join>div {
-    display: grid;
-    grid-template-columns: 13rem 13rem;
-    align-items: center;
-}
 
 .stunx-appspace-join input {
     margin-right: 1rem;
