@@ -188,12 +188,12 @@
 .stunx-appspace-card .saito-badge {
     color: var(--saito-white);
     background: var(--saito-primary);
-    width: 1em;
-    height: 1em;
+    width: 2rem;
+    height: 2rem;
     display: inline-block;
     border-radius: 50%;
     text-align: center;
-    line-height: 1em;
+    line-height: 1.75rem;
     vertical-align: super;
 }
 
