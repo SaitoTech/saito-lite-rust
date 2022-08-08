@@ -244,11 +244,8 @@ module.exports = ArcadeMain = {
               }
 
               if (game_cmd === "join") {
-                let c = confirm("Are you sure you want to join this game?");
-            	if (c) {
                   arcade_main_self.joinGame(app, mod, game_sig);
                   return;
-		          }
               }
 
               if (game_cmd === "continue") {
@@ -335,8 +332,6 @@ module.exports = ArcadeMain = {
           salert(`You must set ${game_options.crypto} as your preferred crypto to join this game`);
           return;
         }
-      
-
 
         let c = await sconfirm("This game requires " + game_options.crypto + " crypto to play. OK?");
         if (!c) {
@@ -350,8 +345,7 @@ module.exports = ArcadeMain = {
         if (parseFloat(game_options.stake) > 0) {
           let my_address = app.wallet.returnPreferredCrypto(game_options.crypto).returnAddress();
           let crypto_transfer_manager = new GameCryptoTransferManager(app);
- //         try{
-           let current_balance = await crypto_transfer_manager.returnBalance(
+          let current_balance = await crypto_transfer_manager.returnBalance(
             app,
             mod,
             my_address,
@@ -359,15 +353,7 @@ module.exports = ArcadeMain = {
             function () { }
           );
             console.log("Current balance", current_balance);
-/*          } catch (err) {
-            if (err.startsWith("Module Not Found")) {
-              salert("This game requires " + game_options.crypto + " crypto to play! Not Found!");
-              return;
-            } else {
-              throw err;
-            }
-          }
-*/
+
           try {
             if (BigInt(current_balance) < BigInt(game_options.stake)) {
               salert("You do not have enough " + game_options.crypto + "! Balance: " + current_balance);
@@ -379,6 +365,12 @@ module.exports = ArcadeMain = {
               return;
             }
           }
+        }
+      }else{
+        //We move the confirmation down here, so you don't have to click twice on crypto games
+        let c = confirm("Are you sure you want to join this game?");
+        if (!c) {
+          return;
         }
       }
     } catch (err) {
@@ -416,13 +408,6 @@ module.exports = ArcadeMain = {
       let newtx = mod.createJoinTransaction(accepted_game);
       app.network.propagateTransaction(newtx);
 
-      /***** FAILS
-      // try to relay
-      let relay_mod = app.modules.returnModule('Relay');
-      if (relay_mod != null && accepted_game.initialize_game_offchain_if_possible == 1) {
-        relay_mod.sendRelayMessage(accepted_game.players, 'game relay gamemove', newtx);
-      }
-      ******/
       //
       // try fast accept
       //
@@ -431,10 +416,12 @@ module.exports = ArcadeMain = {
         relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
       }
       if (mod.debug){console.log(JSON.parse(JSON.stringify(newtx)));}
+
       mod.joinGameOnOpenList(newtx);
       salert("Joining game! Please wait a moment");
       return;
     }
+
     console.log("I create the game with this JOIN!!!");
 
     //
@@ -453,18 +440,13 @@ module.exports = ArcadeMain = {
         let existing_game = app.options.games.find((g) => g.id == game_id);
 
         if (existing_game) {
-          //find returns "undefined"
           if (existing_game.initializing == 1) {
-            salert(
-              "Accepted Game! It may take a minute for your browser to update -- please be patient!"
-            );
-
+            salert("Accepted Game! It may take a minute for your browser to update -- please be patient!");
             GameLoader.render(app, mod);
             GameLoader.attachEvents(app, mod);
 
-          } else {
-           
-            // game exists and is no longer initializing, so "continue" not "join"
+          } else { // game exists and is no longer initializing, so "continue" not "join"
+            
             existing_game.ts = new Date().getTime();
             existing_game.initialize_game_run = 0;
             app.storage.saveOptions();
@@ -475,14 +457,13 @@ module.exports = ArcadeMain = {
                 return;
               }
             }
-            //window.location = "/" + existing_game.slug;
           }
-          return;
+          return; //Stop processing if the game already exists
         }
       }
 
       //
-      // ready to go? check with server game is not taken
+      // ready to go? Still, need check with server game is not taken
       //
       GameLoader.render(app, mod);
       GameLoader.attachEvents(app, mod);

@@ -69,7 +69,7 @@ class Arcade extends ModTemplate {
         //this.renderSidebar();
           let chat_mod = this.app.modules.returnModule("Chat");
           if (chat_mod){
-            if (chat_mod?.groups && 
+            if (chat_mod.groups && 
                 chat_mod.groups.length > 0 &&
                 this.chat_open == 0 &&
                 this.app.options.auto_open_chat_box
@@ -206,7 +206,6 @@ class Arcade extends ModTemplate {
 
   //
   // load transactions into interface when the network is up
-
   onPeerHandshakeComplete(app, peer) {
     if (this.browser_active == 0) {
       return;
@@ -378,33 +377,39 @@ class Arcade extends ModTemplate {
     }
   }
 
+  /*
+  Process a join request
+  */
   joinGame(app, tx) {
     if (!tx.transaction || !tx.transaction.sig || !tx.msg || tx.msg.over == 1) {
       return;
     }
 
+    if (this.app.BROWSER == 0){
+      //this.receiveJoinRequest(blk, tx, conf, app); //Code commented out
+      return;
+    }
+
     let txmsg = tx.returnMessage();
     let game_id = txmsg.game_id;
-    //let blk = null;
-    //let conf = 0;
+
+    if (this.debug){ console.log("Received Join Message for game="+game_id,JSON.parse(JSON.stringify(tx)));}
+
     let relay_mod = app.modules.returnModule("Relay");
     let peers = [];
     for (let i = 0; i < app.network.peers.length; i++) {
       peers.push(app.network.peers[i].returnPublicKey());
     }
+
+    //Check if game exists
     let accepted_game = null;
-
-    if (this.debug) { console.log("Received Join Message for game=" + game_id, JSON.parse(JSON.stringify(tx))); }
-
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i].transaction.sig == game_id) {
         accepted_game = this.games[i]; //cache a refence to the game in the module
       }
     }
-
-    if (accepted_game == null) {
-      console.log("Game not available");
-      console.log(this.games);
+    if (accepted_game == null){
+      console.log("Game not available",this.games);
       return;
     }
 
@@ -413,10 +418,9 @@ class Arcade extends ModTemplate {
     if (this.debug) { console.log(JSON.parse(JSON.stringify(players))); }
 
     this.joinGameOnOpenList(tx); //Update Arcade hero to reflect new player
-
-    //this.receiveJoinRequest(blk, tx, conf, app);
-
+    
     if (this.debug) { console.log(JSON.parse(JSON.stringify(accepted_game.returnMessage().players))); }
+
     //
     // it is possible that we have multiple joins that bring us up to
     // the required number of players, but that did not arrive in the
@@ -425,11 +429,7 @@ class Arcade extends ModTemplate {
     //
     // in this case the last player sends an accept request which triggers
     // the start of the game automatically.
-
-
-    // for (let i = 0; i < this.games.length; i++) {
-    //   if (this.games[i].transaction.sig == txmsg.game_id) {
-
+    
     let number_of_willing_players = accepted_game.msg.players.length;
     let number_of_players_needed = accepted_game.msg.players_needed;
 
@@ -446,17 +446,16 @@ class Arcade extends ModTemplate {
 
       if (accepted_game.msg.players[0] == this.app.wallet.returnPublicKey()) {
         // i should send an accept request to kick this all off
-
+        
+        //Creating an accepttransaction will push these back on the end of the array
         accepted_game.msg.players.splice(0, 1);
         accepted_game.msg.players_sigs.splice(0, 1);
 
-        console.log(app.wallet.returnPublicKey() + " sends the accept message from arcade");
+        console.log(this.app.wallet.returnPublicKey()+" sends the accept message from arcade");
         let newtx = this.createAcceptTransaction(accepted_game);
         this.app.network.propagateTransaction(newtx);
 
-        //
         // try fast accept
-        //
         if (relay_mod != null) {
           relay_mod.sendRelayMessage(players, "arcade spv update", newtx);
           relay_mod.sendRelayMessage(peers, "arcade spv update", newtx);
@@ -506,15 +505,15 @@ class Arcade extends ModTemplate {
       }
     }
 
-    let gamemod = this.app.modules.returnModule(tx.msg.game);
-
-    if (!gamemod) {
+    let gamemod = this.app.modules.returnModule(txmsg.game);
+    
+    if (!gamemod){
       console.error("Game module not found!");
       return;
     }
 
     // game is over, we don't care
-    if (tx.msg.over) {
+    if (txmsg.over) {
       console.log("Game is already over, cannot accept");
       return;
     }
@@ -524,39 +523,20 @@ class Arcade extends ModTemplate {
       if (this.debug) { console.log("ALREADY INITED? " + this.viewing_arcade_initialization_page); }
 
       if (this.browser_active) {
-        GameLoader.render(app, this);
-      } else {
-        // alert us someone has accepted our game if elsewhere
-
-        // Method 1 
+        GameLoader.render(app, this);   
+      }else{
         siteMessage(txmsg.module + ' invite accepted.', 20000);
-        // Method 2
-        if (txmsg.module === "Arcade" && tx.isTo(app.wallet.returnPublicKey())) {
-          this.showAlert(); //Doesn't really do anything... changes a display of something to block
-        }
-        //Method 3
-        app.browser.sendNotification(
-          "Game Accepted",
-          txmsg.module + " invite accepted.",
-          "game-acceptance-notification"
-        ); //This function's code is all commented out
+      }
+      
+      if (this.debug){
+        console.info("MY CREATED GAMES: ", this.app.options.games);
+        console.log("telling game module to receiveAcceptTx");
       }
 
-
-      //
-      // only launch game if it is for us -- observer mode?
-      //
-
-      if (this.debug) {
-        console.info("THIS GAMEIS FOR ME: " + tx.isTo(app.wallet.returnPublicKey()));
-        console.info("OUR GAMES: ", this.app.options.games);
-      }
-
-      if (this.debug) { console.log("telling game module to receiveAcceptTx"); }
 
       //Create Game Here
-      let game_id = gamemod.receiveAcceptRequest(null, tx, 0, this.app);
-
+      let game_id = gamemod.processAcceptRequest(tx, this.app);
+      
       if (game_id) {
         if (this.debug) { console.log("... and launching the game"); }
 
@@ -1210,11 +1190,8 @@ class Arcade extends ModTemplate {
     for (let i = 0; i < txmsg.players.length; i++) {
       tx.transaction.to.push(new saito.default.slip(txmsg.players[i], 0.0));
     }
-    tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
+    //tx.transaction.to.push(new saito.default.slip(this.app.wallet.returnPublicKey(), 0.0));
 
-    //
-    // arcade will listen, but we need game engine to receive to start initialization
-    //
     tx.msg = txmsg;
     tx.msg.game_id = gametx.transaction.sig;
     tx.msg.request = "accept";
@@ -1229,6 +1206,8 @@ class Arcade extends ModTemplate {
   Everyone who receives the accept request should update their local database to reflect who is playing the game and new game status
   */
   async receiveAcceptRequest(blk, tx, conf, app) {
+    if (this.app.BROWSER) { return; }
+
     let txmsg = tx.returnMessage();
     let publickeys = [];
     for (let i = 0; i < tx.transaction.to.length; i++) {
