@@ -20,7 +20,7 @@ class Mixin extends ModTemplate {
 
     super(app);
 
-    this.name = "Mixin";
+    this.name = "Crypto Wallet";
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";

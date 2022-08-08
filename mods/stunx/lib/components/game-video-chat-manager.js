@@ -1,7 +1,9 @@
-
 const VideoBox = require('./video-box');
-const videoChatManagerTemplate = require('./video-chat-manager.template');
-class VideoChatManager {
+const GameMenuVideoChatTemplate = require('./game-video-chat-manager.template');
+
+
+
+class GameVideoChatManager {
 
     // peers = {};
     localStream;
@@ -14,20 +16,20 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod) => {
+        this.app.connection.on('game-show-video-chat-request', (app, mod) => {
             this.show(app, mod);
         })
-        this.app.connection.on('render-local-stream-request', (localStream) => {
+        this.app.connection.on('game-render-local-stream-request', (localStream) => {
             this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
+        this.app.connection.on('game-add-remote-stream-request', (peer, remoteStream, pc) => {
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer) => {
+        this.app.connection.on('game-render-remote-stream-placeholder-request', (peer) => {
             this.renderRemoteStreamPlaceholder(peer);
         });
 
-        this.app.connection.on('stunx-change-connection-state-request', (peer, state) => {
+        this.app.connection.on('change-connection-state-request', (peer, state) => {
             this.updateConnectionState(peer, state)
         })
     }
@@ -35,11 +37,11 @@ class VideoChatManager {
 
 
     render() {
-        this.app.browser.addElementToDom(videoChatManagerTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToDom(GameMenuVideoChatTemplate(), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("stunx-chatbox");
+        app.browser.makeDraggable("game-video-chatbox");
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
             let stunx_mod = app.modules.returnModule("Stunx");
@@ -69,7 +71,7 @@ class VideoChatManager {
     }
 
     show(app, mod) {
-        if (!document.querySelector('.stunx-chatbox')) {
+        if (!document.querySelector('.game-video-chatbox')) {
             this.render();
             this.attachEvents(app, mod);
         }
@@ -77,7 +79,7 @@ class VideoChatManager {
 
     hide() {
         console.log('hiding')
-        document.querySelector('#stunx-chatbox').parentElement.removeChild(document.querySelector('#stunx-chatbox'));
+        document.querySelector('#game-video-chatbox').parentElement.removeChild(document.querySelector('#game-video-chatbox'));
 
     }
 
@@ -108,10 +110,11 @@ class VideoChatManager {
 
 
     updateConnectionState(peer, state) {
-        console.log('connection state ', state);
+        console.log(state, this.video_boxes[peer].video_box);
         if (!this.video_boxes[peer].video_box) {
-            return console.log("An error occured with updating connections state");
+            return;
         }
+
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
     }
 
@@ -162,4 +165,4 @@ class VideoChatManager {
 }
 
 
-module.exports = VideoChatManager;
+module.exports = GameVideoChatManager;

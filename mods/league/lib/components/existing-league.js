@@ -5,8 +5,9 @@ const ArcadeLeagueView = require("../overlays/arcade-league-view");
 module.exports = ExistingLeague = {
 
   render(app, mod, league) {
-    if (!document.getElementById(league.id)){
-      app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
+    if (!document.getElementById(league.id)) {
+      app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
+
     } else {
       document.getElementById(league.id).outerHTML = LeagueComponentExistingLeagueTemplate(app, mod, league);
     }
@@ -20,25 +21,25 @@ module.exports = ExistingLeague = {
         e.preventDefault();
         let league_id = btn.getAttribute('data-league-id');
         let cmd = btn.getAttribute('data-cmd');
-        if (cmd == "join"){
+        if (cmd == "join") {
           mod.sendJoinLeagueTransaction(league_id);
           salert('Joining League... it may take a moment to update info');
         }
-        if (cmd == "view"){
-          for (let league of mod.leagues){
-            if (league.id == league_id){
+        if (cmd == "view") {
+          for (let league of mod.leagues) {
+            if (league.id == league_id) {
               ArcadeLeagueView.render(app, mod, league);
-              return;    
+              return;
             }
           }
           console.log("League not found");
         }
-        if (cmd == "invite"){
-         mod.showShareLink(league_id, mod); 
+        if (cmd == "invite") {
+          mod.showShareLink(league_id, mod);
         }
-        if (cmd == "delete"){
+        if (cmd == "delete") {
           let confirm = await sconfirm("Are you sure you want to delete this league?");
-          if (confirm){
+          if (confirm) {
             mod.sendDisbandLeagueTransaction(league_id);
             salert("League Deleted");
           }

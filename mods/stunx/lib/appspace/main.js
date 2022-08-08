@@ -14,7 +14,7 @@ class StunxAppspace {
     }
 
     attachEvents(app, mod) {
-        document.body.addEventListener('click', (e) => {
+        document.body.onclick = ('click', (e) => {
             if (e.target.id === "add-to-listeners-btn") {
                 let input = document.querySelector('#listeners-input').value.split(',');
                 const listeners = input.map(listener => listener.trim());
@@ -56,6 +56,7 @@ class StunxAppspace {
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             stunx_mod.setLocalStream(localStream);
+            stunx_mod.setChatType = ("room");
             let my_public_key = this.app.wallet.returnPublicKey();
             let peers_in_room = JSON.parse(room.peers);
 
@@ -73,7 +74,7 @@ class StunxAppspace {
                 }
                 stunx_mod.sendUpdateRoomTransaction(roomCode, data);
                 this.app.connection.emit('show-video-chat-request', this.app, this);
-                this.app.connection.emit('add-local-stream-request', localStream);
+                this.app.connection.emit('render-local-stream-request', localStream);
                 siteMessageNew("You are the only participant in this room");
                 return;
 
@@ -96,11 +97,11 @@ class StunxAppspace {
 
                 // filter my public key
                 peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-                stunx_mod.createStunConnectionWithPeers(peers_in_room);
+                stunx_mod.createStunConnectionWithPeers(peers_in_room, 'room');
                 this.app.connection.emit('show-video-chat-request', this.app, this);
-                this.app.connection.emit('add-local-stream-request', localStream);
+                this.app.connection.emit('render-local-stream-request', localStream);
                 peers_in_room.forEach(peer => {
-                    this.app.connection.emit('add-remote-stream-request', null, peer, null, 'fromRecipient');
+                    this.app.connection.emit('render-remote-stream-placeholder-request', peer);
                 });
             }
         }
