@@ -81,6 +81,7 @@ class Mixin extends ModTemplate {
       if (app.BROWSER == 0) {
 
         m = JSON.parse(process.env.MIXIN);
+        
 	if (m.appId) {
 
           let method = "POST";
