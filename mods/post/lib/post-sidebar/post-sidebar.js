@@ -10,7 +10,7 @@ module.exports = PostSidebar = {
       app.browser.addElementToDom('<div id="post-container" class="post-container"></div>');
     }
     if (!document.querySelector(".post-sidebar")) { 
-      app.browser.addElementToDom(PostSidebarTemplate(app, mod), "post-container"); 
+      app.browser.addElementToDom(PostSidebarTemplate(app, mod), document.getElementById("post-container")); 
     }
 
     app.modules.respondTo("email-chat").forEach(module => {

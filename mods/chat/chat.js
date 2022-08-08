@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const EmailChat = require('./lib/email-chat/email-chat');
 const ChatMain = require('./lib/chat-main/chat-main');
 const ChatRoom = require('./lib/chat-main/chat-room');
+const ChatManager = require('./lib/chat-manager/main');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 const JSON = require('json-bigint');
 
@@ -36,6 +37,7 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
+	this.chat_manager = null;
 
     }
 
@@ -69,6 +71,11 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
+            case 'chat-manager':
+            	this.scripts['/chat/css/style.css'];
+      		super.render(this.app, this); // add scripts + styles
+      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+		return this.chat_manager;
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,

@@ -1,4 +1,5 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
+const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const AdvancedOverlay = require("./advanced-overlay"); // game-overlay
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
@@ -30,6 +31,10 @@ module.exports = ArcadeGameDetails = {
    */
   render(app, mod, invite) {
     let gamemod = app.modules.returnModule(invite.msg.game);
+
+    if (mod.overlay == null) {
+      mod.overlay = new SaitoOverlay(app);
+    }
 
     if (!document.getElementById("background-shim")) {
       app.browser.addElementToDom(

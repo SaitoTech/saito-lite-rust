@@ -4,7 +4,7 @@ module.exports = LeaderboardArcadeInfobox = {
 
   render(app, data) {
     if (!document.getElementById("leaderboard-container")) {
-      app.browser.addElementToDom(ArcadeInfoboxTemplate(), "arcade-infobox");
+      app.browser.addElementToId(ArcadeInfoboxTemplate(), "arcade-infobox");
     }
   },
 

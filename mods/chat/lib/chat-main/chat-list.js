@@ -11,7 +11,7 @@ module.exports = ChatList = {
     mod.add_user_modal = new ModalAddUser(app);
 
     document.getElementById("chat-main").innerHTML = "";
-    app.browser.addElementToDom(ChatListTemplate(), "chat-main");
+    app.browser.addElementToDom(ChatListTemplate(), document.getElementById("chat-main"));
 
 
 
@@ -30,7 +30,7 @@ module.exports = ChatList = {
       let timestamp = app.browser.formatDate(ts);
       formatted_ts = timestamp.hours + ":" + timestamp.minutes;
 
-      app.browser.addElementToDom(ChatListHeaderTemplate(mod.groups[i], last_message, formatted_ts), "chat-list-container");
+      app.browser.addElementToDom(ChatListHeaderTemplate(mod.groups[i], last_message, formatted_ts), document.getElementById("chat-list-container"));
 
     }
 

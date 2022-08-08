@@ -85,11 +85,11 @@ module.exports = ArcadeLeagueView = {
    			}
 
    			html += `</tbody></table>`;
-   			app.browser.addElementToDom(html, "league-leaderboard");
+   			app.browser.addElementToId(html, "league-leaderboard");
 
 
    		}else{
-   			app.browser.addElementToDom(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
+   			app.browser.addElementToId(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
    		}
    },
 

@@ -44,13 +44,11 @@ module.exports = PostForums = {
    
 
     if (document.querySelector(".post-forums")) { 
-      //app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "post-forums");
       for (let i = 0; i < sobj.length; i++) {
-        app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), "post-forums");
+        app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), document.getElementById("post-forums"));
       }
-      //app.browser.addElementToDom('<div class="forum-post-header">Post Games</div>', "post-forums");
       for (let i = 0; i < obj.length; i++) {
-        app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), "post-forums");
+        app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), document.getElementById("post-forums"));
       }
     }
 

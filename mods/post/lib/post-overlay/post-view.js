@@ -1,4 +1,5 @@
 let saito = require("./../../../../lib/saito/saito");
+      
 const SaitoOverlay = require("./../../../../lib/saito/ui/saito-overlay/saito-overlay");
 const PostViewTemplate = require("./post-view.template");
 const PostViewCommentTemplate = require("./post-view-comment.template");
@@ -303,6 +304,6 @@ module.exports = PostView = {
   addComment(app, mod, comment) {
     comment.originalSig = mod.originalSig;
 
-    app.browser.addElementToDom(PostViewCommentTemplate(app, mod, comment), "post-view-comments");
+    app.browser.addElementToDom(PostViewCommentTemplate(app, mod, comment), document.getElementById("post-view-comments"));
   },
 };

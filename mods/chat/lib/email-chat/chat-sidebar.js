@@ -9,11 +9,11 @@ module.exports = ChatSidebar = {
 
     mod.modal_add_user = new ModalAddUser(app);
 
-    if (!document.querySelector('.chat-header')) { app.browser.addElementToDom(ChatSidebarTemplate(), "email-chat"); }
+    if (!document.querySelector('.chat-header')) { app.browser.addElementToDom(ChatSidebarTemplate(), document.getElementById("email-chat")); }
 
     for (let i = 0; i < mod.groups.length; i++) {
       if (!document.getElementById(mod.groups[i].id)) {
-        app.browser.addElementToDom(ChatSidebarContactTemplate(app, mod.groups[i]), "chat-list");
+        app.browser.addElementToDom(ChatSidebarContactTemplate(app, mod.groups[i]), document.getElementById("chat-list"));
       }
     }
 

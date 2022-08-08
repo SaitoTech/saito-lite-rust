@@ -1,0 +1,67 @@
+
+.saito-modal {
+  width: 90rem;
+  height: min-content;
+  max-width: 80vw;
+  font-size: 1.5rem;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  background-image: url(/saito/img/dreamscape.png);
+  background-position: 0em;
+  background-size: cover;
+  color: white;
+  display: grid;
+  grid-template-rows: min-content auto;
+  padding: 2rem;
+}
+.saito-modal-title {
+  font-size: 5rem;
+  margin-left: 3rem;
+}
+.saito-modal-subtitle {
+  font-size: 2.2rem;
+  margin-left: 3rem;
+}
+.saito-modal-content {
+  margin-top: 1.5rem;
+  font-size: 1.8rem;
+}
+.saito-modal-option {
+  margin-left: 2rem;
+  height: 8rem;
+  font-size: 4rem;
+  margin-right: 2rem;
+  padding: 1.5rem;
+}
+.saito-modal-option:hover {
+  background-color: #0005;
+  cursor: pointer;
+}
+.saito-modal-option > i {
+  float: left;
+  margin-right: 2rem;
+}
+.saito-modal-option > div {
+  float: left;
+  margin-right: 2rem;
+  font-size: 2rem;
+  padding-top: 1rem;
+}
+.saito-modal-text-input {
+    margin-left: 3rem;
+    margin-right: 3rem;
+    width: 50rem;
+    max-width: 50rem;
+    margin-top: 0.75rem;
+}
+.saito-modal-button {
+    background-color: white;
+    margin-top: 3rem;
+    margin-left: 3rem;
+    max-width: min-content;
+    padding-left: 4rem;
+    padding-right: 4rem;
+}
+.saito-modal-button:hover {
+    border: 1px solid white;
+}
+

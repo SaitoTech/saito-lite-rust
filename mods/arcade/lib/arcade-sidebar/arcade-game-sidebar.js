@@ -11,7 +11,7 @@ module.exports = ArcadeGameSidebar = {
     let game_mod = app.modules.returnModuleBySlug(mod.viewing_game_homepage);
 
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
-    if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeGameSidebarTemplate(game_mod), "arcade-container"); }
+    if (!document.querySelector(".arcade-sidebar")) { app.browser.addElementToDom(ArcadeGameSidebarTemplate(game_mod), document.getElementById("arcade-container")); }
 
     app.modules.respondTo("email-chat").forEach(module => {
       if (module != null) {
