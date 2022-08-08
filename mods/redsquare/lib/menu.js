@@ -29,7 +29,10 @@ class RedSquareMenu {
                   <span> ${app.modules.mods[i].name}</span>
                 </li>
     `;
-        app.browser.addElementToSelector(html, ".saito-menu-list");
+        if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)){
+          app.browser.addElementToSelector(html, ".saito-menu-list");          
+        }
+
       }
     }
     this.attachEvents(app, mod);

@@ -78,7 +78,7 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
           <div class="gamePlayers">${playersHtml}</div>
         </div>
         <div class="gameShortDescription">${makeDescription(app, invite)}</div>
-	<div class="gameButtons">
+	      <div class="gameButtons">
     `;
      if (invite.isMine) {
        if (game_initialized == 1) { 

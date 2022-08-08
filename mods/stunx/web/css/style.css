@@ -106,19 +106,50 @@
     color: white;
 }
 
-.video-box-container p {
-    animation-name: glow;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
+.video-box-container>div {
     color: white;
     width: 50%;
     line-height: 1.5;
-
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.video-box-container>div>p {
+    color: white;
+}
+
+.lds-dual-ring {
+    display: inline-block;
+}
+
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 @keyframes glow {
     0% {
-        transform: scale(.9);
+        transform: scale(.97);
     }
 
     50% {
@@ -126,11 +157,11 @@
     }
 
     75% {
-        transform: scale(0.9);
+        transform: scale(0.97);
     }
 
     100% {
-        transform: scale(.9);
+        transform: scale(.97);
     }
 }
 
