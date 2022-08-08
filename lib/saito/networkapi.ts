@@ -193,7 +193,7 @@ class NetworkAPI {
   deserializeAPIMessage(bytes) {
     return new APIMessage(
       /*Buffer.from(bytes.slice(0, 8)).toString("utf-8"),*/
-        this.app.binary.u8FromByte(bytes[0]),
+        this.app.binary.u8FromByte(Array.from(new Uint8Array(bytes.slice(0, 1))).at(0)),
         this.app.binary.u32FromBytes(Array.from(new Uint8Array(bytes.slice(1, 5)))),
       Buffer.from(bytes.slice(5))
     );
