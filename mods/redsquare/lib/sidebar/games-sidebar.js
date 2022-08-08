@@ -11,6 +11,14 @@ class RedSquareGamesSidebar {
     this.name = "RedSquareGamesSidebar";
     this.mod = mod;
     this.selector = selector;
+
+    app.connection.on("game-invite-render-request", (tx) => {
+        console.log("RECEIVED INVITE TO ADD",JSON.stringify(tx));
+        let gi = new GameInvite(app, mod, tx);
+        gi.render(app, mod, ".saito-arcade-invite-list");
+    });
+
+
   }
 
   render(app, mod, selector="") {
@@ -27,21 +35,14 @@ console.log("ADDING GAMES SIDEBAR!");
       app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), this.selector);
     }
 
-    app.connection.on("game-invite-render-request", (tx) => {
-console.log("RECEIVED INVITE TO ADD");
-        let gi = new GameInvite(app, mod, tx);
-        gi.render(app, mod, ".saito-arcade-invite-list");
-    });
-
 
     //
     // render existing arcade games
     //
     let arcade_mod = app.modules.returnModule("Arcade");
     if (arcade_mod) {
-console.log("arcade mod exists");
       for (let i = 0; i < arcade_mod.games.length; i++) {
-console.log("EMITTING INVITE ");
+        console.log("EMITTING INVITE: "+ arcade_mod.games[i]?.msg.game);
         app.connection.emit('game-invite-render-request', arcade_mod.games[i]);
       }
     };

@@ -33,28 +33,28 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
       html += `
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, modname, modimage)};
+	  ${SaitoModuleTemplate(app, mod, modname, modimage)}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
-	      <div class="saito-table">
+	            <div class="saito-table">
                 <div class="saito-table-row odd">
-                  <div class="saito-leaderboard-gamename">david@saito</div>
+                  <div id="${modname}_1" class="saito-leaderboard-gamename">david@saito</div>
                   <div class="saito-leaderboard-rank">1</div>
                 </div>
                 <div class="saito-table-row">
-                  <div class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
+                  <div id="${modname}_2" class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
                   <div class="saito-leaderboard-rank">2</div>
                 </div>
                 <div class="saito-table-row odd">
-                  <div class="saito-leaderboard-gamename">richard@saito</div>
+                  <div id="${modname}_3" class="saito-leaderboard-gamename">richard@saito</div>
                   <div class="saito-leaderboard-rank">3</div>
                 </div>
               </div>
             </div>
 	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="Chess">Create Game</div>
-              <div>how to play?</div>
+              <div class="create-game-link" data-id="${modname}">Create Game</div>
+              <div class="load-game-instructions" data-id="${modname}">how to play?</div>
 	    </div>
           </div>
         </div>

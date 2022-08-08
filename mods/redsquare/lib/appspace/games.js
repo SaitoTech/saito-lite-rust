@@ -16,9 +16,37 @@ class RedSquareAppspaceGames {
 
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
-
+    this.loadLeagues(app, mod);
     this.attachEvents(app, mod);
   }
+
+  loadLeagues(app, mod){
+    console.log("Inserting League information");
+    let league_mod = app.modules.returnModule("League");
+    if (league_mod){
+      if (league_mod.leagues.length > 0){
+        for (let l of league_mod.leagues){
+          if (l.admin == "saito" && l.id !== "SAITOLICIOUS"){
+            console.log(JSON.parse(JSON.stringify(l)));
+            for (let i = 1; i <= 3; i ++){
+              let elem = document.getElementById(l.name+"_"+i);
+              let player = (i <= l.top3.length) ? l.top3[i-1] : null;
+              if (elem){
+                if (player){
+                  elem.textContent = player;
+                }else{
+                  elem.parentNode.remove();
+                }
+              }
+            }
+
+          }
+        }
+      }
+
+    }
+  }
+
 
   attachEvents(app, mod) {
 
