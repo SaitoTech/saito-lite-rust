@@ -7,6 +7,7 @@ import { Saito } from "../../apps/core";
 import Key from "./key";
 
 class Keychain {
+
   public app: Saito;
   public keys: any;
   public groups: any;
@@ -27,6 +28,7 @@ class Keychain {
   }
 
   initialize() {
+
     if (this.app.options.keys == null) {
       this.app.options.keys = [];
     }
@@ -69,12 +71,17 @@ class Keychain {
     // add my key if nothing else
     //
     if (this.app.options.keys.length == 0) {
-      this.addKey(this.app.wallet.returnPublicKey(), "", true);
+      this.addKey(this.app.wallet.returnPublicKey(), { watched : true });
     }
     console.log("options ", this.app.options);
   }
 
-  addKey(publickey = "", identifier = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
+
+  //
+  // adds an individual key
+  //
+  addKey(publickey = "", data = {}) {
+
     if (publickey === "") {
       return;
     }
@@ -89,83 +96,55 @@ class Keychain {
     let tmpkey = this.findByPublicKey(publickey);
     let added_identifier = 0;
     let added_tag = 0;
-
-    if (tmpkey == null) {
+    if (tmpkey == null) { 
       tmpkey = new Key();
       tmpkey.publickey = publickey;
-      tmpkey.watched = watched;
-      tmpkey.bid = bid;
-      tmpkey.bsh = bsh;
-      tmpkey.lc = lc;
-      tmpkey.name = "";
-      if (identifier != "") {
-        if (!tmpkey.identifiers.includes(identifier)) {
-          added_identifier = 1;
-          tmpkey.addIdentifier(identifier);
-          tmpkey.name = identifier;
-        }
-      }
-      if (tag != "") {
-        if (!tmpkey.tags.includes(tag)) {
-          added_tag = 1;
-          tmpkey.addTag(tag);
-        }
-      }
+      tmpkey.watched = 0;
+      tmpkey.lc = 1;
       this.keys.push(tmpkey);
-    } else {
-      if (bid != "" && bsh != "") {
-        if (tmpkey.bsh != bsh && tmpkey.bid != bid) {
-          tmpkey.publickey = publickey;
-          tmpkey.watched = watched;
-          tmpkey.bid = bid;
-          tmpkey.bsh = bsh;
-          tmpkey.lc = lc;
-          if (!tmpkey.identifiers.includes(identifier)) {
-            added_identifier = 1;
-            tmpkey.addIdentifier(identifier);
-          }
-          if (!tmpkey.tags.includes(tag)) {
-            added_tag = 1;
-            tmpkey.addTag(tag);
-          }
-        } else {
-          tmpkey.publickey = publickey;
-          tmpkey.watched = watched;
-          tmpkey.bid = bid;
-          tmpkey.bsh = bsh;
-          tmpkey.lc = lc;
-          if (!tmpkey.identifiers.includes(identifier)) {
-            added_identifier = 1;
-            tmpkey.addIdentifier(identifier);
-          }
-          if (!tmpkey.tags.includes(tag)) {
-            added_tag = 1;
-            tmpkey.addTag(tag);
-          }
-        }
+    }
+
+console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
+
+    for (let key in data) {
+
+      if (key === "identifiers") {
+        for (let z = 0; z < data[key].length; z++) { 
+	  if (!tmpkey.identifiers.includes(data[key][z])) {
+	    tmpkey.identifiers.push(data[key][z]);
+	    added_identifier = 1;
+	  }
+	}
       } else {
-        if (!tmpkey.identifiers.includes(identifier)) {
-          added_identifier = 1;
-          tmpkey.addIdentifier(identifier);
-        }
-        if (!tmpkey.tags.includes(tag)) {
-          added_tag = 1;
-          tmpkey.addTag(tag);
-        }
-        if (watched) {
-          tmpkey.watched = true;
+        if (key === "tags") {
+          for (let z = 0; z < data[key].length; z++) { 
+	    if (!tmpkey.tags.includes(data[key][z])) {
+	      tmpkey.tags.push(data[key][z]);
+	      added_tag = 1;
+	    }
+	  }
+        } else {
+          if (key === "identifier") {
+	    if (!tmpkey.identifiers.includes(data[key])) {
+	      tmpkey.identifiers.push(data[key]);
+	      added_identifier = 1;
+	    }
+	  } else {
+  	    tmpkey[key] = data[key];
+          }
         }
       }
     }
+
     this.saveKeys();
 
     if (added_identifier == 1) {
       this.app.connection.emit("update_identifier", tmpkey);
-      this.app.browser.updateAddressHTML(publickey, identifier);
     }
     if (added_tag == 1) {
       this.app.connection.emit("update_tag", tmpkey);
     }
+
   }
 
   decryptMessage(publickey, encrypted_msg) {
@@ -188,42 +167,52 @@ class Keychain {
     return encrypted_msg;
   }
 
-  // This is unused
-  // addGroup(group_id = "", members = [], name = "", watched = false, tag = "", bid = "", bsh = "", lc = 1) {
-  //
-  //   for (let i = 0; i < members.length++; i++) {
-  //     this.addKey(members[i]);
-  //   }
-  //   if (watched == true) {
-  //     for (let i = 0; i < this.keys.length; i++) {
-  //       this.keys[i].watched = true;
-  //     }
-  //     this.saveKeys();
-  //   }
-  //
-  //   let group = {};
-  //
-  //   for (let z = 0; z < this.groups.length; z++) {
-  //     if (this.groups[z].id === group_id) {
-  //       group = this.groups[z];
-  //     }
-  //   }
-  //
-  //   group.id = group_id;
-  //   group.members = members;
-  //   group.name = name;
-  //   if (watched == true) {
-  //     group.watched = true;
-  //   }
-  //   if (group.watched == undefined) {
-  //     group.watched = false;
-  //   }
-  //   if (group.tags == undefined) { group.tags = []; }
-  //   if (tag != "") { if (!group.tags.includes(tag)) { group.tags.push(tag); } }
-  //
-  //   this.saveGroups();
-  //
-  // }
+
+
+
+
+  addGroup(group_id = "", data = { members : [] }) {
+
+    //
+    // 
+    //
+    let group = null;
+
+    for (let i = 0; i < this.groups.length; i++) {
+      if (this.groups[i].id === group_id) {
+	group = this.groups[i];
+      }
+    }
+
+    if (group === null) {
+      group = {};
+      group.id = group_id;
+      group.members = [];
+      group.name = "New Group";
+      group.tag = "";
+      group.block_id = 0;
+      group.block_hash = 0;
+    }
+
+
+    for (let key in data) {
+      if (key !== "members") {
+	group[key] = data[key];
+      } else {
+	if (data.members) {
+          for (let i = 0; i < data.members.length++; i++) {
+            this.addKey(data.members[i]);
+            if (!group.members.includes(data.members[i])) {
+	      group.members.push(data.members[i]);
+            }
+          }
+        }
+      }
+    }
+
+    this.saveGroups();
+  
+  }
 
   decryptString(publickey, encrypted_string) {
     for (let x = 0; x < this.keys.length; x++) {
@@ -547,7 +536,7 @@ class Keychain {
 
           // keep track that we fetched this already
           this.fetched_keys[publickey] = 1;
-          this.addKey(publickey, identifier, false, "", bid, bsh, lc);
+          this.addKey(publickey, { identifier : identifier, watched : false, block_id : bid , block_hash : bsh , lc : lc});
           if (!found_keys.includes(publickey)) {
             found_keys[publickey] = identifier;
           }
@@ -610,7 +599,7 @@ class Keychain {
           }
           rows = res.rows.map((row) => {
             const { publickey, identifier, bid, bsh, lc } = row;
-            this.addKey(publickey, identifier, false, "", bid, bsh, lc);
+            this.addKey(publickey, { identifier :  identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
             if (!found_keys.includes(publickey)) {
               found_keys[publickey] = identifier;
             }
@@ -664,7 +653,7 @@ class Keychain {
           //It should be unique....
           res.rows.forEach((row) => {
             const { publickey, identifier, bid, bsh, lc } = row;
-            this.addKey(publickey, identifier, false, "", bid, bsh, lc);
+            this.addKey(publickey, { identifier : identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
           });
           return res.rows[0].publickey;
         }
@@ -734,12 +723,15 @@ class Keychain {
   }
 
   addWatchedPublicKey(publickey = "") {
-    this.addKey(publickey, "", true);
+    this.addKey(publickey, { watched : true});
     this.saveKeys();
     this.app.network.updatePeersWithWatchedPublicKeys();
   }
 
   updateCryptoByPublicKey(publickey, aes_publickey = "", aes_privatekey = "", shared_secret = "") {
+
+console.log("updating crypto for: " + publickey);
+
     if (publickey == "") {
       return;
     }
@@ -747,7 +739,10 @@ class Keychain {
     this.addKey(publickey);
 
     for (let x = 0; x < this.keys.length; x++) {
+console.log("TESTING: " + this.keys[x].publickey + " -- " + this.keys[x].lc);
       if (this.keys[x].publickey == publickey && this.keys[x].lc == 1) {
+
+console.log("UPDATING: " + shared_secret);
         this.keys[x].aes_publickey = aes_publickey;
         this.keys[x].aes_privatekey = aes_privatekey;
         this.keys[x].aes_secret = shared_secret;

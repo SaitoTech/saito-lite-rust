@@ -106,7 +106,7 @@ class Network {
       // }
       if (this.app.options.server.host === peerhost && this.app.options.server.port === peerport) {
         if (this.debugging) {
-          console.log(
+          console.error(
             "ERROR 185203: not adding " +
               this.app.options.server.host +
               " as peer since it is our server."
@@ -120,7 +120,7 @@ class Network {
           this.app.options.server.endpoint.port === peerport
         ) {
           if (this.debugging) {
-            console.log(
+            console.error(
               "ERROR 185204: not adding " +
                 this.app.options.server.host +
                 " as peer since it is our server."
@@ -293,7 +293,7 @@ class Network {
       };
       peer.socket.onmessage = async (event) => {
         const data = new Uint8Array(await event.data.arrayBuffer());
-        console.log("data buffer 2 first: ", data[0]);
+        // console.log("data buffer 2 first: ", data[0]);
         const api_message = this.app.networkApi.deserializeAPIMessage(data);
         if (api_message.message_type == MessageType.Result) {
           this.app.networkApi.receiveAPIResponse(api_message);
@@ -352,7 +352,7 @@ class Network {
       //   console.log("received message buffer with 0 length");
       //   return;
       // }
-      console.log("data buffer 1 first: ", data[0]);
+      // console.log("data buffer 1 first: ", data[0]);
 
       const api_message = this.app.networkApi.deserializeAPIMessage(new Uint8Array(data));
       if (api_message.message_type == MessageType.Result) {
@@ -548,7 +548,7 @@ class Network {
   }
 
   async receiveRequest(peer, message) {
-    console.log("network.receiveRequest : ", message);
+    // console.log("network.receiveRequest : ", message);
 
     let block;
     let block_hash;
@@ -642,8 +642,9 @@ class Network {
 
         try {
           peer.peer.services = JSON.parse(buffer.toString("utf8"));
+          console.log("services : ", peer.peer.services);
         } catch (err) {
-          console.log("ERROR parsing peer services list or setting services in peer");
+          console.error("ERROR parsing peer services list or setting services in peer");
         }
 
         break;
@@ -843,9 +844,9 @@ class Network {
 
         try {
           mdata = Buffer.from(message.message_data).toString("utf-8");
-          console.log("mdata = ",mdata);
+          // console.log("mdata = ",mdata);
           reconstructed_obj = JSON.parse(mdata);
-          console.log("obj = ",reconstructed_obj);
+          // console.log("obj = ",reconstructed_obj);
           reconstructed_message = reconstructed_obj.message;
           reconstructed_data = reconstructed_obj.data;
         } catch (err) {

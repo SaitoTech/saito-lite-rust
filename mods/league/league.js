@@ -2,6 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const ModTemplate = require('../../lib/templates/modtemplate');
 const LeagueMainContainer = require('./lib/main/container');
 const ArcadeLeague = require('./lib/components/arcade-league');
+const ForumLeague = require('./lib/components/forum-league');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require("../../lib/saito/ui/saito-overlay/saito-overlay");
 const LeagueInvite = require("./lib/overlays/league-invite");
@@ -23,6 +24,7 @@ class League extends ModTemplate {
     //
     this.leagues = [];
 
+
     //
     // used in onPeerHandshakeComplete
     //
@@ -40,6 +42,8 @@ class League extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
+
+    this.loadLeagues();
 
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
@@ -156,6 +160,8 @@ class League extends ModTemplate {
 
     //sort leagues
     leagues_to_display.sort((a, b) =>{ 
+      if (a.id === "SAITOLICIOUS") { return -1};
+      if (b.id === "SAITOLICIOUS") { return 1};
       if (a.myRank < 0) {return 1;}
       if (b.myRank < 0) {return -1;}
       return b.myRank - a.myRank
@@ -169,12 +175,20 @@ class League extends ModTemplate {
   */
   renderArcade(app, mod, elem){
     if (!this.doICare()) { return; }
-    console.log("Rendering Leagues for Arcade");
+    //console.log("Rendering Leagues for Arcade");
     let leagues_to_display = this.filterLeagues(app);
 
     for (let le of leagues_to_display){
-      let al = new ArcadeLeague(app, this, le);
-      al.render(app, this, elem);
+      if (le.admin === "saito"){
+        let altElm = document.getElementById(`forum-topic-${le.id.toLowerCase()}`);
+        let al = new ForumLeague(app, this, le);
+        al.render(app, this, altElm);
+      }
+
+      if (le.myRank > 0 || le.admin !== "saito"){
+        let al = new ArcadeLeague(app, this, le);
+        al.render(app, this, elem);
+      }
     }
   }
 
@@ -190,6 +204,12 @@ class League extends ModTemplate {
         if (elem){
           elem.innerHTML = "";
           this.renderArcade(app, arcade, elem);  
+        }
+      }else{
+        let redsquare = app.modules.returnModule("RedSquare");
+        if (redsquare && redsquare.browser_active){
+          console.log("Leagues telling Redsquare to Render");
+          redsquare.render(app);
         }
       }
     }
@@ -208,7 +228,7 @@ class League extends ModTemplate {
     }
     let am = this.app.modules.returnActiveModule().name;
 
-    if (am == "Arcade"){
+    if (am == "Arcade" || am == "RedSquare"){
       return true;
     }
     return false;
@@ -261,28 +281,31 @@ class League extends ModTemplate {
           });
 
           //We need a small delay because we are running async callbacks and can't just use an await...
-          setTimeout(()=>{
+          setTimeout(async ()=>{
             //We wait until we query the leagues before we submit a join request
             if (invitation){
               let leagueId = league_self.app.browser.returnURLParameter("jid");
               for (let i = 0; i < league_self.leagues.length; i ++){
                 if (league_self.leagues[i].id == leagueId){
+                  let myLocation = window.location.href;
+                  myLocation = myLocation.substring(0, myLocation.indexOf("?")-1);
+                  myLocation = myLocation.replace("league","arcade"); 
+
                   if (league_self.leagues[i].playerCnt < league_self.leagues[i].max_players || league_self.leagues[i].max_players == 0){
                     league_self.sendJoinLeagueTransaction(leagueId);
+                    setTimeout(()=>{ window.location = myLocation; },1500);
+
                   }else{
-                    salert("League full, cannot join");
-                  }                 
-                  setTimeout(()=>{
-                    let myLocation = window.location.href;
-                    myLocation = myLocation.substring(0, myLocation.indexOf("?")-1); 
+                    if (document.getElementById("alert-wrapper")) {
+                      document.getElementById("alert-wrapper").remove();
+                    }
+                    let c = await sconfirm("League full, cannot join");
                     window.location = myLocation;
-                  },1500);
+                  }                 
                 }
               }          
             }
-
-            league_self.renderLeagues(app, league_self);
-          },1000);
+          },2000);
         } else {}
       }
     );
@@ -447,9 +470,9 @@ class League extends ModTemplate {
       this.leagues.push(lobj);      
     }
 
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000);
+    //setTimeout(()=>{
+    //  this.renderLeagues(this.app, this);
+    //},1000);
   }
 
   removeLeague(league_id){
@@ -470,9 +493,9 @@ class League extends ModTemplate {
         this.updateLeague(league);
       }
     }
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000); 
+   // setTimeout(()=>{
+   //   this.renderLeagues(this.app, this);
+   // },1000); 
   }
 
   removePlayer(tx){
@@ -482,9 +505,9 @@ class League extends ModTemplate {
         this.updateLeague(league);
       }
     }
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000); 
+   // setTimeout(()=>{
+   //   this.renderLeagues(this.app, this);
+   // },1000); 
 
   }
 
@@ -845,8 +868,9 @@ class League extends ModTemplate {
     let pid = this.app.wallet.returnPublicKey();
     league.myRank = -1;
     league.playerCnt = 0;
-
+    let league_self = this;
     league.players = [];
+    league.top3 = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
       (res) => {
@@ -858,10 +882,14 @@ class League extends ModTemplate {
             if (p.pkey == pid){
               league.myRank = cnt; //I am the cnt player in the leaderboard
             }
+            if (cnt <= 3){
+              league.top3.push(p.pkey);
+            }
           }
           league.playerCnt = cnt;
         }
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
+        league_self.renderLeagues(league_self.app, league_self);
       }
 
     );
@@ -978,6 +1006,41 @@ class League extends ModTemplate {
     }
     return 0;
   }
+
+  //API Function
+  isLeagueMember(league_id){
+    for (let leag of this.leagues){
+      if (leag.id == league_id){
+        if (leag.myRank > 0){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  loadLeagues() {
+
+//    if (this.app.options.leagues) {
+//      this.leagues = this.app.options.leagues;
+//      return;
+//    }
+
+    //
+    // set default values
+    //
+//    this.leagues = {};
+
+  }
+
+  saveLeagues() {
+//      this.app.options.leagues = this.leagues;
+//      this.app.options.saveOptions();
+  }
+
 
 
 }

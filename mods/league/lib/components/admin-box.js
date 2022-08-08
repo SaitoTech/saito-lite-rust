@@ -4,8 +4,8 @@ const LeagueComponentAdminBoxTemplate = require("./admin-box.template");
 module.exports = AdminBox = {
 
   render(app, mod, games) {
-    if (!document.getElementById("game-selector")){
-      app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
+    if (!document.getElementById("game-selector")) {
+      app.browser.addElementToId(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
       this.attachEvents(app, mod);
     }
   },
@@ -13,13 +13,13 @@ module.exports = AdminBox = {
 
   attachEvents(app, mod) {
     let box = document.querySelector('.league-component-admin-box-form');
-    if (!box) {return;}
-    
+    if (!box) { return; }
+
     let desc = document.getElementById("league-desc");
-    if (desc){
-      desc.addEventListener("focus", function(e){
+    if (desc) {
+      desc.addEventListener("focus", function (e) {
         let value = e.target.innerHTML;
-        if (value == desc.getAttribute("data-placeholder")){
+        if (value == desc.getAttribute("data-placeholder")) {
           e.target.innerHTML = "";
         }
       });
@@ -29,7 +29,7 @@ module.exports = AdminBox = {
       e.preventDefault();
       let leaguename = sanitize(document.getElementById("league-name")?.textContent || e.target.game.value);
       let leaguedesc = sanitize(desc?.textContent) || "";
-      if (leaguedesc === desc.getAttribute("data-placeholder")){
+      if (leaguedesc === desc.getAttribute("data-placeholder")) {
         leaguedesc = "";
       }
       let newLeague = {
@@ -46,45 +46,45 @@ module.exports = AdminBox = {
       mod.sendCreateLeagueTransaction(newLeague);
       return false;
     }
-    
-      
+
+
     let selector = document.querySelector("#league-game");
-    if (selector){
-      selector.onchange = (e) =>{
+    if (selector) {
+      selector.onchange = (e) => {
         //Refresh game specific information
         let gamename = selector.value;
-        try{
-          if (gamename){
+        try {
+          if (gamename) {
             document.querySelector("#league-details img").src = selector.querySelector(`#${gamename}`).getAttribute("data-img");
             document.querySelector("#league-name").textContent = gamename;
             document.querySelector("#league-desc").textContent = "";
             document.querySelector("#game").value = gamename;
             document.getElementById("league-details").style.display = "block";
-            if (desc.innerHTML === ""){
+            if (desc.innerHTML === "") {
               desc.innerHTML = desc.getAttribute("data-placeholder");
             }
-          }else{
+          } else {
             document.getElementById("league-details").style.display = "none";
           }
 
-        }catch(err){console.log(err);}
+        } catch (err) { console.log(err); }
       };
     }
 
     let startDiv = document.querySelector("#starting_score");
     let rankDiv = document.querySelector("#ranking");
-    if (startDiv && rankDiv){
+    if (startDiv && rankDiv) {
       rankDiv.onchange = (e) => {
-        if (rankDiv.value == "elo"){
+        if (rankDiv.value == "elo") {
           startDiv.value = 1000;
           startDiv.style.display = "block";
-        }else{
+        } else {
           startDiv.value = 0;
           startDiv.style.display = "none";
         }
       };
     }
-    
+
   }
 }
 

@@ -364,8 +364,8 @@ class Block {
           this.has_issuance_transaction = true;
         }
       } catch (err) {
-        console.log("ERROR: " + err);
-        console.log("ERROR W/: " + JSON.stringify(this.transactions[i]));
+        console.error("ERROR: " + err);
+        console.error("ERROR W/: " + JSON.stringify(this.transactions[i]));
       }
     }
 
@@ -1202,7 +1202,7 @@ class Block {
               await this.callbacks[ii](this, this.transactions[this.callbackTxs[ii]], i, this.app);
             }
           } catch (err) {
-            console.log("ERROR 567567: ", err);
+            console.error("ERROR 567567: ", err);
           }
         }
       }
@@ -1502,7 +1502,7 @@ class Block {
     // invalid if no transactions
     //
     if (this.transactions.length === 0) {
-      console.log("ERROR 582034: no transactions in blocks, thus invalid");
+      console.error("ERROR 582034: no transactions in blocks, thus invalid");
       return false;
     }
 
@@ -1516,7 +1516,7 @@ class Block {
         this.block.creator
       )
     ) {
-      console.log("ERROR 582039: block is not signed by creator or signature does not validate");
+      console.error("ERROR 582039: block is not signed by creator or signature does not validate");
       return false;
     }
 
@@ -1529,11 +1529,11 @@ class Block {
     // average income and average income variance
     //
     if (cv.avg_income !== this.block.avg_income) {
-      console.log("ERROR 712923: block is mis-reporting its average income");
+      console.error("ERROR 712923: block is mis-reporting its average income");
       return false;
     }
     if (cv.avg_variance !== this.block.avg_variance) {
-      console.log("ERROR 712923: block is mis-reporting its average variance");
+      console.error("ERROR 712923: block is mis-reporting its average variance");
       return false;
     }
 
@@ -1541,11 +1541,11 @@ class Block {
     // average atr income and average atr income variance
     //
     if (cv.avg_atr_income !== this.block.avg_atr_income) {
-      console.log("ERROR 712923: block is mis-reporting its average atr income");
+      console.error("ERROR 712923: block is mis-reporting its average atr income");
       return false;
     }
     if (cv.avg_atr_variance !== this.block.avg_atr_variance) {
-      console.log("ERROR 712923: block is mis-reporting its average atr variance");
+      console.error("ERROR 712923: block is mis-reporting its average atr variance");
       return false;
     }
 
@@ -1553,7 +1553,7 @@ class Block {
     // only block #1 can have an issuance transaction
     //
     if (cv.it_num > 0 && this.block.id > 1) {
-      console.log("ERROR 712923: blockchain contains issuance after block 1 in chain");
+      console.error("ERROR 712923: blockchain contains issuance after block 1 in chain");
       return false;
     }
 

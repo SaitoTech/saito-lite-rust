@@ -58,6 +58,8 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
+#mods/stunx
+#mods/stunx/*
 
 mods/forge
 mods/forge/*

@@ -58,7 +58,7 @@ class Browser {
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -80,6 +80,8 @@ class Browser {
             }
           }
         };
+*****/
+
 
         document.addEventListener(
           "visibilitychange",
@@ -219,6 +221,13 @@ class Browser {
         siteMessage("Websocket Connection Lost");
       });
     }
+  }
+
+
+  returnInviteLink(email = "") {
+    let { protocol, host, port } = this.app.options.peers[0];
+    let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));
+    return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
   returnURLParameter(name) {
@@ -375,6 +384,14 @@ class Browser {
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
+  generateQRCode(data) {
+    const QRCode = require('./../helpers/qrcode');
+    return new QRCode(
+      document.getElementById("qrcode"),
+      data
+    );
+  }
+
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
@@ -383,26 +400,129 @@ class Browser {
     }
   }
 
-  addElementToDom(html, id = null) {
+  addElementToDom(html, elemWhere = null) {
     const el = document.createElement("div");
-    if (id == null) {
+    if (elemWhere == null) {
       document.body.appendChild(el);
+      el.outerHTML = html;
     } else {
-      if (!document.getElementById(id)) {
-        document.body.appendChild(el);
-      } else {
-        document.getElementById(id).appendChild(el);
-      }
+      elemWhere.insertAdjacentElement("beforeend", el);
+      el.outerHTML = html;
     }
-    el.outerHTML = html;
   }
 
-  // adds HTML element to class, or DOM if class does not exist
+  prependElementToDom(html, elemWhere = document.body) {
+    try {
+      const elem = document.createElement("div");
+      elemWhere.insertAdjacentElement("afterbegin", elem);
+      elem.outerHTML = html;
+    } catch (err) {
+      console.log("ERROR 582343: error in prependElementToDom");
+    }
+  }
+
+  replaceElementById(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html, id);
+      }
+    }
+  }
+
+  addElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.addElementToDom(html, obj);
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  prependElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.prependElementToDom(html, obj);
+      } else {
+	this.app.browser.prependElementToDom(html);
+      }
+    }
+  }
+
+  replaceElementBySelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  addElementToSelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToSelector(html, selector="") {
+
+    if (selector === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
+  }
+
+
+  replaceElementByClass(html, classname="") {
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let classname = "." + classname;
+      let obj = document.querySelector(classname);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
   addElementToClass(html, classname="") {
 
     if (classname === "") {
       this.app.browser.addElementToDom(html);
     } else {
+      classname = "." + classname;
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.addElementToElement(html, container);
@@ -418,6 +538,7 @@ class Browser {
     if (classname === "") {
       this.app.browser.prependElementToDom(html);
     } else {
+      classname = "." + classname;
       let container = document.querySelector(classname);
       if (container) {
         this.app.browser.prependElementToDom(html, container);
@@ -426,16 +547,6 @@ class Browser {
       }
     }
 
-  }
-
-  prependElementToDom(html, elemWhere = document.body) {
-    try {
-      const elem = document.createElement("div");
-      elemWhere.insertAdjacentElement("afterbegin", elem);
-      elem.outerHTML = html;
-    } catch (err) {
-      console.log("ERROR 582343: error in prependElementToDom");
-    }
   }
 
   addElementToElement(html, elem = document.body) {
@@ -507,7 +618,7 @@ class Browser {
     `;
 
     if (!document.getElementById(`hidden_file_element_${id}`)) {
-      this.addElementToDom(hidden_upload_form, id);
+      this.addElementToId(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
       if (!dropArea) {
         console.error("Undefined id in browser", id);

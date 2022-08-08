@@ -6,8 +6,8 @@ module.exports = ExistingLeague = {
 
   render(app, mod, league) {
     if (!document.getElementById(league.id)){
-      app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
-    }else{
+      app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
+    } else {
       document.getElementById(league.id).outerHTML = LeagueComponentExistingLeagueTemplate(app, mod, league);
     }
     this.attachEvents(app, mod);

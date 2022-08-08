@@ -11,11 +11,13 @@ const ArcadeLink = require("./lib/arcade-main/arcade-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
+const GameInvite = require('./lib/invite/main');
+
+
 
 class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
-
     this.name = "Arcade";
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
@@ -46,7 +48,14 @@ class Arcade extends ModTemplate {
 
     this.header = null;
     this.overlay = null;
-    this.debug = true;
+    this.debug = false;
+
+    //So we can keep track of games which we want to close but are waiting on game engine to process
+    this.game_close_interval_cnt = 0;
+    this.game_close_interval_queue = [];  
+    this.game_close_interval_id = null;
+
+
 
   }
 
@@ -105,6 +114,9 @@ class Arcade extends ModTemplate {
 
   respondTo(type = "") {
     let arcade_mod = this;
+    if (type === "invite") {
+      return new GameInvite(this.app, this);
+    }
     if (type == "header-menu") {
       if (this.browser_active) {
         return {
@@ -133,11 +145,12 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
-    if (type == "appspace") {
-      this.scripts['/arcade/new-style.css'];
-      super.render(this.app, this); // for scripts + styles
-      return new ArcadeAppspace(this.app, this);
-    }
+
+//    if (type == "appspace") {
+//      this.scripts['/arcade/new-style.css'];
+//      super.render(this.app, this); // for scripts + styles
+//      return new ArcadeAppspace(this.app, this);
+//    }
     return null;
   }
 
@@ -749,7 +762,11 @@ class Arcade extends ModTemplate {
       //
       if (txmsg.module == "Arcade" && txmsg.request == "close") {
         // try to give game over message
-        if (this.debug) {console.log("handlePeerRequest: close request received");}
+        if (this.debug) {
+          console.log("handlePeerRequest: close request received");
+          console.log(JSON.parse(JSON.stringify(txmsg)));
+        }
+        
         this.closeGameInvite(blk, tx, conf, app);
         
         if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
@@ -978,8 +995,8 @@ class Arcade extends ModTemplate {
   */
   closeGameInvite(blk, tx, conf, app){
     let found_game = false;
-    let game_id = tx.returnMessage().sig;
-    console.log("Arcade receiving close request");
+    let game_id = tx.returnMessage().game_id;
+    console.log("Arcade receiving close request for "+game_id);
 
     let accepted_game = this.games.find((g) => g.transaction.sig === game_id);
     if (accepted_game){
@@ -993,8 +1010,16 @@ class Arcade extends ModTemplate {
       }
     }else{
       if (this.debug) {console.log("Game not found, cannot cancel");}
-      //this.receiveCloseRequest(blk, tx, conf, app);
+      this.receiveCloseRequest(blk, tx, conf, app);
     }
+    
+    //Force close in wallet if game was created
+    app.options.games.forEach(g => {
+      if (g.id === game_id){
+        console.log("Mark game closed in options");
+        g.over = 1;
+      }
+    });
 
     //Refresh Arcade Main
     if (this.viewing_arcade_initialization_page == 0 && this.browser_active == 1) {
@@ -1008,21 +1033,38 @@ class Arcade extends ModTemplate {
 
   async receiveCloseRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    if (this.debug) {console.log("Close game " + txmsg.sig);}
+    let id = txmsg.sig || txmsg.game_id;
+    this.checkCloseQueue(id);
+    if (this.debug) {console.log("Close game " + id);}
     let sql = `UPDATE games SET status = $status WHERE game_id = $game_id`;
-    let params = { $status: "close", $game_id: txmsg.sig };
+    let params = { $status: "close", $game_id: id };
     await app.storage.executeDatabase(sql, params, "arcade");
   }
 
   async receiveGameoverRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
-    if (this.debug) {console.log("Resign game " + JSON.stringify(txmsg));}
-
-    let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${txmsg.sig}'`;
+    let id = txmsg.sig || txmsg.game_id;
+    this.checkCloseQueue(id);
+    if (this.debug) {console.log("Resign game " + JSON.stringify(id));}
+    //let params = { $status: "close", $game_id: id };
+    let sql2 = `UPDATE games SET status = 'over', winner = '${txmsg.winner}' WHERE game_id = '${id}'`;
     this.sendPeerDatabaseRequestWithFilter("Arcade", sql2);
-
   }
 
+  checkCloseQueue(game_id){
+    if (this.game_close_interval_id){
+      console.log("Are we waiting on "+game_id);
+      for (let i = this.game_close_interval_queue.length-1; i >=0; i--){
+        if (this.game_close_interval_queue[i] == game_id){
+          this.game_close_interval_queue.splice(i,1);
+        }
+      }
+      if (this.game_close_interval_queue.length == 0){
+        clearInterval(this.game_close_interval_id);
+        this.game_close_interval_id = null;
+      }
+    }
+  }
   
   async receiveChangeRequest(blk, tx, conf, app) {
     let txmsg = tx.returnMessage();
@@ -1737,7 +1779,7 @@ class Arcade extends ModTemplate {
     } 
 
     let txmsg = tx.returnMessage();
-    let game_id = txmsg.sig;
+    let game_id = txmsg.sig || txmsg.game_id;
     console.log(`Player ${tx.transaction.from[0].add} wants out of game ${game_id}`);
     for (let i = 0; i < this.games.length; i++) {
       if (this.games[i]?.transaction.sig == game_id) {
@@ -1773,13 +1815,16 @@ class Arcade extends ModTemplate {
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
+
+      //
+      // maybe someone else wants to render this (red square?)
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     }
   }
   addGamesToOpenList(txs) {
     let for_us = false;
     txs.forEach((tx, i) => {
-      //console.log("TX from SQL");
-      //console.log(JSON.parse(JSON.stringify(tx)));
       let valid_game = this.validateGame(tx);
       if (valid_game) {
         let this_game_is_for_us = this.isForUs(tx);
@@ -1788,6 +1833,11 @@ class Arcade extends ModTemplate {
         }
         for_us = for_us || this_game_is_for_us;
       }
+
+      //
+      // red square wanna render?
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     });
 
     //let removed_game = this.removeOldGames();

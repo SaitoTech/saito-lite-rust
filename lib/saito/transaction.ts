@@ -21,25 +21,27 @@ export enum TransactionType {
 }
 
 class Transaction {
-    public transaction = {
-        to: [],
-        from: [],
-        ts: 0,
-        sig: "",
-        path: [],
-        r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
-        type: TransactionType.Normal,
-        m: Buffer.alloc(0),
-    };
-    public fees_total: bigint;
-    public work_available_to_me: bigint;
-    public work_available_to_creator: bigint;
-    public work_cumulative: bigint;
-    public msg: any;
-    public dmsg: any;
-    public size: number;
-    public is_valid: any;
-    public path: Hop[];
+
+  public transaction = {
+    to: [],
+    from: [],
+    ts: 0,
+    sig: "",
+    path: [],
+    r: 1, // "replaces" (how many txs this represents in merkle-tree -- spv block)
+    type: TransactionType.Normal,
+    m: Buffer.alloc(0),
+  };
+  public fees_total: bigint;
+  public work_available_to_me: bigint;
+  public work_available_to_creator: bigint;
+  public work_cumulative: bigint;
+  public msg: any;
+  public dmsg: any;
+  public size: number;
+  public is_valid: any;
+  public path: Hop[];
+
 
     constructor(jsonobj = null) {
         /////////////////////////
@@ -105,6 +107,7 @@ class Transaction {
             }
         }
 
+
         return this;
     }
 
@@ -145,7 +148,7 @@ class Transaction {
                 const parsed_msg = this.msg;
                 this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
             } catch (e) {
-                console.log("ERROR: " + e);
+                console.error("ERROR: " + e);
             }
             return;
         }

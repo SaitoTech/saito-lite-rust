@@ -29,7 +29,7 @@ export default class Wallet {
     spends: [], // TODO -- replace with hashmap using UUID. currently array mapping inputs -> 0/1 whether spent
     pending: [], // slips pending broadcast
     default_fee: 2,
-    version: 4.210,
+    version: 4.229,
   };
   public inputs_hmap: Map<string, boolean>;
   public inputs_hmap_counter: number;
@@ -1091,7 +1091,7 @@ console.log("---------------------");
     }
     if (senders.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
-      console.log("sendPayment ERROR: Only supports one transaction");
+      console.error("sendPayment ERROR: Only supports one transaction");
       //mycallback({err: "Only supports one transaction"});
       return;
     }

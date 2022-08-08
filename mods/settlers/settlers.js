@@ -38,7 +38,7 @@ class Settlers extends GameTemplate {
   Advanced Game options for Arcade
   */
   returnGameOptionsHTML() {
-    return `
+    let html =  `
         <div class="overlay-input">
             <label for="game_length ">Game Length:</label>
             <select name="game_length">
@@ -49,6 +49,8 @@ class Settlers extends GameTemplate {
             <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
     `;
+
+
     /*let html = `
           <div class="overlay-input">
           <label for="theme">Game Version:</label>
@@ -58,8 +60,10 @@ class Settlers extends GameTemplate {
     html += `</select>
           </div>
           <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-    `;
-    return html;*/
+    `;*/
+    html += this.returnCryptoOptionsHTML();
+
+    return html;
   }
 
 
@@ -173,6 +177,8 @@ class Settlers extends GameTemplate {
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
+    //Prevent this function from running twice as saito-lite is configured to run it twice
+    if (this.initialized) {return;} else { this.initialized = 1;}
 
     super.initializeHTML(app);
     if (this.game.state.lastroll.length == 0){
@@ -372,11 +378,13 @@ class Settlers extends GameTemplate {
 
       this.game.queue.push("init");
 
-      for (let i = 1; i <= this.game.players.length; i++) {
+      let numPlay = this.game.players.length;
+
+      for (let i = 1; i <= numPlay; i++) {
         this.game.queue.push("player_build_road\t" + i + "\t1");
         this.game.queue.push(`player_build_city\t${i}\t0`);
       }
-      for (let i = this.game.players.length; i >= 1; i--) {
+      for (let i = numPlay; i >= 1; i--) {
         this.game.queue.push("player_build_road\t" + i + "\t1");
         this.game.queue.push(`player_build_city\t${i}\t0`);
       }
@@ -384,47 +392,17 @@ class Settlers extends GameTemplate {
       this.game.queue.push("READY");
       //Board
       this.game.queue.push("generate_map");
-      /*
-      For some reason, you can only flip one card at a time, otherwise the decrypting fucks up
-      But we treat the tiles and numeric tokens as decks to randomize the order
-      
-      for (let j = 0; j < 19; j++) {
-        for (let i = this.game.players.length - 1; i >= 0; i--) {
-          this.game.queue.push("FLIPCARD\t2\t1\t1\t" + (i + 1)); //tiles
-        }
-        this.game.queue.push("FLIPRESET\t1");
-      }
-      for (let j = 0; j < 18; j++) {
-        for (let i = this.game.players.length - 1; i >= 0; i--) {
-          this.game.queue.push("FLIPCARD\t3\t1\t2\t" + (i + 1)); //tokens
-        }
-        this.game.queue.push("FLIPRESET\t2");
-      }
-      */
+
       this.game.queue.push(`POOLDEAL\t3\t18\t2`);
       this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
-      this.game.queue.push(
-        "DECKANDENCRYPT\t3\t" +
-          this.game.players.length +
-          "\t" +
-          JSON.stringify(this.returnDiceTokens())
-      );
-      this.game.queue.push(
-        "DECKANDENCRYPT\t2\t" +
-          this.game.players.length +
-          "\t" +
-          JSON.stringify(this.skin.returnHexes())
-      );
+      this.game.queue.push(`DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(this.returnDiceTokens())}`);
+      this.game.queue.push(`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.skin.returnHexes())}`);
 
       //Development Cards
-      this.game.queue.push(
-        "DECKANDENCRYPT\t1\t" +
-          this.game.players.length +
-          "\t" +
-          JSON.stringify(this.skin.returnDeck())
-      );
+      this.game.queue.push(`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.skin.returnDeck())}`);
     }
+
     if (this.game.players.length > 2){
       this.grace_window = this.game.players.length * 12;
     }
@@ -658,6 +636,15 @@ class Settlers extends GameTemplate {
           this.game.state.players[player - 1].devcards++; //Add card for display
         }else{
           this.boughtCard = true; //So we display dev cards on next refresh
+        
+          let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
+      
+          let html = `<span class="tip">${lastcard.card}
+                        <div class="tiptext">${this.skin.rules[lastcard.action]}</div>
+                      </span>`;
+        
+          this.updateStatus(`<div class="persistent"><span>You bought a ${html}</span></div>`);
+
         }
         return 1;
       }
@@ -805,10 +792,11 @@ class Settlers extends GameTemplate {
         if (this.game.player == player) {
 
           /* In initial set up, if game reloaded, the free road spaces are lost*/
-	        if (parseInt(mv[2])) {
+	        if (mv[2] == 1) {
+            console.log("Last Placed City: " + this.game.state.last_city);
             let newRoads = this.hexgrid.edgesFromVertex(this.game.state.last_city.replace("city_", ""));
             for (let road of newRoads) {
-              //console.log("road: ",road);
+              console.log("road: ",road);
               this.addRoadToGameboard(road.substring(2), road[0]);
             }
 	        }
@@ -2053,7 +2041,7 @@ class Settlers extends GameTemplate {
     let selector = "hex_bg_" + hex;
     let hexobj = document.getElementById(selector);
     let road_id = "road_" + road_component + "_" + hex;
-    console.log("Add road to gameboard: "+road_id);
+    //console.log("Add road to gameboard: "+road_id);
     if (!document.getElementById(road_id)) {
       let road_html = `<div class="road road${road_component} empty" id="${road_id}"></div>`;
       let road_obj = this.app.browser.htmlToElement(road_html);
@@ -2533,7 +2521,7 @@ class Settlers extends GameTemplate {
     });
   
     if (blocks_me){
-      //console.log("undo ghost roads");
+      console.log("undo ghost roads");
       this.displayBoard();
     }
 
@@ -2881,11 +2869,11 @@ class Settlers extends GameTemplate {
         );
       }
       if (id === "3") {
-        settlers_self.addMove("buy_card\t" + settlers_self.game.player); //have everyone update game state
+        //have everyone update game state
+        settlers_self.addMove("buy_card\t" + settlers_self.game.player); 
         // Deck #1 = deck[0] = devcard deck
-        settlers_self.addMove(
-          "SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"
-        ); //get card from deck
+        //get card from deck
+        settlers_self.addMove("SAFEDEAL\t1\t" + settlers_self.game.player + "\t1"); 
       }
       let purchase = parseInt(id);
       if (purchase >= 0 && purchase <= 3) {

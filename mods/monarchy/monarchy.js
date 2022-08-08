@@ -206,8 +206,8 @@ initializeGame(game_id) {
       if (this.browser_active){
          this.displayBoard();
       }
-      //console.log(JSON.parse(JSON.stringify(this.game.deck)));
-      //console.log(JSON.parse(JSON.stringify(this.game.pool)));
+      //console.log("LOOP DECK:",JSON.parse(JSON.stringify(this.game.deck)));
+      //console.log("LOOP POOL:",JSON.parse(JSON.stringify(this.game.pool)));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
@@ -237,7 +237,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["adventurer", "chancellor", "bureaucrat", "harbinger", "library", "bandit", "vassal", "witch", "spy", "thief"];
+          supply = ["adventurer", "merchant", "bureaucrat", "harbinger", "library", "bandit", "vassal", "moat", "spy", "thief"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -259,7 +259,7 @@ initializeGame(game_id) {
 
         while (supply.length > 0){
           let card = supply.shift();
-          this.game.state.supply[card] = (this.is_testing)? 3: 10;
+          this.game.state.supply[card] = (this.is_testing)? 4: 10;
         }
 
         return 1;
@@ -341,7 +341,9 @@ initializeGame(game_id) {
         let player = parseInt(mv[1]);
         let ckey = mv[2];
         let cvalue = mv[3];
-        this.updateLog(`Player ${player} trashes a ${this.cardToText(cvalue)}`);
+        if (!mv[4]){
+          this.updateLog(`Player ${player} trashes a ${this.cardToText(cvalue)}`);
+        }
         this.game.deck[player-1].removed[ckey] = cvalue;
         delete this.game.deck[player-1].cards[ckey];
 
@@ -475,6 +477,7 @@ initializeGame(game_id) {
         let optional = (mv[4]=="1");
 
         if (this.game.player == player){
+          let card_list = [];
           if (number <= 0){
             this.endTurn();
             return 0;
@@ -482,21 +485,26 @@ initializeGame(game_id) {
           this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
           if (optional){
             this.bindBackButtonFunction(()=>{
+              if (card_list.length > 0){
+                we_self.addMove(`NOTIFY\tPlayer ${player} moved ${we_self.cardsToText(card_list)} to the their ${target}.`);  
+              }
               we_self.endTurn();
               we_self.updateStatusAndListCards(`Finished moving cards to ${target}...`);
             });
           }
           this.attachCardboxEvents(function(card){
             number--;
+            card_list.push(card);
             we_self.removeCardFromHand(card);
             let div = document.querySelector("#status #"+card);
             if (div){ div.remove(); }
             switch(target){
               case "deck": we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`); break;
-              case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`); break;
+              case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`); break;
               case "discards": we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`); break;
             }     
             if (number <= 0){
+              we_self.addMove(`NOTIFY\tPlayer ${player} moved ${we_self.cardsToText(card_list)} to the their ${target}.`);
               we_self.endTurn();
             }
           });
@@ -511,16 +519,23 @@ initializeGame(game_id) {
         let card_to_play = mv[3];
         this.game.queue.splice(qe, 1);
 
+
         if (this.game.player == victim){
+          //Spy Affects even the one who played it
           if (card_to_play == "spy"){
+            this.overlay.show(this.app, this);
             this.addMove(`spy\t${victim}`);
             this.addMove(`SAFEPOOLDEAL\t${victim}\t1\t${victim}`);
             this.addMove(`POOL\t${victim}`);   
             this.endTurn();
             return 0;
           }        
+
+          //Other attacks only affect other players
           if (victim != player){
+            this.overlay.show(this.app, this);
             if (this.hasCardInHand("moat")){
+              this.addMove(`augment\tAttack nullified by Moat\tmoat`);
               this.removeCardFromHand("moat");
               this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
               this.addMove(`NOTIFY\tPlayer ${victim} is protected from ${this.cardToText(card_to_play)} by a ${this.cardToText("moat")}.`);
@@ -543,6 +558,7 @@ initializeGame(game_id) {
                   this.addMove(`POOL\t${victim}`);
                   break;
                 case "witch":
+                  this.addMove(`augment\tPlayer ${victim} gains a curse\tcurse`);
                   this.addMove(`buy\t${victim}\tcurse`);
                   break;
               }
@@ -596,8 +612,10 @@ initializeGame(game_id) {
         this.game.queue.splice(qe, 1);
         let trash = [];
         let discard = [];
+        let top_cards = [];
         for (let c of this.game.pool[victim-1].hand){
           let cardname = this.game.pool[victim-1].cards[c];
+          top_cards.push(cardname);
           if (this.deck[cardname].type == "treasure" && cardname !== "copper"){
             //Can Trash
             trash.push(c);
@@ -605,6 +623,8 @@ initializeGame(game_id) {
             discard.push(c);
           }
         }
+
+        this.augmentAttackOverlay(`Player ${victim}'s top cards:`, ...top_cards);
         if (trash.length > 1){
           if (this.game.pool[victim-1].cards[trash[0]] == "silver"){
             discard.push(trash.shift());
@@ -614,7 +634,7 @@ initializeGame(game_id) {
         }
         
         for (let t of trash){
-          this.game.queue.push(`trash\t${victim}\t${t}\t${this.game.pool[victim-1].cards[t]}`);
+          this.game.queue.push(`trash\t${victim}\t${t}\t${this.game.pool[victim-1].cards[t]}\t1`);
           this.game.queue.push(`NOTIFY\tPlayer ${mv[2]} trashes a ${this.cardToText(this.game.pool[victim-1].cards[t])} because of the ${this.cardToText("bandit")}`);
         }
         for (let t of discard){
@@ -630,10 +650,12 @@ initializeGame(game_id) {
         let victim  = parseInt(mv[2]);
         this.game.queue.splice(qe, 1);
         let vpcards = [];
+        let hand = [];
         if (this.game.player !== victim){ return 0;}
 
         for (let c of this.game.deck[victim-1].hand){
           let cardname = this.game.deck[victim-1].cards[c];
+          hand.push(cardname);
           if (this.deck[cardname].type == "victory" && cardname !== "curse"){
             vpcards.push(cardname);
           }
@@ -641,8 +663,10 @@ initializeGame(game_id) {
         if (vpcards.length > 0){
           this.removeCardFromHand(vpcards[0]);
           this.addMove(`PUSHONDECK\t${mv[2]}\t${JSON.stringify(this.returnLastCard())}`)
+          this.addMove(`augment\tPlayer ${victim}\t${vpcards[0]}`);
           this.addMove(`NOTIFY\t${this.cardToText("bureaucrat")}: Player ${victim} puts a ${this.cardToText(vpcards[0])} back on top of the deck.`);
         }else{
+          this.addMove(`augment\tPlayer ${victim} does not have a victory card in their hand\t${JSON.stringify(hand)}`);
           this.addMove(`NOTIFY\t${this.cardToText("bureaucrat")}: Player ${victim} does not have a victory card in their hand.`);
         }
         this.endTurn();
@@ -665,11 +689,14 @@ initializeGame(game_id) {
           }
           this.updateStatusAndListCards(`Select a card to put on top of your deck:`,my_discards, false);
           this.attachCardboxEvents(function(oldcard){
+            console.log("DECK1:",JSON.parse(JSON.stringify(this.game.deck)));
             let index = my_discards.indexOf(oldcard);
             let card = {};
             card[my_keys[index]] = my_discards[index];
             delete we_self.game.deck[player-1].discards[my_keys[index]];
             this.addMove(`PUSHONDECK\t${player}\t${JSON.stringify(card)}`);
+            console.log("DECK2:",JSON.parse(JSON.stringify(this.game.deck)));
+
             this.endTurn();
           });
         }
@@ -682,18 +709,24 @@ initializeGame(game_id) {
         if (this.game.player !== player){
           return 0;
         }
+
+
         if (this.game.pool[player-1].hand.length > 0){
           let c = this.game.pool[player-1].hand.pop();
           let cardname = this.game.pool[player-1].cards[c];
           if (this.deck[cardname].type.includes("action")){
-            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<ul><li class="card nocard" id="keep">keep</li><li class="card nocard" id="nope">set aside</li></ul>`);
+            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<ul><li class="card nocard" id="keep">keep in hand</li><li class="card nocard" id="nope">set aside</li></ul>`);
             this.attachCardboxEvents(function (action){
               if (action == "keep"){
                 this.game.deck[player-1].hand.push(c);  
               }else{
-                this.game.pool[player-1].hand.push(c);  
+                this.game.pool[player-1].hand.unshift(c);  
+                this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
+                this.endTurn();
               }
+              this.restartQueue();
             });  
+            return 0;
           }else{
             this.game.deck[player-1].hand.push(c);  
           }
@@ -754,6 +787,11 @@ initializeGame(game_id) {
       if (mv[0] == "spy"){
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
+
+        let card = (this.game.pool[player-1].hand.length > 0) ? this.game.pool[player-1].cards[this.game.pool[player-1].hand[0]] : "";
+        this.augmentAttackOverlay(`Players ${player}'s top card:`,card);
+        this.overlay.show(this.app, this); //Redisplay for other players
+
         if (this.game.player == player){
           if (this.game.pool[player-1].hand.length == 0){
             this.endTurn();
@@ -763,7 +801,6 @@ initializeGame(game_id) {
                         <li class="card nocard" id="deck">back to deck</li>
                         <li class="card nocard" id="discards">discard</li>
                       </ul>`;
-          let card = this.game.pool[player-1].cards[this.game.pool[player-1].hand[0]];
           we_self.updateStatusWithOptions(`Move top card of your deck (${we_self.cardToText(card)}):`, html, false);
           we_self.attachCardboxEvents(function(action){
             we_self.removeCardFromPool(card, player);
@@ -793,7 +830,6 @@ initializeGame(game_id) {
 
         for (let c of this.game.pool[victim-1].hand){
           let cardname = this.game.pool[victim-1].cards[c];
-          //if (this.deck[cardname].type == "treasure"){
             cards.push(cardname);
         }
         this.addMove(`thief2\t${mv[1]}\t${mv[2]}\t${cards[0]}\t${cards[1]}`);
@@ -809,7 +845,8 @@ initializeGame(game_id) {
         let victim  = parseInt(mv[2]);
         let card1 = mv[3];
         let card2 = mv[4];
-        
+
+        this.augmentAttackOverlay(`Players ${victim}'s top two cards:`,card1, card2);        
         if (this.game.player !== player){ return 0;}
         let tcards = [];
         if (this.deck[card1].type == "treasure"){
@@ -829,7 +866,8 @@ initializeGame(game_id) {
           //Tell victim to discard one and trash one
           this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${tcards[0]}`);
           this.removeCardFromPool(tcards[0], victim);
-          this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+          this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}\t1`);
+          this.addMove(`NOTIFY\tPlayer ${victim} trashes a ${this.cardToText(this.lastCardValue)} because of the ${this.cardToText("thief")}`);
           if (tcards[0] == card1){
             this.removeCardFromPool(card2, victim);
           }else{
@@ -842,7 +880,8 @@ initializeGame(game_id) {
           this.attachCardboxEvents(function(card){
             this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${card}`);
             this.removeCardFromPool(card, victim);
-            this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+            this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}\t1`);
+            this.addMove(`NOTIFY\tPlayer ${victim} trashes a ${this.cardToText(this.lastCardValue)} because of the ${this.cardToText("thief")}`);
             if (card == card1){
               this.removeCardFromPool(card2, victim);
             }else{
@@ -864,9 +903,10 @@ initializeGame(game_id) {
         if (this.game.player == player){
 
           this.updateStatusWithOptions(`Would you like to keep the ${this.cardToText(card)} from Player ${victim}}?`,
-              `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`);
+              `<ul><li class="card nocard" id="yes">yes, keep</li><li class="card nocard" id="no">no, trash</li></ul>`);
           this.attachCardboxEvents(function (action){
             if (action == "yes"){
+              we_self.addMove(`NOTIFY\tPlayer ${player} decides to keep Player ${victim}'s ${this.cardToText(card)}`);
               we_self.addMove(`buy\t${player}\t${card}`);
               we_self.addMove(`create\t${card}`); //A hack to tell players to increment supply
             }
@@ -885,7 +925,7 @@ initializeGame(game_id) {
           let cname = this.game.pool[player-1].cards[c];
           if (this.deck[cname].type.includes("action")){
             let html = `<ul><li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li></ul>`;
-            we_self.updateStatusWithOptions(`Play ${card} instead of discarding it?`, html);
+            we_self.updateStatusWithOptions(`Play ${we_self.cardToText(cname)} instead of discarding it?`, html);
             we_self.attachCardboxEvents(function (action){
               we_self.removeCardFromPool(cname, player);
               if (action == "play"){
@@ -896,13 +936,30 @@ initializeGame(game_id) {
               we_self.endTurn();
             });
           }else{
-            we_self.removeCardFromPool(cname, player);
-            we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
-            we_self.addMove(`NOTIFY\tPlayer ${mv[1]} discards a ${we_self.cardToText(cname)}`);
-            this.endTurn();
+            we_self.updateStatusWithOptions(`You drew a ${we_self.cardToText(cname)}`, `<ul><li class="card nocard" id="discards">okay</li></ul>`);
+            we_self.attachCardboxEvents(function (action){
+              we_self.removeCardFromPool(cname, player);
+              we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+              we_self.addMove(`NOTIFY\tPlayer ${mv[1]} discards a ${we_self.cardToText(cname)}`);
+              this.endTurn();
+            });
           }
         }
         return 0;
+      }
+
+      if (mv[0] == "augment"){
+        this.game.queue.splice(qe, 1);
+        let msg = mv[1];
+        let card = mv[2];
+        try{
+          card = JSON.parse(card);
+          this.augmentAttackOverlay(msg, ...card);
+        }catch(err){
+          this.augmentAttackOverlay(msg, card);
+        }
+        this.overlay.show(this.app, this);
+        return 1;
       }
 
     } // if cards in queue
@@ -1006,6 +1063,31 @@ initializeGame(game_id) {
     });
   }
 
+  returnAttackOverlay(card){
+    let html = `<div class="attack_overlay">
+                  <h2>Attack! -- ${this.deck[card].name}</h2>
+                  <div class="overlay_content">
+                    <div class="overlay-img">${this.returnCardImage(card)}</div>
+                    <div class="attack_details"></div>
+                  </div>
+                </div>`;
+
+    return html;
+  }
+
+  augmentAttackOverlay(text, ...cards){
+    let rCol = document.querySelector(".attack_details");
+    if (!rCol){ return; }
+    let html = rCol.innerHTML;
+    if (text){
+      html += `<div class="overlay-msg">${text}</div>`;
+    }
+    for (let i = 0; i < cards.length; i++){
+      html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
+    }
+    rCol.innerHTML = html;
+  }
+
   displayBoard(){
     let html = `<div class="cardstacks">`;
     let cardClass = ($("#zoom").hasClass("active"))?"showcard":"passivecard";
@@ -1056,8 +1138,8 @@ initializeGame(game_id) {
         $(".showcard").removeClass("showcard");
         $(".cardpile").addClass("tip");
       }
-      
-      we_self.attachCardboxEvents();
+      we_self.cardbox.attachCardEvents();
+      //we_self.attachCardboxEvents();
     });
 
     $(".cardstacks").draggable();
@@ -1170,6 +1252,20 @@ initializeGame(game_id) {
     }
   }
 
+  cardsToText(cards){
+    if (cards.length == 0){
+      return "";
+    }
+    if (cards.length == 1){
+      return this.cardToText(cards[0]);
+    }
+    let text = "";
+    for (let c of cards){
+      text += this.cardToText(c) + ", ";
+    }
+    return text.substring(0, text.length - 2);
+  }
+
   /*
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
@@ -1206,6 +1302,7 @@ initializeGame(game_id) {
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
+      this.overlay.show(this.app, this, this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
       }
@@ -1292,7 +1389,7 @@ initializeGame(game_id) {
       this.game.state.coins += 2;
       if (this.game.player == player){
         let html = `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`;
-        this.updateStatusWithOptions("Would you like to discard your deck (for a reshuffle before next draw)?", html);
+        this.updateStatusWithOptions("Would you like to discard your deck (for an immediate reshuffle)?", html);
         this.attachCardboxEvents(function(card){
           if (card == "yes"){
             we_self.addMove(`SHUFFLEDISCARDS\t${player}`);
@@ -1356,6 +1453,7 @@ initializeGame(game_id) {
       //Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards
       this.game.state.shuffled = false;
       this.game.queue.push(`library\t${player}`);
+      this.game.queue.push(`POOL\t${player}`);
     }
     //**
     if (card_to_play == "market"){

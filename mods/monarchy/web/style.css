@@ -1,5 +1,6 @@
 :root{
   --dominion-parchment: tan;
+  --dominion-dark: #554e3e;
 }
 
 body {
@@ -137,4 +138,53 @@ body {
 
 .rules-overlay{
   background-color: var(--dominion-parchment);
+}
+
+.attack_overlay{
+  background-color: var(--dominion-dark);
+  border-radius: 3px;
+  border: solid var(--dominion-parchment) 1px;
+  color: ghostwhite;
+  padding: 1em;
+}
+
+.attack_overlay h1, .attack_overlay h2{
+  font-size: 1.5em;
+  color: ghostwhite;
+  text-align: center;
+}
+
+.attack_overlay .overlay-img{
+  min-width: 150px;
+  max-width: 180px;
+  margin-right: 20px;
+}
+
+.attack_overlay .overlay-input{
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.attack_overlay .overlay_content{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.attack_details{
+  display: grid;
+  align-items: center;
+  max-width: 250px;
+  grid-gap: 10px;
+  grid-template-rows: 10px auto;
+  grid-template-columns: repeat(auto-fit, minmax(auto, 100px));
+}
+
+.attack_details .overlay-msg{
+  grid-column: 1 / 4;
+}
+
+.aoc{
+  max-width: 100px;
 }

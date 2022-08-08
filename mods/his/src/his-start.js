@@ -86,14 +86,24 @@
       }
     });
     this.menu.addMenuOption({
-      text : "Cards",
+      text : "Info",
       id : "game-cards",
       class : "game-cards",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.handleCardsMenu();
+	game_mod.menu.showSubMenu("game-cards");
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Religion",
+      id : "game-religious-conflict",
+      class : "game-religious-conflict",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayReligiousConflictSheet();
+      }
+    });
+
     this.menu.addMenuOption({
       text : "Factions",
       id : "game-factions",
