@@ -17,7 +17,7 @@ module.exports = AdminBox = {
 
   render(app, mod, games) {
     if (!document.getElementById("game-selector")) {
-      app.browser.addElementToDom(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
+      app.browser.addElementToId(LeagueComponentAdminBoxTemplate(app, mod, games), "league-main-container-games");
       this.attachEvents(app, mod);
     }
   },
