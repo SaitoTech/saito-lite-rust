@@ -8484,30 +8484,6 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 
 
   
-  returnFormattedGameOptions(options) {
-    let new_options = {};
-    for (var index in options) {
-      if (index == "player1") {
-        if (options[index] == "random") {
-          new_options[index] = options[index];
-        } else {
-	  if (options[index] === "ussr") {
-	    new_options[index] = "ussr";
-	  } else {
-	    new_options[index] = "us";
-	  }
-        }
-      } else {
-        new_options[index] = options[index]
-      }
-    }
-    return new_options;
-  }
-
-
-
-
-
   
 
   displayChinaCard() {
@@ -10365,7 +10341,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
       	// make DEFCON boxes clickable
       	//
         for (let i = 1; i <= 5; i ++){
-          twilight_self.app.browser.addElementToDom(`<div id="${i}" class="set_defcon_box set_defcon_box_${i}"></div>`, "gameboard");  
+          twilight_self.app.browser.addElementToDom(`<div id="${i}" class="set_defcon_box set_defcon_box_${i}"></div>`, document.getElementById("gameboard"));  
           $('.set_defcon_box_'+i).css('top', twilight_self.scale(twilight_self.game.state.defcon_ps[5-i].top)+"px");
           $('.set_defcon_box_'+i).css('left', twilight_self.scale(twilight_self.game.state.defcon_ps[5-i].left)+"px");
 

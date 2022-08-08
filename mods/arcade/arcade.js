@@ -11,11 +11,13 @@ const ArcadeLink = require("./lib/arcade-main/arcade-link");
 const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
+const GameInvite = require('./lib/invite/main');
+
+
 
 class Arcade extends ModTemplate {
   constructor(app) {
     super(app);
-
     this.name = "Arcade";
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
@@ -112,6 +114,9 @@ class Arcade extends ModTemplate {
 
   respondTo(type = "") {
     let arcade_mod = this;
+    if (type === "invite") {
+      return new GameInvite(this.app, this);
+    }
     if (type == "header-menu") {
       if (this.browser_active) {
         return {
@@ -140,11 +145,12 @@ class Arcade extends ModTemplate {
         slug: this.returnSlug(),
       };
     }
-    if (type == "appspace") {
-      this.scripts['/arcade/new-style.css'];
-      super.render(this.app, this); // for scripts + styles
-      return new ArcadeAppspace(this.app, this);
-    }
+
+//    if (type == "appspace") {
+//      this.scripts['/arcade/new-style.css'];
+//      super.render(this.app, this); // for scripts + styles
+//      return new ArcadeAppspace(this.app, this);
+//    }
     return null;
   }
 
@@ -1817,13 +1823,16 @@ class Arcade extends ModTemplate {
       if (for_us || removed_game) {
         this.renderArcadeMain(this.app, this);
       }
+
+      //
+      // maybe someone else wants to render this (red square?)
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     }
   }
   addGamesToOpenList(txs) {
     let for_us = false;
     txs.forEach((tx, i) => {
-      //console.log("TX from SQL");
-      //console.log(JSON.parse(JSON.stringify(tx)));
       let valid_game = this.validateGame(tx);
       if (valid_game) {
         let this_game_is_for_us = this.isForUs(tx);
@@ -1832,6 +1841,11 @@ class Arcade extends ModTemplate {
         }
         for_us = for_us || this_game_is_for_us;
       }
+
+      //
+      // red square wanna render?
+      //
+      this.app.connection.emit('game-invite-render-request', tx);
     });
 
     //let removed_game = this.removeOldGames();

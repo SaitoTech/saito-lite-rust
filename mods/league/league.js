@@ -24,6 +24,7 @@ class League extends ModTemplate {
     //
     this.leagues = [];
 
+
     //
     // used in onPeerHandshakeComplete
     //
@@ -41,6 +42,8 @@ class League extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
+
+    this.loadLeagues();
 
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
@@ -296,9 +299,7 @@ class League extends ModTemplate {
                 }
               }          
             }
-
-            league_self.renderLeagues(app, league_self);
-          },1000);
+          },2000);
         } else {}
       }
     );
@@ -463,9 +464,9 @@ class League extends ModTemplate {
       this.leagues.push(lobj);      
     }
 
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000);
+    //setTimeout(()=>{
+    //  this.renderLeagues(this.app, this);
+    //},1000);
   }
 
   removeLeague(league_id){
@@ -486,9 +487,9 @@ class League extends ModTemplate {
         this.updateLeague(league);
       }
     }
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000); 
+   // setTimeout(()=>{
+   //   this.renderLeagues(this.app, this);
+   // },1000); 
   }
 
   removePlayer(tx){
@@ -498,9 +499,9 @@ class League extends ModTemplate {
         this.updateLeague(league);
       }
     }
-    setTimeout(()=>{
-      this.renderLeagues(this.app, this);
-    },1000); 
+   // setTimeout(()=>{
+   //   this.renderLeagues(this.app, this);
+   // },1000); 
 
   }
 
@@ -861,7 +862,7 @@ class League extends ModTemplate {
     let pid = this.app.wallet.returnPublicKey();
     league.myRank = -1;
     league.playerCnt = 0;
-
+    let league_self = this;
     league.players = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
@@ -878,6 +879,7 @@ class League extends ModTemplate {
           league.playerCnt = cnt;
         }
         //console.log(`League updated: ${league.myRank} / ${league.playerCnt}`);
+        league_self.renderLeagues(league_self.app, league_self);
       }
 
     );
@@ -994,6 +996,41 @@ class League extends ModTemplate {
     }
     return 0;
   }
+
+  //API Function
+  isLeagueMember(league_id){
+    for (let leag of this.leagues){
+      if (leag.id == league_id){
+        if (leag.myRank > 0){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  loadLeagues() {
+
+//    if (this.app.options.leagues) {
+//      this.leagues = this.app.options.leagues;
+//      return;
+//    }
+
+    //
+    // set default values
+    //
+//    this.leagues = {};
+
+  }
+
+  saveLeagues() {
+//      this.app.options.leagues = this.leagues;
+//      this.app.options.saveOptions();
+  }
+
 
 
 }

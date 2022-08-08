@@ -1167,7 +1167,7 @@ class Wordblocks extends GameTemplate {
 
         if (
           (starting_point <= 6 && ending_point >= 6) ||
-          (starting_point <= 10 && ending_point >= 6)
+          (starting_point <= 10 && ending_point >= 10)
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");
@@ -1186,7 +1186,7 @@ class Wordblocks extends GameTemplate {
 
         if (
           (starting_point <= 6 && ending_point >= 6) ||
-          (starting_point <= 10 && ending_point >= 6)
+          (starting_point <= 10 && ending_point >= 10)
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");

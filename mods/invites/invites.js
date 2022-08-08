@@ -13,18 +13,18 @@ class Invites extends InviteTemplate {
     this.description    = "Demo module with UI for invite display and acceptance";
     this.categories     = "Utilities Education Demo";
 
+    this.icon		= "fas fa-envelope-open-text";
     this.invites        = [];
     this.scripts	= [];
-    this.styles		= ['/invites/style.css'];
-    return this;
-  }
+    this.styles		= ['/invites/css/appspace.css'];
 
+    return this;
+
+  }
 
   initialize(app) {
-    this.load();
+    this.loadInvites();
   }
-
-
 
   respondTo(type) {
 
@@ -36,16 +36,11 @@ class Invites extends InviteTemplate {
     return null;
   }
 
-
-  //
-  // InviteTemplate handles
-  //
   async onConfirmation(blk, tx, conf, app) {
     super.onConfirmation(blk, tx, conf, app);
   }
 
 }
-
 
 module.exports = Invites;
 

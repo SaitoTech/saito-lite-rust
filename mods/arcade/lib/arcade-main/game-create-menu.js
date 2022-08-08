@@ -8,6 +8,9 @@ module.exports = GameCreateMenu = {
 
   render(app, mod) {
 
+    if (mod.overlay === null) {
+      mod.overlay = new SaitoOverlay(app);
+    }
     mod.overlay.show(app, mod, GameCreateMenuTemplate());
 
     let games_menu = document.querySelector(".arcade-games");

@@ -1,222 +1,308 @@
-#redsquare-input-container {
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-    /* background-color: green; */
-
-    height: 15rem;
-    position: relative;
-    border: 1px solid var(--saito-border);
-    border-radius: .5rem;
-    margin-bottom: 1rem;
+.background-shim {
+  background-image: url('/chess/img/arcade/arcade.jpg');
+  top: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-size: cover;
+  z-index: 10;
 }
 
-#redsquare-input-container button {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
-}
-
-.redsquare-input-profile img {
-    width: 5rem;
-    height: 5rem;
-    border-radius: .5rem;
-    margin-top: 3rem;
-    margin-left: 3rem;
-}
-
-#redsquare-input-container textarea {
-    margin-top: 3rem;
-    padding-left: 1rem;
-    padding-top: 1.5rem;
-    height: calc(100% - 6rem);
-    width: 100%;
-    border: none;
-}
-
-#tweet-img-input-label {
-    display: inline-block;
-    margin-left: 30px;
-    width: 150px;
-}
-
-
-#redsquare-list {
-    border: 1px solid var(--saito-border);
-    border-radius: .5rem;
-    padding-bottom: 1rem;
-}
 
 .redsquare-item {
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-
+  cursor: pointer;
 }
 
-.redsquare-item:not(:last-child) {
-    margin-bottom: 2rem;
+.redsquare-item-children>.redsquare-item {
+  border-bottom: 0px;
+  margin-left: 0rem;
+  padding-left: 0rem;
+  padding-top: 3rem;
 }
 
-.redsquare-item-profile img {
-    width: 5rem;
-    height: 5rem;
-    border-radius: .5rem;
-    margin-top: 2rem;
-    margin-left: 3rem;
+.post-tweet-preview {
+  padding: 0rem;
+  padding-bottom: 2rem;
+}
+
+.post-tweet-preview .redsquare-item {
+  padding-left: 0rem;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
+  display: none;
+}
+
+.post-tweet-textarea {
+  width: auto;
+  margin-top: 1rem;
+}
+
+.post-tweet-button {
+  margin-left: 0rem;
+  margin-right: 0rem;
+  margin-top: 1rem;
+  width: 20rem;
+  text-align: center;
+  float: right;
+}
+
+.redsquare-tweet-overlay {
+  padding: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 2rem;
+  background-color: white;
+}
+
+.saito-sidebar.right {
+  width: 51rem;
+}
+
+.saito-main.appspace {
+  min-width: 50rem;
+}
+
+.redsquare-appspace-contacts-list {
+  padding-left: 2rem;
+  padding-top: 2rem;
+}
+
+.redsquare-appspace-contacts-list>h6 {
+  padding-bottom: 1rem;
 }
 
 
+.redsquare-item {
+  padding: 2rem 3rem 2rem 1rem;
+  border-bottom: 1px solid #a5a5a533;
+}
 
 .redsquare-item-contents {
-    padding-left: 1rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
 }
 
 
-.redsquare-user {
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
+.redsquare-invite-participants {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
 }
 
-.redsquare-user-details {
-    margin-right: 5rem;
-    display: flex;
-    align-items: center;
+.redsquare-invite-participants>.saito-user {
+  max-width: 20rem;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
 }
 
-.redsquare-user-details p {
-    font-weight: bold;
-    font-size: 1.9rem;
-    margin-right: .5rem;
-    word-wrap: break-word;
-}
-
-.redsquare-user-details i {
-    color: var(--saito-primary)
-}
-
-.redsquare-user-actions {
-    display: grid;
-    align-items: center;
-    grid-gap: 2rem;
-    grid-template-columns: min-content min-content;
-    position: relative;
-}
-
-.redsquare-user-actions i {
-    font-size: 25px;
-    position: absolute;    
-    top: -15px;
-    font-size: 25px;
-}
-
-.redsquare-user-actions i {
-    cursor: pointer;
-}
-
-.redsquare-text-container {
-    margin-bottom: 1rem;
-}
-
-.redsquare-image-container img {
-    width: 80%;
-    height: 30rem;
-    border-radius: .5rem;
-    object-fit: cover;
+.redsquare-invite-title {
+  color: var(--saito-default-font-color);
+  background-color: white;
+  font-weight: bold;
+  font-size: 2.2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 
 
-
-/*  Trends */
-
-#redsquare-trends-container {
-    background-color: var(--saito-gray);
-    padding: 1rem;
-    border-radius: .5rem;
-
+.redsquare-game-creator {
+  padding: 3rem;
+  border-radius: 2rem;
+  background-color: #0009;
+  color: white;
+  max-height: 90vh;
+  max-width: 114rem;
+  overflow-y: scroll;
 }
 
-#redsquare-trends-container>div:not(:last-child) {
-    margin-bottom: 1.5rem;
-
+.redsquare-create-game-list {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
 }
 
-#redsquare-trends-container>h5 {
-    margin-bottom: 2rem;
-    font-weight: bold;
-    font-size: 2.3rem;
+.redsquare-create-game-header {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background-color: #0008;
+  padding: 1rem;
 }
 
-#redsquare-trends-container>div>p {
-    font-size: 1.3rem;
-    color: var(--saito-default-font-color);
-
+.redsquare-game-container {
+  display: grid;
+  grid-template-columns: 10vw auto;
+  grid-template-rows: min-content 1fr;
+  max-width: 80vw;
+  column-gap: 2rem;
+  min-height: 10rem;
+  max-height: 10rem;
+  min-width: 51rem;
+  padding: 0.5rem
 }
 
-#redsquare-trends-container>div>p:not(:last-child) {
-    margin-bottom: .5rem;
+.redsquare-game-container:hover {
+  cursor: pointer;
+  background-color: #0009;
 }
 
-#redsquare-trends-container>div>h6 {
-    font-size: 1.8rem;
-    color: var(--saito-black);
-    margin-bottom: .5rem;
+.redsquare-game-image {
+  grid-row: span 2;
+  width: 10vw;
+  height: auto;
+  max-height: 10rem;
 }
 
-
-/* Follow */
-
-#redsquare-follow-container {
-    background-color: var(--saito-gray);
-    padding-top: 1rem;
-
+.redsquare-game-image>img {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem
 }
 
-
-#redsquare-follow-container>h5 {
-    margin-bottom: 2rem;
-    font-weight: bold;
-    font-size: 2.3rem;
-    margin-left: 1rem;
+.redsquare-game-title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  font-size: 3rem;
+  font-weight: bolder;
 }
 
-/* TWEET BOX */
-
-.tweet-tool-like {
-    display: inline-block;
-    line-height: 19px;
-    border-radius: 3px;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    margin-right: 30px;
-}
-
-.tweet-tool-like.liked, .tweet-tool-like:hover{
-    background: #EA462F;
-    color: #fff;
-    border: none;
-}
-
-
-.redsquare-date-container {
-    margin-top: 25px;
-}
-
-
-.redsquare-date-container p {
-    font-size: 1.34rem;
-    color: #666060;
+.redsquare-game-description {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  overflow-y: hidden;
+  text-overflow: clip;
+  font-size: 1.5rem;
+  line-height: 1.9rem;
 }
 
 .redsquare-tweet-tools {
-    margin-top: 9px;
-    font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-size: 1.5rem;
+  width: 3.5rem;
+  margin: 1rem 0;
 }
 
+
+.redsquare-tweet-tools>div {
+  position: relative;
+  margin: 0.75rem 0;
+  transform: scale(0.75);
+}
+
+.redsquare-tweet-tools>div:hover {
+  transform: scale(1);
+}
+
+
 .redsquare-tweet-tools span {
+  margin: 0 auto;
+  position: absolute;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  line-height: 2.9rem;
+  font-weight: bold;
+  color: var(--saito-white);
+  z-index: 1;
 }
 
 .redsquare-tweet-tools i {
-    margin-left: 5px;
+  font-size: 3rem;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  color: #aaa;
+}
+
+
+.saito-tweet-activity i {
+  color: var(--saito-primary);
+}
+
+.tweet-tool-retweet span {
+  line-height: 3.3rem;
+}
+
+.tweet-tool-retweet i {
+  padding-left: 0.666rem;
+}
+
+
+
+.link-preview {
+  margin: 15px 0px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 250px;
+  background-size: cover !important;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.preview-info {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+
+.preview-title {
+  color: #000;
+  margin: 3px 0px;
+}
+
+.preview-url {
+  font-size: 1.4rem;
+  color: #444;
+}
+
+.preview-description {
+  font-size: 1.6rem;
+  color: #444;
+}
+
+.youtube-embed-container {
+  width: 100%;
+  margin: 15px 0px;
+}
+
+.youtube-embed {
+  width: 100%;
+  height: 300px;
+}
+
+.tweet-tool-like {
+  cursor: pointer;
+}
+
+.tweet-tool-comment-count {
+  width: 1rem;
+  text-align: center;
+}
+
+
+#redsquare-reply-tweet-overlay {
+  background-color: #fff;
+  width: 60vh;
+}
+
+#redsquare-reply-tweet-overlay .redsquare-item-contents {
+  border-left: 1px solid #b1b0b0;
+  margin: 30px 10px;
 }

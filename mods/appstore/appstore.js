@@ -1,13 +1,13 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const EmailAppStore = require('./lib/email-appspace/appstore-appspace');
-const AppStoreOverlay = require('./lib/appstore-overlay/appstore-overlay');
-const AppStoreBundleConfirm = require('./lib/appstore-overlay/appstore-bundle-confirm');
-const AppStoreModuleIndexedConfirm = require('./lib/appstore-overlay/appstore-module-indexed-confirm');
+const AppStoreAppspace = require('./lib/appspace/main');
+const AppStoreBundleConfirm = require('./lib/overlay/appstore-bundle-confirm');
+const AppStoreModuleIndexedConfirm = require('./lib/overlay/appstore-module-indexed-confirm');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const fs = require('fs');
 const path = require('path');
 const JSON = require('json-bigint');
+
 
 
 class AppStore extends ModTemplate {
@@ -22,6 +22,7 @@ class AppStore extends ModTemplate {
     this.categories    = "Utilities Dev";
     this.featured_apps = ['Polkadot','Kusama', 'Westend', 'Design', 'Debug', 'Midnight', 'Hearts', 'Settlers', 'President', 'Scotland'];
     this.header        = null;
+    this.icon	       = "fas fa-window-restore";
 
     this.bundling_timer = null;
     this.renderMode    = "none";
@@ -34,22 +35,12 @@ class AppStore extends ModTemplate {
   // appstore upload is in email
   //
   respondTo(type) {
-    if (type == 'email-appspace') {
-      let obj = {};
-      obj.render = this.renderEmail;
-      obj.attachEvents = this.attachEventsEmail;
-      obj.script = '<link ref="stylesheet" href="/appstore/css/email-appspace.css" />';
-      return obj;
+    if (type == 'appspace') {
+      this.styles = ['/appstore/css/appspace.css'];
+      super.render(this.app, this);
+      return new AppStoreAppspace(this.app, this);
     }
     return null;
-  }
-  renderEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.render(app, appstore_mod);
-  }
-  attachEventsEmail(app, mod) {
-    appstore_mod = app.modules.returnModule("AppStore");
-    EmailAppStore.attachEvents(app, appstore_mod);
   }
 
 
@@ -78,12 +69,6 @@ class AppStore extends ModTemplate {
       this.renderMode = "standalone";
     }
   }
-  onPeerHandshakeComplete(app, mod) {
-    if (this.renderMode == "standalone") {
-      AppStoreOverlay.render(this.app, this, this.search_options);
-      AppStoreOverlay.attachEvents(this.app, this);
-    }
-  }
 
 
   //
@@ -95,6 +80,8 @@ class AppStore extends ModTemplate {
 
     if (message.request === "appstore search modules") {
 
+////console.log("HANDLE SEARCH MODULES");
+
       let squery1 = "%" + message.data + "%";
       let squery2 = message.data;
 
@@ -104,8 +91,8 @@ class AppStore extends ModTemplate {
         $squery2: squery2,
       };
 
-console.log(sql);
-console.log(JSON.stringify(params));
+//console.log(sql);
+//console.log(JSON.stringify(params));
 
       let rows = await this.app.storage.queryDatabase(sql, params, "appstore");
 
@@ -156,9 +143,9 @@ console.log(JSON.stringify(params));
       //
       dirs.forEach(dir => {
 
-console.log("##########################");
-console.log("processing: " + dir);
-console.log("##########################");
+////console.log("##########################");
+////console.log("processing: " + dir);
+////console.log("##########################");
 
         let mod_path = path.resolve(__dirname, `mods/${dir}.zip`);
         let output = fs.createWriteStream(mod_path);
@@ -194,6 +181,7 @@ console.log("##########################");
           let mod_zip_filename = path.basename(this.path);
           let mod_path = path.resolve(__dirname, `mods/${mod_zip_filename}`);
           let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+////console.log("mod path is: " + mod_path);
           let zip = fs.readFileSync(mod_path, { encoding: 'base64' });
 
 	  //
@@ -206,6 +194,8 @@ console.log("##########################");
 	  //
 	  if (zip.length <= 30000000) {
 
+////console.log("submitting: " + mod_zip_filename);
+
             newtx.msg = {
               module: "AppStore",
               request: "submit module",
@@ -215,6 +205,10 @@ console.log("##########################");
 
             newtx = app.wallet.signTransaction(newtx);
             app.network.propagateTransaction(newtx);
+
+	  } else {
+
+////console.log("ZIP TOO BIG: " + dir);
 
 	  }
 
@@ -236,8 +230,6 @@ console.log("##########################");
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-
-console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 
       switch (txmsg.request) {
         case 'submit module':
@@ -298,14 +290,15 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
           this.requestBundle(blk, tx);
           break;
         case 'receive bundle':
+////console.log("##### - RECEIVE BUNDLE 1");
           if (tx.isTo(app.wallet.returnPublicKey()) && !tx.isFrom(app.wallet.returnPublicKey())) {
-            console.log("##### BUNDLE RECEIVED #####");
-            //
-            // 
-            //
+            ////console.log("##### BUNDLE RECEIVED #####");
             if (app.options.appstore) {
+////console.log("##### - RECEIVE BUNDLE 2");
               if (app.options.appstore.default != "") {
+////console.log("##### - RECEIVE BUNDLE 3");
                 if (tx.isFrom(app.options.appstore.default)) {
+////console.log("##### - RECEIVE BUNDLE 4");
                   this.receiveBundle(blk, tx);
                 }
               }
@@ -378,7 +371,6 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 	  if (/this.name/.test(zip_lines[i]) && found_name == 0) {
 	    found_name = 1;
 	    if (zip_lines[i].indexOf("=") > 0) {
-//console.log("FP: " + file.path);
 	      name = zip_lines[i].substring(zip_lines[i].indexOf("="));
 	      name = cleanString(name);
 	      name = name.replace(/^\s+|\s+$/gm,'');
@@ -431,7 +423,7 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 
       await Promise.all(promises);
     } catch (err) {
-      console.log("ERROR UNZIPPING: " + err);
+      ////console.log("ERROR UNZIPPING: " + err);
     }
 
     //
@@ -451,11 +443,10 @@ console.log("onconf: " + txmsg.module + " -- " + txmsg.request);
 
     if (this.app.BROWSER == 1) { 
 
-console.log("we are browser submit module...");
-console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
+////console.log("we are browser submit module...");
+//console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transaction.sig)}`);
 
       if (tx.isFrom(this.app.wallet.returnPublicKey())) {
-
 
         let newtx = this.app.wallet.createUnsignedTransaction();
             newtx.msg.module       = "Email";
@@ -493,7 +484,7 @@ console.log(`hash: ${this.app.crypto.hash(tx.transaction.ts + "-" + tx.transacti
     }
 
 
-console.log("server is starting app insert");
+////console.log("server is starting app insert");
 
     let sql = `INSERT OR IGNORE INTO modules (name, description, version, image, categories, publickey, unixtime, bid, bsh, tx, featured) VALUES ($name, $description, $version, $image, $categories, $publickey, $unixtime, $bid, $bsh, $tx, $featured)`;
 
@@ -504,12 +495,13 @@ console.log("server is starting app insert");
 
     let { name, image, description, categories } = await this.getNameAndDescriptionFromZip(module_zip, `mods/module-${sig}-${ts}.zip`);
 
-console.log("-----------------------------");
-console.log("--INSERTING INTO APPSTORE --- " + name);
-console.log("-----------------------------");
+////console.log("-----------------------------");
+////console.log("--INSERTING INTO APPSTORE --- " + name);
+//console.log(description);
+////console.log("-----------------------------");
 if (name == "Unknown") {
-  console.log(`TROUBLE EXTRACTING: mods/module-${sig}-${ts}.zip`);
-  //console.log("ZIP: " + module_zip);
+  //console.log(`TROUBLE EXTRACTING: mods/module-${sig}-${ts}.zip`);
+  //////console.log("ZIP: " + module_zip);
   //process.exit();
 }
 
@@ -522,7 +514,7 @@ if (name == "Unknown") {
       }
     }
 
-console.log(name + " is included? " + featured_app);
+//console.log(name + " is included? " + featured_app);
 
     let params = {
       $name: name,
@@ -577,7 +569,7 @@ console.log(name + " is included? " + featured_app);
 
     if (this.app.BROWSER == 1) { return; }
 
-console.log("now making a bundle!");
+////console.log("now making a bundle!");
 
     let sql = '';
     let params = '';
@@ -608,7 +600,7 @@ console.log("now making a bundle!");
       }
     }
 
-console.log("now making a bundle 2!");
+////console.log("now making a bundle 2!");
 
     //
     // unversioned apps (first as default)
@@ -632,7 +624,7 @@ console.log("now making a bundle 2!");
       }
     }
 
-console.log("now making a bundle 3!");
+////console.log("now making a bundle 3!");
 
     //
     // versioned apps (second as overrules default)
@@ -655,7 +647,7 @@ console.log("now making a bundle 3!");
       }
     }
 
-console.log("now making a bundle 4!");
+////console.log("now making a bundle 4!");
 
     //
     // WEBPACK
@@ -702,6 +694,8 @@ console.log("now making a bundle 4!");
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
+////console.log("FINISHED MAKING BUNDLE!");
+
   }
 
 
@@ -710,7 +704,7 @@ console.log("now making a bundle 4!");
 
   async bundler(modules) {
 
-console.log("into bundler!");
+////console.log("into bundler!");
 
     //
     // shell access
@@ -733,7 +727,7 @@ console.log("into bundler!");
     
     let newappdir = `${ts}-${hash}`;
 
-console.log("into new app dir: " + newappdir);
+////console.log("into new app dir: " + newappdir);
 
     let bash_script_content = '';
     let bash_script_delete = '';
@@ -754,7 +748,7 @@ console.log("into new app dir: " + newappdir);
       let createdir_command = 'sh ' + bash_script_create;
       const { stdout, stderr } = await exec(createdir_command, { cwd: cwdir, maxBuffer: 4096 * 2048 });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
 
     bash_script_content += 'cd ' + __dirname + '/mods' + "\n";
@@ -765,7 +759,7 @@ console.log("into new app dir: " + newappdir);
     //
     let module_paths = modules.map(mod => {
 
-console.log("processing mod: " + mod.name);
+////console.log("processing mod: " + mod.name);
 
       let mod_name = mod.name;
       let mod_path = `mods/${returnSlug(mod_name)}-${ts}-${hash}.zip`;
@@ -782,7 +776,7 @@ console.log("processing mod: " + mod.name);
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/install.sh` + "\n";
       bash_script_content += `rm -rf ../../../bundler/${newappdir}/mods/${returnSlug(mod_name)}/license` + "\n";
 
-console.log("still ok");
+////console.log("still ok");
 
       bash_script_delete += `rm -rf ${returnSlug(mod_name)}-${ts}-${hash}.zip` + "\n";
       bash_script_delete += `rm -rf ../../bundler/${newappdir}/mods/${returnSlug(mod_name)}` + "\n";
@@ -827,7 +821,7 @@ console.log("still ok");
     bash_script_content += 'cd ../../' + "\n";
     bash_script_content += `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`;
 
-console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`);
+////console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`);
 
     bash_script_content += "\n";
     bash_script_content += bash_script_delete;
@@ -838,10 +832,10 @@ console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filen
       let bash_command = 'sh ' + bash_script;
       const { stdout, stderr } = await exec(bash_command, { cwd: cwdir, maxBuffer: 4096 * 2048 });
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
 
-console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
+//console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
 
     //
     // create tx
@@ -849,8 +843,8 @@ console.log(newappdir + " --- " + index_filename + " ------ " + bash_script);
     let newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
     let bundle_bin = "";
 
-console.log("Bundle Filename: " + bundle_filename);
-console.log("Bundle __dirname: " + __dirname);
+////console.log("Bundle Filename: " + bundle_filename);
+////console.log("Bundle __dirname: " + __dirname);
 
     if (fs) { bundle_bin = fs.readFileSync(path.resolve(__dirname, `./bundler/dist/${bundle_filename}`), { encoding: 'binary' }); }
     newtx.msg = { module: "AppStore", request: "add bundle", bundle: bundle_bin };
@@ -861,7 +855,7 @@ console.log("Bundle __dirname: " + __dirname);
     // cleanup
     //
     await fs.rmdir(path.resolve(__dirname, `../../bundler/${newappdir}/`), function () {
-      console.log("Appstore Compilation Files Removed!");
+      ////console.log("Appstore Compilation Files Removed!");
     });
 
     return bundle_filename;
@@ -975,6 +969,97 @@ console.log("Bundle __dirname: " + __dirname);
   openAppstoreOverlay(options) {
     AppStoreOverlay.render(this.app, this, options);
     AppStoreOverlay.attachEvents(this.app, this);
+  }
+
+
+  sendSubmitModuleTransaction(app, mod, data) {
+    let newtx = app.wallet.createUnsignedTransactionWithDefaultFee();
+    let { name, description, zip } = data;
+    newtx.msg = {
+      module: "AppStore",
+      request: "submit module",
+      module_zip: zip,
+    };
+    newtx = app.wallet.signTransaction(newtx);
+    app.network.propagateTransaction(newtx);
+    return newtx;
+  }
+
+
+
+  /////////////////////
+  // Database Search //
+  /////////////////////
+  searchForApps(search_options = {}, mycallback = null) {
+
+    if (mycallback == null) { return; }
+
+    //
+    // there are server-side checks, but perform basic ones
+    //
+    let where_clause = "";
+    if (search_options.category != "" && search_options.category != undefined) {
+      where_clause = " WHERE categories LIKE \"%" + search_options.category.replace(/\W/, '') + "%\"";
+    }
+    if (search_options.search != "" && search_options.search != undefined) {
+      if (where_clause == "") {
+        where_clause = " WHERE ";
+      } else {
+        where_clause += " AND ";
+      }
+      where_clause += " (name LIKE \"%" + search_options.search.replace(/\W/, '') + "%\" OR description LIKE \"%" + search_options.search.replace(/\W/, '') + "%\" OR version LIKE \"%" + search_options.search + "%\")";
+    }
+    if (search_options.version != "" && search_options.version != undefined) {
+      if (where_clause == "") {
+        where_clause = " WHERE ";
+      } else {
+        where_clause += " AND ";
+      }
+      where_clause += " version = \"" + search_options.version + "\"";
+    }
+    let featured = 0;
+    if (search_options.featured == 1) { featured = 1; }
+    if (where_clause == "") {
+      where_clause = " WHERE ";
+    } else {
+      where_clause += " AND ";
+    }
+    if (featured == 1) {
+      where_clause += " featured = 1";
+    } else {
+      where_clause += " (featured = 1 OR featured = 0) ";
+    }
+
+    //
+    // form sql query
+    //
+    let sql_query = ("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
+    ////console.log("SELECT name, description, version, image, publickey, unixtime, bid, bsh FROM modules " + where_clause);
+    //console.log(sql_query);
+
+    if (this.app.BROWSER === 1) {
+
+      this.sendPeerDatabaseRequestWithFilter(
+        this.name ,
+        sql_query ,
+        (res) => {
+          if (res.rows != undefined) {
+            mycallback(res.rows);
+          } else {
+            mycallback([]);
+	  }  
+        }
+      );
+
+    } else {
+
+      //
+      // TODO - does server need implementation
+      //
+      mycallback([]);
+
+    }
+
   }
 
 

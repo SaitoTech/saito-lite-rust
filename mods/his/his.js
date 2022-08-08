@@ -869,7 +869,6 @@ console.log("adding stuff!");
 
 
 
-
   initializeHTML(app) {
 
     if (this.browser_active == 0) { return; }
@@ -953,14 +952,24 @@ console.log("adding stuff!");
       }
     });
     this.menu.addMenuOption({
-      text : "Cards",
+      text : "Info",
       id : "game-cards",
       class : "game-cards",
       callback : function(app, game_mod) {
 	game_mod.menu.hideSubMenus();
-        game_mod.handleCardsMenu();
+	game_mod.menu.showSubMenu("game-cards");
       }
     });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Religion",
+      id : "game-religious-conflict",
+      class : "game-religious-conflict",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+        game_mod.displayReligiousConflictSheet();
+      }
+    });
+
     this.menu.addMenuOption({
       text : "Factions",
       id : "game-factions",
@@ -1357,6 +1366,7 @@ console.log("adding stuff!");
     state.round = 0;
     state.players = [];
     state.events = {};
+
     state.tmp_protestant_reformation_bonus = 0;
     state.tmp_catholic_reformation_bonus = 0;
     state.tmp_protestant_counter_reformation_bonus = 0;
@@ -1374,6 +1384,221 @@ console.log("adding stuff!");
     return state;
 
   }
+
+
+  returnReligiousConflictChart() {
+
+    let chart = {};
+
+    chart['s0'] = {
+      top: "475px",
+      left: "64px",
+    }
+    chart['s1'] = {
+      top: "475px",
+      left: "140px",
+    }
+    chart['s2'] = {
+      top: "475px",
+      left: "216px",
+    }
+    chart['s3'] = {
+      top: "475px",
+      left: "292px",
+    }
+    chart['s4'] = {
+      top: "475px",
+      left: "368px",
+    }
+    chart['s5'] = {
+      top: "475px",
+      left: "444px",
+    }
+    chart['s6'] = {
+      top: "475px",
+      left: "520px",
+    }
+    chart['s7'] = {
+      top: "475px",
+      left: "596px",
+    }
+    chart['s8'] = {
+      top: "475px",
+      left: "672px",
+    }
+    chart['s9'] = {
+      top: "475px",
+      left: "748px",
+    }
+    chart['s10'] = {
+      top: "475px",
+      left: "824px",
+    }
+    chart['s11'] = {
+      top: "475px",
+      left: "900px",
+    }
+    chart['s12'] = {
+      top: "475px",
+      left: "976px",
+    }
+    chart['s13'] = {
+      top: "558px",
+      left: "64px",
+    }
+    chart['s14'] = {
+      top: "558px",
+      left: "140px",
+    }
+    chart['s15'] = {
+      top: "558px",
+      left: "216px",
+    }
+    chart['s16'] = {
+      top: "558px",
+      left: "292px",
+    }
+    chart['s17'] = {
+      top: "558px",
+      left: "368px",
+    }
+    chart['s18'] = {
+      top: "558px",
+      left: "444px",
+    }
+    chart['s19'] = {
+      top: "558px",
+      left: "520px",
+    }
+    chart['s20'] = {
+      top: "558px",
+      left: "596px",
+    }
+    chart['s21'] = {
+      top: "558px",
+      left: "672px",
+    }
+    chart['s22'] = {
+      top: "558px",
+      left: "748px",
+    }
+    chart['s23'] = {
+      top: "558px",
+      left: "824px",
+    }
+    chart['s24'] = {
+      top: "558px",
+      left: "900px",
+    }
+    chart['s25'] = {
+      top: "558px",
+      left: "976px",
+    }
+    chart['s26'] = {
+      top: "643px",
+      left: "64px",
+    }
+    chart['s27'] = {
+      top: "643px",
+      left: "140px",
+    }
+    chart['s28'] = {
+      top: "643px",
+      left: "216px",
+    }
+    chart['s29'] = {
+      top: "643px",
+      left: "292px",
+    }
+    chart['s30'] = {
+      top: "643px",
+      left: "368px",
+    }
+    chart['s31'] = {
+      top: "643px",
+      left: "444px",
+    }
+    chart['s32'] = {
+      top: "643px",
+      left: "520px",
+    }
+    chart['s33'] = {
+      top: "643px",
+      left: "596px",
+    }
+    chart['s34'] = {
+      top: "643px",
+      left: "672px",
+    }
+    chart['s35'] = {
+      top: "643px",
+      left: "748px",
+    }
+    chart['s36'] = {
+      top: "643px",
+      left: "824px",
+    }
+    chart['s37'] = {
+      top: "643px",
+      left: "900px",
+    }
+    chart['s38'] = {
+      top: "643px",
+      left: "976px",
+    }
+    chart['s39'] = {
+      top: "475px",
+      left: "64px",
+    }
+    chart['s40'] = {
+      top: "726px",
+      left: "140px",
+    }
+    chart['s41'] = {
+      top: "726px",
+      left: "216px",
+    }
+    chart['s42'] = {
+      top: "726px",
+      left: "292px",
+    }
+    chart['s43'] = {
+      top: "726px",
+      left: "368px",
+    }
+    chart['s44'] = {
+      top: "726px",
+      left: "444px",
+    }
+    chart['s45'] = {
+      top: "726px",
+      left: "520px",
+    }
+    chart['s46'] = {
+      top: "726px",
+      left: "596px",
+    }
+    chart['s47'] = {
+      top: "726px",
+      left: "672px",
+    }
+    chart['s48'] = {
+      top: "726px",
+      left: "672px",
+    }
+    chart['s49'] = {
+      top: "726px",
+      left: "748px",
+    }
+    chart['s50'] = {
+      top: "726px",
+      left: "824px",
+    }
+
+    return chart;
+
+  }
+
 
 
   returnPregnancyChart() {
@@ -5267,14 +5492,12 @@ console.log("NEW WORLD PHASE!");
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.players == 2) {
-	    // reverse order as last added goes first
 	    this.game.queue.push("play\tprotestant");
 	    this.game.queue.push("play\tpapacy");
 	    return 1;
 	  }
 
 	  let io = this.returnImpulseOrder();
-	  // reverse order as last added goes first
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("play\t"+io[i]);
 	  }
@@ -7128,6 +7351,39 @@ console.log("faction: " + faction);
     }
     return null;
   }
+
+
+  displayReligiousConflictSheet() {
+
+    let num_protestant_spaces = 0;
+    let rcc = this.returnReligiousConflictChart();
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+    let cid = "s" + num_protestant_spaces;
+
+    let html = `
+      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')">
+	<div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
+	<div class="papal_debaters"></div>
+	<div class="lutheran_debaters"></div>
+	<div class="calvinist_debaters"></div>
+	<div class="anglican_debaters"></div>
+	<div class="protestant_spaces_track"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
+
+  }
+
 
 
   displayFactionSheet(faction) {

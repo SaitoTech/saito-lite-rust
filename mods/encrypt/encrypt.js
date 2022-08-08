@@ -174,7 +174,7 @@ class Encrypt extends ModTemplate {
     let tx = null;
     try{
       tx = this.app.wallet.createUnsignedTransactionWithDefaultFee(recipient, (parties_to_exchange * this.app.wallet.wallet.default_fee));  
-    }catch(err){}
+    } catch(err) {}
   
     //
     // we had an issue creating the transaction, try zero-fee
@@ -310,7 +310,7 @@ class Encrypt extends ModTemplate {
           //
           //
           //
-          encrypt_self.sendEvent('encrypt-key-exchange-confirm', {members: [sender, app.wallet.returnPublicKey()]});
+          encrypt_self.sendEvent('encrypt-key-exchange-confirm', { members: [sender, app.wallet.returnPublicKey()] });
           encrypt_self.saveEncrypt();
 
         }
