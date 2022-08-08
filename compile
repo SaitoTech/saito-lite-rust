@@ -61,8 +61,6 @@ function reset_nonpersistent {
   # we explicitly don't delete registry/balance databases
   rm -f ./data/redsquare.sq3
   rm -f ./data/appstore.sq3
-  #rm -f ./data/covid19.sq3
-  #rm -f ./data/post.sq3
   rm -f ./data/hospital.sq3
   rm -f ./data/records.sq3
   rm -f ./data/archive.sq3

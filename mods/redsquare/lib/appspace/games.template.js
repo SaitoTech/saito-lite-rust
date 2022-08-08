@@ -33,7 +33,7 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
       html += `
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, modname, modimage)};
+	  ${SaitoModuleTemplate(app, mod, modname, modimage)}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
