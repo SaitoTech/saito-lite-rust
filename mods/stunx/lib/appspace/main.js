@@ -14,7 +14,7 @@ class StunxAppspace {
     }
 
     attachEvents(app, mod) {
-        document.body.addEventListener('click', (e) => {
+        document.body.onclick = ('click', (e) => {
             if (e.target.id === "add-to-listeners-btn") {
                 let input = document.querySelector('#listeners-input').value.split(',');
                 const listeners = input.map(listener => listener.trim());
