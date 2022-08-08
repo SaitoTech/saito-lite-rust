@@ -28,13 +28,19 @@ class StunxGameMenu {
 
     async receiveVideoCall(app, offer_creator, offer) {
         console.log('receiving video call');
-        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const stunx_mod = this.app.modules.returnModule('Stunx');
-        stunx_mod.setLocalStream(localStream);
-        stunx_mod.setChatType("game");
-        this.app.connection.emit('game-show-video-chat-request', this.app, this);
-        this.app.connection.emit('game-render-local-stream-request', localStream);
-        stunx_mod.acceptPeerConnectionOffer(app, offer_creator, offer, 'game');
+        const promise = sconfirm("Accept Incoming video call");
+        promise.then(async () => {
+            const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stunx_mod = this.app.modules.returnModule('Stunx');
+            stunx_mod.setLocalStream(localStream);
+            stunx_mod.setChatType("game");
+            this.app.connection.emit('game-show-video-chat-request', this.app, this);
+            this.app.connection.emit('game-render-local-stream-request', localStream);
+            stunx_mod.acceptPeerConnectionOffer(app, offer_creator, offer, 'game');
+        }).catch(error => {
+            salert("Video call rejected");
+        })
+
     }
 }
 
