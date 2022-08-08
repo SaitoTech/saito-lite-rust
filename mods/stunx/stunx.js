@@ -46,7 +46,7 @@ class Stunx extends ModTemplate {
         if (type === 'invite') {
             this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
-            return new StunInvite(this.app, this);
+            // return new StunInvite(this.app, this);
         }
         if (type === 'appspace') {
             this.styles = ['/stunx/css/style.css',];
@@ -70,11 +70,7 @@ class Stunx extends ModTemplate {
                     let longNames = null;
                     for (let i = 0; i < game_mod.game.players.length; i++) {
                         if (game_mod.game.players[i] != app.wallet.returnPublicKey()) {
-                            let members = [game_mod.game.players[i], app.wallet.returnPublicKey()].sort();
-                            let gid = app.crypto.hash(members.join("_"));
                             let nickname = shortNames ? shortNames[i] : "Player " + (i + 1);
-                            let name = longNames ? longNames[i] : nickname;
-
                             game_mod.menu.addSubMenuOption("game-video-chat", {
                                 text: nickname,
                                 id: "game-video-chat-" + (i + 1),

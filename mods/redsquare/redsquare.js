@@ -273,44 +273,13 @@ class RedSquare extends ModTemplate {
 
           // ascending because we add one-by-one on receipt
           `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
-<<<<<<< HEAD
-    
-          async (res) => {    
-=======
+
 
           async (res) => {
->>>>>>> 254ad934 (update)
 
             if (res.rows) {
 
               res.rows.forEach(row => {
-<<<<<<< HEAD
-    
-                let new_tweet = 1;
-      
-       	        for (let i = 0; i < redsquare_self.tweets.length; i++) {
-                  if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
-    	            new_tweet = 0;
-    	          }
-                }
-    
-                if (new_tweet) {
-
-                  let tx = new saito.default.transaction(JSON.parse(row.tx));
-    
-                  if (!tx.optional) { tx.optional = {}; }
-                  tx.optional.parent_id       = tx.msg.parent_id;
-                  tx.optional.thread_id       = tx.msg.thread_id;
-                  tx.optional.num_replies     = row.num_replies;
-                  tx.optional.num_retweets    = row.num_retweets;
-                  tx.optional.num_likes       = row.num_likes;
-                  tx.optional.link_properties = {};
-    
-                  try {
-                    let x = JSON.parse(row.link_properties);
-                    tx.optional.link_properties = x;
-                  } catch (err) {}
-=======
 
                 let new_tweet = 1;
 
@@ -337,20 +306,14 @@ class RedSquare extends ModTemplate {
                     let x = JSON.parse(row.link_properties);
                     tx.optional.link_properties = x;
                   } catch (err) { }
->>>>>>> 254ad934 (update)
+
 
                   this.addTweetFromTransaction(app, redsquare_self, tx);
                 }
               });
 
               redsquare_self.renderMainPage(app, redsquare_self);
-<<<<<<< HEAD
-    
-            }
-          }
-        );
-      } 
-=======
+
 
             }
           }
@@ -358,7 +321,6 @@ class RedSquare extends ModTemplate {
 
       }
 
->>>>>>> 254ad934 (update)
     }
   }
 
@@ -523,7 +485,7 @@ class RedSquare extends ModTemplate {
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
-console.log("INSERTING SQL: " + sql);
+    console.log("INSERTING SQL: " + sql);
     app.storage.executeDatabase(sql, params, "redsquare");
 
 
@@ -547,12 +509,6 @@ console.log("INSERTING SQL: " + sql);
       return;
     }
 
-<<<<<<< HEAD
-    saveRedSquare() {
-        this.app.options.redsquare = this.redsquare;
-        this.app.options.saveOptions();
-    }
-=======
     this.redsquare = {};
     this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
     this.redsquare.last_liked_tweets = [];
@@ -562,7 +518,6 @@ console.log("INSERTING SQL: " + sql);
     this.app.options.redsquare = this.redsquare;
     this.app.options.saveOptions();
   }
->>>>>>> 254ad934 (update)
 
 }
 
