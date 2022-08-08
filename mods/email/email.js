@@ -91,7 +91,7 @@ console.log("RECEIVE EMAIL TRANSACTION: " + JSON.stringify(txmsg));
     newtx = this.app.wallet.signTransaction(newtx);
     this.app.network.propagateTransaction(newtx);
 
-    return newtx;   
+    return newtx;
 
   }
 

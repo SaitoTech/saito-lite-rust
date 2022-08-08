@@ -148,7 +148,7 @@ class Transaction {
                 const parsed_msg = this.msg;
                 this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
             } catch (e) {
-                console.log("ERROR: " + e);
+                console.error("ERROR: " + e);
             }
             return;
         }

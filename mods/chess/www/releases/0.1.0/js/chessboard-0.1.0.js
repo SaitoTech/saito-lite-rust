@@ -296,7 +296,7 @@
             if (cfg.showErrors === 'console' &&
                 typeof console === 'object' &&
                 typeof console.log === 'function') {
-                console.log(errorText);
+                console.error(errorText);
                 if (arguments.length >= 2) {
                     console.log(obj);
                 }
@@ -546,13 +546,13 @@
           var html = '<div class="' + CSS.square + ' ' + CSS[color] + '" ' +
           'style="width: ' + size + 'px; height: ' + size + 'px" ' +
           'id="' + id + '">';
-        
+
           if (cfg.showNotation === true) {
-        
+
           }
-        
+
           html += '</div>';
-        
+
           return html;
         };
         */
@@ -1295,7 +1295,7 @@
         /*
         // TODO: write this, GitHub Issue #5
         widget.highlight = function() {
-        
+
         };
         */
 

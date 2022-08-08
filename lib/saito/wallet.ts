@@ -1091,7 +1091,7 @@ console.log("---------------------");
     }
     if (senders.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
-      console.log("sendPayment ERROR: Only supports one transaction");
+      console.error("sendPayment ERROR: Only supports one transaction");
       //mycallback({err: "Only supports one transaction"});
       return;
     }

@@ -206,7 +206,7 @@ webpack({
     console.log(err);
     if (stats) {
       let info = stats.toJson();
-      console.log(info.errors);
+      console.error(info.errors);
     }
   }
   //
