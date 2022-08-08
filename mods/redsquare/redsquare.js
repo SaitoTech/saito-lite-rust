@@ -41,7 +41,7 @@ class RedSquare extends ModTemplate {
     this.loadRedSquare();
   }
 
-  
+
   addTweetFromTransaction(app, mod, tx) {
     let tweet = new Tweet(app, this, tx);
     this.addTweet(app, this, tweet);
@@ -61,16 +61,16 @@ class RedSquare extends ModTemplate {
         }
       }
       if (new_tweet == 1) {
-	let insertion_index = 0;
-	for (let i = 0; i < this.tweets.length; i++) {
-	  if (this.tweets[i].updated_at > tweet.updated_at) {
-	    insertion_index++;
-	    break;
-	  } else {
-	    insertion_index++;
-	  }
-	}
-	this.tweets.splice(insertion_index, 0, tweet);
+        let insertion_index = 0;
+        for (let i = 0; i < this.tweets.length; i++) {
+          if (this.tweets[i].updated_at > tweet.updated_at) {
+            insertion_index++;
+            break;
+          } else {
+            insertion_index++;
+          }
+        }
+        this.tweets.splice(insertion_index, 0, tweet);
       }
       //
       // comment-level
@@ -268,17 +268,23 @@ class RedSquare extends ModTemplate {
 
       if (document.querySelector(".redsquare-list")) {
         app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-  
+
           "RedSquare",
-    
+
           // ascending because we add one-by-one on receipt
           `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
+<<<<<<< HEAD
     
           async (res) => {    
+=======
+
+          async (res) => {
+>>>>>>> 254ad934 (update)
 
             if (res.rows) {
-    
+
               res.rows.forEach(row => {
+<<<<<<< HEAD
     
                 let new_tweet = 1;
       
@@ -304,17 +310,55 @@ class RedSquare extends ModTemplate {
                     let x = JSON.parse(row.link_properties);
                     tx.optional.link_properties = x;
                   } catch (err) {}
+=======
+
+                let new_tweet = 1;
+
+                //	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
+                //	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
+                //		new_tweet = 0;
+                //	      }
+                //	    }
+
+                if (new_tweet) {
+                  let tx = new saito.default.transaction(JSON.parse(row.tx));
+
+                  console.log("NUM LIKES: " + row.num_likes);
+
+                  if (!tx.optional) { tx.optional = {}; }
+                  tx.optional.parent_id = tx.msg.parent_id;
+                  tx.optional.thread_id = tx.msg.thread_id;
+                  tx.optional.num_replies = row.num_replies;
+                  tx.optional.num_retweets = row.num_retweets;
+                  tx.optional.num_likes = row.num_likes;
+                  tx.optional.link_properties = {};
+
+                  try {
+                    let x = JSON.parse(row.link_properties);
+                    tx.optional.link_properties = x;
+                  } catch (err) { }
+>>>>>>> 254ad934 (update)
 
                   this.addTweetFromTransaction(app, redsquare_self, tx);
                 }
               });
 
               redsquare_self.renderMainPage(app, redsquare_self);
+<<<<<<< HEAD
     
             }
           }
         );
       } 
+=======
+
+            }
+          }
+        );
+
+      }
+
+>>>>>>> 254ad934 (update)
     }
   }
 
@@ -348,9 +392,9 @@ class RedSquare extends ModTemplate {
     let obj = {
       module: redsquare_self.name,
       request: "like tweet",
-      data : {} ,
+      data: {},
     };
-    for (let key in data) { 
+    for (let key in data) {
       obj.data[key] = data[key];
     }
 
@@ -375,7 +419,7 @@ class RedSquare extends ModTemplate {
 
       }
       return;
-    } 
+    }
 
     //
     // servers
@@ -498,20 +542,27 @@ console.log("INSERTING SQL: " + sql);
 
   loadRedSquare() {
 
-        if (this.app.options.redsquare) {
-            this.redsquare = this.app.options.redsquare;
-            return;
-        }
-
-        this.redsquare = {};
-        this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
-	this.redsquare.last_liked_tweets = [];
+    if (this.app.options.redsquare) {
+      this.redsquare = this.app.options.redsquare;
+      return;
     }
 
+<<<<<<< HEAD
     saveRedSquare() {
         this.app.options.redsquare = this.redsquare;
         this.app.options.saveOptions();
     }
+=======
+    this.redsquare = {};
+    this.redsquare.last_checked_notifications_timestamp = new Date().getTime();
+    this.redsquare.last_liked_tweets = [];
+  }
+
+  saveStun() {
+    this.app.options.redsquare = this.redsquare;
+    this.app.options.saveOptions();
+  }
+>>>>>>> 254ad934 (update)
 
 }
 

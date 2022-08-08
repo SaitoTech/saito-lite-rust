@@ -1,11 +1,14 @@
 const saito = require("../../lib/saito/saito");
-const InviteTemplate = require("../../lib/templates/invitetemplate");
+const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
 const VideoChatManager = require('./lib/components/video-chat-manager');
+const GameVideoChatManager = require("./lib/components/game-video-chat-manager");
 const StunxAppspace = require('./lib/appspace/main');
-const StunxInvite = require('./lib/main');
+const InviteOverlay = require("./lib/components/invite-overlay");
+const StunxGameMenu = require("./lib/game-menu/main");
 
-class Stunx extends InviteTemplate {
+
+class Stunx extends ModTemplate {
 
     constructor(app, mod) {
         super(app);
@@ -18,8 +21,13 @@ class Stunx extends InviteTemplate {
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
         this.VideoChatManager = new VideoChatManager(app, this);
+        this.GameVideoChatManager = new GameVideoChatManager(app, this);
+        this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
+        this.stunxGameMenu = new StunxGameMenu(app, this);
         this.localStream = null;
+        this.hasRendered = true
+        this.chatType = null;
         this.servers = [
             {
                 urls: "stun:stun-sf.saito.io:3478"
@@ -32,19 +40,66 @@ class Stunx extends InviteTemplate {
         ];
     }
 
+
+
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = ['/stunx/css/invite.css',];
+            this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
-	    return new StunxInvite(this.app, this);
+            return new StunInvite(this.app, this);
         }
         if (type === 'appspace') {
             this.styles = ['/stunx/css/style.css',];
             super.render(this.app, this);
             return new StunxAppspace(this.app, this);
         }
+
+        if (type == "game-menu") {
+
+            return {
+                init: (app, game_mod) => {
+                    game_mod.menu.addMenuOption({
+                        text: "Video Chat",
+                        id: "game-video-chat",
+                        class: "game-video-chat",
+                        callback: function (app, game_mod) {
+                            game_mod.menu.showSubMenu("game-video-chat");
+                        },
+                    });
+                    let shortNames = null;
+                    let longNames = null;
+                    for (let i = 0; i < game_mod.game.players.length; i++) {
+                        if (game_mod.game.players[i] != app.wallet.returnPublicKey()) {
+                            let members = [game_mod.game.players[i], app.wallet.returnPublicKey()].sort();
+                            let gid = app.crypto.hash(members.join("_"));
+                            let nickname = shortNames ? shortNames[i] : "Player " + (i + 1);
+                            let name = longNames ? longNames[i] : nickname;
+
+                            game_mod.menu.addSubMenuOption("game-video-chat", {
+                                text: nickname,
+                                id: "game-video-chat-" + (i + 1),
+                                class: "game-video-chat-" + (i + 1),
+                                callback: function (app, game_mod) {
+                                    const stunx = app.modules.returnModule('Stunx');
+                                    console.log('player ', game_mod.game.players[i]);
+                                    app.connection.emit('game-start-video-call', game_mod.game.players[i]);
+                                },
+                            });
+                        }
+                    }
+                },
+                menus: []
+            }
+        }
         return null;
     }
+
+
+
+
+
+
+
 
     onConfirmation(blk, tx, conf, app) {
         let txmsg = tx.returnMessage();
@@ -59,6 +114,8 @@ class Stunx extends InviteTemplate {
             }
         }
     }
+
+
 
     handlePeerRequest(app, message, peer, mycallback) {
         if (message.request == null) {
@@ -79,6 +136,8 @@ class Stunx extends InviteTemplate {
         }
         super.handlePeerRequest(app, message, peer, mycallback)
     }
+
+
 
     async sendCreateRoomTransaction() {
         let roomCode = this.app.crypto.generateRandomNumber().substring(0, 6);
@@ -131,6 +190,8 @@ class Stunx extends InviteTemplate {
         server.sendRequest(message.request, message.data);
     }
 
+
+
     async receiveCreateRoomTransaction(app, tx) {
         let room = tx.msg.room.room;
         let sql = `INSERT INTO rooms (
@@ -177,15 +238,130 @@ class Stunx extends InviteTemplate {
             $is_max_capacity: is_max_capacity
         }
         app.storage.executeDatabase(sql, params, "stunx");
+
         return;
+
+
 
     }
 
     acceptOfferAndBroadcastAnswer(app, offer_creator, offer) {
 
         console.log('accepting offer');
-        console.log('from:', offer_creator, offer)
-        this.app.connection.emit('add-remote-stream-request', null, offer_creator, null, 'fromCreator');
+        console.log('from:', offer_creator, offer);
+
+
+        if (this.chatType === 'room') {
+            this.acceptPeerConnectionOffer(app, offer_creator, offer, 'room');
+
+        } else if (!this.chatType) {
+            this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
+        }
+
+
+
+
+
+    }
+
+    createPeerConnectionOffer(publicKey, type) {
+        const createPeerConnection = new Promise((resolve, reject) => {
+            let ice_candidates = [];
+            const execute = async () => {
+                try {
+                    const pc = new RTCPeerConnection({
+                        iceServers: this.servers,
+                    });
+
+                    pc.onicecandidate = (ice) => {
+                        if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                            let offer_sdp = pc.localDescription;
+                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
+                            return;
+                        } else {
+                            ice_candidates.push(ice.candidate);
+                        }
+
+                    };
+                    pc.onconnectionstatechange = e => {
+                        console.log("connection state ", pc.connectionState)
+                        switch (pc.connectionState) {
+                            case "connecting":
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                break;
+                            case "connected":
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                break;
+                            case "disconnected":
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                break;
+                            case "failed":
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                break;
+                            default:
+                                ""
+                                break;
+                        }
+                    }
+
+                    const stunx_self = this.app.modules.returnModule('Stunx');
+                    let localStream = stunx_self.localStream;
+                    if (!localStream) return console.log('there is no localstream');
+                    stunx_self.localStream.getTracks().forEach(track => {
+                        pc.addTrack(track, localStream);
+
+                    });
+
+                    const remoteStream = new MediaStream();
+                    pc.addEventListener('track', (event) => {
+                        console.log('got remote stream', event.streams);
+                        event.streams[0].getTracks().forEach(track => {
+                            remoteStream.addTrack(track);
+                            this.remoteStreamPosition += 1;
+                        });
+
+                        console.log('type ', this.chatType);
+                        if (this.chatType === "room") {
+                            this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc);
+                        } else if (this.chatType === "game") {
+                            this.app.connection.emit('game-add-remote-stream-request', publicKey, remoteStream, pc);
+                            console.log('adding remote stream')
+                        }
+                    });
+
+                    const data_channel = pc.createDataChannel('channel');
+                    pc.dc = data_channel;
+                    pc.dc.onmessage = (e) => {
+                        console.log('new message from client : ', e.data);
+                    };
+                    pc.dc.open = (e) => console.log("connection opened");
+                    const offer = await pc.createOffer();
+                    pc.setLocalDescription(offer);
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            }
+            execute();
+
+        })
+
+        return createPeerConnection;
+
+
+
+    }
+
+
+    acceptPeerConnectionOffer(app, offer_creator, offer, type) {
+
+        if (type === 'room') {
+            this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, 'fromCreator');
+        } else if (type === 'game') {
+            this.app.connection.emit('game-render-remote-stream-placeholder-request', offer_creator, 'fromCreator');
+        }
+
         const createPeerConnection = async () => {
             let reply = {
                 answer: "",
@@ -208,9 +384,17 @@ class Stunx extends InviteTemplate {
                 pc.onconnectionstatechange = e => {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
+                        case "connecting":
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            break;
                         case "connected":
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
                             break;
                         case "disconnected":
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            break;
+                        case "failed":
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
                             break;
                         default:
                             ""
@@ -242,7 +426,13 @@ class Stunx extends InviteTemplate {
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-                    this.app.connection.emit('add-remote-stream-request', remoteStream, offer_creator, pc, 'fromCreator');
+                    if (type === "room") {
+                        this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc);
+                    } else if (type === "game") {
+                        console.log('adding remote stream')
+                        this.app.connection.emit('game-add-remote-stream-request', offer_creator, remoteStream, pc);
+                    }
+
                 });
                 await pc.setRemoteDescription(offer.offer_sdp);
                 const offer_ice_candidates = offer.ice_candidates;
@@ -264,89 +454,18 @@ class Stunx extends InviteTemplate {
         createPeerConnection();
     }
 
-    createPeerConnectionOffer(publicKey) {
-        const createPeerConnection = new Promise((resolve, reject) => {
-            let ice_candidates = [];
-            const execute = async () => {
-                try {
-                    const pc = new RTCPeerConnection({
-                        iceServers: this.servers,
-                    });
 
-                    pc.onicecandidate = (ice) => {
-                        if (!ice || !ice.candidate || !ice.candidate.candidate) {
-                            let offer_sdp = pc.localDescription;
-                            resolve({ recipient: publicKey, offer_sdp, ice_candidates, pc });
-                            return;
-                        } else {
-                            ice_candidates.push(ice.candidate);
-                        }
 
-                    };
-                    pc.onconnectionstatechange = e => {
-                        console.log("connection state ", pc.connectionState)
-                        switch (pc.connectionState) {
-                            case "connected":
-                                // siteMessageNew("Connected");
-                                break;
 
-                            case "disconnecting":
-                                break;
-
-                            default:
-                                ""
-                                break;
-                        }
-                    }
-
-                    const stunx_self = this.app.modules.returnModule('Stunx');
-                    let localStream = stunx_self.localStream;
-                    if (!localStream) return console.log('there is no localstream');
-                    stunx_self.localStream.getTracks().forEach(track => {
-                        pc.addTrack(track, localStream);
-
-                    });
-
-                    const remoteStream = new MediaStream();
-                    pc.addEventListener('track', (event) => {
-                        console.log('got remote stream', event.streams);
-                        event.streams[0].getTracks().forEach(track => {
-                            remoteStream.addTrack(track);
-                            this.remoteStreamPosition += 1;
-                        });
-                        this.app.connection.emit('add-remote-stream-request', remoteStream, publicKey, pc, 'fromRecipient');
-                    });
-
-                    const data_channel = pc.createDataChannel('channel');
-                    pc.dc = data_channel;
-                    pc.dc.onmessage = (e) => {
-                        console.log('new message from client : ', e.data);
-                    };
-                    pc.dc.open = (e) => console.log("connection opened");
-                    const offer = await pc.createOffer();
-                    pc.setLocalDescription(offer);
-
-                } catch (error) {
-                    console.log(error);
-                }
-
-            }
-            execute();
-
-        })
-
-        return createPeerConnection;
-
-    }
-
-    async createStunConnectionWithPeers(public_keys) {
+    async createStunConnectionWithPeers(public_keys, type) {
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
             for (let i = 0; i < public_keys.length; i++) {
-                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]));
+                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]), type);
             }
         }
+
 
         try {
             peerConnectionOffers = await Promise.all(peerConnectionOffers);
@@ -373,8 +492,13 @@ class Stunx extends InviteTemplate {
         siteMessageNew("Starting video connection", 5000);
     }
 
+
     setLocalStream(localStream) {
         this.localStream = localStream;
+    }
+
+    setChatType(type) {
+        this.chatType = type;
     }
 
     sendOfferTransaction(offer_creator, offers) {
@@ -393,6 +517,8 @@ class Stunx extends InviteTemplate {
         console.log(this.app.network);
         this.app.network.propagateTransaction(newtx);
     }
+
+
 
     sendAnswerTransaction(answer_creator, offer_creator, reply) {
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -450,8 +576,10 @@ class Stunx extends InviteTemplate {
             }
         }
     }
+
+
+
 }
 
 module.exports = Stunx;
-
 
