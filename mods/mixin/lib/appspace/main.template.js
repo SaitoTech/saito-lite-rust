@@ -2,10 +2,6 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   let mixin_mod = app.modules.returnModule("Crypto Wallet");
 
-  console.log('inside mixin template');
-  console.log(mixin_mod);
-  console.log(mixin_mod.mixin);
-
   let account_created = (mixin_mod.mixin.publickey !== "") ? true : false;
 
   let html = `

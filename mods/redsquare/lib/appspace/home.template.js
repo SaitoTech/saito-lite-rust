@@ -2,6 +2,7 @@
 module.exports = (app, mod) => {
 
     return `
+      <button class="saito-button-secondary" id="redsquare-new-tweets-btn">Load New Tweets</button>
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
         <div class="saito-page-header">
@@ -11,6 +12,8 @@ module.exports = (app, mod) => {
           </div>
 
         </div>
+
+
 
         <div class="redsquare-list"></div>
 

@@ -307,3 +307,16 @@
   border-left: 1px solid #b1b0b0;
   margin: 30px 10px;
 }
+
+
+#redsquare-new-tweets-btn {
+  display: none;
+  color: #fff;
+  position: fixed;
+  top: 15rem;
+  width: 30rem;
+  left: 35%;
+  box-shadow: 1px 1px 5px 5px #ccc;
+  z-index: 2;
+  cursor: pointer;
+}
