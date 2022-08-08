@@ -55,19 +55,18 @@ class RedSquareGamesSidebar {
 
   attachEvents(app, mod) {
     Array.from(document.querySelectorAll('.saito-arcade-invite')).forEach(game => {
-      console.log("Adding invite",game);
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
 
         let game_id = e.currentTarget.getAttribute("data-id");
-        console.log("Click on invite for game:" + game_id);
+
         let arcade_mod = app.modules.returnModule("Arcade");
         if (arcade_mod) {
           for (let i = 0; i < arcade_mod.games.length; i++) {
             if (arcade_mod.games[i].transaction.sig == game_id){
-              let gameInviteDetails = new GameInviteDetails(this.app, this.mod);
-              gameInviteDetails.render(this.app, this.mod, arcade_mod.games[i]);
+              let gameInviteDetails = new GameInviteDetails(this.app, this.mod, arcade_mod.games[i]);
+              gameInviteDetails.render(this.app, this.mod);
             }
           }    
         }
