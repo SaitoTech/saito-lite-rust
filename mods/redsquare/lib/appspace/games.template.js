@@ -3,6 +3,9 @@ const SaitoModuleTemplate = require('./../../../../lib/saito/new-ui/templates/sa
 
 module.exports = (app, mod) => {
 
+    let league_mod = app.modules.returnModule("League");
+
+
   let html = `
 
     <div class="redsquare-appspace-games">
@@ -12,7 +15,7 @@ module.exports = (app, mod) => {
         <div id="redsquare-create-game" class="saito-button-secondary small" style="float: right;">Create New Game</div>
         <div class="saito-page-header-title">SAITO ARCADE</div>
         <div class="saito-page-header-text">
-Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.
+          Welcome to the Saito Arcade, where all games are open source, provably-fair and can be played directly in your browser. Create a game today, or join our developer community in porting more great games to the platform.
         </div>
       </div>
 
@@ -33,29 +36,38 @@ Welcome to the Saito Arcade, where all games are open source, provably-fair and 
       html += `
         <div class="saito-game">
 
-	  ${SaitoModuleTemplate(app, mod, modname, modimage)}
+	        ${SaitoModuleTemplate(app, mod, modname, modimage)}
 
           <div class="saito-game-content">
             <div class="saito-leaderboard">
-	            <div class="saito-table">
-                <div class="saito-table-row odd">
-                  <div id="${modname}_1" class="saito-leaderboard-gamename">david@saito</div>
-                  <div class="saito-leaderboard-rank">1</div>
-                </div>
-                <div class="saito-table-row">
-                  <div id="${modname}_2" class="saito-leaderboard-gamename">xQsdfCcQsGbJxehvBUGN3g...</div>
-                  <div class="saito-leaderboard-rank">2</div>
-                </div>
-                <div class="saito-table-row odd">
-                  <div id="${modname}_3" class="saito-leaderboard-gamename">richard@saito</div>
-                  <div class="saito-leaderboard-rank">3</div>
-                </div>
+	            <div class="saito-table">`;
+
+        if (league_mod){
+          if (league_mod.leagues.length > 0){
+            for (let l of league_mod.leagues){
+              if (l.admin == "saito" && l.id == modname.toUpperCase()){
+                console.log(JSON.parse(JSON.stringify(l)));
+                for (let i = 1; i <= 3; i ++){
+                  let player = (i <= l.top3.length) ? l.top3[i-1] : null;
+                  if (player){
+                    html += `<div class="saito-table-row ${(i%2 == 1)?"odd":""}">
+                              <div class="saito-leaderboard-gamename">${app.browser.returnAddressHTML(player)}</div>
+                              <div class="saito-leaderboard-rank">${i}</div>
+                            </div>`;     
+                  }
+                }
+              }
+            }
+          }
+        }
+
+	    html += `
               </div>
-            </div>
-	    <div class="saito-game-controls">
-              <div class="create-game-link" data-id="${modname}">Create Game</div>
-              <div class="load-game-instructions" data-id="${modname}">how to play?</div>
-	    </div>
+             </div>
+             <div class="saito-game-controls">
+                <div class="create-game-link" data-id="${modname}">Create Game</div>
+                <div class="load-game-instructions" data-id="${modname}">how to play?</div>
+        	   </div>
           </div>
         </div>
       `;

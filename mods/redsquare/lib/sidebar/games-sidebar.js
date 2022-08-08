@@ -13,7 +13,8 @@ class RedSquareGamesSidebar {
     this.selector = selector;
 
     app.connection.on("game-invite-render-request", (tx) => {
-        console.log("RECEIVED INVITE TO ADD",JSON.stringify(tx));
+        console.log("RECEIVED INVITE TO ADD");
+        console.log(tx);
         let gi = new GameInvite(app, mod, tx);
         gi.render(app, mod, ".saito-arcade-invite-list");
     });
@@ -27,7 +28,7 @@ class RedSquareGamesSidebar {
       document.querySelector(".saito-sidebar.right").remove();
     }
 
-console.log("ADDING GAMES SIDEBAR!");
+    console.log("ADDING GAMES SIDEBAR!");
 
     if (selector != "") {
       app.browser.addElementToSelector(RedSquareGamesSidebarTemplate(app, mod), selector);
@@ -47,11 +48,10 @@ console.log("ADDING GAMES SIDEBAR!");
       }
     };
 
-
-
     this.attachEvents(app, mod);
 
   }
+
 
   attachEvents(app, mod) {
     document.querySelector('.saito-arcade-invite').onclick = (e) => {
