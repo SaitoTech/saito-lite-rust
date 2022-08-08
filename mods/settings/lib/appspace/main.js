@@ -1,4 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
+const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
+const ModalRegisterEmail = require('./../../../../lib/saito/ui/modal-register-email/modal-register-email');
 
 class SettingsAppspace {
 
@@ -38,6 +40,20 @@ class SettingsAppspace {
           document.querySelector(".saito-overlay-container").classList.remove("show");
         }
 
+        if (e.target.id == "register-email-btn"){
+          mod.modal_register_email = new ModalRegisterEmail(app, function() {
+            });
+          mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
+          mod.modal_register_email.attachEvents(app, mod);
+        }
+
+        if (e.target.id == "register-identifier-btn"){
+          mod.modal_register_username = new ModalRegisterUsername(app, function() {
+          });
+          mod.modal_register_username.render(app, mod);
+          mod.modal_register_username.attachEvents(app, mod);
+        }
+
       })
 
       document.querySelector("#settings-appspace-cancel-modules-modal").onclick = () => {
@@ -57,23 +73,6 @@ class SettingsAppspace {
           }
           } catch (err) {}
       
-          try {
-          document.getElementById("register-email-btn").onclick = function (e) {
-            mod.modal_register_email = new ModalRegisterEmail(app, function() {
-            });
-            mod.modal_register_email.render(app, mod, ModalRegisterEmail.MODES.REGISTEREMAIL);
-            mod.modal_register_email.attachEvents(app, mod);
-          }
-          } catch (err) {}
-      
-          try {
-          document.getElementById("register-identifier-btn").onclick = function (e) {
-            mod.modal_register_username = new ModalRegisterUsername(app, function() {
-            });
-            mod.modal_register_username.render(app, mod);
-            mod.modal_register_username.attachEvents(app, mod);
-          }
-          } catch (err) {}
       
           try {
           document.getElementById("privatekey").onclick = function (e) {
@@ -86,12 +85,12 @@ class SettingsAppspace {
           } catch (err) {}
       
           try {
-          document.getElementById("see-password").onclick = function (e) {
-            document.getElementById("privatekey").toggleClass("password");
+          document.getElementById("settings-appspace-see-password").onclick = function (e) {
+            document.getElementById("settings-appspace-password").toggleClass("settings-priv-key-text");
             if (this.private_key_visible == 1) {
-        this.private_key_visible = 0;
+              this.private_key_visible = 0;
             } else {
-        this.private_key_visible = 1;
+              this.private_key_visible = 1;
             }
           }
           } catch (err) {}

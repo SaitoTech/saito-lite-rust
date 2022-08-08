@@ -4,6 +4,7 @@ const RedSquareTweet = require("./tweet");
 const RedSquareSidebar = require("./sidebar/sidebar");
 const RedSquareMenu = require("./menu");
 const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
+const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
 const RedSquareAppspaceHome = require("./appspace/home");
 const RedSquareAppspaceContacts = require("./appspace/contacts");
 const RedSquareAppspaceGames = require("./appspace/games");
@@ -42,6 +43,13 @@ class RedSquareMain {
     //
     //
     mod.gsidebar = new RedSquareGamesSidebar(app, mod, ".saito-sidebar-right");
+
+
+    //
+    // settings sidebar
+    //
+
+    mod.settsidebar = new RedSquareSettingsSidebar(app, mod, ".saito-sidebar-right");
 
     //
     // main panels

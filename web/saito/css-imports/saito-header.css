@@ -88,7 +88,7 @@
     padding: 1.4rem 0.5rem;
     border-radius: 8px;
     display: grid;
-    column-gap: 2rem;
+    column-gap: 1rem;
     grid-template-rows: min-content min-content;
     grid-template-columns: min-content 1fr;
     border-bottom: 1px solid var(--saito-border);
@@ -113,6 +113,13 @@
   width: 28rem;
 }
 
+.header-profile-identicon .saito-identicon {
+    width: 4.5rem;
+    height: 4.5rem;
+    padding: 1px;
+    border-radius: 0;
+}
+
 .header-profile-address {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -131,7 +138,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 1.7rem;
-    font-weight: bold;
     margin-right: .5rem;
 }
 
@@ -148,6 +154,12 @@
     padding: 1.5rem 0;
     font-size: 1.1rem;
     overflow: auto;
+}
+
+.header-menu-section li i {
+    color: var(--saito-primary);
+    font-size: 2rem !important;
+    width: 0.5rem !important;
 }
 
 .header-menu-section:not(:last-child) {
