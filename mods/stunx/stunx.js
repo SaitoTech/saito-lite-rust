@@ -3,7 +3,7 @@ const InviteTemplate = require("../../lib/templates/invitetemplate");
 var serialize = require('serialize-javascript');
 const VideoChatManager = require('./lib/components/video-chat-manager');
 const StunxAppspace = require('./lib/appspace/main');
-const StunxInvite = require('./lib/invite/main');
+const StunxInvite = require('./lib/main');
 
 class Stunx extends InviteTemplate {
 
