@@ -213,7 +213,7 @@ class Peer {
   //
   // new default implementation
   //
-  sendRequestWithCallback(message, data: any = "", callback = null, loop = true) {
+  sendRequestWithCallback(message : string, data: any = "", callback = null, loop = true) {
     //console.log("sendRequestWithCallback : " + message);
     //
     // respect prohibitions
