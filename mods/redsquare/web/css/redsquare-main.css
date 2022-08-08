@@ -62,6 +62,7 @@
 
 .saito-main.appspace {
   min-width: 50rem;
+  height: 100vh;
 }
 
 .redsquare-appspace-contacts-list {

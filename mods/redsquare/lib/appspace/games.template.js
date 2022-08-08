@@ -34,9 +34,7 @@ module.exports = (app, mod) => {
 
       html += `
         <div class="saito-game">
-
 	        ${SaitoModuleTemplate(app, mod, modtitle, modimage)}
-
           <div class="saito-game-content">
             <div class="saito-leaderboard">
 	            <div class="saito-table">`;
