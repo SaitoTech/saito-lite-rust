@@ -8,11 +8,11 @@ module.exports = ExistingLeague = {
     this.app = app;
     this.mod = mod;
     this.game = game;
-  }
+  },
 
   render(app, mod, league) {
     if (!document.getElementById(league.id)){
-      app.browser.addElementToDom(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
+      app.browser.addElementToId(LeagueComponentExistingLeagueTemplate(app, mod, league), "league-component-existing-league");
     } else {
       document.getElementById(league.id).outerHTML = LeagueComponentExistingLeagueTemplate(app, mod, league);
     }

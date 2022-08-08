@@ -1,3 +1,9 @@
+
+.invites-invitation-controls > div {
+    width: 15rem;
+    margin-left: 2rem;
+}
+
 .invites-appspace {
   width: 69.5rem;
 }

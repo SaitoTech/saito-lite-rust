@@ -508,7 +508,7 @@ console.log("INSERTING SQL: " + sql);
 	this.redsquare.last_liked_tweets = [];
     }
 
-    saveStun() {
+    saveRedSquare() {
         this.app.options.redsquare = this.redsquare;
         this.app.options.saveOptions();
     }

@@ -1,5 +1,7 @@
 const ArcadeLeagueViewTemplate = require("./arcade-league-view.template");
 const SaitoOverlay = require("../../../../lib/saito/ui/saito-overlay/saito-overlay");
+const saito = require("../../../../lib/saito/saito");
+
 module.exports = ArcadeLeagueView = {
 
   render(app, mod, league) {
@@ -83,11 +85,11 @@ module.exports = ArcadeLeagueView = {
    			}
 
    			html += `</tbody></table>`;
-   			app.browser.addElementToDom(html, "league-leaderboard");
+   			app.browser.addElementToId(html, "league-leaderboard");
 
 
    		}else{
-   			app.browser.addElementToDom(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
+   			app.browser.addElementToId(`<div class="league-error">No Stats for the league</div>`, "league-leaderboard");
    		}
    },
 
@@ -110,6 +112,21 @@ module.exports = ArcadeLeagueView = {
     if (inviteBtn){
       inviteBtn.onclick = () => {
         mod.showShareLink(this.league.id, app.modules.returnActiveModule());
+      }
+    }
+
+    //ActiveModule should be Arcade
+    //We only render the button in the template if that is the case
+    let createGameBtn = document.getElementById("game-invite-btn");
+    if (createGameBtn){
+      createGameBtn.onclick = () => {
+        let tx = new saito.default.transaction();
+        tx.msg.game = this.league.game;
+        if (this.league.admin !== "saito"){
+          tx.msg.league = this.league.id;
+        }
+        ArcadeGameDetails.render(app, app.modules.returnActiveModule(), tx);
+        ArcadeGameDetails.attachEvents(app, app.modules.returnActiveModule(), tx);
       }
     }
 
