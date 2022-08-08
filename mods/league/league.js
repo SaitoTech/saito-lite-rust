@@ -24,6 +24,7 @@ class League extends ModTemplate {
     //
     this.leagues = [];
 
+
     //
     // used in onPeerHandshakeComplete
     //
@@ -41,6 +42,8 @@ class League extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
+
+    this.loadLeagues();
 
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
@@ -1007,6 +1010,27 @@ class League extends ModTemplate {
     }
     return false;
   }
+
+
+  loadLeagues() {
+
+//    if (this.app.options.leagues) {
+//      this.leagues = this.app.options.leagues;
+//      return;
+//    }
+
+    //
+    // set default values
+    //
+//    this.leagues = {};
+
+  }
+
+  saveLeagues() {
+//      this.app.options.leagues = this.leagues;
+//      this.app.options.saveOptions();
+  }
+
 
 
 }
