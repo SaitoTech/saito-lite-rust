@@ -56,6 +56,7 @@ class StunxAppspace {
 
             const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             stunx_mod.setLocalStream(localStream);
+            stunx_mod.setChatType = ("room");
             let my_public_key = this.app.wallet.returnPublicKey();
             let peers_in_room = JSON.parse(room.peers);
 
@@ -96,7 +97,7 @@ class StunxAppspace {
 
                 // filter my public key
                 peers_in_room = peers_in_room.filter(public_key => public_key !== my_public_key);
-                stunx_mod.createStunConnectionWithPeers(peers_in_room);
+                stunx_mod.createStunConnectionWithPeers(peers_in_room, 'room');
                 this.app.connection.emit('show-video-chat-request', this.app, this);
                 this.app.connection.emit('render-local-stream-request', localStream);
                 peers_in_room.forEach(peer => {

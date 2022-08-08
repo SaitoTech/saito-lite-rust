@@ -26,7 +26,7 @@ class VideoBox {
         this.stream = stream
         console.log(this);
         if (this.stream_id === 'local' && stream !== null) {
-            this.renderStream(true);
+            this.renderStream({ muted: true });
 
         }
 
@@ -44,7 +44,7 @@ class VideoBox {
         }
     }
 
-    renderStream(muted = false) {
+    renderStream({ muted }) {
         if (!document.querySelector(`#stream${this.stream_id}`)) {
             this.app.browser.addElementToClass(videoBoxTemplate(this.stream_id, muted), this.containerClass);
         }
@@ -72,7 +72,7 @@ class VideoBox {
             case "connected":
                 if (this.stream) {
                     document.querySelector('#connection-message').parentElement.remove(document.querySelector('#connection-message'));
-                    this.renderStream();
+                    this.renderStream({ muted: null });
                 }
                 break;
             case "disconnected":
