@@ -13,50 +13,27 @@ class Spider extends GameTemplate {
     super(app);
 
     this.name            = "Spider";
-    this.gamename        = "Spider";
-    this.slug            = "spider";
+
     this.description     = 'Two deck solitaire card game that traps you in a web of addiction';
-    this.categories      = "Arcade Games Entertainment";
-    //So we have multiple categories defined??
-    this.categories       = "Cardgame Game Solitaire";
+    this.categories       = "Games Cardgame one-player";
 
     this.scoreboard      = new GameScoreboard(app);
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    this.type            = "Solitaire Cardgame";
-    this.status          = "Alpha";
+    this.status          = "Beta";
     this.difficulty      = 2; //default medium, 1 = easy, 4 = hard
   }
 
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/spider/img/arcade/arcade-banner-background.jpg";
-      obj.title = "Spider";
+  // Create an exp league by default
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
       return obj;
     }
-
-    return null;
-
+    return super.respondTo(type);
   }
-
-  requestInterface(type) {
-    if (type == "arcade-sidebar") {
-      return { title: this.name };
-    }
-    return null;
-  }
-
-
+  
 
   returnGameRulesHTML(){
     return `<div class="rules-overlay">
@@ -256,6 +233,8 @@ class Spider extends GameTemplate {
     
     super.initializeHTML(app);
 
+    this.preloadImages();
+
     //
     // ADD MENU
     //
@@ -273,13 +252,14 @@ class Spider extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.endGame();
         game_mod.newRound();
         game_mod.endTurn();
       }
     });
     
 
-    /*this.menu.addSubMenuOption("game-game", {
+    this.menu.addSubMenuOption("game-game", {
       text : "Play Mode",
       id : "game-play",
       class : "game-play",
@@ -315,7 +295,7 @@ class Spider extends GameTemplate {
        }catch(err){}
       }
     });
-    */
+    
 
     this.menu.addSubMenuOption("game-game", {
       text : "Difficulty",
@@ -444,15 +424,10 @@ class Spider extends GameTemplate {
     return html;
   }
 
-  checkBoardStatus(){
-    
-  }
 
   attachEventsToBoard(){
     let spider_self = this;
-    let selected_stack = null;
-    let selected_stack_size = 0;
-   
+
     //Undo last move
     $(".undo").off();
     $(".undo").on('click', function(){
@@ -475,13 +450,63 @@ class Spider extends GameTemplate {
           spider_self.prependMove("draw");
           spider_self.endTurn();  
         }else{
-          salert("You cannot deal with open slots!");
+          spider_self.displayWarning("Invalid Move","You cannot deal with open slots!");
         }
       }else{
+        spider_self.endGame();
         spider_self.newRound();
         spider_self.endTurn();  
       }
     });
+
+    if (this.game.options.play_mode == "auto"){
+      this.attachEventsToBoardAutomatic();
+    }else{
+      this.attachEventsToBoardManual();
+    }
+  }
+
+  attachEventsToBoardAutomatic(){
+    let spider_self = this;
+    let selected_stack_size = 0;
+    //Manipulate cards
+    $('.card').off();
+    $('.card').on('click', function(e) {
+      e.stopPropagation();
+
+      let card_pos = $(this).attr("id");
+      
+      selected_stack_size = spider_self.canSelectStack(card_pos);
+      if (selected_stack_size > 0){
+        for (let i = 0; i < 10; i++){
+          if (card_pos[0] != i){  
+            if (spider_self.canMoveStack(card_pos, i.toString())){
+              spider_self.untoggleAll();
+              spider_self.updateScore();
+              spider_self.prependMove(`move\t${card_pos}\t${i}\t${selected_stack_size}`);
+              spider_self.moveStack(card_pos, i.toString());
+              let key = spider_self.revealCard(card_pos[0]); 
+              if (key){
+                spider_self.prependMove(`flip\t${card_pos[0]}\t${key}`);  
+              }
+              spider_self.displayBoard();
+              spider_self.checkStack(i);
+              return;
+            }
+          }   
+        }
+      }
+
+    });
+
+  }
+
+
+  attachEventsToBoardManual(){
+    let spider_self = this;
+    let selected_stack = null;
+    let selected_stack_size = 0;
+   
 
     $(".card-stack").off();
     $(".card-stack").on('click', function(){
@@ -525,7 +550,7 @@ class Spider extends GameTemplate {
             spider_self.displayBoard();
             spider_self.checkStack(parseInt(card_pos[0]));
           }else{
-            salert("Cannot move there");
+            spider_self.displayWarning("Invalid Move");
           }            
         }
       }else{
@@ -636,6 +661,9 @@ class Spider extends GameTemplate {
     return true;
   }
 
+  /*
+    Check if we have completed a stack
+  */
   async checkStack(stackNum){
     if (this.game.state.board[stackNum].length < 13){
       return;
@@ -741,6 +769,11 @@ class Spider extends GameTemplate {
     else return true;
   }
 
+
+  getAvailableMoves(card){
+
+  }
+
   /* scan board to see if any legal moves available*/
   hasAvailableMoves(){
     
@@ -779,12 +812,6 @@ class Spider extends GameTemplate {
   }
 
   
-/*  boardToHand(){
-    let indexCt = 0;
-    for (let position in this.game.board){
-      this.game.deck[0].hand[indexCt++] = this.game.board[position];
-    }
-  }*/
 
   parseIndex(slot){
     let coords = slot.split("_");
@@ -812,6 +839,7 @@ class Spider extends GameTemplate {
       if (mv[0] === "lose"){
         this.game.queue.splice(qe, 1);
         this.displayModal("You Lose!", "Too many moves");
+        this.endGame();
         this.newRound();
         return 1;
       }
@@ -820,6 +848,7 @@ class Spider extends GameTemplate {
         this.game.queue.splice(qe, 1);
         this.game.state.wins++;
         this.animateFinalVictory();
+        this.endGame(this.app.wallet.returnPublicKey());
         this.overlay.show(this.app, this, this.returnStatsHTML("Winner!"), ()=>{
           this.newRound();
           $(".completed_card").remove();
@@ -953,11 +982,12 @@ class Spider extends GameTemplate {
     let numLoops = 104 / (13*numSuits);
     
     for (let k = 0; k < numLoops; k++){
-      for (let i = 0; i<numSuits; i++)
+      for (let i = 0; i<numSuits; i++){
         for (let j=1; j<=13; j++){
           deck[index.toString()] = suits[i]+j;
           index ++;
         }  
+      }
     }
     //console.log("Deck Length:"+Object.keys(deck).length);
     return deck;
@@ -1003,10 +1033,43 @@ class Spider extends GameTemplate {
     //Refresh Arcade if in it
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade){
+      arcade.checkCloseQueue(game_id);
       //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
   }
+
+   receiveGameoverRequest(blk, tx, conf, app) {
+    console.log("The game never ends in Spider Solitaire");
+    return;
+  }
+
+
+  preloadImages(){
+    let suits = ["S","D","C","H"];
+
+    var allImages = [];
+    for (let i = 0; i<this.difficulty; i++){
+      for (let j=1; j<=13; j++){
+        allImages.push( suits[i]+j );
+      }  
+    }
+    this.preloadImageArray(allImages, 0);
+  }
+
+   preloadImageArray(imageArray, idx=0) {
+
+    let pre_images = [imageArray.length];
+
+    if (imageArray && imageArray.length > idx) {
+      pre_images[idx] = new Image();
+      pre_images[idx].onload = () => {
+        this.preloadImageArray(imageArray, idx+1);
+      }
+      pre_images[idx].src = "/spider/img/cards/" + imageArray[idx] + ".png";
+    }
+  }
+
 
 
 }

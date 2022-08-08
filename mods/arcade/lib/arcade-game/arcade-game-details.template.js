@@ -15,15 +15,19 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
     return selection;
   };
 
+  let game_name = mod.gamename || mod.name;
+  let gamemod_url = mod.respondTo("arcade-games")?.img || `/${mod.returnSlug()}/img/arcade.jpg`;
   let html = `
     <div class="game-wizard">
       <form id="game-wizard-form" class="game-wizard-form">
         <div class="game-wizard-header">
-          <div class="game-wizard-image"><img class="game-image" src="/${mod.returnSlug()}/img/arcade.jpg"/></div>
+          <div class="game-wizard-image"><img class="game-image" src="${gamemod_url}"/></div>
           <div class="game-wizard-intro">
-            <input type="hidden" name="gamename" value="${invite.msg.game}" />
-            <div class="game-wizard-title">${mod.gamename}</div>
-            <div class="game-wizard-description">${mod.description} <div class="game-wizard-post-description">[<span class="game-home-link">homepage</span>]</div></div>
+            <input type="hidden" name="game" value="${invite.msg.game}" />
+            ${(invite.msg.league)? `<input type="hidden" name="league" value="${invite.msg.league}" />` : ""}
+            <div class="game-wizard-title"><span class="game-home-link">${game_name}</span></div>
+            <div class="game-wizard-description">${mod.description} </div>
+            <div class="game-wizard-post-description">[<span id="game-rules-btn" class="game-help-link">how to play</span>]</div>
           </div>
         </div>
         
@@ -42,7 +46,7 @@ module.exports = ArcadeGameDetailsTemplate = (app, mod, invite) => {
       }else{
         html += `<div class="dynamic_button saito-select">
                  <div class="dynamic_button_options saito-slct">
-                    <button type="button" id="game-invite-btn" class="game-invite-btn" data-type="open">Create Open Game</button>
+                    <button type="button" id="game-invite-btn" class="game-invite-btn" data-type="open">Create ${(invite.msg.league)?"League":"Open"} Game</button>
                     <button type="button" id="game-invite-btn" class="game-invite-btn tip" data-type="private">Create Private Game<div class="tiptext">Other players on the Saito network will not see this game and can only join if you provide them the invitation link</div></button>
                  </div>
                  </div>

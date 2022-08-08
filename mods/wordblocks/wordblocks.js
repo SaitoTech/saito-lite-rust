@@ -5,22 +5,19 @@ class Wordblocks extends GameTemplate {
   constructor(app) {
     super(app);
 
-    this.name = "Wordblocks";
-    this.gamename = "Wordblocks";
-
     this.wordlist = [];
     this.mydeck = {};
     this.score = "";
     this.app = app;
+
     this.name = "Wordblocks";
     this.description = `Wordblocks is a word game in which two to four players score points by placing TILES bearing a single letter onto a board divided into a grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
-    this.categories = "Game Arcade Entertainment";
+    this.categories = "Games Boardgame Classic Wordgame";
     //
     // Game Class VARS
     //
     this.minPlayers = 2;
     this.maxPlayers = 4;
-    this.type = "Wordgame";
 
     this.boardWidth = 1000;
     this.tileHeight = 163;
@@ -38,29 +35,7 @@ class Wordblocks extends GameTemplate {
 
     return this;
   }
-  // requestInterface(type) {
-  //
-  //   if (type == "arcade-sidebar") {
-  //     return { title: this.name };
-  //   }
-  //   return null;
-  // }
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/wordblocks/img/arcade/arcade-banner-background.png";
-      obj.title = "Wordblocks";
-      return obj;
-    }
 
-    return null;
-  }
 
   initializeHTML(app) {
 
@@ -251,9 +226,6 @@ class Wordblocks extends GameTemplate {
 
     // OBSERVER MODE
     //if (this.game.player == 0) { return; }
-
-    this.updateStatus("loading game...");
-    this.loadGame(game_id);
 
     //
     // deal cards
@@ -1195,7 +1167,7 @@ class Wordblocks extends GameTemplate {
 
         if (
           (starting_point <= 6 && ending_point >= 6) ||
-          (starting_point <= 10 && ending_point >= 6)
+          (starting_point <= 10 && ending_point >= 10)
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");
@@ -1214,7 +1186,7 @@ class Wordblocks extends GameTemplate {
 
         if (
           (starting_point <= 6 && ending_point >= 6) ||
-          (starting_point <= 10 && ending_point >= 6)
+          (starting_point <= 10 && ending_point >= 10)
         ) {
         } else {
           salert("First Word must be long enough to cross a Star");
@@ -2407,31 +2379,27 @@ class Wordblocks extends GameTemplate {
   }
 
   returnGameOptionsHTML() {
-    let testHtml = "";
-    if (this.app.config && this.app.config.currentEnv == "DEV") {
-      testHtml = `<option value="test">Test Dictionary</option>`;
-    }
-    return `
-          <h1 class="overlay-title">Wordblocks Options</h1>
-          <div class="overlay-input">
-          <label for="dictionary">Dictionary:</label>
-          <select name="dictionary">
-            <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
-            <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
-            <option value="fise">Spanish: FISE</option>
-            <option value="tagalog">Tagalog</option>
-            ${testHtml}
-          </select>
-          </div>
+    let html = `<h1 class="overlay-title">Wordblocks Options</h1>`;
+
+    html += `<div class="overlay-input">
+                <label for="dictionary">Dictionary:</label>
+                <select name="dictionary">
+                  <option value="sowpods" title="A combination of the Official Scrabble Player Dictionary and Official Scrabble Words" selected>English: SOWPODS</option>
+                  <option value="twl" title="Scrabble Tournament Word List">English: TWL06</option>
+                  <option value="fise">Spanish: FISE</option>
+                  <option value="tagalog">Tagalog</option>
+                </select>
+              </div>
           <div class="overlay-input">
           <label for="observer_mode">Observer Mode:</label>
           <select name="observer">
             <option value="enable">enable</option>
             <option value="disable" selected>disable</option>
           </select>
-          </div>
-          <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-          `;
+          </div>`;
+
+    html += this.returnCryptoOptionsHTML();
+    return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
   }
 
   async animatePlay(){

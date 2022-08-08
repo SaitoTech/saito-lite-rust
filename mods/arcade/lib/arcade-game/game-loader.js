@@ -21,6 +21,9 @@ module.exports = GameLoader = {
     try {
       if (document.querySelector(".start-game-btn")){
         document.querySelector(".start-game-btn").addEventListener("click", (e) => {
+          clearInterval(mod.tabInterval);
+          mod.tabInterval = null;
+
           let game_id = e.currentTarget.id;
           for (let i = 0; i < app.options.games.length; i++) {
             if (app.options.games[i].id == game_id) {

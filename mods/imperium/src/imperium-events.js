@@ -83,6 +83,12 @@
     // ensure that "player" has the right to execute the logic being coded, either by 
     // adding gainTechnology() or doesPlayerHaveTech()
     //
+    // if you need to code a function that actually provides the opportunity for users to
+    // selectively take action, then you need an asychronous trigger. these functions will
+    // be named as follows
+    //
+    // nameEventTriggers - returns 1 if triggers -- default is 0 don't trigger and cont game
+    // nameEvent - returns 1 by default - 0 is halt game until next move
     //
     // runs for everyone
     //
@@ -329,6 +335,17 @@
 
 
     //
+    // when a player researches a technology
+    //
+    if (obj.researchTechnologyEventTriggers == null) {
+      obj.researchTechnologyEventTriggers = function(imperium_self, researcher, player, technology) { return 0; } // default skips
+    }
+    if (obj.researchTechnologyEvent == null) {
+      obj.researchTechnologyEvent = function(imperium_self, researcher, player, technology) { return 1; } // default continues gameloop
+    }
+
+
+    //
     // when strategy card primary is played
     //
     if (obj.playStrategyCardPrimaryTriggers == null) {
@@ -429,6 +446,16 @@
     }
     if (obj.playerEndTurnEvent == null) {
       obj.playerEndTurnEvent = function(imperium_self, player) { return 0; }
+    }
+
+    //
+    // after ships have fired / before hits assignment
+    //
+    if (obj.postShipsFireEventTriggers == null) {
+      obj.postShipsFireEventTriggers = function(imperium_self, player, defender, attacker, sector, combat_info) { return 0; }
+    }
+    if (obj.postShipsFireEvent == null) {
+      obj.postShipsFireEvent = function(imperium_self, player, defender, attacker, sector, combat_info) { return 0; }
     }
 
     return obj;

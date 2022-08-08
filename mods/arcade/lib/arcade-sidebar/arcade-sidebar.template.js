@@ -12,8 +12,14 @@ module.exports = ArcadeSidebarTemplate = () => {
             <ul class="arcade-apps" id="arcade-apps"></ul>
           </div>
         </div>
+      </div>
     </div>
-  </div>
-  <div id="email-chat" class="email-chat"></div>
+    <div id="email-chat" class="email-chat"></div>
+
+    <div class="arcade-announcements" id="arcade-announcements">
+      <div class="arcade-announcement">Looking for an opponent? Drop an invite on our gamers' <a href="https://t.me/SaitoArcadeChat">Telegram Channel</a>.</div>
+      <div class="arcade-announcement">Like large multiplayer games? See our upcoming <a href="https://docs.google.com/spreadsheets/d/1f1QrDFd8f6RaIJhV5m-pQFBoAO9WZGxpCoJmdKBaQwI/edit#gid=0" target="_community">Community Games and Events</a>.</div>
+    </div>
+
   `;
 }

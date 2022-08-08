@@ -10,6 +10,8 @@
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -89,7 +91,7 @@
                 twilight_self.addMove("NOTIFY\tBrush War in "+twilight_self.countries[c].name+" failed.");
               }
 
-              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
+              twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls for Brush War: ${die}, adjusted: ${die-modifications}`);  
               twilight_self.addMove(`war\t${card}\t${winner}\t${die}\t${modifications}\t${player}`);
               twilight_self.endTurn();
 

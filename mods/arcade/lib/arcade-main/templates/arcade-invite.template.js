@@ -1,14 +1,12 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log("ARCADEINVITETEMPLATE");
   //console.log(invite);
-  //
-  // gameslug given game
-  //
-  let slug = invite.msg.game;
-  for (let i = 0; i < app.modules.mods.length; i++) {
-    if (app.modules.mods[i].name === slug) { slug = app.modules.mods[i].returnSlug(); }
-  }
 
+  let gameModule = app.modules.returnModule(invite.msg.game);
+  if (!gameModule){
+    return "";
+  }  
+  let slug = gameModule.returnSlug();
 
   let inviteTypeClass = "open-invite";
 
@@ -16,14 +14,15 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   if (invite.isMine) { inviteTypeClass = "my-invite"; }
   if (invite.msg) {
     if (invite.msg.options['game-wizard-players-select'] <= invite.msg.players.length) {
+      console.log("Game initialized becase msg.options");
       game_initialized = 1;
     }
     if (invite.msg.players_needed <= invite.msg.players.length) {
+      console.log("Game initialized becase msg.players_needed")
       game_initialized = 1;
     }
   }
-  console.log("Arcade invite template");
-  console.log(JSON.parse(JSON.stringify(invite.msg)));
+
   //console.log("Game_initialized: " + game_initialized);
   //
   // trying to stop games from continue / cancel on load
@@ -32,9 +31,12 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   if (app.options) {
     if (app.options.games) {
       for (let i = 0; i < app.options.games.length; i++) {
-      	if (app.options.games[i].initializing == 1) {
-      	  game_initialized = 0;
-      	}
+        if (app.options.games[i].id == invite.transaction.sig){
+          if (app.options.games[i].initializing == 1) {
+            console.log("Game not initialized because app.options.games[i]")
+            game_initialized = 0;
+          }
+        }
       }
     }
   }
@@ -64,11 +66,13 @@ module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   playersHtml += '</div>';
 
   if (document.getElementById(`invite-${invite.transaction.sig}`)) { return ''; }
+  let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
+  let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 
   let inviteHtml = `
-    <div id="invite-${invite.transaction.sig}" class="arcade-tile i_${idx} ${inviteTypeClass}" style="background-image: url('/${slug}/img/arcade.jpg');">
+    <div id="invite-${invite.transaction.sig}" class="arcade-tile i_${idx} ${inviteTypeClass}" style="background-image: url('${bannerBack}');">
       <div class="invite-tile-wrapper">
-        <div class="game-inset-img" style="background-image: url('/${slug}/img/arcade.jpg');"></div>
+        <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${invite.msg.game}</div>
           <div class="gamePlayers">${playersHtml}</div>

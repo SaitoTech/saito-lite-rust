@@ -65,7 +65,6 @@
       },
       upgradeUnit :       function(imperium_self, player, unit) {
         if (unit.type === "carrier" && imperium_self.doesPlayerHaveTech(player, "carrier-ii")) {
-console.log("returning upgraded carrier...");
           return imperium_self.returnUnit("carrier-ii", player, 0);
         }
         return unit;
@@ -202,7 +201,7 @@ console.log("returning upgraded carrier...");
         }
       },
       gainTechnology :       function(imperium_self, gainer, tech) {
-        if (tech == "warsun") {
+        if (tech == "warsun" && imperium_self.doesPlayerHaveTech(gainer, "warsuns")) {
           imperium_self.game.players_info[gainer-1].may_produce_warsuns = 1;
         }
       },

@@ -13,6 +13,8 @@
         return 0;
       }
       if (me == player) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -25,12 +27,12 @@
 
         twilight_self.attachCardboxEvents(function(invaded) {
 
-          for (let c in twilight_self.countries[invaded].neighbours){
+          for (let c of twilight_self.countries[invaded].neighbours){
             if (twilight_self.isControlled(opponent, c) == 1) { modifications++; }
           }
 
           let die = twilight_self.rollDice(6);
-          twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+`rolls: ${die}, adjusted: ${die-modifications}`);
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase()+` rolls: ${die}, adjusted: ${die-modifications}`);
 
           if (die >= target + modifications) { //Successful Invasion
             winner = (invaded == "pakistan")? "India conquers Pakistan!": "Pakistan conquers India";

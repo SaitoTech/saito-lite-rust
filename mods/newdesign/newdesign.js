@@ -1,5 +1,6 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
 const NewDesignMain = require("./lib/main/newdesign-main");
+const SaitoHeader = require("./../../lib/saito/new-ui/saito-header/saito-header");
 
 class NewDesign extends ModTemplate {
 
@@ -11,20 +12,19 @@ class NewDesign extends ModTemplate {
     this.description = "Saito Design Reference Module";
     this.categories = "Design Development";
 
-    this.header = null;
-    this.overlay = null;
+    this.styles = ['/saito/saito.css', '/newdesign/css/newdesign-main.css', '/saito/lib/date-picker/dist/css/datepicker.css', '/saito/lib/saito-date-picker/style.css'];
+    this.scripts = ['/saito/lib/date-picker/dist/js/datepicker-full.js', '/saito/lib/saito-date-picker/script.js'];
 
-    this.styles = ['/newdesign/saito.css', '/saito/lib/date-picker/dist/css/datepicker.css'];
-    this.scripts = ['/saito/lib/date-picker/dist/js/datepicker-full.js']
+    this.main = new NewDesignMain(app, this);
+    this.header = new SaitoHeader(app, this);
 
   }
 
+
   render(app) {
-
-    super.render(app)
-
-    NewDesignMain.render(app, this);
-
+    this.addComponent(this.main);
+    this.addComponent(this.header);
+    super.render(app);
   }
 
 }

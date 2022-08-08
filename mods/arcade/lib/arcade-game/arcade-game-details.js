@@ -1,4 +1,5 @@
 const ArcadeGameDetailsTemplate = require("./arcade-game-details.template");
+const SaitoOverlay = require("./../../../../lib/saito/new-ui/saito-overlay/saito-overlay");
 const AdvancedOverlay = require("./advanced-overlay"); // game-overlay
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 
@@ -31,12 +32,17 @@ module.exports = ArcadeGameDetails = {
   render(app, mod, invite) {
     let gamemod = app.modules.returnModule(invite.msg.game);
 
+    if (mod.overlay == null) {
+      mod.overlay = new SaitoOverlay(app);
+    }
+
     if (!document.getElementById("background-shim")) {
       app.browser.addElementToDom(
         `<div id="background-shim" class="background-shim" style=""><div id="background-shim-cover" class="background-shim-cover"></div></div>`
       );
     }
-    let gamemod_url = "/" + gamemod.returnSlug() + "/img/arcade.jpg";
+    
+    let gamemod_url = gamemod.respondTo("arcade-games")?.img;
     document.querySelector(".background-shim").style.backgroundImage = "url(" + gamemod_url + ")";
 
     //Create the gamedetails window
@@ -96,7 +102,7 @@ module.exports = ArcadeGameDetails = {
     //go to game home page
     document.querySelector(".game-home-link").addEventListener("click", (e) => {
       let options = getOptions();
-      let gamemod = app.modules.returnModule(options.gamename);
+      let gamemod = app.modules.returnModule(options.game);
       app.browser.logMatomoEvent("Navigation", "GameDetailtoPage", gamemod.returnSlug());
       window.location = "/arcade/?game=" + gamemod.returnSlug();
     });
@@ -109,27 +115,28 @@ module.exports = ArcadeGameDetails = {
     }
 
     //Query game instructions
-    //document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
-    //   let options = getOptions();
-    //   let gamemod = app.modules.returnModule(options.gamename);
-    //   gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
-    //});
+    document.getElementById("game-rules-btn").addEventListener("click", (e)=>{
+       let options = getOptions();
+       let gamemod = app.modules.returnModule(options.game);
+       gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+    });
 
     //
     // create game
     //
     Array.from(document.querySelectorAll(".game-invite-btn")).forEach((gameButton) => {
       gameButton.addEventListener("click", async (e) => {
+        mod.active_tab = "arcade"; //So it refreshes to show the new game invite
         e.stopPropagation();
         try {
           let options = getOptions();
           let isPrivateGame = e.currentTarget.getAttribute("data-type");
           if (isPrivateGame == "private") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateClosedInvite", options.game);
           } else if (isPrivateGame == "single") {
-            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeLaunchSinglePlayerGame", options.game);
           } else {
-            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.gamename);
+            app.browser.logMatomoEvent("Arcade", "ArcadeCreateOpenInvite", options.game);
           }
 
           //
@@ -177,7 +184,17 @@ module.exports = ArcadeGameDetails = {
              console.log("ERROR checking crypto: " + err);
             return;
           }
-          let gamemod = app.modules.returnModule(options.gamename);
+
+          //Check League Membership
+          if (options.league){
+            let leag = app.modules.returnModule("League");
+            if (!leag.isLeagueMember(options.league)){
+              salert("You need to be a member of the League to create a League-only game invite");
+              return;
+            }
+          }
+
+          let gamemod = app.modules.returnModule(options.game);
           let players_needed = 0;
           if (document.querySelector(".game-wizard-players-select")) {
             players_needed = document.querySelector(".game-wizard-players-select").value;
@@ -189,7 +206,7 @@ module.exports = ArcadeGameDetails = {
             ts: new Date().getTime(),
             name: gamemod.name,
             slug: gamemod.returnSlug(),
-            options: gamemod.returnFormattedGameOptions(options),
+            options: options,
             players_needed: players_needed,
             invitation_type: "public",
           };

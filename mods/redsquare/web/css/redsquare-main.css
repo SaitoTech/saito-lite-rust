@@ -1,0 +1,308 @@
+.background-shim {
+  background-image: url('/chess/img/arcade/arcade.jpg');
+  top: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-size: cover;
+  z-index: 10;
+}
+
+
+.redsquare-item {
+  cursor: pointer;
+}
+
+.redsquare-item-children>.redsquare-item {
+  border-bottom: 0px;
+  margin-left: 0rem;
+  padding-left: 0rem;
+  padding-top: 3rem;
+}
+
+.post-tweet-preview {
+  padding: 0rem;
+  padding-bottom: 2rem;
+}
+
+.post-tweet-preview .redsquare-item {
+  padding-left: 0rem;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
+  display: none;
+}
+
+.post-tweet-textarea {
+  width: auto;
+  margin-top: 1rem;
+}
+
+.post-tweet-button {
+  margin-left: 0rem;
+  margin-right: 0rem;
+  margin-top: 1rem;
+  width: 20rem;
+  text-align: center;
+  float: right;
+}
+
+.redsquare-tweet-overlay {
+  padding: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 2rem;
+  background-color: white;
+}
+
+.saito-sidebar.right {
+  width: 51rem;
+}
+
+.saito-main.appspace {
+  width: 70rem;
+}
+
+.redsquare-appspace-contacts-list {
+  padding-left: 2rem;
+  padding-top: 2rem;
+}
+
+.redsquare-appspace-contacts-list>h6 {
+  padding-bottom: 1rem;
+}
+
+
+.redsquare-item {
+  padding: 2rem 3rem 2rem 1rem;
+  border-bottom: 1px solid #a5a5a533;
+}
+
+.redsquare-item-contents {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+
+.redsquare-invite-participants {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
+}
+
+.redsquare-invite-participants>.saito-user {
+  max-width: 20rem;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+.redsquare-invite-title {
+  color: var(--saito-default-font-color);
+  background-color: white;
+  font-weight: bold;
+  font-size: 2.2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+
+
+.redsquare-game-creator {
+  padding: 3rem;
+  border-radius: 2rem;
+  background-color: #0009;
+  color: white;
+  max-height: 90vh;
+  max-width: 114rem;
+  overflow-y: scroll;
+}
+
+.redsquare-create-game-list {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 2rem;
+  column-gap: 2rem;
+}
+
+.redsquare-create-game-header {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background-color: #0008;
+  padding: 1rem;
+}
+
+.redsquare-game-container {
+  display: grid;
+  grid-template-columns: 10vw auto;
+  grid-template-rows: min-content 1fr;
+  max-width: 80vw;
+  column-gap: 2rem;
+  min-height: 10rem;
+  max-height: 10rem;
+  min-width: 51rem;
+  padding: 0.5rem
+}
+
+.redsquare-game-container:hover {
+  cursor: pointer;
+  background-color: #0009;
+}
+
+.redsquare-game-image {
+  grid-row: span 2;
+  width: 10vw;
+  height: auto;
+  max-height: 10rem;
+}
+
+.redsquare-game-image>img {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem
+}
+
+.redsquare-game-title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  font-size: 3rem;
+  font-weight: bolder;
+}
+
+.redsquare-game-description {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  overflow-y: hidden;
+  text-overflow: clip;
+  font-size: 1.5rem;
+  line-height: 1.9rem;
+}
+
+.redsquare-tweet-tools {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  font-size: 1.5rem;
+  width: 3.5rem;
+  margin: 1rem 0;
+}
+
+
+.redsquare-tweet-tools>div {
+  position: relative;
+  margin: 0.75rem 0;
+  transform: scale(0.75);
+}
+
+.redsquare-tweet-tools>div:hover {
+  transform: scale(1);
+}
+
+
+.redsquare-tweet-tools span {
+  margin: 0 auto;
+  position: absolute;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  line-height: 2.9rem;
+  font-weight: bold;
+  color: var(--saito-white);
+  z-index: 1;
+}
+
+.redsquare-tweet-tools i {
+  font-size: 3rem;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  color: #aaa;
+}
+
+
+.saito-tweet-activity i {
+  color: var(--saito-primary);
+}
+
+.tweet-tool-retweet span {
+  line-height: 3.3rem;
+}
+
+.tweet-tool-retweet i {
+  padding-left: 0.666rem;
+}
+
+
+
+.link-preview {
+  margin: 15px 0px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 250px;
+  background-size: cover !important;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.preview-info {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  border-top: none;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+
+.preview-title {
+  color: #000;
+  margin: 3px 0px;
+}
+
+.preview-url {
+  font-size: 1.4rem;
+  color: #444;
+}
+
+.preview-description {
+  font-size: 1.6rem;
+  color: #444;
+}
+
+.youtube-embed-container {
+  width: 100%;
+  margin: 15px 0px;
+}
+
+.youtube-embed {
+  width: 100%;
+  height: 300px;
+}
+
+.tweet-tool-like {
+  cursor: pointer;
+}
+
+.tweet-tool-comment-count {
+  width: 1rem;
+  text-align: center;
+}
+
+
+#redsquare-reply-tweet-overlay {
+  background-color: #fff;
+  width: 60vh;
+}
+
+#redsquare-reply-tweet-overlay .redsquare-item-contents {
+  border-left: 1px solid #b1b0b0;
+  margin: 30px 10px;
+}

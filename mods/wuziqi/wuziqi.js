@@ -11,11 +11,9 @@ class Wuziqi extends GameTemplate {
         // Define static game parameters and add global variables.
 
         this.name = "Wuziqi";
-        this.gamename = "Wuziqi";
         this.title = "五子棋"
         this.description = "五子棋 aka Gokomu and Gobang! is a simple game where two players alternately place black and white tiles on a go board attempting to place 5 of them in adjacent positions."
-        this.categories = "Boardgame Strategy";
-        this.type = "Boardgame";
+        this.categories = "Games Boardgame Classic";
         //this.status = "Beta";
 
         this.minPlayers = 2;
@@ -160,9 +158,6 @@ class Wuziqi extends GameTemplate {
     }
 
     initializeGame(game_id) {
-
-        // Grab the game from my wallet if it's there, and the arcade if not.
-        this.loadGame(game_id);
 
         // Send 'let's get started' message.
         this.game.queue.push("READY");
@@ -312,6 +307,12 @@ class Wuziqi extends GameTemplate {
                             this.addMove("roundover\t" + this.game.player);
                         }
                     }
+
+                    //If board full
+                    if (!this.canPlayTile()){
+                        this.addMove("draw\t" + this.game.player);
+                    }
+
                     // No matter what, add a 'place' message (filo - thi will be executed first) to update the board for both players.
                     // Set the message type, the board state, cell played, player, and existing scores.
                     let mv = "place\t" + this.serializeBoard(board) + "\t" + cell.id + "\t" + this.game.player + "\t" + this.game.score[0] + "|" + this.game.score[1];
@@ -365,9 +366,30 @@ class Wuziqi extends GameTemplate {
                 this.updateScore();
                 this.drawBoard(this.game.board);
 
-                this.endGame(this.game.players[parseInt(mv[1])-1]);
+                //console.log(this.game.options);
+                //console.log(this.game.crypto);
+
+                this.endGame(this.game.players[parseInt(mv[1])-1], `best of ${this.game.options.best_of}`);
                 return 0; //end queue cycling
             }
+            if (mv[0] == "draw"){
+                this.drawBoard(this.game.board);
+                this.updateScore();
+              
+                // Initiate next round.
+                // Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
+                if (mv[1] != this.game.player) {
+                    this.updateStatus(`<span class='playertitle'>It's a draw -- no winner.`);
+                    this.addContinueButton();
+                } else {
+                    this.updateStatus(`It's a draw -- no winner! <span class="playertitle">${this.game.sides[mv[1]%2]}</span> will start next round.`);
+                    this.drawBoard(this.game.board);
+                }
+                // Remove this item from the queue.
+                this.game.queue.splice(this.game.queue.length - 1, 1);
+                return 1;
+            }
+
             // Round over
             if (mv[0] == "roundover") {
                 this.drawBoard(this.game.board);
@@ -511,6 +533,15 @@ class Wuziqi extends GameTemplate {
         return cell;
     }
 
+    canPlayTile(){
+        for (let item of this.game.board){
+            if (item.owner == "none") {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*
     The following four function compress/decompress the board state into a string so that
     players can transmit it with their move, a completely unnecessary action, since each player places a single 
@@ -580,24 +611,26 @@ class Wuziqi extends GameTemplate {
     }
     // Add options to the game start wizard for different game parameters
     returnGameOptionsHTML() {
-        return `
-        <h1 class="overlay-title">Wuziqi Options</h1>
+        let html =  `<h1 class="overlay-title">Wuziqi Options</h1>`;
         
-        <div class="overlay-input">
-        <label for="board_size">Board Size:</label>
-        <select name="board_size">
-        <option value="9">9</>
-        <option value="11">11</>
-        <option value="13" selected>13</>
-        <option value="15">15</>
-        <option value="17">17</>
-        <option value="19">19</>
-        <option value="21">21</>
-        <option value="23">23</>
-        <option value="25">25</>
-      </select></div>
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-    `;
+        html += `<div class="overlay-input">
+                    <label for="board_size">Board Size:</label>
+                    <select name="board_size">
+                        <option value="9">9</>
+                        <option value="11">11</>
+                        <option value="13" selected>13</>
+                        <option value="15">15</>
+                        <option value="17">17</>
+                        <option value="19">19</>
+                        <option value="21">21</>
+                        <option value="23">23</>
+                        <option value="25">25</>
+                    </select>
+                </div>`;
+                
+        html += this.returnCryptoOptionsHTML();
+
+      return html + `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
 
     }
 

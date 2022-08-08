@@ -1,0 +1,28 @@
+.saito-scheduler {
+  min-width: 50rem;
+  background-color: #fff;
+  border-radius: 2rem;
+  padding: 3rem;
+}
+.saito-scheduler-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.saito-scheduler h5 {
+  padding-top: 0.5rem;
+}
+.saito-scheduler-event {
+  float: right;
+}
+.saito-scheduler-label {
+  padding-top: 2rem;
+  clear: both;
+  margin-bottom: 1rem;
+}
+.saito-scheduler-button {
+  margin-top: 2rem;
+  width: 20rem;
+  margin-left: 0rem;
+}
+
+

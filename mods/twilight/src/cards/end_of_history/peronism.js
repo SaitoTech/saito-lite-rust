@@ -42,7 +42,7 @@
             twilight_self.updateStatusWithOptions(user_message,html,false);
             twilight_self.attachCardboxEvents(function(action2) {
 
-              let modified_ops = twilight_self.modifyOps(1,"peronism");
+              let modified_ops = twilight_self.modifyOps(1, "peronism", me);
 
               if (action2 == "coup") {
                 twilight_self.addMove("resolve\tperonism");

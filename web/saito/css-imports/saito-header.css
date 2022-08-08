@@ -1,0 +1,205 @@
+#saito-header {
+    position: fixed;
+    display: flex;
+    width: 100vw;
+    background: var(--dreamscape);
+    backdrop-filter: blur(5px);
+    margin: 0;
+    align-items: center;
+    padding: 0 calc((100vw - var(--saito-width)) / 2);
+    top: 0;
+    left: 0;
+    z-index: 10;
+    height: var(--saito-header-height);
+}
+
+#saito-header nav {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 2rem;
+}
+
+.saito-header-logo {
+    width: 15rem;
+}
+
+#header-menu-toggle {
+    margin-right: auto;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+#header-menu-toggle:hover {
+    opacity: 0.9;
+    transform: scale(1.2);
+}
+
+#header-menu-toggle:active {
+    transform: scale(0.9);
+}
+
+#header-menu-toggle span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: var(--saito-white);
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1);
+    background: 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+    margin-left: auto;
+}
+
+#header-menu-toggle span:first-child {
+    transform-origin: 0% 0%;
+}
+
+#header-menu-toggle span:nth-last-child(2) {
+    transform-origin: 0% 100%;
+}
+
+.header-hamburger-contents {
+    display: block;
+    pointer-events: none;
+    color: var(--saito-default-font-color);
+    background-color: var(--saito-menu-background);
+    position: absolute;
+    right: 0;
+    top: var(--saito-header-height);
+    border: 1px solid var(--saito-border);
+    border-top: none;
+    transition: all 0.2s;
+    opacity: 0;
+    z-index: 10;
+    padding: 2rem;
+    box-shadow: 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border), 1px 3px 3px var(--saito-border), 1px 1rem 1rem var(--saito-border), 1px 1rem 1rem var(--saito-border);
+    width: 20rem;
+    height: 100vh;
+    overflow: auto;
+}
+
+.header-profile {
+    background-color: var(--header-profile-background);
+    padding: 1.4rem 0.5rem;
+    border-radius: 8px;
+    display: grid;
+    column-gap: 2rem;
+    grid-template-rows: min-content min-content;
+    grid-template-columns: min-content 1fr;
+    border-bottom: 1px solid var(--saito-border);
+}
+
+.header-profile-identicon {
+    grid-column-start: 1;
+    grid-column-end: 2;    
+    grid-row-start: 1;
+    grid-row-end: 2;    
+    cursor: pointer;
+}
+
+.header-profile-balance {
+    grid-column-start: 2;
+    grid-column-end: 3;   
+    grid-row-start: 1;
+    grid-row-end: 2;    
+}
+
+.header-profile-balance > .saito-select-wrapper > div {
+  width: 28rem;
+}
+
+.header-profile-address {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    justify-self: center;
+    padding-top: 1rem;
+}
+
+.header-profile>div p {
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin-right: .5rem;
+}
+
+.header-profile>div i {
+    cursor: pointer;
+}
+
+.header-profile>div i:hover {
+    transform: scale(1.05);
+    color: var(--saito-primary);
+}
+
+.header-menu-section {
+    padding: 1.5rem 0;
+    font-size: 1.1rem;
+    overflow: auto;
+}
+
+.header-menu-section:not(:last-child) {
+    border-bottom: 1px solid var(--saito-border);
+}
+
+.show-menu {
+    opacity: 1;
+    width: 40rem;
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+
+
+@media screen and (max-width: 1600px) {
+    #saito-header {
+        padding: 1.3rem calc((100vw - var(--saito-width)) / 2);
+    }
+}
+
+@media screen and (max-width: 1500px) {
+    #saito-header {
+        padding: 1.3rem 2rem;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    #saito-header {
+        padding: 1.3rem 2rem;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .header-hamburger-contents {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .header-hamburger-contents {
+        width: 100vw;
+    }
+    #saito-header {
+        padding: 1.3rem 1rem;
+    }
+    .shortcodes {
+        font-size: 12px;
+        position: absolute;
+        bottom: 0.15rem;
+        margin-left: 2rem;
+    }
+}
+

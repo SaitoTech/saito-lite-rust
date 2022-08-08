@@ -11,9 +11,9 @@
       let valid_targets = 0;
       let couppower = 3;
       
-      if (player == "us") { couppower = this.modifyOps(3,"che",2); }
-      if (player == "ussr") { couppower = this.modifyOps(3,"che",1); }
-        
+      if (player == "us") { couppower = this.modifyOps(3,"che","us"); }
+      if (player == "ussr") { couppower = this.modifyOps(3,"che","ussr"); } 
+       
       for (var c in this.countries) {
         
         if ( twilight_self.countries[c].bg == 0 && (twilight_self.countries[c].region == "africa" || twilight_self.countries[c].region == "camerica" || twilight_self.countries[c].region == "samerica") && twilight_self.countries[c].us > 0 ) {
@@ -32,6 +32,8 @@
         return 0;
       }   
       if (this.game.player == 1) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
           
         let user_message = `${this.cardToText(card)} takes effect. Pick first target for coup:`;
         let html = '<ul><li class="card" id="skipche">or skip coup</li></ul>';

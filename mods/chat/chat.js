@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const EmailChat = require('./lib/email-chat/email-chat');
 const ChatMain = require('./lib/chat-main/chat-main');
 const ChatRoom = require('./lib/chat-main/chat-room');
+const ChatManager = require('./lib/chat-manager/main');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 const JSON = require('json-bigint');
 
@@ -36,6 +37,7 @@ class Chat extends ModTemplate {
         this.inTransitImageMsgSig = null;
 
         this.added_identifiers_post_load = 0;
+	this.chat_manager = null;
 
     }
 
@@ -69,6 +71,11 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
+            case 'chat-manager':
+            	this.scripts['/chat/css/style.css'];
+      		super.render(this.app, this); // add scripts + styles
+      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+		return this.chat_manager;
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,
@@ -247,7 +254,6 @@ class Chat extends ModTemplate {
                             // check identifiers
                             //
                             if (this.added_identifiers_post_load == 0) {
-                                console.log("ADD IDENTIFIERS POST LOAD: chat.js");
                                 try {
                                     setTimeout(() => {
                                         this.app.browser.addIdentifiersToDom();
@@ -548,10 +554,8 @@ class Chat extends ModTemplate {
             salert("Connection to chat server lost");
         }
 
-        console.log('saving chats on sendMessage');
         this.saveChat();
-        console.log('chats saved');
-        console.log(localStorage);
+
     }
 
 
@@ -576,8 +580,6 @@ class Chat extends ModTemplate {
             members.splice(0, 1);
             members.push(this.app.wallet.returnPublicKey());
         }
-
-        console.log("MEMBERS ZERO: " + members[0]);
 
         let newtx = this.app.wallet.createUnsignedTransaction(members[0], 0.0, 0.0);
         if (newtx == null) {
@@ -682,10 +684,6 @@ class Chat extends ModTemplate {
 
 
     receiveMessage(app, tx, renderMode = "") {
-
-        console.log('receing msgs');
-        console.log(tx);
-        console.log(tx.returnMessage());
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
@@ -809,11 +807,7 @@ class Chat extends ModTemplate {
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-
-        console.log('saving chat on receive');
         this.saveChat();
-        console.log('chats saved');
-        console.log(localStorage);
 
         //
         // maybe try to find out who this is...
@@ -829,9 +823,11 @@ class Chat extends ModTemplate {
         let options = this.app.storage.getOptions();
         let groups = [];
 
-        if (options != null && options != "") {
+        if (options) {
             options = JSON.parse(options);
-            groups = options.chat.groups;
+            if (options.chat?.groups){
+                groups = options.chat.groups;    
+            }
         }
 
         return groups;
@@ -852,12 +848,9 @@ class Chat extends ModTemplate {
     //////////////////
     // UI Functions //
     //////////////////
-
     openChats() {
-        let groups = this.getChatGroups();
 
-        console.log('available chat groups');
-        console.log(groups);
+        let groups = this.getChatGroups();
 
         if (groups.length > 0) {
             for (let i=0; i < groups.length; i++) {

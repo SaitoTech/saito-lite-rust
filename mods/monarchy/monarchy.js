@@ -12,20 +12,18 @@ class Monarchy extends GameTemplate {
 
     this.app             = app;
 
-    this.name  		       = "Monarchy";
-    this.gamename        = "Monarchy";
-    this.slug		         = "monarchy";
-    this.description     = `Monarchy is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
-    this.categories      = "Games Arcade Entertainment";
+    this.name  		       = "Dominion";
 
+    this.description     = `${this.name} is a strategy deck-building game, where players strive for dominion over the land by spending money on land and resources.`;
+    this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width
 
     this.scoreboard      = new GameScoreboard(app);
     this.interface     = 1; //Display card graphics
     this.minPlayers 	 = 2;
     this.maxPlayers 	 = 4;
-    this.type       	 = "Strategy Boardgame";
-    this.categories 	 = "Boardgame Game"
+
+    this.categories 	 = "Games Boardgame Strategy Deckbuilding";
 
     this.hud.mode = 0;  // long-horizontal
     this.hud.enable_mode_change = 1;
@@ -33,32 +31,13 @@ class Monarchy extends GameTemplate {
     this.hud.respectDocking = true;
     
     this.cards_in_play = [];
-    this.is_testing = true;
+    this.is_testing = false;
     
     this.last_discard = null;
     this.back_button_html = `<i class="fas fa-window-close" id="back_button"></i>`;
     this.menu_backup_callback = ()=>{this.endTurn();} //Default behavior
   }
 
-
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/monarchy/img/arcade/arcade-banner-background.png";
-      obj.title = "Monarchy";
-      return obj;
-    }
-   
-    return null;
-   }
 
 
   showCardOverlay(cards, title = ""){
@@ -120,6 +99,9 @@ class Monarchy extends GameTemplate {
         app.browser.requestFullscreen();
       }
     });
+
+    this.menu.addChatMenu(app, this);
+
     this.menu.render(app, this);
     this.menu.attachEvents(app, this);
 
@@ -135,9 +117,17 @@ class Monarchy extends GameTemplate {
     this.cardbox.addCardType("showcard", "", null);
     this.cardbox.addCardType("logcard", "", null);
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
+    this.cardbox.addCardType("handy-help", "", function(){});
     
     this.hud.render(app, this);
     this.hud.attachEvents(app, this);
+
+    let hh = document.querySelector(".hud-header");
+    if (!hh.querySelector(".handy-help")){
+      this.app.browser.addElementToElement(`<i id="zoom" class="fas fa-compass hud-controls" aria-hidden="true""></i>`, hh);
+      this.app.browser.addElementToElement(`<i id="my_hand" class="handy-help hud-controls fas fa-fw fa-hand-paper" aria-hidden="true"></i>`, hh);  
+    }
+
 
     this.scoreboard.render(app, this);
     this.scoreboard.attachEvents(app, this);
@@ -164,7 +154,7 @@ initializeGame(game_id) {
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("------ INITIALIZE GAME ----");
-    console.log("----------MONARCHY---------");
+    console.log("----------Dominion---------");
     console.log("---------------------------");
     console.log("---------------------------");
     console.log("\n\n\n\n");
@@ -216,8 +206,8 @@ initializeGame(game_id) {
       if (this.browser_active){
          this.displayBoard();
       }
-      //console.log(JSON.parse(JSON.stringify(this.game.deck)));
-      //console.log(JSON.parse(JSON.stringify(this.game.pool)));
+      //console.log("LOOP DECK:",JSON.parse(JSON.stringify(this.game.deck)));
+      //console.log("LOOP POOL:",JSON.parse(JSON.stringify(this.game.pool)));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
@@ -247,7 +237,7 @@ initializeGame(game_id) {
           }
         }
         if (this.is_testing){
-          supply = ["adventurer", "chancellor", "bureaucrat", "harbinger", "library", "bandit", "vassal", "witch", "spy", "thief"];
+          supply = ["adventurer", "merchant", "bureaucrat", "harbinger", "library", "bandit", "vassal", "moat", "spy", "thief"];
         }
         supply.sort((a,b) =>{
           let c_a = this.deck[a];
@@ -269,7 +259,7 @@ initializeGame(game_id) {
 
         while (supply.length > 0){
           let card = supply.shift();
-          this.game.state.supply[card] = (this.is_testing)? 3: 10;
+          this.game.state.supply[card] = (this.is_testing)? 4: 10;
         }
 
         return 1;
@@ -351,7 +341,9 @@ initializeGame(game_id) {
         let player = parseInt(mv[1]);
         let ckey = mv[2];
         let cvalue = mv[3];
-        this.updateLog(`Player ${player} trashes a ${this.cardToText(cvalue)}`);
+        if (!mv[4]){
+          this.updateLog(`Player ${player} trashes a ${this.cardToText(cvalue)}`);
+        }
         this.game.deck[player-1].removed[ckey] = cvalue;
         delete this.game.deck[player-1].cards[ckey];
 
@@ -485,6 +477,7 @@ initializeGame(game_id) {
         let optional = (mv[4]=="1");
 
         if (this.game.player == player){
+          let card_list = [];
           if (number <= 0){
             this.endTurn();
             return 0;
@@ -492,21 +485,26 @@ initializeGame(game_id) {
           this.updateStatusAndListCards(`Select (${number}) cards to move to ${target}:`,[],optional);
           if (optional){
             this.bindBackButtonFunction(()=>{
+              if (card_list.length > 0){
+                we_self.addMove(`NOTIFY\tPlayer ${player} moved ${we_self.cardsToText(card_list)} to the their ${target}.`);  
+              }
               we_self.endTurn();
               we_self.updateStatusAndListCards(`Finished moving cards to ${target}...`);
             });
           }
           this.attachCardboxEvents(function(card){
             number--;
+            card_list.push(card);
             we_self.removeCardFromHand(card);
             let div = document.querySelector("#status #"+card);
             if (div){ div.remove(); }
             switch(target){
               case "deck": we_self.addMove(`PUSHONDECK\t${mv[1]}\t${JSON.stringify(we_self.returnLastCard())}`); break;
-              case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}`); break;
+              case "trash": we_self.addMove(`trash\t${mv[1]}\t${we_self.lastCardKey}\t${we_self.lastCardValue}\t1`); break;
               case "discards": we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`); break;
             }     
             if (number <= 0){
+              we_self.addMove(`NOTIFY\tPlayer ${player} moved ${we_self.cardsToText(card_list)} to the their ${target}.`);
               we_self.endTurn();
             }
           });
@@ -521,16 +519,23 @@ initializeGame(game_id) {
         let card_to_play = mv[3];
         this.game.queue.splice(qe, 1);
 
+
         if (this.game.player == victim){
+          //Spy Affects even the one who played it
           if (card_to_play == "spy"){
+            this.overlay.show(this.app, this);
             this.addMove(`spy\t${victim}`);
             this.addMove(`SAFEPOOLDEAL\t${victim}\t1\t${victim}`);
             this.addMove(`POOL\t${victim}`);   
             this.endTurn();
             return 0;
           }        
+
+          //Other attacks only affect other players
           if (victim != player){
+            this.overlay.show(this.app, this);
             if (this.hasCardInHand("moat")){
+              this.addMove(`augment\tAttack nullified by Moat\tmoat`);
               this.removeCardFromHand("moat");
               this.addMove(`DISCARD\t${victim}\t${this.lastCardKey}`);
               this.addMove(`NOTIFY\tPlayer ${victim} is protected from ${this.cardToText(card_to_play)} by a ${this.cardToText("moat")}.`);
@@ -553,6 +558,7 @@ initializeGame(game_id) {
                   this.addMove(`POOL\t${victim}`);
                   break;
                 case "witch":
+                  this.addMove(`augment\tPlayer ${victim} gains a curse\tcurse`);
                   this.addMove(`buy\t${victim}\tcurse`);
                   break;
               }
@@ -606,8 +612,10 @@ initializeGame(game_id) {
         this.game.queue.splice(qe, 1);
         let trash = [];
         let discard = [];
+        let top_cards = [];
         for (let c of this.game.pool[victim-1].hand){
           let cardname = this.game.pool[victim-1].cards[c];
+          top_cards.push(cardname);
           if (this.deck[cardname].type == "treasure" && cardname !== "copper"){
             //Can Trash
             trash.push(c);
@@ -615,6 +623,8 @@ initializeGame(game_id) {
             discard.push(c);
           }
         }
+
+        this.augmentAttackOverlay(`Player ${victim}'s top cards:`, ...top_cards);
         if (trash.length > 1){
           if (this.game.pool[victim-1].cards[trash[0]] == "silver"){
             discard.push(trash.shift());
@@ -624,7 +634,7 @@ initializeGame(game_id) {
         }
         
         for (let t of trash){
-          this.game.queue.push(`trash\t${victim}\t${t}\t${this.game.pool[victim-1].cards[t]}`);
+          this.game.queue.push(`trash\t${victim}\t${t}\t${this.game.pool[victim-1].cards[t]}\t1`);
           this.game.queue.push(`NOTIFY\tPlayer ${mv[2]} trashes a ${this.cardToText(this.game.pool[victim-1].cards[t])} because of the ${this.cardToText("bandit")}`);
         }
         for (let t of discard){
@@ -640,10 +650,12 @@ initializeGame(game_id) {
         let victim  = parseInt(mv[2]);
         this.game.queue.splice(qe, 1);
         let vpcards = [];
+        let hand = [];
         if (this.game.player !== victim){ return 0;}
 
         for (let c of this.game.deck[victim-1].hand){
           let cardname = this.game.deck[victim-1].cards[c];
+          hand.push(cardname);
           if (this.deck[cardname].type == "victory" && cardname !== "curse"){
             vpcards.push(cardname);
           }
@@ -651,8 +663,10 @@ initializeGame(game_id) {
         if (vpcards.length > 0){
           this.removeCardFromHand(vpcards[0]);
           this.addMove(`PUSHONDECK\t${mv[2]}\t${JSON.stringify(this.returnLastCard())}`)
+          this.addMove(`augment\tPlayer ${victim}\t${vpcards[0]}`);
           this.addMove(`NOTIFY\t${this.cardToText("bureaucrat")}: Player ${victim} puts a ${this.cardToText(vpcards[0])} back on top of the deck.`);
         }else{
+          this.addMove(`augment\tPlayer ${victim} does not have a victory card in their hand\t${JSON.stringify(hand)}`);
           this.addMove(`NOTIFY\t${this.cardToText("bureaucrat")}: Player ${victim} does not have a victory card in their hand.`);
         }
         this.endTurn();
@@ -675,11 +689,14 @@ initializeGame(game_id) {
           }
           this.updateStatusAndListCards(`Select a card to put on top of your deck:`,my_discards, false);
           this.attachCardboxEvents(function(oldcard){
+            console.log("DECK1:",JSON.parse(JSON.stringify(this.game.deck)));
             let index = my_discards.indexOf(oldcard);
             let card = {};
             card[my_keys[index]] = my_discards[index];
             delete we_self.game.deck[player-1].discards[my_keys[index]];
             this.addMove(`PUSHONDECK\t${player}\t${JSON.stringify(card)}`);
+            console.log("DECK2:",JSON.parse(JSON.stringify(this.game.deck)));
+
             this.endTurn();
           });
         }
@@ -692,18 +709,24 @@ initializeGame(game_id) {
         if (this.game.player !== player){
           return 0;
         }
+
+
         if (this.game.pool[player-1].hand.length > 0){
           let c = this.game.pool[player-1].hand.pop();
           let cardname = this.game.pool[player-1].cards[c];
           if (this.deck[cardname].type.includes("action")){
-            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<ul><li class="card nocard" id="keep">keep</li><li class="card nocard" id="nope">set aside</li></ul>`);
+            this.updateStatusWithOptions(`You drew ${this.cardToText(cardname)}:`, `<ul><li class="card nocard" id="keep">keep in hand</li><li class="card nocard" id="nope">set aside</li></ul>`);
             this.attachCardboxEvents(function (action){
               if (action == "keep"){
                 this.game.deck[player-1].hand.push(c);  
               }else{
-                this.game.pool[player-1].hand.push(c);  
+                this.game.pool[player-1].hand.unshift(c);  
+                this.addMove(`POOLDEAL\t${mv[1]}\t1\t${mv[1]}`);
+                this.endTurn();
               }
+              this.restartQueue();
             });  
+            return 0;
           }else{
             this.game.deck[player-1].hand.push(c);  
           }
@@ -764,6 +787,11 @@ initializeGame(game_id) {
       if (mv[0] == "spy"){
         this.game.queue.splice(qe, 1);
         let player = parseInt(mv[1]);
+
+        let card = (this.game.pool[player-1].hand.length > 0) ? this.game.pool[player-1].cards[this.game.pool[player-1].hand[0]] : "";
+        this.augmentAttackOverlay(`Players ${player}'s top card:`,card);
+        this.overlay.show(this.app, this); //Redisplay for other players
+
         if (this.game.player == player){
           if (this.game.pool[player-1].hand.length == 0){
             this.endTurn();
@@ -773,7 +801,6 @@ initializeGame(game_id) {
                         <li class="card nocard" id="deck">back to deck</li>
                         <li class="card nocard" id="discards">discard</li>
                       </ul>`;
-          let card = this.game.pool[player-1].cards[this.game.pool[player-1].hand[0]];
           we_self.updateStatusWithOptions(`Move top card of your deck (${we_self.cardToText(card)}):`, html, false);
           we_self.attachCardboxEvents(function(action){
             we_self.removeCardFromPool(card, player);
@@ -803,7 +830,6 @@ initializeGame(game_id) {
 
         for (let c of this.game.pool[victim-1].hand){
           let cardname = this.game.pool[victim-1].cards[c];
-          //if (this.deck[cardname].type == "treasure"){
             cards.push(cardname);
         }
         this.addMove(`thief2\t${mv[1]}\t${mv[2]}\t${cards[0]}\t${cards[1]}`);
@@ -819,7 +845,8 @@ initializeGame(game_id) {
         let victim  = parseInt(mv[2]);
         let card1 = mv[3];
         let card2 = mv[4];
-        
+
+        this.augmentAttackOverlay(`Players ${victim}'s top two cards:`,card1, card2);        
         if (this.game.player !== player){ return 0;}
         let tcards = [];
         if (this.deck[card1].type == "treasure"){
@@ -839,7 +866,8 @@ initializeGame(game_id) {
           //Tell victim to discard one and trash one
           this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${tcards[0]}`);
           this.removeCardFromPool(tcards[0], victim);
-          this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+          this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}\t1`);
+          this.addMove(`NOTIFY\tPlayer ${victim} trashes a ${this.cardToText(this.lastCardValue)} because of the ${this.cardToText("thief")}`);
           if (tcards[0] == card1){
             this.removeCardFromPool(card2, victim);
           }else{
@@ -852,7 +880,8 @@ initializeGame(game_id) {
           this.attachCardboxEvents(function(card){
             this.addMove(`thief3\t${mv[1]}\t${mv[2]}\t${card}`);
             this.removeCardFromPool(card, victim);
-            this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}`);
+            this.addMove(`trash\t${victim}\t${this.lastCardKey}\t${this.lastCardValue}\t1`);
+            this.addMove(`NOTIFY\tPlayer ${victim} trashes a ${this.cardToText(this.lastCardValue)} because of the ${this.cardToText("thief")}`);
             if (card == card1){
               this.removeCardFromPool(card2, victim);
             }else{
@@ -874,9 +903,10 @@ initializeGame(game_id) {
         if (this.game.player == player){
 
           this.updateStatusWithOptions(`Would you like to keep the ${this.cardToText(card)} from Player ${victim}}?`,
-              `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`);
+              `<ul><li class="card nocard" id="yes">yes, keep</li><li class="card nocard" id="no">no, trash</li></ul>`);
           this.attachCardboxEvents(function (action){
             if (action == "yes"){
+              we_self.addMove(`NOTIFY\tPlayer ${player} decides to keep Player ${victim}'s ${this.cardToText(card)}`);
               we_self.addMove(`buy\t${player}\t${card}`);
               we_self.addMove(`create\t${card}`); //A hack to tell players to increment supply
             }
@@ -895,7 +925,7 @@ initializeGame(game_id) {
           let cname = this.game.pool[player-1].cards[c];
           if (this.deck[cname].type.includes("action")){
             let html = `<ul><li class="card nocard" id="play">play</li><li class="card nocard" id="discards">discard</li></ul>`;
-            we_self.updateStatusWithOptions(`Play ${card} instead of discarding it?`, html);
+            we_self.updateStatusWithOptions(`Play ${we_self.cardToText(cname)} instead of discarding it?`, html);
             we_self.attachCardboxEvents(function (action){
               we_self.removeCardFromPool(cname, player);
               if (action == "play"){
@@ -906,13 +936,30 @@ initializeGame(game_id) {
               we_self.endTurn();
             });
           }else{
-            we_self.removeCardFromPool(cname, player);
-            we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
-            we_self.addMove(`NOTIFY\tPlayer ${mv[1]} discards a ${we_self.cardToText(cname)}`);
-            this.endTurn();
+            we_self.updateStatusWithOptions(`You drew a ${we_self.cardToText(cname)}`, `<ul><li class="card nocard" id="discards">okay</li></ul>`);
+            we_self.attachCardboxEvents(function (action){
+              we_self.removeCardFromPool(cname, player);
+              we_self.addMove(`DISCARD\t${mv[1]}\t${we_self.lastCardKey}`);
+              we_self.addMove(`NOTIFY\tPlayer ${mv[1]} discards a ${we_self.cardToText(cname)}`);
+              this.endTurn();
+            });
           }
         }
         return 0;
+      }
+
+      if (mv[0] == "augment"){
+        this.game.queue.splice(qe, 1);
+        let msg = mv[1];
+        let card = mv[2];
+        try{
+          card = JSON.parse(card);
+          this.augmentAttackOverlay(msg, ...card);
+        }catch(err){
+          this.augmentAttackOverlay(msg, card);
+        }
+        this.overlay.show(this.app, this);
+        return 1;
       }
 
     } // if cards in queue
@@ -1016,6 +1063,31 @@ initializeGame(game_id) {
     });
   }
 
+  returnAttackOverlay(card){
+    let html = `<div class="attack_overlay">
+                  <h2>Attack! -- ${this.deck[card].name}</h2>
+                  <div class="overlay_content">
+                    <div class="overlay-img">${this.returnCardImage(card)}</div>
+                    <div class="attack_details"></div>
+                  </div>
+                </div>`;
+
+    return html;
+  }
+
+  augmentAttackOverlay(text, ...cards){
+    let rCol = document.querySelector(".attack_details");
+    if (!rCol){ return; }
+    let html = rCol.innerHTML;
+    if (text){
+      html += `<div class="overlay-msg">${text}</div>`;
+    }
+    for (let i = 0; i < cards.length; i++){
+      html += `<div class="aoc">${this.returnCardImage(cards[i])}</div>`;
+    }
+    rCol.innerHTML = html;
+  }
+
   displayBoard(){
     let html = `<div class="cardstacks">`;
     let cardClass = ($("#zoom").hasClass("active"))?"showcard":"passivecard";
@@ -1023,34 +1095,16 @@ initializeGame(game_id) {
       if (c !== "curse"){
         html += `<div class="cardpile tip" id="${c}">`;
         if (this.game.state.supply[c] > 0){
-          html += `<img class="${cardClass}" id="${c}" src="/monarchy/img/cards/${this.deck[c].img}">`;
+          html += `<img class="${cardClass}" id="${c}" src="/${this.name.toLowerCase()}/img/cards/${this.deck[c].img}">`;
           html += `<div class="tiptext">Remaining Supply: ${this.game.state.supply[c]}</div>`;
         }else{
-          html += `<img class="${cardClass}" src="/monarchy/img/cards/blank.png">`;
+          html += `<img class="${cardClass}" src="/${this.name.toLowerCase()}/img/cards/blank.jpg">`;
           html += `<div class="tiptext">No more ${this.cardToText(c,true)}</div>`;
         }
         html += "</div>";  
       }
     }
     html += "</div>";
-
-    //Draw and discard pile
-    let pooled_cards = 0;
-    if (this.game.pool?.length >= this.game.player){
-      if (this.game.pool[this.game.player-1]?.hand){
-        pooled_cards = this.game.pool[this.game.player-1].hand.length;
-      }
-    }
-    html += `<div id="mydecks">
-             <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
-             <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
-             <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
-             <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
-             <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
-    if (this.last_discard){
-      html += `<div>Last: ${this.cardToText(this.last_discard)}</div>`;
-    }
-    html += `</div>`;
 
     $(".gameboard").html(html);
     this.attachCardboxEvents();
@@ -1084,8 +1138,8 @@ initializeGame(game_id) {
         $(".showcard").removeClass("showcard");
         $(".cardpile").addClass("tip");
       }
-      
-      we_self.attachCardboxEvents();
+      we_self.cardbox.attachCardEvents();
+      //we_self.attachCardboxEvents();
     });
 
     $(".cardstacks").draggable();
@@ -1198,6 +1252,20 @@ initializeGame(game_id) {
     }
   }
 
+  cardsToText(cards){
+    if (cards.length == 0){
+      return "";
+    }
+    if (cards.length == 1){
+      return this.cardToText(cards[0]);
+    }
+    let text = "";
+    for (let c of cards){
+      text += this.cardToText(c) + ", ";
+    }
+    return text.substring(0, text.length - 2);
+  }
+
   /*
   Get the card out of the hand (but don't add it to the discards ...yet)
   */
@@ -1234,6 +1302,7 @@ initializeGame(game_id) {
 
     //Attacks
     if (this.deck[card_to_play].type.includes("attack")){
+      this.overlay.show(this.app, this, this.returnAttackOverlay(card_to_play));
       for (let i = 1; i <= this.game.players.length; i++){
         this.game.queue.push(`attack\t${player}\t${i}\t${card_to_play}`);
       }
@@ -1320,7 +1389,7 @@ initializeGame(game_id) {
       this.game.state.coins += 2;
       if (this.game.player == player){
         let html = `<ul><li class="card nocard" id="yes">yes</li><li class="card nocard" id="no">no</li></ul>`;
-        this.updateStatusWithOptions("Would you like to discard your deck (for a reshuffle before next draw)?", html);
+        this.updateStatusWithOptions("Would you like to discard your deck (for an immediate reshuffle)?", html);
         this.attachCardboxEvents(function(card){
           if (card == "yes"){
             we_self.addMove(`SHUFFLEDISCARDS\t${player}`);
@@ -1384,6 +1453,7 @@ initializeGame(game_id) {
       //Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards
       this.game.state.shuffled = false;
       this.game.queue.push(`library\t${player}`);
+      this.game.queue.push(`POOL\t${player}`);
     }
     //**
     if (card_to_play == "market"){
@@ -1546,12 +1616,33 @@ initializeGame(game_id) {
 
   returnCardImage(cardname){
     if (this.deck[cardname]?.img){
-      return `<img class="cardimg" src="/monarchy/img/cards/${this.deck[cardname].img}" />`;
-    }else{
-      return ""; 
-    }
+      return `<img class="cardimg" src="/${this.name.toLowerCase()}/img/cards/${this.deck[cardname].img}" />`;
+    }else if (cardname === "my_hand"){
     
+      //Draw and discard pile
+      let pooled_cards = 0;
+      if (this.game.pool?.length >= this.game.player){
+        if (this.game.pool[this.game.player-1]?.hand){
+          pooled_cards = this.game.pool[this.game.player-1].hand.length;
+        }
+      }
+      let html = `<div id="mydecks">
+               <div class="drawdeck">Deck: ${this.game.deck[this.game.player-1].crypt.length}</div>
+               <div class="drawdeck">Hand: ${this.game.deck[this.game.player-1].hand.length}</div>
+               <div class="drawdeck">Used: ${this.cards_in_play.length + pooled_cards}</div>
+               <div class="discardpile">Discards: ${Object.keys(this.game.deck[this.game.player-1].discards).length}</div>
+               <div class="drawdeck">Total: ${Object.keys(this.game.deck[this.game.player-1].cards).length}</div>`;
+      if (this.last_discard){
+        html += `<div>Last: ${this.cardToText(this.last_discard)}</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }else{
+      return ""
+    }
   }
+
+
 
   ////////////////////
   // Core Game Data //
@@ -1620,45 +1711,45 @@ initializeGame(game_id) {
 
     var deck = {};
 
-    deck['copper']    = { img : "copper.png" , name : "Copper", type : "treasure" , cost : 0 , text: "+1 Coin"};
-    deck['silver']    = { img : "silver.png" , name : "Silver", type : "treasure" , cost : 3 , text: "+2 Coin"};
-    deck['gold']      = { img : "gold.png" , name : "Gold", type : "treasure" , cost : 6 , text: "+3 Coin"};
-    deck['estate']    = { img : "estate.png" , name : "Estate", type : "victory" , cost : 2 , text:"+1 VP"};
-    deck['duchy']     = { img : "duchy.png" , name : "Duchy", type : "victory" , cost : 5 , text:"+3 VP"};
-    deck['province']  = { img : "province.png" , name : "Province", type : "victory" , cost : 8 , text: "+6 VP"};
-    deck['curse']     = { img : "curse.png" , name : "Curse", type : "victory" , cost : 0 , text: "-1 VP"};
-    deck['adventurer']= { img : "adventurer.png" , name : "Adventurer", type : "action" , cost : 6 , text: "Reveal cards from your deck until you reveal 2 Treasure cards. Put those into your hand and discard the other revealed cards."};
-    deck['artisan']   = { img : "artisan.png" , name : "Artisan", type : "action" , cost : 6 , text: "Gain a card to your hand costing up to 5. Put a card from you hand onto your deck."};
-    deck['bandit']    = { img : "bandit.png" , name : "Bandit", type : "action - attack" , cost : 5 , text: "Gain a gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest."};
-    deck['bureaucrat']= { img : "bureaucrat.png" , name : "Bureaucrat", type : "action - attack" , cost : 4 , text: "Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards)."};
-    deck['cellar']    = { img : "cellar.png" , name : "Cellar", type : "action" , cost : 2 , text: "+1 Action, Discard any number of cards, then draw that many."};
-    deck['chancellor']= { img : "chancellor.png" , name : "Chancellor", type : "action" , cost : 3 , text: "+2 coin, You may immediately put your deck into your discard pile."};
-    deck['chapel']    = { img : "chapel.png" , name : "Chapel", type : "action" , cost : 2 , text: "Trash up to 4 cards from your hand."};
-    deck['councilroom'] = { img : "councilroom.png" , name : "Council Room", type : "action" , cost : 5 , text: "+4 Cards +1 Buy, Each other player draws a card"};
-    deck['feast']       = { img : "feast.png" , name : "Feast", type : "action" , cost : 4 , text: "Trash this card. Gain a card costing up to 5"};
-    deck['festival']    = { img : "festival.png" , name : "Festival", type : "action" , cost : 5 , text: "+2 Actions, +1 Buy, +2 Coin"};
-    deck['gardens']     = { img : "gardens.png" , name : "Gardens", type : "victory" , cost : 4 , text: "+1 VP for 10 cards in deck"};
-    deck['harbinger']   = { img : "harbinger.png" , name : "Harbinger", type : "action" , cost : 3 , text: "+1 Card, +1 Action, Look through your discard pile. You may put a card from it onto your deck."};
-    deck['laboratory']  = { img : "laboratory.png" , name : "Laboratory", type : "action" , cost : 5 , text: "+2 Cards, +1 Action"};
-    deck['library']     = { img : "library.png" , name : "Library", type : "action" , cost : 5 , text: "Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards"};
-    deck['market']      = { img : "market.png" , name : "Market", type : "action" , cost : 5 , text: "+1 Card +1 Action +1 Buy +1 Coin"};
-    deck['merchant']    = { img : "merchant.png" , name : "Merchant", type : "action" , cost : 3 , text: "+1 Card +1 Action The first time you play a Silver this turn, +1 Coin"};
-    deck['militia']     = { img : "militia.png" , name : "Militia", type : "action - attack" , cost : 4 , text: "+2 Coin, Each other play discards down to 3 cards in hand"};
-    deck['mine']        = { img : "mine.png" , name : "Mine", type : "action" , cost : 5 , text: "You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it"};
-    deck['moat']        = { img : "moat.png" , name : "Moat", type : "action - reaction" , cost : 2 , text: "+2 Cards, When another player plays an Attack card, you may first reveal this from your hand to be unaffected by it"};
-    deck['moneylender'] = { img : "moneylender.png" , name : "Moneylender", type : "action" , cost : 4 , text: "You may trash a Copper from your hand for +3 Coin"};
-    deck['poacher']     = { img : "poacher.png" , name : "Poacher", type : "action" , cost : 4 , text: "+1 Card, +1 Action, +1 Coin, Discard a card per empty Supply pile"};
-    deck['remodel']     = { img : "remodel.png" , name : "Remodel", type : "action" , cost : 4 , text: "Trash a card from your hand. Gain a card costing up to 2 more than it"};
-    deck['sentry']      = { img : "sentry.png" , name : "Sentry", type : "action" , cost : 5 , text: "+1 Card +1 Action, Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order"};
-    deck['smithy']      = { img : "smithy.png" , name : "Smithy", type : "action" , cost : 4 , text: "+3 Cards"};
-    deck['spy']         = { img : "spy.png" , name : "Spy", type : "action - attack" , cost : 4 , text: "+1 Card +1 Action, Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice."};
-    deck['thief']       = { img : "thief.png" , name : "Thief", type : "action - attack" , cost : 4 , text: "Each other player reveals the top 2 cards of their deck. If they revealed any Treasure cards, you choose one to trash. You may gain any and all of these trashed cards. Other revealed cards are discarded."};
-    deck['throneroom']  = { img : "throneroom.png" , name : "Throne Room", type : "action" , cost : 4 , text: "You may play an Action card from your hand twice"};
-    deck['vassal']      = { img : "vassal.png" , name : "Vassal", type : "action" , cost : 3 , text: "+2 Coin, Discard the top card of your deck. If it's an Action card, you may play it."};
-    deck['village']     = { img : "village.png" , name : "Village", type : "action" , cost : 3 , text: "+1 Card, +2 Actions"};
-    deck['witch']       = { img : "witch.png" , name : "Witch", type : "action - attack" , cost : 5 , text: "+2 Cards, each other player gains a curse"};
-    deck['woodcutter']  = { img : "woodcutter.png" , name : "Woodcutter", type : "action" , cost : 3 , text: "+1 Buy, +2 Coins"};
-    deck['workshop']    = { img : "workshop.png" , name : "Workshop", type : "action" , cost : 3 , text: "Gain a card costing up to 4"};
+    deck['copper']    = { img : "copper.jpg" , name : "Copper", type : "treasure" , cost : 0 , text: "+1 Coin"};
+    deck['silver']    = { img : "silver.jpg" , name : "Silver", type : "treasure" , cost : 3 , text: "+2 Coin"};
+    deck['gold']      = { img : "gold.jpg" , name : "Gold", type : "treasure" , cost : 6 , text: "+3 Coin"};
+    deck['estate']    = { img : "estate.jpg" , name : "Estate", type : "victory" , cost : 2 , text:"+1 VP"};
+    deck['duchy']     = { img : "duchy.jpg" , name : "Duchy", type : "victory" , cost : 5 , text:"+3 VP"};
+    deck['province']  = { img : "province.jpg" , name : "Province", type : "victory" , cost : 8 , text: "+6 VP"};
+    deck['curse']     = { img : "curse.jpg" , name : "Curse", type : "victory" , cost : 0 , text: "-1 VP"};
+    deck['adventurer']= { img : "adventurer.jpg" , name : "Adventurer", type : "action" , cost : 6 , text: "Reveal cards from your deck until you reveal 2 Treasure cards. Put those into your hand and discard the other revealed cards."};
+    deck['artisan']   = { img : "artisan.jpg" , name : "Artisan", type : "action" , cost : 6 , text: "Gain a card to your hand costing up to 5. Put a card from you hand onto your deck."};
+    deck['bandit']    = { img : "bandit.jpg" , name : "Bandit", type : "action - attack" , cost : 5 , text: "Gain a gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest."};
+    deck['bureaucrat']= { img : "bureaucrat.jpg" , name : "Bureaucrat", type : "action - attack" , cost : 4 , text: "Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards)."};
+    deck['cellar']    = { img : "cellar.jpg" , name : "Cellar", type : "action" , cost : 2 , text: "+1 Action, Discard any number of cards, then draw that many."};
+    deck['chancellor']= { img : "chancellor.jpg" , name : "Chancellor", type : "action" , cost : 3 , text: "+2 coin, You may immediately put your deck into your discard pile."};
+    deck['chapel']    = { img : "chapel.jpg" , name : "Chapel", type : "action" , cost : 2 , text: "Trash up to 4 cards from your hand."};
+    deck['councilroom'] = { img : "councilroom.jpg" , name : "Council Room", type : "action" , cost : 5 , text: "+4 Cards +1 Buy, Each other player draws a card"};
+    deck['feast']       = { img : "feast.jpg" , name : "Feast", type : "action" , cost : 4 , text: "Trash this card. Gain a card costing up to 5"};
+    deck['festival']    = { img : "festival.jpg" , name : "Festival", type : "action" , cost : 5 , text: "+2 Actions, +1 Buy, +2 Coin"};
+    deck['gardens']     = { img : "gardens.jpg" , name : "Gardens", type : "victory" , cost : 4 , text: "+1 VP for 10 cards in deck"};
+    deck['harbinger']   = { img : "harbinger.jpg" , name : "Harbinger", type : "action" , cost : 3 , text: "+1 Card, +1 Action, Look through your discard pile. You may put a card from it onto your deck."};
+    deck['laboratory']  = { img : "laboratory.jpg" , name : "Laboratory", type : "action" , cost : 5 , text: "+2 Cards, +1 Action"};
+    deck['library']     = { img : "library.jpg" , name : "Library", type : "action" , cost : 5 , text: "Draw until you have 7 cards in hand, skipping any Action cards you choose to. Set those aside to discard afterwards"};
+    deck['market']      = { img : "market.jpg" , name : "Market", type : "action" , cost : 5 , text: "+1 Card +1 Action +1 Buy +1 Coin"};
+    deck['merchant']    = { img : "merchant.jpg" , name : "Merchant", type : "action" , cost : 3 , text: "+1 Card +1 Action The first time you play a Silver this turn, +1 Coin"};
+    deck['militia']     = { img : "militia.jpg" , name : "Militia", type : "action - attack" , cost : 4 , text: "+2 Coin, Each other play discards down to 3 cards in hand"};
+    deck['mine']        = { img : "mine.jpg" , name : "Mine", type : "action" , cost : 5 , text: "You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it"};
+    deck['moat']        = { img : "moat.jpg" , name : "Moat", type : "action - reaction" , cost : 2 , text: "+2 Cards, When another player plays an Attack card, you may first reveal this from your hand to be unaffected by it"};
+    deck['moneylender'] = { img : "moneylender.jpg" , name : "Moneylender", type : "action" , cost : 4 , text: "You may trash a Copper from your hand for +3 Coin"};
+    deck['poacher']     = { img : "poacher.jpg" , name : "Poacher", type : "action" , cost : 4 , text: "+1 Card, +1 Action, +1 Coin, Discard a card per empty Supply pile"};
+    deck['remodel']     = { img : "remodel.jpg" , name : "Remodel", type : "action" , cost : 4 , text: "Trash a card from your hand. Gain a card costing up to 2 more than it"};
+    deck['sentry']      = { img : "sentry.jpg" , name : "Sentry", type : "action" , cost : 5 , text: "+1 Card +1 Action, Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order"};
+    deck['smithy']      = { img : "smithy.jpg" , name : "Smithy", type : "action" , cost : 4 , text: "+3 Cards"};
+    deck['spy']         = { img : "spy.jpg" , name : "Spy", type : "action - attack" , cost : 4 , text: "+1 Card +1 Action, Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice."};
+    deck['thief']       = { img : "thief.jpg" , name : "Thief", type : "action - attack" , cost : 4 , text: "Each other player reveals the top 2 cards of their deck. If they revealed any Treasure cards, you choose one to trash. You may gain any and all of these trashed cards. Other revealed cards are discarded."};
+    deck['throneroom']  = { img : "throneroom.jpg" , name : "Throne Room", type : "action" , cost : 4 , text: "You may play an Action card from your hand twice"};
+    deck['vassal']      = { img : "vassal.jpg" , name : "Vassal", type : "action" , cost : 3 , text: "+2 Coin, Discard the top card of your deck. If it's an Action card, you may play it."};
+    deck['village']     = { img : "village.jpg" , name : "Village", type : "action" , cost : 3 , text: "+1 Card, +2 Actions"};
+    deck['witch']       = { img : "witch.jpg" , name : "Witch", type : "action - attack" , cost : 5 , text: "+2 Cards, each other player gains a curse"};
+    deck['woodcutter']  = { img : "woodcutter.jpg" , name : "Woodcutter", type : "action" , cost : 3 , text: "+1 Buy, +2 Coins"};
+    deck['workshop']    = { img : "workshop.jpg" , name : "Workshop", type : "action" , cost : 3 , text: "Gain a card costing up to 4"};
 
     return deck;
 
@@ -1689,7 +1780,7 @@ initializeGame(game_id) {
 
   returnGameRulesHTML(){
     let html = `<div class="rules-overlay">
-    <h1>Monarchy (Dominion)</h1>
+    <h1>${this.name}</h1>
     <p>You are the ruler of a small kingdom with grand hopes and dreams. In all directions lie small tracts of land on the verge of a nervous breakdown. Pacify these lands under your banner and expand your kingdom, and do it quickly as other principalities are looking to expand. Hire minions, construct buildings, and fill the coffers of your treasury.</p>
     <h2>How to Play</h2>
     <p>Players take turns, playing an <em>action</em> card from their hand, then buying a card from the supply pile with their <em>treasure</em>. Each player begins with seven COPPER and 3 ESTATES, so in the first two turns the player will not have any ACTION cards to play. Playing an action card or buying a card is optional, but each player is guaranteed one play or purchase per turn. Some action cards give players additional actions, purchases, or temporary treasure to spend that turn. All cards in the players hand are discarded at the end of the turn. </p>
@@ -1702,7 +1793,7 @@ initializeGame(game_id) {
 
   returnGameOptionsHTML(){
       let html = `
-      <h1 class="overlay-title">Monarchy Options</h1>
+      <h1 class="overlay-title">${this.name} Options</h1>
         <div class="overlay-input">
           <label for="card_set">Prearranged Supplies:</label>
           <select name="card_set">
@@ -1718,11 +1809,10 @@ initializeGame(game_id) {
           <input type="checkbox" name="second" />
           <label for"second">Use Second Edition Cards</label>
         </div>
+        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
     `;
     return html;
   }
-
-
 
 
 

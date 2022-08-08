@@ -13,7 +13,6 @@ class Chessgame extends GameTemplate {
     super(app);
 
     this.name = "Chess";
-    this.gamename = "Chess";
     this.description = "Chess is a two-player strategy board game played on a checkered board with 64 squares arranged in an 8×8 grid."
     this.board = null;
     this.engine = null;
@@ -22,37 +21,26 @@ class Chessgame extends GameTemplate {
 
     this.minPlayers = 2;
     this.maxPlayers = 2;
-    this.type       = "Classic Boardgame";
+
     this.description = "An implementation of Chess for the Saito Blockchain";
-    this.categories  = "Boardgame Game";
+    this.categories  = "Games Boardgame Classic";
+    
     this.player_roles = ["Observer", "White", "Black"];
     return this;
 
   }
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/chess/img/arcade/arcade-banner-background.png";
-      obj.title = "Chess";
-      return obj;
-    }
-    return null;
-
-  }
 
   initializeHTML(app) {
 
     if (!this.browser_active) { return; }
     super.initializeHTML(app);
+
+    this.confirm_moves = this.loadGamePreference("chess_expert_mode"); 
+    if (this.confirm_moves == null || this.confirm_moves == undefined){
+      this.confirm_moves = 1;
+    }
+    console.log(this.loadGamePreference("chess_expert_mode"), this.confirm_moves);
 
     //
     // ADD MENU
@@ -65,7 +53,42 @@ class Chessgame extends GameTemplate {
         game_mod.menu.showSubMenu("game-game");
       },
     });
-    
+    this.menu.addSubMenuOption("game-game", {
+      text : "Play Mode",
+      id : "game-confirm",
+      class : "game-confirm",
+      callback : function(app, game_mod) {
+         game_mod.menu.showSubSubMenu("game-confirm"); 
+      }
+    });
+
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Newbie ${(this.confirm_moves==1)?"✔":""}`,
+      id:"game-confirm-newbie",
+      class:"game-confirm-newbie",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 0){
+          game_mod.saveGamePreference('chess_expert_mode', 1);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
+   
+    this.menu.addSubMenuOption("game-confirm",{
+      text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
+      id:"game-confirm-expert",
+      class:"game-confirm-expert",
+      callback: function(app,game_mod){
+        if (game_mod.confirm_moves == 1){
+          game_mod.saveGamePreference('chess_expert_mode', 0);
+          setTimeout(function() { window.location.reload(); }, 1000);
+        }else{
+          game_mod.menu.hideSubMenus();
+        }
+      }
+    });
     this.menu.addSubMenuOption("game-game", {
       text: "Rules",
       id: "game-rules",
@@ -111,6 +134,13 @@ class Chessgame extends GameTemplate {
     this.restoreLog();
     this.log.render(app, this);
     this.log.attachEvents(app, this);
+
+    if (!this.confirm_moves){
+      let confirm_btn = document.getElementById("buttons");
+      if (confirm_btn){
+        confirm_btn.style.display = "none";
+      }
+    }
   }
 
   async initializeGame(game_id) {
@@ -124,78 +154,106 @@ class Chessgame extends GameTemplate {
     console.log('######################################################');
     console.log(game_id);
 
-    if (this.browser_active == 1) {
-      chess = require('./lib/chess.js');
-      chessboard = require('./lib/chessboard');
-      this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
-      this.engine = new chess.Chess();
-    }
-
-
     //
-    // finish initializing
+    // There is no initializing in Chess -- finish initializing
     //
     if (this.game.initializing == 1) {
       this.game.queue.push("READY");
+      //Check colors
+      // observer skips
+        if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+            return 1;
+        } 
+
+        //Game engine automatically randomizes player order, so we are good to go
+        if (!this.game.options.player1 || this.game.options.player1 == "random"){
+          return 1;
+        }
+        
+        //Reordeer the players so that originator can be the correct role
+        if (this.game.options.player1 === "white"){
+          if (this.game.players[0] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }else{
+          if (this.game.players[1] !== this.game.originator){
+            let p = this.game.players.shift();
+            this.game.players.push(p);
+          }
+        }
+        //Fix game.player so that it corresponds to the indices of game.players[]
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+            this.game.player = i+1;
+          }
+        }
     }
 
 
-    if (this.browser_active == 1) {
-      if (this.game.position != undefined) {
-        this.engine.load(this.game.position);
-      } else {
-        this.game.position = this.engine.fen();
-      }
-
-      this.updateStatusMessage("White moves first");
-      if (this.game.target == this.game.player) {
-        this.setBoard(this.engine.fen());
-	      if (this.useClock) { this.startClock(); }
-      } else {
-        this.lockBoard(this.engine.fen());
-      }
-
-      var opponent = this.game.opponents[0];
-
-      if (this.app.crypto.isPublicKey(opponent)) {
-        if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
-          opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
-        }
-        else {
-          try {
-            // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
-          }
-          catch (err) {
-            console.log(err);
-          }
-        }
-      }
-
-      let opponent_elem = document.getElementById('opponent_id');
-      if (opponent_elem) {
-        opponent_elem.innerHTML = sanitize(opponent);
-        opponent_elem.setAttribute('data-add', opponent)
-      }
-
-      let identicon = "";
-
-      name = this.game.players[0];
-      name = this.app.keys.returnUsername(opponent);
-      identicon = this.app.keys.returnIdenticon(name);
-
-      if (name != "") {
-        if (name.indexOf("@") > 0) {
-          name = name.substring(0, name.indexOf("@"));
-        }
-      }
-
-      let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
-      document.getElementById("opponent_identicon").innerHTML = html;
-
-      this.updateStatusMessage();
-      this.attachEvents();
-
+    if (!this.browser_active){
+      return;
     }
+
+    chess = require('./lib/chess.js');
+    chessboard = require('./lib/chessboard');
+    this.board = new chessboard('board', { pieceTheme: 'img/pieces/{piece}.png' });
+    this.engine = new chess.Chess();
+
+    if (this.game.position != undefined) {
+      this.engine.load(this.game.position);
+    } else {
+      this.game.position = this.engine.fen();
+    }
+
+    this.updateStatusMessage("White moves first");
+    if (this.game.target == this.game.player) {
+      this.setBoard(this.engine.fen());
+      if (this.useClock) { this.startClock(); }
+    } else {
+      this.lockBoard(this.engine.fen());
+    }
+
+    var opponent = this.game.opponents[0];
+
+    if (this.app.crypto.isPublicKey(opponent)) {
+      if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
+        opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
+      }
+      else {
+        try {
+          // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    }
+
+    let opponent_elem = document.getElementById('opponent_id');
+    if (opponent_elem) {
+      opponent_elem.innerHTML = sanitize(opponent);
+      opponent_elem.setAttribute('data-add', opponent)
+    }
+
+    let identicon = "";
+
+    name = this.game.players[0];
+    name = this.app.keys.returnUsername(opponent);
+    identicon = this.app.keys.returnIdenticon(name);
+    
+    if (name != "") {
+      if (name.indexOf("@") > 0) {
+        name = name.substring(0, name.indexOf("@"));
+      }
+    }
+
+    let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
+    document.getElementById("opponent_identicon").innerHTML = html;
+
+    this.updateStatusMessage();
+    this.attachEvents();
+
 
   }
 
@@ -339,7 +397,6 @@ class Chessgame extends GameTemplate {
       this.endTurn(data);
 
       move_accept.disabled = true;
-
       move_reject.disabled = true;
     };
 
@@ -347,7 +404,6 @@ class Chessgame extends GameTemplate {
       this.setBoard(this.game.position);
 
       move_accept.disabled = true;
-
       move_reject.disabled = true;
     }
 
@@ -511,8 +567,7 @@ class Chessgame extends GameTemplate {
       promotion: piece
     });
 
-    document.getElementById('promotion').style.display = "none";
-    document.getElementById('buttons').style.display = "flex";
+    //document.getElementById('promotion').style.display = "none";
 
     this_chess.updateStatusMessage("Confirm Move to Send!");
 
@@ -520,24 +575,36 @@ class Chessgame extends GameTemplate {
     this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san}`;
     this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
 
+    if (this_chess.confirm_moves == 0){
+      var data = {};
+      data.white = this.game.white;
+      data.black = this.game.black;
+      data.id = this.game.id;
+      data.position = this.engine.fen();
+      data.move = this.game.move;
+      this.endTurn(data);
+    }else{
+      document.getElementById('buttons').style.display = "flex";
+    }
+
   };
 
   checkPromotion(source, target, color) {
     let promotion = document.getElementById('promotion');
     let promotion_choices = document.getElementById('promotion-choices');
-    let buttons = document.getElementById('buttons');
-    buttons.style.display = "none";
+    //let buttons = document.getElementById('buttons');
+    //buttons.style.display = "none";
 
     let html = ['q', 'r', 'b', 'n'].map(n => this.piecehtml(n, color)).join('');
     promotion_choices.innerHTML = html;
     promotion_choices.childNodes.forEach(node => {
       node.onclick = () => {
         promotion.style.display = "none";
-        buttons.style.display = "flex";
+        //buttons.style.display = "flex";
         this_chess.promoteAfterDrop(source, target, node.alt);
       }
     });
-    this.updateStatusMessage('Chose promotion piece');
+    this.updateStatusMessage('Choose promotion piece');
     promotion.style.display = "block";
   }
 
@@ -590,13 +657,23 @@ class Chessgame extends GameTemplate {
   onChange(oldPos, newPos) {
 
     this_chess.lockBoard(this_chess.engine.fen(newPos));
-    document.getElementById('buttons').style.display = "flex";
-    let move_accept = document.getElementById('move_accept');
-    let move_reject = document.getElementById('move_reject');
 
-    move_accept.disabled = false;
-    
-    move_reject.disabled = false;
+    if (this_chess.confirm_moves){
+      document.getElementById('buttons').style.display = "flex";
+      let move_accept = document.getElementById('move_accept');
+      let move_reject = document.getElementById('move_reject');
+
+      move_accept.disabled = false;
+      move_reject.disabled = false;
+    }else{
+      var data = {};
+      data.white = this_chess.game.white;
+      data.black = this_chess.game.black;
+      data.id = this_chess.game.id;
+      data.position = this_chess.engine.fen();
+      data.move = this_chess.game.move;
+      this_chess.endTurn(data);
+    }
     
   };
 
@@ -698,32 +775,43 @@ class Chessgame extends GameTemplate {
 
   returnGameOptionsHTML() {
 
-
-    let html = `
-      <h1 class="overlay-title">Chess Options</h1>
-      <div class="overlay-input">   
-      <label for="color">Pick Your Color:</label>
-      <select name="color">
-        <option value="black" default>Black</option>
-        <option value="white">White</option>
-      </select>
-      </div>
-
+    let html = `<h1 class="overlay-title">Chess Options</h1>`;
       
-      <div class="overlay-input">
-      <label for="observer_mode">Observer Mode:</label>
-      <select name="observer">
-        <option value="enable" >enable</option>
-        <option value="disable" selected>disable</option>
-      </select>
-      </div>
-    
-      <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
-        
-    `;
+    html   +=  `<div class="overlay-input">   
+                  <label for="player1">Pick Your Color:</label>
+                  <select name="player1">
+                    <option value="random" default>Random</option>
+                    <option value="black">Black</option>
+                    <option value="white">White</option>
+                  </select>
+                </div>`;
 
+    /*html   +=  `<div class="overlay-input">
+                  <label for="observer_mode">Observer Mode:</label>
+                  <select name="observer">
+                    <option value="enable" >enable</option>
+                    <option value="disable" selected>disable</option>
+                  </select>
+                </div>`;*/
+      
+    html += this.returnCryptoOptionsHTML();
+
+    html += `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>`;
+        
     return html;
 
+  }
+
+
+  returnShortGameOptionsArray(options) {
+    let sgoa = super.returnShortGameOptionsArray(options);
+    let ngoa = {};
+    for (let i in sgoa) {
+      if (!(i == "player1" && sgoa[i] == "random")){
+        ngoa[i] = sgoa[i];
+      }
+    }
+    return ngoa;
   }
 }
 

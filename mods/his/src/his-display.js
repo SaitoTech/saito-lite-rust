@@ -1,4 +1,37 @@
 
+  displayReligiousConflictSheet() {
+
+    let num_protestant_spaces = 0;
+    let rcc = this.returnReligiousConflictChart();
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].religion === "protestant") {
+        num_protestant_spaces++;
+      }
+    }
+    if (num_protestant_spaces > 50) { num_protestant_spaces = 50; }
+    let cid = "s" + num_protestant_spaces;
+
+    let html = `
+      <div class="religious_conflict_sheet" id="religious_conflict_sheet" style="background-image: url('/his/img/religious.jpg')">
+	<div class="religious_conflict_sheet_tile" id="religious_conflict_sheet_tile"></div>
+	<div class="papal_debaters"></div>
+	<div class="lutheran_debaters"></div>
+	<div class="calvinist_debaters"></div>
+	<div class="anglican_debaters"></div>
+	<div class="protestant_spaces_track"></div>
+      </div>
+    `;
+
+    this.overlay.showOverlay(this.app, this, html);
+
+    let obj = document.getElementById("religious_conflict_sheet_tile");
+    obj.style.top = rcc[cid].top;
+    obj.style.left = rcc[cid].left;
+
+  }
+
+
+
   displayFactionSheet(faction) {
 
     this.overlay.showOverlay(this.app, this, this.factions[faction].returnFactionSheet(faction));

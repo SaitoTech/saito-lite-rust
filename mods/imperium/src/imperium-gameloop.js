@@ -16,9 +16,6 @@
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
-console.log("QUEUE: " + JSON.stringify(this.game.queue));
-console.log("MV: " + mv[0]);
-
       if (mv[0] === "gameover") {
   	if (imperium_self.browser_active == 1) {
   	  salert("Game Over");
@@ -29,18 +26,6 @@ console.log("MV: " + mv[0]);
       }
   
 
-      //
-      // start of status phase, players must exhaust
-      //
-      if (mv[0] === "exhaust_at_round_start") { 
-
-	let player = mv[1]; // state or players
-        this.game.queue.splice(qe, 1);
-
-  	return 0;
-
-      }
-  
 
       if (mv[0] === "setvar") { 
 
@@ -307,6 +292,7 @@ console.log("MV: " + mv[0]);
         if (imperium_self.game.player == player) {
             imperium_self.playerResearchTechnology(function(tech) {
               imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
+              imperium_self.addMove("purchase\t"+imperium_self.game.player+"\ttech\t"+tech);
               imperium_self.addMove("NOTIFY\t"+imperium_self.returnFaction(imperium_self.game.player) + " researches " + imperium_self.tech[tech].name);
               imperium_self.endTurn();
           });
@@ -490,10 +476,6 @@ console.log("MV: " + mv[0]);
 
 
       if (mv[0] === "post_production") {
-
-console.log("----------------------------");
-console.log("---------- X X X -----------");
-console.log("----------------------------");
 
 	let player = mv[1];
 	let sector = mv[2];
@@ -880,16 +862,20 @@ console.log("----------------------------");
 
       if (mv[0] === "quash") {
 
-	let agenda_to_quash = parseInt(mv[1]);
+	let agenda_to_quash = mv[1];
 	let redeal_new = parseInt(mv[2]);
   	this.game.queue.splice(qe, 1);
 
-	this.game.state.agendas.splice(agenda_to_quash, 1);
+        for (let i = 0; i < this.game.state.agendas.length; i++) {
+	  if (this.game.state.agendas[i] === agenda_to_quash) {
+	    this.game.state.agendas.splice(i, 1);
+	    break;
+	  }
+	}
 
 	if (redeal_new == 1) {
           this.game.queue.push("revealagendas\t1");
   	  for (let i = 1; i <= this.game.players_info.length; i++) {
-            //this.game.queue.push("FLIPCARD\t1\t1\t1\t"+i); // deck card poolnum player
             this.game.queue.push("FLIPCARD\t3\t1\t1\t"+i); // deck card poolnum player
    	  }
 	}
@@ -1054,15 +1040,11 @@ console.log("----------------------------");
 	let vote = mv[3];
 	let votes = parseInt(mv[4]);
 
-console.log("GAME STATE PRE_ERROR: " + JSON.stringify(this.game.state));
-
 	this.game.state.votes_cast[player-1] = votes;
 	this.game.state.votes_available[player-1] -= votes;
 	this.game.state.voted_on_agenda[player-1][this.game.state.voting_on_agenda] = 1;
 
 	this.game.state.how_voted_on_agenda[player-1] = vote;
-
-console.log("GAME STATE PRE_ERROR");
 
         if (vote == "abstain") {
           this.updateLog(this.returnFactionNickname(player) + " abstains");
@@ -1568,18 +1550,6 @@ this.game.state.end_round_scoring = 0;
 
 
 	//
-	//
-	//
-	for (let i = 0; i < this.game.players_info.length; i++) {
-	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
-	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
-	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
-	    }
-	  }
-	}
-
-
-	//
 	// REFRESH PLANETS
 	//
 	for (let i = 0; i < this.game.players_info.length; i++) {
@@ -1588,6 +1558,28 @@ this.game.state.end_round_scoring = 0;
 	  }
 	}
 
+  	//
+  	// REPAIR UNITS
+  	//
+  	this.repairUnits();
+
+  
+  	//
+  	// SET INITIATIVE ORDER
+  	//
+        this.game.queue.push("setinitiativeorder");
+
+
+	//
+	// EXHAUST ANYTHING REQUIRED (before setinitiative order -- which starts play)
+	//
+	for (let i = 0; i < this.game.players_info.length; i++) {
+	  if (this.game.players_info[i].must_exhaust_at_round_start.length > 0) {
+	    for (let b = 0; b < this.game.players_info[i].must_exhaust_at_round_start.length; b++) {
+	      this.game.queue.push("must_exhaust_at_round_start\t"+(i+1)+"\t"+this.game.players_info[i].must_exhaust_at_round_start[b]);
+	    }
+	  }
+	}
 
   	//
   	// RESET USER ACCOUNTS
@@ -1600,17 +1592,6 @@ this.game.state.end_round_scoring = 0;
   	  this.game.players_info[i].objectives_scored_this_round = [];
         }
 
-
-  	//
-  	// REPAIR UNITS
-  	//
-  	this.repairUnits();
-
-  
-  	//
-  	// SET INITIATIVE ORDER
-  	//
-        this.game.queue.push("setinitiativeorder");
 
 
 	//
@@ -2027,6 +2008,7 @@ this.game.state.end_round_scoring = 0;
 
       if (mv[0] === "must_exhaust_at_round_start") {
 
+	let imperium_self = this;
 	let player = parseInt(mv[1]);
 	let type = mv[2];
 	let number = "all"; if (mv[2]) { number = mv[2]; }
@@ -2034,9 +2016,36 @@ this.game.state.end_round_scoring = 0;
 
 	let exhausted = 0;
 
+	if (type === "planet") {
+	  if (player != this.game.player) {
+	    this.updateStatus(this.returnFactionName(this, player) + " is selecting planets to exhaust.");
+	    return 0;
+	  } else {
+	
+            this.playerSelectPlanetWithFilter(
+
+      	      "Select a planet to exhaust at start of turn: ",
+
+	      function (planet) {
+                if (imperium_self.game.planets[planet].owner == imperium_self.game.player) { return 1; }
+		return 0;
+	      },
+
+              function (planet) {
+                imperium_self.addMove("exhaust\t" + imperium_self.game.player + "\t" + "planet" + "\t" + planet);
+                imperium_self.endTurn();
+		return;
+              }
+
+	    );
+	    return 0;
+	  }
+
+	  return 0;
+	}
 	if (type == "cultural") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "cultural") {
+	    if (this.game.planets[i].type == "cultural" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2045,7 +2054,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "industrial") {	
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "industrial") {
+	    if (this.game.planets[i].type == "industrial" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2054,7 +2063,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "hazardous") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "hazardous") {
+	    if (this.game.planets[i].type == "hazardous" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2063,7 +2072,7 @@ this.game.state.end_round_scoring = 0;
 	}
 	if (type == "homeworld") {
 	  for (let i in this.game.planets) {
-	    if (this.game.planets[i].type == "homeworld") {
+	    if (this.game.planets[i].type == "homeworld" && this.game.planets[i].owner == player) {
 	      this.game.planets[i].exhausted = 1;
 	      exhausted = 1;
 	      this.updateSectorGraphics(i);
@@ -2072,10 +2081,9 @@ this.game.state.end_round_scoring = 0;
 	}
 
 	if (exhausted == 0) {
-	  this.game.planets[type] = exhausted;
+	  this.game.planets[type].exhausted = 1;
 	  this.updateSectorGraphics(i);
 	}
-
 
 	return 1;
 
@@ -2291,7 +2299,18 @@ this.game.state.end_round_scoring = 0;
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+
+	if (type === "strategy") {
+	  this.game.players_info[recipient-1].strategy.push(details);
+	  for (let i = 0; i < this.game.players_info[giver-1].strategy.length; i++) {
+	    if (this.game.players_info[giver-1].strategy[i] === details) {
+	      this.game.players_info[giver-1].strategy.splice(i, 1);
+	    }
+	  }
+        }
+
+
+        if (type === "action") {
 	  if (this.game.player == recipient) {
 	    this.game.deck[1].hand.push(details);
             let ac_in_hand = this.returnPlayerActionCards(this.game.player);
@@ -2321,8 +2340,8 @@ this.game.state.end_round_scoring = 0;
 	  this.givePromissary(giver, recipient, details);
 	  let z = this.returnEventObjects();
 	  for (let z_index = 0; z_index < z.length; z++) {
-	    z[z_index].gainPromissary(this, receipient, details);
-	    z[z_index].losePromissary(this, sender, details);
+	    z[z_index].gainPromissary(this, recipient, details);
+	    z[z_index].losePromissary(this, giver, details);
 	  }
 	}
 
@@ -2352,7 +2371,7 @@ this.game.state.end_round_scoring = 0;
         let details      = mv[4];
   	this.game.queue.splice(qe, 1);
 
-        if (type == "action") {
+        if (type === "action") {
 	  if (details === "random") {
 	    if (this.game.player == pullee) {
 
@@ -2365,7 +2384,9 @@ this.game.state.end_round_scoring = 0;
 
 	      if (selectable.length == 0) {
 
+	        let roll = this.rollDice();
 	        this.addMove("NOTIFY\t" + this.returnFaction(pullee) + " does not have any action cards");
+		// everyone else is burning a roll
 
 	      } else {
 
@@ -2416,15 +2437,33 @@ this.game.state.end_round_scoring = 0;
   
         if (type == "command") {
   	  this.game.players_info[player-1].command_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].command_tokens < 0) { 
+  	    this.game.players_info[player-1].command_tokens = 0;
+	  };
   	}
         if (type == "strategy") {
   	  this.game.players_info[player-1].strategy_tokens -= parseInt(details);
+  	  if (this.game.players_info[player-1].strategy_tokens < 0) { 
+  	    this.game.players_info[player-1].strategy_tokens = 0;
+	  };
+  	}
+        if (type == "fleet") {
+  	  this.game.players_info[player-1].fleet_supply -= parseInt(details);
+  	  if (this.game.players_info[player-1].fleet_supply < 0) { 
+  	    this.game.players_info[player-1].fleet_supply = 0;
+	  };
   	}
         if (type == "goods") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "trade") {
   	  this.game.players_info[player-1].goods -= parseInt(details);
+  	  if (this.game.players_info[player-1].goods < 0) { 
+  	    this.game.players_info[player-1].goods = 0;
+	  };
   	}
         if (type == "planet") {
   	  this.game.planets[details].exhausted = 1;
@@ -2441,6 +2480,20 @@ this.game.state.end_round_scoring = 0;
       }
 
 
+
+      if (mv[0] === "exhaust") {
+  
+  	let player       = parseInt(mv[1]);
+        let type	 = mv[2];
+        let name	 = mv[3];
+  
+  	if (type == "planet") { this.exhaustPlanet(name); }
+	this.displayFactionDashboard();
+
+  	this.game.queue.splice(qe, 1);
+  	return 1;
+  
+      }
 
       if (mv[0] === "unexhaust") {
   
@@ -2466,6 +2519,7 @@ this.game.state.end_round_scoring = 0;
   	this.game.queue.splice(qe, 1);
 
         let log_offer = '';
+
         let offering_html = this.returnFaction(offering_faction) + " makes a trade offer to " + this.returnFaction(faction_to_consider) + ": ";
 	    offering_html += '<div style="padding:20px;clear:left">';
 
@@ -2484,10 +2538,25 @@ this.game.state.end_round_scoring = 0;
 	      for (let i = 0; i < stuff_on_offer.promissaries.length; i++) {
 	        let pm = stuff_on_offer.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_on_offer.action_cards.length > 0) {
+	      if (stuff_on_offer.goods >= 1 || stuff_on_offer.promissaries.length >= 1) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_on_offer.action_cards.length; i++) {
+	        let ac = stuff_on_offer.action_cards[i];
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_on_offer.goods == 0 && stuff_on_offer.promissaries_length == 0) || log_offer === "") {
@@ -2515,10 +2584,27 @@ this.game.state.end_round_scoring = 0;
 	        nothing_check = "";
 	        let pm = stuff_in_return.promissaries[i].promissary;
         	let tmpar = pm.split("-");
+		let tmpname = tmpar[1];
+	 	for (let z = 2; z < tmpar.length; z++) {
+		  tmpname += "-";
+		  tmpname += tmpar[z];
+		}
         	let faction_promissary_owner = imperium_self.factions[tmpar[0]].name;
-		log_offer += this.promissary_notes[tmpar[1]].name;
+		log_offer += this.promissary_notes[tmpname].name;
 		log_offer += " ";
 		log_offer += "("+faction_promissary_owner+")";
+	      }
+	    }
+	    if (stuff_in_return.action_cards.length > 0) {
+	      nothing_check = "";
+	      if (stuff_in_return.goods > 1 || stuff_in_return.promissaries.length > 0) {
+	        log_offer += " and ";
+	      }
+	      for (let i = 0; i < stuff_in_return.action_cards.length; i++) {
+	        nothing_check = "";
+	        let ac = stuff_in_return.action_cards[i];
+		if (i > 0) { log_offer += ", "; }
+		log_offer += this.action_cards[ac].name;
 	      }
 	    }
 	    if ((stuff_in_return.goods == 0 && stuff_in_return.promissaries_length == 0) || nothing_check === "nothing") {
@@ -2528,7 +2614,7 @@ this.game.state.end_round_scoring = 0;
 	    offering_html += log_offer;
 	    offering_html += '</div>';
 
-        log_offer = this.returnFactionNickname(offering_faction) + " offers " + this.returnFactionNickname(faction_to_consider) + " " + log_offer;
+        log_offer = this.returnFactionNickname(offering_faction) + " offers " + log_offer;
 	this.updateLog(log_offer);
 	if (this.game.player == faction_to_consider) {
 	  this.playerHandleTradeOffer(offering_faction, stuff_on_offer, stuff_in_return, log_offer);
@@ -2582,6 +2668,13 @@ this.game.state.end_round_scoring = 0;
 
   	this.game.players_info[offering_faction-1].commodities -= parseInt(offer.goods);
        	this.game.players_info[faction_responding-1].commodities -= parseInt(response.goods);
+
+	if (offer.action_cards) {
+	  for (let i = 0; i < offer.action_cards.length; i++) {
+	    this.giveActionCard(offering_faction, faction_responding, offer.action_cards[i]);
+	  }
+	}
+	// no action cards received so no response.action_cards
 
 	if (offer.promissaries) {
 	  for (let i = 0; i < offer.promissaries.length; i++) {
@@ -2694,7 +2787,6 @@ this.game.state.end_round_scoring = 0;
 	if (mv[4] === "0") { run_events = 0; }
 	let z            = this.returnEventObjects();
 
-
 	if (type == "action_cards") {
 
           if (this.game.player == player && this.browser_active == 1) {
@@ -2791,6 +2883,12 @@ this.game.state.end_round_scoring = 0;
   	    z[z_index].gainTechnology(imperium_self, player, mv[3]);
   	  }
 	  this.upgradePlayerUnitsOnBoard(player);
+
+	  //
+	  // game engine will see if anyone wants to do anything
+	  //
+	  this.game.queue.push("post_research_technology\t"+player+"\t"+mv[3]);
+
   	}
 
         if (item === "goods") {
@@ -2942,7 +3040,7 @@ this.game.state.end_round_scoring = 0;
 	}
 
         //
-	//
+	// deal with rift loss-probability
 	// 
 	if (hazard === "rift") {
 
@@ -3075,6 +3173,7 @@ this.game.state.end_round_scoring = 0;
   	for (let i = 0; i < speaker_order.length; i++) {
 	  for (let k = 0; k < z.length; k++) {
 	    if (z[k].activateSystemTriggers(this, activating_player, speaker_order[i], sector) == 1) {
+console.log("K: " + z[k].name);
 	      this.game.queue.push("activate_system_event\t"+activating_player+"\t"+speaker_order[i]+"\t"+sector+"\t"+k);
 	    }
           }
@@ -3090,7 +3189,6 @@ this.game.state.end_round_scoring = 0;
         let z_index	 = parseInt(mv[4]);
   	this.game.queue.splice(qe, 1);
 	return z[z_index].activateSystemEvent(this, activating_player, player, sector);
-
       }
 
       if (mv[0] === "activate_system_post") {
@@ -3099,7 +3197,12 @@ this.game.state.end_round_scoring = 0;
   	this.game.queue.splice(qe, 1);
         this.updateSectorGraphics(sector);
 	// control returns to original player
-        if (this.game.player == player) { this.playerPostActivateSystem(sector); }
+        if (this.game.player == player) {
+	  this.playerPostActivateSystem(sector); 
+	} else {
+          let sys = imperium_self.returnSectorAndPlanets(sector);
+	  this.updateStatus(this.returnFactionName(this, player) + " continues after activating " + sys.s.name);
+	}
 	return 0;
 
       }
@@ -3171,6 +3274,40 @@ this.game.state.end_round_scoring = 0;
 
 
 
+      //
+      // examines events and selectively halts when player researches tech
+      //
+      if (mv[0] === "post_research_technology") {
+
+	let researcher = parseInt(mv[1]);
+	let tech = mv[2];
+
+        let z = this.returnEventObjects();
+  	this.game.queue.splice(qe, 1);
+	let speaker_order = this.returnSpeakerOrder();
+  	for (let i = 0; i < speaker_order.length; i++) {
+	  for (let k = 0; k < z.length; k++) {
+	    if (z[k].researchTechnologyEventTriggers(this, researcher, speaker_order[i], tech) == 1) {
+	      this.game.queue.push("post_research_technology_event\t"+researcher+"\t"+speaker_order[i]+"\t"+tech+"\t"+k);
+	    }
+          }
+        }
+  	return 1;
+      }
+
+      if (mv[0] === "post_research_technology_event") {
+	let researcher 	= parseInt(mv[1]);
+	let player 	= parseInt(mv[2]);
+	let tech 	= mv[3];
+        let z_index	= parseInt(mv[4]);
+
+  	this.game.queue.splice(qe, 1);
+	z[z_index].researchTechnologyEvent(this, researcher, player, tech);
+	return 0;
+      }
+
+
+
 
       if (mv[0] === "post_agenda_stage") {
         let z = this.returnEventObjects();
@@ -3186,6 +3323,23 @@ this.game.state.end_round_scoring = 0;
         }
   	return 1;
       }
+
+
+
+      if (mv[0] === "post_ships_fire_event") {
+        let z		 = this.returnEventObjects();
+  	let player       = parseInt(mv[1]);
+  	let defender     = mv[2];
+  	let attacker     = mv[3];
+  	let sector       = mv[4];
+  	let combat_info  = JSON.parse(mv[5]);
+        let z_index	 = parseInt(mv[6]);
+  	this.game.queue.splice(qe, 1);
+	z[z_index].postShipsFireEvent(this, player, defender, attacker, sector, combat_info);
+	return 0;
+      }
+
+
       if (mv[0] === "post_agenda_stage_event") {
         let z		 = this.returnEventObjects();
   	let player       = parseInt(mv[1]);
@@ -3721,7 +3875,6 @@ this.game.state.end_round_scoring = 0;
 	  }
 	}
 
-
         let attacker       = parseInt(mv[1]);
         let defender       = parseInt(mv[2]);
         let type           = mv[3]; // space // infantry
@@ -4127,6 +4280,7 @@ this.game.state.end_round_scoring = 0;
 	  //
 	  let restrictions = [];
 
+
 	  this.game.queue.push("assign_hits\t"+player+"\t"+attacker+"\tspace\t"+sector+"\tpds\t"+total_hits+"\tpds");
 
           //
@@ -4381,6 +4535,7 @@ this.game.state.end_round_scoring = 0;
 
 	    for (let z_index in z) {
 	      roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "space", roll);
+	      roll = z[z_index].modifySpaceCombatRoll(this, attacker, defender, roll);
 	      total_hits = z[z_index].modifyUnitHits(this, attacker, defender, attacker, "space", sys.s.units[attacker-1][i], roll, total_hits);
 	      imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "space", imperium_self.game.players_info[defender-1].target_units);
 	    }
@@ -4494,6 +4649,19 @@ this.game.state.end_round_scoring = 0;
 	  }
 	  this.game.queue.push("assign_hits\t"+attacker+"\t"+defender+"\tspace\t"+sector+"\tspace\t"+total_hits+"\tspace_combat");
 
+
+	  //
+	  // check for pre-assign-buffs -- NEW JUNE 25
+	  //
+          let speaker_order = this.returnSpeakerOrder();
+          for (let i = 0; i < speaker_order.length; i++) {
+            for (let k = 0; k < z.length; k++) {
+              if (z[k].postShipsFireEventTriggers(this, speaker_order[i], defender, attacker, sector, combat_info) == 1) {
+                this.game.queue.push("post_ships_fire_event\t"+speaker_order[i]+"\t"+defender+"\t"+attacker+"\t"+sector+"\t"+JSON.stringify(combat_info)+"\t"+k);
+              }
+            }
+          }
+
         }
 
         return 1;
@@ -4568,6 +4736,7 @@ this.game.state.end_round_scoring = 0;
 
 	      for (let z_index in z) {
 	        roll = z[z_index].modifyCombatRoll(this, attacker, defender, attacker, "ground", roll);
+	        roll = z[z_index].modifyGroundCombatRoll(this, attacker, defender, roll);
 	        imperium_self.game.players_info[defender-1].target_units = z[z_index].modifyTargets(this, attacker, defender, imperium_self.game.player, "ground", imperium_self.game.players_info[defender-1].target_units);
 	      }
 
@@ -5583,11 +5752,6 @@ this.game.state.end_round_scoring = 0;
             }
           }
           this.game.queue.push("simultaneous_action_card_player_menu\t"+player+"\t"+card);
-  	  //for (let i = 0; i < speaker_order.length; i++) {
-	    //if (speaker_order[i] != player) {
-              //this.game.queue.push("action_card_player_menu\t"+speaker_order[i]+"\t"+player+"\t"+card);
-            //}
-          //}
 
 	  //
 	  // sabotage is a response to another card, which has its own simultaneous

@@ -38,7 +38,7 @@ module.exports = ArcadeForums = {
     for (let i = 0; i < modgames.length; i++) {
       obj.push({
         ft_link: "/arcade/?game=" + modgames[i].returnSlug(),
-        ft_img: `/${modgames[i].returnSlug()}/img/arcade.jpg`,
+        ft_img: modgames[i].respondTo("arcade-games").img ||`/${modgames[i].returnSlug()}/img/arcade/arcade.jpg`,
         ft_mod: modgames[i].returnSlug(),
         ft_title: modgames[i].gamename || modgames[i].name,
         ft_desc: modgames[i].description,
@@ -46,16 +46,15 @@ module.exports = ArcadeForums = {
     }
 
     if (!document.querySelector(".arcade-posts-container")) {
-      app.browser.addElementToDom(ArcadeForumsTemplate(), "arcade-sub");
-      
-      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', "arcade-posts-container");
+      app.browser.addElementToDom(ArcadeForumsTemplate(), document.getElementById("arcade-sub"));
+      app.browser.addElementToDom('<div class="forum-post-header">Saito Discussions</div>', document.getElementById("arcade-posts-container"));
       for (let i = 0; i < sobj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), "arcade-posts-container");
+        app.browser.addElementToDom(ArcadeForumsThreadTemplate(sobj[i]), document.getElementById("arcade-posts-container"));
       }
       
-      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', "arcade-posts-container");
+      app.browser.addElementToDom('<div class="forum-post-header">Game-Specific Forums</div>', document.getElementById("arcade-posts-container"));
       for (let i = 0; i < obj.length; i++) {
-        app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), "arcade-posts-container");
+        app.browser.addElementToDom(ArcadeForumsThreadTemplate(obj[i]), document.getElementById("arcade-posts-container"));
       }
     }
   },

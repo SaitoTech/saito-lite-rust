@@ -1,6 +1,5 @@
 const saito = require('./../../../../lib/saito/saito');
 const GameCreateMenuTemplate= require('./templates/game-create-menu.template');
-const ArcadeGamesFullListOverlayTemplate = require('./../arcade-sidebar/arcade-games-full-list-overlay.template');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const ModalRegisterUsername = require('./../../../../lib/saito/ui/modal-register-username/modal-register-username');
 const ArcadeGameDetails = require('./../arcade-game/arcade-game-details');
@@ -9,6 +8,9 @@ module.exports = GameCreateMenu = {
 
   render(app, mod) {
 
+    if (mod.overlay === null) {
+      mod.overlay = new SaitoOverlay(app);
+    }
     mod.overlay.show(app, mod, GameCreateMenuTemplate());
 
     let games_menu = document.querySelector(".arcade-games");

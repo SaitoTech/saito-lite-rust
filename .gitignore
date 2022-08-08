@@ -4,6 +4,7 @@ saitolitedocs
 .vscode
 .vscode/*
 .idea/
+.vs/*
 
 .env
 
@@ -57,8 +58,9 @@ mods/appstore/bundler
 mods/appstore/bundler/*
 mods/appstore/modules
 mods/appstore/modules/*
-mods/chirp
-mods/chirp/*
+mods/stunx
+mods/stunx/*
+
 mods/forge
 mods/forge/*
 mods/citysim

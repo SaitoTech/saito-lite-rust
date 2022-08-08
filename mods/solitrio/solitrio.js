@@ -15,37 +15,22 @@ class Solitrio extends GameTemplate {
     this.gamename        = "Solitrio";
     this.slug            = "solitrio";
     this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
-    this.categories      = "Arcade Games Entertainment";
+    this.categories      = "Games Cardgame one-player";
 
     this.maxPlayers      = 1;
     this.minPlayers      = 1;
-    this.type            = "Solitaire Cardgame";
-    //this.status          = "Beta";
-
-    this.description = "Solitaire card game made famous by the good folks at Cathay Pacific Information Technology Services.";
-    this.categories  = "Cardgame Game Solitaire";
     
   }
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/solitrio/img/arcade/arcade-banner-background.jpg";
-      obj.title = "Solitrio";
+  // Create an exp league by default
+  respondTo(type){
+    if (type == "default-league") {
+      let obj = super.respondTo(type);
+      obj.type = "exp";
       return obj;
     }
-
-    return null;
-
+    return super.respondTo(type);
   }
 
 
@@ -76,8 +61,9 @@ class Solitrio extends GameTemplate {
             <label for="auto">Cards move to available slots</label></div>
             <div><input type="radio" id="manual" value="manual" name="play_mode">
             <label for="manual">Click empty slot to move card</label></div>
-            <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
         </div>
+        <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button">accept</div>
+
     `;
   }
 
@@ -140,6 +126,7 @@ class Solitrio extends GameTemplate {
       class : "game-new",
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
+        game_mod.endGame();
         game_mod.newRound();
         game_mod.endTurn();
       }
@@ -227,13 +214,6 @@ class Solitrio extends GameTemplate {
 
   }
 
-  requestInterface(type) {
-    if (type == "arcade-sidebar") {
-      return { title: this.name };
-    }
-    return null;
-  }
-
 
   returnState() {
 
@@ -267,12 +247,13 @@ class Solitrio extends GameTemplate {
     this.displayUserInterface();
 
     if (this.scanBoard(false)) {
-      salert("Congratulations! You win!");
+      this.displayModal("Congratulations!", "You win the deal!");
       this.prependMove("win");
       this.endTurn();
     }else if (!this.hasAvailableMoves()){
       if (this.game.state.recycles_remaining == 0){
-        salert("No More Available Moves, you lose!");
+        this.displayWarning("Game over", "There are no more available moves to make.", 9000);
+        //salert("No More Available Moves, you lose!");
       }else{
         this.shuffleFlash();
       }
@@ -296,7 +277,10 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
+      if (solitrio_self.game.board[card][0] === "E") {
+        solitrio_self.displayWarning("Invalid Move", "You need to select a card");
+        return;
+      }
 
       solitrio_self.toggleCard(card);
       let slot = solitrio_self.dynamicColoring(card);
@@ -321,7 +305,8 @@ class Solitrio extends GameTemplate {
         solitrio_self.checkBoardStatus();
 
         } else {
-          salert("<p>Sorry, You can't move that card anywhere");
+          solitrio_self.displayWarning("Invalid Move", "There is nowhere to move that card");
+          //salert("<p>Sorry, You can't move that card anywhere");
           solitrio_self.untoggleCard(card);
         }
       
@@ -339,7 +324,6 @@ class Solitrio extends GameTemplate {
 
       let card = $(this).attr("id");
 
-      if (card[0] === 'E') { return; } 
       if (selected === card) { //Selecting same card again
         solitrio_self.untoggleCard(card);
         selected = "";
@@ -390,12 +374,14 @@ class Solitrio extends GameTemplate {
           solitrio_self.displayUserInterface();
 
           if (solitrio_self.scanBoard(false)) {
-            salert("Congratulations! You win!");
+            //salert("Congratulations! You win!");
+            solitrio_self.displayModal("Congratulations!", "You win the deal!");
             solitrio_self.prependMove("win");
             solitrio_self.endTurn();
           }else if (!solitrio_self.hasAvailableMoves()){
             if (solitrio_self.game.state.recycles_remaining == 0){
-              salert("No More Available Moves, you lose!");
+              solitrio_self.displayWarning("Game over", "There are no more available moves to make.", 9000);
+              //salert("No More Available Moves, you lose!");
             }else{
               solitrio_self.shuffleFlash();
             }
@@ -415,7 +401,8 @@ class Solitrio extends GameTemplate {
             smartTip = "Hint: Try a 2 of any suit";
           }
           //Feedback
-          salert("<p>Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
+          solitrio_self.displayWarning("Invalid Move", "Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... ");
+          //salert("Sorry, "+solitrio_self.cardSuitHTML(solitrio_self.returnCardSuite(selected))+solitrio_self.returnCardNumber(selected)+" cannot go there... </p><p>"+smartTip+"</p>");
           solitrio_self.untoggleCard(selected);
           selected = "";
           $("#rowbox").removeClass("selected");
@@ -603,6 +590,7 @@ class Solitrio extends GameTemplate {
 
       if (mv[0] === "win"){
         this.game.state.wins++;
+        this.endGame(this.app.wallet.returnPublicKey());
         this.newRound();
       }
 
@@ -748,6 +736,7 @@ no status atm, but this is to update the hud
         return;
       }
       if (action == "quit"){
+        solitrio_self.endGame();
         solitrio_self.newRound();
         solitrio_self.endTurn();
         return;
@@ -759,7 +748,6 @@ no status atm, but this is to update the hud
 
     });
   }
-
 
 
   returnCardImageHTML(name) {
@@ -897,10 +885,17 @@ no status atm, but this is to update the hud
     //Refresh Arcade if in it
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade){
+      arcade.checkCloseQueue(game_id);
       //arcade.receiveGameoverRequest(blk, tx, conf, app); //Update SQL Database
       arcade.removeGameFromOpenList(game_id);            //remove from arcade.games[]
     }
   }
+
+  receiveGameoverRequest(blk, tx, conf, app) {
+    console.log("The game never ends in Solitrio");
+    return;
+  }
+
 
 }
 

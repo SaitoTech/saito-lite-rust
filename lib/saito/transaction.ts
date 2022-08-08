@@ -21,6 +21,7 @@ export enum TransactionType {
 }
 
 class Transaction {
+
   public transaction = {
     to: [],
     from: [],
@@ -74,9 +75,11 @@ class Transaction {
           const reconstruct = this.base64ToString(Buffer.from(this.transaction.m).toString());
           this.msg = JSON.parse(reconstruct);
         } catch (err) {
+          console.log(this.transaction);
           console.error(err);
         }
       }
+
       for (let i = 0; i < this.transaction.from.length; i++) {
         const fslip = this.transaction.from[i];
         this.transaction.from[i] = new Slip(

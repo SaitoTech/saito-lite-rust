@@ -11,7 +11,7 @@ class AdvancedOverlay {
     }
 
     render(app, mod) {
-      if (!document.querySelector("#advanced-overlay-backdrop")) { app.browser.addElementToDom(AdvancedOverlayTemplate(), "game-wizard-advanced-options-overlay"); }
+      if (!document.querySelector("#advanced-overlay-backdrop")) { app.browser.addElementToId(AdvancedOverlayTemplate(), "game-wizard-advanced-options-overlay"); }
 
       //
       // advanced options loaded, even if never shown
@@ -38,9 +38,12 @@ class AdvancedOverlay {
       overlay_backdrop_el.style.opacity = 1;
       overlay_backdrop_el.style.backgroundColor = "#111";
 
-      overlay_backdrop_el.onclick = (e) => {
-        overlay_self.hide(mycallback);
-      }
+      //This should be a blocking overlay by default
+      //it is way too easy to accidentally click the background and close the options
+      
+      //overlay_backdrop_el.onclick = (e) => {
+      //  overlay_self.hide(mycallback);
+      //}
 
     }
 

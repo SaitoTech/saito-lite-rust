@@ -13,8 +13,9 @@ class Hearts extends GameTemplate {
 
     this.name = "Hearts";
     this.description = 'A version of Hearts for the Saito Arcade';
-    this.categories = "Games Arcade Entertainment";
-    this.type            = "Classic Cardgame";
+    
+    this.categories = "Games Cardgame Classic";
+    
     this.card_img_dir = '/hearts/img/cards';
 
     this.minPlayers = 4;
@@ -27,39 +28,14 @@ class Hearts extends GameTemplate {
 
 
 
-  //
-  // manually announce arcade banner support
-  //
-  respondTo(type) {
-
-    if (super.respondTo(type) != null) {
-      return super.respondTo(type);
+  // Opt out of letting League create a default
+  respondTo(type){
+    if (type == "default-league") {
+      return null;
     }
-
-    if (type == "arcade-create-game") {
-      return {
-        slug: this.slug,
-        title: this.name,
-        description: this.description,
-        publisher_message: "",
-        returnGameOptionsHTML: this.returnGameOptionsHTML.bind(this),
-        minPlayers: this.minPlayers,
-        maxPlayers: this.maxPlayers,
-      }
-    }
-
-    if (type == "arcade-carousel") {
-      let obj = {};
-      obj.background = "/hearts/img/arcade/arcade-banner-background.png";
-      obj.title = "Hearts";
-      return obj;
-    }
-
-
-    return null;
-
+    return super.respondTo(type);
   }
-  
+ 
 
 
   //

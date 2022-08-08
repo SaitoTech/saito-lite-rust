@@ -31,10 +31,11 @@ module.exports = PostForums = {
     }
 
     //Create an array of objects for each module that responds to arcade-games
+    //respondTo arcade-games should just return an object with this information, lol, so inefficient!
     let obj = [];
     for (let i = 0; i < modgames.length; i++) {
       obj.push({
-      	ft_img    : `/${modgames[i].returnSlug()}/img/arcade.jpg`,
+      	ft_img    : modgames[i].respondTo("arcade-games").img,
       	ft_mod    : modgames[i].returnSlug(),
       	ft_title  : modgames[i].gamename || modgames[i].name,
       	ft_desc   : modgames[i].description,
@@ -43,13 +44,11 @@ module.exports = PostForums = {
    
 
     if (document.querySelector(".post-forums")) { 
-      //app.browser.addElementToDom('<div class="forum-post-header">Saito Discussion</div>', "post-forums");
       for (let i = 0; i < sobj.length; i++) {
-        app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), "post-forums");
+        app.browser.addElementToDom(PostForumsThreadTemplate(sobj[i]), document.getElementById("post-forums"));
       }
-      //app.browser.addElementToDom('<div class="forum-post-header">Post Games</div>', "post-forums");
       for (let i = 0; i < obj.length; i++) {
-        app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), "post-forums");
+        app.browser.addElementToDom(PostForumsThreadTemplate(obj[i]), document.getElementById("post-forums"));
       }
     }
 

@@ -1,24 +1,4 @@
 
-//
-// manually add arcade banner support
-//
-respondTo(type) {
-
-  if (super.respondTo(type) != null) {
-    return super.respondTo(type);
-  }
-
-  if (type == "arcade-carousel") {
-    let obj = {};
-    obj.background = "/imperium/img/arcade/arcade-banner-background.png";
-    obj.title = "Red Imperium";
-    return obj;
-  }
-
-  return null;
-
-}
-
 
 
 
@@ -95,7 +75,7 @@ handleStrategyMenuItem() {
         <i class="fas fa-database white-stroke"></i>
         <span>${strategy_card_bonus}</span>
       </div>`;
-      this.app.browser.addElementToDom(strategy_card_bonus_html, s);
+      this.app.browser.addElementToDom(strategy_card_bonus_html, document.getElementById(s));
     }
 
     let thiscard = this.strategy_cards[s];
@@ -118,7 +98,7 @@ handleStrategyMenuItem() {
      `;
     }
 
-    this.app.browser.addElementToDom(card_html, s);   
+    this.app.browser.addElementToDom(card_html, document.getElementById(s));   
 
   }
 }

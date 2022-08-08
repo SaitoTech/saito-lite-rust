@@ -5,6 +5,8 @@
         //this.updateStatus("<div class='status-message' id='status-message'>US is playing Independent Reds</div>");
         return 0;
       }
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClock();
 
       let yugo_ussr = this.countries['yugoslavia'].ussr;
       let romania_ussr = this.countries['romania'].ussr;

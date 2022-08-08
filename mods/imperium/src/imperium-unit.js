@@ -53,14 +53,14 @@
     return array_of_stored_units;
   }
 
-  
-  
   addPlanetaryUnit(player, sector, planet_idx, unitname) {
     return this.loadUnitOntoPlanet(player, sector, planet_idx, unitname);
   };
+
   addPlanetaryUnitByJSON(player, sector, planet_idx, unitjson) {
     return this.loadUnitByJSONOntoPlanet(player, sector, planet_idx, unitname);
   };
+
   addSpaceUnit(player, sector, unitname) {
     let sys = this.returnSectorAndPlanets(sector);
     let unit_to_add = this.returnUnit(unitname, player);
@@ -81,7 +81,14 @@
         let removedunit = sys.s.units[player - 1].splice(i, 1);
         this.saveSystemAndPlanets(sys);
         return JSON.stringify(removedunit[0]);
-        ;
+      }
+    }
+  };
+  copySpaceUnit(player, sector, unitname) {
+    let sys = this.returnSectorAndPlanets(sector);
+    for (let i = 0; i < sys.s.units[player - 1].length; i++) {
+      if (sys.s.units[player - 1][i].type === unitname) {
+        return JSON.stringify(sys.s.units[player - 1][i]);
       }
     }
   };
@@ -315,7 +322,7 @@
   	          let pds = {};
   	              pds.range = sys.p[j].units[k][z].range;
   	              pds.combat = sys.p[j].units[k][z].combat;
-  		      pds.owner = (k+1);
+  		      pds.owner = parseInt((k+1));
   		      pds.sector = sectors[i];
   		      pds.unit = sys.p[j].units[k][z];
   
@@ -352,6 +359,7 @@
         let x = {};
         x.ships = [];
         x.ship_idxs = [];
+        x.removed_ship_idxs = [];
         x.sector = null;
         x.distance = distance[i];
         x.adjusted_distance = [];
@@ -529,15 +537,14 @@
   
   returnUnit(type = "", player, upgrade_unit=1) {
     let unit = JSON.parse(JSON.stringify(this.units[type]));
-    unit.owner = player;
+    // json unit comparisons can fail if owner is sometimes a string sometimes an int
+    unit.owner = parseInt(player);
     // optional as otherwise we can have a loop
     if (upgrade_unit == 1) {
       unit = this.upgradeUnit(unit, player);
     }
     return unit;
   };
-  
-  
   
   upgradePlayerUnitsOnBoard(player) {
 

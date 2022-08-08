@@ -40,8 +40,6 @@ class Browser {
       return 0;
     }
 
-console.log("LANGUAGE: " + this.returnPreferredLanguage());
-
     try {
       if (!document.hidden) {
         this.setActiveTab(1);
@@ -60,7 +58,7 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
             publickey: this.app.wallet.returnPublicKey(),
           });
         }
-
+/******
         channel.onmessage = (e) => {
           console.log("document onmessage change");
           if (!document.hidden) {
@@ -82,18 +80,20 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
             }
           }
         };
+*****/
+
 
         document.addEventListener(
           "visibilitychange",
           () => {
-            console.log("document event listener visibility change");
+            //console.log("document event listener visibility change");
             if (document.hidden) {
               channel.postMessage({
                 active: 0,
                 publickey: this.app.wallet.returnPublicKey(),
               });
             } else {
-              console.log("document event listener visibility change");
+              //console.log("document event listener visibility change");
               this.setActiveTab(1);
               channel.postMessage({
                 active: 1,
@@ -120,10 +120,10 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
       // Abercrombie's rule.
       //
       if (typeof window == "undefined") {
-        console.log("Initializing Saito Node");
+        //console.log("Initializing Saito Node");
         return;
       } else {
-        console.info("Initializing Saito Light Client");
+        //console.info("Initializing Saito Light Client");
       }
       const current_url = window.location.toString();
       const myurl = new URL(current_url);
@@ -221,6 +221,13 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
         siteMessage("Websocket Connection Lost");
       });
     }
+  }
+
+
+  returnInviteLink(email = "") {
+    let { protocol, host, port } = this.app.options.peers[0];
+    let url_payload = encodeURIComponent(this.app.crypto.stringToBase64(JSON.stringify(this.returnInviteObject(email))));
+    return `${protocol}://${host}:${port}/r?i=${url_payload}`;
   }
 
   returnURLParameter(name) {
@@ -377,6 +384,14 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
   //////////////////////////////////
   // Browser and Helper Functions //
   //////////////////////////////////
+  generateQRCode(data) {
+    const QRCode = require('./../helpers/qrcode');
+    return new QRCode(
+      document.getElementById("qrcode"),
+      data
+    );
+  }
+
 
   // https://github.com/sindresorhus/screenfull.js
   requestFullscreen() {
@@ -385,18 +400,15 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
     }
   }
 
-  addElementToDom(html, id = null) {
+  addElementToDom(html, elemWhere = null) {
     const el = document.createElement("div");
-    if (id == null) {
+    if (elemWhere == null) {
       document.body.appendChild(el);
+      el.outerHTML = html;
     } else {
-      if (!document.getElementById(id)) {
-        document.body.appendChild(el);
-      } else {
-        document.getElementById(id).appendChild(el);
-      }
+      elemWhere.insertAdjacentElement("beforeend", el);
+      el.outerHTML = html;
     }
-    el.outerHTML = html;
   }
 
   prependElementToDom(html, elemWhere = document.body) {
@@ -407,6 +419,134 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
     } catch (err) {
       console.log("ERROR 582343: error in prependElementToDom");
     }
+  }
+
+  replaceElementById(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html, id);
+      }
+    }
+  }
+
+  addElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.addElementToDom(html, obj);
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  prependElementToId(html, id = null) {
+    if (id == null) {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let obj = document.getElementById(id);
+      if (obj) {
+	this.app.browser.prependElementToDom(html, obj);
+      } else {
+	this.app.browser.prependElementToDom(html);
+      }
+    }
+  }
+
+  replaceElementBySelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let obj = document.querySelector(selector);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  addElementToSelector(html, selector="") {
+    if (selector === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToSelector(html, selector="") {
+
+    if (selector === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      let container = document.querySelector(selector);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
+  }
+
+
+  replaceElementByClass(html, classname="") {
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      let classname = "." + classname;
+      let obj = document.querySelector(classname);
+      if (obj) {
+        obj.outerHTML = html;
+      } else {
+	this.app.browser.addElementToDom(html);
+      }
+    }
+  }
+
+  addElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.addElementToDom(html);
+    } else {
+      classname = "." + classname;
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.addElementToElement(html, container);
+      } else {
+        this.app.browser.addElementToDom(html);
+      }
+    }
+
+  }
+
+  prependElementToClass(html, classname="") {
+
+    if (classname === "") {
+      this.app.browser.prependElementToDom(html);
+    } else {
+      classname = "." + classname;
+      let container = document.querySelector(classname);
+      if (container) {
+        this.app.browser.prependElementToDom(html, container);
+      } else {
+        this.app.browser.prependElementToDom(html);
+      }
+    }
+
   }
 
   addElementToElement(html, elem = document.body) {
@@ -478,7 +618,7 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
     `;
 
     if (!document.getElementById(`hidden_file_element_${id}`)) {
-      this.addElementToDom(hidden_upload_form, id);
+      this.addElementToId(hidden_upload_form, id);
       const dropArea = document.getElementById(id);
       if (!dropArea) {
         console.error("Undefined id in browser", id);
@@ -602,10 +742,6 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
         mouse_down_top = e.clientY;
 
         element_moved = false;
-        //console.log("Element Start Left: " + element_start_left);
-        //console.log("Element Start Top: " + element_start_top);
-        //console.log("Mouse Down Left: " + mouse_down_left);
-        //console.log("Mouse Down Top: " + mouse_down_top);
 
         document.onmouseup = function (e) {
           document.onmouseup = null;
@@ -715,7 +851,6 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
       };
     } catch (err) {
       console.error("error: " + err);
-      console.log(element_to_move, element_to_drag);
     }
   }
 
@@ -772,7 +907,7 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
         .push(category, action, name, value);
     } catch (err) {
       if (err.startsWith("Module responding to")) {
-        console.log("Matomo module not present, cannot push event");
+        //console.log("Matomo module not present, cannot push event");
       } else {
         console.log(err);
       }
@@ -888,7 +1023,6 @@ console.log("LANGUAGE: " + this.returnPreferredLanguage());
   async captureScreenshot(callback = null) {
     html2canvas(document.body).then(function (canvas) {
       let img = canvas.toDataURL("image/jpeg", 0.35);
-      console.log("img: " + img);
       if (callback != null) {
         callback(img);
       }

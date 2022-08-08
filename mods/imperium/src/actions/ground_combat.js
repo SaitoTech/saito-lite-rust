@@ -18,14 +18,13 @@
   	text : "Return invading infantry to space if player ships exist in the sector" ,
 	playActionCard : function(imperium_self, player, action_card_player, card) {
 	
+	  let sector = imperium_self.game.state.ground_combat_sector;
+	  let planet_idx = imperium_self.game.state.ground_combat_planet_idx;
+	  let attacker = imperium_self.game.state.ground_combat_attacker;
+
 	  if (player == action_card_player) {
 
-	    let sector = imperium_self.game.state.ground_combat_sector;
-	    let planet_idx = imperium_self.game.state.ground_combat_planet_idx;
-	    let attacker = imperium_self.game.state.ground_combat_attacker;
-
 	    let sys = imperium_self.returnSectorAndPlanets(sector);
-
 	    let attacker_infantry = sys.p[planet_idx].units[attacker-1];
 	    sys.p[planet_idx].units[attacker-1] = [];;
 
@@ -35,7 +34,6 @@
 	        attacker_infantry.splice(0, 1);
 	      }
 	    }
-
 	  }
 
 	  imperium_self.updateSectorGraphics(sector);

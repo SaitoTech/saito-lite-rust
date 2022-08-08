@@ -54,6 +54,7 @@ class DevCenter extends ModTemplate {
   }
 
 
+
   render(app) {
     if (app.BROWSER != 1 || this.browser_active != 1) {
       return;
@@ -77,6 +78,7 @@ class DevCenter extends ModTemplate {
     this.renderSidebar(app);
     this.renderMain(app);
 
+
   }
 
   renderMain(app) {
@@ -91,11 +93,8 @@ class DevCenter extends ModTemplate {
     if (app.BROWSER != 1 || this.browser_active != 1) {
       return;
     }
-    console.log("### 1");
     EmailSidebar.render(app, this);
-    console.log("### 2");
     EmailSidebar.attachEvents(app, this);
-    console.log("### 3");
   }
 
   respondTo(type = "") {
@@ -111,6 +110,7 @@ class DevCenter extends ModTemplate {
   }
 
 
+
   //
   // load transactions into interface when the network is up
   //
@@ -123,7 +123,7 @@ class DevCenter extends ModTemplate {
 
      this.app.storage.loadTransactions("Dev", 50, (txs) => {
       for (let i = 0; i < txs.length; i++) {
-	txs[i].decryptMessage(app);
+  txs[i].decryptMessage(app);
         this.addTransaction(txs[i]);
       }
       let readyCount = app.browser.getValueFromHashAsNumber(window.location.hash, "ready")
