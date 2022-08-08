@@ -16,9 +16,9 @@ class RedSquareAppspaceGames {
 
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceGamesTemplate(app, mod), "appspace");
-
     this.attachEvents(app, mod);
   }
+
 
   attachEvents(app, mod) {
 
@@ -61,6 +61,23 @@ class RedSquareAppspaceGames {
       };
 
     });
+
+    Array.from(document.querySelectorAll(".load-game-instructions")).forEach(game => {
+      game.onclick = (e) => {
+        e.stopPropagation();
+        let gameName = e.currentTarget.getAttribute("data-id");
+        console.log(gameName);
+        let gamemod = app.modules.returnModule(gameName);
+        if (gamemod){
+          gamemod.overlay.show(app, mod, gamemod.returnGameRulesHTML());
+        }else{
+          console.log("Module not found");
+        }
+      };
+
+    });
+        
+
 
 
   }

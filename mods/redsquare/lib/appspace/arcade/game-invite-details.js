@@ -13,8 +13,8 @@ class GameInviteDetails {
     this.overlay = new SaitoOverlay(app, mod);
   }
 
-  render(app, mod) {
-    this.overlay.show(this.app, this.mod, GameInviteDetailsTemplate(app, mod));
+  render(app, mod, invite = null) {
+    this.overlay.show(this.app, this.mod, GameInviteDetailsTemplate(app, mod, invite));
     this.attachEvents(app, mod);
   }
 
