@@ -192,6 +192,10 @@ html += `
     font-size: 1.15rem;
 }
 
+.mixin-balances_deposit, .mixin-balances_withdraw {
+    color: var(--saito-primary);
+}
+
   </style>
   `;
 

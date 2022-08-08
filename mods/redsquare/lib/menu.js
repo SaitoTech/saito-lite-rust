@@ -1,6 +1,9 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
 const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
+const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
+
+
 
 class RedSquareMenu {
 
@@ -98,7 +101,7 @@ class RedSquareMenu {
         break;
       case "settings":
         // re-render sidebar
-        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+        mod.settsidebar.render(app, mod, ".saito-sidebar-right");
 
         // settings can render into appspace
         document.querySelector(".appspace").innerHTML = "";

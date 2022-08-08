@@ -56,6 +56,17 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   let html = `
+
+
+  <div class="saito-page-header">
+    <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
+    <div class="saito-page-header-title">SETTINGS</div>
+    <div class="saito-page-header-text">
+      Configure and personalise your Saito experience. Add/remove modules, setup wallet. 
+      Get informed on latest versions. Reach out to us on social media platforms in case of any queries.
+    </div>
+  </div>
+
   <div class="settings-appspace">
 
     <div>
@@ -70,10 +81,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 	<h6>Wallet</h6>
         <div class="settings-appspace-user-details">
           
-          <div class="saito-black">Email:</div>
+          <div id="register-email-btn" class="saito-black">Email:</div>
           <div >${email_registered}</div>
 
-          <div class="saito-black">Username:</div>
+          <div id="register-identifier-btn" class="saito-black">Username:</div>
          <div>${identifier_registered}</div>
 
           <div class="saito-black">Public Key:</div>
@@ -81,16 +92,15 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
           <div class="saito-black">Private Key:</div>
           <div class="settings-appspace-privatekey">
-            <div class="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
-            <i class="settings-appspace-see-password fas fa-eye"></i>
+             <div class="settings-appspace-password" id="settings-appspace-password">${app.wallet.returnPrivateKey()} </div>
+            <i class="settings-appspace-see-password fas fa-eye" id="settings-appspace-see-password"></i>
           </div>
 
 	       </div>
          <div class="saito-grid-1-1-1">
-         <div class="saito-button-secondary">Backup</div>
-         <div class="saito-button-secondary">Restore</div>
-         <div class="saito-button-secondary">Import Private Key</div>
-         <input type="file" style="display:none;" />
+         <div class="saito-button-secondary" id="restore-account-btn">Restore</div>
+         <div class="saito-button-secondary" id="restore-privatekey-btn">Import Private Key</div>
+         <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
          </div>
      
   </div>
@@ -121,28 +131,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
             </div>
       </div>
       </div>
-      <div class="settings-appspace-versions-container">
-      <h6> Version </h6>
-      <div class="settings-appspace-versions">
-        <p class="saito-black">Code Version:</p>
-        <p>${app.wallet.wallet.version}</p>
-        <p class="saito-black">Wallet Version:</p>
-        <p>${app.options.wallet.version}</p>
-      </div>
-      </div>
       
-      <div class="settings-appspace-icons-container">
-      <h6> Help </h6>
-      <div class="settings-appspace-icons"  style="padding-bottom:40px;">
-      <div><a target="_blank" href="https://discord.gg/HjTFh9Tfec"><i class="fab fa-discord"></i></a></div>
-      <div class="saito-black">Discord</div>
-
-      <div> <a target="_blank" href="https://t.me/SaitoIO"><i class="fab fa-telegram"></i></a></div>
-      <div class="saito-black">Telegram</div>
-
-     <div> <a target="_blank" href="https://github.com/SaitoTech"> <i class="fab fa-github"></i></a></div>
-      <div class="saito-black">Github</div>
-      </div>
       </div>
 
     </div>

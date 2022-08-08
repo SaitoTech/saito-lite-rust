@@ -11,10 +11,6 @@ Saito User
     border-radius: 0px;
 }
 
-.saito-main {
-    width: 65rem;
-}
-
 .saito-userline {
     color: #888;
 }
@@ -138,6 +134,10 @@ Saito Leaderboard
     padding-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    background: #fafafa;
+    border-width: 2px 0;
+    border-color: #fff;
+    border-style: solid;
 }
 
 
@@ -152,7 +152,7 @@ Saito Module Boxes
     display: flex;
     flex-direction: row;
     flex-flow: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 
@@ -165,7 +165,8 @@ Saito Module Boxes
     border-radius: 2rem;
     border: 1px solid;
     border-top: none;
-    margin-bottom: 2rem;
+    margin-bottom: 2rem;    
+    
 }
 
 .saito-module-image {
@@ -174,8 +175,6 @@ Saito Module Boxes
     width: 100%;
     height: 100%;
     background-size: cover;
-    grid-column: span 1 / auto;
-    grid-row: span 1 / auto;
 }
 
 .saito-module-controls {
@@ -228,7 +227,6 @@ Saito Module Boxes
     from {
         transform: rotate(0deg);
     }
-
     to {
         transform: rotate(360deg);
     }
@@ -251,10 +249,11 @@ Saito Module Boxes
     display: grid;
     grid-template-rows: 1fr min-content;
     position: relative;
-    border-radius: 2rem;
+    border-radius: 1rem;
     border: 1px solid var(--saito-border);
     overflow: hidden;
     margin-bottom: 2rem;
+    width: calc(50% - 1rem);
 }
 
 .saito-game-controls {
