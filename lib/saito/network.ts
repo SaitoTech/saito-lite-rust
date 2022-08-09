@@ -830,6 +830,7 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         await this.app.mempool.addTransaction(tx);
+        this.propagateTransaction(tx);
         break;
 
       // case "SNDKYLST":
@@ -1043,6 +1044,7 @@ class Network {
       return;
     }
     if (!tx.is_valid) {
+      console.warn("tx is not valid. not propagating", tx);
       return;
     }
 
@@ -1080,6 +1082,8 @@ class Network {
         }
       }
     }
+
+    console.log("propagating tx with sig: ",tx.transaction.sig);
 
     //
     // now send the transaction out with the appropriate routing hop
