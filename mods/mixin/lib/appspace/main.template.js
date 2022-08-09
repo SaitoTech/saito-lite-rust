@@ -18,7 +18,7 @@ module.exports = MixinAppspaceTemplate = (app) => {
   `;
 
 if (!account_created) {
-    html += `<div class="saito-button-primary small" id="mixin-create-wallet" >Create Wallet</div>`;
+    html += `<div class="saito-button-primary small" id="mixin-create-wallet" >Enable Third Party Cryptos</div>`;
 } else {
 
   html += `
