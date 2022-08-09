@@ -219,8 +219,9 @@ class Network {
     }
 
     try {
-      let url = `${peer.peer.protocol}://${peer.peer.host}:${peer.peer.port}/block/${block_hash}`;
+      let url = `${peer.peer.block_fetch_url}/${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
+        // TODO : Tharinda to fix. need to get endpoint details in handshake for this
         url = `${peer.peer.protocol}://${peer.peer.host}:${
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
