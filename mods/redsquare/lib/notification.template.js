@@ -4,9 +4,17 @@ const Tweet = require('./tweet');
 module.exports = (app, mod, tx) => {
 
     let activity = "replied to your tweet...";
-    if (!tx.transaction.to[0].includes(app.wallet.returnPublicKey())) {
-      let activity = "mentioned you...";
+    if (typeof tx.transaction.to != 'undefined' && tx.transaction.to.length > 0) {
+      let publickey = app.wallet.returnPublicKey();
+      let txnTo = tx.transaction.to[0];
+
+      for(let i=0; i< txnTo.length; i++) {
+        if(txnTo[i] != publickey) { 
+          let activity = "mentioned you...";
+        }
+      }
     }
+
     if (!tx.msg.request === "like tweet") {
       let activity = "liked your tweet";
     }

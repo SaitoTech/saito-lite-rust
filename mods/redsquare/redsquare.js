@@ -485,7 +485,6 @@ class RedSquare extends ModTemplate {
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
-    console.log("INSERTING SQL: " + sql);
     app.storage.executeDatabase(sql, params, "redsquare");
 
 

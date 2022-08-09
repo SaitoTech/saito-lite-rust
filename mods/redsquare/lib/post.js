@@ -42,16 +42,16 @@ alert("image uploaded");
         }
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  
-	mod.addTweetFromTransaction(app, mod, newtx);
+      	mod.addTweetFromTransaction(app, mod, newtx);
 
         if (thread_id !== "") {
-	  mod.renderMainPage(app, mod);
-	} else {
-  	  mod.renderWithChildren(app, mod, thread_id);
-	}
+      	  mod.renderMainPage(app, mod);
+      	} else {
+        	  mod.renderWithChildren(app, mod, thread_id);
+      	}
 
-	this.overlay.hide();
-
+      	this.overlay.hide();
+        document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
     }
 
