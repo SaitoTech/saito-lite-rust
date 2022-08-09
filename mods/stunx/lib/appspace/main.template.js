@@ -3,7 +3,7 @@ module.exports = StunxAppspaceTemplate = (app) => {
     return `<div class="stunx-appspace"> 
     <card class="appear stunx-appspace-card">
 
-        <h2> Saito Video <span class="saito-badge">α</span></h2>
+        <div class="saito-page-header-title"> Saito Video <span class="saito-badge">α</span></div>
         <p>  Use Saito to start a peer-to-peer video chat!</p>
         <div class="stunx-appspace-actions">
         <div class="stunx-appspace-create">

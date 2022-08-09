@@ -1,6 +1,8 @@
 module.exports = MixinAppspaceTemplate = (app) => {
 
-  let mixin_mod = app.modules.returnModule("Mixin");
+  let mixin_mod = app.modules.returnModule("Crypto Wallet");
+
+  let account_created = (mixin_mod.mixin.publickey !== "") ? true : false;
 
   let html = `
 
@@ -14,6 +16,10 @@ module.exports = MixinAppspaceTemplate = (app) => {
 
   <div class="mixin-appspace">
   `;
+
+if (!account_created) {
+    html += `<div class="saito-button-primary small" id="mixin-create-wallet" >Enable Third Party Cryptos</div>`;
+} else {
 
   html += `
 
@@ -62,11 +68,20 @@ html += `
              <div class='mixin-item mixin-item-header'>Status</div>
         </div>
       <div class="saito-button-secondary small mixin-history-button" id="mixin-history-button" >Load Account History</div>
-    </div>
+    </div>`;
+
+}
+
+
+html +=`
 
   </div>
 
   <style>
+
+  .mixin-no-history {
+    margin-left: 2rem;
+  }
 
   #mixin-txn-his-container {
    display: none;

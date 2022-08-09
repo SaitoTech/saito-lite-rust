@@ -29,11 +29,11 @@ class Retweet {
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  
 
-	mod.addTweetFromTransaction(app, mod, newtx);
-	mod.renderMainPage(app, mod);
+      	mod.addTweetFromTransaction(app, mod, newtx);
+      	mod.renderMainPage(app, mod);
 
-	this.overlay.hide();
-
+      	this.overlay.hide();
+        document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
     }
 

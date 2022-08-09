@@ -188,12 +188,12 @@
 .stunx-appspace-card .saito-badge {
     color: var(--saito-white);
     background: var(--saito-primary);
-    width: 1em;
-    height: 1em;
+    width: 2rem;
+    height: 2rem;
     display: inline-block;
     border-radius: 50%;
     text-align: center;
-    line-height: 1em;
+    line-height: 1.75rem;
     vertical-align: super;
 }
 
@@ -225,8 +225,6 @@
 }
 
 
-
-
 .stunx-appspace-create {
     margin-bottom: 1rem;
 }
@@ -235,14 +233,13 @@
     font-weight: bold;
 }
 
+.stunx-appspace-actions>div {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: 20rem 1fr;
+}
 
 .stunx-appspace-join {}
-
-.stunx-appspace-join>div {
-    display: grid;
-    grid-template-columns: 13rem 13rem;
-    align-items: center;
-}
 
 .stunx-appspace-join input {
     margin-right: 1rem;

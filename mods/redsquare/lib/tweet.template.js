@@ -100,6 +100,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       <div class="youtube-embed-container">${youtube_preview}</div>
       <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            </div>
+          <div></div>
            <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
         </div>
     </div>

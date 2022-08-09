@@ -15,13 +15,13 @@ class Post {
 
       this.overlay.show(app, mod, '<div id="redsquare-tweet-overlay" class="redsquare-tweet-overlay"></div>');
       app.browser.addElementToSelector(PostTemplate(app, mod, app.wallet.returnPublicKey(), this.parent_id, this.thread_id), "#redsquare-tweet-overlay");
+      document.getElementById("post-tweet-textarea").focus();
       this.attachEvents(app, mod);
     }
 
     attachEvents(app, mod) { 
 
       app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
-alert("image uploaded");
         this.images.push(file);
       }, false);
 
@@ -42,16 +42,19 @@ alert("image uploaded");
         }
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  
-	mod.addTweetFromTransaction(app, mod, newtx);
+      	mod.addTweetFromTransaction(app, mod, newtx);
+
 
         if (thread_id !== "") {
-	  mod.renderMainPage(app, mod);
-	} else {
-  	  mod.renderWithChildren(app, mod, thread_id);
-	}
+console.log("RENDER MAIN PAGE");
+      	  mod.renderMainPage(app, mod);
+      	} else {
+console.log("RENDER WITH CHILDREN");
+          mod.renderWithChildren(app, mod, thread_id);
+      	}
 
-	this.overlay.hide();
-
+      	this.overlay.hide();
+        document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
     }
 

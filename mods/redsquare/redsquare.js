@@ -88,7 +88,22 @@ class RedSquare extends ModTemplate {
   }
 
 
+  reorganizeTweets(app, mod) {
+    for (let i = this.tweets.length-1; i >= 1; i--) {
+
+console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this.tweets[i].updated_at);
+
+      if (this.tweets[i-1].updated_at < this.tweets[i].updated_at) {
+	let x = this.tweets[i-1];
+	let y = this.tweets[i];
+        this.tweets[i] = x;
+        this.tweets[i-1] = y;
+      }
+    }
+  }
+
   renderMainPage(app, mod) {
+    this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
@@ -96,6 +111,7 @@ class RedSquare extends ModTemplate {
   }
 
   renderWithChildren(app, mod, sig) {
+    this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
@@ -307,13 +323,11 @@ class RedSquare extends ModTemplate {
                     tx.optional.link_properties = x;
                   } catch (err) { }
 
-
                   this.addTweetFromTransaction(app, redsquare_self, tx);
                 }
               });
 
               redsquare_self.renderMainPage(app, redsquare_self);
-
 
             }
           }
@@ -485,7 +499,6 @@ class RedSquare extends ModTemplate {
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties)
     };
-    console.log("INSERTING SQL: " + sql);
     app.storage.executeDatabase(sql, params, "redsquare");
 
 
