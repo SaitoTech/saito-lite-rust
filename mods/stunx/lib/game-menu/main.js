@@ -1,6 +1,7 @@
 
 
 class StunxGameMenu {
+
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
