@@ -46,28 +46,25 @@ class RedSquareMenu {
     let obj;
 
     obj = document.querySelector('.redsquare-menu-home');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "home");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-notifications');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "notifications");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-settings');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "settings");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-contacts');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "contacts");
-    }
+    } }
     obj = document.querySelector('.redsquare-menu-games');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "games");
-    }
+    } }
 
 
     //
