@@ -710,6 +710,7 @@ initializeGame(game_id) {
   if (!this.game.state) {
 
     this.game.countries = this.returnCountries();
+    this.countries = this.game.countries; // deprecated
     this.game.state = this.returnState();
 
     console.log("\n\n\n\n");
@@ -726,7 +727,7 @@ initializeGame(game_id) {
 
     this.game.queue.push("round");
     if (this.game.options.usbonus != undefined) {
-      if (this.game.options.usbonus > 0) {
+      if (this.game.options.usbonus > 0 && this.game.options.deck !== "late-war") {
         this.game.queue.push("placement_bonus\t2\t"+this.game.options.usbonus);
       }
     }
@@ -779,13 +780,161 @@ initializeGame(game_id) {
       
       this.game.queue.push("DECK\t1\t"+JSON.stringify(k));
     } else {
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
+      if (this.game.options.deck === "late-war") {
+
+        let l = this.returnEarlyWarCards();
+        let m = this.returnMidWarCards();
+        let n = this.returnLateWarCards();
+        let o = Object.assign({}, l, m);
+        let p = Object.assign({}, n, o);
+
+	delete p['fidel'];
+	delete p['vietnamrevolts'];
+	delete p['blockade'];
+	delete p['koreanwar'];
+	delete p['romanianab'];
+	delete p['comecon'];
+	delete p['nasser'];
+	delete p['warsawpact'];
+	delete p['degualle'];
+	delete p['naziscientist'];
+	delete p['truman'];
+	delete p['nato'];
+	delete p['indreds'];
+	delete p['marshall'];
+	delete p['usjapan'];
+	delete p['containment'];
+	delete p['cia'];
+	delete p['suezcrisis'];
+	delete p['destalinization'];
+	delete p['formosan'];
+	delete p['norad'];
+
+	delete p['cubanmissile'];
+	delete p['seasia'];
+	delete p['nuclearsubs'];
+	delete p['quagmire'];
+	delete p['saltnegotiations'];
+	delete p['howilearned'];
+	delete p['kitchendebates'];
+	delete p['wwby'];
+	delete p['brezhnev'];
+	delete p['portuguese'];
+	delete p['allenda'];
+	delete p['willybrandt'];
+	delete p['culturalrev'];
+	delete p['flowerpower'];
+	delete p['u2'];
+	delete p['lonegunman'];
+	delete p['puppet'];
+	delete p['oas'];
+	delete p['nixon'];
+	delete p['sadat'];
+	delete p['ussuri'];
+	delete p['asknot'];
+	delete p['alliance'];
+	delete p['tehran'];
+
+        this.game.queue.push("DECK\t1\t"+JSON.stringify(p));
+
+	this.game.state.turn = 8;
+        this.game.state.defcon = 4;
+        this.game.state.space_race_us_counter = 6;
+        this.game.state.space_race_ussr_counter = 4;
+	this.game.state.eagle_has_landed = "us";
+	this.game.state.eagle_has_landed_bonus_taken = 0;
+
+	this.game.state.events.usjapan = 1;
+	this.game.state.events.marshall = 1;
+	this.game.state.events.warsawpact = 1;
+	this.game.state.events.degaulle = 1;
+	this.game.state.events.nato = 1;
+	this.game.state.events.nato_westgermany = 1;
+	this.game.state.events.flowerpower = 1;
+
+        this.placeInfluence("uk", 5, "us");
+        this.placeInfluence("italy", 2, "us");
+        this.placeInfluence("benelux", 2, "us");
+        this.placeInfluence("westgermany", 5, "us");
+        this.placeInfluence("denmark", 3, "us");
+        this.placeInfluence("norway", 3, "us");
+        this.placeInfluence("israel", 4, "us");
+        this.placeInfluence("iran", 2, "us");
+        this.placeInfluence("pakistan", 2, "us");
+        this.placeInfluence("turkey", 2, "us");
+        this.placeInfluence("zaire", 1, "us");
+        this.placeInfluence("somalia", 2, "us");
+        this.placeInfluence("kenya", 2, "us");
+        this.placeInfluence("nigeria", 1, "us");
+        this.placeInfluence("japan", 4, "us");
+        this.placeInfluence("southkorea", 3, "us");
+        this.placeInfluence("taiwan", 3, "us");
+        this.placeInfluence("philippines", 3, "us");
+        this.placeInfluence("thailand", 2, "us");
+        this.placeInfluence("indonesia", 2, "us");
+        this.placeInfluence("australia", 5, "us");
+        this.placeInfluence("malaysia", 3, "us");
+        this.placeInfluence("nicaragua", 1, "us");
+        this.placeInfluence("panama", 2, "us");
+        this.placeInfluence("haiti", 1, "us");
+        this.placeInfluence("honduras", 1, "us");
+        this.placeInfluence("venezuela", 2, "us");
+        this.placeInfluence("chile", 3, "us");
+        this.placeInfluence("argentina", 2, "us");
+        this.placeInfluence("colombia", 2, "us");
+        this.placeInfluence("dominicanrepublic", 2, "us");
+
+        this.placeInfluence("angola", 1, "us");
+        this.placeInfluence("spain", 1, "us");
+        this.placeInfluence("france", 3, "us");
+        this.placeInfluence("romania", 1, "us");
+        this.placeInfluence("jordan", 2, "us");
+        this.placeInfluence("egypt", 1, "us");
+        this.placeInfluence("southafrica", 2, "us");
+        this.placeInfluence("finland", 1, "us");
+        this.placeInfluence("peru", 2, "us");
+        this.placeInfluence("yugoslavia", 1, "us");
+        this.placeInfluence("saudiarabia", 2, "us");
+
+        this.placeInfluence("westgermany", 1, "ussr");
+        this.placeInfluence("eastgermany", 3, "ussr");
+        this.placeInfluence("poland", 3, "ussr");
+        this.placeInfluence("hungary", 3, "ussr");
+        this.placeInfluence("czechoslovakia", 3, "ussr");
+        this.placeInfluence("bulgaria", 3, "ussr");
+        this.placeInfluence("cuba", 3, "ussr");
+        this.placeInfluence("northkorea", 3, "ussr");
+        this.placeInfluence("iraq", 3, "ussr");
+        this.placeInfluence("syria", 3, "ussr");
+        this.placeInfluence("india", 3, "ussr");
+        this.placeInfluence("afghanistan", 2, "ussr");
+        this.placeInfluence("libya", 2, "ussr");
+        this.placeInfluence("algeria", 2, "ussr");
+        this.placeInfluence("ethiopia", 1, "ussr");
+        this.placeInfluence("zimbabwe", 1, "ussr");
+        this.placeInfluence("angola", 3, "ussr");
+        this.placeInfluence("laos", 2, "ussr");
+        this.placeInfluence("vietnam", 5, "ussr");
+        this.placeInfluence("seafricanstates", 2, "ussr");
+        this.placeInfluence("france", 1, "ussr");
+        this.placeInfluence("romania", 3, "ussr");
+        this.placeInfluence("jordan", 2, "ussr");
+        this.placeInfluence("southafrica", 1, "ussr");
+        this.placeInfluence("finland", 2, "ussr");
+        this.placeInfluence("burma", 1, "ussr");
+        this.placeInfluence("peru", 1, "ussr");
+        this.placeInfluence("yugoslavia", 2, "ussr");
+
+
+      } else {
+        this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
+      }
     }
     this.game.queue.push("init");
 
+  } else {
+    this.countries = this.game.countries; //strange choice
   }
-
-  this.countries = this.game.countries; //strange choice
 
 
   if (this.game.state.headline == 1 && this.game.state.headline_card == ""){
@@ -991,16 +1140,16 @@ try {
         
       }
 
-  	if (mv[0] === "update_observers") {
-  	  let p = parseInt(mv[1]);
-  	  if (this.game.player == p) {
-  	    this.addMove("observer_cards_update\t"+this.game.player+"\t"+JSON.stringify(this.game.deck[0].hand));
-  	    this.endTurn();
-  	  }
+     if (mv[0] === "update_observers") {
+       let p = parseInt(mv[1]);
+       if (this.game.player == p) {
+         this.addMove("observer_cards_update\t"+this.game.player+"\t"+JSON.stringify(this.game.deck[0].hand));
+         this.endTurn();
+       }
 
-      this.game.queue.splice(qe, 1); //This may be better placed before adding moves to the queue, no?
-  	  return 0;
-  	}
+       this.game.queue.splice(qe, 1); //This may be better placed before adding moves to the queue, no?
+       return 0;
+    }
 
     if (mv[0] === "observer_cards_update") {
 
@@ -1016,7 +1165,7 @@ try {
   	  //}
 
       this.game.queue.splice(qe, 1);
-	    return 1;
+      return 1;
 
     }
     
@@ -1111,6 +1260,21 @@ try {
           this.game.state.vp += this.game.state.wargames_concession;
         }
         this.updateVictoryPoints();
+
+	//
+	// late-war
+	//
+        if (this.game.options.deck === "late-war") {
+          if (this.game.state.vp < 20) {
+            this.endGame(this.game.players[0], "Wargames");
+          } else {
+            this.endGame(this.game.players[1], "Wargames");
+          }
+	  return 0;
+        }
+
+
+
         if (this.game.state.vp > 0) {
           this.endGame(this.game.players[1],"Wargames");
         }
@@ -2425,6 +2589,14 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
             this.game.deck[0].hand.push("china");
           }
         }
+      }
+
+      //
+      // Late-War scenario skips
+      //
+      if (this.game.options.deck === "late-war") { 
+	this.game.queue.splice(qe, 1);
+	return 1;
       }
 
       if (this.is_testing && this.game.player == mv[1]){
@@ -6788,8 +6960,6 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
 
   finalScoring() {
 
-console.log("FINAL SCORING RUNNING!");
-
     //
     // disable shuttle diplomacy
     //
@@ -6850,6 +7020,20 @@ console.log("FINAL SCORING RUNNING!");
 
     this.updateVictoryPoints();
 
+    //
+    // late-war scenario
+    //
+    if (this.game.options.deck === "late-war") {
+      if (this.game.state.vp < 20) {
+        this.endGame(this.game.players[0], "final scoring");
+      } else {
+        this.endGame(this.game.players[1], "final scoring");
+      }
+    }
+
+    //
+    // normal game
+    //
     if (this.game.state.vp == 0) {
       this.tieGame();
       return 1;
@@ -8254,6 +8438,7 @@ console.log("MONITORING DEFCON: in lowerDefcon() D ");
 	      } '>
             <option value="original">original</option>
               <option value="optional" selected>optional</option>
+              <option value="late-war">late war</option>
               <option value="saito">saito edition</option>
               <option value="absurdum">twilight absurdum</option>
               <option value="endofhistory">end of history</option>
