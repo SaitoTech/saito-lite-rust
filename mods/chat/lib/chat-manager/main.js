@@ -27,11 +27,9 @@ class ChatManager {
 	  let divid = "Saito Community Chat";
 	  if (document.getElementById(divid)) {
             let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg", "3.45");
-            html = html.replace("saito-identicon\"", "saito-identicon small square\"");
 	    app.browser.replaceElementById(html, divid);
 	  } else {
             let html = SaitoUserWithTime(app, mod, "Saito Community Chat", "last msg", "3.45");
-            html = html.replace("saito-identicon\"", "saito-identicon small square\"");
 	    app.browser.addElementToSelector(html, ".chat-manager-list");
 	  }
 	  this.rendered = 1;
@@ -42,11 +40,9 @@ class ChatManager {
 	    let divid = `saito-user-${app.keys.keys[i].publickey}`;
 	    if (document.getElementById(divid)) {
               let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
-              html = html.replace("saito-identicon\"", "saito-identicon small square\"");
 	      app.browser.replaceElementById(html, divid);
 	    } else {
               let html = SaitoUserWithTime(app, mod, app.keys.keys[i].publickey, "", "3.45");
-              html = html.replace("saito-identicon\"", "saito-identicon small square\"");
 	      app.browser.addElementToSelector(html, ".chat-manager-list");
 	    }
 	  }

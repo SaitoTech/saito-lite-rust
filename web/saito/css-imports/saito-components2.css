@@ -121,6 +121,7 @@ Saito Table
     background-color: #fff;
     display: grid;
     grid-template-columns: auto;
+    width: 100%;
 }
 .saito-table-row {
     align-items: center;
@@ -129,6 +130,12 @@ Saito Table
     background-color: #fafafa;
 }
 
+.saito-address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: inherit;
+  }
 
 /* ----------------------------------------------------------------
 Saito Leaderboard
@@ -145,6 +152,11 @@ Saito Leaderboard
     border-color: #fff;
     border-style: solid;
 }
+
+.saito-leaderboard-gamename {
+    width: 100%;
+    overflow: hidden;
+  }
 
 
 /* ----------------------------------------------------------------
