@@ -238,7 +238,7 @@ class Network {
         this.app.mempool.addBlock(block);
       } else {
         if (this.debugging) {
-          console.error(`Error fetching block: Status ${res.status} -- ${res.statusText}`);
+          console.error(`Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`);
         }
       }
     } catch (err) {
