@@ -19,6 +19,7 @@ class RedSquareTweet {
 
     this.parent_id = "";
     this.thread_id = "";
+    this.critical_child_post = null;
     this.text = null;
     this.link = null;
     this.link_properties = null;
@@ -98,6 +99,18 @@ class RedSquareTweet {
   }
 
 
+  isCriticalChild(app, mod, tweet) {
+    for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
+      if (tweet.tx.transaction.to[i].add === app.wallet.returnPublicKey()) {
+	if (this.critical_child == null) { return true; }
+        if (tweet.tx.transaction.ts > this.critical_child.tx.transaction.tx) {
+	  return true;
+	}
+      }
+    }
+    return false;
+  }
+
   render(app, mod, selector = "") {
 
     let html = TweetTemplate(app, mod, this);
@@ -109,6 +122,16 @@ class RedSquareTweet {
       app.browser.replaceElementById(html, tweet_id);
     } else {
       app.browser.addElementToSelector(html, selector);
+    }
+
+    if (this.critical_child != null) {
+      if (obj) {
+        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        this.critical_child.render(app, mod, tweet_div);
+      } else {
+        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        this.critical_child.render(app, mod, selector);
+      }
     }
 
     this.attachEvents(app, mod);
@@ -140,8 +163,6 @@ class RedSquareTweet {
 
     this.attachEvents(app, mod);
   }
-
-
 
   attachEvents(app, mod) {
 
@@ -264,6 +285,10 @@ class RedSquareTweet {
     //
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
+        if (this.isCriticalChild(app, mod, this.unknown_children[i])) {
+	  this.critical_child = this.unknown_children[i];
+          this.updated_at = this.critical_child;
+	}
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
       }
@@ -276,19 +301,25 @@ class RedSquareTweet {
           return 1;
         }
       }
-      this.last_updated = tweet.last_updated;
+      this.updated_at = tweet.updated_at;
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         return 1;
       } else {
+        if (this.isCriticalChild(app, mod, tweet)) {
+          this.critical_child = tweet;
+        }
         this.children.push(tweet);
         return 1;
       }
     } else {
       for (let i = 0; i < this.children.length; i++) {
+        if (this.isCriticalChild(app, mod, tweet)) {
+          this.critical_child = tweet;
+        }
         let x = this.children[i].addTweet(app, mod, tweet);
         if (x == 1) {
-          this.last_updated = tweet.last_updated;
+          this.updated_at = tweet.updated_at;
         }
         return x;
       }

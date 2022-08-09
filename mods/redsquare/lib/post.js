@@ -21,7 +21,6 @@ class Post {
     attachEvents(app, mod) { 
 
       app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
-alert("image uploaded");
         this.images.push(file);
       }, false);
 
@@ -44,10 +43,13 @@ alert("image uploaded");
         let newtx = mod.sendTweetTransaction(app, mod, data);  
       	mod.addTweetFromTransaction(app, mod, newtx);
 
+
         if (thread_id !== "") {
+console.log("RENDER MAIN PAGE");
       	  mod.renderMainPage(app, mod);
       	} else {
-        	  mod.renderWithChildren(app, mod, thread_id);
+console.log("RENDER WITH CHILDREN");
+          mod.renderWithChildren(app, mod, thread_id);
       	}
 
       	this.overlay.hide();
