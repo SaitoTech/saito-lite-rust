@@ -1,6 +1,6 @@
 
 const VideoBox = require('./video-box');
-const videoChatManagerTemplate = require('./video-chat-manager.template');
+const ChatManagerLargeTemplate = require('./chat-manager-large.template');
 class VideoChatManager {
 
     // peers = {};
@@ -14,28 +14,33 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod) => {
+
+        this.app.connection.on('show-video-chat-request', (app, mod, type) => {
+            if (type !== "large") return
             this.show(app, mod);
         })
-        this.app.connection.on('render-local-stream-request', (localStream) => {
+        this.app.connection.on('render-local-stream-request', (localStream, type) => {
+            if (type !== "large") return
             this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, type) => {
+            if (type !== "large") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer) => {
+        this.app.connection.on('render-remote-stream-placeholder-request', (peer, type) => {
+            if (type !== "large") return
             this.renderRemoteStreamPlaceholder(peer);
         });
 
-        this.app.connection.on('stunx-change-connection-state-request', (peer, state) => {
+        this.app.connection.on('change-connection-state-request', (peer, state, type) => {
+            if (type !== "large") return
             this.updateConnectionState(peer, state)
         })
     }
 
 
-
     render() {
-        this.app.browser.addElementToDom(videoChatManagerTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToDom(ChatManagerLargeTemplate(), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
@@ -91,7 +96,7 @@ class VideoChatManager {
 
     renderLocalStream(localStream) {
         const videoBox = new VideoBox(this.app, this.mod);
-        videoBox.render(localStream, 'local', 'wrapper');
+        videoBox.render(localStream, 'local', 'large-wrapper');
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
     }
@@ -103,7 +108,7 @@ class VideoChatManager {
             const videoBox = new VideoBox(this.app, this.mod);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
-        this.video_boxes[peer].video_box.render(null, peer, 'wrapper');
+        this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper');
     }
 
 
