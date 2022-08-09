@@ -26,7 +26,7 @@ class RedSquareMenu {
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
-                  <span> ${app.modules.mods[i].appname}</span>
+                  <span> ${app.modules.mods[i].returnName()}</span>
                 </li>
     `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)){
