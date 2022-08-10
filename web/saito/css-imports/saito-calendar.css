@@ -24,6 +24,25 @@
     flex-direction: column;
 }
 
+.saito-calendar-events {
+    margin: 0.5rem;
+    border: 1px solid #888;
+    height: 22rem;
+    width: 28rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+}
+
+.saito-calendar-events-date {
+  float: right;
+  padding: 0.5rem;
+  color: #777;
+}
+
+.saito-calendar-events-details {
+  clear: both;
+}
+
 .saito-calendar-month {
     /* padding: 1rem 1rem; */
     display: grid;
@@ -77,6 +96,7 @@
     padding: 3px;
     background-color: #fcfcfc;
     text-align: center;
+    cursor: pointer;
 }
 
 .saito-calendar-days div:hover {
