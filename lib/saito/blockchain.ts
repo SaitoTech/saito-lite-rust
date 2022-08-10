@@ -1253,7 +1253,7 @@ class Blockchain {
         // which requires us to start at the END of the new chain vector.
         //
         if (old_chain.length > 0) {
-          return await this.windChain(old_chain, new_chain, old_chain.len() - 1, true);
+          return await this.windChain(old_chain, new_chain, old_chain.length - 1, true);
         } else {
           return false;
         }
