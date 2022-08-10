@@ -26,7 +26,7 @@
     color: black
 }
 
-.stunx-chatbox .wrapper {
+.stunx-chatbox .large-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: minmax(100px, 30vh);

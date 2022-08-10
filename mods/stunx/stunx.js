@@ -1,8 +1,8 @@
 const saito = require("../../lib/saito/saito");
 const ModTemplate = require("../../lib/templates/modtemplate");
 var serialize = require('serialize-javascript');
-const VideoChatManager = require('./lib/components/video-chat-manager');
-const GameVideoChatManager = require("./lib/components/game-video-chat-manager");
+const ChatManagerLarge = require('./lib/components/chat-manager-large');
+const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
@@ -20,8 +20,8 @@ class Stunx extends ModTemplate {
         this.remoteStreamPosition = 0;
         this.peer_connections = {};
         this.videoMaxCapacity = 5;
-        this.VideoChatManager = new VideoChatManager(app, this);
-        this.GameVideoChatManager = new GameVideoChatManager(app, this);
+        this.ChatManagerLarge = new ChatManagerLarge(app, this);
+        this.ChatManagerSmall = new ChatManagerSmall(app, this);
         this.InviteOverlay = new InviteOverlay(app, this);
         this.icon = "fas fa-video"
         this.stunxGameMenu = new StunxGameMenu(app, this);
@@ -122,6 +122,9 @@ class Stunx extends ModTemplate {
                 }
                 if (tx.msg.request === "offer") {
                     this.receiveOfferTransaction(blk, tx, conf, app)
+                }
+                if (tx.msg.request === "open video chat") {
+                    this.receiveOpenVideoChatTransaction(blk, tx, conf, app)
                 }
             }
         }
@@ -263,12 +266,13 @@ class Stunx extends ModTemplate {
         console.log('from:', offer_creator, offer);
 
 
-        if (this.chatType === 'room') {
-            this.acceptPeerConnectionOffer(app, offer_creator, offer, 'room');
-
-        } else if (!this.chatType) {
+        if (!this.localStream) {
             this.app.connection.emit('game-receive-video-call', app, offer_creator, offer);
+            return
         }
+
+
+        this.acceptPeerConnectionOffer(app, offer_creator, offer, 'large');
 
 
 
@@ -279,7 +283,7 @@ class Stunx extends ModTemplate {
     createPeerConnectionOffer(publicKey, type) {
         const createPeerConnection = new Promise((resolve, reject) => {
             let ice_candidates = [];
-            const execute = async () => {
+            const execute = async (type) => {
                 try {
                     const pc = new RTCPeerConnection({
                         iceServers: this.servers,
@@ -299,16 +303,16 @@ class Stunx extends ModTemplate {
                         console.log("connection state ", pc.connectionState)
                         switch (pc.connectionState) {
                             case "connecting":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, type);
                                 break;
                             case "connected":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, type);
                                 break;
                             case "disconnected":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, type);
                                 break;
                             case "failed":
-                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState);
+                                this.app.connection.emit('change-connection-state-request', publicKey, pc.connectionState, type);
                                 break;
                             default:
                                 ""
@@ -332,13 +336,10 @@ class Stunx extends ModTemplate {
                             this.remoteStreamPosition += 1;
                         });
 
-                        console.log('type ', this.chatType);
-                        if (this.chatType === "room") {
-                            this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc);
-                        } else if (this.chatType === "game") {
-                            this.app.connection.emit('game-add-remote-stream-request', publicKey, remoteStream, pc);
-                            console.log('adding remote stream')
-                        }
+                        console.log('type ', type, 'public key ', publicKey);
+
+                        this.app.connection.emit('add-remote-stream-request', publicKey, remoteStream, pc, type);
+
                     });
 
                     const data_channel = pc.createDataChannel('channel');
@@ -355,7 +356,7 @@ class Stunx extends ModTemplate {
                 }
 
             }
-            execute();
+            execute(type);
 
         })
 
@@ -368,11 +369,7 @@ class Stunx extends ModTemplate {
 
     acceptPeerConnectionOffer(app, offer_creator, offer, type) {
 
-        if (type === 'room') {
-            this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, 'fromCreator');
-        } else if (type === 'game') {
-            this.app.connection.emit('game-render-remote-stream-placeholder-request', offer_creator, 'fromCreator');
-        }
+        this.app.connection.emit('render-remote-stream-placeholder-request', offer_creator, type);
 
         const createPeerConnection = async () => {
             let reply = {
@@ -397,16 +394,16 @@ class Stunx extends ModTemplate {
                     console.log("connection state ", pc.connectionState)
                     switch (pc.connectionState) {
                         case "connecting":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, type);
                             break;
                         case "connected":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, type);
                             break;
                         case "disconnected":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, type);
                             break;
                         case "failed":
-                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState);
+                            this.app.connection.emit('change-connection-state-request', offer_creator, pc.connectionState, type);
                             break;
                         default:
                             ""
@@ -438,12 +435,9 @@ class Stunx extends ModTemplate {
                     event.streams[0].getTracks().forEach(track => {
                         remoteStream.addTrack(track);
                     });
-                    if (type === "room") {
-                        this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc);
-                    } else if (type === "game") {
-                        console.log('adding remote stream')
-                        this.app.connection.emit('game-add-remote-stream-request', offer_creator, remoteStream, pc);
-                    }
+
+                    this.app.connection.emit('add-remote-stream-request', offer_creator, remoteStream, pc, type);
+
 
                 });
                 await pc.setRemoteDescription(offer.offer_sdp);
@@ -470,11 +464,13 @@ class Stunx extends ModTemplate {
 
 
     async createStunConnectionWithPeers(public_keys, type) {
+
         let peerConnectionOffers = [];
         if (public_keys.length > 0) {
             // send connection to other peers if they exit
             for (let i = 0; i < public_keys.length; i++) {
-                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i]), type);
+                console.log('public key ', public_keys[i], ' type ', type);
+                peerConnectionOffers.push(this.createPeerConnectionOffer(public_keys[i], type));
             }
         }
 
@@ -509,9 +505,6 @@ class Stunx extends ModTemplate {
         this.localStream = localStream;
     }
 
-    setChatType(type) {
-        this.chatType = type;
-    }
 
     sendOfferTransaction(offer_creator, offers) {
         let newtx = this.app.wallet.createUnsignedTransaction();
@@ -589,6 +582,28 @@ class Stunx extends ModTemplate {
         }
     }
 
+    sendOpenVideoChatTransaction(peer, type) {
+        let newtx = this.app.wallet.createUnsignedTransaction();
+        newtx.transaction.to.push(new saito.default.slip(peer));
+        newtx.msg.module = "Stunx";
+        newtx.msg.request = "open video chat"
+        newtx.msg.data = {
+            type,
+            peer
+        };
+        newtx = this.app.wallet.signTransaction(newtx);
+        console.log(this.app.network);
+        this.app.network.propagateTransaction(newtx);
+    }
+
+    receiveOpenVideoChatTransaction(blk, tx, conf, app) {
+        let stunx_self = app.modules.returnModule("Stunx");
+        let my_pubkey = app.wallet.returnPublicKey();
+        if (my_pubkey === tx.msg.data.peer) {
+            // open video chat
+            this.app.connection.emit('show-video-chat-request', this.app, this, tx.msg.data.type);
+        }
+    }
 
 
 }
