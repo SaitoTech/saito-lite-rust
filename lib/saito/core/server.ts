@@ -365,10 +365,10 @@ class Server {
           return res.sendStatus(404); // Not Found
         }
         let buffer = block.serialize();
-        let bufferString = Buffer.from(buffer).toString("base64");
+        let bufferString = Buffer.from(buffer);//.toString("base64");
 
         res.status(200);
-        res.end(bufferString);
+        res.end(buffer);
       } catch (err) {
         console.log("ERROR: server cannot feed out block");
       }

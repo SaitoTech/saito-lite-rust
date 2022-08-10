@@ -218,18 +218,23 @@ class Network {
       peer = this.peers[0];
     }
 
+    let url = "";
     try {
-      let url = `${peer.peer.block_fetch_url}/${block_hash}`;
+      let base_url = peer.peer.block_fetch_url.endsWith('/')?peer.peer.block_fetch_url:peer.peer.block_fetch_url+"/";
+      url = `${base_url}${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
         // TODO : Tharinda to fix. need to get endpoint details in handshake for this
         url = `${peer.peer.protocol}://${peer.peer.host}:${
           peer.peer.port
         }/lite-block/${block_hash}/${this.app.wallet.returnPublicKey()}`;
       }
+      console.log("fetching url : "+url);
       const res = await fetch(url);
       if (res.ok) {
-        const base64Buffer = await res.arrayBuffer();
-        const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
+        console.log("block fetched : "+block_hash);
+        const blob = await res.blob();//arrayBuffer();
+        // const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
+        const buffer = Buffer.from(await blob.arrayBuffer());
         const block = new Block(this.app);
         block.deserialize(buffer);
         await block.generateConsensusValues();
@@ -238,17 +243,17 @@ class Network {
         block.peer = this;
         this.app.mempool.addBlock(block);
       } else {
-        if (this.debugging) {
+        // if (this.debugging) {
           console.error(`Error fetching block from :${url}: Status ${res.status} -- ${res.statusText}`);
-        }
+        // }
       }
     } catch (err) {
-      if (this.debugging) {
-        console.log(`Error fetching block:`);
-      }
-      if (this.debugging) {
+      // if (this.debugging) {
+        console.error(`Error fetching block: ${url}`);
+      // }
+      // if (this.debugging) {
         console.error(err);
-      }
+      // }
     }
     return;
   }
