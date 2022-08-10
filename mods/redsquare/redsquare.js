@@ -1,5 +1,5 @@
 const saito = require("./../../lib/saito/saito");
-const ModTemplate = require('../../lib/templates/modtemplate');
+const InviteTemplate = require('../../lib/templates/invitetemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const RedSquareMain = require('./lib/main');
 const Tweet = require('./lib/tweet');
@@ -10,7 +10,7 @@ const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 
 
-class RedSquare extends ModTemplate {
+class RedSquare extends InviteTemplate {
 
   constructor(app) {
 
