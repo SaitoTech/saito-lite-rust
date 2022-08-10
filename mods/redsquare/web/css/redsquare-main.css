@@ -8,6 +8,12 @@
   z-index: 10;
 }
 
+.tweet {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+}
 
 .redsquare-item {
   cursor: pointer;
