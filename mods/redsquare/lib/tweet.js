@@ -102,10 +102,10 @@ class RedSquareTweet {
   isCriticalChild(app, mod, tweet) {
     for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
       if (tweet.tx.transaction.to[i].add === app.wallet.returnPublicKey()) {
-	if (this.critical_child == null) { return true; }
+        if (this.critical_child == null) { return true; }
         if (tweet.tx.transaction.ts > this.critical_child.tx.transaction.tx) {
-	  return true;
-	}
+          return true;
+        }
       }
     }
     return false;
@@ -126,14 +126,17 @@ class RedSquareTweet {
 
     if (this.critical_child != null) {
       if (obj) {
+        obj.classList.add("before-ellipsis");
+        obj.nextSibling.classList.add("after-ellipsis");
         app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
         this.critical_child.render(app, mod, tweet_div);
       } else {
         app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
         this.critical_child.render(app, mod, selector);
+        document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
+        document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
       }
     }
-
     this.attachEvents(app, mod);
   }
 
@@ -286,9 +289,9 @@ class RedSquareTweet {
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
         if (this.isCriticalChild(app, mod, this.unknown_children[i])) {
-	  this.critical_child = this.unknown_children[i];
+          this.critical_child = this.unknown_children[i];
           this.updated_at = this.critical_child;
-	}
+        }
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
       }
