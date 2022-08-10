@@ -837,6 +837,7 @@ initializeGame(game_id) {
 
         this.game.queue.push("DECK\t1\t"+JSON.stringify(p));
 
+	this.game.state.vp = -4;
 	this.game.state.turn = 8;
         this.game.state.defcon = 4;
         this.game.state.space_race_us_counter = 6;

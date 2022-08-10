@@ -20,6 +20,8 @@
   padding-top: 3rem;
 }
 
+
+
 .post-tweet-preview {
   padding: 0rem;
   padding-bottom: 2rem;
@@ -319,4 +321,26 @@
   box-shadow: 1px 1px 5px 5px #ccc;
   z-index: 2;
   cursor: pointer;
+}
+
+.redsquare-ellipsis::after {
+  border-left: 5px dotted var(--saito-border);
+  height: 200px;
+  position: relative;
+  top: -2rem;
+  content: " ";
+  margin-left: 2.5rem;
+}
+
+.redsquare-ellipsis {
+  height: 0;
+}
+
+.before-ellipsis {
+  border-bottom: none;
+}
+
+.after-ellipsis {
+  border-top: none;
+  padding-top: none;
 }
