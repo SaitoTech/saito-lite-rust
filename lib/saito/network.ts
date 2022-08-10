@@ -277,7 +277,6 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
         this.app.connection.emit("peer_connect", peer);
         this.app.connection.emit("connection_up", peer);
@@ -332,7 +331,6 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        await this.app.handshake.initiateHandshake(peer.socket);
         this.app.network.requestBlockchain(peer);
         this.app.network.propagateServices(peer);
       });
@@ -568,11 +566,6 @@ class Network {
 
     switch (message.message_type) {
       case MessageType.HandshakeChallenge: {
-        // response = await this.app.handshake.handleIncomingHandshakeChallenge(
-        //   peer,
-        //   message.message_data
-        // );
-        // await peer.sendResponse(message.message_id, response);
 
         await this.app.handshake.handleIncomingHandshakeChallenge(
             peer,
@@ -836,7 +829,7 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         await this.app.mempool.addTransaction(tx);
-        this.propagateTransaction(tx);
+        //this.propagateTransaction(tx);
         break;
 
       // case "SNDKYLST":
