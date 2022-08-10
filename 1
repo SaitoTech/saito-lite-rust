@@ -21,7 +21,16 @@ class SaitoCalendarPopup {
 
   attachEvents(app, mod) {
 
+alert("Testing A");
+
+let obj = document.getElementById("invites-new-invite");
+if (!obj) {
+ alert("no obj!");
+}
+
     document.getElementById("invites-new-invite").onclick = (e) => {
+
+alert("Testing B");
 
       let m = 0;
       if (this.month === "February") 	{ m = 1; }

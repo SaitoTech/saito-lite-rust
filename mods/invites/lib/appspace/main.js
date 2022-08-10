@@ -19,15 +19,11 @@ class InvitesAppspace {
       }
       for (let i = 0; i < mod.invites.length; i++) {
         if (mod.invites[i].adds.includes(app.wallet.returnPublicKey())) {
-console.log("HELLO: address includes...");
           let qs = `#invites-invitation-join-${mod.invites[i].invite_id}`;
-console.log("QS: " + qs);
           document.querySelector(qs).style.display = "none";
         }
         if (!mod.isPendingMe(mod.invites[i], app.wallet.returnPublicKey())) {
-console.log("I AM NOT PENDING...");
           let qs = `#invites-invitation-accept-${mod.invites[i].invite_id}`;
-console.log("QS: " + qs);
           document.querySelector(qs).style.display = "none";
         }
       }
