@@ -14,6 +14,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="fas fa-gamepad"></i>
                   <span> Games</span>
                 </li>
+<!---
                 <li class="redsquare-menu-notifications">
                   <i class="fas fa-bell"></i>
                   <span> Notifications</span>
@@ -22,6 +23,7 @@ module.exports = RedSquareMenuTemplate = (app, mod) => {
                   <i class="far fa-id-card"></i>
                   <span> Contacts</span>
                 </li>
+--->
               </ul>
             </div>
           </div>

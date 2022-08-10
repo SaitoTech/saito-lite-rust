@@ -48,7 +48,7 @@ module.exports = (app, mod) => {
                   let player = (i <= l.top3.length) ? l.top3[i-1] : null;
                   if (player){
                     html += `<div class="saito-table-row ${(i%2 == 1)?"odd":""}">
-                              <div class="saito-leaderboard-gamename">${app.browser.returnAddressHTML(player)}</div>
+                              <div class="saito-leaderboard-gamename">${app.keys.returnUsername(player)}</div>
                               <div class="saito-leaderboard-rank">${i}</div>
                             </div>`;     
                   }
