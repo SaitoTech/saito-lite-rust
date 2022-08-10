@@ -344,3 +344,7 @@
   border-top: none;
   padding-top: none;
 }
+
+.redsquare-image-container img {
+  width: 100%;
+}

@@ -21,9 +21,20 @@ class Post {
 
     attachEvents(app, mod) { 
 
-      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
-        this.images.push(file);
-      }, false);
+
+      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", 
+      (file) => {
+          console.log(file);
+          this.images.push(file);
+          app.browser.addElementToDom(`<div data-id="${this.images.length-1}" class="post-create-image-preview"><img src="${file}" 
+            style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;"
+             /></div>`, document.getElementById("post-create-image-preview-container"));
+      }, 
+      false);
+
+      // app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
+      //   this.images.push(file);
+      // }, false);
 
 
       document.getElementById("post-tweet-button").onclick = (e) => {
