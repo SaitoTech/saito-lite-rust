@@ -1,5 +1,6 @@
 const saito = require("./../../lib/saito/saito");
 const InviteTemplate = require('../../lib/templates/invitetemplate');
+const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/new-ui/saito-header/saito-header');
 const RedSquareMain = require('./lib/main');
 const Tweet = require('./lib/tweet');
@@ -10,7 +11,7 @@ const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
 
 
-class RedSquare extends InviteTemplate {
+class RedSquare extends ModTemplate {
 
   constructor(app) {
 
@@ -306,6 +307,7 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
                 //	    }
 
                 if (new_tweet) {
+
                   let tx = new saito.default.transaction(JSON.parse(row.tx));
 
                   console.log('on load txn');
@@ -319,7 +321,6 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
                   tx.optional.num_replies = row.num_replies;
                   tx.optional.num_retweets = row.num_retweets;
                   tx.optional.num_likes = row.num_likes;
-                  tx.optional.images = row.images;
                   tx.optional.link_properties = {};
 
                   try {
@@ -336,9 +337,7 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
             }
           }
         );
-
       }
-
     }
   }
 
@@ -440,13 +439,7 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
 
   async receiveTweetTransaction(blk, tx, conf, app) {
 
-    // console.log('inside receive txn');
-    // console.log(tx);
-
     let tweet = new Tweet(app, this, tx);
-
-    // console.log('tweet inside receive');
-    // console.log(tweet);
 
     //
     // browsers
@@ -474,36 +467,42 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
     let sql = `INSERT INTO tweets (
                 tx,
                 sig,
-            		created_at,
-            		updated_at,
-            		parent_id,
-            		thread_id,
+            	created_at,
+            	updated_at,
+            	parent_id,
+            	thread_id,
                 publickey,
                 link,
-            		link_properties,
-            		num_replies,
-            		num_retweets,
-            		num_likes,
-                images
+            	link_properties,
+            	num_replies,
+            	num_retweets,
+            	num_likes,
+                has_images,
+                tx_size
               ) VALUES (
                 $txjson,
                 $sig,
-            		$created_at,
-            		$updated_at,
-            		$parent_id,
-            		$thread_id,
+            	$created_at,
+            	$updated_at,
+            	$parent_id,
+            	$thread_id,
                 $publickey,
-            		$link,
-            		$link_properties,
-            		0,
-            		0,
-            		0,
-                $images
+            	$link,
+            	$link_properties,
+            	0,
+            	0,
+            	0,
+                $has_images,
+                $tx_size
               )`;
 
-    let imgs = (typeof (tweet.images) != "undefined") ? JSON.stringify(tweet.images) : "";
+    let has_images = 0;
+    if (typeof (tweet.images) != "undefined") { has_images = 1; }
+    let txjson = JSON.stringify(tx.transaction);
+    let tx_size = txjson.length;
+
     let params = {
-      $txjson: JSON.stringify(tx.transaction),
+      $txjson: txjson,
       $sig: tx.transaction.sig,
       $created_at: created_at,
       $updated_at: updated_at,
@@ -512,10 +511,11 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
       $publickey: tx.transaction.from[0].add,
       $link: tweet.link,
       $link_properties: JSON.stringify(tweet.link_properties),
-      $images: imgs
+      $has_images: has_images,
+      $tx_size: tx_size
     };
-    app.storage.executeDatabase(sql, params, "redsquare");
 
+    app.storage.executeDatabase(sql, params, "redsquare");
 
     let ts = new Date().getTime();
     let sql2 = "UPDATE tweets SET updated_at = $timestamp WHERE sig = $sig";
