@@ -47,22 +47,9 @@ class VideoChatManager {
         app.browser.makeDraggable("stunx-chatbox");
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
-            let stunx_mod = app.modules.returnModule("Stunx");
-            console.log("peer connections ", stunx_mod.peer_connections);
-            for (let i in stunx_mod.peer_connections) {
-                if (stunx_mod.peer_connections[i]) {
-                    stunx_mod.peer_connections[i].close();
-                    console.log('closing peer connection');
-                }
-            }
 
-            this.localStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping track');
-            })
+            this.disconnectMediaStreams()
 
-            this.hide();
             siteMessage("You have been disconnected", 5000);
         })
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -86,12 +73,27 @@ class VideoChatManager {
 
     }
 
+    disconnect() {
+        let stunx_mod = this.app.modules.returnModule("Stunx");
+        console.log("peer connections ", stunx_mod.peer_connections);
+        for (let i in stunx_mod.peer_connections) {
+            if (stunx_mod.peer_connections[i]) {
+                stunx_mod.peer_connections[i].close();
+                console.log('closing peer connection');
+            }
+        }
+        this.localStream.getTracks().forEach(track => {
+            track.stop();
+            console.log(track);
+            console.log('stopping track');
+        })
+        this.hide();
+    }
+
 
     addRemoteStream(peer, remoteStream, pc) {
-
         this.video_boxes[peer].video_box.addStream(remoteStream);
         this.video_boxes[peer].peer_connection = pc;
-
     }
 
     renderLocalStream(localStream) {
