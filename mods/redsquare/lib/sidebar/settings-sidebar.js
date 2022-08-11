@@ -27,6 +27,12 @@ class RedSquareGamesSidebar {
   }
 
   attachEvents(app, mod) { 
+    document.querySelector(".settings-sidebar-nuke").addEventListener("click", async () => {
+      let c = await sconfirm("Are you sure you want to delete your wallet?");
+      if (c) {
+        app.wallet.resetWallet();
+      }
+    });
   }
 
 }
