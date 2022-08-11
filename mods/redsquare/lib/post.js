@@ -24,10 +24,14 @@ class Post {
 
       app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", 
       (file) => {
+        if (this.images.length >= 4) {
+          salert("maximum 4 images allowed per tweet.");
+        } else {
           this.images.push(file);
           app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${file}"
              /><i data-id="${this.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
              </div>`, document.getElementById("post-tweet-img-preview-container"));
+        }
       }, 
       false);
 
