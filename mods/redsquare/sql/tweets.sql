@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tweets (
   num_likes 		INTEGER,
   num_retweets 		INTEGER,
   num_replies 		INTEGER,
+  images  TEXT,
   created_at 		INTEGER,
   updated_at 		INTEGER,
   UNIQUE 		(id),

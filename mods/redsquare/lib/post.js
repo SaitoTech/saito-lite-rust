@@ -21,13 +21,22 @@ class Post {
 
     attachEvents(app, mod) { 
 
-      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
-        this.images.push(file);
-      }, false);
 
+      app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", 
+      (file) => {
+        if (this.images.length >= 4) {
+          salert("maximum 4 images allowed per tweet.");
+        } else {
+          this.images.push(file);
+          app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${file}"
+             /><i data-id="${this.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+             </div>`, document.getElementById("post-tweet-img-preview-container"));
+        }
+      }, 
+      false);
 
       document.getElementById("post-tweet-button").onclick = (e) => {
-
+        document.getElementById("post-tweet-loader").style.display = 'block';
         e.preventDefault();
 
         let text = document.getElementById('post-tweet-textarea').value;
@@ -46,16 +55,35 @@ class Post {
 
 
         if (thread_id !== "") {
-console.log("RENDER MAIN PAGE");
+          console.log("RENDER MAIN PAGE");
       	  mod.renderMainPage(app, mod);
       	} else {
-console.log("RENDER WITH CHILDREN");
+          console.log("RENDER WITH CHILDREN");
           mod.renderWithChildren(app, mod, thread_id);
       	}
 
       	this.overlay.hide();
         document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
+
+      let post_self = this;
+      document.addEventListener('click',function(e){
+        if (typeof (e.target.classList) != 'undefined'){
+          if (e.target.classList.contains('post-tweet-img-preview-close')){
+                let array_position = e.target.getAttribute("data-id");
+                e.target.parentNode.remove();
+                (post_self.images).splice(array_position, 1);
+                console.log(post_self.images);
+                document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
+                  let array_position2 = el2.getAttribute("data-id");
+                  if (array_position2 > array_position) {
+                    el2.setAttribute("data-id", (array_position2-1));
+                  }
+                });
+          }
+        }
+      });
+
     }
 
 }
