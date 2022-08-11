@@ -50,22 +50,7 @@ class ChatManagerSmall {
         app.browser.makeDraggable("small-video-chatbox");
 
         document.querySelector('.disconnect_btn').onclick = (e) => {
-            let stunx_mod = app.modules.returnModule("Stunx");
-            console.log("peer connections ", stunx_mod.peer_connections);
-            for (let i in stunx_mod.peer_connections) {
-                if (stunx_mod.peer_connections[i]) {
-                    stunx_mod.peer_connections[i].close();
-                    console.log('closing peer connection');
-                }
-            }
-
-            this.localStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping track');
-            })
-
-            this.hide();
+            this.disconnect();
             siteMessage("You have been disconnected", 5000);
         }
 
@@ -90,6 +75,23 @@ class ChatManagerSmall {
 
     }
 
+    disconnect() {
+        let stunx_mod = this.app.modules.returnModule("Stunx");
+        console.log("peer connections ", stunx_mod.peer_connections);
+        for (let i in stunx_mod.peer_connections) {
+            if (stunx_mod.peer_connections[i]) {
+                stunx_mod.peer_connections[i].close();
+                console.log('closing peer connection');
+            }
+        }
+        this.localStream.getTracks().forEach(track => {
+            track.stop();
+            console.log(track);
+            console.log('stopping track');
+        })
+
+        this.hide();
+    }
 
     addRemoteStream(peer, remoteStream, pc) {
 
@@ -121,8 +123,24 @@ class ChatManagerSmall {
         if (!this.video_boxes[peer].video_box) {
             return;
         }
-
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+
+        switch (state) {
+            case "disconnected":
+                delete this.video_boxes[peer];
+                if (Object.keys(this.video_boxes).length === 1) {
+                    this.disconnect();
+                    siteMessage("Video call ended")
+                }
+                console.log("video boxes: after ", this.video_boxes);
+                break;
+
+            default:
+                break;
+        }
+
+
+
     }
 
 
