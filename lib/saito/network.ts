@@ -832,7 +832,7 @@ class Network {
         tx = new Transaction();
         tx.deserialize(this.app, message.message_data, 0);
         await this.app.mempool.addTransaction(tx);
-        //this.propagateTransaction(tx);
+        this.propagateTransaction(tx);
         break;
 
       // case "SNDKYLST":

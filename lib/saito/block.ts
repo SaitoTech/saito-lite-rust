@@ -305,7 +305,7 @@ class Block {
   }
 
   async generateConsensusValues() {
-    //
+    console.debug("generating consensus values");
     // this is the number of blocks we will recurse backwards to issue the
     // staker payout. if this permits strings of blocks that are less than
     // the theoretical maximum number of golden-ticket free blocks that can
@@ -384,7 +384,7 @@ class Block {
 
       //
       // generate metadata should have already loaded this pruned-block into
-      // memory with all of the transactions that we will need to examine to
+      // memory with all the transactions that we will need to examine to
       // determine which should be rebroadcast.
       //
       if (pruned_block) {
@@ -681,10 +681,10 @@ class Block {
       transaction.transaction.type = TransactionType.Fee;
 
       for (let i = 0; i < cv.block_payouts.length; i++) {
-        if (cv.block_payout[i].miner !== "") {
+        if (cv.block_payouts[i].miner !== "") {
           const output = new Slip();
-          output.add = cv.block_payout[i].miner;
-          output.amt = cv.block_payout[i].miner_payout;
+          output.add = cv.block_payouts[i].miner;
+          output.amt = cv.block_payouts[i].miner_payout;
           output.type = SlipType.MinerOutput;
           output.sid = slip_ordinal;
           transaction.addOutput(output.clone());
@@ -692,8 +692,8 @@ class Block {
         }
         if (cv.block_payout[i].router !== "") {
           const output = new Slip();
-          output.add = cv.block_payout[i].router;
-          output.amt = cv.block_payout[i].router_payout;
+          output.add = cv.block_payouts[i].router;
+          output.amt = cv.block_payouts[i].router_payout;
           output.type = SlipType.RouterOutput;
           output.sid = slip_ordinal;
           transaction.addOutput(output.clone());
