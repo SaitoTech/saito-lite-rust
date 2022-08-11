@@ -690,7 +690,7 @@ class Block {
           transaction.addOutput(output.clone());
           slip_ordinal += 1;
         }
-        if (cv.block_payout[i].router !== "") {
+        if (cv.block_payouts[i].router !== "") {
           const output = new Slip();
           output.add = cv.block_payouts[i].router;
           output.amt = cv.block_payouts[i].router_payout;
