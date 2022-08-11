@@ -6910,6 +6910,7 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
   modifyOps(ops, card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
+    // probably not, just check with card if ops are undefined ? see if this breaks first
     if (card == "olympic" && ops == 4) {} else {
       if (card != "") { ops = this.returnOpsOfCard(card); }
     }

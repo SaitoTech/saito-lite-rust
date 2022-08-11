@@ -38,12 +38,22 @@ class Post {
       false);
 
       document.getElementById("post-tweet-button").onclick = (e) => {
+
         document.getElementById("post-tweet-loader").style.display = 'block';
         e.preventDefault();
 
         let text = document.getElementById('post-tweet-textarea').value;
         let parent_id = document.getElementById("parent_id").value;
         let thread_id = document.getElementById("thread_id").value;
+
+	//
+	// saito-loader
+	//
+        post_self.overlay.hide();
+        post_self.overlay.closebox = false;
+        post_self.overlay.show(app, mod, '<div class="saito-loader"></div>');
+
+
         let data = { text : text };
         if (parent_id !== "") {
           data = { text : text , parent_id : parent_id , thread_id : thread_id };
@@ -52,20 +62,23 @@ class Post {
           data['images'] = this.images;
         }
 
-        let newtx = mod.sendTweetTransaction(app, mod, data);  
-      	mod.addTweetFromTransaction(app, mod, newtx);
+	setTimeout(() => {
 
+          let newtx = mod.sendTweetTransaction(app, mod, data);  
+          mod.addTweetFromTransaction(app, mod, newtx);
 
-        if (thread_id !== "") {
-          console.log("RENDER MAIN PAGE");
-      	  mod.renderMainPage(app, mod);
-      	} else {
-          console.log("RENDER WITH CHILDREN");
-          mod.renderWithChildren(app, mod, thread_id);
-      	}
+          if (thread_id !== "") {
+            console.log("RENDER MAIN PAGE");
+      	    mod.renderMainPage(app, mod);
+      	  } else {
+            console.log("RENDER WITH CHILDREN");
+            mod.renderWithChildren(app, mod, thread_id);
+      	  }
 
-      	this.overlay.hide();
-        document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
+      	  post_self.overlay.hide();
+          document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
+	}, 1000);
+
       }
 
       document.addEventListener('click',function(e){

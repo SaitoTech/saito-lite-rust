@@ -1,8 +1,4 @@
 
-
-
-
-const videoBoxContainerTemplate = require("./video-box-container.template");
 const videoBoxTemplate = require("./video-box.template");
 
 
