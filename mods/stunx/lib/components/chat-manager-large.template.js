@@ -1,11 +1,11 @@
-const videoChatTemplate = () => {
+const ChatManagerLargeTemplate = () => {
   return `
     <div class="stunx-chatbox" id="stunx-chatbox">
       <main>
         <section>
         <h6 class="heading" style="color: white;">Video Chat </h6>
         </section>
-        <section class="wrapper">
+        <section class="large-wrapper">
       
         </section>
 
@@ -20,7 +20,7 @@ const videoChatTemplate = () => {
     </div>`
 }
 
-module.exports = videoChatTemplate;
+module.exports = ChatManagerLargeTemplate;
 
 {/* <div class="box">
 <button class="b-btngrid">2h5dt6dd678s..</button>

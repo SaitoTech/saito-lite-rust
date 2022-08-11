@@ -1,7 +1,9 @@
-
 const VideoBox = require('./video-box');
-const videoChatManagerTemplate = require('./video-chat-manager.template');
-class VideoChatManager {
+const ChatManagerSmallTemplate = require('./chat-manager-small.template');
+
+
+
+class ChatManagerSmall {
 
     // peers = {};
     localStream;
@@ -14,62 +16,54 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod) => {
+        this.app.connection.on('show-video-chat-request', (app, mod, type) => {
+            if (type !== "small") return
+            console.log('showing')
             this.show(app, mod);
         })
-        this.app.connection.on('render-local-stream-request', (localStream) => {
+        this.app.connection.on('render-local-stream-request', (localStream, type) => {
+            if (type !== "small") return
+            console.log('rendering local strem')
             this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc) => {
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, type) => {
+            if (type !== "small") return
             this.addRemoteStream(peer, remoteStream, pc)
         });
-        this.app.connection.on('render-remote-stream-placeholder-request', (peer) => {
+        this.app.connection.on('render-remote-stream-placeholder-request', (peer, type) => {
+            console.log('type ', type);
+            if (type !== "small") return
             this.renderRemoteStreamPlaceholder(peer);
         });
 
-        this.app.connection.on('stunx-change-connection-state-request', (peer, state) => {
+        this.app.connection.on('change-connection-state-request', (peer, state, type) => {
+            if (type !== "small") return
             this.updateConnectionState(peer, state)
         })
     }
 
-
-
     render() {
-        this.app.browser.addElementToDom(videoChatManagerTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToDom(ChatManagerSmallTemplate(), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
-        app.browser.makeDraggable("stunx-chatbox");
+        app.browser.makeDraggable("small-video-chatbox");
 
-        document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
-            let stunx_mod = app.modules.returnModule("Stunx");
-            console.log("peer connections ", stunx_mod.peer_connections);
-            for (let i in stunx_mod.peer_connections) {
-                if (stunx_mod.peer_connections[i]) {
-                    stunx_mod.peer_connections[i].close();
-                    console.log('closing peer connection');
-                }
-            }
-
-            this.localStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping track');
-            })
-
-            this.hide();
+        document.querySelector('.disconnect_btn').onclick = (e) => {
+            this.disconnect();
             siteMessage("You have been disconnected", 5000);
-        })
-        document.querySelector('.audio_control').addEventListener('click', (e) => {
+        }
+
+        document.querySelector('.audio_control').onclick = (e) => {
             this.toggleAudio();
-        })
-        document.querySelector('.video_control').addEventListener('click', (e) => {
+        }
+        document.querySelector('.video_control').onclick = (e) => {
             this.toggleVideo();
-        })
+        }
     }
 
     show(app, mod) {
-        if (!document.querySelector('.stunx-chatbox')) {
+        if (!document.querySelector('.small-video-chatbox')) {
             this.render();
             this.attachEvents(app, mod);
         }
@@ -77,10 +71,27 @@ class VideoChatManager {
 
     hide() {
         console.log('hiding')
-        document.querySelector('#stunx-chatbox').parentElement.removeChild(document.querySelector('#stunx-chatbox'));
+        document.querySelector('#small-video-chatbox').parentElement.removeChild(document.querySelector('#small-video-chatbox'));
 
     }
 
+    disconnect() {
+        let stunx_mod = this.app.modules.returnModule("Stunx");
+        console.log("peer connections ", stunx_mod.peer_connections);
+        for (let i in stunx_mod.peer_connections) {
+            if (stunx_mod.peer_connections[i]) {
+                stunx_mod.peer_connections[i].close();
+                console.log('closing peer connection');
+            }
+        }
+        this.localStream.getTracks().forEach(track => {
+            track.stop();
+            console.log(track);
+            console.log('stopping track');
+        })
+
+        this.hide();
+    }
 
     addRemoteStream(peer, remoteStream, pc) {
 
@@ -91,7 +102,7 @@ class VideoChatManager {
 
     renderLocalStream(localStream) {
         const videoBox = new VideoBox(this.app, this.mod);
-        videoBox.render(localStream, 'local', 'wrapper');
+        // videoBox.render(localStream, 'local', 'small-wrapper');
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
     }
@@ -103,16 +114,33 @@ class VideoChatManager {
             const videoBox = new VideoBox(this.app, this.mod);
             this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
         }
-        this.video_boxes[peer].video_box.render(null, peer, 'wrapper');
+        this.video_boxes[peer].video_box.render(null, peer, 'small-wrapper');
     }
 
 
     updateConnectionState(peer, state) {
-        console.log('connection state ', state);
+        console.log(state, this.video_boxes[peer].video_box);
         if (!this.video_boxes[peer].video_box) {
-            return console.log("An error occured with updating connections state");
+            return;
         }
         this.video_boxes[peer].video_box.handleConnectionStateChange(state);
+
+        switch (state) {
+            case "disconnected":
+                delete this.video_boxes[peer];
+                if (Object.keys(this.video_boxes).length === 1) {
+                    this.disconnect();
+                    siteMessage("Video call ended")
+                }
+                console.log("video boxes: after ", this.video_boxes);
+                break;
+
+            default:
+                break;
+        }
+
+
+
     }
 
 
@@ -146,7 +174,7 @@ class VideoChatManager {
         } else {
 
             this.localStream.getVideoTracks()[0].enabled = true;
-
+            // this.localStream.getVideoTracks()[0].start();
 
             this.videoEnabled = true;
             document.querySelector('.video_control').classList.remove('fa-video-slash')
@@ -162,4 +190,4 @@ class VideoChatManager {
 }
 
 
-module.exports = VideoChatManager;
+module.exports = ChatManagerSmall;

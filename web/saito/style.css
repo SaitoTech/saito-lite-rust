@@ -2131,7 +2131,7 @@ a.header-icon-fullscreen.tip {
 
 /*  video chat */
 
-.game-video-chatbox {
+.small-video-chatbox {
   max-width: 60vw;
   top: 50%;
   left: 50%;
@@ -2143,29 +2143,29 @@ a.header-icon-fullscreen.tip {
 }
 
 
-.game-video-chatbox .heading {
+.small-video-chatbox .heading {
   padding: 1rem;
 }
 
-.game-video-chatbox .disconnect_btn {
+.small-video-chatbox .disconnect_btn {
   transform: matrix(1, 0, 0, -1, 0, 0);
   background-color: var(--saito-white);
 }
 
 
-.game-video-chatbox .disconnect_btn:hover {
+.small-video-chatbox .disconnect_btn:hover {
   color: black
 }
 
-.game-video-chatbox .wrapper {
+.small-video-chatbox .small-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   grid-auto-rows: minmax(100px, 30vh);
   grid-gap: 1rem;
   background: var(--saito-skyline-grey);
 }
 
-.game-video-chatbox .video-box {
+.small-video-chatbox .video-box {
   border-radius: 0.1rem;
   width: 100%;
   height: 100%;
@@ -2178,7 +2178,7 @@ a.header-icon-fullscreen.tip {
   display: block;
 }
 
-.game-video-chatbox .b-btngrid {
+.small-video-chatbox .b-btngrid {
   border: none;
   margin-left: 1rem;
   margin-top: 250px;
@@ -2189,11 +2189,11 @@ a.header-icon-fullscreen.tip {
   cursor: pointer;
 }
 
-.game-video-chatbox .heading {
+.small-video-chatbox .heading {
   background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
 }
 
-.game-video-chatbox .footer {
+.small-video-chatbox .footer {
   display: grid;
   grid-gap: 1rem;
   padding: 20px;
@@ -2207,17 +2207,17 @@ a.header-icon-fullscreen.tip {
 }
 
 
-.game-video-chatbox p {
+.small-video-chatbox p {
   margin: 0;
 }
 
 
-.game-video-chatbox .disconnect_btn {
+.small-video-chatbox .disconnect_btn {
   margin-left: auto;
   background-color: white;
 }
 
-.game-video-chatbox .footer .fa, .game-video-chatbox .footer .fas   {
+.small-video-chatbox .footer .fa, .small-video-chatbox .footer .fas   {
   color: white;
   font-size: 2rem;
   cursor: pointer;
