@@ -7,7 +7,6 @@ const ArcadeInfobox = require("./arcade-infobox");
 const GameLoader = require("./../arcade-game/game-loader");
 const SaitoCarousel = require("./../../../../lib/saito/ui/saito-carousel/saito-carousel");
 const ArcadeInviteTemplate = require("./templates/arcade-invite.template");
-const ArcadeObserveTemplate = require("./templates/arcade-observe.template");
 const GameCryptoTransferManager = require("./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager");
 const JSON = require("json-bigint");
 const saito = require("../../../../lib/saito/saito");
@@ -55,10 +54,22 @@ module.exports = ArcadeMain = {
     // add tabs if we have League installed
     //
     let league = app.modules.returnModule("League");
+    let observer = app.modules.returnModule("Observer");
 
-    let tabNames = (league)? ["arcade", "league"] : [];
+    let tabNames = ["arcade"];
+    if (league){
+      tabNames.push("league");
+    }
+    if (observer){
+      tabNames.push("observer");
+    }
 
-    if (tabNames.length > 0){
+    if (tabNames.length > 1){
+      try{
+        document.getElementById("arcade-tab-buttons").style.gridTemplateColumns = `repeat(${tabNames.length}, auto)`;
+      }catch(err){
+        console.log(err);
+      }
       tabNames.forEach((tabButtonName, i) => {
         //Add click event to tab
         document.querySelector("#tab-button-" + tabButtonName).onclick = () => {
@@ -144,16 +155,13 @@ module.exports = ArcadeMain = {
         }
       });
 
-      /*mod.observer.forEach((observe, i) => {
-        app.browser.addElementToElement(
-          ArcadeObserveTemplate(app,mod,observe,i,app.crypto.stringToBase64(JSON.stringify(observe))),
-          document.querySelector(".observables-hero")
-        );
-      });*/
-
       //insert leagues into hidden tab
       if (league){
         league.renderArcade(app, mod, document.querySelector("#league-hero")); 
+      }
+
+      if (observer){
+        observer.renderArcade(app, mod, "observer-hero");
       }
 
     }
@@ -202,20 +210,7 @@ module.exports = ArcadeMain = {
   },
 
   attachEvents(app, mod) {
-    /*
-    // observer mode actions
-    document.querySelectorAll(`.observe-game-btn`).forEach((el, i) => {
-      el.onclick = function (e) {
-        let game_obj = e.currentTarget.getAttribute("data-gameobj");
-        let game_cmd = e.currentTarget.getAttribute("data-cmd");
-
-        if (game_cmd === "watch") {
-          arcade_main_self.observeGame(app, mod, game_obj);
-          return;
-        }
-      };
-    });*/
-
+    
     //
     // game invitation actions
     //
@@ -229,11 +224,6 @@ module.exports = ArcadeMain = {
               let game_cmd = e.currentTarget.getAttribute("data-cmd");
 
               app.browser.logMatomoEvent("Arcade", "ArcadeAcceptInviteButtonClick", game_cmd);
-
-              /*if (game_cmd === "delete") {
-                arcade_main_self.deleteGame(app, mod, game_sig);
-                return;
-              }*/
 
               if (game_cmd === "cancel") {
             	  let c = confirm("Are you sure you want to cancel this game?");
@@ -752,10 +742,6 @@ module.exports = ArcadeMain = {
       this.removeGameFromList(game_id);
     }
   },*/
-
-  observeGame(app, mod, encryptedgamejson) {
-    mod.observeGame(encryptedgamejson);
-  },
 
   removeGameFromList(game_id) {
     try{

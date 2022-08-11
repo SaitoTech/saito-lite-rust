@@ -1,19 +1,11 @@
+//TODO -- DELETE ME
+module.exports = ArcadeObserveTemplate = (app, mod, msg) => {
 
-module.exports = ArcadeObserveTemplate = (app, mod, msg, idx, msgjson) => {
-
-
-  let gameModule = app.modules.returnModule(invite.msg.game);
-  /*for (let i = 0; i < app.modules.mods.length; i++) {
-    if (app.modules.mods[i].name === slug) { 
-      slug = app.modules.mods[i].returnSlug(); 
-    }
-  }*/
-  //
-  // gameslug given game
-  //
+  let gameModule = app.modules.returnModule(msg.module);
   let slug = gameModule.returnSlug();
 
   let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${msg.players_array.split("_").length}, 1fr);">`;
+  let gameName= gameModule.gamename || gameModule.name;
   let gametime = new Date().getTime();
   let datetime = app.browser.formatDate(gametime);
 
@@ -31,12 +23,13 @@ module.exports = ArcadeObserveTemplate = (app, mod, msg, idx, msgjson) => {
       <div class="invite-tile-wrapper">
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
+          <div class="gameName">${gameName}</div>
           <div class="gameName" style="font-size:0.9em">${datetime.day} ${datetime.month} ${datetime.year}</div>
           ${playersHtml}
         </div>
         <div class="gameShortDescription">${makeDescription(app, msg)}</div>
 	<div class="gameButtons">
-          <button data-sig="${msg.game_id}" data-gameobj="${msgjson}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
+          <button data-sig="${msg.game_id}" data-cmd="watch" class="button observe-game-btn">WATCH</button>
         </div>
       </div>
     </div>
