@@ -24,18 +24,12 @@ class Post {
 
       app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", 
       (file) => {
-          console.log(file);
           this.images.push(file);
-          app.browser.addElementToDom(`<div data-id="${this.images.length-1}" class="post-create-image-preview"><img src="${file}" 
-            style="top: 0px; position: relative; float: left; height: 50px; width: auto; margin-left: auto; margin-right: auto;width: auto;"
-             /></div>`, document.getElementById("post-create-image-preview-container"));
+          app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${file}"
+             /><i data-id="${this.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+             </div>`, document.getElementById("post-tweet-img-preview-container"));
       }, 
       false);
-
-      // app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", (file) => {
-      //   this.images.push(file);
-      // }, false);
-
 
       document.getElementById("post-tweet-button").onclick = (e) => {
 
@@ -67,6 +61,30 @@ console.log("RENDER WITH CHILDREN");
       	this.overlay.hide();
         document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
+
+      let post_self = this;
+      document.addEventListener('click',function(e){
+        console.log(e.target);
+        if (typeof (e.target.classList) != 'undefined'){
+          if (e.target.classList.contains('post-tweet-img-preview-close')){
+                let array_position = e.target.getAttribute("data-id");
+                e.target.parentNode.remove();
+                console.log('images before')
+                console.log(post_self.images);
+                console.log(array_position);
+                console.log('***********');
+                (post_self.images).splice(array_position, 1);
+                console.log(post_self.images);
+                document.querySelectorAll('.post-tweet-img-preview-close').forEach(el2 => {
+                  let array_position2 = el2.getAttribute("data-id");
+                  if (array_position2 > array_position) {
+                    el2.setAttribute("data-id", (array_position2-1));
+                  }
+                });
+          }
+        }
+      });
+
     }
 
 }

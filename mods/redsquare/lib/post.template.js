@@ -12,7 +12,7 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
     <input type="hidden" id="parent_id" name="parent_id" value="${parent_id}" />
     <input type="hidden" id="thread_id" name="thread_id" value="${thread_id}" />
 
-    <div id="post-create-image-preview-container"></div>
+    <div id="post-tweet-img-preview-container"></div>
 
     <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> Tweet </div>
     <div style="clear:both"></div>

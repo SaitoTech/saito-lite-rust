@@ -10,9 +10,6 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     let link_preview = '';
     let youtube_preview = "";
 
-    console.log("tweet");
-    console.log(tweet);
-
     if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
         let imgs = tweet.tx.msg.data.images;
         for (let i=0; i<imgs.length; i++) {
