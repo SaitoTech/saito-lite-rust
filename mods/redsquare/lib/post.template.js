@@ -17,6 +17,11 @@ module.exports = (app, mod, publickey, parent_id = "", thread_id = "") => {
     <div class="saito-button-primary post-tweet-button" id="post-tweet-button"> Tweet </div>
     <div style="clear:both"></div>
 
+    <section id="post-tweet-loader" class="post-tweet-loader">
+      <span class="loading__anim"></span>
+    </section>
+        
+
   `;
 
 }
