@@ -31,6 +31,7 @@ test/
 
 data/*.sq3
 data/*/*.blk
+data/backup/*
 data/blocks/*.blk
 data/blocks/*.sai
 data/blocks/empty
