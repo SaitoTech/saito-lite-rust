@@ -1,11 +1,11 @@
-const GameMenuVideoChatTemplate = () => {
+const ChatManagerSmallTemplate = () => {
   return `
-      <div class="game-video-chatbox" id="game-video-chatbox">
+      <div class="small-video-chatbox" id="small-video-chatbox">
         <main>
           <section>
           <h3 class="heading" style="color: white;">Game Chat </h3>
           </section>
-          <section class="wrapper">
+          <section class="small-wrapper">
         
           </section>
   
@@ -20,4 +20,4 @@ const GameMenuVideoChatTemplate = () => {
       </div>`
 }
 
-module.exports = GameMenuVideoChatTemplate;
+module.exports = ChatManagerSmallTemplate;
