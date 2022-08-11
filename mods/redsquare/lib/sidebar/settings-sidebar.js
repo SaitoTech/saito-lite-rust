@@ -16,8 +16,6 @@ class RedSquareGamesSidebar {
       document.querySelector(".saito-sidebar.right").remove();
     }
 
-    console.log("ADDING GAMES SIDEBAR!");
-
     if (selector != "") {
       app.browser.addElementToSelector(RedSquareSettingsSidebarTemplate(app, mod), selector);
     } else {

@@ -13,11 +13,7 @@ class GameCreator {
   }
 
   render(app, mod) {
-console.log("about to attach to overlay: ");
-console.log(GameCreatorTemplate(app, mod, "Select Game to Play"));
-
     this.overlay.show(app, mod, GameCreatorTemplate(app, mod, "Select Game to Play"));
-alert("and done rendering!");
     this.attachEvents(app, mod);
   }
 
@@ -37,7 +33,6 @@ alert("and done rendering!");
 	// DEPRECATED -- 
 	//
         let arcade_mod = app.modules.returnModule("Arcade");
-	// invite info will be here
 	arcade_mod.invite = mod.invite;
         ArcadeGameDetails.render(app, arcade_mod, tx);
         ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
@@ -45,13 +40,9 @@ alert("and done rendering!");
 	this.overlay.hide();
 
       };
-
     });
-
   }
-
 }
-
 
 module.exports = GameCreator;
 

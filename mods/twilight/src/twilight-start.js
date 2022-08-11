@@ -839,7 +839,7 @@ initializeGame(game_id) {
 
 	this.game.state.vp = -4;
 	this.game.state.turn = 8;
-        this.game.state.defcon = 4;
+        this.game.state.defcon = 3; // will go to 4 next round
         this.game.state.space_race_us_counter = 6;
         this.game.state.space_race_ussr_counter = 4;
 	this.game.state.eagle_has_landed = "us";
@@ -6910,6 +6910,7 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
   modifyOps(ops, card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
+    // probably not, just check with card if ops are undefined ? see if this breaks first
     if (card == "olympic" && ops == 4) {} else {
       if (card != "") { ops = this.returnOpsOfCard(card); }
     }

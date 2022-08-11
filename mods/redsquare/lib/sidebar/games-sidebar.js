@@ -13,8 +13,6 @@ class RedSquareGamesSidebar {
     this.selector = selector;
 
     app.connection.on("game-invite-render-request", (tx) => {
-        console.log("RECEIVED INVITE TO ADD");
-        console.log(tx);
         let gi = new GameInvite(app, mod, tx);
         gi.render(app, mod, ".saito-arcade-invite-list");
         this.attachEvents(app, mod);
