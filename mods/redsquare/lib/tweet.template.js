@@ -12,9 +12,12 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
 
     if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
         let imgs = tweet.tx.msg.data.images;
+        tweet_img += `<div class="redsquare-image-container">`;
+        let img_class = (imgs.length>1) ? 'tweet-multiple-img' : '';
         for (let i=0; i<imgs.length; i++) {
-          tweet_img += `<div class="redsquare-image-container"><img src="${imgs[i]}" /></div>`;
+          tweet_img += `<div class='${img_class}' style="background: url(${imgs[i]});"></div>`;
         }
+        tweet_img += `</div>`;
     }
     if (typeof tweet.text != 'undefined' && tweet.text != "") {
       tweet_text = tweet.text;
