@@ -194,7 +194,7 @@ class Network {
     //
     // initiate the handshake (verifying peers)
     // - this is normally done in initializeWebSocket, but it is not
-    // done for remote-sockets created int he server, so we manually
+    // done for remote-sockets created in the server, so we manually
     // do it here. this adds the message emission events to the socket
     //
     await this.app.handshake.initiateHandshake(socket);
@@ -220,6 +220,9 @@ class Network {
 
     let url = "";
     try {
+      if (!peer.peer.block_fetch_url){
+        console.error("peer block fetch url is not set");
+      }
       let base_url = peer.peer.block_fetch_url.endsWith('/')?peer.peer.block_fetch_url:peer.peer.block_fetch_url+"/";
       url = `${base_url}${block_hash}`;
       if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) {
