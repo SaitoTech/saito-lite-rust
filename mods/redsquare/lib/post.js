@@ -5,6 +5,8 @@ const JSON = require('json-bigint');
 class Post {
 
     constructor(app, mod) {
+      this.app = app;
+      this.mod = mod;
       this.overlay = new SaitoOverlay(app, mod);
       this.parent_id = "";
       this.thread_id = "";
@@ -21,16 +23,16 @@ class Post {
 
     attachEvents(app, mod) { 
 
+      let post_self = this;
 
       app.browser.addDragAndDropFileUploadToElement("redsquare-tweet-overlay", 
       (file) => {
         if (this.images.length >= 4) {
-          salert("maximum 4 images allowed per tweet.");
+          salert("Maximum 4 images allowed per tweet.");
         } else {
-          this.images.push(file);
-          app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${file}"
-             /><i data-id="${this.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
-             </div>`, document.getElementById("post-tweet-img-preview-container"));
+        
+          this.resizeImg(file, 0.75, 0.75);
+        
         }
       }, 
       false);
@@ -66,7 +68,6 @@ class Post {
         document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
       }
 
-      let post_self = this;
       document.addEventListener('click',function(e){
         if (typeof (e.target.classList) != 'undefined'){
           if (e.target.classList.contains('post-tweet-img-preview-close')){
@@ -86,6 +87,47 @@ class Post {
 
     }
 
+  resizeImg(img, dimensions, quality){
+    let post_self = this;
+    let canvas = document.createElement("canvas");
+    let oImg = document.createElement("img");
+    oImg.setAttribute('src', img);
+    oImg.setAttribute('id', "uploaded-img");
+    document.body.appendChild(oImg);
+
+    let original = document.getElementById("uploaded-img");
+    let img_width = 0;
+    let img_height = 0;
+
+    original.onload = function() {
+      img_width =  this.width;
+      img_height = this.height;
+
+      let type = original.src.split(";")[0].split(":")[1];
+      let canvas = document.createElement("canvas");
+
+      let w = 0;
+      let h = 0;
+      let r = 1;
+      
+      w = (img_width * r)*dimensions;
+      h = (img_height * r)*dimensions;
+
+      canvas.width = w;
+      canvas.height = h;
+
+      canvas.getContext("2d").drawImage(this, 0, 0, w, h);
+      let result_img_uri = canvas.toDataURL('image/jpeg', quality);
+      
+      post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
+       /><i data-id="${post_self.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+       </div>`, document.getElementById("post-tweet-img-preview-container"));  
+
+      post_self.images.push(img);
+      this.remove();
+      return result_img_uri;
+    };
+  }
 }
 
 module.exports = Post;
