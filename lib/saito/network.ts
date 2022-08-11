@@ -231,12 +231,14 @@ class Network {
       console.log("fetching url : "+url);
       const res = await fetch(url);
       if (res.ok) {
-        console.log("block fetched : "+block_hash);
         const blob = await res.blob();//arrayBuffer();
         // const buffer = Buffer.from(Buffer.from(base64Buffer).toString("utf-8"), "base64");
         const buffer = Buffer.from(await blob.arrayBuffer());
+        console.log("block fetched : " + block_hash + " size = " + buffer.length);
+
         const block = new Block(this.app);
         block.deserialize(buffer);
+        console.debug("block deserialized : " + block_hash);
         await block.generateConsensusValues();
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -277,7 +279,6 @@ class Network {
         if (this.debugging) {
           console.log("connected to network", event);
         }
-        this.app.network.requestBlockchain(peer);
         this.app.connection.emit("peer_connect", peer);
         this.app.connection.emit("connection_up", peer);
         this.app.network.propagateServices(peer);
@@ -331,7 +332,6 @@ class Network {
       // default ws websocket
       //
       peer.socket.on("open", async (event) => {
-        this.app.network.requestBlockchain(peer);
         this.app.network.propagateServices(peer);
       });
       peer.socket.on("close", (event) => {
@@ -1120,6 +1120,8 @@ class Network {
     let latest_block_id = this.app.blockring.returnLatestBlockId();
     let latest_block_hash = this.app.blockring.returnLatestBlockHash();
     let fork_id = this.app.blockchain.blockchain.fork_id;
+
+    console.log(`requesting blockchain from peer : latest block id= ${latest_block_id} latest block hash = ${latest_block_hash} fork id = ${fork_id}`);
 
     if (this.app.BROWSER == 1) {
       if (this.app.blockchain.blockchain.last_block_id > latest_block_id) {

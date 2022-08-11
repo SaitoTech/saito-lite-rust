@@ -137,6 +137,7 @@ class Handshake {
             } else {
                 peer.peer.block_fetch_url = r.block_fetch_url;
             }
+            this.app.network.requestBlockchain(peer);
 
             this.app.connection.emit("handshake_complete", peer);
             console.log("handshake completed with ",  peer.returnPublicKey());
@@ -152,7 +153,8 @@ class Handshake {
 
         if (this.app.crypto.verifyHash(peer.challenge, c.signature.toString("hex"), peer.peer.publickey)) {
             console.log("handshake completed with ",  peer.returnPublicKey());
-            //this.app.connection.emit("handshake_complete", peer);
+            this.app.network.requestBlockchain(peer);
+            this.app.connection.emit("handshake_complete", peer);
         } else {
             console.log("handshake completion failed");
         }

@@ -335,8 +335,8 @@ class Server {
           });
 
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
-          res.write(buffer, "utf8");
+          const buffer = Buffer.from(liteblock.serialize())//, "binary").toString("base64");
+          res.write(buffer);
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.end();
           return;

@@ -136,6 +136,7 @@ class Block {
    * @returns {Block}
    */
   deserialize(buffer?) {
+    console.debug("deserializing block");
     const transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
 
     this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
@@ -185,7 +186,7 @@ class Block {
     ) {
       this.block.signature = "";
     }
-
+    console.debug("tx length = " + transactions_length);
     for (let i = 0; i < transactions_length; i++) {
       const inputs_len = this.app.binary.u32FromBytes(
         buffer.slice(start_of_transaction_data, start_of_transaction_data + 4)
@@ -211,6 +212,7 @@ class Block {
       this.transactions.push(transaction);
       start_of_transaction_data = end_of_transaction_data;
     }
+    console.log("block deserialized");
   }
 
   //
