@@ -548,10 +548,10 @@ class Block {
       //
       let previous_block_payout = previous_block.returnFeesTotal();
       if (
-        previous_block_payout > previous_block.block.avg_income * BigInt(125)/BigInt(100) &&
+        previous_block_payout > (previous_block.block.avg_income * BigInt(125))/BigInt(100) &&
         previous_block_payout > 50
       ) {
-        previous_block_payout = previous_block.block.avg_income * BigInt(124)/BigInt(100);
+        previous_block_payout = (previous_block.block.avg_income * BigInt(124))/BigInt(100);
       }
 
       //
