@@ -815,7 +815,7 @@ class Blockchain {
     return !!this.blocks[block_hash];
   }
 
-  async loadBlockAsync(block_hash: string) {
+  async loadBlockAsync(block_hash: string):Promise<Block | null> {
     if (!block_hash) return null;
     if (typeof window === "undefined") {
       if (this.blocks[block_hash] && this.blocks[block_hash].block_type === BlockType.Full) {

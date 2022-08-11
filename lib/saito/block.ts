@@ -440,7 +440,7 @@ class Block {
               } else {
                 //
                 // rebroadcast dust is either collected into the treasury or
-                // distributed as a fee for the next block producer. for now
+                // distributed as a fee for the next block producer. for now,
                 // we will simply distribute it as a fee. we may need to
                 // change this if the DUST becomes a significant enough amount
                 // each block to reduce consensus security.
@@ -458,9 +458,7 @@ class Block {
     //
     const previous_block = await this.app.blockchain.loadBlockAsync(this.block.previous_block_hash);
     if (previous_block) {
-      //
       // difficulty depends on previous block
-      //
       const difficulty = previous_block.returnDifficulty();
 
       if (previous_block.hasGoldenTicket() && cv.gt_num === 0) {
@@ -483,7 +481,7 @@ class Block {
 
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
-          (previous_block.block.avg_income - cv.total_fees) /
+          Number(previous_block.block.avg_income - cv.total_fees) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
@@ -491,7 +489,7 @@ class Block {
       }
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
-          (cv.total_fees - previous_block.block.avg_income) /
+          Number(cv.total_fees - previous_block.block.avg_income) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income += adjustment;
@@ -503,7 +501,7 @@ class Block {
       //
       if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
         let adjustment =
-          (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
+          Number(previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income -= adjustment;
@@ -511,7 +509,7 @@ class Block {
       }
       if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
         let adjustment =
-          (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
+         Number (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income += adjustment;
@@ -550,10 +548,10 @@ class Block {
       //
       let previous_block_payout = previous_block.returnFeesTotal();
       if (
-        previous_block_payout > previous_block.block.avg_income * 1.25 &&
+        previous_block_payout > previous_block.block.avg_income * BigInt(125)/BigInt(100) &&
         previous_block_payout > 50
       ) {
-        previous_block_payout = previous_block.block.avg_income * 1.24;
+        previous_block_payout = previous_block.block.avg_income * BigInt(124)/BigInt(100);
       }
 
       //
@@ -601,7 +599,7 @@ class Block {
         let cont = 1;
         let loop_idx = 0;
         let did_the_block_before_our_staking_block_have_a_golden_ticket =
-          previous_block.hasGoldenTicket();
+            previous_block.hasGoldenTicket();
 
         //
         // staking block hash is 3 back, pre
@@ -631,17 +629,17 @@ class Block {
                 // update with this block info in case of next loop
                 //
                 did_the_block_before_our_staking_block_have_a_golden_ticket =
-                  staking_block.hasGoldenTicket();
+                    staking_block.hasGoldenTicket();
 
                 //
                 // calculate staker block payments
                 //
                 let previous_staking_block_payout = staking_block.returnFeesTotal();
                 if (
-                  previous_staking_block_payout > staking_block.block.avg_income * 1.25 &&
-                  previous_staking_block_payout > 50
+                    previous_staking_block_payout > staking_block.block.avg_income * BigInt(125) / BigInt(100) &&
+                    previous_staking_block_payout > 50
                 ) {
-                  previous_staking_block_payout = staking_block.block.avg_income * 1.24;
+                  previous_staking_block_payout = staking_block.block.avg_income * BigInt(124) / BigInt(100);
                 }
 
                 const sp = previous_staking_block_payout / BigInt(2);
