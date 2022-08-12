@@ -1108,8 +1108,6 @@ try {
 
     if (mv[0] == "init") {
 
-alert("TESTING HERE: " + this.game.id);
-
       this.game.queue.splice(qe, 1);
   	    
       // observer skips
