@@ -37,6 +37,7 @@ data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
 data/backup/*
+data/backup
 
 bundler
 bundler/*
