@@ -40,6 +40,11 @@ class RedSquareAppspaceHome {
       ptweet.render(app, mod);
     }
 
+    document.getElementById("redsquare-new-tweets-btn").onclick = (e) => {
+      mod.renderMainPage(app, mod);
+      document.getElementById("redsquare-new-tweets-btn").style.display = 'none';
+    }
+
   }
 
 }

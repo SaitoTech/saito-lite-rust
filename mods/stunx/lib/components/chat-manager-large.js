@@ -1,6 +1,6 @@
 
 const VideoBox = require('./video-box');
-const videoChatManagerTemplate = require('./video-chat-manager.template');
+const ChatManagerLargeTemplate = require('./chat-manager-large.template');
 class VideoChatManager {
 
     // peers = {};
@@ -14,51 +14,42 @@ class VideoChatManager {
     constructor(app, mod) {
         this.app = app;
         this.mod = mod;
-        this.app.connection.on('show-video-chat-request', (app, mod) => {
+
+        this.app.connection.on('show-video-chat-request', (app, mod, type) => {
+            if (type !== "large") return
             this.show(app, mod);
         })
-        this.app.connection.on('add-local-stream-request', (localStream) => {
-            this.addLocalStream(localStream)
+        this.app.connection.on('render-local-stream-request', (localStream, type) => {
+            if (type !== "large") return
+            this.renderLocalStream(localStream)
         })
-        this.app.connection.on('add-remote-stream-request', (remoteStream, publicKey, pc, type) => {
-            console.log(type);
-            if (type === "fromCreator") {
-                console.log('from offer creator')
-                this.addRemoteStreamFromOfferCreator(remoteStream, publicKey, pc);
-            }
-            if (type === "fromRecipient") {
-                console.log('adding offer recipient')
-                this.addRemoteStreamFromOfferRecipient(remoteStream, publicKey, pc);
-            }
+        this.app.connection.on('add-remote-stream-request', (peer, remoteStream, pc, type) => {
+            if (type !== "large") return
+            this.addRemoteStream(peer, remoteStream, pc)
+        });
+        this.app.connection.on('render-remote-stream-placeholder-request', (peer, type) => {
+            if (type !== "large") return
+            this.renderRemoteStreamPlaceholder(peer);
+        });
+
+        this.app.connection.on('change-connection-state-request', (peer, state, type) => {
+            if (type !== "large") return
+            this.updateConnectionState(peer, state)
         })
     }
 
 
-
     render() {
-        this.app.browser.addElementToDom(videoChatManagerTemplate(), document.getElementById('content__'));
+        this.app.browser.addElementToDom(ChatManagerLargeTemplate(), document.getElementById('content__'));
     }
 
     attachEvents(app, mod) {
         app.browser.makeDraggable("stunx-chatbox");
 
         document.querySelector('.disconnect_btn').addEventListener('click', (e) => {
-            let stunx_mod = app.modules.returnModule("Stunx");
-            console.log("peer connections ", stunx_mod.peer_connections);
-            for (let i in stunx_mod.peer_connections) {
-                if (stunx_mod.peer_connections[i]) {
-                    stunx_mod.peer_connections[i].close();
-                    console.log('closing peer connection');
-                }
-            }
 
-            this.localStream.getTracks().forEach(track => {
-                track.stop();
-                console.log(track);
-                console.log('stopping track');
-            })
+            this.disconnectMediaStreams()
 
-            this.hide();
             siteMessage("You have been disconnected", 5000);
         })
         document.querySelector('.audio_control').addEventListener('click', (e) => {
@@ -82,25 +73,55 @@ class VideoChatManager {
 
     }
 
-    addLocalStream(localStream) {
+    disconnect() {
+        let stunx_mod = this.app.modules.returnModule("Stunx");
+        console.log("peer connections ", stunx_mod.peer_connections);
+        for (let i in stunx_mod.peer_connections) {
+            if (stunx_mod.peer_connections[i]) {
+                stunx_mod.peer_connections[i].close();
+                console.log('closing peer connection');
+            }
+        }
+        this.localStream.getTracks().forEach(track => {
+            track.stop();
+            console.log(track);
+            console.log('stopping track');
+        })
+        this.hide();
+    }
+
+
+    addRemoteStream(peer, remoteStream, pc) {
+        this.video_boxes[peer].video_box.addStream(remoteStream);
+        this.video_boxes[peer].peer_connection = pc;
+    }
+
+    renderLocalStream(localStream) {
         const videoBox = new VideoBox(this.app, this.mod);
-        videoBox.render(localStream, 'local', 'wrapper');
+        videoBox.render(localStream, 'local', 'large-wrapper');
         this.video_boxes['local'] = { video_box: videoBox, peer_connection: null }
         this.localStream = localStream;
     }
 
-    addRemoteStreamFromOfferCreator(remoteStream, offer_creator, pc) {
-        const videoBox = new VideoBox(this.app, this.mod);
-        videoBox.render(remoteStream, offer_creator, 'wrapper');
-        this.video_boxes[offer_creator] = { video_box: videoBox, peer_connection: pc }
+
+
+    renderRemoteStreamPlaceholder(peer) {
+        if (!this.video_boxes[peer]) {
+            const videoBox = new VideoBox(this.app, this.mod);
+            this.video_boxes[peer] = { video_box: videoBox, peer_connection: null }
+        }
+        this.video_boxes[peer].video_box.render(null, peer, 'large-wrapper');
     }
 
 
-    addRemoteStreamFromOfferRecipient(remoteStream, answer_creator, pc) {
-        const videoBox = new VideoBox(this.app, this.mod);
-        videoBox.render(remoteStream, answer_creator, 'wrapper');
-        this.video_boxes[answer_creator] = { video_box: videoBox, peer_connection: pc }
+    updateConnectionState(peer, state) {
+        console.log('connection state ', state);
+        if (!this.video_boxes[peer].video_box) {
+            return console.log("An error occured with updating connections state");
+        }
+        this.video_boxes[peer].video_box.handleConnectionStateChange(state);
     }
+
 
 
 

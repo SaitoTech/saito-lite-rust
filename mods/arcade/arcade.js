@@ -16,6 +16,7 @@ const GameInvite = require('./lib/invite/main');
 
 
 class Arcade extends ModTemplate {
+
   constructor(app) {
     super(app);
     this.name = "Arcade";

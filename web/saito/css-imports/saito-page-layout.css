@@ -18,6 +18,7 @@
     position: relative;
     max-width: var(--saito-width);
     margin: auto;
+    min-height: 100vh;
 }
 
 .saito-main {
@@ -78,7 +79,7 @@
 }
 
 .saito-sidebar.left .hamburger:hover {
-    transform: scale(1.05);
+    /* transform: scale(1.05); */
 }
 
 .saito-sidebar.left .hamburger i {

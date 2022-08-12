@@ -1,6 +1,72 @@
-module.exports = GameCreatorTemplate = (app, mod) => {
+module.exports = GameCreatorTemplate = (app, mod, invite = null) => {
+  if (!invite){
+    return dummyHTML();  
+  }
 
-  return `
+  let gameModule = app.modules.returnModule(invite.msg.game);
+  if (!gameModule){
+    return dummyHTML();
+  }
+
+  let game_name = gameModule.gamename || gameModule.name;
+  let gamemod_url = gameModule.respondTo("arcade-games")?.img || `/${gameModule.returnSlug()}/img/arcade.jpg`;
+
+
+  let html = `
+    <div class="game-invite-detail-container" style="
+        width: 71rem;
+        background-color: #fff;
+        min-height: 38rem;
+        display: flex;
+        justify-content: initial;
+    ">
+      <div class="game-invite-details-item game-invite-img" style="
+          width: 30%;
+          background-color: #f7d3d9;
+          background: url(${gamemod_url});
+          background-size: cover;
+      "></div>
+      <div class="game-invite-details-item game-invite-info" style="
+           padding: 2.5rem;
+        width: 69%;
+      ">
+         <h5>${game_name}</h5>
+
+      <div class="saito-leaderboard game-invite-info-table" style="
+          margin-top: 2rem;
+      ">
+        <div class="saito-table">
+          ${formatOptions(gameModule.returnShortGameOptionsArray(invite.msg.options))}
+        </div>
+      </div>`;
+
+    if (invite.msg.originator !== app.wallet.returnPublicKey()){
+      html += `<div class="saito-button-primary game-invite-join-btn" style="margin-top: 2rem;">Join Game</div>`;
+    }
+
+    html += `</div></div>`;
+
+    return html;
+}
+
+const formatOptions = (sgoa)=> {
+  let html = '';
+  let cnt = 1;
+
+  for (let i in sgoa) {
+    html += `<div class="saito-table-row ${(cnt%2 == 1)? "odd":""}">
+                <div class="saito-table-gamename">${i.replace(/_/g, ' ')}</div>`;
+    if (sgoa[i] !== null){
+      html += `<div class="saito-table-rank">${sgoa[i]}</div>`;
+    }
+    html += "</div>";
+  }
+
+  return html;
+}
+
+const dummyHTML = () =>{
+    return `
 <div class="game-invite-detail-container" style="
     width: 71rem;
     background-color: #fff;
@@ -68,4 +134,5 @@ module.exports = GameCreatorTemplate = (app, mod) => {
           </div>
     </div>
   `;
+
 }

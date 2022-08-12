@@ -18,6 +18,9 @@ config/runtime.config.js
 config/mixin-credentials.js
 
 
+.gitignore
+compile-e
+
 .DS_Store
 node_modules
 node_modules/*
@@ -28,10 +31,12 @@ test/
 
 data/*.sq3
 data/*/*.blk
+data/backup/*
 data/blocks/*.blk
 data/blocks/*.sai
 data/blocks/empty
 data/shashmaps/*.smap
+data/backup/*
 
 bundler
 bundler/*

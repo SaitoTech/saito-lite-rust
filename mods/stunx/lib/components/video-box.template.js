@@ -1,7 +1,10 @@
-module.exports = (muted = false) => {
+module.exports = (streamId, muted) => {
     return `
-    <video ${muted ? "muted" : ""}  autoplay  class="video-box">
+    <div id="stream${streamId}"   class="video-box-container">
+    <video   ${muted ? "muted" : " "}  autoplay  class="video-box">
             
-    </video>`
+    </video>
+    </div>`
+
 }
 
