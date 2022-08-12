@@ -60,6 +60,9 @@ class Chatx extends ModTemplate {
     }
 
 
+
+
+
     shouldAffixCallbackToModule(modname, tx = null) {
       if (modname == this.name) { return 1; }
       if (modname == "Chat") { return 1; }
@@ -82,6 +85,21 @@ class Chatx extends ModTemplate {
 
         });
 
+
+        //
+        // public chat / main server
+        //
+	// note - we read this from the options file directly as
+	// the peers will not have yet initialized and thus will 
+	// not be able to inform us whether they support the chat
+	// service. TODO - fix later
+	//
+ 	if (app.options?.peers?.length >= 1) {
+	  let peer = app.options.peers[0];
+          this.createChatGroup([peer.publickey], "Saito Community Chat");
+        }
+
+
         //
         // create chatgroups from keychain
         //
@@ -101,7 +119,36 @@ class Chatx extends ModTemplate {
             this.createChatGroup(g[i].members, g[i].name);
         }
 
+
+//
+// add dummy tweets
+//
+console.log("testing A");
+console.log("how many groups? " + this.groups.length);
+for (let i = 0; i < this.groups.length; i++) {
+console.log("CREATING MESSAGE FOR GROUP: " + this.groups[i].id);
+  let newtx = this.createMessage(this.groups[i].id, `short message ${i}`);
+  this.receiveMessage(app, newtx);
+}
+console.log("testing B");
+
+
+
+
+
         this.sendEvent('chat-render-request', {});
+
+    }
+
+    returnGroup(group_id) {
+
+      for (let i = 0; i < this.groups.length; i++) {
+        if (group_id === this.groups[i].id) {
+	  return this.groups[i];
+        }
+      }
+
+      return null;
 
     }
 
