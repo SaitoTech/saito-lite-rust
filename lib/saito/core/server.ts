@@ -319,12 +319,13 @@ class Server {
         const blk = await this.app.storage.loadBlockByHash(bsh);
 
         if (blk == null) {
-          res.writeHead(200, {
-            "Content-Type": "text/plain",
-            "Content-Transfer-Encoding": "utf8",
-          });
-          res.send("{}");
-          res.end();
+          // res.writeHead(200, {
+          //   "Content-Type": "text/plain",
+          //   "Content-Transfer-Encoding": "utf8",
+          // });
+          // res.send("{}");
+          // res.end();
+          res.sendStatus(404);
           return;
         } else {
           const newblk = blk.returnLiteBlock(keylist);
