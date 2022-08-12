@@ -796,7 +796,7 @@ initializeGame(game_id) {
 	delete p['comecon'];
 	delete p['nasser'];
 	delete p['warsawpact'];
-	delete p['degualle'];
+	delete p['degaulle'];
 	delete p['naziscientist'];
 	delete p['truman'];
 	delete p['nato'];
@@ -820,7 +820,7 @@ initializeGame(game_id) {
 	delete p['wwby'];
 	delete p['brezhnev'];
 	delete p['portuguese'];
-	delete p['allenda'];
+	delete p['allende'];
 	delete p['willybrandt'];
 	delete p['culturalrev'];
 	delete p['flowerpower'];
@@ -838,12 +838,12 @@ initializeGame(game_id) {
         this.game.queue.push("DECK\t1\t"+JSON.stringify(p));
 
 	this.game.state.vp = -4;
-	this.game.state.turn = 8;
+	this.game.state.round = 7; // will go to 8 next round
         this.game.state.defcon = 3; // will go to 4 next round
         this.game.state.space_race_us_counter = 6;
         this.game.state.space_race_ussr_counter = 4;
 	this.game.state.eagle_has_landed = "us";
-	this.game.state.eagle_has_landed_bonus_taken = 0;
+	this.game.state.eagle_has_landed_bonus_taken = 1; // set to 0 on round init
 
 	this.game.state.events.usjapan = 1;
 	this.game.state.events.marshall = 1;
@@ -1106,51 +1106,53 @@ try {
       // init -- assign roles
       // observer -- reveal cards to player0s (insecure)
 
-      if (mv[0] == "init") {
+    if (mv[0] == "init") {
 
-        this.game.queue.splice(qe, 1);
+      this.game.queue.splice(qe, 1);
   	    
-  	    // observer skips
-  	    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-            return 1;
-  	    } 
+      // observer skips
+      if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+        return 1;
+      } 
 
-        //Game engine automatically randomizes player order, so we are good to go
-        if (!this.game.options.player1 || this.game.options.player1 == "random"){
-          return 1;
-        }
-        
-        //Reordeer the players so that originator can be the correct role
-        if (this.game.options.player1 === "ussr"){
-          if (this.game.players[0] !== this.game.originator){
-            let p = this.game.players.shift();
-            this.game.players.push(p);
-          }
-        }else{
-          if (this.game.players[1] !== this.game.originator){
-            let p = this.game.players.shift();
-            this.game.players.push(p);
-          }
-        }
-        //Fix game.player so that it corresponds to the indices of game.players[]
-        for (let i = 0; i < this.game.players.length; i++){
-          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
-            this.game.player = i+1;
-          }
-        }
-        
+      //Game engine automatically randomizes player order, so we are good to go
+      if (!this.game.options.player1 || this.game.options.player1 == "random"){
+        return 1;
       }
-
-     if (mv[0] === "update_observers") {
-       let p = parseInt(mv[1]);
-       if (this.game.player == p) {
-         this.addMove("observer_cards_update\t"+this.game.player+"\t"+JSON.stringify(this.game.deck[0].hand));
-         this.endTurn();
-       }
-
-       this.game.queue.splice(qe, 1); //This may be better placed before adding moves to the queue, no?
-       return 0;
+        
+      if (this.game.options.player1 === "ussr"){
+        if (this.game.players[0] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      } else {
+        if (this.game.players[1] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }
+      //Fix game.player so that it corresponds to the indices of game.players[]
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+          this.game.player = i+1;
+        }
+      }
     }
+
+    if (mv[0] === "update_observers") {
+
+     let p = parseInt(mv[1]);
+
+     if (this.game.player == p) {
+       this.addMove("observer_cards_update\t"+this.game.player+"\t"+JSON.stringify(this.game.deck[0].hand));
+       this.endTurn();
+     }
+
+     this.game.queue.splice(qe, 1); //This may be better placed before adding moves to the queue, no?
+     return 0;
+
+    }
+
 
     if (mv[0] === "observer_cards_update") {
 
@@ -1474,8 +1476,6 @@ try {
       let receiver = "us";
       let discarder = "ussr";
       if (sender == 2) { receiver = "ussr"; discarder = "us"; }
-
-console.log(`missileenvy ${sender} ${card}`);
 
       this.game.state.events.missile_envy = sender;
 
@@ -2245,7 +2245,6 @@ console.log(`missileenvy ${sender} ${card}`);
 
     if (mv[0] === "defcon") {
       if (mv[1] === "lower") {
-console.log("MONITORING DEFCON: in defcon instruction in gameloop");
         this.lowerDefcon();
       }
       if (mv[1] === "raise") {
@@ -2265,8 +2264,6 @@ console.log("MONITORING DEFCON: in defcon instruction in gameloop");
 
 
     if (mv[0] === "event") {
-
-      console.log("received event: " + JSON.stringify(mv));
 
       if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
@@ -2748,12 +2745,10 @@ try {
         this.game.state.stats.round[this.game.state.stats.round.length-1].vp = this.game.state.vp;
       }
 
-
       //
       // settle outstanding VP issue
       //
       this.settleVPOutstanding();
-
 
       //
       // show active events
@@ -2859,7 +2854,6 @@ try {
 } catch (err) {
 }
       }
-
 
       //
       // Space Station
@@ -3141,7 +3135,6 @@ try {
     // NO HEADLINE PEEKING
     if (this.game.state.man_in_earth_orbit == "") {
       if (stage == "headline1"){
-        console.log("Launching simultaneous pick of headline cards");
         //Directly push these, so only a single copy is added to queue
         this.game.queue.push("resolve\theadline");
         this.game.queue.push("headline\theadline4");
@@ -3149,14 +3142,11 @@ try {
         this.playerPickHeadlineCard();  //Players simultaneously pick their headlines
         return 0;
 
-      }else if (stage == "headline4"){
-        console.log("Finishing simultaneous pick of headline cards");
+      } else if (stage == "headline4"){
         //We should have results back from simultaneous pick
         //stored in -- game_self.game.state.sp[player_id - 1] = player_card;
         
         this.game.state.headline_opponent_card = this.game.state.sp[2-this.game.player];
-        console.log(JSON.parse(JSON.stringify(this.game.state.sp)));
-        console.log(this.game.state.headline_card,this.game.state.headline_opponent_card);
         stage = "headline6";
       }
     }else{ // man in earth orbit = HEADLINE PEEKING
@@ -3188,7 +3178,6 @@ try {
           this.game.state.headline_opponent_hash = hash;
           this.game.state.headline_opponent_xor = xor;
           this.game.state.headline_opponent_card = card;
-          console.log("My opponent picked: "+ this.game.state.headline_opponent_card+", now I chooose.");
           this.addMove("resolve\theadline");
           this.playerPickHeadlineCard();
         } else {
@@ -3204,7 +3193,6 @@ try {
           this.game.state.headline_opponent_hash = hash;
           this.game.state.headline_opponent_xor = xor;
           this.game.state.headline_opponent_card = card;
-          console.log("My opponent picked: "+ this.game.state.headline_opponent_card+", now we reveal.");
         }
         stage = "headline6"; //Fast forward to processing events
       }
@@ -3241,8 +3229,6 @@ try {
       }
 
       let card_player = (this.game.state.player_to_go == 2)? "us": "ussr";
-
-      console.log(`${card_player} goes first. I am ${this.game.player} and my card is ${my_card}`);
 
       //
       // check to see if defectors is in play
@@ -5405,8 +5391,6 @@ playerTurnHeadlineSelected(card, player) {
     let successful     = 0;
     let box       = (player == "ussr") ? this.game.state.space_race_ussr : this.game.state.space_race_us;
     
-    //console.log(this.game.state.space_race_ussr,this.game.state.space_race_us,box);
-
     if (box == 0) { if (roll < 4) { successful = 1; } }
     if (box == 1) { if (roll < 5) { successful = 1; } }
     if (box == 2) { if (roll < 4) { successful = 1; } }
@@ -5621,12 +5605,9 @@ playerTurnHeadlineSelected(card, player) {
         modifier--;
     }
 
-console.log("DEFCON MONITOR: about to lower defcon in coup logic 1...");
-
     // Lower Defcon in BG countries unless US has nuclear subs or special condition flagged
     if (this.countries[countryname].bg == 1 && this.game.state.lower_defcon_on_coup == 1) {
       if (player !== "us" || this.game.state.events.nuclearsubs == 0 ){
-console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
         this.lowerDefcon();
       }
     }
@@ -5889,7 +5870,7 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
 
     this.game.state.round++;
     this.game.state.turn 		= 0;
-    this.game.state.turn_in_round = 0;
+    this.game.state.turn_in_round 	= 0;
     this.game.state.move 		= 0;
 
     //
@@ -5899,10 +5880,13 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
       for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
-            this.game.over = 1;
-            //There may be an issue if both players simulataneously resign...
-            this.resignGame(this.game.id, "scoring card held");
-            return 0;
+	    // hard-exception
+	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
+              this.game.over = 1;
+              //There may be an issue if both players simulataneously resign...
+              this.resignGame(this.game.id, "scoring card held");
+              return 0;
+	    }
           }
         }
       }
@@ -6910,6 +6894,7 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
   modifyOps(ops, card="",player="", updatelog=1) {
 
     /* Do we really want to always override the ops passed in??*/
+    // probably not, just check with card if ops are undefined ? see if this breaks first
     if (card == "olympic" && ops == 4) {} else {
       if (card != "") { ops = this.returnOpsOfCard(card); }
     }
@@ -7130,8 +7115,6 @@ console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
       scoring = this.calculateControlledCountries(scoring, non_bg_countries);         //fill in scoring.us/ussr.total
     }
 
-console.log("SCORING OBJ: " + JSON.stringify(scoring));
-
     switch (region) {
 
       ////////////
@@ -7141,8 +7124,6 @@ console.log("SCORING OBJ: " + JSON.stringify(scoring));
 
         scoring_range = {presence: 3, domination: 7, control: 10000 };
         scoring = this.determineRegionVictor(scoring, scoring_range, bg_countries.length);
-
-console.log("SCORING 2: " + JSON.stringify(scoring));
 
         //
         // neighbouring countries
@@ -7300,8 +7281,6 @@ console.log("SCORING 2: " + JSON.stringify(scoring));
             scoring.ussr.neigh.push("japan");
   	  }
 	}
-
-console.log("SCORING FINAL: " + JSON.stringify(scoring));
 
         break;
       }
@@ -7752,13 +7731,9 @@ console.log("SCORING FINAL: " + JSON.stringify(scoring));
 
     this.updateLog("DEFCON falls to " + this.game.state.defcon);
 
-console.log("MONITORING DEFCON: in lowerDefcon() A ");
     if (this.game.state.events.norad == 1) {
-console.log("MONITORING DEFCON: in lowerDefcon() B ");
       if (this.game.state.defcon == 2) {
-console.log("MONITORING DEFCON: in lowerDefcon() C ");
         if (this.game.state.headline != 1) {
-console.log("MONITORING DEFCON: in lowerDefcon() D ");
           this.game.state.us_defcon_bonus = 1;
         }
       }
