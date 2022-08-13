@@ -20,15 +20,17 @@ class ChatPopup {
     app.connection.on("chat-render-request", (message) => {
       // update rendered popup
       let divid = "chat-container-"+group_id;
-console.log("updating " + divid);
       app.browser.replaceElementById(ChatPopupTemplate(app, mod, group_id), divid);
+      this.attachEvents(app, mod, group_id);
     });
 
   }
 
   attachEvents(app, mod, group_id) {
 
+    //
     // close
+    //
     document.querySelector(`#chat-container-close-${group_id}`).onclick = (e) => {
       let obj = document.getElementById(`chat-container-${group_id}`).remove(); 
     }
@@ -43,7 +45,6 @@ console.log("updating " + divid);
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
         e.preventDefault();
         if (msg_input.value == "") { return; }
-
         let newtx = mod.createMessage(group_id, msg_input.value);
         mod.sendMessage(app, newtx);
         mod.receiveMessage(app, newtx);
@@ -52,13 +53,18 @@ console.log("updating " + divid);
 
     });
 
-
-
-//    app.connection.on("chat-render-request", (message) => {
-//    listen for chat re-render requests affecting this popup
-//    app.connection.on("chat-render-request", (message) => {
-//        console.log('inside chat popup listener');
-//    });
+    //
+    // submit (button)
+    //
+    let ibtn = "chat-input-submit-"+group_id;
+    document.getElementById(ibtn).onclick = (e) => {
+      e.preventDefault();
+      if (msg_input.value == "") { return; }
+      let newtx = mod.createMessage(group_id, msg_input.value);
+      mod.sendMessage(app, newtx);
+      mod.receiveMessage(app, newtx);
+      msg_input.value = "";
+    }
 
   }
 
