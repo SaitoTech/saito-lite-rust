@@ -3,17 +3,11 @@ const JSON = require('json-bigint');
 
 module.exports = (app, mod, group_id) => {
 
-console.log("group id: " + group_id);
-    
     let group = mod.returnGroup(group_id);
     if (!group) { return ""; }
 
-console.log("group: " + JSON.stringify(group));
-    
     let message_blocks = mod.createMessageBlocks(group);
     
-console.log("message blocks: " + JSON.stringify(message_blocks));
-
     let html = `
 
       <div class="chat-container chat-container-${group_id}" id="chat-container-${group_id}">
@@ -43,8 +37,8 @@ console.log("message blocks: " + JSON.stringify(message_blocks));
         </div>
 
         <div class="chat-footer">
-          <input type="text" placeholder="Type something..." />
-          <i class="fas fa-paper-plane"></i>
+          <input name="chat-input" id="chat-input-${group_id}" type="text" placeholder="Type something..." />
+          <i class="fas fa-paper-plane chat-input-submit" id="chat-input-submit-${group_id}"></i>
         </div>
 
       </div>
