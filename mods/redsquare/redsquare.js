@@ -9,6 +9,7 @@ const fetch = require('node-fetch');
 const HTMLParser = require('node-html-parser');
 const prettify = require('html-prettify');
 const GameCreator = require("./lib/appspace/arcade/game-creator");
+const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 
 
 class RedSquare extends ModTemplate {
@@ -22,7 +23,7 @@ class RedSquare extends ModTemplate {
     this.slug = "redsquare";
     this.description = "Open Source Twitter-clone for the Saito Network";
     this.categories = "Social Entertainment";
-
+    this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
 
     this.tweets = [];
@@ -90,15 +91,15 @@ class RedSquare extends ModTemplate {
 
 
   reorganizeTweets(app, mod) {
-    for (let i = this.tweets.length-1; i >= 1; i--) {
+    for (let i = this.tweets.length - 1; i >= 1; i--) {
 
-console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this.tweets[i].updated_at);
+      console.log("COMPARING: " + this.tweets[i - 1].updated_at + " --  with -- " + this.tweets[i].updated_at);
 
-      if (this.tweets[i-1].updated_at < this.tweets[i].updated_at) {
-	let x = this.tweets[i-1];
-	let y = this.tweets[i];
+      if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
+        let x = this.tweets[i - 1];
+        let y = this.tweets[i];
         this.tweets[i] = x;
-        this.tweets[i-1] = y;
+        this.tweets[i - 1] = y;
       }
     }
   }
@@ -146,17 +147,19 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
 
 
   render(app, mod, selector = "") {
-
+    this.saitoLoader.render(app, mod);
     if (this.ui_initialized == false) {
-
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
       this.addComponent(this.main);
       this.addComponent(this.header);
       this.ui_initialized = true;
+
     }
 
     super.render(app, this);
+
+    this.saitoLoader.remove(app, mod);
 
   }
 
@@ -176,9 +179,9 @@ console.log("COMPARING: " + this.tweets[i-1].updated_at + " --  with -- " + this
     if (message.request === "redsquare linkobj fetch") {
       let redsquare_self = app.modules.returnModule("RedSquare");
       let link = message.data.link;
-      let link_properties = await this.fetchOpenGraphProperties(app, mod, link);
+      // let link_properties = await this.fetchOpenGraphProperties(app, mod, link);
 
-      mycallback(res);
+      // mycallback(res);
       return;
 
     }

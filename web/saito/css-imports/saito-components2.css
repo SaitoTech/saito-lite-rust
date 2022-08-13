@@ -245,7 +245,7 @@ Saito Module Boxes
 }
 .saito-loader::after {
   background-color: transparent;
-  background-image: url(https://saito.tech/wp-content/uploads/2022/08/Saito-Secondary-Impossible-Shape-White-RGB.svg);
+  background-image: url("../img/saito-loader.svg");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center; 
