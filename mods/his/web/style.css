@@ -1,4 +1,38 @@
 
+.protestant_debaters {
+    left: 68px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.calvinist_debaters {
+    left: 305px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.anglican_debaters {
+    left: 542px;
+    top: 295px;
+    position: absolute;
+    width: 240px;
+    height: 140px;
+    display: grid;
+}
+.papal_debaters {
+    left: 195px;
+    top: 120px;
+    position: absolute;
+    border: 1px solid black;
+    width: 490px;
+    height: 140px;
+    display: grid;
+}
+
 .vp_tile {
   position: absolute;
   z-index: 200;

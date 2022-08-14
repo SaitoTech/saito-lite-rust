@@ -149,8 +149,7 @@ console.log("adding stuff!");
 	
       }
 
-
-
+      
       if (this.game.state.scenario === "1532") {
 
       }
@@ -158,6 +157,16 @@ console.log("adding stuff!");
       if (this.game.state.scenario === "tournament") {
 
       }
+
+
+      //
+      // TMP - add debaters
+      //
+      this.addDebater("papacy", "bucer");
+      this.addDebater("hapsburg", "aleander");
+      this.addDebater("england", "bullinger");
+      this.addDebater("protestant", "campeggio");
+
     }
 
     //

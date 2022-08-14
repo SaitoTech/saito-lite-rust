@@ -878,6 +878,367 @@ class HereIStand extends GameTemplate {
  
 
 
+      this.importUnit('doria', {
+           type              :       "doria" ,
+           name              :       "Andrea Doria",
+           personage         :       true,
+           img               :       "Andrea_Doria.svg",
+      });
+
+      this.importUnit('boleyn', {
+           type              :       "boleyn" ,
+           name              :       "Anne Boleyn",
+           personage         :       true,
+           img               :       "AnneBoleyn.svg",
+      });
+
+      this.importUnit('cleves', {
+           type              :       "cleves" ,
+           name              :       "Anne Cleves",
+           personage         :       true,
+           img               :       "AnneCleves.svg",
+      });
+
+      this.importUnit('barbarossa', {
+           type              :       "barbarossa" ,
+           name              :       "Frederick Barbarossa",
+           personage         :       true,
+           img               :       "Barbarossa.svg",
+      });
+
+      this.importUnit('Brandon', {
+           type              :       "Brandon" ,
+           name              :       "Katherine Brandon",
+           personage         :       true,
+           img               :       "Brandon.svg",
+      });
+
+      this.importUnit('cabot', {
+           type              :       "cabot" ,
+           name              :       "John Cabot",
+           personage         :       true,
+           img               :       "Cabot_English.svg",
+      });
+
+      this.importUnit('cabot', {
+           type              :       "cabot" ,
+           name              :       "John Cabot",
+           personage         :       true,
+           img               :       "Cabot_French.svg",
+      });
+
+      this.importUnit('cabot', {
+           type              :       "cabot" ,
+           name              :       "John Cabot",
+           personage         :       true,
+           img               :       "Cabot_Hapsburg.svg",
+      });
+
+
+      this.importUnit('cartier', {
+           type              :       "cartier" ,
+           name              :       "Jacques Cartier",
+           personage         :       true,
+           img               :       "Cartier.svg",
+      });
+
+      this.importUnit('aragon', {
+           type              :       "aragon" ,
+           name              :       "CatherineAragon",
+           personage         :       true,
+           img               :       "CatherineAragon.svg",
+      });
+
+      this.importUnit('chancellor', {
+           type              :       "chancellor" ,
+           name              :       "Chancellor",
+           personage         :       true,
+           img               :       "Chancellor.svg",
+      });
+
+      this.importUnit('charles-v', {
+           type              :       "charles-v" ,
+           name              :       "Charles V",
+           personage         :       true,
+           img               :       "Charles_V.svg",
+      });
+
+      this.importUnit('cordova', {
+           type              :       "cordova" ,
+           name              :       "Neisa Cordova",
+           personage         :       true,
+           img               :       "Cordova.svg",
+      });
+
+      this.importUnit('Coronado', {
+           type              :       "Coronado" ,
+           name              :       "Francisco Vázquez de Coronado",
+           personage         :       true,
+           img               :       "Coronado.svg",
+      });
+
+      this.importUnit('cortez', {
+           type              :       "cortez" ,
+           name              :       "Hernan Cortes",
+           personage         :       true,
+           img               :       "Cortez.svg",
+      });
+
+      this.importUnit('de-vaca', {
+           type              :       "de-vaca" ,
+           name              :       "Cabeza De Vaca",
+           personage         :       true,
+           img               :       "De_Vaca.svg",
+      });
+
+      this.importUnit('de-soto', {
+           type              :       "de-soto" ,
+           name              :       "DeSoto",
+           personage         :       true,
+           img               :       "DeSoto.svg",
+      });
+
+       this.importUnit('dragut', {
+           type              :       "dragut" ,
+           name              :       "Alexandra Dragut",
+           personage         :       true,
+           img               :       "Dragut.svg",
+      });
+
+      this.importUnit('dudley', {
+           type              :       "dudley" ,
+           name              :       "John Dudley",
+           personage         :       true,
+           img               :       "Dudley.svg",
+      });
+
+      this.importUnit('duke-of-alva', {
+           type              :       "duke-of-alva" ,
+           name              :       "Duke_of_Alva",
+           personage         :       true,
+           img               :       "Duke_of_Alva.svg",
+      });
+
+      this.importUnit('ferdinand-ii', {
+           type              :       "ferdinand-ii" ,
+           name              :       "Ferdinand_II",
+           personage         :       true,
+           img               :       "Ferdinand.svg",
+      });
+
+      this.importUnit('francis-i', {
+           type              :       "francis-i" ,
+           name              :       "Francis_I",
+           personage         :       true,
+           img               :       "Francis_I.svg",
+      });
+
+      this.importUnit('henry-ii', {
+           type              :       "henry-ii" ,
+           name              :       "Henry_II",
+           personage         :       true,
+           img               :       "Henry_II.svg",
+      });
+
+      this.importUnit('henry-viii', {
+           type              :       "henry-viii" ,
+           name              :       "Henry_VIII",
+           personage         :       true,
+           img               :       "Henry_VIII.svg",
+      });
+
+      this.importUnit('ibrahim', {
+           type              :       "ibrahim" ,
+           name              :       "Raymond Ibrahim",
+           personage         :       true,
+           img               :       "Ibrahim.svg",
+      });
+
+      this.importUnit('seymour', {
+           type              :       "seymour" ,
+           name              :       "Jane Seymour",
+           personage         :       true,
+           img               :       "JaneSeymour.svg",
+      });
+
+      this.importUnit('frederick', {
+           type              :       "frederick" ,
+           name              :       "John_Frederick",
+           personage         :       true,
+           img               :       "John_Frederick.svg",
+      });
+
+       this.importUnit('parr', {
+           type              :       "parr" ,
+           name              :       "Katherine Parr",
+           personage         :       true,
+           img               :       "KatherineParr.svg",
+      });
+
+      this.importUnit('howard', {
+           type              :       "howard" ,
+           name              :       "Kathryn Howard",
+           personage         :       true,
+           img               :       "KathrynHoward.svg",
+      });
+
+      this.importUnit('leon', {
+           type              :       "leon" ,
+           name              :       "Leon",
+           personage         :       true,
+           img               :       "Leon.svg",
+      });
+
+      this.importUnit('magellan', {
+           type              :       "magellan" ,
+           name              :       "Ferdinand Magellan",
+           personage         :       true,
+           img               :       "Magellan.svg",
+      });
+
+      this.importUnit('Maurice', {
+           type              :       "Maurice" ,
+           name              :       "Maurice of Sax",
+           personage         :       true,
+           img               :       "Maurice_Hapsburg.svg",
+      });
+
+      this.importUnit('Maurice', {
+           type              :       "maurice" ,
+           name              :       "Maurice of Sax",
+           personage         :       true,
+           img               :       "Maurice_Protestant.svg",
+      });
+
+      this.importUnit('montejo', {
+           type              :       "montejo" ,
+           name              :       "Victor Montejo",
+           personage         :       true,
+           img               :       "Montejo.svg",
+      });
+
+      this.importUnit('montmorency', {
+           type              :       "montmorency" ,
+           name              :       "François de Montmorency",
+           personage         :       true,
+           img               :       "Montmorency.svg",
+      });
+
+      this.importUnit('narvaez', {
+           type              :       "narvaez" ,
+           name              :       "Sofia Narvaez",
+           personage         :       true,
+           img               :       "Narvaez.svg",
+      });
+
+      this.importUnit('orellana', {
+           type              :       "orellana",
+           name              :       "Hector Rodrigo Enriquez Orellana",
+           personage         :       true,
+           img               :       "Orellana.svg",
+      });
+
+      this.importUnit('philip-i', {
+           type              :       "philip-i" ,
+           name              :       "Philip_I",
+           personage         :       true,
+           img               :       "Philip_Hesse.svg",
+      });
+
+      this.importUnit('pizarro', {
+           type              :       "pizarro" ,
+           name              :       "Francisco Pizarro",
+           personage         :       true,
+           img               :       "Pizarro.svg",
+      });
+
+      this.importUnit('', {
+           type              :       "" ,
+           name              :       "",
+           personage         :       true,
+           img               :       "Renegade.svg",
+      });
+
+      this.importUnit('roberval', {
+           type              :       "roberval" ,
+           name              :       "Jean-François de La Rocque de Roberval",
+           personage         :       true,
+           img               :       "Roberval.svg",
+      });
+
+      this.importUnit('suleiman', {
+           type              :       "" ,
+           name              :       "",
+           personage         :       true,
+           img               :       "Suleiman.svg",
+      });
+
+      this.importUnit('more', {
+           type              :       "more" ,
+           name              :       "Thomas More",
+           personage         :       true,
+           img               :       "ThomasMore.svg",
+      });
+
+      this.importUnit('verrazano', {
+           type              :       "verrazano" ,
+           name              :       "Giovanni da Verrazano",
+           personage         :       true,
+           img               :       "Verrazano.svg",
+      });
+
+      this.importUnit('willoughby', {
+           type              :       "willoughby" ,
+           name              :       "Katherine Willoughby",
+           personage         :       true,
+           img               :       "Willoughby.svg",
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      this.importUnit('calvin-reformer', {
+           type              :       "calvin" ,
+           name              :       "John Calvin",
+           reformer          :       true,
+           img               :       "CalvinReformer.svg",
+      });
+
+
+      this.importUnit('cranmer-reformer', {
+           type              :       "cranmer " ,
+           name              :       "Thomas Cranmer ",
+           reformer          :       true,
+           img               :       "CranmerReformer.svg",
+      });
+
+
+      this.importUnit('luther-reformer', {
+           type              :       "luther" ,
+           name              :       "Martin Luther",
+           reformer          :       true,
+           img               :       "LutherReformer.svg",
+      });
+
+      this.importUnit('zwingli-reformer', {
+           type              :       "zwingli" ,
+           name              :       "Huldrych Zwingli",
+           reformer          :       true,
+           img               :       "ZwingliReformer.svg",
+      });
+
+
     this.importUnit('regular', {
       type		:	"regular" ,
       name		: 	"Regular",
@@ -909,6 +1270,12 @@ class HereIStand extends GameTemplate {
       type		:	"debater" ,
       name		: 	"Debater",
       debater		:	true,
+    });
+ 
+    this.importUnit('reformer', {
+      type		:	"reformer" ,
+      name		: 	"Reformer",
+      reformer		:	true,
     });
  
 
@@ -1066,8 +1433,7 @@ console.log("adding stuff!");
 	
       }
 
-
-
+      
       if (this.game.state.scenario === "1532") {
 
       }
@@ -1075,6 +1441,16 @@ console.log("adding stuff!");
       if (this.game.state.scenario === "tournament") {
 
       }
+
+
+      //
+      // TMP - add debaters
+      //
+      this.addDebater("papacy", "bucer");
+      this.addDebater("hapsburg", "aleander");
+      this.addDebater("england", "bullinger");
+      this.addDebater("protestant", "campeggio");
+
     }
 
     //
@@ -1476,6 +1852,11 @@ console.log("adding stuff!");
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
+  }
+
+  addReformer(faction, space, reformer) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.units[faction].push(this.newReformer(faction, reformer));
   }
 
   addDebater(faction, debater) {
@@ -1887,6 +2268,8 @@ console.log("adding stuff!");
     state.autowin_france_keys_controlled = 11;
     state.autowin_england_keys_controlled = 9;
 
+    state.leaders = {};
+
     state.leaders.francis_i = 1;
     state.leaders.henry_viii = 1;
     state.leaders.charles_v = 1;
@@ -1894,13 +2277,13 @@ console.log("adding stuff!");
     state.leaders.leo_x = 1;
     state.leaders.martin_luther = 1
 
-    state.leaders_clement_vii = 0;
-    state.leaders_paul_iii = 0;
-    state.leaders_edward_vi = 0;
-    state.leaders_henry_ii = 0;
-    state.leaders_mary_i = 0;
-    state.leaders_julius_iii = 0;
-    state.leaders_elizabeth_i = 0;
+    state.leaders.clement_vii = 0;
+    state.leaders.paul_iii = 0;
+    state.leaders.edward_vi = 0;
+    state.leaders.henry_ii = 0;
+    state.leaders.mary_i = 0;
+    state.leaders.julius_iii = 0;
+    state.leaders.elizabeth_i = 0;
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -4396,7 +4779,7 @@ console.log("adding stuff!");
         game_mod.convertSpace("protestant", "wittenberg");
         game_mod.addUnit("protestant", "wittenberg", "regular");
         game_mod.addUnit("protestant", "wittenberg", "regular");
-        game_mod.addDebater("protestant", "wittenberg", "luther");
+        game_mod.addReformer("protestant", "wittenberg", "luther-reformer");
         game_mod.displaySpace("wittenberg");
 
 	return 1;
@@ -4518,8 +4901,8 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_leo_x = 0;
-	game_mod.game.state.leaders_clement_vii = 1;
+	game_mod.game.state.leaders.leo_x = 0;
+	game_mod.game.state.leaders.clement_vii = 1;
 	return 1;
       },
 
@@ -4601,10 +4984,10 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_leo_x = 0;
-	game_mod.game.state.leaders_clement_vii = 0;
+	game_mod.game.state.leaders.leo_x = 0;
+	game_mod.game.state.leaders.clement_vii = 0;
 	game_mod.removeCardFromGame('010'); // remove clement vii
-	game_mod.game.state.leaders_paul_iii = 1;
+	game_mod.game.state.leaders.paul_iii = 1;
 	return 1;
       },
 
@@ -4661,7 +5044,7 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_edward_vi = 1;
+	game_mod.game.state.leaders.edward_vi = 1;
 	return 1;
       },
     }
@@ -4673,8 +5056,8 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_francis_i = 0;
-	game_mod.game.state.leaders_henry_ii = 1;
+	game_mod.game.state.leaders.francis_i = 0;
+	game_mod.game.state.leaders.henry_ii = 1;
 	return 1;
       },
     }
@@ -4686,9 +5069,9 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_henry_viii = 0;
-	game_mod.game.state.leaders_edward_vi = 0;
-	game_mod.game.state.leaders_mary_i = 1;
+	game_mod.game.state.leaders.henry_viii = 0;
+	game_mod.game.state.leaders.edward_vi = 0;
+	game_mod.game.state.leaders.mary_i = 1;
 	game_mod.removeCardFromGame('021');
 	return 1;
       },
@@ -4701,10 +5084,10 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_leo_x = 0;
-	game_mod.game.state.leaders_clement_vii = 0;
-	game_mod.game.state.leaders_paul_iii = 0;
-	game_mod.game.state.leaders_julius_iii = 1;
+	game_mod.game.state.leaders.leo_x = 0;
+	game_mod.game.state.leaders.clement_vii = 0;
+	game_mod.game.state.leaders.paul_iii = 0;
+	game_mod.game.state.leaders.julius_iii = 1;
 	game_mod.removeCardFromGame('010');
 	game_mod.removeCardFromGame('014');
 	return 1;
@@ -4718,10 +5101,10 @@ console.log("adding stuff!");
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       onEvent : function(game_mod, player) {
-	game_mod.game.state.leaders_henry_viii = 0;
-	game_mod.game.state.leaders_edward_vi = 0;
-	game_mod.game.state.leaders_mary_i = 0;
-	game_mod.game.state.leaders_elizabeth_i = 1;
+	game_mod.game.state.leaders.henry_viii = 0;
+	game_mod.game.state.leaders.edward_vi = 0;
+	game_mod.game.state.leaders.mary_i = 0;
+	game_mod.game.state.leaders.elizabeth_i = 1;
 	game_mod.removeCardFromGame('019');
 	game_mod.removeCardFromGame('021');
 	return 1;
@@ -8583,6 +8966,7 @@ return;
     if (obj.name == null)               { obj.name = "Unit"; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
+    if (obj.reformer == null)           { obj.reformer = false; }
     if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
@@ -8608,6 +8992,16 @@ return;
     return null;
   }
 
+  newReformer(faction, reformer) {
+    for (let key in this.units) {
+      if (this.units[key].type === reformer) {
+	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
+	new_unit.owner = faction;
+	return new_unit;
+      }
+    }
+    return null;
+  }
   newDebater(faction, debater) {
     for (let key in this.units) {
       if (this.units[key].type === debater) {
@@ -8650,11 +9044,32 @@ return;
 	<div class="lutheran_debaters"></div>
 	<div class="calvinist_debaters"></div>
 	<div class="anglican_debaters"></div>
-	<div class="protestant_spaces_track"></div>
+	<div class="protestant_debaters"></div>
       </div>
     `;
 
     this.overlay.showOverlay(this.app, this, html);
+
+    //
+    // list all debaters
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+console.log("DEBATER IS: " + d.owner);
+      if (d.owner === "papacy") {
+	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      }
+      if (d.owner === "england") {
+	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      }
+      if (d.owner === "hapsburg") {
+	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+      }
+      if (d.owner === "protestant") {
+	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+      }
+    }
 
     let obj = document.getElementById("religious_conflict_sheet_tile");
     obj.style.top = rcc[cid].top;

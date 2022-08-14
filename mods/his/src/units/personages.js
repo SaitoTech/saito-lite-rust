@@ -1,3 +1,4 @@
+
       this.importUnit('doria', {
            type              :       "doria" ,
            name              :       "Andrea Doria",
@@ -37,7 +38,7 @@
            type              :       "cabot" ,
            name              :       "John Cabot",
            personage         :       true,
-           img               :       Cabot_English".svg",
+           img               :       "Cabot_English.svg",
       });
 
       this.importUnit('cabot', {
@@ -54,13 +55,6 @@
            img               :       "Cabot_Hapsburg.svg",
       });
 
-
-      this.importUnit('calvin', {
-           type              :       "calvin" ,
-           name              :       "John Calvin",
-           personage         :       true,
-           img               :       "CalvinReformer.svg",
-      });
 
       this.importUnit('cartier', {
            type              :       "cartier" ,
@@ -109,13 +103,6 @@
            name              :       "Hernan Cortes",
            personage         :       true,
            img               :       "Cortez.svg",
-      });
-
-      this.importUnit('cranmer ', {
-           type              :       "cranmer " ,
-           name              :       "Thomas Cranmer ",
-           personage         :       true,
-           img               :       "CranmerReformer.svg",
       });
 
       this.importUnit('de-vaca', {
@@ -223,13 +210,6 @@
            img               :       "Leon.svg",
       });
 
-      this.importUnit('luther', {
-           type              :       "luther" ,
-           name              :       "Martin Luther",
-           personage         :       true,
-           img               :       "LutherReformer.svg",
-      });
-
       this.importUnit('magellan', {
            type              :       "magellan" ,
            name              :       "Ferdinand Magellan",
@@ -333,13 +313,6 @@
            name              :       "Katherine Willoughby",
            personage         :       true,
            img               :       "Willoughby.svg",
-      });
-
-      this.importUnit('zwingli', {
-           type              :       "zwingli" ,
-           name              :       "Huldrych Zwingli",
-           personage         :       true,
-           img               :       "ZwingliReformer.svg",
       });
 
 

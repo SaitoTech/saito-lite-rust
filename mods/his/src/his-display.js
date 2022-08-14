@@ -18,11 +18,32 @@
 	<div class="lutheran_debaters"></div>
 	<div class="calvinist_debaters"></div>
 	<div class="anglican_debaters"></div>
-	<div class="protestant_spaces_track"></div>
+	<div class="protestant_debaters"></div>
       </div>
     `;
 
     this.overlay.showOverlay(this.app, this, html);
+
+    //
+    // list all debaters
+    //
+    for (let i = 0; i < this.game.state.debaters.length; i++) {
+      let d = this.game.state.debaters[i];
+      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
+console.log("DEBATER IS: " + d.owner);
+      if (d.owner === "papacy") {
+	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
+      }
+      if (d.owner === "england") {
+	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
+      }
+      if (d.owner === "hapsburg") {
+	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
+      }
+      if (d.owner === "protestant") {
+	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
+      }
+    }
 
     let obj = document.getElementById("religious_conflict_sheet_tile");
     obj.style.top = rcc[cid].top;
