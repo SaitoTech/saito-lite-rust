@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS tweets (
   processed		INTEGER,
   flagged 		INTEGER,
   moderated 		INTEGER,
+  has_images  		INTEGER,
+  tx_size		INTEGER,
   num_likes 		INTEGER,
   num_retweets 		INTEGER,
   num_replies 		INTEGER,

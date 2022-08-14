@@ -1,6 +1,9 @@
 const RedSquareMenuTemplate = require("./menu.template");
 const RedSquareWideSidebar = require("./sidebar/sidebar");
 const RedSquareGamesSidebar = require("./sidebar/games-sidebar");
+const RedSquareSettingsSidebar = require("./sidebar/settings-sidebar");
+
+
 
 class RedSquareMenu {
 
@@ -23,10 +26,13 @@ class RedSquareMenu {
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
-                  <span> ${app.modules.mods[i].name}</span>
+                  <span> ${app.modules.mods[i].returnName()}</span>
                 </li>
     `;
-        app.browser.addElementToSelector(html, ".saito-menu-list");
+        if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)){
+          app.browser.addElementToSelector(html, ".saito-menu-list");          
+        }
+
       }
     }
     this.attachEvents(app, mod);
@@ -40,28 +46,25 @@ class RedSquareMenu {
     let obj;
 
     obj = document.querySelector('.redsquare-menu-home');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "home");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-notifications');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "notifications");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-settings');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "settings");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-contacts');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "contacts");
-    }
+    } }
     obj = document.querySelector('.redsquare-menu-games');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "games");
-    }
+    } }
 
 
     //
@@ -98,7 +101,7 @@ class RedSquareMenu {
         break;
       case "settings":
         // re-render sidebar
-        mod.rsidebar.render(app, mod, ".saito-sidebar-right");
+        mod.settsidebar.render(app, mod, ".saito-sidebar-right");
 
         // settings can render into appspace
         document.querySelector(".appspace").innerHTML = "";

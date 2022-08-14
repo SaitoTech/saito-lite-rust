@@ -21,8 +21,8 @@ class Screenshot extends ModTemplate {
           menu_option: {
 	    text: "Screenshot",
 	    id: "game-screenshot",
-            class : "game-screenshot",
-            callback : async function(app, game_mod) {
+      class : "game-screenshot",
+      callback : async function(app, game_mod) {
 	      game_mod.menu.showSubMenu("game-screenshot");
 	    }
           },

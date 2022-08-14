@@ -24,6 +24,7 @@ class League extends ModTemplate {
     //
     this.leagues = [];
 
+
     //
     // used in onPeerHandshakeComplete
     //
@@ -41,6 +42,8 @@ class League extends ModTemplate {
   initialize(app) {
 
     super.initialize(app);
+
+    this.loadLeagues();
 
     app.modules.getRespondTos("arcade-games").forEach((mod, i) => {
         this.games.push(mod);
@@ -202,6 +205,12 @@ class League extends ModTemplate {
           elem.innerHTML = "";
           this.renderArcade(app, arcade, elem);  
         }
+      }else{
+        let redsquare = app.modules.returnModule("RedSquare");
+        if (redsquare && redsquare.browser_active){
+          console.log("Leagues telling Redsquare to Render");
+          redsquare.render(app);
+        }
       }
     }
   }
@@ -219,7 +228,7 @@ class League extends ModTemplate {
     }
     let am = this.app.modules.returnActiveModule().name;
 
-    if (am == "Arcade"){
+    if (am == "Arcade" || am == "RedSquare"){
       return true;
     }
     return false;
@@ -861,6 +870,7 @@ class League extends ModTemplate {
     league.playerCnt = 0;
     let league_self = this;
     league.players = [];
+    league.top3 = [];
     this.sendPeerDatabaseRequestWithFilter("League" , `SELECT * FROM players WHERE league_id = '${lid}' ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC` ,
 
       (res) => {
@@ -871,6 +881,9 @@ class League extends ModTemplate {
             cnt++; //Count number of players 
             if (p.pkey == pid){
               league.myRank = cnt; //I am the cnt player in the leaderboard
+            }
+            if (cnt <= 3){
+              league.top3.push(p.pkey);
             }
           }
           league.playerCnt = cnt;
@@ -1007,6 +1020,27 @@ class League extends ModTemplate {
     }
     return false;
   }
+
+
+  loadLeagues() {
+
+//    if (this.app.options.leagues) {
+//      this.leagues = this.app.options.leagues;
+//      return;
+//    }
+
+    //
+    // set default values
+    //
+//    this.leagues = {};
+
+  }
+
+  saveLeagues() {
+//      this.app.options.leagues = this.leagues;
+//      this.app.options.saveOptions();
+  }
+
 
 
 }

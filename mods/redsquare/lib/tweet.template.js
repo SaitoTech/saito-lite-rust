@@ -10,8 +10,14 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     let link_preview = '';
     let youtube_preview = "";
 
-    if (typeof tweet.img != 'undefined' && tweet.img != "") {
-        tweet_img = `<div class="redsquare-image-container"><img src="${tweet.img}" /></div>`;
+    if (typeof tweet.tx.msg.data.images != 'undefined' && tweet.tx.msg.data.images.length > 0) {
+        let imgs = tweet.tx.msg.data.images;
+        tweet_img += `<div class="redsquare-image-container">`;
+        let img_class = (imgs.length>1) ? 'tweet-multiple-img' : '';
+        for (let i=0; i<imgs.length; i++) {
+          tweet_img += `<div class='${img_class}' style="background: url(${imgs[i]});"></div>`;
+        }
+        tweet_img += `</div>`;
     }
     if (typeof tweet.text != 'undefined' && tweet.text != "") {
       tweet_text = tweet.text;
@@ -100,6 +106,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       <div class="youtube-embed-container">${youtube_preview}</div>
       <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
            </div>
+          <div></div>
            <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
         </div>
     </div>
