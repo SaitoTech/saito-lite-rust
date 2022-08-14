@@ -24,6 +24,9 @@ Saito User
     margin-bottom: 1px;
     width: 100%;
 }
+.saito-user.small {
+    grid-template-rows: min-content min-content;
+}
 
 .saito-user>div:nth-child(1) {
     margin-right: 1rem;
@@ -52,6 +55,10 @@ Saito User
     grid-row-start: 2;
     grid-row-end: span 1;
     font-size: 1.4rem;
+}
+.saito-user.small>div:nth-child(3) {
+    line-height: 1.8rem;
+    padding-top: 0.5rem;
 }
 
 .saito-user>div:nth-child(4).saito-user-alert,
