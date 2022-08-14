@@ -11,7 +11,7 @@ class ChatManager {
 	this.rendered = 0;
 	this.mod = mod;
 
-        app.connection.on("chat-render-request", (tx) => {
+        app.connection.on("chat-render-request", (emptymsg) => {
           this.render(app, mod);
         });
 
