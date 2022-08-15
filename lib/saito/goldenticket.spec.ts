@@ -4,6 +4,7 @@ import saito from "./saito";
 
 import * as blake3 from "blake3";
 import GoldenTicket from "./goldenticket";
+import Goldenticket from "./goldenticket";
 
 test("golden ticket serialization", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -36,6 +37,7 @@ test("golden ticket serialization", () => {
 });
 
 test("difficulty test", () => {
+
     expect(GoldenTicket.generateHash(0).toUpperCase()).toEqual("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     expect(GoldenTicket.generateHash(1).toUpperCase()).toEqual("7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     expect(GoldenTicket.generateHash(2).toUpperCase()).toEqual("3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
@@ -46,4 +48,5 @@ test("difficulty test", () => {
 
     expect(GoldenTicket.verifyHash("4523d0eb05233434b42de74a99049decb6c4347da2e7cde9fb49330e905da1e2","7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")).toBeTruthy();
     expect(GoldenTicket.verifyHash("4523d0eb05233434b42de74a99049decb6c4347da2e7cde9fb49330e905da1e2","3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")).toBeFalsy();
+
 });
