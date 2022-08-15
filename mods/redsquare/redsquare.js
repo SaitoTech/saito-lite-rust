@@ -191,12 +191,9 @@ class RedSquare extends ModTemplate {
   }
 
 
-  //
-  // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
-  // NEEDS TO BE REMOVED BEFORE CODE MERGE
-  //
+  /*********** REMOVED AS RUNNING ON PRODUCTION *************
   installModule(app) {
-
+  
     if (this.app.BROWSER == 1) { return }
 
     super.installModule(app);
@@ -219,7 +216,7 @@ class RedSquare extends ModTemplate {
     }
 
   }
-
+  **********************************************************/
 
 
 
