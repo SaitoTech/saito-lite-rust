@@ -1708,11 +1708,10 @@ class Block {
       return false;
     }
 
-    //
+    let generated_merkle_root = this.generateMerkleRoot();
     // validate merkle root
-    //
-    if (this.block.merkle !== this.generateMerkleRoot()) {
-      console.log("merkle root is unset or is invalid false 1");
+    if (this.block.merkle !== generated_merkle_root) {
+      console.log(`merkle root : ${this.block.merkle} is different from expected : ${generated_merkle_root}`);
       return false;
     }
 
