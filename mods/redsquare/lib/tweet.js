@@ -3,7 +3,6 @@ const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
-const SaitoShareLinkModal = require("./../../../lib/saito/new-ui/modals/share-link/share-link");
 
 class RedSquareTweet {
 
@@ -305,8 +304,9 @@ class RedSquareTweet {
       e.stopImmediatePropagation();
 
       let url = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
-      let share_link = new SaitoShareLinkModal(app, mod, url);
-      share_link.render();
+      navigator.clipboard.writeText(url).then(() => {
+        salert("Link copied to clipboard successfully.");
+      });
     };
   }
 
