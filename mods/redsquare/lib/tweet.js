@@ -3,6 +3,7 @@ const TweetTemplate = require("./tweet.template");
 const PostTweet = require("./post");
 const RetweetTweet = require("./retweet");
 const SaitoOverlay = require("./../../../lib/saito/new-ui/saito-overlay/saito-overlay");
+const SaitoShareLinkModal = require("./../../../lib/saito/new-ui/modals/share-link/share-link");
 
 class RedSquareTweet {
 
@@ -24,6 +25,7 @@ class RedSquareTweet {
     this.link = null;
     this.link_properties = null;
     this.youtube_id = null;
+    this.flagged = null;
 
     //
     // retweet
@@ -275,6 +277,36 @@ class RedSquareTweet {
         obj.parentNode.classList.remove("saito-tweet-no-activity");
         obj.parentNode.classList.add("saito-tweet-activity");
       };
+    };
+
+    //
+    // flag
+    //
+    sel = ".tweet-flag-" + this.tx.transaction.sig;
+    document.querySelector(sel).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+
+      let obj = document.querySelector(sel);
+      obj.classList.add("saito-tweet-activity");
+      salert("Tweet reported to moderators successfully.");
+    };
+
+    //
+    // share tweet
+    //
+    sel = ".tweet-share-" + this.tx.transaction.sig;
+    document.querySelector(sel).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      let url = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
+      let share_link = new SaitoShareLinkModal(app, mod, url);
+      share_link.render();
     };
   }
 

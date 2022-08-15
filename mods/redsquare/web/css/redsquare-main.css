@@ -11,7 +11,7 @@
 .tweet {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   line-height: 2.2rem;
 }
 
@@ -197,18 +197,18 @@
 
 .redsquare-tweet-tools {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  justify-content: initial;
   font-size: 1.5rem;
-  width: 3.5rem;
-  margin: 1rem 0;
+  width: 100%;
+  margin: 2rem 0 0rem 0;
 }
 
 
 .redsquare-tweet-tools>div {
   position: relative;
   margin: 0.75rem 0;
-  transform: scale(0.75);
+  min-width: 8%;
+  margin-right: 15%;
 }
 
 .redsquare-tweet-tools>div:hover {
@@ -217,39 +217,37 @@
 
 
 .redsquare-tweet-tools span {
-  margin: 0 auto;
-  position: absolute;
   display: inline-block;
-  width: 100%;
-  text-align: center;
-  line-height: 2.9rem;
   font-weight: bold;
-  color: var(--saito-white);
   z-index: 1;
+  float: left;
+  margin-right: 1rem;
+  color: rgba(83, 100, 113, 0.8);
+  font-size: 1.5rem;
 }
 
 .redsquare-tweet-tools i {
-  font-size: 3rem;
-  font-weight: bold;
-  width: 100%;
+  font-size: 1.7rem;
   text-align: center;
-  color: #aaa;
+  color: rgba(83, 100, 113, 0.8);
+}
+
+.redsquare-tweet-tools i:hover {
+  color: var(--saito-primary);
+}
+
+.tweet-tool-retweet i {
+  font-size: 2rem;
+}
+
+.tweet-tool-flag i {
+  font-weight: normal;
 }
 
 
 .saito-tweet-activity i {
   color: var(--saito-primary);
 }
-
-.tweet-tool-retweet span {
-  line-height: 3.3rem;
-}
-
-.tweet-tool-retweet i {
-  padding-left: 0.666rem;
-}
-
-
 
 .link-preview {
   margin: 15px 0px;

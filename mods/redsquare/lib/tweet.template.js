@@ -70,10 +70,12 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     let saito_tweet_replied = "saito-tweet-no-activity";
     let saito_tweet_liked = "saito-tweet-no-activity";
     let saito_tweet_retweeted = "saito-tweet-no-activity";
+    let saito_tweet_flagged = "saito-tweet-no-activity";
     
     if (tweet.children.length > 0 ) { saito_tweet_replied = "saito-tweet-activity"; }
     if (tweet.num_likes > 0) { saito_tweet_liked = "saito-tweet-activity"}
     if (tweet.num_retweets > 0 ) { saito_tweet_retweeted = "saito-tweet-activity"}
+    if (tweet.flagged > 0 ) { saito_tweet_flagged = "saito-tweet-activity"}
 
     let html = `
        <div class="redsquare-item" id="tweet-box-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
@@ -84,32 +86,47 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
     html += `
          <div class="redsquare-item-contents" id="redsquare-item-contents-${tweet.tx.transaction.sig}" data-id="${tweet.tx.transaction.sig}">
     `;
-    if (include_controls == 1) {
-      html += `
-           <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
-
-             <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
-
-             <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
-
-             <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fas fa-play fa-rotate-180"></i></div>
-
+    
+    html += `
+           <div class="redsquare-tweet-sidebar" data-id="${tweet.tx.transaction.sig}">
            </div>
       `;
-    } else {
-      html += `<div class="redsquare-tweet-no-tools"></div>`;
-    }
+
     html += `
     <div class="tweet-body">
       <div class="tweet">${tweet_text}</div>
       ${tweet_img}
       <div class="youtube-embed-container">${youtube_preview}</div>
       <div class="link-preview" id="link-preview-${tweet.tx.transaction.sig}">${link_preview}</div>
-           </div>
+     `;
+
+      if (include_controls == 1) {
+      html += `
+        <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
+           <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
+           <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fab fa-rev"></i></div>
+           <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
+           <div class="tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-share"></i></div>
+           <div class="tweet-tool-flag tweet-flag-${tweet.tx.transaction.sig} ${saito_tweet_flagged}"><i class="fa fa-flag"></i></div>
+        </div>
+      `;
+    } else {
+      html += `<div class="redsquare-tweet-no-tools"></div>`;
+    }
+
+        
+     
+  html += `
+      </div>
+
+
           <div></div>
            <div class="redsquare-item-children redsquare-item-children-${tweet.tx.transaction.sig}"></div>
         </div>
+
     </div>
+
+    
     `;
 
     return html;
