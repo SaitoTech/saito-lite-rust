@@ -76,7 +76,7 @@ class Post {
       	  }
 
       	  post_self.overlay.hide();
-          document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
+          document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
 	}, 1000);
 
       }
