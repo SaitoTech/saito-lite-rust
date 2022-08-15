@@ -191,12 +191,9 @@ class RedSquare extends InviteTemplate {
   }
 
 
-  //
-  // TEMPORARY METHOD TO ADD TWEETS ON MODULE LOAD
-  // NEEDS TO BE REMOVED BEFORE CODE MERGE
-  //
+  /*********** REMOVED AS RUNNING ON PRODUCTION *************
   installModule(app) {
-
+  
     if (this.app.BROWSER == 1) { return }
 
     super.installModule(app);
@@ -219,7 +216,7 @@ class RedSquare extends InviteTemplate {
     }
 
   }
-
+  **********************************************************/
 
 
 
@@ -324,6 +321,7 @@ class RedSquare extends InviteTemplate {
                   tx.optional.num_replies = row.num_replies;
                   tx.optional.num_retweets = row.num_retweets;
                   tx.optional.num_likes = row.num_likes;
+                  tx.optional.flagged = row.flagged;
                   tx.optional.link_properties = {};
 
                   try {
@@ -527,6 +525,51 @@ class RedSquare extends InviteTemplate {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
+
+    return;
+
+  }
+
+  sendFlagTransaction(app, mod, data) {
+
+    let redsquare_self = this;
+
+    let obj = {
+      module: redsquare_self.name,
+      request: "flag tweet",
+      data: {},
+    };
+    for (let key in data) {
+      obj.data[key] = data[key];
+    }
+
+    let newtx = redsquare_self.app.wallet.createUnsignedTransaction();
+    newtx.msg = obj;
+    newtx = redsquare_self.app.wallet.signTransaction(newtx);
+    redsquare_self.app.network.propagateTransaction(newtx);
+
+    return newtx;
+
+  }
+
+  async receiveFlagTransaction(blk, tx, conf, app) {
+
+    //
+    // browsers
+    //
+    if (app.BROWSER == 1) {
+      return;
+    }
+
+    //
+    // servers
+    //
+    let txmsg = tx.returnMessage();
+    let sql = `UPDATE tweets SET flagged = 1 WHERE sig = $sig`;
+    let params = {
+      $sig: txmsg.data.sig,
+    };
+    app.storage.executeDatabase(sql, params, "redsquare");
 
     return;
 
