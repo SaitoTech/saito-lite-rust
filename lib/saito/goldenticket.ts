@@ -21,8 +21,13 @@ class GoldenTicket {
         let target_hash = GoldenTicket.generateHash(difficulty);
 
         // anything lower than target hash acceptable
+        return GoldenTicket.verifyHash(solution, target_hash);
+    }
+
+    static verifyHash(solution: string, target: string): boolean {
+        // anything lower than target hash acceptable
         for (let i = 0; i < 64; i++) {
-            if (parseInt(solution[i], 16) > parseInt(target_hash[i], 16)) {
+            if (parseInt(solution[i], 16) > parseInt(target[i], 16)) {
                 return false;
             }
         }
