@@ -80,8 +80,7 @@ class Chatx extends ModTemplate {
             return;
           }
           let newgroup = this.createChatGroup(data.members);
-          this.sendEvent('chat-render-request', {});
-          this.saveChat();
+          app.connection.emit('chat-render-request', {});
 
         });
 
@@ -136,7 +135,7 @@ console.log("testing B");
 
 
 
-        this.sendEvent('chat-render-request', {});
+      app.connection.emit('chat-render-request', {});
 
     }
 
@@ -213,7 +212,7 @@ console.log("testing B");
                                     return a.transaction.ts - b.transaction.ts;
                                 })
                             }
-                            this.sendEvent('chat-render-request', {});
+        		    app.connection.emit('chat-render-request', {});
 
                             //
                             // check identifiers
@@ -238,7 +237,7 @@ console.log("testing B");
                         return 1;
                     }
 
-                    this.sendEvent('chat-render-request', {});
+		    app.connection.emit('chat-render-request', {});
 
 		    //
 		    // check identifiers
@@ -327,7 +326,7 @@ console.log("testing B");
         //
         // render loaded messages
         //
-        this.sendEvent('chat-render-request', {});
+        app.connection.emit('chat-render-request', {});
 
     }
 
@@ -379,6 +378,9 @@ console.log("testing B");
         let txmsg = tx.returnMessage();
         if (conf == 0) {
             if (txmsg.request == "chat message") {
+
+console.log("RECEIVED CHAT MESAAGE!");
+
                 //
                 // we manually update the TS ourselves to prevent re-orgs, this means sigs
                 // no longer validate on messages, but we should be able to recreate if needed
@@ -392,11 +394,14 @@ console.log("testing B");
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
+console.log("to group: " + txmsg.group_id);
+
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
 
-                if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-                    return;
-                }
+// TESTING
+//                if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+//                    return;
+//                }
                 this.receiveMessage(app, tx);
             }
         }
@@ -421,6 +426,8 @@ console.log("testing B");
             switch (req.request) {
 
                 case "chat message":
+
+console.log("RECEIVED CHAT MESAAGE RELAY!");
 
                     //
                     let modified_tx_obj = JSON.parse(JSON.stringify(tx.transaction));
@@ -515,8 +522,6 @@ console.log("testing B");
         } else {
             salert("Connection to chat server lost");
         }
-
-        this.saveChat();
 
     }
 
@@ -645,7 +650,9 @@ console.log("testing B");
     }
 
 
-    receiveMessage(app, tx, renderMode = "") {
+    receiveMessage(app, tx) {
+
+console.log("received chat message");
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
@@ -663,13 +670,7 @@ console.log("testing B");
             }
         }
 
-        if (app.BROWSER == 1) {
-            let m = app.modules.returnActiveModule();
-            if (!m.events.includes("chat-render-request")) {
-                this.showAlert();
-            }
-        }
-
+console.log("received message!");
 
         //
         // if direct message, add group
@@ -700,187 +701,24 @@ console.log("testing B");
         }
 
 
-        //
-        // notify group chat if not-on-page
-        //
-        let chat_on_page = 1;
-        try {
-            let chat_box_id = "#chat-box-" + txmsg.group_id;
-            if (!document.querySelector(chat_box_id)) {
-                chat_on_page = 0;
-            }
-        } catch (err) {
-        }
-
-
         let message = txmsg.message;
+
+console.log("CHAT IS: " + JSON.stringify(message));
+
         this.groups.forEach(group => {
-            try {
-                if (group.id == txmsg.group_id) {
-                    //
-                    // only add if not from me, otherwise will be encrypted for others
-                    //
-                    if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
-                        let identifier = app.keys.returnIdentifierByPublicKey(tx.transaction.from[0].add);
-                        let title = identifier ? identifier : tx.transaction.from[0].add;
-                        group.txs.push(tx);
-                        app.browser.sendNotification(title, message, 'chat-message-notification');
-                    } else {
-                        let identifier = app.keys.returnIdentifierByPublicKey(this.app.wallet.returnPublicKey());
-                        let title = identifier ? identifier : this.app.wallet.returnPublicKey();
-                        group.txs.push(tx);
-                        app.browser.sendNotification(title, message, 'chat-message-notification');
-                    }
-                }
-            } catch (err) {
-                console.log("ERROR 113234: chat error receiving message: " + err);
-            }
+          if (group.id == txmsg.group_id) {
+            group.txs.push(tx);
+          }
         });
 
-        if (chat_on_page == 0) {
-            if (!tx.isFrom(this.app.wallet.returnPublicKey())) {
-                this.openChatBox(txmsg.group_id);
-                try {
-                    if (this.isOtherInputActive() == 0) {
-                        document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).focus();
-                        if (document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).val === "") {
-                            document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).select();
-                        }
-                    }
-                } catch (err) {
-                }
-            }
-        } else {
-            try {
-                if (this.isOtherInputActive() == 0) {
-                    document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).focus();
-                    if (document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).val === "") {
-                        document.getElementById(`chat-box-new-message-input-${txmsg.group_id}`).select();
-                    }
-                }
-            } catch (err) {
-            }
-        }
+        app.connection.emit('chat-render-request', {});
 
-        //
-        // update sidebar if possible
-        //
-        this.updateLastMessage(txmsg.group_id, message);
-        this.sendEvent('chat_receive_message', message);
-        this.render(this.app, renderMode);
-
-        this.saveChat();
-
-        //
-        // maybe try to find out who this is...
-        //
-        let msgidentifier = app.keys.returnIdentifierByPublicKey(tx.transaction.from[0].add);
-        if (msgidentifier === tx.transaction.from[0].add || msgidentifier == "") {
-            app.browser.addIdentifiersToDom([tx.transaction.from[0].add]);
-        }
-
-    }
-
-    getChatGroups() {
-        let options = this.app.storage.getOptions();
-        let groups = [];
-
-        if (options) {
-            options = JSON.parse(options);
-            if (options.chat?.groups){
-                groups = options.chat.groups;    
-            }
-        }
-
-        return groups;
-    }
-
-
-    saveChat() {
-
-        this.app.options.chat = Object.assign({}, this.app.options.chat);
-        this.app.options.chat.groups = this.groups.map(group => {
-            let { id, name, members, is_encrypted, txs } = group;
-            return { id, name, members, is_encrypted, txs};
-        });
-        this.app.storage.saveOptions();
     }
 
 
     //////////////////
     // UI Functions //
     //////////////////
-    openChats() {
-
-        let groups = this.getChatGroups();
-
-        if (groups.length > 0) {
-            for (let i=0; i < groups.length; i++) {
-                console.log('opening this group chat');
-                console.log(groups[i]);
-                this.groups = groups;
-                this.openChatBox(groups[i].id);
-            }
-        } else {
-           this.openChatBox();
-        }
-    }
-
-    openChatBox(group_id = null) {
-
-        if (this.renderMode != "email" && this.renderMode != "none") {
-            return;
-        }
-
-        if (group_id == null) {
-            let group = this.returnCommunityChat();
-            if (group == undefined || group == null) {
-                return;
-            }
-            if (group.id == undefined || group.id == null) {
-                return;
-            }
-            group_id = group.id;
-        }
-
-        let community_chat_group = this.returnCommunityChat();
-        if (community_chat_group.id == group_id && this.mute_community_chat == 1) {
-            return;
-        }
-
-        if (document.getElementById(`chat-box-${group_id}`)) {
-            let chat_box_input = document.getElementById(`chat-box-new-message-input-${group_id}`);
-            if (this.isOtherInputActive() == 0) {
-                chat_box_input.focus();
-            }
-
-            //
-            // maximize if minimized
-            //
-            let chat_box = document.getElementById(`chat-box-${group_id}`);
-            chat_box.classList.remove("chat-box-hide");
-            return;
-        }
-
-        for (let i = 0; i < this.groups.length; i++) {
-            if (this.groups[i].id == group_id) {
-                EmailChat.showChatBox(this.app, this, this.groups[i]);
-            }
-        }
-
-        this.render(this.app);
-
-        try {
-            if (this.isOtherInputActive() == 0) {
-                document.getElementById(`chat-box-new-message-input-${group_id}`).focus();
-                if (document.getElementById(`chat-box-new-message-input-${group_id}`).val === "") {
-                    document.getElementById(`chat-box-new-message-input-${group_id}`).select();
-                }
-            }
-        } catch (err) {
-        }
-
-    }
 
     ///////////////////
     // CHAT SPECIFIC //

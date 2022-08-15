@@ -31,7 +31,7 @@ class Post {
           salert("Maximum 4 images allowed per tweet.");
         } else {
         
-          this.resizeImg(file, 0.75, 0.75);
+          this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
         
         }
       }, 
