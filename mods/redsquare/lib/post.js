@@ -108,9 +108,6 @@ class Post {
     oImg.setAttribute('id', "uploaded-img");
     document.body.appendChild(oImg);
 
-    console.log('original img');
-    console.log(img);
-
     let original = document.getElementById("uploaded-img");
     let img_width = 0;
     let img_height = 0;
@@ -134,12 +131,6 @@ class Post {
 
       canvas.getContext("2d").drawImage(this, 0, 0, w, h);
       let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-      console.log('dimensions');
-      console.log(dimensions, quality);
-      console.log(img_width, img_height)
-
-      console.log('result_img_uri');
-      console.log(result_img_uri);
       
       post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
        /><i data-id="${post_self.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
