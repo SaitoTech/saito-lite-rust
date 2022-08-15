@@ -127,7 +127,7 @@ class RedSquareTweet {
       app.browser.addElementToSelector(html, selector);
     }
 
-    if (this.critical_child != null) {
+    if (this.critical_child != null && this.flagged != 1) {
       if (obj) {
         obj.classList.add("before-ellipsis");
         obj.nextSibling.classList.add("after-ellipsis");
@@ -291,6 +291,7 @@ class RedSquareTweet {
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
+      document.querySelector('#tweet-box-'+this.tx.transaction.sig).style.display = 'none';
       salert("Tweet reported to moderators successfully.");
     };
 
