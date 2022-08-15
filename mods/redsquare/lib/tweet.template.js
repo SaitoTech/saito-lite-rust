@@ -104,9 +104,9 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       html += `
         <div class="redsquare-tweet-tools" data-id="${tweet.tx.transaction.sig}">
            <div class="tweet-tool-comment tweet-reply-${tweet.tx.transaction.sig} ${saito_tweet_replied}"><span class="tweet-tool-comment-count tweet-tool-comment-count-${tweet.tx.transaction.sig}">${tweet.children.length}</span> <i class="far fa-comment"></i></div>
-           <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fab fa-rev"></i></div>
+           <div class="tweet-tool-retweet tweet-retweet-${tweet.tx.transaction.sig} ${saito_tweet_retweeted}"><span class="tweet-tool-retweet-count tweet-tool-retweet-count-${tweet.tx.transaction.sig}">${tweet.num_retweets || 0}</span> <i class="fa fa-repeat"></i></div>
            <div class="tweet-tool-like tweet-like-${tweet.tx.transaction.sig} ${saito_tweet_liked}"><span class="tweet-tool-like-count  tweet-tool-like-count-${tweet.tx.transaction.sig}">${tweet.num_likes || 0}</span> <i class="far fa-heart"></i></div>
-           <div class="tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-share"></i></div>
+           <div class="tweet-tool-share tweet-share-${tweet.tx.transaction.sig}"><i class="fa fa-arrow-up-from-bracket"></i></div>
            <div class="tweet-tool-flag tweet-flag-${tweet.tx.transaction.sig} ${saito_tweet_flagged}"><i class="fa fa-flag"></i></div>
         </div>
       `;
