@@ -12,7 +12,7 @@ const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 
 
-class RedSquare extends ModTemplate {
+class RedSquare extends InviteTemplate {
 
   constructor(app) {
 
