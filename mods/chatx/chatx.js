@@ -92,7 +92,6 @@ class Chatx extends ModTemplate {
 	// service. TODO - fix later
 	//
  	if (app.options?.peers?.length >= 1) {
-console.log("CREATING PUBLIC CHAT");
 	  let peer = app.options.peers[0];
           this.createChatGroup([peer.publickey], "Saito Community Chat");
         }
@@ -113,7 +112,6 @@ console.log("CREATING PUBLIC CHAT");
         // create chatgroups from groups
         //
         let g = this.app.keys.returnGroups();
-console.log("CREATING GROUP CHATS: " + g.length);
         for (let i = 0; i < g.length; i++) {
             this.createChatGroup(g[i].members, g[i].name);
         }
@@ -365,8 +363,6 @@ console.log("CREATING GROUP CHATS: " + g.length);
         if (conf == 0) {
             if (txmsg.request == "chat message") {
 
-console.log("RECEIVED CHAT MESAAGE!");
-
                 //
                 // we manually update the TS ourselves to prevent re-orgs, this means sigs
                 // no longer validate on messages, but we should be able to recreate if needed
@@ -380,14 +376,7 @@ console.log("RECEIVED CHAT MESAAGE!");
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
-console.log("to group: " + txmsg.group_id);
-
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
-
-// TESTING
-//                if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-//                    return;
-//                }
                 this.receiveChatTransaction(app, tx);
             }
         }
@@ -412,8 +401,6 @@ console.log("to group: " + txmsg.group_id);
             switch (req.request) {
 
                 case "chat message":
-
-console.log("RECEIVED CHAT MESAAGE RELAY!");
 
                     //
                     let modified_tx_obj = JSON.parse(JSON.stringify(tx.transaction));
@@ -638,8 +625,6 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
 
     receiveChatTransaction(app, tx) {
 
-console.log("received chat message");
-
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
         }
@@ -655,8 +640,6 @@ console.log("received chat message");
                 txmsg = tx.returnMessage();
             }
         }
-
-console.log("received message!");
 
 	//
 	//
@@ -752,9 +735,9 @@ console.log("received message!");
 
 
     addTransactionToGroup(group, tx) {
-      let x = JSON.stringify(tx);
+      let x = JSON.stringify(tx.returnMessage());
       for (let i = 0; i < group.txs.length; i++) {
-	if (JSON.stringify(group.txs[i]) === x) {
+	if (JSON.stringify(group.txs[i].returnMessage()) === x) {
 	  return;
 	}
       }

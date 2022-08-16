@@ -36,6 +36,13 @@ class ChatPopup {
     }
 
     //
+    // focus on text input
+    //
+    let iobj = "chat-input-"+group_id;
+    document.getElementById(iobj).focus();
+
+
+    //
     // submit
     //
     let idiv = "chat-input-"+group_id;
