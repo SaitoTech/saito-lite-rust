@@ -11,18 +11,11 @@ module.exports = ArcadeSidebar = {
     if (!document.getElementById("arcade-container")) { app.browser.addElementToDom(ArcadeContainerTemplate()); }
     if (!document.querySelector(".arcade-sidebar")) { app.browser.prependElementToDom(ArcadeSidebarTemplate(), document.getElementById("arcade-container")); }
 
-    app.modules.respondTo("chat-manager").forEach(module => {
-      if (module != null) {
-        module.respondTo('chat-manager').render(app, module, ".chat-manager-container");
-      }
-    });
-/***
     app.modules.respondTo("email-chat").forEach(module => {
       if (module != null) {
         module.respondTo('email-chat').render(app, module);
       }
     });
-***/
 
     let gamelist = [];
     //Query all games in Saito build

@@ -14,7 +14,7 @@ module.exports = ArcadeSidebarTemplate = () => {
         </div>
       </div>
     </div>
-    <div id="chat-manager-container" class="chat-manager-container"></div>
+    <div id="email-chat" class="email-chat"></div>
 
     <div class="arcade-announcements" id="arcade-announcements">
       <div class="arcade-announcement">Looking for an opponent? Drop an invite on our gamers' <a href="https://t.me/SaitoArcadeChat">Telegram Channel</a>.</div>
