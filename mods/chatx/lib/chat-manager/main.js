@@ -75,8 +75,6 @@ console.log("ADD ELEMENT BY ID: " + divid);
         document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
             item.onclick = (e) => {
 		let group_id = e.currentTarget.getAttribute("data-id");
-		
-	        alert("clicked to create: " + group_id);
 		let chat_popup = new ChatPopup(app, mod, group_id);
 		chat_popup.render(app, mod, group_id);
             }
