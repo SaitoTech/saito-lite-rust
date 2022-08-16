@@ -537,3 +537,22 @@ Saito Arcade Invite
     height: 3rem;
 }
 
+
+/* ----------------------------------------------------------------
+Legacy Site Message
+-----------------------------------------------------------------*/
+div#message-wrapper {
+    border: 2px solid var(--saito-primary);
+    min-width: 500px;
+    padding: 1em;
+    background: var(--saito-primary);
+    position: fixed;
+    bottom: 1em;
+    left: 1em;
+    z-index: 200;
+  }
+
+  div#message-wrapper p {
+    font-size: 3rem;
+    color: #fff !important;
+  }
