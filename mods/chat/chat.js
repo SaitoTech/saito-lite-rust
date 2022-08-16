@@ -377,7 +377,7 @@ class Chat extends ModTemplate {
           const reconstruct = Buffer.from((Buffer.from(txs.transaction.m).toString()), "base64").toString("utf-8");
           msg = JSON.parse(reconstruct);
         } catch (err) {
-          console.error(err);
+          //console.error(err);
         }
         return msg.message;
     }
@@ -519,7 +519,7 @@ class Chat extends ModTemplate {
                     break;
             }
         } catch (err) {
-            console.log(err);
+            //console.log(err);
         }
     }
 
