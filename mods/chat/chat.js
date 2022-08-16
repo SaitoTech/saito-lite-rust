@@ -807,7 +807,7 @@ class Chat extends ModTemplate {
         this.sendEvent('chat_receive_message', message);
         this.render(this.app, renderMode);
 
-	this.app.emit('chat-render-request', {});
+	//this.app.emit('chat-render-request', {});
 
         this.saveChat();
 
