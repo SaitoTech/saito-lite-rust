@@ -12,7 +12,6 @@ class RedSquareAppspaceHome {
   }
 
   async render(app, mod) {
-
     document.querySelector(".appspace").innerHTML = "";
     app.browser.addElementToClass(RedSquareAppspaceHomeTemplate(app, mod), "appspace");
 
@@ -40,9 +39,9 @@ class RedSquareAppspaceHome {
       ptweet.render(app, mod);
     }
 
-    document.getElementById("redsquare-new-tweets-btn").onclick = (e) => {
+    document.getElementById("redsquare-new-tweets-banner").onclick = (e) => {
       mod.renderMainPage(app, mod);
-      document.getElementById("redsquare-new-tweets-btn").style.display = 'none';
+      document.getElementById("redsquare-new-tweets-banner").style.display = 'none';
     }
 
   }

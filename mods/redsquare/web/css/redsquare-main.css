@@ -8,6 +8,12 @@
   z-index: 10;
 }
 
+.saito-menu i::before {
+  -webkit-text-stroke: var(--saito-default-font-color) 1px;
+  color: transparent;
+  font-size: smaller;
+}
+
 .tweet {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -315,17 +321,20 @@
   margin: 30px 10px;
 }
 
-
-#redsquare-new-tweets-btn {
+#redsquare-new-tweets-banner {
   display: none;
   color: #fff;
-  position: fixed;
-  top: 15rem;
-  width: 30rem;
-  left: 35%;
-  box-shadow: 1px 1px 5px 5px #ccc;
+  position: sticky;
+  top: 13rem;
   z-index: 2;
   cursor: pointer;
+  height: 3rem;
+  line-height: 3rem;
+  text-align: center;
+  width: 34%;
+  margin: 0 33%;
+  background: #0004;
+  border-radius: 0.5rem;
 }
 
 .redsquare-ellipsis::after {

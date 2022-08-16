@@ -306,7 +306,7 @@ class RedSquareTweet {
 
       let url = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
       navigator.clipboard.writeText(url).then(() => {
-        salert("Link copied to clipboard successfully.");
+        siteMessageNew("Link copied to clipboard.", 2000);
       });
     };
   }

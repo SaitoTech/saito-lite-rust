@@ -86,14 +86,13 @@ class Chatx extends ModTemplate {
 
 
         //
-        // public chat / main server
-        //
 	// note - we read this from the options file directly as
 	// the peers will not have yet initialized and thus will 
 	// not be able to inform us whether they support the chat
 	// service. TODO - fix later
 	//
  	if (app.options?.peers?.length >= 1) {
+console.log("CREATING PUBLIC CHAT");
 	  let peer = app.options.peers[0];
           this.createChatGroup([peer.publickey], "Saito Community Chat");
         }
@@ -114,11 +113,13 @@ class Chatx extends ModTemplate {
         // create chatgroups from groups
         //
         let g = this.app.keys.returnGroups();
+console.log("CREATING GROUP CHATS: " + g.length);
         for (let i = 0; i < g.length; i++) {
             this.createChatGroup(g[i].members, g[i].name);
         }
 
 
+/****
 //
 // add dummy tweets
 //
@@ -130,7 +131,7 @@ console.log("CREATING MESSAGE FOR GROUP: " + this.groups[i].id);
   this.receiveMessage(app, newtx);
 }
 console.log("testing B");
-
+****/
 
 
 
@@ -189,9 +190,11 @@ console.log("testing B");
         //
         if (peer.isMainPeer()) {
 
-            console.log("CHATX: peer handshake complete with: " + peer.peer.publickey);
-            this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
-            community_chat_group_id = this.groups[this.groups.length - 1].id;
+            for (let z = 0; z < this.groups.length; z++) {
+              if (this.groups[z].name === "Saito Community Chat") {
+		community_chat_group_id = this.groups[z].id;
+	      }
+            }
 
             // not a publickey but group_id gets archived as if it were one
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
@@ -725,6 +728,8 @@ console.log("CHAT IS: " + JSON.stringify(message));
     ///////////////////
     createChatGroup(members = null, name = null) {
 
+console.log("create chat group...");
+
         if (members == null) {
             return;
         }
@@ -741,6 +746,10 @@ console.log("CHAT IS: " + JSON.stringify(message));
         }
 
         let id = this.app.crypto.hash(`${members.join('_')}`)
+
+console.log("creating GROUP with id: " + id);
+console.log("creating GROUP with name: " + name);
+
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
                 return null;

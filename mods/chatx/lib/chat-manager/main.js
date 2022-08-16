@@ -28,11 +28,13 @@ class ChatManager {
 	//
 	mod = this.mod;
 
+console.log("MOD GROUPS LENGTH: " + mod.groups.length);
+
         for (let z = 0; z < mod.groups.length; z++) {
 
 	  let group = mod.groups[z];
 
-console.log("GROUP: " + JSON.stringify(group));
+console.log("GROUP: " + group.id);
 
           // {
           //   id: id,
@@ -49,15 +51,16 @@ console.log("GROUP: " + JSON.stringify(group));
 	     last_msg = txmsg.message;
 	  }
 
-console.log("SAITO USER WITH TIME AND GROUP_ID : " + group.id);
           let html = SaitoUserWithTime(app, mod, group.name, last_msg, "3:45", group.id);
 
 	  let divid = "saito-user-"+group.id;
 	  let obj = document.getElementById(divid);
 
 	  if (obj) {
+console.log("REPLACE ELEMENT BY ID: " + divid);
 	    app.browser.replaceElementById(html, divid);
 	  } else {
+console.log("ADD ELEMENT BY ID: " + divid);
 	    app.browser.addElementToSelector(html, ".chat-manager-list");	
 	  }
         }
@@ -72,8 +75,6 @@ console.log("SAITO USER WITH TIME AND GROUP_ID : " + group.id);
         document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
             item.onclick = (e) => {
 		let group_id = e.currentTarget.getAttribute("data-id");
-		
-	        alert("clicked to create: " + group_id);
 		let chat_popup = new ChatPopup(app, mod, group_id);
 		chat_popup.render(app, mod, group_id);
             }

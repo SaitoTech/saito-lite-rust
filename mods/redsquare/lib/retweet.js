@@ -33,7 +33,7 @@ class Retweet {
       	mod.renderMainPage(app, mod);
 
       	this.overlay.hide();
-        document.getElementById("redsquare-new-tweets-btn").style.display = 'block';
+        document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
       }
     }
 
