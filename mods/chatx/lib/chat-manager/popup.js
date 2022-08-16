@@ -36,6 +36,13 @@ class ChatPopup {
     }
 
     //
+    // focus on text input
+    //
+    let iobj = "chat-input-"+group_id;
+    document.getElementById(iobj).focus();
+
+
+    //
     // submit
     //
     let idiv = "chat-input-"+group_id;
@@ -45,9 +52,9 @@ class ChatPopup {
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
         e.preventDefault();
         if (msg_input.value == "") { return; }
-        let newtx = mod.createMessage(group_id, msg_input.value);
-        mod.sendMessage(app, newtx);
-        mod.receiveMessage(app, newtx);
+        let newtx = mod.createChatTransaction(group_id, msg_input.value);
+        mod.sendChatTransaction(app, newtx);
+        mod.receiveChatTransaction(app, newtx);
         msg_input.value = "";
       }
 
@@ -60,9 +67,9 @@ class ChatPopup {
     document.getElementById(ibtn).onclick = (e) => {
       e.preventDefault();
       if (msg_input.value == "") { return; }
-      let newtx = mod.createMessage(group_id, msg_input.value);
-      mod.sendMessage(app, newtx);
-      mod.receiveMessage(app, newtx);
+      let newtx = mod.createChatTransaction(group_id, msg_input.value);
+      mod.sendChatTransaction(app, newtx);
+      mod.receiveChatTransaction(app, newtx);
       msg_input.value = "";
     }
 
