@@ -24,7 +24,6 @@ class Arcade extends InviteTemplate {
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
 
-    this.events = ["chat-render-request"];
     this.mods = [];
     this.affix_callbacks_to = [];
     this.games = [];
@@ -61,28 +60,6 @@ class Arcade extends InviteTemplate {
 
   }
 
-  receiveEvent(type, data) {
-    if (type == "chat-render-request") {
-      if (this.browser_active) {
-        if (this.app.options.auto_open_chat_box == undefined) {
-          this.app.options.auto_open_chat_box = 1;
-          this.app.storage.saveOptions();
-        }
-        //this.renderSidebar();
-        let chat_mod = this.app.modules.returnModule("Chat");
-        if (chat_mod) {
-          if (chat_mod?.groups &&
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
-          }
-        }
-      }
-    }
-  }
 
   handleUrlParams(urlParams) {
     let i = urlParams.get("i");

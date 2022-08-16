@@ -28,7 +28,6 @@ class ChatManager {
             app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
         }
 
-
 	//
 	// make sure chat mod
 	//
@@ -64,7 +63,6 @@ class ChatManager {
 	    app.browser.addElementToSelector(html, ".chat-manager-list");	
 	  }
 
-
 	  //
 	  // if new message, open chat box
 	  //
@@ -90,10 +88,7 @@ class ChatManager {
 	  }
 	}
 
-
-
 	this.rendered = 1;
-
         this.attachEvents(app, mod);
 
     }
