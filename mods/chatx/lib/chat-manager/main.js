@@ -8,8 +8,13 @@ class ChatManager {
     constructor(app, mod) {
 
         this.name = "ChatManager";
-	this.rendered = 0;
 	this.mod = mod;
+	this.messages_in_groups = [];
+	this.rendered = 0;
+
+	for (let z = 0; z < this.mod.groups.length; z++) {
+	  this.messages_in_groups[z] = this.mod.groups[z].txs.length;
+	}
 
         app.connection.on("chat-render-request", (emptymsg) => {
           this.render(app, mod);
@@ -22,6 +27,7 @@ class ChatManager {
         if (!document.querySelector(".chat-manager")) {
             app.browser.addElementToSelector(ChatManagerTemplate(app, mod), selector);
         }
+
 
 	//
 	// make sure chat mod
@@ -57,15 +63,42 @@ class ChatManager {
 	  } else {
 	    app.browser.addElementToSelector(html, ".chat-manager-list");	
 	  }
+
+
+	  //
+	  // if new message, open chat box
+	  //
+	  if (z > this.messages_in_groups.length) {
+	    this.messages_in_groups[z] = 0;
+	  }
+	  if (group.txs.length > this.messages_in_groups[z]) {
+	  //  let group_id = group.id;
+	  //  let chat_popup = new ChatPopup(app, mod, group_id);
+	  //  chat_popup.render(app, mod, group_id);
+	  }
+
         }
 
+	//
+	// open community chat if new load
+	//
+	if (this.rendered == 0) {
+	  if (mod.groups.length > 0) {
+	    let gid = mod.groups[0].id;
+	    let chat_popup = new ChatPopup(app, mod, gid);
+	    chat_popup.render(app, mod, gid);
+	  }
+	}
+
+
+
 	this.rendered = 1;
+
         this.attachEvents(app, mod);
 
     }
 
     attachEvents(app, mod) {
-
         document.querySelectorAll('.chat-manager-list .saito-user').forEach(item => {
             item.onclick = (e) => {
 		let group_id = e.currentTarget.getAttribute("data-id");
