@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS gamestate (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  step INTEGER,
   game_id TEXT ,
   status TEXT ,
   player TEXT ,
@@ -7,8 +7,6 @@ CREATE TABLE IF NOT EXISTS gamestate (
   module TEXT ,
   bid INTEGER ,
   tid INTEGER ,
-  lc INTEGER ,
-  last_move INTEGER ,
+  ts INTEGER ,
   game_state TEXT ,
-  tx TEXT ,
-  sharekey TEXT);
+  tx TEXT );

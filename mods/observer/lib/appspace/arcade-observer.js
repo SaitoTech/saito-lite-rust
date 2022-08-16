@@ -20,7 +20,7 @@ class ArcadeObserver{
 		        let game_id2 = e.currentTarget.getAttribute("data-sig");
 		        //app.crypto.stringToBase64(JSON.stringify(observe))
 		        if (game_cmd === "watch" && game_id === game_id2) {
-		          mod.observeGame(game_id, 1);
+		          mod.observeGame(game_id);
 		          return;
 		        }		
 			}

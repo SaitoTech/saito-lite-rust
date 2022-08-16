@@ -25,7 +25,7 @@ class Arcade extends ModTemplate {
     this.mods = [];
     this.affix_callbacks_to = [];
     this.games = [];
-    this.observer = [];
+    //this.observer = [];
     this.old_game_removal_delay = 2000000;
     this.initialization_timer = null;
     this.services = [{ service: "arcade", domain: "saito" }];
@@ -596,14 +596,6 @@ class Arcade extends ModTemplate {
         if (txmsg.module == "Arcade" && txmsg.request == "close") {
           if (this.debug) { console.log("onConfirmation: close request received"); }
           this.closeGameInvite(blk, tx, conf, app);
-        }
-
-        //
-        // save state -- also prolifigate
-        //
-        if (txmsg.game_state != undefined && txmsg.game_id != "") {
-          if (this.debug) {console.log("onConfirmation: Should save game state");}
-          this.saveGameState(blk, tx, conf, app);
         }
 
         //
