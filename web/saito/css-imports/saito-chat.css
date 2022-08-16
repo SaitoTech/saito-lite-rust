@@ -2,9 +2,9 @@
 .chat-container {
     width: 44rem;
     border: 1px solid var(--saito-border);
-    position: absolute;
+    position: fixed;
     right: 1rem;
-    bottom: 8rem;
+    bottom: 1rem;
     background-color: var(--saito-white);
     border-radius: .4rem;
 }
