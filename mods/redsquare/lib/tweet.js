@@ -40,8 +40,7 @@ class RedSquareTweet {
 
     //
     // 
-    //
-    this.num_likes = 0;
+    //  
     this.num_retweets = 0;
 
     this.children = [];
@@ -291,7 +290,7 @@ class RedSquareTweet {
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");
-      document.querySelector('#tweet-box-'+this.tx.transaction.sig).style.display = 'none';
+      document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
       salert("Tweet reported to moderators successfully.");
     };
 
@@ -313,7 +312,6 @@ class RedSquareTweet {
 
 
   addTweet(app, mod, tweet) {
-
     //
     // maybe we have some parentless children?
     //
