@@ -81,7 +81,6 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
-    console.log('tweet');
     console.log(this);
   }
 
@@ -193,7 +192,8 @@ class RedSquareTweet {
         mod.renderMainPage(app, mod);
       }
 
-      mod.renderWithChildren(app, mod, tweet_sig_id);
+      // mod.renderWithChildren(app, mod, tweet_sig_id);
+      mod.fetchTweetsFromServer(app, mod, tweet_sig_id)
 
     };
 
