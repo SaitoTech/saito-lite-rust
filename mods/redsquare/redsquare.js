@@ -12,7 +12,7 @@ const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 
 
-class RedSquare extends InviteTemplate {
+class RedSquare extends ModTemplate {
 
   constructor(app) {
 
@@ -25,6 +25,7 @@ class RedSquare extends InviteTemplate {
     this.categories = "Social Entertainment";
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
+    this.cached = null;
 
     this.tweets = [];
 
@@ -41,6 +42,7 @@ class RedSquare extends InviteTemplate {
 
   initialize(app) {
     this.loadRedSquare();
+    super.initialize(app);
   }
 
 
@@ -92,9 +94,6 @@ class RedSquare extends InviteTemplate {
 
   reorganizeTweets(app, mod) {
     for (let i = this.tweets.length - 1; i >= 1; i--) {
-
-      console.log("COMPARING: " + this.tweets[i - 1].updated_at + " --  with -- " + this.tweets[i].updated_at);
-
       if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
         let x = this.tweets[i - 1];
         let y = this.tweets[i];
@@ -137,9 +136,9 @@ class RedSquare extends InviteTemplate {
 
 
   respondTo(type) {
-    if (type === "invite") {
-      return new GameCreator(this.app, this);
-    }
+    //if (type === "invite") {
+    //  return new GameCreator(this.app, this);
+    //}
     return null;
   }
 
@@ -191,7 +190,7 @@ class RedSquare extends InviteTemplate {
   }
 
 
-  /*********** REMOVED AS RUNNING ON PRODUCTION *************
+/*********************
   installModule(app) {
   
     if (this.app.BROWSER == 1) { return }
@@ -216,7 +215,7 @@ class RedSquare extends InviteTemplate {
     }
 
   }
-  **********************************************************/
+*********************/
 
 
 
