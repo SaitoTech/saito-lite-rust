@@ -25,6 +25,7 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
+    this.cached = null;
 
     this.tweets = [];
 
@@ -281,8 +282,6 @@ class RedSquare extends ModTemplate {
 
     if (this.app.BROWSER == 1) {
 
-console.log("ABOUT TO QUERY SERVER FOR TWEETS");
-
       if (document.querySelector(".redsquare-list")) {
         app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
@@ -295,8 +294,6 @@ console.log("ABOUT TO QUERY SERVER FOR TWEETS");
           async (res) => {
 
             if (res.rows) {
-
-console.log("RECEIVED RESPONSE: " + JSON.stringify(res.rows));
 
               res.rows.forEach(row => {
 
