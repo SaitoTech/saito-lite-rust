@@ -12,11 +12,9 @@ const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
-const InviteTemplate = require("../../lib/templates/invitetemplate");
 
 
-
-class Arcade extends InviteTemplate {
+class Arcade extends ModTemplate {
 
   constructor(app) {
     super(app);

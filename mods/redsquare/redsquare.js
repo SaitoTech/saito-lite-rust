@@ -289,8 +289,7 @@ class RedSquare extends ModTemplate {
           "RedSquare",
 
           // ascending because we add one-by-one on receipt
-          `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
-
+          `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 30`,
 
           async (res) => {
 
