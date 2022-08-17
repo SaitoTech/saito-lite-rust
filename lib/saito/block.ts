@@ -1211,6 +1211,7 @@ class Block {
   }
 
   generateMerkleRoot() {
+    console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
     // we accept the merkle root since it is what has been provided. users who
@@ -1219,6 +1220,7 @@ class Block {
     // as in any other blockchains/SPV/MR implementation.
     //
     if (this.transactions.length === 0 && (this.app.BROWSER === 1 || this.app.SPVMODE === 1)) {
+      console.log("returning block's merkle without calculating");
       return this.block.merkle;
     }
 
