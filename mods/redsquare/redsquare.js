@@ -25,7 +25,8 @@ class RedSquare extends ModTemplate {
     this.categories = "Social Entertainment";
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
-    this.cached = null;
+
+    this.sqlcache_enabled = 1;
 
     this.tweets = [];
 
@@ -350,9 +351,11 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
+	  this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
         }
         if (txmsg.request === "like tweet") {
+	  this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
         }
       }
