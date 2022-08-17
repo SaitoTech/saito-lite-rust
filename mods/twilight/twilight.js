@@ -2569,7 +2569,7 @@ try {
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["olympic", "redscare", "usjapan", "duckandcover", "fiveyearplan", "koreanwar", "marshall"];
         } else {
-          this.game.deck[0].hand = ["indopaki", "fidel", "decolonization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
+          this.game.deck[0].hand = ["debtcrisis", "fidel", "destalinization", "nato", "warsawpact", "vietnamrevolts", "europe", "china"];
         }
       }
 
@@ -9883,7 +9883,9 @@ playerTurnHeadlineSelected(card, player) {
       }
 
       twilight_self.attachCardboxEvents(function(action2) {
-        if (action2 == "nodiscard") {
+
+	// do not remove spacing pls
+        if (action2 === 'no discard') {
           twilight_self.addMove("resolve\tdebtcrisis");
           twilight_self.addMove("latinamericandebtcrisis");
           twilight_self.endTurn();

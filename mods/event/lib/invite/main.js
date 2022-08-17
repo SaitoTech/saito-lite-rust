@@ -22,12 +22,7 @@ class EventCreator {
 alert("event / invitation sent");
 
   }
-
   
-  attachEvents(app, mod) {
-
-  }
-
 }
 
 
