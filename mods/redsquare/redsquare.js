@@ -12,7 +12,7 @@ const GameCreator = require("./lib/appspace/arcade/game-creator");
 const SaitoLoader = require("../../lib/saito/new-ui/saito-loader/saito-loader");
 
 
-class RedSquare extends InviteTemplate {
+class RedSquare extends ModTemplate {
 
   constructor(app) {
 
@@ -25,6 +25,8 @@ class RedSquare extends InviteTemplate {
     this.categories = "Social Entertainment";
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
+
+    this.sqlcache_enabled = 1;
 
     this.tweets = [];
 
@@ -41,6 +43,7 @@ class RedSquare extends InviteTemplate {
 
   initialize(app) {
     this.loadRedSquare();
+    super.initialize(app);
   }
 
 
@@ -92,9 +95,6 @@ class RedSquare extends InviteTemplate {
 
   reorganizeTweets(app, mod) {
     for (let i = this.tweets.length - 1; i >= 1; i--) {
-
-      console.log("COMPARING: " + this.tweets[i - 1].updated_at + " --  with -- " + this.tweets[i].updated_at);
-
       if (this.tweets[i - 1].updated_at < this.tweets[i].updated_at) {
         let x = this.tweets[i - 1];
         let y = this.tweets[i];
@@ -105,8 +105,10 @@ class RedSquare extends InviteTemplate {
   }
 
   renderMainPage(app, mod) {
-    this.reorganizeTweets(app, mod);
-    document.querySelector(".redsquare-list").innerHTML = "";
+    this.reorganizeTweets(app, mod);  
+    document.querySelector(".redsquare-list").innerHTML = ""; 
+    this.saitoLoader.remove();
+
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
@@ -137,9 +139,9 @@ class RedSquare extends InviteTemplate {
 
 
   respondTo(type) {
-    if (type === "invite") {
-      return new GameCreator(this.app, this);
-    }
+    //if (type === "invite") {
+    //  return new GameCreator(this.app, this);
+    //}
     return null;
   }
 
@@ -147,7 +149,6 @@ class RedSquare extends InviteTemplate {
 
 
   render(app, mod, selector = "") {
-    this.saitoLoader.render(app, mod);
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -158,9 +159,7 @@ class RedSquare extends InviteTemplate {
     }
 
     super.render(app, this);
-
-    this.saitoLoader.remove(app, mod);
-
+    this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
   }
 
 
@@ -191,7 +190,6 @@ class RedSquare extends InviteTemplate {
   }
 
 
-  /*********** REMOVED AS RUNNING ON PRODUCTION *************
   installModule(app) {
   
     if (this.app.BROWSER == 1) { return }
@@ -216,7 +214,6 @@ class RedSquare extends InviteTemplate {
     }
 
   }
-  **********************************************************/
 
 
 
@@ -351,9 +348,11 @@ class RedSquare extends InviteTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
+	  this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
         }
         if (txmsg.request === "like tweet") {
+	  this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
         }
       }
