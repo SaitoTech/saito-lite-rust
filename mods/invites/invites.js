@@ -10,7 +10,7 @@ class Invites extends InviteTemplate {
 
     this.app = app;
     this.name = "Invites";
-    this.appname = "Events";
+    this.appname = "Invites";
     this.description = "Demo module with UI for invite display and acceptance";
     this.categories = "Utilities Education Demo";
 
@@ -38,6 +38,7 @@ class Invites extends InviteTemplate {
   }
 
   async onConfirmation(blk, tx, conf, app) {
+console.log(" INVITE ONCONFIRMATION ");
     super.onConfirmation(blk, tx, conf, app);
   }
 
