@@ -292,10 +292,8 @@ class RedSquare extends ModTemplate {
           app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
             "RedSquare",
-
             // ascending because we add one-by-one on receipt
             `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`,
-
 
             async (res) => {
 
@@ -341,8 +339,7 @@ class RedSquare extends ModTemplate {
                 redsquare_self.renderMainPage(app, redsquare_self);
 
               } else {
-                salertNew("Tweet not found");
-                console.log("Tweet Not found")
+
               }
             }
           );
@@ -357,50 +354,36 @@ class RedSquare extends ModTemplate {
 
             async (res) => {
 
-              if (res.rows) {
-
-                console.log('single tweet', res.rows);
+              if (res.rows.length > 0) {
 
                 res.rows.forEach(row => {
+                  let tx = new saito.default.transaction(JSON.parse(row.tx));
 
-                  let new_tweet = 1;
+                  console.log('on load txn');
+                  console.log(tx);
 
-                  //	    for (let i = 0; i < redsquare_self.tweets.length; i++) {
-                  //	      if (redsquare_self.tweets[i].tx.transaction.sig == row.sig) {
-                  //		new_tweet = 0;
-                  //	      }
-                  //	    }
+                  // console.log("NUM LIKES: " + row.num_likes);
 
-                  if (new_tweet) {
+                  if (!tx.optional) { tx.optional = {}; }
+                  tx.optional.parent_id = tx.msg.parent_id;
+                  tx.optional.thread_id = tx.msg.thread_id;
+                  tx.optional.num_replies = row.num_replies;
+                  tx.optional.num_retweets = row.num_retweets;
+                  tx.optional.num_likes = row.num_likes;
+                  tx.optional.flagged = row.flagged;
+                  tx.optional.link_properties = {};
 
-                    let tx = new saito.default.transaction(JSON.parse(row.tx));
+                  try {
+                    let x = JSON.parse(row.link_properties);
+                    tx.optional.link_properties = x;
+                  } catch (err) { }
 
-                    console.log('on load txn');
-                    console.log(tx);
-
-                    // console.log("NUM LIKES: " + row.num_likes);
-
-                    if (!tx.optional) { tx.optional = {}; }
-                    tx.optional.parent_id = tx.msg.parent_id;
-                    tx.optional.thread_id = tx.msg.thread_id;
-                    tx.optional.num_replies = row.num_replies;
-                    tx.optional.num_retweets = row.num_retweets;
-                    tx.optional.num_likes = row.num_likes;
-                    tx.optional.flagged = row.flagged;
-                    tx.optional.link_properties = {};
-
-                    try {
-                      let x = JSON.parse(row.link_properties);
-                      tx.optional.link_properties = x;
-                    } catch (err) { }
-
-                    this.addTweetFromTransaction(app, redsquare_self, tx);
-
-
-                  }
+                  this.addTweetFromTransaction(app, redsquare_self, tx);
                 });
-
                 redsquare_self.renderMainPage(app, redsquare_self);
+              } else {
+                salertNew("Tweet not found");
+                console.log("Tweet Not found")
               }
             }
           )
