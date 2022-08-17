@@ -110,6 +110,8 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
+
+    app.browser.addIdentifiersToDom();
   }
 
   renderWithChildren(app, mod, sig) {
