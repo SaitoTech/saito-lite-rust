@@ -192,8 +192,10 @@ class RedSquareTweet {
         mod.renderMainPage(app, mod);
       }
 
-      // mod.renderWithChildren(app, mod, tweet_sig_id);
-      mod.fetchTweetsFromServer(app, mod, tweet_sig_id)
+      mod.renderWithChildren(app, mod, tweet_sig_id);
+      // // mod.fetchTweetsFromServer(app, mod, tweet_sig_id, function(app, mod) {mod.renderWithChildren(app, mod,)})
+      // let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}`;
+      // mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
 
     };
 
