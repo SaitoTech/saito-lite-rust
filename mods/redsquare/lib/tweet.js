@@ -192,8 +192,7 @@ class RedSquareTweet {
         mod.renderMainPage(app, mod);
       }
 
-      // mod.renderWithChildren(app, mod, tweet_sig_id);
-      mod.fetchTweetsFromServer(app, mod, tweet_sig_id)
+      mod.renderWithChildren(app, mod, tweet_sig_id);
 
     };
 
