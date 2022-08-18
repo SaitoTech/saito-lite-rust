@@ -9,7 +9,7 @@ module.exports = ArcadeAppspaceTemplate = (app, mod) => {
     <div class="saito-list-user">
   
     <div class="saito-list-user-content-box">
-    <div class="saito-username">
+    <div class="saito-address">
         <p>CHESS</p>
    </div>
         <p class="saito-tweet-timestamp">posted on: 3:46 PM - July 7, 2022 </p>

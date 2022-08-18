@@ -214,7 +214,7 @@ module.exports = (app) => {
                                                   <img class="saito-idenitcon" src="/saito/img/background.png" />
                                               </div>
                                               <div class="saito-list-user-content-box">
-                                                  <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33
+                                                  <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33
                                                   </div>
                                                   <p> Active at 9.00am </p>
                                               </div>
@@ -224,7 +224,7 @@ module.exports = (app) => {
                                                   <img class="saito-idenitcon" src="/saito/img/background.png" />
                                               </div>
                                               <div class="saito-list-user-content-box">
-                                                  <div class="saito-username">Davik Stone</div>
+                                                  <div class="saito-address">Davik Stone</div>
                                                   <p> Active at 9.00am </p>
                                               </div>
                                           </div>
@@ -779,7 +779,7 @@ module.exports = (app) => {
                                       <img class="saito-idenitcon" src="/saito/img/background.png" />
                                   </div>
                                   <div class="saito-list-user-content-box">
-                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</div>
+                                      <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33</div>
                                       <p> Active at 9.00am </p>
                                   </div>
                               </div>
@@ -788,7 +788,7 @@ module.exports = (app) => {
                                       <img class="saito-idenitcon" src="/saito/img/background.png" />
                                   </div>
                                   <div class="saito-list-user-content-box">
-                                      <div class="saito-username">Davik Stone</div>
+                                      <div class="saito-address">Davik Stone</div>
                                       <p> Active at 9.00am </p>
                                   </div>
                               </div>
@@ -812,7 +812,7 @@ module.exports = (app) => {
                                       <img class="saito-identicon" src="/saito/img/background.png" />
                                   </div>
                                   <div class="saito-list-user-content-box">
-                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                                      <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
                                       <p> Hey how are you?</p>
                                   </div>
                                   <div class="saito-list-user-timestamp">
@@ -824,7 +824,7 @@ module.exports = (app) => {
                                       <img class="saito-identicon" src="/saito/img/background.png" />
                                   </div>
                                   <div class="saito-list-user-content-box">
-                                      <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                                      <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
                                       <p> Hey how are you?</p>
                                   </div>
                                   <div class="saito-list-user-timestamp">
@@ -983,7 +983,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">
@@ -995,7 +995,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">
@@ -1076,7 +1076,7 @@ module.exports = (app) => {
                           <img class="saito-identicon" src="/saito/img/background.png" />
                       </div>
                       <div class="saito-list-user-content-box">
-                          <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                          <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
                           <p> Hey how are you?</p>
                       </div>
                       <div class="saito-list-user-timestamp">
@@ -1088,7 +1088,7 @@ module.exports = (app) => {
                           <img class="saito-identicon" src="/saito/img/background.png" />
                       </div>
                       <div class="saito-list-user-content-box">
-                          <div class="saito-username">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
+                          <div class="saito-address">t4gEMWsDjZ4xeYGn2gCGxFg8ty53rs7UQKUpwfvsBq33 </div>
                           <p> Hey how are you?</p>
                       </div>
                       <div class="saito-list-user-timestamp">
@@ -1164,7 +1164,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">
@@ -1176,7 +1176,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">
@@ -1354,7 +1354,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">
@@ -1366,7 +1366,7 @@ module.exports = (app) => {
                                   <img class="saito-identicon" src="/saito/img/background.png" />
                               </div>
                               <div class="saito-list-user-content-box">
-                                  <div class="saito-username">Saito Community Chat </div>
+                                  <div class="saito-address">Saito Community Chat </div>
                                   <p> new chat</p>
                               </div>
                               <div class="saito-list-user-timestamp">

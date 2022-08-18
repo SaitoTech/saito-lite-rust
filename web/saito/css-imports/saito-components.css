@@ -185,7 +185,7 @@ Saito Identicon
 Saito Username
 -----------------------------------------------------------------*/
 
-.saito-username {
+.saito-address {
     max-width: 90%;
     white-space: nowrap;
     overflow: hidden;
@@ -195,7 +195,7 @@ Saito Username
     align-items: center;
 }
 
-.saito-username>*:first-child {
+.saito-address>*:first-child {
     margin-right: .5rem;
 }
 

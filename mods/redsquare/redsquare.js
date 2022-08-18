@@ -110,6 +110,7 @@ class RedSquare extends ModTemplate {
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
+    app.browser.addIdentifiersToDom();
   }
 
   renderWithChildren(app, mod, sig) {
@@ -131,6 +132,8 @@ class RedSquare extends ModTemplate {
         }
       }
     }
+
+    app.browser.addIdentifiersToDom();
   }
 
 
@@ -191,32 +194,32 @@ class RedSquare extends ModTemplate {
   }
 
 
-/*********************
-  installModule(app) {
+  /*********************
+    installModule(app) {
+    
+      if (this.app.BROWSER == 1) { return }
   
-    if (this.app.BROWSER == 1) { return }
-
-    super.installModule(app);
-
-    let dummy_content = [
-      {
-        text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
-        img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
-      },
-      {
-        text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
-      },
-      {
-        text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
+      super.installModule(app);
+  
+      let dummy_content = [
+        {
+          text: 'Etiam luctus, massa ut mattis maximus, magna dolor consequat massa, sit amet finibus velit nisi vitae sem.',
+          img: 'https://cdn.titans.ventures/uploads/photo_2021_04_12_20_54_32_fe75007318.jpg',
+        },
+        {
+          text: 'Checkout this awesome video about web3 and open source. https://www.youtube.com/watch?v=0tZFQs7qBfQ',
+        },
+        {
+          text: 'Nice tutorial. https://webdesign.tutsplus.com/articles/best-minimal-shopify-themes--cms-35081',
+        }
+      ];
+  
+      for (let i = 0; i < dummy_content.length; i++) {
+        this.sendTweetTransaction(app, this, dummy_content[i]);
       }
-    ];
-
-    for (let i = 0; i < dummy_content.length; i++) {
-      this.sendTweetTransaction(app, this, dummy_content[i]);
+  
     }
-
-  }
-*********************/
+  *********************/
 
 
 
@@ -334,6 +337,7 @@ class RedSquare extends ModTemplate {
 
               redsquare_self.renderMainPage(app, redsquare_self);
 
+
             }
           }
         );
@@ -350,11 +354,11 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-	  this.sqlcache = [];
+          this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
         }
         if (txmsg.request === "like tweet") {
-	  this.sqlcache = [];
+          this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
         }
       }
