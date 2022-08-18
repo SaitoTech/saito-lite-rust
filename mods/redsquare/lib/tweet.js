@@ -172,7 +172,7 @@ class RedSquareTweet {
     //
     // render tweet with children
     //
-    let sel = "#tweet-box-" + this.tx.transaction.sig;
+    let sel = "#tweet-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
 
       //e.preventDefault();
@@ -181,6 +181,8 @@ class RedSquareTweet {
       let el = e.currentTarget;
 
       let tweet_sig_id = el.getAttribute("data-id");
+
+      // console.log('tweet id ', tw)
 
       document.querySelector(".redsquare-list").innerHTML = "";
 
