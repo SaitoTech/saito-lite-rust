@@ -295,7 +295,6 @@ class RedSquare extends ModTemplate {
 	} else {
           this.fetchTweets(app, redsquare_self);
 	}
-
       }
     }
   }
@@ -324,7 +323,7 @@ class RedSquare extends ModTemplate {
 
   fetchTweets(app, redsquare_self, tweet_id = null, post_fetch_tweets_callback=null) {
 
-    let sql = 'SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100';
+    let sql = 'SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 30';
     if (tweet_id) { sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`, }
     if (post_fetch_tweets_callback == null) { post_fetch_tweets_callback = redsquare_self.renderMainPage; }
 
