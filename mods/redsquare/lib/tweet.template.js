@@ -94,7 +94,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       `;
 
     html += `
-    <div class="tweet-body">
+    <div class="tweet-body" data-id="${tweet.tx.transaction.sig}">
       <div class="tweet">${tweet_text}</div>
       ${tweet_img}
       <div class="youtube-embed-container">${youtube_preview}</div>

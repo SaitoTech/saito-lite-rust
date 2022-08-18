@@ -104,6 +104,28 @@ class RedSquare extends ModTemplate {
     }
   }
 
+
+  //
+  // renders the main component
+  //
+  render(app, mod, selector = "") {
+    this.saitoLoader.render(app, mod);
+    if (this.ui_initialized == false) {
+      this.main = new RedSquareMain(this.app, this);
+      this.header = new SaitoHeader(this.app, this);
+      this.addComponent(this.main);
+      this.addComponent(this.header);
+      this.ui_initialized = true;
+
+    }
+    super.render(app, this);
+    this.saitoLoader.remove(app, mod);
+  }
+
+
+  //
+  // renders the main page
+  //
   renderMainPage(app, mod) {
     this.reorganizeTweets(app, mod);  
     document.querySelector(".redsquare-list").innerHTML = ""; 
@@ -122,6 +144,40 @@ class RedSquare extends ModTemplate {
     
   }
 
+  //
+  // render with children, but loads if not parent (used for retweets)
+  //
+  renderParentWithChildren(app, mod, sig) {
+alert("rendering parent with sig: " + sig);
+    this.reorganizeTweets(app, mod);
+    document.querySelector(".redsquare-list").innerHTML = "";
+    let tweet_shown = 0;
+    for (let i = 0; i < this.tweets.length; i++) {
+      if (this.tweets[i].tx.transaction.sig === sig) {
+alert("found parent tweet");
+        tweet_shown = 1;
+        this.tweets[i].renderWithChildren(app, mod, ".redsquare-list");
+	return;
+      }
+    }
+
+    //
+    // if we get here, we don't have this locally, try remote request
+    //
+    //this.saitoLoader.render(app, mod);
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+alert("ABOUT TO TEST THIS SIG: " + sig);
+    mod.fetchTweets(app, mod, sql, function(app, mod) { 
+      mod.renderParentWithChildren(app, mod, sig); 
+alert("DONE SECOND RENDER LOOP " + sig);
+      //mod.saitoLoader.remove(app, mod);
+    });
+
+  }
+
+  //
+  // renders children
+  //
   renderWithChildren(app, mod, sig) {
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
@@ -130,6 +186,7 @@ class RedSquare extends ModTemplate {
       if (this.tweets[i].tx.transaction.sig === sig) {
         tweet_shown = 1;
         this.tweets[i].renderWithChildren(app, mod, ".redsquare-list");
+	return;
       }
     }
     if (tweet_shown == 0) {
@@ -138,9 +195,22 @@ class RedSquare extends ModTemplate {
           let t = this.tweets[i].returnTweet(app, mod, sig);
           tweet_shown = 1;
           t.renderWithChildren(app, mod, ".redsquare-list");
+	  return;
         }
       }
     }
+
+    //
+    // if we get here, we don't have this locally, try remote request
+    //
+    this.saitoLoader.render(app, mod);
+    let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
+    mod.fetchTweets(app, mod, sql, function(app, mod) { 
+      mod.renderWithChildren(app, redsquare_self, sig); 
+      this.saitoLoader.remove(app, mod);
+    });
+
+
   }
 
 
@@ -152,24 +222,6 @@ class RedSquare extends ModTemplate {
     //}
     return null;
   }
-
-
-
-
-  render(app, mod, selector = "") {
-    if (this.ui_initialized == false) {
-      this.main = new RedSquareMain(this.app, this);
-      this.header = new SaitoHeader(this.app, this);
-      this.addComponent(this.main);
-      this.addComponent(this.header);
-      this.ui_initialized = true;
-
-    }
-
-    super.render(app, this);
-    this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
-  }
-
 
 
 
