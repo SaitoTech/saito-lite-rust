@@ -12,11 +12,9 @@ const ArcadeAppspace = require("./lib/appspace/main");
 const JSON = require("json-bigint");
 const fetch = require("node-fetch");
 const GameInvite = require('./lib/invite/main');
-const InviteTemplate = require("../../lib/templates/invitetemplate");
 
 
-
-class Arcade extends InviteTemplate {
+class Arcade extends ModTemplate {
 
   constructor(app) {
     super(app);
@@ -24,7 +22,6 @@ class Arcade extends InviteTemplate {
     this.description = "Interface for creating and joining games coded for the Saito Open Source Game Engine.";
     this.categories = "Games Entertainment";
 
-    this.events = ["chat-render-request"];
     this.mods = [];
     this.affix_callbacks_to = [];
     this.games = [];
@@ -61,6 +58,7 @@ class Arcade extends InviteTemplate {
 
   }
 
+
   receiveEvent(type, data) {
     if (type == "chat-render-request") {
       if (this.browser_active) {
@@ -69,15 +67,15 @@ class Arcade extends InviteTemplate {
           this.app.storage.saveOptions();
         }
         //this.renderSidebar();
-        let chat_mod = this.app.modules.returnModule("Chat");
-        if (chat_mod) {
-          if (chat_mod?.groups &&
-            chat_mod.groups.length > 0 &&
-            this.chat_open == 0 &&
-            this.app.options.auto_open_chat_box
-          ) {
-            this.chat_open = 1;
-            chat_mod.openChats();
+          let chat_mod = this.app.modules.returnModule("Chat");
+          if (chat_mod){
+            if (chat_mod?.groups && 
+                chat_mod.groups.length > 0 &&
+                this.chat_open == 0 &&
+                this.app.options.auto_open_chat_box
+             ) {
+              this.chat_open = 1;
+              chat_mod.openChats();
           }
         }
       }

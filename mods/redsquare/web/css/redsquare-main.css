@@ -14,6 +14,24 @@
   font-size: smaller;
 }
 
+.saito-menu li:hover i::before {
+  -webkit-text-stroke: #fff 1px;
+}
+
+.saito-menu li i {
+  margin-bottom: 4px;
+}
+
+.redsquare-home-red-square {
+  font-size: 2.6rem;
+  width: 2rem;
+  padding-left: 1.2rem
+}
+
+span.redsquare-home-red-square+span {
+  margin-left: 3.8rem;
+}
+
 .tweet {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -212,7 +230,7 @@
 
 .redsquare-tweet-tools>div {
   position: relative;
-  margin: 0.75rem 0;
+  margin: 0 0;
   min-width: 8%;
   margin-right: 15%;
 }
@@ -374,7 +392,7 @@
   border-radius: 1rem;
   border: 1px solid #d7d3d3;
   height: 40rem;
-  background-size: cover!important;
+  background-size: cover !important;
 }
 
 .redsquare-image-container div.tweet-multiple-img {
@@ -427,7 +445,7 @@
   font-weight: bold;
   text-align: center;
   position: absolute;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   left: 0px;
   top: 0px;
   border-radius: 2rem;

@@ -12,7 +12,7 @@ module.exports = (app, mod) => {
           </div>
         </div>
 
-        <div class="redsquare-list">
+        <div class="redsquare-list" id="redsquare-list">
 	  <div class="saito-loader"></div> 
 	  </p></p>
 	  loading...
