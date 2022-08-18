@@ -1,11 +1,5 @@
 module.exports = (app, mod, link) => {
 
-
-    console.log('inside link template');
-    console.log(link.title);
-    console.log(link.description);
-    console.log(link.url);
-
     let link_preview = '';
     if (typeof link != 'undefined') {
       link_preview = `<section class="section">

@@ -71,11 +71,11 @@ class Chat extends ModTemplate {
 
     respondTo(type) {
         switch (type) {
-            case 'chat-manager':
-            	this.scripts['/chat/css/style.css'];
-      		super.render(this.app, this); // add scripts + styles
-      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
-		return this.chat_manager;
+//            case 'chat-manager':
+//            	this.scripts['/chat/css/style.css'];
+//      		super.render(this.app, this); // add scripts + styles
+//      		if (this.chat_manager == null) { this.chat_manager = new ChatManager(this.app, this); }
+//		return this.chat_manager;
             case 'email-chat':
                 return {
                     render: this.renderEmailChat,
@@ -160,6 +160,12 @@ class Chat extends ModTemplate {
 
 
     initialize(app) {
+
+	//let redsquare_mod = app.modules.returnModule("RedSquare");
+	//if (redsquare_mod) {
+	//  this.onConfirmation = function(a, b, c, d) {};
+	//  this.render = function() {};
+	//}
 
         super.initialize(app);
 
@@ -412,6 +418,8 @@ class Chat extends ModTemplate {
     // onchain messages --> eeceiveMessage()
     //
     onConfirmation(blk, tx, conf, app) {
+
+return;
 
         tx.decryptMessage(app);
         let txmsg = tx.returnMessage();
