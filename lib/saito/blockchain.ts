@@ -51,7 +51,7 @@ class Blockchain {
     //
     // downgrade blocks after N blocks
     //
-    this.prune_after_blocks = 6;
+    this.prune_after_blocks = 100;
 
     //
     // set to true when adding blocks to disk (must be done one at a time!)
