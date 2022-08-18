@@ -155,11 +155,11 @@ class RedSquare extends ModTemplate {
     // if we get here, we don't have this locally, try remote request
     //
     //this.saitoLoader.render(app, mod);
-    let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-    mod.fetchTweets(app, mod, sql, function (app, mod) {
-      mod.renderParentWithChildren(app, mod, sig);
-      //mod.saitoLoader.remove(app, mod);
-    });
+    // let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
+    // mod.fetchTweets(app, mod, sql, function (app, mod) {
+    //   mod.renderParentWithChildren(app, mod, sig);
+    //   //mod.saitoLoader.remove(app, mod);
+    // });
 
   }
 
@@ -337,12 +337,22 @@ class RedSquare extends ModTemplate {
         let tweet_id = app.browser.returnURLParameter('tweet_id');
 
         if (!tweet_id) {
-          let sql = 'SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
-        } else {
-          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
+
+          let sql = `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`;
+          const callback = (app, mod) => {
+            mod.renderMainPage(app, mod)
+          }
+          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
         }
+        else {
+          const callback = (app, mod) => {
+            mod.renderMainPage(app, mod, tweet_id)
+          }
+          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}'`;
+          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
+        }
+
+        console.log('tweet id ', tweet_id);
 
 
       }
@@ -379,15 +389,10 @@ class RedSquare extends ModTemplate {
   fetchTweets(app, redsquare_self, sql, post_fetch_tweets_callback = null) {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
-
       "RedSquare",
-
       sql,
-
       async (res) => {
-
         if (res.rows) {
-          console.log(res.rows);
           res.rows.forEach(row => {
 
             let new_tweet = 1;
