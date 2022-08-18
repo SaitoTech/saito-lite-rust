@@ -290,10 +290,13 @@ class RedSquare extends ModTemplate {
 
       if (document.querySelector(".redsquare-list")) {
 
+    if (post_fetch_tweets_callback == null) { post_fetch_tweets_callback = redsquare_self.renderMainPage; }
 	if (this.tweet_id) {
+          let sql = 'SELECT * FROM tweets WHERE (flagged == 0 || moderated == 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
           this.fetchTweets(app, redsquare_self, this.tweet_id, function(app, mod) { mod.renderWithChildren(app, redsquare_self, this.tweet_id); });
 	} else {
-          this.fetchTweets(app, redsquare_self);
+          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderMainPage(app, redsquare_self); });
 	}
       }
     }
@@ -321,11 +324,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  fetchTweets(app, redsquare_self, tweet_id = null, post_fetch_tweets_callback=null) {
-
-    let sql = 'SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 30';
-    if (tweet_id) { sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`, }
-    if (post_fetch_tweets_callback == null) { post_fetch_tweets_callback = redsquare_self.renderMainPage; }
+  fetchTweets(app, redsquare_self, sql, post_fetch_tweets_callback=null) {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
@@ -358,19 +357,15 @@ class RedSquare extends ModTemplate {
               } catch (err) { }
                 this.addTweetFromTransaction(app, redsquare_self, tx);
               }
-            });
+          });
 
-	    if (post_fetch_tweets_callback != null) {
-	      post_fetch_tweets_callback(app, redsquare_self);
-	    }
-            redsquare_self.renderMainPage(app, redsquare_self);
+	  if (post_fetch_tweets_callback != null) {
+	    post_fetch_tweets_callback(app, redsquare_self);
+	  }
 
-            return;
-
-          }
-        }
-      );
-    }
+        }  
+      }
+    );
   }
 
 
