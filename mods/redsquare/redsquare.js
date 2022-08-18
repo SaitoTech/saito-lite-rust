@@ -109,8 +109,6 @@ class RedSquare extends ModTemplate {
     document.querySelector(".redsquare-list").innerHTML = ""; 
     
 
-    this.saitoLoader.render(app, mod, 'redsquare-list', false);
-
     for (let i = 0; i < this.tweets.length; i++) {
       this.tweets[i].render(app, mod, ".redsquare-list");
     }
@@ -120,7 +118,7 @@ class RedSquare extends ModTemplate {
     redsquare_self = this;
     setTimeout(function(){
       redsquare_self.saitoLoader.remove();  
-    }, 500)
+    }, 1500)
     
   }
 
@@ -169,6 +167,7 @@ class RedSquare extends ModTemplate {
     }
 
     super.render(app, this);
+    this.saitoLoader.render(app, mod, 'redsquare-home-header', false);
   }
 
 

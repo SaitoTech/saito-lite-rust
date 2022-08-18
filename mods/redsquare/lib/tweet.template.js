@@ -40,22 +40,23 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
 
         if (typeof tweet.link_properties != 'undefined') {
           if (tweet.link_properties['og:exists'] !== false) {
-
             let d = tweet.link_properties;
- 
-            let link = new URL(d['og:url']);
-            link_preview = `
-                      <a target="_blank" href="${d['og:url']}">
-                      <div class="preview-container">
-                          <div class='preview-img' style="background: url(${d['og:image']})"></div>
-                          <div class="preview-info">  
-                            <div class="preview-url">${link.hostname}</div>
-                            <div class="preview-title">${d['og:title']}</div>
-                            <div class="preview-description">${d['og:description']}</div>
-                          </div>
-                      </div>
-                      </a>
-                      `;
+            if (d['og:url'] != '') {
+              let link = new URL(d['og:url']);
+              link_preview = `
+                        <a target="_blank" href="${d['og:url']}">
+                        <div class="preview-container">
+                            <div class='preview-img' style="background: url(${d['og:image']})"></div>
+                            <div class="preview-info">  
+                              <div class="preview-url">${link.hostname}</div>
+                              <div class="preview-title">${d['og:title']}</div>
+                              <div class="preview-description">${d['og:description']}</div>
+                            </div>
+                        </div>
+                        </a>
+                        `;
+            }
+
           }
         }
       }
