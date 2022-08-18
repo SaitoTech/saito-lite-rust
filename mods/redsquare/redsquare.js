@@ -109,7 +109,6 @@ class RedSquare extends ModTemplate {
   // renders the main component
   //
   render(app, mod, selector = "") {
-    this.saitoLoader.render(app, mod);
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -119,7 +118,6 @@ class RedSquare extends ModTemplate {
 
     }
     super.render(app, this);
-    this.saitoLoader.remove(app, mod);
   }
 
 
@@ -136,12 +134,6 @@ class RedSquare extends ModTemplate {
     }
 
     app.browser.addIdentifiersToDom();
-    
-    redsquare_self = this;
-    setTimeout(function(){
-      redsquare_self.saitoLoader.remove();  
-    }, 1500)
-    
   }
 
   //
@@ -246,6 +238,7 @@ class RedSquare extends ModTemplate {
   }
 
 
+  /************
   installModule(app) {
   
     if (this.app.BROWSER == 1) { return }
@@ -271,6 +264,7 @@ class RedSquare extends ModTemplate {
 
   }
 
+**********/
 
 
   async fetchOpenGraphProperties(app, mod, link) {
@@ -333,7 +327,10 @@ class RedSquare extends ModTemplate {
 
     let redsquare_self = this;
 
+
     if (this.app.BROWSER == 1) {
+      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
+
       if (document.querySelector(".redsquare-list")) {
 
        let tweet_id = app.browser.returnURLParameter('tweet_id');
@@ -347,6 +344,10 @@ class RedSquare extends ModTemplate {
         }
 
       }
+    
+      setTimeout(function(){
+        redsquare_self.saitoLoader.remove();  
+      }, 1500);
     }
   }
 
