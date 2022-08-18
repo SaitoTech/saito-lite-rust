@@ -71,7 +71,7 @@ class Leaderboard extends ModTemplate {
         html += `<div class="leaderboard-rankings leaderboard_${modnameKey} leaderboard_${index} ${classdata}" id="leaderboard_${modnameKey}">`;
         for (let i = 0; i < ranking.length; i++) {
           let entry = ranking[i];
-          html += `<div class="${entry.player} playername saito-address saito-address-${entry.address} ${classdata}">${entry.publickey}</div><div class="${entry.player}">${entry.games}</div><div class="${entry.player}">${entry.ranking}</div>`;
+          html += `<div class="${entry.player} playername saito-address-${entry.address} ${classdata}">${entry.publickey}</div><div class="${entry.player}">${entry.games}</div><div class="${entry.player}">${entry.ranking}</div>`;
         }
         html += '</div>';
         html += `<hr class="leaderboard_hrbottom_${index} ${classdata}"/>`;
