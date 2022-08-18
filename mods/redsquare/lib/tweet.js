@@ -81,7 +81,6 @@ class RedSquareTweet {
     //
     this.generateTweetProperties(app, mod, 0);
 
-    console.log(this);
   }
 
 
@@ -170,6 +169,7 @@ class RedSquareTweet {
 
   attachEvents(app, mod) {
 
+/***
     //
     // render tweet with children
     //
@@ -195,7 +195,7 @@ class RedSquareTweet {
       mod.renderWithChildren(app, mod, tweet_sig_id);
 
     };
-
+***/
 
     //
     // reply to tweet
@@ -228,15 +228,15 @@ class RedSquareTweet {
     //
     // click on interior retweet to view it
     //
-
-    sel = ".redsquare-item-contents > .tweet-body > .link-preview > .redsquare-item > .redsquare-item-contents > .tweet-body";
+    sel = `#redsquare-item-contents-${this.tx.transaction.sig} > .tweet-body > .link-preview > .redsquare-item > .redsquare-item-contents > .tweet-body`;
     let x = document.querySelector(sel);
-    if (x) { x.onclick = (e) => {
-      let tweet_id = e.currentTarget.getAttribute("data-id");
-alert(tweet_id);
-      // parent --> forces load of top-level element
-      mod.renderParentWithChildren(app, mod, tweet_id);
-    } }
+    if (x) {
+      x.onclick = (e) => {
+        let tweet_id = e.currentTarget.getAttribute("data-id");
+        // parent --> forces load of top-level element
+        mod.renderParentWithChildren(app, mod, tweet_id);
+      }
+    }
 
 
     //
