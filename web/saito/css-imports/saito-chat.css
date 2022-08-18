@@ -48,6 +48,7 @@
 }
 .chat-body > .saito-user {
     padding-bottom: 1rem;
+    cursor: default;
 }
 
 .chat-footer {
@@ -108,7 +109,7 @@
     display: grid;
     grid-template-columns: 3rem 1fr;
     grid-gap: .5rem;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 .chat-profile-dropdown>div:not(:last-child) {
