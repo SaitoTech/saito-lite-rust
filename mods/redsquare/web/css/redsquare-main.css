@@ -230,7 +230,7 @@ span.redsquare-home-red-square+span {
 
 .redsquare-tweet-tools>div {
   position: relative;
-  margin: 0.75rem 0;
+  margin: 0 0;
   min-width: 8%;
   margin-right: 15%;
 }
