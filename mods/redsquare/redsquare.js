@@ -148,13 +148,11 @@ class RedSquare extends ModTemplate {
   // render with children, but loads if not parent (used for retweets)
   //
   renderParentWithChildren(app, mod, sig) {
-alert("rendering parent with sig: " + sig);
     this.reorganizeTweets(app, mod);
     document.querySelector(".redsquare-list").innerHTML = "";
     let tweet_shown = 0;
     for (let i = 0; i < this.tweets.length; i++) {
       if (this.tweets[i].tx.transaction.sig === sig) {
-alert("found parent tweet");
         tweet_shown = 1;
         this.tweets[i].renderWithChildren(app, mod, ".redsquare-list");
 	return;
@@ -166,10 +164,8 @@ alert("found parent tweet");
     //
     //this.saitoLoader.render(app, mod);
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
-alert("ABOUT TO TEST THIS SIG: " + sig);
     mod.fetchTweets(app, mod, sql, function(app, mod) { 
       mod.renderParentWithChildren(app, mod, sig); 
-alert("DONE SECOND RENDER LOOP " + sig);
       //mod.saitoLoader.remove(app, mod);
     });
 

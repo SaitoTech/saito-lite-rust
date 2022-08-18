@@ -169,7 +169,6 @@ class RedSquareTweet {
 
   attachEvents(app, mod) {
 
-/***
     //
     // render tweet with children
     //
@@ -195,7 +194,6 @@ class RedSquareTweet {
       mod.renderWithChildren(app, mod, tweet_sig_id);
 
     };
-***/
 
     //
     // reply to tweet
