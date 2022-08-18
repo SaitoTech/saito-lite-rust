@@ -198,6 +198,7 @@ class RedSquare extends ModTemplate {
   }
 
 
+  /************
   installModule(app) {
   
     if (this.app.BROWSER == 1) { return }
@@ -223,6 +224,7 @@ class RedSquare extends ModTemplate {
 
   }
 
+**********/
 
 
   async fetchOpenGraphProperties(app, mod, link) {
