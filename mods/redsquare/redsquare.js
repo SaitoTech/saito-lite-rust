@@ -313,30 +313,18 @@ class RedSquare extends ModTemplate {
 
       if (document.querySelector(".redsquare-list")) {
 
-
         let tweet_id = app.browser.returnURLParameter('tweet_id');
 
-
-        if (!tweet_id) {
-
-          // let sql = `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`;
-          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-          const callback = (app, mod) => {
-            mod.renderMainPage(app, mod)
-          }
-          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
-        }
-        else {
-          const callback = (app, mod) => {
-            mod.renderMainPage(app, mod, tweet_id)
-          }
-          // let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}'`;
+        if (tweet_id) {
+          let sql = SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}';
+          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
+        } else {
           let sql = 'SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
-          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
+          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
       }
 
-      setTimeout(function () {
+      setTimeout(function(){
         redsquare_self.saitoLoader.remove();
       }, 1000);
     }
