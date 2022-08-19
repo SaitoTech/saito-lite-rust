@@ -35,7 +35,7 @@
           default: { base = 0; break; }
         }
 
-        if (state.leaders_charles_v == 1) { base += 0; }
+        if (game_mod.game.state.leaders_charles_v == 1) { base += 0; }
        
         // TODO - bonus for home spaces under protestant control
         return base;

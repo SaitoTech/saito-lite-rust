@@ -629,10 +629,12 @@ console.log("spring deploy");
 
           function(destination_spacekey) {
 
-	    // spacekey is destination, but space is our source == id from above
             let space = his_self.spaces[id];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
+
+	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      let msg = "Max Formation Size: " + max_formation_size + " units";
 
               let html = "<ul>";
               for (let i = 0; i < space.units[faction].length; i++) {
@@ -647,7 +649,7 @@ console.log("spring deploy");
               html += `<li class="option" id="end">finish</li>`;
               html += "</ul>";
 
-              his_self.updateStatus(html);
+              his_self.updateStatusWithOptions(msg, html);
 
               $('.option').off();
               $('.option').on('click', function () {
@@ -688,13 +690,40 @@ console.log("spring deploy");
       });
     }
   }
+  returnMaxFormationSize(units_to_move) {
 
+    let command_value_one = 0;
+    let command_value_two = 0;
+    let max_command_value = 0;
 
+    for (let i = 0; i < units_to_move.length; i++) {
+      if (units_to_move[i].command_value > 0) {
+        // we can have up to two army leaders combine command values
+	if (command_value_one == 0) {
+	  command_value_one = units_to_move[i].command_value; 
+	} else {
+	  if (command_value_two == 0) {
+	    command_value_one = units_to_move[i].command_value;
+	  } else {
+	    if (command_value_one > command_value_two && units_to_move[i].command_value > command_value_one) {
+	      command_value_one = units_to_move[i].command_value;
+	    } else {
+	      if (command_value_one < command_value_two && units_to_move[i].command_value > command_value_two) {
+	        command_value_two = units_to_move[i].command_value;
+	      }
+	    }
+	  }
+	}
 
+	max_command_value = command_value_one + command_value_two;
+      }
+    }
 
-  canPlayerMoveFormationInClear(his_self, player, faction) {
-    return 1;
+    if (max_command_value > 4) { return max_command_value; }
+    return 4;
+
   }
+
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
@@ -759,6 +788,9 @@ console.log("spring deploy");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let msg = "Max Formation Size: " + max_formation_size + " units";
+
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
@@ -772,7 +804,7 @@ console.log("spring deploy");
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
-	  his_self.updateStatus(html);
+	  his_self.updateStatusWitOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -869,6 +901,9 @@ console.log("spring deploy");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let msg = "Max Formation Size: " + max_formation_size + " units";
+
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
@@ -882,7 +917,7 @@ console.log("spring deploy");
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
-	  his_self.updateStatus(html);
+	  his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -1048,6 +1083,10 @@ console.log("spring deploy");
 
   }
   canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
+  }
+
+  canPlayerMoveFormationInClear(his_self, player, faction) {
     return 1;
   }
 

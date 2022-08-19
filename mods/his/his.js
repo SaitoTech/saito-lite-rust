@@ -88,10 +88,10 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (state.leaders_henry_viii == 1) { base += 1; }
-        if (state.leaders_edward_vi == 1) { base += 1; }
-        if (state.leaders_mary_i == 1) { base += 1; }
-        if (state.leaders_elizabeth_i == 1) { base += 2; }
+        if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_edward_vi == 1) { base += 1; }
+        if (game_mod.game.state.leaders_mary_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
 
         return base;
 
@@ -118,10 +118,10 @@ class HereIStand extends GameTemplate {
 	}
 
 	// bonuses based on leaders
-	if (state.leaders_henry_viii == 1) { base += 1; }
-	if (state.leaders_edward_vi == 1) { base += 0; }
-	if (state.leaders_mary_i == 1) { base += 0; }
-	if (state.leaders_elizabeth_i == 1) { base += 2; }
+	if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
+	if (game_mod.game.state.leaders_edward_vi == 1) { base += 0; }
+	if (game_mod.game.state.leaders_mary_i == 1) { base += 0; }
+	if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
 
 	// TODO - bonus for home spaces under protestant control
 	return base;
@@ -171,8 +171,8 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (state.leaders_francis_i == 1) { base += 1; }
-        if (state.leaders_henry_ii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders_henry_ii == 1) { base += 1; }
 
         return base;
 
@@ -199,8 +199,8 @@ class HereIStand extends GameTemplate {
         }
 
         // bonuses based on leaders
-        if (state.leaders_francis_i == 1) { base += 1; }        
-        if (state.leaders_henry_ii == 1) { base += 0; }        
+        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }        
+        if (game_mod.game.state.leaders_henry_ii == 1) { base += 0; }        
 
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -268,7 +268,7 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (state.leaders_charles_v == 1) { base += 0; }
+        if (game_mod.game.state.leaders_charles_v == 1) { base += 0; }
        
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -315,7 +315,7 @@ class HereIStand extends GameTemplate {
 
         let base = 0;
 
-        if (state.leaders_suleiman == 1) { base += 2; }
+        if (game_mod.game.state.leaders_suleiman == 1) { base += 2; }
 
         return base;
 
@@ -339,7 +339,7 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (state.leaders_suleiman == 1) { base += 0; }        
+        if (game_mod.game.state.leaders_suleiman == 1) { base += 0; }        
        
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -385,10 +385,10 @@ class HereIStand extends GameTemplate {
  
         let base = 0;
 
-        if (state.leaders_leo_x == 1) { base += 0; }
-        if (state.leaders_clement_vii == 1) { base += 1; }
-        if (state.leaders_paul_iii == 1) { base += 1; }
-        if (state.leaders_julius_iii == 1) { base += 0; }
+        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders_clement_vii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_julius_iii == 1) { base += 0; }
 
         return base; 
 
@@ -408,10 +408,10 @@ class HereIStand extends GameTemplate {
           default: { base = 0; break; }
         }
 
-        if (state.leaders_leo_x == 1) { base += 0; }
-        if (state.leaders_clement_vii == 1) { base += 0; }
-        if (state.leaders_paul_iii == 1) { base += 1; }
-        if (state.leaders_julius_iii == 1) { base += 1; }       
+        if (game_mod.game.state.leaders_leo_x == 1) { base += 0; }
+        if (game_mod.game.state.leaders_clement_vii == 1) { base += 0; }
+        if (game_mod.game.state.leaders_paul_iii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_julius_iii == 1) { base += 1; }       
 
         // TODO - bonus for home spaces under protestant control
         return base;
@@ -454,7 +454,7 @@ class HereIStand extends GameTemplate {
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
 
-        if (state.leaders_martin_luther == 1) { base += 0; }
+        if (game_mod.game.state.leaders_martin_luther == 1) { base += 0; }
 
 	return base;        
 
@@ -1166,13 +1166,6 @@ class HereIStand extends GameTemplate {
            img               :       "Roberval.svg",
       });
 
-      this.importUnit('suleiman', {
-           type              :       "" ,
-           name              :       "",
-           personage         :       true,
-           img               :       "Suleiman.svg",
-      });
-
       this.importUnit('more', {
            type              :       "more" ,
            name              :       "Thomas More",
@@ -1209,7 +1202,7 @@ class HereIStand extends GameTemplate {
 
 
       this.importUnit('calvin-reformer', {
-           type              :       "calvin" ,
+           type              :       "calvin-reformer" ,
            name              :       "John Calvin",
            reformer          :       true,
            img               :       "CalvinReformer.svg",
@@ -1217,7 +1210,7 @@ class HereIStand extends GameTemplate {
 
 
       this.importUnit('cranmer-reformer', {
-           type              :       "cranmer " ,
+           type              :       "cranmer-reformer" ,
            name              :       "Thomas Cranmer ",
            reformer          :       true,
            img               :       "CranmerReformer.svg",
@@ -1225,14 +1218,14 @@ class HereIStand extends GameTemplate {
 
 
       this.importUnit('luther-reformer', {
-           type              :       "luther" ,
+           type              :       "luther-reformer" ,
            name              :       "Martin Luther",
            reformer          :       true,
            img               :       "LutherReformer.svg",
       });
 
       this.importUnit('zwingli-reformer', {
-           type              :       "zwingli" ,
+           type              :       "zwingli-reformer" ,
            name              :       "Huldrych Zwingli",
            reformer          :       true,
            img               :       "ZwingliReformer.svg",
@@ -6238,19 +6231,21 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("diplomacy_phase");
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
-  	    this.game.queue.push("diet_of_worms");
+
+//  	    this.game.queue.push("diet_of_worms");
 	    //
-	    // must happen before the diet of worms
+	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+
 	  } else {
 	    this.game.queue.push("card_draw_phase");
 	  }
@@ -8173,10 +8168,12 @@ console.log("spring deploy");
 
           function(destination_spacekey) {
 
-	    // spacekey is destination, but space is our source == id from above
             let space = his_self.spaces[id];
 
             let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) { 
+
+	      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	      let msg = "Max Formation Size: " + max_formation_size + " units";
 
               let html = "<ul>";
               for (let i = 0; i < space.units[faction].length; i++) {
@@ -8191,7 +8188,7 @@ console.log("spring deploy");
               html += `<li class="option" id="end">finish</li>`;
               html += "</ul>";
 
-              his_self.updateStatus(html);
+              his_self.updateStatusWithOptions(msg, html);
 
               $('.option').off();
               $('.option').on('click', function () {
@@ -8232,13 +8229,40 @@ console.log("spring deploy");
       });
     }
   }
+  returnMaxFormationSize(units_to_move) {
 
+    let command_value_one = 0;
+    let command_value_two = 0;
+    let max_command_value = 0;
 
+    for (let i = 0; i < units_to_move.length; i++) {
+      if (units_to_move[i].command_value > 0) {
+        // we can have up to two army leaders combine command values
+	if (command_value_one == 0) {
+	  command_value_one = units_to_move[i].command_value; 
+	} else {
+	  if (command_value_two == 0) {
+	    command_value_one = units_to_move[i].command_value;
+	  } else {
+	    if (command_value_one > command_value_two && units_to_move[i].command_value > command_value_one) {
+	      command_value_one = units_to_move[i].command_value;
+	    } else {
+	      if (command_value_one < command_value_two && units_to_move[i].command_value > command_value_two) {
+	        command_value_two = units_to_move[i].command_value;
+	      }
+	    }
+	  }
+	}
 
+	max_command_value = command_value_one + command_value_two;
+      }
+    }
 
-  canPlayerMoveFormationInClear(his_self, player, faction) {
-    return 1;
+    if (max_command_value > 4) { return max_command_value; }
+    return 4;
+
   }
+
   async playerMoveFormationInClear(his_self, player, faction) {
 
     let units_to_move = [];
@@ -8303,6 +8327,9 @@ console.log("spring deploy");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let msg = "Max Formation Size: " + max_formation_size + " units";
+
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
@@ -8316,7 +8343,7 @@ console.log("spring deploy");
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
-	  his_self.updateStatus(html);
+	  his_self.updateStatusWitOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -8413,6 +8440,9 @@ console.log("spring deploy");
 
 	let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface) {
 
+	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+	  let msg = "Max Formation Size: " + max_formation_size + " units";
+
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
@@ -8426,7 +8456,7 @@ console.log("spring deploy");
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
-	  his_self.updateStatus(html);
+	  his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -8592,6 +8622,10 @@ console.log("spring deploy");
 
   }
   canPlayerMoveFormationOverPass(his_self, player, faction) {
+    return 1;
+  }
+
+  canPlayerMoveFormationInClear(his_self, player, faction) {
     return 1;
   }
 
@@ -9486,8 +9520,11 @@ console.log("DEBATER IS: " + d.owner);
 
     for (let z in space.units) {
 
+console.log(JSON.stringify(space.units[z]));
+
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
+console.log(z + " -- " + zz);
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
@@ -9833,8 +9870,12 @@ console.log("DEBATER IS: " + d.owner);
 
     let stype = "hex";
 
+console.log("a 1");
+
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
+
+console.log("a 2");
 
     //
     // should we show the tile?
@@ -9853,6 +9894,8 @@ console.log("DEBATER IS: " + d.owner);
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
 
+console.log("a 3");
+
     //
     // and force if has units
     //
@@ -9862,21 +9905,30 @@ console.log("DEBATER IS: " + d.owner);
       }
     }
 
+console.log("a 4");
 
     //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
 
+console.log("a 5");
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+console.log("a 6 1");
       obj.innerHTML += this.returnArmies(space);
+console.log("a 6 2");
       obj.innerHTML += this.returnNavies(space);
+console.log("a 6 3");
       obj.innerHTML += this.returnMercenaries(space);
+console.log("a 6 4");
       obj.innerHTML += this.returnPersonages(space);
+console.log("a 6 5");
 
     }
+
+console.log("a 6 6");
 
     // add unrest if needed
     if (this.isSpaceInUnrest(space)) {
@@ -9928,8 +9980,11 @@ console.log("DEBATER IS: " + d.owner);
     // add tiles
     //
     for (let key in this.spaces) {
+console.log(key + " 1");
       if (this.spaces.hasOwnProperty(key)) {
+console.log(key + " 2");
 	this.displaySpace(key);
+console.log(key + " 3");
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }

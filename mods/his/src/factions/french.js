@@ -11,8 +11,8 @@
 
         let base = 0;
 
-        if (state.leaders_francis_i == 1) { base += 1; }
-        if (state.leaders_henry_ii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders_henry_ii == 1) { base += 1; }
 
         return base;
 
@@ -39,8 +39,8 @@
         }
 
         // bonuses based on leaders
-        if (state.leaders_francis_i == 1) { base += 1; }        
-        if (state.leaders_henry_ii == 1) { base += 0; }        
+        if (game_mod.game.state.leaders_francis_i == 1) { base += 1; }        
+        if (game_mod.game.state.leaders_henry_ii == 1) { base += 0; }        
 
         // TODO - bonus for home spaces under protestant control
         return base;

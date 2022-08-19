@@ -39,19 +39,21 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("diplomacy_phase");
+//	  this.game.queue.push("diplomacy_phase");
 
 	  //
 	  // start the game with the Protestant Reformation
 	  //
 	  if (this.game.state.round == 1) {
-  	    this.game.queue.push("diet_of_worms");
+
+//  	    this.game.queue.push("diet_of_worms");
 	    //
-	    // must happen before the diet of worms
+	    // cards dealt before diet of worms
 	    //
 	    this.game.queue.push("card_draw_phase");
-	    this.updateLog("Luther's 95 Theses!");
-	    this.game.queue.push("event\t1\t008");
+//	    this.updateLog("Luther's 95 Theses!");
+//	    this.game.queue.push("event\t1\t008");
+
 	  } else {
 	    this.game.queue.push("card_draw_phase");
 	  }

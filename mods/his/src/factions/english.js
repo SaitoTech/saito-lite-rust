@@ -12,10 +12,10 @@
 
         let base = 0;
 
-        if (state.leaders_henry_viii == 1) { base += 1; }
-        if (state.leaders_edward_vi == 1) { base += 1; }
-        if (state.leaders_mary_i == 1) { base += 1; }
-        if (state.leaders_elizabeth_i == 1) { base += 2; }
+        if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
+        if (game_mod.game.state.leaders_edward_vi == 1) { base += 1; }
+        if (game_mod.game.state.leaders_mary_i == 1) { base += 1; }
+        if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
 
         return base;
 
@@ -42,10 +42,10 @@
 	}
 
 	// bonuses based on leaders
-	if (state.leaders_henry_viii == 1) { base += 1; }
-	if (state.leaders_edward_vi == 1) { base += 0; }
-	if (state.leaders_mary_i == 1) { base += 0; }
-	if (state.leaders_elizabeth_i == 1) { base += 2; }
+	if (game_mod.game.state.leaders_henry_viii == 1) { base += 1; }
+	if (game_mod.game.state.leaders_edward_vi == 1) { base += 0; }
+	if (game_mod.game.state.leaders_mary_i == 1) { base += 0; }
+	if (game_mod.game.state.leaders_elizabeth_i == 1) { base += 2; }
 
 	// TODO - bonus for home spaces under protestant control
 	return base;

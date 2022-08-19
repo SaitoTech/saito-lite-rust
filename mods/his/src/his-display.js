@@ -460,8 +460,11 @@ console.log("DEBATER IS: " + d.owner);
 
     for (let z in space.units) {
 
+console.log(JSON.stringify(space.units[z]));
+
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
+console.log(z + " -- " + zz);
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
@@ -807,8 +810,12 @@ console.log("DEBATER IS: " + d.owner);
 
     let stype = "hex";
 
+console.log("a 1");
+
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
+
+console.log("a 2");
 
     //
     // should we show the tile?
@@ -827,6 +834,8 @@ console.log("DEBATER IS: " + d.owner);
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
 
+console.log("a 3");
+
     //
     // and force if has units
     //
@@ -836,21 +845,30 @@ console.log("DEBATER IS: " + d.owner);
       }
     }
 
+console.log("a 4");
 
     //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
 
+console.log("a 5");
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
+console.log("a 6 1");
       obj.innerHTML += this.returnArmies(space);
+console.log("a 6 2");
       obj.innerHTML += this.returnNavies(space);
+console.log("a 6 3");
       obj.innerHTML += this.returnMercenaries(space);
+console.log("a 6 4");
       obj.innerHTML += this.returnPersonages(space);
+console.log("a 6 5");
 
     }
+
+console.log("a 6 6");
 
     // add unrest if needed
     if (this.isSpaceInUnrest(space)) {
@@ -902,8 +920,11 @@ console.log("DEBATER IS: " + d.owner);
     // add tiles
     //
     for (let key in this.spaces) {
+console.log(key + " 1");
       if (this.spaces.hasOwnProperty(key)) {
+console.log(key + " 2");
 	this.displaySpace(key);
+console.log(key + " 3");
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }

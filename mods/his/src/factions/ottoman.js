@@ -11,7 +11,7 @@
 
         let base = 0;
 
-        if (state.leaders_suleiman == 1) { base += 2; }
+        if (game_mod.game.state.leaders_suleiman == 1) { base += 2; }
 
         return base;
 
@@ -35,7 +35,7 @@
           default: { base = 0; break; }
         }
 
-        if (state.leaders_suleiman == 1) { base += 0; }        
+        if (game_mod.game.state.leaders_suleiman == 1) { base += 0; }        
        
         // TODO - bonus for home spaces under protestant control
         return base;

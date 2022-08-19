@@ -287,13 +287,6 @@
            img               :       "Roberval.svg",
       });
 
-      this.importUnit('suleiman', {
-           type              :       "" ,
-           name              :       "",
-           personage         :       true,
-           img               :       "Suleiman.svg",
-      });
-
       this.importUnit('more', {
            type              :       "more" ,
            name              :       "Thomas More",

@@ -14,7 +14,7 @@
         let kc = game_mod.returnNumberOfElectoratesControlledByProtestants();
         if (kc > 4) { base += 1; }
 
-        if (state.leaders_martin_luther == 1) { base += 0; }
+        if (game_mod.game.state.leaders_martin_luther == 1) { base += 0; }
 
 	return base;        
 
