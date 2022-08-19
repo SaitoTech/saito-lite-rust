@@ -231,15 +231,15 @@ class RedSquareTweet {
     //
     // click on interior retweet to view it
     //
-    sel = `#redsquare-item-contents-${this.tx.transaction.sig} > .tweet-body > .link-preview > .redsquare-item > .redsquare-item-contents > .tweet-body`;
-    let x = document.querySelector(sel);
-    if (x) {
-      x.onclick = (e) => {
-        let tweet_id = e.currentTarget.getAttribute("data-id");
-        // parent --> forces load of top-level element
-        mod.renderParentWithChildren(app, mod, tweet_id);
-      }
-    }
+    // sel = `#redsquare-item-contents-${this.tx.transaction.sig} > .tweet-body > .link-preview > .redsquare-item > .redsquare-item-contents > .tweet-body`;
+    // let x = document.querySelector(sel);
+    // if (x) {
+    //   x.onclick = (e) => {
+    //     let tweet_id = e.currentTarget.getAttribute("data-id");
+    //     // parent --> forces load of top-level element
+    //     mod.renderParentWithChildren(app, mod, tweet_id);
+    //   }
+    // }
 
 
     //
@@ -324,26 +324,26 @@ class RedSquareTweet {
       });
     };
 
-    document.addEventListener('click',function(e){
+    document.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      if(e.target && e.target.classList.contains('tweet-img')){
-          let imgdata_uri = e.target.style.backgroundImage.slice(4, -1).replace(/"/g, "");
-          let img_overlay = new SaitoOverlay(app, mod);
-          img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
-        
-          let oImg = document.createElement("img");
-          oImg.setAttribute('src', imgdata_uri);
-          document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
-       
+      if (e.target && e.target.classList.contains('tweet-img')) {
+        let imgdata_uri = e.target.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        let img_overlay = new SaitoOverlay(app, mod);
+        img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
+
+        let oImg = document.createElement("img");
+        oImg.setAttribute('src', imgdata_uri);
+        document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
+
       }
 
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
       }
-   });
+    });
   }
 
 

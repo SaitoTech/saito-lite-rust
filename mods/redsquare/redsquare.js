@@ -106,7 +106,6 @@ class RedSquare extends ModTemplate {
 
 
   render(app, mod, selector = "") {
-    this.saitoLoader.render(app, mod);
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -116,7 +115,6 @@ class RedSquare extends ModTemplate {
 
     }
     super.render(app, this);
-    this.saitoLoader.remove(app, mod);
   }
 
 
@@ -147,11 +145,12 @@ class RedSquare extends ModTemplate {
     //
     // if we get here, we don't have this locally, try remote request
     //
-    this.saitoLoader.render(app, mod);
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
-       mod.renderParentWithChildren(app, mod, sig);
-       mod.saitoLoader.remove(app, mod);
+      mod.renderParentWithChildren(app, mod, sig);
+      mod.saitoLoader.remove(app, mod);
+
+
     });
 
   }
@@ -185,11 +184,9 @@ class RedSquare extends ModTemplate {
     //
     // if we get here, we don't have this locally, try remote request
     //
-    this.saitoLoader.render(app, mod);
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderWithChildren(app, redsquare_self, sig);
-      this.saitoLoader.remove(app, mod);
     });
 
 
@@ -312,6 +309,7 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     if (this.app.BROWSER == 1) {
+      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
 
       let tweet_id = app.browser.returnURLParameter('tweet_id');
 
@@ -324,6 +322,10 @@ class RedSquare extends ModTemplate {
           this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
       }
+
+      setTimeout(function(){
+        redsquare_self.saitoLoader.remove();
+      }, 1000);
     }
   }
 
@@ -349,7 +351,7 @@ class RedSquare extends ModTemplate {
     }
   }
 
-  fetchTweets(app, redsquare_self, sql, post_fetch_tweets_callback=null) {
+  fetchTweets(app, mod, sql, post_fetch_tweets_callback = null) {
 
     app.modules.returnModule("RedSquare").sendPeerDatabaseRequestWithFilter(
 
@@ -380,15 +382,15 @@ class RedSquare extends ModTemplate {
                 let x = JSON.parse(row.link_properties);
                 tx.optional.link_properties = x;
               } catch (err) { }
-                this.addTweetFromTransaction(app, redsquare_self, tx);
-              }
+              this.addTweetFromTransaction(app, mod, tx);
+            }
           });
 
-	  if (post_fetch_tweets_callback != null) {
-	    post_fetch_tweets_callback(app, redsquare_self);
-	  }
+          if (post_fetch_tweets_callback != null) {
+            post_fetch_tweets_callback(app, mod);
+          }
 
-        }  
+        }
       }
     );
   }
