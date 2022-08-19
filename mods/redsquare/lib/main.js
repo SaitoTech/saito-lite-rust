@@ -72,20 +72,19 @@ class RedSquareMain {
     mod.home.render(app, mod, ".appspace");
     mod.rsidebar.render(app, mod, ".saito-sidebar-right");
 
-  // check the url for an anchor hash
-  // if one exists ask the menu to render it
-  // if that fails render home
-  
-  var hash = new URL(document.URL).hash.split('#')[1];
-  var hash_matched = 0;
+    // check the url for an anchor hash
+    // if one exists ask the menu to render it
+    // if that fails render home
 
-  if (hash != "") {
-    let hash_matched = mod.menu.renderItem(app, mod, hash);
-    if (hash_matched == 1) {
-      return 1;
+    var hash = new URL(document.URL).hash.split('#')[1];
+    var hash_matched = 0;
+
+    if (hash != "") {
+      let hash_matched = mod.menu.renderItem(app, mod, hash);
+      if (hash_matched == 1) {
+        return 1;
+      }
     }
-  }
-
     //app.connection.on("tweet-render-request", (tx) => {
     //    let tweet = new RedSquareTweet(app, mod, tx);
     //    tweet.render(app, mod); 

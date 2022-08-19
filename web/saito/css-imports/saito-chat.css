@@ -48,6 +48,7 @@
 }
 .chat-body > .saito-user {
     padding-bottom: 1rem;
+    cursor: default;
 }
 
 .chat-footer {
@@ -88,46 +89,3 @@
 
 
 
-/*  dropdown */
-
-.chat-profile-dropdown {
-    position: absolute;
-    left: 2rem;
-    width: 18rem;
-    background-color: var(--saito-white);
-    border: 1px solid var(--saito-border);
-    border-radius: .5rem;
-    z-index: 3;
-    opacity: 0;
-    pointer-events: none;
-    transition: all .2s;
-}
-
-.chat-profile-dropdown>div {
-    padding: .5rem;
-    display: grid;
-    grid-template-columns: 3rem 1fr;
-    grid-gap: .5rem;
-    cursor: pointer;
-}
-
-.chat-profile-dropdown>div:not(:last-child) {
-    border-bottom: 1px solid var(--saito-border);
-}
-
-.chat-profile-dropdown>div:hover {
-    background-color: var(--saito-primary);
-    color: var(--saito-white);
-}
-
-.chat-profile-dropdown>div:hover>p {
-    color: var(--saito-white);
-}
-
-
-
-/* hover to show dropdown */
-.chat-item.other .chat-profile:hover .chat-profile-dropdown {
-    opacity: 1;
-    pointer-events: all;
-}
