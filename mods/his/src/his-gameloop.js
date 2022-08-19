@@ -190,14 +190,98 @@ console.log("MOVE: " + mv[0]);
 	        this.game.queue.push("halt");
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
                 this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	        this.game.queue.push("retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		return 1;;
 	      }
 	    }
-
 	  }
 
           return 1;
 	}
+
+
+        if (mv[0] === "retreat_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_cpomes_from_this_spacekey = mv[3];
+	  let space = this.game.spaces[spacekey];
+	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+
+	  let io = this.returnImpulseOrder();
+	  for (let i = io.length-1; i>= 0; i--) {
+	    let can_player_retreat = 0;
+	    for (let z = 0; z < neighbours.length; z++) {
+	      if (io[i] !== attacker) {
+	        let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
+	        if (fluis > 0) {
+		  can_player_retreat = 1;
+	        }
+	      }
+	    }
+	    if (can_player_retreat) {
+	      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]+"\t"+neighbours[z]);
+	    }
+	  }
+
+          return 1;
+
+	}
+
+
+        if (mv[0] === "retreat") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let defender = mv[1];
+	  let from = mv[2];
+	  let to = mv[3];
+
+	  let source = this.game.spaces[from];
+	  let destination = this.game.spaces[to];
+
+	  for (let i = 0; i < source.units[defender].length; i++) {
+	    to.units[defender].push(source.units[defender][i]);
+	  }
+
+	  source.units[defender] = [];
+
+	  this.displaySpace(from);
+	  this.displaySpace(to);
+
+          return 1;
+
+	}
+
+
+
+        if (mv[0] === "player_evaluate_retreat_opportunity") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_comes_from_this_spacekey = mv[3];
+	  let defender = mv[3];
+	  let defender_spacekey = mv[4];
+
+	  let player_factions = this.returnPlayerFactions(this.game.player)
+
+	  if (player_factions.includes(defender)) {
+	    this.playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender, defender_spacekey);
+	  } else {
+	    this.updateStatus(defender + " considering interception from " + defender_spacekey);   
+	  }
+
+	  return 0;
+
+	}
+
+
+
+
 
 
         if (mv[0] === "interception_check") {
@@ -213,9 +297,13 @@ console.log("MOVE: " + mv[0]);
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-	    for (let z = 0; z < neighbours.length; z++) {
-	      let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
-	      this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	    if (io[i] !== faction) {
+	      for (let z = 0; z < neighbours.length; z++) {
+	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	        if (fluis > 0) {
+	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	        }
+	      }
 	    }
 	  }
 

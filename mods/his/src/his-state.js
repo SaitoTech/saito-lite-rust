@@ -171,6 +171,15 @@
   }
 
 
+  canFactionRetreatToSpace(faction, space, attacker_comes_from_this_space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.spaces[attacker_comes_from_this_space]) { attacker_comes_from_this_space = this.game.spaces[invalid_space]; } } catch (err) {}
+    if (space === attacker_comes_from_this_space) { return 0; }
+    if (this.isSpaceInUnrest(space) == 1) { return 0; }
+    if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
+    return 0;
+  }
+
   convertSpace(religion, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.religion = religion;

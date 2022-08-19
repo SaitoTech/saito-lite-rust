@@ -846,6 +846,79 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
   }
 
 
+
+            let can_player_retreat = 0;
+            for (let z = 0; z < neighbours.length; z++) {
+              if (fluis > 0) {
+                can_player_retreat = 1;
+              }
+            }
+            if (can_player_retreat) {
+              this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
+            }
+          }
+          
+
+
+  playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space, defender) {
+
+    let his_self = this;
+    let retreat_destination = "";
+
+
+    let onFinishSelect = function(his_self, destination_spacekey) {
+      his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
+      his_self.endTurn();
+    };
+
+    let selectDestinationInterface = function(his_self, selectDestinationInterface, onFinishSelect) {
+
+      let space = his_self.game.spaces[spacekey];
+
+      let html = "<ul>";
+      for (let i = 0; i < space.neighbours.length; i++) {
+        if (this.canFactionRetreatToSpace(defender, space.neighbours[i], attacker_comes_from_this_spacekey)) {
+          html += `<li class="option" id="${space.neighbours[i]}">${his_self.game.spaces[space.neighbours[i]].key}</li>`;
+	}
+      }
+      html += "</ul>";
+
+      his_self.updateStatusWitOptions("Choose Desetination for Retreat: ", html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let id = $(this).attr("id");
+        onFinishSelect(his_self, id);
+      });
+
+      selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="skip">do not retreat</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat from ${spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "retreat") {
+	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
+
+
   playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey) {
 
     let his_self = this;
