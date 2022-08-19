@@ -1,10 +1,6 @@
 
     if (card == "puppet") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>US is playing ${this.cardToText(card)}</div>`);
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -58,9 +54,8 @@
           twilight_self.playerFinishedPlacingInfluence();
           twilight_self.endTurn();
         } 
-        
-        return 0;
       }
+      return 0;
     }
 
 

@@ -3,10 +3,6 @@
     // US may discard any number of cards and replace them with a new draw
     if (card == "asknot") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();

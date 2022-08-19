@@ -18,6 +18,7 @@ class Observer extends ModTemplate {
     this.game_id = null;
     this.game_states = [];
     this.game_moves = [];
+    this.future_moves = [];
 
     this.fast_forward = 0;
     this.step_speed = 2000;
@@ -84,12 +85,12 @@ class Observer extends ModTemplate {
     //
     this.sendPeerDatabaseRequestWithFilter(
       "Observer", /*DISTINCT id, count(id) as count, last_move, game_id, module, player, players_array*/
-      `SELECT DISTINCT step, count(step) as count, * FROM gamestate GROUP BY game_id ORDER BY count DESC, step DESC LIMIT 8`,
+      `SELECT DISTINCT step, count(step) as count, * FROM gamestate GROUP BY game_id ORDER BY count DESC LIMIT 8`,
       (res) => {
         if (res.rows) {
           console.log("GAMESTATES:");
           res.rows.forEach((row) => {
-            console.log(JSON.parse(JSON.stringify(row)));
+            //console.log(JSON.parse(JSON.stringify(row)));
             this.addGameToObserverList(row);
           });
         }
@@ -123,17 +124,20 @@ class Observer extends ModTemplate {
     try {
       if (conf == 0) {
 
-        //
-        // save state -- also prolifigate
-        //
-        if (txmsg.game_state != undefined && txmsg.game_id != "") {
-          //if (this.debug) {console.log("onConfirmation: Should save game state");}
-          this.saveGameState(blk, tx, conf, app);
-        }
 
-        if (app.BROWSER == 0){
-        	this.notifyPeers(app, tx);
+        //If there is a game_state to save, we save it
+        if (txmsg.game_state != undefined && txmsg.game_id != "") {
+    
+          if (app.BROWSER == 0){
+            this.notifyPeers(app, tx);
+          }
+            
+          if (this.debug) {console.log("onConfirmation: Should save game state");}
+  
+          this.saveGameState(blk, tx, conf, app);
+          this.addGameToObserverList(this.createGameFromTX(tx));
         }
+        
       }
     } catch (err) {
       console.log("ERROR in observer: " + err);
@@ -159,24 +163,64 @@ class Observer extends ModTemplate {
       }
 
       let txmsg = tx.returnMessage();
-	  if (txmsg.game_state != undefined && txmsg.game_id != "") {
-	    //if (this.debug) {console.log("HandlePeerRequest: Should save game state");}
-	    this.saveGameState(null, tx, 0, app);
-	  }
+
+      //For now, we aren't caring about the message request, but if there is a game_state & game_id attached to the message
+	    if (txmsg.game_state != undefined && txmsg.game_id != "") {
+
+  	    //if (this.debug) {console.log("HandlePeerRequest: New game state received in Observer");}
+  	    this.saveGameState(null, tx, 0, app);
+        this.addGameToObserverList(this.createGameFromTX(tx));
+        if (app.BROWSER == 0 && app.SPVMODE == 0) {
+          this.notifyPeers(app, tx);
+        }
+
+  	  }
       
     }    
 
     super.handlePeerRequest(app, message, peer, mycallback);
   }
 
+  createGameFromTX(tx){
+    let txmsg = tx.returnMessage();
+    let newtx = {};
+    console.log(txmsg);
+    newtx.step = txmsg.game_state.step?.game || 1;
+    newtx.game_id = txmsg.game_id;
+    newtx.player = txmsg.player;
+    newtx.status = (txmsg.game_state.over) ? "over" : "live";
+    newtx.players_array = txmsg.game_state.players.join("_");;
+    newtx.module = txmsg.module;
+    newtx.game_state = JSON.stringify(txmsg.game_state);
+    newtx.tx = JSON.stringify(tx.transaction);
+    newtx.ts = new Date().getTime();
+
+    return newtx;
+  }
 
   addGameToObserverList(msg) {
-    for (let i = 0; i < this.games.length; i++) {
-      if (msg.game_id == this.games[i].game_id) {
-        return;
+    let newGame = true;
+    if (msg.count){
+      if (msg.count > msg.step){
+        msg.step = msg.count;
       }
     }
-    this.games.push(msg);
+
+    for (let i = 0; i < this.games.length; i++) {
+      if (msg.game_id == this.games[i].game_id) {
+        newGame = false;
+        //So we may want to update the displayed invite with most recent timestamp, etc
+        this.games[i].ts = msg.ts;
+        this.games[i].step = msg.step;
+        this.games[i].status = msg.status;
+      }
+    }
+  
+    if (newGame){
+      console.log(JSON.parse(JSON.stringify(msg)));
+      this.games.push(msg);
+    }
+  
     let arcade = this.app.modules.returnModule("Arcade");
     if (arcade){
     	arcade.renderArcadeMain();	
@@ -195,14 +239,13 @@ class Observer extends ModTemplate {
 
     let { game_state } = txmsg;
 
-    let sql = `INSERT INTO gamestate (
+    let sql = `INSERT OR REPLACE INTO gamestate (
                 step ,
                 game_id ,
                 player ,
                 players_array ,
+                status ,
                 module ,
-                bid ,
-                tid ,
                 game_state ,
                 tx ,
                 ts
@@ -211,20 +254,12 @@ class Observer extends ModTemplate {
                 $game_id,
                 $player,
                 $players_array,
+                $status , 
                 $module,
-                $bid,
-                $tid,
                 $game_state,
                 $tx ,
                 $ts
         )`;
-    let x = [];
-    let txto = tx.transaction.to;
-    for (let z = 0; z < txto.length; z++) {
-      if (!x.includes(txto[z].add)) {
-        x.push(txto[z].add);
-      }
-    }
 
     //
     // add any move associated with this tx to the
@@ -237,20 +272,21 @@ class Observer extends ModTemplate {
     //
     // do not save 1-player games
     //
-    if (x.length == 1) {
+    if (game_state.players.length == 1) {
       return;
     }
 
-    let players_array = x.join("_");
+    let status = (game_state.over) ? "over" : "live";
+    let players_array = game_state.players.join("_"); 
+    let step = txmsg.step?.game || 1;
 
     let params = {
-      $step: txmsg.step.game,
+      $step: step,
       $game_id: txmsg.game_id,
       $player: tx.transaction.from[0].add,
       $players_array: players_array,
       $module: txmsg.module,
-      $bid: blk.block.id,
-      $tid: tx.transaction.id,
+      $status: status,
       $game_state: JSON.stringify(game_state),
       $tx: JSON.stringify(tx.transaction),
       $ts: new Date().getTime(),
@@ -296,7 +332,16 @@ class Observer extends ModTemplate {
       return;
     }
     
+    //Piggy back on Arcade look and feel to load a spinner
+    //Block arcade from rerendering while loading game
+    let arcade = this.app.modules.returnModule("Arcade");
+    if (arcade.browser_active){
+      arcade.viewing_arcade_initialization_page = 1;
+    }else{
+      return;
+    }
     ObserverLoader.render(this.app, this); //Start Spinner
+    
     //let address_to_watch = msgobj.player;
 
     if (!this.app.options.games) {
@@ -365,7 +410,15 @@ class Observer extends ModTemplate {
     }
   }
 
-  observerDownloadNextMoves(game_mod, mycallback = null) {
+  insertFutureMoves(game_mod){
+    for (let i = 0; i < this.future_moves.length; i++){
+      let future_tx = this.future_moves[i];
+      game_mod.addFutureMove(future_tx);  
+    }
+    this.future_moves = [];
+  }
+
+  async observerDownloadNextMoves(game_mod, mycallback = null) {
     let arcade_self = this;
 
     // purge old transactions
@@ -503,7 +556,7 @@ class Observer extends ModTemplate {
           callback(game_mod);
         }else{
           game_mod.initialize_game_run = 0;
-          game_mod.initialize(arcade_self.app);
+          game_mod.initializeGameFeeder(game_mod.game.id);
           arcade_self.controls.updateStep(game_mod.game.step.game);
         }
 
@@ -535,7 +588,7 @@ class Observer extends ModTemplate {
             return;
           }
 
-          for (let i = 0; i < data.length; i++) {
+          for (let i = 1; i < data.length; i++) {
             let future_tx = new saito.default.transaction(JSON.parse(data[i].tx));
             future_tx.msg = future_tx.returnMessage();
             future_tx.msg.game_state = {};

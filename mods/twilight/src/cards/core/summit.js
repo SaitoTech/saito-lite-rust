@@ -28,12 +28,8 @@
 
       this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 
-      let is_winner = 0;
 
-      if (us_roll > ussr_roll) { is_winner = 1; }
-      if (ussr_roll > us_roll) { is_winner = 1; }
-
-      if (is_winner == 0) {
+      if (us_roll === ussr_roll) {
         this.updateLog(`${this.cardToText(card)}: no winner`);
         this.displayModal(`${this.cardToText(card)}: no winner`);
         return 1;
@@ -42,11 +38,12 @@
         //
         // winner
         //
-        let my_go = 0;
-        if (us_roll > ussr_roll && this.game.player == 2) { my_go = 1; }
-        if (ussr_roll > us_roll && this.game.player == 1) { my_go = 1; }
+        let winner = 1;
+        if (us_roll > ussr_roll){
+          winner = 2;
+        }
 
-        if (my_go == 1) {
+        if (this.game.player === winner) {
 
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
@@ -87,7 +84,12 @@
 
           });
         }else{
-          this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);
+          if (this.game.player == 0){
+            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+          }else{
+            this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
+          }
+
         }
         return 0;
       }

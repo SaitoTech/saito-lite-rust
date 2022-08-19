@@ -805,7 +805,7 @@ class Arcade extends ModTemplate {
     let game_id = tx.transaction.sig;
 
     if (this.debug) {
-      console.log(`Storing new ${game_status} game: ` + game_id);
+      console.log(`Arcade: Storing new ${txmsg.request} game: ` + game_id);
     }
     if (this.app.BROWSER){
       return;
@@ -835,7 +835,7 @@ class Arcade extends ModTemplate {
       acceptance_sig = txmsg.players_sigs[0];
     }
 
-    let sql = `INSERT INTO games (
+    let sql = `INSERT OR IGNORE INTO games (
                 game_id ,
                 players_needed ,
                 players_array ,

@@ -20,6 +20,7 @@ class ArcadeObserver{
 		        let game_id2 = e.currentTarget.getAttribute("data-sig");
 		        //app.crypto.stringToBase64(JSON.stringify(observe))
 		        if (game_cmd === "watch" && game_id === game_id2) {
+		          //TODO insert an intermediate question about where to begin watching the game from
 		          mod.observeGame(game_id);
 		          return;
 		        }		

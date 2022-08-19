@@ -7,24 +7,16 @@
 
       let twilight_self = this;
 
-      let instigator = 1;
       let respondant = 2;
       let opponent = "us";
-      if (player == "us") { respondant = 1; instigator = 2; opponent = "ussr"; }
+      if (player == "us") { respondant = 1; opponent = "ussr"; }
       this.game.state.events.missileenvy = 1;
 
-      //
-      //
-      //
-      if (this.game.player == instigator) {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent is returning card for Missile Envy</div>");
-        return 0;
-      }
 
       //
       // targeted player provided list if multiple options available
       //
-      if (this.game.player != instigator && this.game.player != 0) {
+      if (this.game.player == respondant) {
 
         this.addMove("resolve\tmissileenvy");
 
@@ -99,6 +91,8 @@
 
           });
         }
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>${this.playerRoles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
       }
       return 0;
     }

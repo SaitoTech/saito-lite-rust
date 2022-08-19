@@ -1,12 +1,15 @@
 
 module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
 
+  //TODO: LEAGUES!
+
   let gameModule = app.modules.returnModule(msg.module);
   let slug = gameModule.returnSlug();
 
   let playersHtml = `<div class="playerInfo" style="grid-template-columns: repeat(${msg.players_array.split("_").length}, 1fr);">`;
   let gameName= gameModule.gamename || gameModule.name;
-  let gametime = new Date().getTime();
+  
+  let gametime = msg.ts;
   let datetime = app.browser.formatDate(gametime);
 
   msg.players_array.split("_").forEach((player) => {
@@ -24,7 +27,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${gameName}</div>
-          <div class="gameName" style="font-size:0.9em">${datetime.day} ${datetime.month} ${datetime.year}</div>
+          <div class="gameName" style="font-size:0.9em">${datetime.day} ${datetime.month} ${datetime.year}, ${datetime.hours}:${datetime.minutes} (${msg.step} moves)</div>
           ${playersHtml}
         </div>
         <div class="gameShortDescription">${makeDescription(app, msg)}</div>

@@ -7,11 +7,6 @@
         return 1;
       }
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'><span>USSR is playing The Cambridge Five (fetching scoring cards in US hand)</span></div>");
-        return 0;
-      }
-
       if (this.game.player == 2) {
 
         this.addMove("resolve\tcambridge");
