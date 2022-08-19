@@ -37,6 +37,12 @@ span.redsquare-home-red-square+span {
   padding-bottom: 0.5rem;
   font-size: 1.7rem;
   line-height: 2.2rem;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.tweet a {
+  color: var(--saito-primary);
 }
 
 .redsquare-item {
@@ -472,4 +478,9 @@ span.redsquare-home-red-square+span {
   to {
     transform: rotate(1turn);
   }
+}
+
+
+#tweet-overlay-img-cont img {
+  height: 70vh;
 }

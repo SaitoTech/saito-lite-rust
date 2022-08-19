@@ -50,6 +50,10 @@
 
 }
 
+.saito-overlay {
+  position: fixed;
+}
+
 .saito-overlay-closebox {
   position: absolute;
   width: 30px;

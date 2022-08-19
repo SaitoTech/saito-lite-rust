@@ -1,5 +1,5 @@
 .saito-overlay-backdrop {
-  position: fixed;
+  position: fixed!important;
   display: none;
   top: 0;
   left: 0;
