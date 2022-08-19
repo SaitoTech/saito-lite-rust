@@ -42,7 +42,6 @@ class RedSquare extends ModTemplate {
 
   initialize(app) {
     this.loadRedSquare();
-    this.tweet_id = app.browser.returnURLParameter('tweet_id');
     super.initialize(app);
   }
 
@@ -107,7 +106,6 @@ class RedSquare extends ModTemplate {
 
 
   render(app, mod, selector = "") {
-    this.saitoLoader.render(app, mod);
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -117,7 +115,6 @@ class RedSquare extends ModTemplate {
 
     }
     super.render(app, this);
-    this.saitoLoader.remove(app, mod);
   }
 
 
@@ -148,11 +145,12 @@ class RedSquare extends ModTemplate {
     //
     // if we get here, we don't have this locally, try remote request
     //
-    this.saitoLoader.render(app, mod);
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
       mod.saitoLoader.remove(app, mod);
+
+
     });
 
   }
@@ -186,11 +184,9 @@ class RedSquare extends ModTemplate {
     //
     // if we get here, we don't have this locally, try remote request
     //
-    this.saitoLoader.render(app, mod);
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderWithChildren(app, redsquare_self, sig);
-      this.saitoLoader.remove(app, mod);
     });
 
 
@@ -313,17 +309,36 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     if (this.app.BROWSER == 1) {
+      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
 
       if (document.querySelector(".redsquare-list")) {
 
-        if (this.tweet_id) {
-          let sql = 'SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 30';
-          redsquare_self.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, mod, this.tweet_id); });
-        } else {
-          let sql = `SELECT * FROM tweets WHERE sig = '${this.tweet_id}' OR parent_id = '${this.tweet_id}'`;
-          redsquare_self.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, mod); });
+
+        let tweet_id = app.browser.returnURLParameter('tweet_id');
+
+
+        if (!tweet_id) {
+
+          // let sql = `SELECT * FROM tweets ORDER BY updated_at DESC LIMIT 100`;
+          let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+          const callback = (app, mod) => {
+            mod.renderMainPage(app, mod)
+          }
+          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
+        }
+        else {
+          const callback = (app, mod) => {
+            mod.renderMainPage(app, mod, tweet_id)
+          }
+          // let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}'`;
+          let sql = 'SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
+          redsquare_self.fetchTweets(app, redsquare_self, sql, callback);
         }
       }
+
+      setTimeout(function () {
+        redsquare_self.saitoLoader.remove();
+      }, 1000);
     }
   }
 
