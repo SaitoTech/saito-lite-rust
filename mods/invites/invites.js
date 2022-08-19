@@ -8,16 +8,16 @@ class Invites extends InviteTemplate {
   constructor(app) {
     super(app);
 
-    this.app            = app;
-    this.name           = "Invites";
-    this.appname        = "Events";
-    this.description    = "Demo module with UI for invite display and acceptance";
-    this.categories     = "Utilities Education Demo";
+    this.app = app;
+    this.name = "Invites";
+    this.appname = "Invites";
+    this.description = "Demo module with UI for invite display and acceptance";
+    this.categories = "Utilities Education Demo";
 
-    this.icon		= "fas fa-envelope-open-text";
-    this.invites        = [];
-    this.scripts	= [];
-    this.styles		= ['/invites/css/appspace.css'];
+    this.icon = "fas fa-envelope-open-text";
+    this.invites = [];
+    this.scripts = [];
+    this.styles = ['/invites/css/appspace.css'];
 
     return this;
 
@@ -38,6 +38,7 @@ class Invites extends InviteTemplate {
   }
 
   async onConfirmation(blk, tx, conf, app) {
+console.log(" INVITE ONCONFIRMATION ");
     super.onConfirmation(blk, tx, conf, app);
   }
 

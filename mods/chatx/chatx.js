@@ -86,8 +86,6 @@ class Chatx extends ModTemplate {
 
 
         //
-        // public chat / main server
-        //
 	// note - we read this from the options file directly as
 	// the peers will not have yet initialized and thus will 
 	// not be able to inform us whether they support the chat
@@ -119,23 +117,7 @@ class Chatx extends ModTemplate {
         }
 
 
-//
-// add dummy tweets
-//
-console.log("testing A");
-console.log("how many groups? " + this.groups.length);
-for (let i = 0; i < this.groups.length; i++) {
-console.log("CREATING MESSAGE FOR GROUP: " + this.groups[i].id);
-  let newtx = this.createMessage(this.groups[i].id, `short message ${i}`);
-  this.receiveMessage(app, newtx);
-}
-console.log("testing B");
-
-
-
-
-
-      app.connection.emit('chat-render-request', {});
+        app.connection.emit('chat-render-request', {});
 
     }
 
@@ -189,9 +171,11 @@ console.log("testing B");
         //
         if (peer.isMainPeer()) {
 
-            console.log("CHATX: peer handshake complete with: " + peer.peer.publickey);
-            this.createChatGroup([peer.peer.publickey], "Saito Community Chat");
-            community_chat_group_id = this.groups[this.groups.length - 1].id;
+            for (let z = 0; z < this.groups.length; z++) {
+              if (this.groups[z].name === "Saito Community Chat") {
+		community_chat_group_id = this.groups[z].id;
+	      }
+            }
 
             // not a publickey but group_id gets archived as if it were one
             let sql = `SELECT id, tx FROM txs WHERE publickey = "${community_chat_group_id}" ORDER BY ts DESC LIMIT 25`;
@@ -379,8 +363,6 @@ console.log("testing B");
         if (conf == 0) {
             if (txmsg.request == "chat message") {
 
-console.log("RECEIVED CHAT MESAAGE!");
-
                 //
                 // we manually update the TS ourselves to prevent re-orgs, this means sigs
                 // no longer validate on messages, but we should be able to recreate if needed
@@ -394,22 +376,15 @@ console.log("RECEIVED CHAT MESAAGE!");
                 let modified_tx = new saito.default.transaction(modified_tx_obj);
                 modified_tx.transaction.ts = new Date().getTime();
 
-console.log("to group: " + txmsg.group_id);
-
                 app.storage.saveTransactionByKey(txmsg.group_id, modified_tx);
-
-// TESTING
-//                if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
-//                    return;
-//                }
-                this.receiveMessage(app, tx);
+                this.receiveChatTransaction(app, tx);
             }
         }
     }
 
 
     //
-    // peer messages --> receiveMessage()
+    // peer messages --> receiveChatTransaction()
     //
     async handlePeerRequest(app, req, peer, mycallback) {
         if (req.request == null) {
@@ -427,8 +402,6 @@ console.log("to group: " + txmsg.group_id);
 
                 case "chat message":
 
-console.log("RECEIVED CHAT MESAAGE RELAY!");
-
                     //
                     let modified_tx_obj = JSON.parse(JSON.stringify(tx.transaction));
                     let modified_tx = new saito.default.transaction(modified_tx_obj);
@@ -437,7 +410,7 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
                     // decrypt if needed
                     let tx2 = new saito.default.transaction(tx.transaction);
                     tx2.decryptMessage(app);
-                    this.receiveMessage(app, tx2);
+                    this.receiveChatTransaction(app, tx2);
                     this.app.storage.saveTransaction(modified_tx);
 
                     if (mycallback) {
@@ -457,7 +430,7 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
                     // this might be a message for us! process if so
                     //
                     if (routed_tx.isTo(app.wallet.returnPublicKey())) {
-                        this.receiveMessage(app, routed_tx);
+                        this.receiveChatTransaction(app, routed_tx);
                         //this.app.storage.saveTransaction(routed_tx);
                     }
 
@@ -493,7 +466,7 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
     }
 
 
-    sendMessage(app, tx, broadcast = 0) {
+    sendChatTransaction(app, tx, broadcast = 0) {
 
         if (tx.msg.message.substring(0, 4) == "<img") {
             if (this.inTransitImageMsgSig != null) {
@@ -526,7 +499,7 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
     }
 
 
-    createMessage(group_id, msg) {
+    createChatTransaction(group_id, msg) {
 
         let members = [];
 
@@ -650,9 +623,7 @@ console.log("RECEIVED CHAT MESAAGE RELAY!");
     }
 
 
-    receiveMessage(app, tx) {
-
-console.log("received chat message");
+    receiveChatTransaction(app, tx) {
 
         if (this.inTransitImageMsgSig == tx.transaction.sig) {
             this.inTransitImageMsgSig = null;
@@ -670,12 +641,25 @@ console.log("received chat message");
             }
         }
 
-console.log("received message!");
+	//
+	//
+	//
+        if (txmsg.group_id) {
+ 	  for (let i = 0; i < this.groups.length; i++) {
+	    if (this.groups[i].id === txmsg.group_id) {
+	      this.addTransactionToGroup(this.groups[i], tx);
+              app.connection.emit('chat-render-request', {});
+	      return;
+	    }
+	  }
+	}
+
 
         //
-        // if direct message, add group
+        // no match on groups -- direct message
         //
         if (tx.isTo(app.wallet.returnPublicKey())) {
+            let proper_group = null;
             let add_new_group = 1;
             let members = [];
             for (let x = 0; x < tx.transaction.to.length; x++) {
@@ -688,30 +672,20 @@ console.log("received message!");
             for (let i = 0; i < this.groups.length; i++) {
                 if (this.groups[i].id == group_id) {
                     add_new_group = 0;
+		    proper_group = this.groups[i];
                 }
             }
             if (add_new_group == 1) {
-                this.createChatGroup(members);
-                txmsg.group_id = group_id;
-            } else {
-                if (!txmsg, group_id) {
-                    txmsg.group_id = group_id;
-                }
+                proper_group = this.createChatGroup(members);
             }
+	    if (proper_group) {
+	        this.addTransactionToGroup(proper_group, tx);
+                app.connection.emit('chat-render-request', {});
+	    }
+
+            return;
+	    
         }
-
-
-        let message = txmsg.message;
-
-console.log("CHAT IS: " + JSON.stringify(message));
-
-        this.groups.forEach(group => {
-          if (group.id == txmsg.group_id) {
-            group.txs.push(tx);
-          }
-        });
-
-        app.connection.emit('chat-render-request', {});
 
     }
 
@@ -726,7 +700,7 @@ console.log("CHAT IS: " + JSON.stringify(message));
     createChatGroup(members = null, name = null) {
 
         if (members == null) {
-            return;
+            return null;
         }
         members.sort();
         if (name == null || name == "" || name == undefined) {
@@ -741,6 +715,7 @@ console.log("CHAT IS: " + JSON.stringify(message));
         }
 
         let id = this.app.crypto.hash(`${members.join('_')}`)
+
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i].id == id) {
                 return null;
@@ -753,8 +728,21 @@ console.log("CHAT IS: " + JSON.stringify(message));
             name: name,
             txs: [],
         });
+
+	return this.groups[this.groups.length-1];
+
     }
 
+
+    addTransactionToGroup(group, tx) {
+      let x = JSON.stringify(tx.returnMessage());
+      for (let i = 0; i < group.txs.length; i++) {
+	if (JSON.stringify(group.txs[i].returnMessage()) === x) {
+	  return;
+	}
+      }
+      group.txs.push(tx);
+    }
 
     returnCommunityChat() {
         for (let i = 0; i < this.groups.length; i++) {

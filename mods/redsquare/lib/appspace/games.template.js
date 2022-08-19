@@ -43,7 +43,6 @@ module.exports = (app, mod) => {
           if (league_mod.leagues.length > 0){
             for (let l of league_mod.leagues){
               if (l.admin == "saito" && l.id == modname.toUpperCase()){
-                console.log(JSON.parse(JSON.stringify(l)));
                 for (let i = 1; i <= 3; i ++){
                   let player = (i <= l.top3.length) ? l.top3[i-1] : null;
                   if (player){
