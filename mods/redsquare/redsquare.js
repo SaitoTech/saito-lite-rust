@@ -42,7 +42,6 @@ class RedSquare extends ModTemplate {
 
   initialize(app) {
     this.loadRedSquare();
-    this.tweet_id = app.browser.returnURLParameter('tweet_id');
     super.initialize(app);
   }
 
@@ -314,16 +313,16 @@ class RedSquare extends ModTemplate {
 
     if (this.app.BROWSER == 1) {
 
-      if (document.querySelector(".redsquare-list")) {
+      let tweet_id = app.browser.returnURLParameter('tweet_id');
 
-    if (post_fetch_tweets_callback == null) { post_fetch_tweets_callback = redsquare_self.renderMainPage; }
-	if (this.tweet_id) {
-          let sql = 'SELECT * FROM tweets WHERE (flagged == 0 || moderated == 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
-          this.fetchTweets(app, redsquare_self, this.tweet_id, function(app, mod) { mod.renderWithChildren(app, redsquare_self, this.tweet_id); });
-	} else {
+      if (document.querySelector(".redsquare-list")) {
+        if (tweet_id) {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
+          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderWithChildren(app, redsquare_self, this.tweet_id); });
+        } else {
+          let sql = 'SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
           this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderMainPage(app, redsquare_self); });
-	}
+        }
       }
     }
   }
