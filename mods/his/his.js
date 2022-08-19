@@ -1791,8 +1791,6 @@ console.log("adding stuff!");
     return 0;
   }
 
-  
-
   setAllies(faction1, faction2) {
     try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
@@ -1963,6 +1961,17 @@ console.log("adding stuff!");
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
     space.political = faction;
+  }
+
+  returnFactionLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction].type === "regular") { luis++; }
+      if (space.units[faction].type === "mercenary") { luis++; }
+      if (space.units[faction].type === "cavalry") { luis++; }
+    }
+    return luis;
   }
 
   doesFactionHaveNavalUnitsOnBoard(faction) {
@@ -6391,6 +6400,157 @@ console.log("MOVE: " + mv[0]);
           return 1;
 	}
 
+
+        if (mv[0] === "interception_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let includes_cavalry = parseInt(mv[3]);
+
+	  let space = this.game.spaces[spacekey];
+	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+
+	  let io = this.returnImpulseOrder();
+	  for (let i = io.length-1; i>= 0; i--) {
+	    for (let z = 0; z < neighbours.length; z++) {
+	      let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	      this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	    }
+	  }
+
+          return 1;
+
+	}
+
+
+        if (mv[0] === "player_evaluate_interception_opportunity") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_includes_cavalry = parseInt(mv[3]);
+	  let defender = mv[4];
+	  let defender_spacekey = mv[5];
+
+	  let player_factions = this.returnPlayerFactions(this.game.player)
+
+	  if (player_factions.includes(defender)) {
+	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
+	  } else {
+	    this.updateStatus(defender + " considering interception from " + defender_spacekey);   
+	  }
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "intercept") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_includes_cavalry = parseInt(mv[3]);
+	  let defender = mv[4];
+	  let defender_spacekey = mv[5];
+	  let units_to_move_idx = JSON.parse(mv[6]);
+	  let units_to_move = [];
+
+	  // load actual units to examine them for cavalry, leaders
+	  let s = this.game.spaces[defender_spacekey];
+          for (let i = 0; i < units_to_move_idx.lengths; i++) {
+	    units_to_move.push(s.units[units_to_move_idx[i]]);
+	  }
+
+	  if (units_to_move.length == 0) {
+	    this.updateLog("no units sent to intercept...");
+	    return 1;
+	  }
+
+	  let hits_on = 9;
+	  let defender_has_cavalry = 0;
+	  let defender_highest_battle_rating = 0;
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (units_to_move[i].type === "cavalry") { defender_has_cavalry = 1; }
+	    if (units_to_move[i].battle_rating > defender_highest_battle_rating) {
+	      defender_highest_battle_rating = units_to_move[i].battle_rating;
+	    }
+	  }
+
+	  this.updateLog("Interception Attempt from " + defender_spacekey);
+
+	  if (attacker === "ottoman" && attacker_includes_cavalry) {
+	    this.updateLog("Ottoman +1 cavalry bonus");
+	    hits_on++; 
+	  }
+	  if (defender === "ottoman" && defender_has_cavalry) {
+	    this.updateLog("Ottoman -1 cavalry bonus");
+	    hits_on--; 
+	  }
+	  if (defender_highest_battle_rating > 0) {
+	    this.updateLog("Interceptor gains +"+defender_highest_battle_rating+" from formation leader");
+	  }
+
+	  let d1 = this.rollDice(6);
+	  let d2 = this.rollDice(6);
+	  let dsum = d1+d2;
+
+	  this.updateLog("Roll 1: " + d1);
+	  this.updateLog("Roll 2: " + d2);
+
+	  if (dsum >= hits_on) {
+
+	    this.updateLog("Interception Success - units will move");
+
+	    //
+	    // insert at end of queue by default
+	    //
+	    let index_to_insert_moves = this.game.queue.length-1;
+
+	    //
+	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE
+	    //
+	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	      let lqe = this.game.queue[i];
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] !== "player_evaluate_interception_opportunity") {
+	        index_to_insert_moves = i;
+		break;
+	      } else {
+	        if (lmv[4] !== defender) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+		}
+	      } 
+	    }
+
+
+	    //
+	    // SUCCESS - move and continue to evaluate interception opportunities
+	    //
+	    for (let i = 0; i < units_to_move_idx.length; i++) {
+	      let m = "move\t"+defender+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i];
+	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
+	    }
+
+	  } else {
+
+	    this.updateLog("Interception Failure");
+
+	  }
+
+console.log("QUEUE POST INTERCEPTION CALCULATION");
+console.log(JSON.stringify(his_self.game.queue));
+
+	  return 1;
+
+	}
+
+
         if (mv[0] === "diet_of_worms") {
 
 	  let game_self = this;
@@ -8111,7 +8271,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let cancel_func = null;
     let source_spacekey;
 
-
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.game.spaces[c].units[faction].length > 0) {
@@ -8134,8 +8293,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       opt += `<li class="option" id="pass">skip</li>`;
 
       this.updateStatusWithOptions(msg, opt);
-
-console.log("spring deploy");
 
       $(".option").off();
       $(".option").on('click', function() {
@@ -8229,6 +8386,7 @@ console.log("spring deploy");
       });
     }
   }
+
   returnMaxFormationSize(units_to_move) {
 
     let command_value_one = 0;
@@ -8307,8 +8465,15 @@ console.log("spring deploy");
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      ////units_to_move.reverse();
 
+	      let does_movement_include_cavalry = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+		if (units_to_move[i].type === "cavalry") {
+		  does_movement_include_cavalry = 1;
+		}
+	      }
+
+	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
@@ -8378,6 +8543,87 @@ console.log("spring deploy");
     );
 
   }
+
+
+  playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey) {
+
+    let his_self = this;
+
+    let units_to_move = [];
+
+    let onFinishSelect = function(his_self, units_to_move) {
+      his_self.addMove("intercept"+"\t"+attacker+"\t"+spacekey+"\t"+attacker_includes_cavalry+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+      his_self.endTurn();
+    };
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
+
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+      let msg = "Max Formation Size: " + max_formation_size + " units";
+
+      let html = "<ul>";
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+          if (units_to_move.includes(parseInt(i))) {
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+          } else {
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWitOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          onFinishSelect(his_self, units_to_move);
+          return;
+        }
+
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          units_to_move.push(parseInt(id));
+        }
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+      });
+
+      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="intercept">intercept</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "intercept") {
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
@@ -8426,6 +8672,14 @@ console.log("spring deploy");
 	      units_to_move.sort();
 	      ////units_to_move.reverse();
 
+	      let does_movement_include_cavalry = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+		if (units_to_move[i].type === "cavalry") {
+		  does_movement_include_cavalry = 1;
+		}
+	      }
+
+	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }

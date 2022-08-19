@@ -572,7 +572,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let cancel_func = null;
     let source_spacekey;
 
-
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.game.spaces[c].units[faction].length > 0) {
@@ -595,8 +594,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       opt += `<li class="option" id="pass">skip</li>`;
 
       this.updateStatusWithOptions(msg, opt);
-
-console.log("spring deploy");
 
       $(".option").off();
       $(".option").on('click', function() {
@@ -690,6 +687,7 @@ console.log("spring deploy");
       });
     }
   }
+
   returnMaxFormationSize(units_to_move) {
 
     let command_value_one = 0;
@@ -768,8 +766,15 @@ console.log("spring deploy");
       	    function(destination_spacekey) {
 	
 	      units_to_move.sort();
-	      ////units_to_move.reverse();
 
+	      let does_movement_include_cavalry = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+		if (units_to_move[i].type === "cavalry") {
+		  does_movement_include_cavalry = 1;
+		}
+	      }
+
+	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }
@@ -839,6 +844,87 @@ console.log("spring deploy");
     );
 
   }
+
+
+  playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey) {
+
+    let his_self = this;
+
+    let units_to_move = [];
+
+    let onFinishSelect = function(his_self, units_to_move) {
+      his_self.addMove("intercept"+"\t"+attacker+"\t"+spacekey+"\t"+attacker_includes_cavalry+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+      his_self.endTurn();
+    };
+
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
+
+      let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
+      let msg = "Max Formation Size: " + max_formation_size + " units";
+
+      let html = "<ul>";
+      for (let i = 0; i < space.units[faction].length; i++) {
+        if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+          if (units_to_move.includes(parseInt(i))) {
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+          } else {
+            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+          }
+        }
+      }
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+      his_self.updateStatusWitOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id === "end") {
+          onFinishSelect(his_self, units_to_move);
+          return;
+        }
+
+        if (units_to_move.includes(id)) {
+          let idx = units_to_move.indexOf(id);
+          if (idx > -1) {
+            units_to_move.splice(idx, 1);
+          }
+        } else {
+          units_to_move.push(parseInt(id));
+        }
+
+        selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+      });
+
+      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+
+    };
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="intercept">intercept</li>`;
+    html    += `<li class="card" id="skip">skip</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Intercept from ${defender_spacekey}?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "intercept") {
+	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
+        return;
+      }
+      if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
   canPlayerMoveFormationOverPass(his_self, player, faction) {
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_units.length; i++) {
@@ -887,6 +973,14 @@ console.log("spring deploy");
 	      units_to_move.sort();
 	      ////units_to_move.reverse();
 
+	      let does_movement_include_cavalry = 0;
+	      for (let i = 0; i < units_to_move.length; i++) {
+		if (units_to_move[i].type === "cavalry") {
+		  does_movement_include_cavalry = 1;
+		}
+	      }
+
+	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i]);
 	      }

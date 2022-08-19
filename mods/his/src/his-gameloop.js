@@ -199,6 +199,157 @@ console.log("MOVE: " + mv[0]);
           return 1;
 	}
 
+
+        if (mv[0] === "interception_check") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let includes_cavalry = parseInt(mv[3]);
+
+	  let space = this.game.spaces[spacekey];
+	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
+
+	  let io = this.returnImpulseOrder();
+	  for (let i = io.length-1; i>= 0; i--) {
+	    for (let z = 0; z < neighbours.length; z++) {
+	      let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+	      this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
+	    }
+	  }
+
+          return 1;
+
+	}
+
+
+        if (mv[0] === "player_evaluate_interception_opportunity") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_includes_cavalry = parseInt(mv[3]);
+	  let defender = mv[4];
+	  let defender_spacekey = mv[5];
+
+	  let player_factions = this.returnPlayerFactions(this.game.player)
+
+	  if (player_factions.includes(defender)) {
+	    this.playerEvaluateInterceptionOpportunity(attacker, spacekey, attacker_includes_cavalry, defender, defender_spacekey);
+	  } else {
+	    this.updateStatus(defender + " considering interception from " + defender_spacekey);   
+	  }
+
+	  return 0;
+
+	}
+
+        if (mv[0] === "intercept") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let attacker_includes_cavalry = parseInt(mv[3]);
+	  let defender = mv[4];
+	  let defender_spacekey = mv[5];
+	  let units_to_move_idx = JSON.parse(mv[6]);
+	  let units_to_move = [];
+
+	  // load actual units to examine them for cavalry, leaders
+	  let s = this.game.spaces[defender_spacekey];
+          for (let i = 0; i < units_to_move_idx.lengths; i++) {
+	    units_to_move.push(s.units[units_to_move_idx[i]]);
+	  }
+
+	  if (units_to_move.length == 0) {
+	    this.updateLog("no units sent to intercept...");
+	    return 1;
+	  }
+
+	  let hits_on = 9;
+	  let defender_has_cavalry = 0;
+	  let defender_highest_battle_rating = 0;
+
+	  for (let i = 0; i < units_to_move.length; i++) {
+	    if (units_to_move[i].type === "cavalry") { defender_has_cavalry = 1; }
+	    if (units_to_move[i].battle_rating > defender_highest_battle_rating) {
+	      defender_highest_battle_rating = units_to_move[i].battle_rating;
+	    }
+	  }
+
+	  this.updateLog("Interception Attempt from " + defender_spacekey);
+
+	  if (attacker === "ottoman" && attacker_includes_cavalry) {
+	    this.updateLog("Ottoman +1 cavalry bonus");
+	    hits_on++; 
+	  }
+	  if (defender === "ottoman" && defender_has_cavalry) {
+	    this.updateLog("Ottoman -1 cavalry bonus");
+	    hits_on--; 
+	  }
+	  if (defender_highest_battle_rating > 0) {
+	    this.updateLog("Interceptor gains +"+defender_highest_battle_rating+" from formation leader");
+	  }
+
+	  let d1 = this.rollDice(6);
+	  let d2 = this.rollDice(6);
+	  let dsum = d1+d2;
+
+	  this.updateLog("Roll 1: " + d1);
+	  this.updateLog("Roll 2: " + d2);
+
+	  if (dsum >= hits_on) {
+
+	    this.updateLog("Interception Success - units will move");
+
+	    //
+	    // insert at end of queue by default
+	    //
+	    let index_to_insert_moves = this.game.queue.length-1;
+
+	    //
+	    // BUT NO OTHER POWER CAN INTERCEPT, SO CLEAN OUT GAME QUEUE
+	    //
+	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	      let lqe = this.game.queue[i];
+	      let lmv = lqe.split("\t");
+	      if (lmv[0] !== "player_evaluate_interception_opportunity") {
+	        index_to_insert_moves = i;
+		break;
+	      } else {
+	        if (lmv[4] !== defender) {
+		  this.game.queue.splice(i, 1); // remove 1 at i
+		  i--; // queue is 1 shorter
+		}
+	      } 
+	    }
+
+
+	    //
+	    // SUCCESS - move and continue to evaluate interception opportunities
+	    //
+	    for (let i = 0; i < units_to_move_idx.length; i++) {
+	      let m = "move\t"+defender+"\tland\t"+defender_spacekey+"\t"+spacekey+"\t"+units_to_move_idx[i];
+	      his_self.game.queue.splice(index_to_insert_moves, 0, m);
+	    }
+
+	  } else {
+
+	    this.updateLog("Interception Failure");
+
+	  }
+
+console.log("QUEUE POST INTERCEPTION CALCULATION");
+console.log(JSON.stringify(his_self.game.queue));
+
+	  return 1;
+
+	}
+
+
         if (mv[0] === "diet_of_worms") {
 
 	  let game_self = this;

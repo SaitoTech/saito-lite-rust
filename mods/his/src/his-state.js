@@ -11,8 +11,6 @@
     return 0;
   }
 
-  
-
   setAllies(faction1, faction2) {
     try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
@@ -183,6 +181,17 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
     space.political = faction;
+  }
+
+  returnFactionLandUnitsInSpace(faction, space) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let i = 0; i < space.units[faction].length; i++) {
+      if (space.units[faction].type === "regular") { luis++; }
+      if (space.units[faction].type === "mercenary") { luis++; }
+      if (space.units[faction].type === "cavalry") { luis++; }
+    }
+    return luis;
   }
 
   doesFactionHaveNavalUnitsOnBoard(faction) {
