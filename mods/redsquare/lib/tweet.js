@@ -292,6 +292,7 @@ class RedSquareTweet {
       };
     };
 
+
     //
     // flag
     //
@@ -301,7 +302,7 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");

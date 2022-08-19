@@ -345,6 +345,10 @@ class RedSquare extends ModTemplate {
           this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
         }
+        if (txmsg.request === "flag tweet") {
+          this.sqlcache = [];
+          redsquare_self.receiveFlagTransaction(blk, tx, conf, app);
+        }
       }
     } catch (err) {
       console.log("ERROR in " + this.name + " onConfirmation: " + err);
