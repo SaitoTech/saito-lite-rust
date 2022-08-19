@@ -43,8 +43,6 @@ class Post {
         e.preventDefault();
 
         let text = document.getElementById('post-tweet-textarea').value;
-        text  = this.app.browser.sanitizeTweet(text);
-
         let parent_id = document.getElementById("parent_id").value;
         let thread_id = document.getElementById("thread_id").value;
 
