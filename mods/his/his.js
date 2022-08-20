@@ -1485,6 +1485,7 @@ console.log("adding stuff!");
       this.convertSpace("protestant", "graz");
       this.controlSpace("protestant", "graz");
       this.addRegular("protestant", "graz", 3);
+      this.addRegular("venice", "trieste", 2);
 
 
     }
@@ -2040,10 +2041,11 @@ console.log("adding stuff!");
   returnFactionLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+console.log("UNITS: " + JSON.stringify(space.units));
     for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction].type === "regular") { luis++; }
-      if (space.units[faction].type === "mercenary") { luis++; }
-      if (space.units[faction].type === "cavalry") { luis++; }
+      if (space.units[faction][i].type === "regular") { luis++; }
+      if (space.units[faction][i].type === "mercenary") { luis++; }
+      if (space.units[faction][i].type === "cavalry") { luis++; }
     }
     return luis;
   }
@@ -6588,7 +6590,9 @@ console.log("MOVE: " + mv[0]);
 	  for (let i = io.length-1; i>= 0; i--) {
 	    if (io[i] !== faction) {
 	      for (let z = 0; z < neighbours.length; z++) {
+console.log("checking if " + io[i] + " has units in " + neighbours[z]);
 	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+console.log("reported units: " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
 	        }
@@ -7875,8 +7879,6 @@ this.updateLog("Catholics: " + c_rolls);
 
 
 
-
-
   returnPlayers(num = 0) {
 
     var players = [];
@@ -8862,14 +8864,15 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
       let msg = "Max Formation Size: " + max_formation_size + " units";
+      let space = his_self.game.spaces[defender_spacekey];
 
       let html = "<ul>";
-      for (let i = 0; i < space.units[faction].length; i++) {
-        if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+      for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
-            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
           } else {
-            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
           }
         }
       }
@@ -10080,11 +10083,8 @@ console.log("DEBATER IS: " + d.owner);
 
     for (let z in space.units) {
 
-console.log(JSON.stringify(space.units[z]));
-
       let army = 0;
       for (let zz = 0; zz < space.units[z].length; zz++) {
-console.log(z + " -- " + zz);
 	if (space.units[z][zz].type === "regular") {
 	  army++;
 	}
@@ -10430,12 +10430,8 @@ console.log(z + " -- " + zz);
 
     let stype = "hex";
 
-console.log("a 1");
-
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
-
-console.log("a 2");
 
     //
     // should we show the tile?
@@ -10454,8 +10450,6 @@ console.log("a 2");
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
 
-console.log("a 3");
-
     //
     // and force if has units
     //
@@ -10465,30 +10459,19 @@ console.log("a 3");
       }
     }
 
-console.log("a 4");
-
     //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
 
-console.log("a 5");
-
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
-console.log("a 6 1");
       obj.innerHTML += this.returnArmies(space);
-console.log("a 6 2");
       obj.innerHTML += this.returnNavies(space);
-console.log("a 6 3");
       obj.innerHTML += this.returnMercenaries(space);
-console.log("a 6 4");
       obj.innerHTML += this.returnPersonages(space);
-console.log("a 6 5");
-
     }
 
-console.log("a 6 6");
 
     // add unrest if needed
     if (this.isSpaceInUnrest(space)) {
@@ -10540,11 +10523,8 @@ console.log("a 6 6");
     // add tiles
     //
     for (let key in this.spaces) {
-console.log(key + " 1");
       if (this.spaces.hasOwnProperty(key)) {
-console.log(key + " 2");
 	this.displaySpace(key);
-console.log(key + " 3");
         document.getElementById(key).onclick = (e) => {
 	  this.displaySpaceDetailedView(key);
         }
@@ -10560,7 +10540,6 @@ console.log(key + " 3");
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
-console.log("trying with " + JSON.stringify(f));
       let total_vp = factions_and_scores[f].vp
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);

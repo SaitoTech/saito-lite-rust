@@ -217,10 +217,11 @@
   returnFactionLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+console.log("UNITS: " + JSON.stringify(space.units));
     for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction].type === "regular") { luis++; }
-      if (space.units[faction].type === "mercenary") { luis++; }
-      if (space.units[faction].type === "cavalry") { luis++; }
+      if (space.units[faction][i].type === "regular") { luis++; }
+      if (space.units[faction][i].type === "mercenary") { luis++; }
+      if (space.units[faction][i].type === "cavalry") { luis++; }
     }
     return luis;
   }

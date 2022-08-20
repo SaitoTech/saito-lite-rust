@@ -301,7 +301,9 @@ console.log("MOVE: " + mv[0]);
 	  for (let i = io.length-1; i>= 0; i--) {
 	    if (io[i] !== faction) {
 	      for (let z = 0; z < neighbours.length; z++) {
+console.log("checking if " + io[i] + " has units in " + neighbours[z]);
 	        let fluis = this.returnFactionLandUnitsInSpace(io[i], neighbours[z]);
+console.log("reported units: " + fluis);
 	        if (fluis > 0) {
 	          this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+includes_cavalry+"\t"+io[i]+"\t"+neighbours[z]);
 	        }

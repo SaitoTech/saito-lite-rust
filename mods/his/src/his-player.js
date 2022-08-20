@@ -1,6 +1,4 @@
 
-
-
   returnPlayers(num = 0) {
 
     var players = [];
@@ -986,14 +984,15 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
       let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
       let msg = "Max Formation Size: " + max_formation_size + " units";
+      let space = his_self.game.spaces[defender_spacekey];
 
       let html = "<ul>";
-      for (let i = 0; i < space.units[faction].length; i++) {
-        if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
+      for (let i = 0; i < space.units[defender].length; i++) {
+        if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
-            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[faction][i].name}</li>`;
+            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
           } else {
-            html += `<li class="option" id="${i}">${space.units[faction][i].name}</li>`;
+            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
           }
         }
       }
