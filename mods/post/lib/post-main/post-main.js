@@ -24,6 +24,7 @@ module.exports = PostMain = {
       app.browser.addElementToDom('<div id="forum-main" class="forum-main"><div id="forum-mobile-helper"></div></div>',document.getElementById('post-container'));
     }
 
+try {
     if (mod.forum === "") {
       if (!document.querySelector(".post-forums")) {
         app.browser.addElementToDom(PostForumsTemplate(app, mod), document.getElementById("forum-main"));
@@ -52,7 +53,7 @@ module.exports = PostMain = {
         this.addPost(app, mod, mod.posts[i]);
       }
     }
-
+} catch (err) {}
 
   },
 
