@@ -1243,7 +1243,8 @@ alert("ASSAULT UNIMPLEMENTED");
 	  return 1;
 
 	}
-	if (mv[0] === "pacify") {
+
+	if (mv[0] === "pacify" || mv[0] === "control") {
 
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];

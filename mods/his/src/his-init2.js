@@ -160,7 +160,7 @@ console.log("adding stuff!");
 
 
       //
-      // TMP - add debaters
+      // IS_TESTING -- TEMPORARY 
       //
       this.addDebater("papacy", "bucer");
       this.addDebater("hapsburg", "aleander");
@@ -168,6 +168,11 @@ console.log("adding stuff!");
       this.addDebater("protestant", "campeggio");
 
       this.activateMinorPower("papacy", "venice");
+
+      this.convertSpace("protestant", "graz");
+      this.controlSpace("protestant", "graz");
+      this.addRegular("protestant", "graz", 3);
+
 
     }
 

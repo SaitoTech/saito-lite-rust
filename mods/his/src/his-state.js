@@ -211,7 +211,6 @@
 
   controlSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
     space.political = faction;
   }
 
@@ -948,6 +947,10 @@
 
     let track = {};
 
+    track['0'] = {
+      top : 2912,
+      left : 2025
+    }
     track['1'] = {
       top : 2912,
       left : 2138

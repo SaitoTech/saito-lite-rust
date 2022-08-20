@@ -1473,7 +1473,7 @@ console.log("adding stuff!");
 
 
       //
-      // TMP - add debaters
+      // IS_TESTING -- TEMPORARY 
       //
       this.addDebater("papacy", "bucer");
       this.addDebater("hapsburg", "aleander");
@@ -1481,6 +1481,11 @@ console.log("adding stuff!");
       this.addDebater("protestant", "campeggio");
 
       this.activateMinorPower("papacy", "venice");
+
+      this.convertSpace("protestant", "graz");
+      this.controlSpace("protestant", "graz");
+      this.addRegular("protestant", "graz", 3);
+
 
     }
 
@@ -2029,7 +2034,6 @@ console.log("adding stuff!");
 
   controlSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (faction === "protestant") { this.convertSpace(faction, space.key); return; }
     space.political = faction;
   }
 
@@ -2766,6 +2770,10 @@ console.log("adding stuff!");
 
     let track = {};
 
+    track['0'] = {
+      top : 2912,
+      left : 2025
+    }
     track['1'] = {
       top : 2912,
       left : 2138
@@ -7522,7 +7530,8 @@ alert("ASSAULT UNIMPLEMENTED");
 	  return 1;
 
 	}
-	if (mv[0] === "pacify") {
+
+	if (mv[0] === "pacify" || mv[0] === "control") {
 
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
@@ -8355,6 +8364,7 @@ this.updateLog("Catholics: " + c_rolls);
 
   async playerPlayOps(card, faction, ops=null) {
 
+    let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player);
     let pfactions = this.returnPlayerFactions(this.game.player);
 
@@ -8397,7 +8407,7 @@ alert("selected faction = " + selected_faction);
         html    += `<li class="card" id="end_turn">end turn</li>`;
         html    += `</ul>`;
 
-        this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+        his_self.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
 
           if (user_choice === "end_turn") {
@@ -8467,7 +8477,10 @@ alert("selected faction = " + selected_faction);
     }
   }
   playerPlayEvent(card, faction, ops=null) {
-console.log("playing event");
+    this.addMove("event\t"+faction+"\t"+card);
+    this.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
+    this.endTurn();
+
   }
 
 
@@ -8725,7 +8738,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
 	  let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
-
 	  let html = "<ul>";
 	  for (let i = 0; i < space.units[faction].length; i++) {
 	    if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
@@ -8739,7 +8751,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 	  html += `<li class="option" id="end">finish</li>`;
 	  html += "</ul>";
 
-	  his_self.updateStatusWitOptions(msg, html);
+	  his_self.updateStatusWithOptions(msg, html);
 
           $('.option').off();
           $('.option').on('click', function () {
@@ -8782,7 +8794,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
     let his_self = this;
     let retreat_destination = "";
 
-
     let onFinishSelect = function(his_self, destination_spacekey) {
       his_self.addMove("retreat"+"\t"+defender+"\t"+spacekey+"\t"+"\t"+destination_spacekey);
       his_self.endTurn();
@@ -8800,7 +8811,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       }
       html += "</ul>";
 
-      his_self.updateStatusWitOptions("Choose Desetination for Retreat: ", html);
+      his_self.updateStatusWithOptions("Choose Desetination for Retreat: ", html);
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -8865,7 +8876,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
 
-      his_self.updateStatusWitOptions(msg, html);
+      his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
@@ -9179,6 +9190,8 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
   }
   playerBuyMercenary(his_self, player, faction) {
 
+console.log("faction: " + faction);
+
     his_self.playerSelectSpaceWithFilter(
 
       "Select Destination for Mercenary",
@@ -9210,7 +9223,7 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
       function(space) {
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
-	return 1;
+	return 0;
       },
 
       function(destination_spacekey) {
@@ -10547,6 +10560,7 @@ console.log(key + " 3");
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
+console.log("trying with " + JSON.stringify(f));
       let total_vp = factions_and_scores[f].vp
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);

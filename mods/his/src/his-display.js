@@ -940,6 +940,7 @@ console.log(key + " 3");
     let x = this.returnVictoryPointTrack();
 
     for (f in factions_and_scores) {
+console.log("trying with " + JSON.stringify(f));
       let total_vp = factions_and_scores[f].vp
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
