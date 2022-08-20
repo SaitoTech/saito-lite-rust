@@ -982,11 +982,16 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
     let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, onFinishSelect) {
 
+console.log("selecting intercept units");
+
       let max_formation_size = his_self.returnMaxFormationSize(units_to_move);
       let msg = "Max Formation Size: " + max_formation_size + " units";
       let space = his_self.game.spaces[defender_spacekey];
 
       let html = "<ul>";
+
+console.log("units length: " + space.units[defender].length);
+
       for (let i = 0; i < space.units[defender].length; i++) {
         if (space.units[defender][i].land_or_sea === "land" || space.units[defender][i].land_or_sea === "both") {
           if (units_to_move.includes(parseInt(i))) {
@@ -1022,9 +1027,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
         selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
       });
-
-      selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
-
     };
 
 

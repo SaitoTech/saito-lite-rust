@@ -352,7 +352,7 @@ console.log("reported units: " + fluis);
 
 	  // load actual units to examine them for cavalry, leaders
 	  let s = this.game.spaces[defender_spacekey];
-          for (let i = 0; i < units_to_move_idx.lengths; i++) {
+          for (let i = 0; i < units_to_move_idx.length; i++) {
 	    units_to_move.push(s.units[units_to_move_idx[i]]);
 	  }
 
