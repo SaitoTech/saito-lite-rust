@@ -167,6 +167,8 @@ console.log("adding stuff!");
       this.addDebater("england", "bullinger");
       this.addDebater("protestant", "campeggio");
 
+      this.activateMinorPower("papacy", "venice");
+
     }
 
     //

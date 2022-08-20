@@ -10,6 +10,8 @@
     if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
     if (obj.vp == null)			{ obj.vp = 0; }
+    if (obj.allies == null)		{ obj.allies = []; }
+    if (obj.minor_allies == null)	{ obj.minor_allies = []; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `

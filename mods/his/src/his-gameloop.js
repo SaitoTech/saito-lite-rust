@@ -121,6 +121,7 @@ console.log("MOVE: " + mv[0]);
 
 	}
 
+
         if (mv[0] === "move") {
 
 	  let faction = mv[1];
@@ -190,6 +191,7 @@ console.log("MOVE: " + mv[0]);
 	        this.game.queue.push("halt");
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
                 this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+		this.game.queue("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
 	        this.game.queue.push("retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		return 1;;
 	      }

@@ -180,22 +180,22 @@
     let menu = [];
 
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      cost : [1,1,1,1,1,1],
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
       name : "Move formation in clear",
       check : this.canPlayerMoveFormationInClear,
       fnct : this.playerMoveFormationInClear,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      cost : [2,2,2,2,2,2],
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
       name : "Move formation over pass",
       check : this.canPlayerMoveFormationOverPass,
       fnct : this.playerMoveFormationOverPass,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy'],
-      cost : [1,1,1,1,1],
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1],
       name : "Naval move",
       check : this.canPlayerNavalMove,
       fnct : this.playerNavalMove,
@@ -208,29 +208,29 @@
       fnct : this.playerBuyMercenary,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      cost : [2,2,2,2,2,2],
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
       name : "Raise regular",
       check : this.canPlayerRaiseRegular,
       fnct : this.playerRaiseRegular,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy'],
-      cost : [2,2,2,2,2],
+      factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2],
       name : "Build naval squadron",
       check : this.canPlayerBuildNavalSquadron,
       fnct : this.playerBuildNavalSquadron,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      cost : [1,1,1,1,1,1],
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
       name : "Assault",
       check : this.canPlayerAssault,
       fnct : this.playerAssault,
     });
     menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      cost : [1,1,1,1,1,1],
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [1,1,1,1,1,1,1,1,1,1],
       name : "Control unfortified space",
       check : this.canPlayerControlUnfortifiedSpace,
       fnct : this.playerControlUnfortifiedSpace,
@@ -469,11 +469,11 @@
 
       this.updateStatusWithOptions('Playing card:', html, true);
       this.bindBackButtonFunction(() => {
-       this.playerTurn(faction);
+        this.playerTurn(faction);
       });
       this.attachCardboxEvents(function(user_choice) {
         if (user_choice === "ops") {
-	  let ops = this.game.deck[0].cards[card].ops;
+          let ops = this.game.deck[0].cards[card].ops;
           this.playerPlayOps(card, faction, ops);
           return;
         }
@@ -484,7 +484,6 @@
         return;
       });
     }
-
   }
 
   async playerPlayOps(card, faction, ops=null) {
@@ -497,44 +496,108 @@
 console.log("OPS ARE ZERO!");
     }
 
-    let html = `<ul>`;
-    for (let i = 0; i < menu.length; i++) {
-      if (menu[i].check(this, this.game.player, faction)) {
-        for (let z = 0; z < menu[i].factions.length; z++) {
-          if (menu[i].factions[z] === faction) {
-	    if (menu[i].cost[z] <= ops) {
-              html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+    if (this.game.state.activated_powers[faction].length > 0) {
+
+      let html = `<ul>`;
+      html    += `<li class="card" id="${faction}">${faction}</li>`;
+      for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+         html    += `<li class="card" id="${this.game.state.activated_powers[faction][i]}">${this.game.state.activated_powers[faction][i]}</li>`;
+      }
+      html    += `</ul>`;
+
+      this.updateStatusWithOptions('Spend as which Power:', html);
+      this.attachCardboxEvents(function(selected_faction) {
+
+alert("selected faction = " + selected_faction);
+
+	//
+	// duplicates code below
+	//
+        let html = `<ul>`;
+        for (let i = 0; i < menu.length; i++) {
+          if (menu[i].check(this, this.game.player, selected_faction)) {
+            for (let z = 0; z < menu[i].factions.length; z++) {
+              if (menu[i].factions[z] === selected_faction) {
+  	        if (menu[i].cost[z] <= ops) {
+                  html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                }
+	        z = menu[i].factions.length+1;
+              }
             }
-	    z = menu[i].factions.length+1;
+          }
+        }
+
+        html    += `<li class="card" id="end_turn">end turn</li>`;
+        html    += `</ul>`;
+
+        this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+        this.attachCardboxEvents(async (user_choice) => {      
+
+          if (user_choice === "end_turn") {
+            this.endTurn();
+            return;
+          }
+
+          for (let z = 0; z < menu[user_choice].factions.length; z++) {
+            if (pfactions.includes(menu[user_choice].factions[z])) {
+              ops -= menu[user_choice].cost[z];
+	        z = menu[user_choice].factions.length+1;
+            }
+          }
+
+          if (ops > 0) {
+	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+          }
+          menu[user_choice].fnct(this, this.game.player, selected_faction);
+          return;
+
+        });
+      });
+    } else {
+
+      //
+      // duplicates code above
+      //
+      let html = `<ul>`;
+      for (let i = 0; i < menu.length; i++) {
+        if (menu[i].check(this, this.game.player, faction)) {
+          for (let z = 0; z < menu[i].factions.length; z++) {
+            if (menu[i].factions[z] === faction) {
+  	      if (menu[i].cost[z] <= ops) {
+                html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+              }
+	      z = menu[i].factions.length+1;
+            }
           }
         }
       }
-    }
-    html    += `<li class="card" id="end_turn">end turn</li>`;
-    html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
-    this.attachCardboxEvents(async (user_choice) => {      
+      html    += `<li class="card" id="end_turn">end turn</li>`;
+      html    += `</ul>`;
 
-      if (user_choice === "end_turn") {
-        this.endTurn();
-        return;
-      }
+      this.updateStatusWithOptions(`You have ${ops} ops remaining: ${faction}`, html, false);
+      this.attachCardboxEvents(async (user_choice) => {      
 
-      for (let z = 0; z < menu[user_choice].factions.length; z++) {
-        if (pfactions.includes(menu[user_choice].factions[z])) {
-          ops -= menu[user_choice].cost[z];
-	  z = menu[user_choice].factions.length+1;
+        if (user_choice === "end_turn") {
+          this.endTurn();
+          return;
         }
-      }
 
-      if (ops > 0) {
-	this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
-      }
-      menu[user_choice].fnct(this, this.game.player, faction);
-      return;
+        for (let z = 0; z < menu[user_choice].factions.length; z++) {
+          if (pfactions.includes(menu[user_choice].factions[z])) {
+            ops -= menu[user_choice].cost[z];
+  	    z = menu[user_choice].factions.length+1;
+          }
+        }
 
-    });
+        if (ops > 0) {
+  	  this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops);
+        }
+        menu[user_choice].fnct(this, this.game.player, faction);
+        return;
+      });
+
+    }
   }
   playerPlayEvent(card, faction, ops=null) {
 console.log("playing event");
@@ -845,19 +908,6 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
 
   }
 
-
-
-            let can_player_retreat = 0;
-            for (let z = 0; z < neighbours.length; z++) {
-              if (fluis > 0) {
-                can_player_retreat = 1;
-              }
-            }
-            if (can_player_retreat) {
-              this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
-            }
-          }
-          
 
 
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_space, defender) {

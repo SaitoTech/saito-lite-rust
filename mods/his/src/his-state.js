@@ -1,4 +1,17 @@
 
+  activateMinorPower(faction, power) {
+    this.setAllies(faction, power);
+    this.game.state.activated_powers[faction].push(power);
+  }
+  deactivateMinorPower(faction, power) {
+    this.unsetAllies(faction, power);
+    for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
+      if (this.game.state.activated_powers[faction][i] === power) {
+	this.game.state.activated_powers[faction].splice(i, 1);
+      }
+    }
+  }
+
   areAllies(faction1, faction2) {
     try { if (this.game.diplomacy[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.diplomacy[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
@@ -18,11 +31,21 @@
     try { this.game.diplomacy[faction2][faction1].allies = 1; } catch (err) {}
   }
 
+  unsetAllies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
+  }
+
   setEnemies(faction1, faction2) {
     try { this.game.diplomacy[faction1][faction2].allies = 0; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].allies = 0; } catch (err) {}
     try { this.game.diplomacy[faction1][faction2].enemies = 1; } catch (err) {}
     try { this.game.diplomacy[faction2][faction1].enemies = 1; } catch (err) {}
+  }
+
+  unsetEnemies(faction1, faction2) {
+    try { this.game.diplomacy[faction1][faction2].enemies = 0; } catch (err) {}
+    try { this.game.diplomacy[faction2][faction1].enemies = 0; } catch (err) {}
   }
 
   addUnit(faction, space, type) {
@@ -477,6 +500,14 @@
     state.players = [];
     state.events = {};
     state.debaters = [];
+
+    state.activated_powers = {};
+    state.activated_powers['ottoman'] = [];
+    state.activated_powers['hapsburg'] = [];
+    state.activated_powers['france'] = [];
+    state.activated_powers['england'] = [];
+    state.activated_powers['papacy'] = [];
+    state.activated_powers['protestant'] = [];
 
     state.tmp_reformations_this_turn = [];
     state.tmp_counter_reformations_this_turn = [];
