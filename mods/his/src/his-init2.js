@@ -172,8 +172,9 @@ console.log("adding stuff!");
       this.convertSpace("protestant", "graz");
       this.controlSpace("protestant", "graz");
       this.addRegular("protestant", "graz", 3);
-      this.addRegular("venice", "trieste", 2);
-
+      this.addRegular("venice", "trieste", 4);
+      this.addRegular("venice", "agram", 4);
+      this.game.spaces['agram'].type = "fortress";
 
     }
 

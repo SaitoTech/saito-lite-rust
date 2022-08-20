@@ -601,8 +601,8 @@ alert("selected faction = " + selected_faction);
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
+    his_self.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
-
   }
 
 
@@ -958,6 +958,34 @@ this.updateLog("Papacy Diplomacy Phase Special Turn");
         return;
       }
       if (user_choice === "skip") {
+	his_self.endTurn();
+        return;
+      }
+    });
+
+  }
+
+
+
+
+
+  playerEvaluateFortification(attacker, faction, spacekey) {
+
+    let his_self = this;
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="fortify">withdraw into fortification</li>`;
+    html    += `<li class="card" id="battle">engage in land battle</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
+    this.attachCardboxEvents(function(user_choice) {
+      if (user_choice === "fortify") {
+	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey);
+	his_self.endTurn();
+        return;
+      }
+      if (user_choice === "battle") {
 	his_self.endTurn();
         return;
       }

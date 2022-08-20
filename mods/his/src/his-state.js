@@ -2,12 +2,19 @@
   activateMinorPower(faction, power) {
     this.setAllies(faction, power);
     this.game.state.activated_powers[faction].push(power);
+    this.game.state.minor_activated_powers.push(power);
   }
+
   deactivateMinorPower(faction, power) {
     this.unsetAllies(faction, power);
     for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
       if (this.game.state.activated_powers[faction][i] === power) {
 	this.game.state.activated_powers[faction].splice(i, 1);
+      }
+    }
+    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
+      if (this.game.state.minor_activated_powers[i] === power) {
+	this.game.state.minor_activated_powers.splice(i, 1);
       }
     }
   }
@@ -217,7 +224,6 @@
   returnFactionLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-console.log("UNITS: " + JSON.stringify(space.units));
     for (let i = 0; i < space.units[faction].length; i++) {
       if (space.units[faction][i].type === "regular") { luis++; }
       if (space.units[faction][i].type === "mercenary") { luis++; }
@@ -353,6 +359,27 @@ console.log("UNITS: " + JSON.stringify(space.units));
 
   }
 
+  isMinorPower(power) {
+    if (power === "genoa" || power === "hungary" || power === "scotland" || power === "venice") { return 1; }
+    return 0;
+  }
+
+  isMinorActivatedPower(power) {
+    for (let i = 0; i < this.game.state.minor_activated_powers.length; i++) {
+      if (power === this.game.state.minor_activated_powers[i]) {
+	return 1;
+      }
+    }
+    return 0;
+  }
+
+  isMinorUnactivatedPower(power) {
+    if (power === "genoa" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "scotland" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "hungary" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    if (power === "venice" && this.isMinorActivatedPower(power) != 1) { return 1; }
+    return 0;
+  }
 
   isSpaceControlledByFaction(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -500,6 +527,9 @@ console.log("UNITS: " + JSON.stringify(space.units));
     state.players = [];
     state.events = {};
     state.debaters = [];
+
+    // which ones are activated
+    state.minor_activated_powers = [];
 
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];
@@ -2666,6 +2696,8 @@ console.log("UNITS: " + JSON.stringify(space.units));
       spaces[key].unrest = 0;
       if (!spaces[key].pass) { spaces[key].pass = []; }
       if (!spaces[key].name) { spaces[key].name = key.toUpperCase(); }
+      if (!spaces[key].besieged) { spaces[key].besieged = 0; }
+      if (!spaces[key].besieged_factions) { spaces[key].besieged_factions = []; }
     }
 
     return spaces;
