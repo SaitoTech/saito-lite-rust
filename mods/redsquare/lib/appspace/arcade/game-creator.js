@@ -29,16 +29,16 @@ class GameCreator {
         let tx = new saito.default.transaction();
         tx.msg.game = modname;
 
-	//
-	// DEPRECATED -- 
-	//
+        //
+        // DEPRECATED -- 
+        //
+
+        this.overlay.hide();
+
         let arcade_mod = app.modules.returnModule("Arcade");
-	arcade_mod.invite = mod.invite;
+        arcade_mod.invite = mod.invite;
         ArcadeGameDetails.render(app, arcade_mod, tx);
         ArcadeGameDetails.attachEvents(app, arcade_mod, tx);
-
-	this.overlay.hide();
-
       };
     });
   }

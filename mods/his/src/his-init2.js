@@ -149,8 +149,7 @@ console.log("adding stuff!");
 	
       }
 
-
-
+      
       if (this.game.state.scenario === "1532") {
 
       }
@@ -158,6 +157,25 @@ console.log("adding stuff!");
       if (this.game.state.scenario === "tournament") {
 
       }
+
+
+      //
+      // IS_TESTING -- TEMPORARY 
+      //
+      this.addDebater("papacy", "bucer");
+      this.addDebater("hapsburg", "aleander");
+      this.addDebater("england", "bullinger");
+      this.addDebater("protestant", "campeggio");
+
+      this.activateMinorPower("papacy", "venice");
+
+      this.convertSpace("protestant", "graz");
+      this.controlSpace("protestant", "graz");
+      this.addRegular("protestant", "graz", 3);
+      this.addRegular("venice", "trieste", 4);
+      this.addRegular("venice", "agram", 4);
+      this.game.spaces['agram'].type = "fortress";
+
     }
 
     //
