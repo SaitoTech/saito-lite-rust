@@ -9,9 +9,6 @@
     if (obj.ruler == null)		{ obj.ruler = ""; }
     if (obj.capitals == null)	        { obj.capitals = []; }
     if (obj.cards_bonus == null)	{ obj.cards_bonus = 0; }
-    if (obj.vp == null)			{ obj.vp = 0; }
-    if (obj.allies == null)		{ obj.allies = []; }
-    if (obj.minor_allies == null)	{ obj.minor_allies = []; }
     if (obj.returnFactionSheet == null) {
       obj.returnFactionSheet = function(faction) {
         return `
@@ -31,29 +28,6 @@
 
   }
 
-  gainVP(faction, points) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
-          this.game.players_info[i].factions[ii].vp += points;
-	  break;
-        }
-      }
-    }
-    return -1;
-  }
-
-  returnCapitals(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-	if (faction === this.game.players_info[i].factions[ii]) {
-          return this.factions[this.game.players_info[i].factions[ii]].capitals;
-        }
-      }
-    }
-    return [];
-  }
-
   returnPlayerOfFaction(faction) {
     for (let i = 0; i < this.game.players_info.length; i++) {
       if (this.game.players_info[i].factions.includes(faction)) {
@@ -63,7 +37,10 @@
     return -1;
   }
 
+
   returnFactionHandIdx(player, faction) {
+console.log("player: " + player);
+console.log("faction: " + faction);
     for (let i = 0; i < this.game.players_info[player-1].factions.length; i++) {
       if (this.game.players_info[player-1].factions[i] === faction) {
 	return i;
@@ -72,15 +49,5 @@
     return -1;
   }
 
-  returnFactionName(faction) {
-    for (let i = 0; i < this.game.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.players_info[i].factions.length; ii++) {
-        if (faction === this.game.players_info[i].factions[ii]) {
-	  return this.factions[this.game.players_info[i].factions[ii]].name;
-	}
-      }
-    }
-    return faction.toUpperCase();
-  }
 
 

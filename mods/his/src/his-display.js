@@ -18,32 +18,11 @@
 	<div class="lutheran_debaters"></div>
 	<div class="calvinist_debaters"></div>
 	<div class="anglican_debaters"></div>
-	<div class="protestant_debaters"></div>
+	<div class="protestant_spaces_track"></div>
       </div>
     `;
 
     this.overlay.showOverlay(this.app, this, html);
-
-    //
-    // list all debaters
-    //
-    for (let i = 0; i < this.game.state.debaters.length; i++) {
-      let d = this.game.state.debaters[i];
-      let dtile = `<img class="debater_tile" id="${i}" src="/his/img/tiles/debaters/${d.img}" />`;
-console.log("DEBATER IS: " + d.owner);
-      if (d.owner === "papacy") {
-	this.app.browser.addElementToSelector(dtile, '.papal_debaters');
-      }
-      if (d.owner === "england") {
-	this.app.browser.addElementToSelector(dtile, '.anglican_debaters');
-      }
-      if (d.owner === "hapsburg") {
-	this.app.browser.addElementToSelector(dtile, '.calvinist_debaters');
-      }
-      if (d.owner === "protestant") {
-	this.app.browser.addElementToSelector(dtile, '.protestant_debaters');
-      }
-    }
 
     let obj = document.getElementById("religious_conflict_sheet_tile");
     obj.style.top = rcc[cid].top;
@@ -136,6 +115,7 @@ console.log("DEBATER IS: " + d.owner);
     if (this.factions[faction].key === "hapsburg") {
       let total_keys = 14;
       let remaining_keys = total_keys - controlled_keys;
+console.log("remaining keys for hapsburgs: " +remaining_keys + " ------ " + controlled_keys);
       for (let i = 1; i <= 14; i++) {
         if (i > (14-remaining_keys)) {
           keyboxen += `<div class="faction_sheet_keytile faction_sheet_${this.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
@@ -205,11 +185,13 @@ console.log("DEBATER IS: " + d.owner);
   displayElectorateDisplay() {
     let elecs = this.returnElectorateDisplay();
     for (let key in elecs) {
+console.log("key: " + key);
       let obj = document.getElementById(`ed_${key}`);
       let tile = this.returnSpaceTile(this.game.spaces[key]);
       obj.innerHTML = ` <img class="hextile" src="${tile}" />`;      
+console.log("about to add electoral bonus");
       if (this.returnElectoralBonus(key)) {
-        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-${this.returnElectoralBonus(key)}.svg" />`;
+        obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;
       }
     }
   }
@@ -219,7 +201,7 @@ console.log("DEBATER IS: " + d.owner);
   returnElectoralBonus(space) {
 
     if (space === "augsburg" && this.game.state.augsburg_electoral_bonus == 0) {
-      return 2;
+      return 1;
     }
     if (space === "mainz" && this.game.state.augsburg_electoral_bonus == 0) {
       return 1;
@@ -231,7 +213,7 @@ console.log("DEBATER IS: " + d.owner);
       return 1;
     }
     if (space === "wittenberg" && this.game.state.wittenberg_electoral_bonus == 0) {
-      return 2;
+      return 1;
     }
     if (space === "brandenburg" && this.game.state.brandenburg_electoral_bonus == 0) {
       return 1;
@@ -376,7 +358,7 @@ console.log("DEBATER IS: " + d.owner);
         if (z === "england") {
           tile = "/his/img/tiles/england/";	  
 	  if (squadrons >= 2) {
-            tile += `English_squadron.svg`;
+            tile += `England_squadron.svg`;
 	    squadrons -= 2;
           }
         }
@@ -406,7 +388,6 @@ console.log("DEBATER IS: " + d.owner);
           }
         }
         if (z === "venice") {
-          tile = "/his/img/tiles/venice/";	  
 	  if (squadrons >= 2) {
             tile += `Venice_squadron.svg`;
 	    squadrons -= 2;
@@ -836,10 +817,12 @@ console.log("DEBATER IS: " + d.owner);
       }
     }
 
+
     //
     // sanity check
     //
     if (tile === "") { show_tile = 0; }
+
 
     if (show_tile === 1) {
       obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
@@ -847,12 +830,6 @@ console.log("DEBATER IS: " + d.owner);
       obj.innerHTML += this.returnNavies(space);
       obj.innerHTML += this.returnMercenaries(space);
       obj.innerHTML += this.returnPersonages(space);
-    }
-
-
-    // add unrest if needed
-    if (this.isSpaceInUnrest(space)) {
-      obj.innerHTML += `<img class="unrest" src="/his/img/tiles/unrest.svg" />`;
     }
 
   }
@@ -912,19 +889,6 @@ console.log("DEBATER IS: " + d.owner);
 
 
   displayVictoryTrack() {
-
-    let factions_and_scores = this.calculateVictoryPoints();
-    let x = this.returnVictoryPointTrack();
-
-    for (f in factions_and_scores) {
-      let total_vp = factions_and_scores[f].vp
-      let ftile = f + "_vp_tile";
-      obj = document.getElementById(ftile);
-      obj.style.left = x[total_vp].left + "px";
-      obj.style.top = x[total_vp].top + "px";
-      obj.style.display = "block";
-    }
-
   }
 
 

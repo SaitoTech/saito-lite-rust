@@ -32,12 +32,6 @@
       debater		:	true,
     });
  
-    this.importUnit('reformer', {
-      type		:	"reformer" ,
-      name		: 	"Reformer",
-      reformer		:	true,
-    });
- 
 
 
 

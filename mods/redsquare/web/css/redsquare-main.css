@@ -484,13 +484,3 @@ span.redsquare-home-red-square+span {
 #tweet-overlay-img-cont img {
   height: 70vh;
 }
-
-/* Hacks to stop old arcade and chat content from ruining display */
-
-.chat-box, .saito-arcade-invite {
-  display: none;
-}
-
-.saito-arcade-invite-list .saito-arcade-invite {
-  display: grid;
-}

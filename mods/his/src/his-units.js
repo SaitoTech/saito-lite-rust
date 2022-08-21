@@ -6,11 +6,9 @@
     if (obj.name == null)               { obj.name = "Unit"; }
     if (obj.personage == null)          { obj.personage = false; }
     if (obj.debater == null)            { obj.debater = false; }
-    if (obj.reformer == null)           { obj.reformer = false; }
     if (obj.land_or_sea == null)        { obj.land_or_sea = "land"; }
     if (obj.army_leader == null)        { obj.army_leader = false; }
     if (obj.navy_leader == null)        { obj.navy_leader = false; }
-    if (obj.piracy_rating == null)      { obj.piracy_rating = 0; }
     if (obj.command_value == null)      { obj.command_value = 0; }
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
@@ -32,22 +30,11 @@
     return null;
   }
 
-  newReformer(faction, reformer) {
-    for (let key in this.units) {
-      if (this.units[key].type === reformer) {
-	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
-	new_unit.owner = faction;
-	return new_unit;
-      }
-    }
-    return null;
-  }
   newDebater(faction, debater) {
     for (let key in this.units) {
       if (this.units[key].type === debater) {
 	let new_unit = JSON.parse(JSON.stringify(this.units[key]));
 	new_unit.owner = faction;
-	new_unit.committed = 0;
 	return new_unit;
       }
     }
