@@ -105,7 +105,13 @@ class RedSquare extends ModTemplate {
   }
 
 
+
+  initializeHTML(app) {
+    this.saitoLoader.render(app, this, '', true);
+  }
+
   render(app, mod, selector = "") {
+
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -114,7 +120,11 @@ class RedSquare extends ModTemplate {
       this.ui_initialized = true;
 
     }
+
     super.render(app, this);
+
+    mod.saitoLoader.remove(app, mod);
+
   }
 
 
@@ -148,8 +158,6 @@ class RedSquare extends ModTemplate {
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
-      mod.saitoLoader.remove(app, mod);
-
 
     });
 
@@ -188,6 +196,7 @@ class RedSquare extends ModTemplate {
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderWithChildren(app, redsquare_self, sig);
     });
+
 
 
   }
@@ -309,10 +318,8 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
 
     if (this.app.BROWSER == 1) {
-      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
 
       if (document.querySelector(".redsquare-list")) {
-
         let tweet_id = app.browser.returnURLParameter('tweet_id');
 
         if (tweet_id) {
@@ -325,19 +332,13 @@ class RedSquare extends ModTemplate {
 
         }
       }
-
-      setTimeout(function () {
-        redsquare_self.saitoLoader.remove();
-      }, 1000);
     }
   }
 
 
   async onConfirmation(blk, tx, conf, app) {
-
     let redsquare_self = this;
     let txmsg = tx.returnMessage();
-
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
@@ -394,6 +395,7 @@ class RedSquare extends ModTemplate {
           }
 
         }
+        mod.saitoLoader.remove(app, mod);
       }
     );
   }
