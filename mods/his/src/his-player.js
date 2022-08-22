@@ -449,6 +449,7 @@
 
   }
 
+
   playerPlayCard(card, player, faction) {
 
     //
@@ -600,7 +601,7 @@ alert("selected faction = " + selected_faction);
   }
   playerPlayEvent(card, faction, ops=null) {
     this.addMove("event\t"+faction+"\t"+card);
-    this.addMove("counter_or_acknowledge\t" + his_self.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
+    this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " plays " + card + " for the event\tevent\tcard");
     his_self.addMove("RESETCONFIRMSNEEDED\tall");
     this.endTurn();
   }
@@ -1617,5 +1618,66 @@ return;
 console.log("22 treatise");
 return;
   }
+
+  playerPlaceUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+    let placed = 0;
+    let unit = new Unit();
+
+    his_self.playerSelectSpaceWithFilter(
+
+      `Place ${his_self.units[unittype].name} (${num})` ,
+
+      filter_func ,
+
+      function(spacekey) {
+        
+	his_self.addUnit(faction, spacekey, unittype);
+        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+
+	if (num == 1) {
+          his_self.endTurn();
+	} else {
+  	  his_self.playerPlaceUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+	}
+      },
+
+      cancel_func 
+
+    );
+  }
+
+
+  playerRemoveUnitsInSpaceWithFilter(unittype, num, faction, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+    let placed = 0;
+    let unit = new Unit();
+
+    his_self.playerSelectSpaceWithFilter(
+
+      `Remove ${his_self.units[unittype].name} (${num})` ,
+
+      filter_func ,
+
+      function(spacekey) {
+
+	his_self.removeUnit(faction, spacekey, unittype);
+        his_self.addMove("remove\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+
+	if (num == 1) {
+          his_self.endTurn();
+	} else {
+  	  his_self.playerRemoveUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+	}
+
+      },
+
+      cancel_func 
+
+    );
+  }
+
 
 

@@ -41,6 +41,9 @@ console.log("MOVE: " + mv[0]);
 	  this.game.queue.push("spring_deployment_phase");
 //	  this.game.queue.push("diplomacy_phase");
 
+this.game.queue.push("is_testing");
+
+
 	  //
 	  // start the game with the Protestant Reformation
 	  //
@@ -78,18 +81,73 @@ console.log("MOVE: " + mv[0]);
 	  let faction = mv[2];
 	  let unit_type = mv[3];
 	  let spacekey = mv[4];
+          let player_to_ignore = parseInt(mv[5]);
 
-	  if (land_or_sea === "land") {
-	    this.game.spaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	  if (this.game.player != player_to_ignore) {
+	    if (land_or_sea === "land") {
+	      this.game.spaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	    }
+	    if (land_or_sea === "sea") {
+	      this.game.navalspaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
+	    }
 	  }
-	  if (land_or_sea === "sea") {
-	    this.game.navalspaces[spacekey].units[faction].push(this.newUnit(faction, unit_type));
-	  }
+
+	  this.displaySpace(spacekey);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
+
+	if (mv[0] === "remove") {
+
+	  let land_or_sea = mv[1];
+	  let faction = mv[2];
+	  let unit_type = mv[3];
+	  let spacekey = mv[4];
+          let player_to_ignore = parseInt(mv[5]);
+
+	  if (this.game.player != player_to_ignore) {
+	    if (land_or_sea === "land") {
+	      this.removeUnit(faction, spacekey, unit_type);
+	    }
+	    if (land_or_sea === "sea") {
+alert("removing unit not implement for sea");
+	      this.removeUnit(faction, unit_type, spacekey);
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+if (mv[0] === "is_testing") {
+
+      //
+      // IS_TESTING -- TEMPORARY
+      //
+      this.addDebater("papacy", "bucer");
+      this.addDebater("hapsburg", "aleander");
+      this.addDebater("england", "bullinger");
+      this.addDebater("protestant", "campeggio");
+
+      this.activateMinorPower("papacy", "venice");
+
+      this.convertSpace("protestant", "graz");
+      this.controlSpace("protestant", "graz");
+      this.addRegular("protestant", "graz", 3);
+      this.addRegular("venice", "trieste", 4);
+      this.addRegular("venice", "agram", 4);
+      this.game.spaces['agram'].type = "fortress";
+
+      this.addCard("protestant", "036");
+
+      this.game.queue.splice(qe, 1);
+
+}
 
         if (mv[0] === "event") {
 
@@ -189,16 +247,12 @@ console.log("MOVE: " + mv[0]);
 	    let space = this.game.spaces[destination];
 	    for (let f in space.units) {
 	      if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
-console.log("TESTING A");
-	        this.game.queue.push("halt");
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
-                this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		this.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
                 this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		if (skip_avoid_battle != 1) {
 	          this.game.queue.push("fortification_check\t"+faction+"\t"+destination+"\t"+source);
 	          this.game.queue.push("retreat_check\t"+faction+"\t"+destination+"\t"+source);
-console.log("TESTING B");
 		}
 	        return 1;
 	      }
@@ -304,7 +358,7 @@ console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 
         if (mv[0] === "player_evaluate_fortification") {
 
-	a this.game.queue.splice(qe, 1);
+	  this.game.queue.splice(qe, 1);
 
 	  let attacker = mv[1];
 	  let player = parseInt(mv[2]);
@@ -370,7 +424,7 @@ console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	      }
 	    }
 	    if (can_player_retreat) {
-	      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]+"\t"+neighbours[z]);
+	      this.game.queue.push("player_evaluate_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+io[i]);
 	    }
 	  }
 
@@ -387,15 +441,14 @@ console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
 	  let attacker_comes_from_this_spacekey = mv[3];
-	  let defender = mv[3];
-	  let defender_spacekey = mv[4];
+	  let defender = mv[4];
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
 	  if (player_factions.includes(defender)) {
-	    this.playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender, defender_spacekey);
+	    this.playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 	  } else {
-	    this.updateStatus(defender + " considering interception from " + defender_spacekey);   
+	    this.updateStatus(defender + " considering interception");
 	  }
 
 	  return 0;
@@ -720,10 +773,11 @@ console.log(JSON.stringify(his_self.game.queue));
     	  html += '<li class="option" id="ok">acknowledge</li>';
 
           let z = this.returnEventObjects();
-	  for (let i = 0; i < z.length; z++) {
+	  for (let i = 0; i < z.length; i++) {
             if (z[i].menuOptionTriggers(this, stage, this.game.player) == 1) {
               let x = z[i].menuOption(this, stage, this.game.player);
               html += x.html;
+	      z[i].faction = x.faction; // add faction
 	      menu_index.push(i);
 	      menu_triggers.push(x.event);
 	      attach_menu_events = 1;
@@ -749,14 +803,13 @@ console.log(JSON.stringify(his_self.game.queue));
               for (let i = 0; i < menu_triggers.length; i++) {
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
-                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player);
+                  z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   return;
                 }
               }
             }
 
             if (action2 == "ok") {
-console.log("sending resolve");
               his_self.endTurn();
               return;
             }
@@ -770,9 +823,6 @@ console.log("sending resolve");
 
 	if (mv[0] === "field_battle") {
 
-	  //
-	  // RESOLVE will remove "halt" next
-	  //
           this.game.queue.splice(qe, 1);
 
 	  //
@@ -792,6 +842,7 @@ console.log("sending resolve");
 	  //
 	  if (space.besieged == 2) {
 	    this.updateLog("field battle avoided by withdrawing into fortifications");
+	    this.game.queue.push("counter_or_acknowledge\tField Battle avoided by defenders retreating into fortification\tsiege");
 	    space.besieged = 1;
 	    return 1;
 	  }
