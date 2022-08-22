@@ -189,13 +189,16 @@ console.log("MOVE: " + mv[0]);
 	    let space = this.game.spaces[destination];
 	    for (let f in space.units) {
 	      if (f !== faction && space.units[f].length > 0 && !this.areAllies(f, faction)) {
+console.log("TESTING A");
 	        this.game.queue.push("halt");
 	        this.game.queue.push("field_battle\t"+space.key+"\t"+faction);
                 this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-		this.game.queue("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
+		this.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+destination + "\tfield_battle");
+                this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		if (skip_avoid_battle != 1) {
 	          this.game.queue.push("fortification_check\t"+faction+"\t"+destination+"\t"+source);
 	          this.game.queue.push("retreat_check\t"+faction+"\t"+destination+"\t"+source);
+console.log("TESTING B");
 		}
 	        return 1;
 	      }
@@ -212,7 +215,7 @@ console.log("MOVE: " + mv[0]);
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
-	  let attacker_cpomes_from_this_spacekey = mv[3];
+	  let attacker_comes_from_this_spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
 
 	  if (space.type !== "key" && space.type !== "fortress") {
@@ -225,54 +228,64 @@ console.log("MOVE: " + mv[0]);
 	  //
 	  for (f in this.factions) {
 
-	    if (f.key !== attacker) {
+	    if (f !== attacker) {
 
-	      let fluis = this.returnFactionLandUnitsInSpace(f.key, spacekey);
+	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
 
-	      if (fluis > 4) {
+console.log("FACTION LAND UNITS IN SPACE: " + f + " / " + fluis);
+	      if (fluis == 0) {
 
-		// must land battle
+		//
+		// no troops - skip
+		//
 
 	      } else {
 
-		if (this.isMinorPower(f.key)) {
+	        if (fluis > 4) {
 
-		  if (this.isMinorUnactivatedPower(f.key)) {
-
-		    //
-		    // auto-handled -- we retreat for siege
-		    //
-		    this.game.queue.push("fortification\t"+attacker+"\t"+f.key+"\t"+spacekey);
-
-		  } else {
-
-		    //
- 		    // major power decides
-		    //
-		    let cf = "";
-		    let mp = f.key;
-
-		    if (this.game.state.activated_powers['ottoman'].includes(f.key)) { cf = "ottoman"; }
-		    if (this.game.state.activated_powers['hapsburg'].includes(f.key)) { cf = "hapsburg"; }
-		    if (this.game.state.activated_powers['france'].includes(f.key)) { cf = "france"; }
-		    if (this.game.state.activated_powers['england'].includes(f.key)) { cf = "england"; }
-		    if (this.game.state.activated_powers['papacy'].includes(f.key)) { cf = "papacy"; }
-		    if (this.game.state.activated_powers['protestant'].includes(f.key)) { cf = "protestant"; }
-
-		    let cp = this.returnPlayerOfFaction(cf);
-
-		    this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+mp+"\t"+spacekey);
-
-		  }
+		  // must land battle
 
 	        } else {
 
-		  //
-		  // major power - some player decides
-		  //
-		  let cp = this.returnPlayerOfFaction(f.key);
-		  this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f.key+"\t"+spacekey);
+		  if (this.isMinorPower(f)) {
 
+		    if (this.isMinorUnactivatedPower(f)) {
+
+		      //
+		      // auto-handled -- we retreat for siege
+		      //
+		      this.game.queue.push("fortification\t"+attacker+"\t"+f+"\t"+spacekey);
+
+		    } else {
+
+		      //
+ 		      // major power decides
+		      //
+		      let cf = "";
+		      let mp = f;
+
+		      if (this.game.state.activated_powers['ottoman'].includes(f)) { cf = "ottoman"; }
+		      if (this.game.state.activated_powers['hapsburg'].includes(f)) { cf = "hapsburg"; }
+		      if (this.game.state.activated_powers['france'].includes(f)) { cf = "france"; }
+		      if (this.game.state.activated_powers['england'].includes(f)) { cf = "england"; }
+		      if (this.game.state.activated_powers['papacy'].includes(f)) { cf = "papacy"; }
+		      if (this.game.state.activated_powers['protestant'].includes(f)) { cf = "protestant"; }
+
+		      let cp = this.returnPlayerOfFaction(cf);
+
+		      this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+mp+"\t"+spacekey);
+
+		    }
+
+	          } else {
+
+		    //
+		    // major power - some player decides
+		    //
+		    let cp = this.returnPlayerOfFaction(f);
+		    this.game.queue.push("player_evaluate_fortification"+"\t"+attacker+"\t"+cp+"\t"+f+"\t"+spacekey);
+
+	          }
 	        }
 	      }
 
@@ -291,7 +304,7 @@ console.log("MOVE: " + mv[0]);
 
         if (mv[0] === "player_evaluate_fortification") {
 
-	  this.game.queue.splice(qe, 1);
+	a this.game.queue.splice(qe, 1);
 
 	  let attacker = mv[1];
 	  let player = parseInt(mv[2]);
@@ -318,14 +331,12 @@ console.log("MOVE: " + mv[0]);
 	  let space = this.game.spaces[spacekey];
 
 	  for (f in this.factions) {
-	    if (f.key !== attacker) {
-	      space.besieged_factions.push(f.key);
+	    if (f !== attacker) {
+	      space.besieged_factions.push(f);
 	      space.besieged = 2; // 2 = cannot attack this round
 	    }
 
 	  }
-
-alert("units withdrawing into fortification -- decide how to signify");
 
           return 1;
 
@@ -341,7 +352,7 @@ alert("units withdrawing into fortification -- decide how to signify");
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
-	  let attacker_cpomes_from_this_spacekey = mv[3];
+	  let attacker_comes_from_this_spacekey = mv[3];
 	  let space = this.game.spaces[spacekey];
 	  let neighbours = this.returnNeighbours(spacekey, 0); // 0 cannot intercept across passes
 
@@ -352,7 +363,9 @@ alert("units withdrawing into fortification -- decide how to signify");
 	      if (io[i] !== attacker) {
 	        let fluis = this.canFactionRetreatToSpace(io[i], neighbours[z], attacker_comes_from_this_spacekey);
 	        if (fluis > 0) {
-		  can_player_retreat = 1;
+		  if (this.returnPlayerOfFaction(io[i]) > 0) {
+		    can_player_retreat = 1;
+		  }
 	        }
 	      }
 	    }
@@ -743,7 +756,7 @@ console.log(JSON.stringify(his_self.game.queue));
             }
 
             if (action2 == "ok") {
-              his_self.endTurn();
+console.log("sending resolve");
               his_self.endTurn();
               return;
             }
