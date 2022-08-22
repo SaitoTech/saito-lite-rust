@@ -83,9 +83,18 @@ class GameObserver {
       this.arcade_mod.game_moves = [];
       this.pause();
       this.showNextMoveButton();
-      this.arcade_mod.initializeObserverModePreviousStep(this.game_mod.game.id, 0);
+      this.hideLastMoveButton();
+      this.arcade_mod.initializeObserverModePreviousStep(this.game_mod, 0, (mod) =>{
+        //Get game module to reload and refresh the DOM
+        console.log("GAME QUEUE:"+JSON.stringify(mod.game.queue));
+        mod.initialize_game_run = 0;
+        mod.initializeGameFeeder(mod.game.id);
+        //Tell gameObserver HUD to update its step
+        this.updateStep(mod.game.step.game);
+        //Clear status of gameObserverHUD
+        mod.updateObserverStatus("");
+      });
     };
-
 
     document.getElementById("game-observer-last-btn").onclick = (e) => {
       //Backup one step
@@ -218,7 +227,7 @@ class GameObserver {
       salert("Please wait while we query the previous step...");
 
       this.arcade_mod.initializeObserverModePreviousStep(
-        this.game_mod.game.id,
+        this.game_mod,
         this.game_mod.game.step.game, 
         callback
       );

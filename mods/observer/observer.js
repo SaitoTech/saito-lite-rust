@@ -547,13 +547,13 @@ class Observer extends ModTemplate {
       .catch((err) => console.info("ERROR 354322: error downloading next moves", err));
   }
 
-  async initializeObserverModePreviousStep(game_id, starting_move, callback = null) {
+  async initializeObserverModePreviousStep(game_mod, starting_move, callback = null) {
     let arcade_self = this;
     let first_tx = null;
 
-    console.log(`FETCHING: /arcade/observer_prev/${game_id}/${starting_move}`);
+    console.log(`FETCHING: /arcade/observer_prev/${game_mod.game.id}/${starting_move}`);
 
-    fetch(`/arcade/observer_prev/${game_id}/${starting_move}`).then((response) => {
+    fetch(`/arcade/observer_prev/${game_mod.game.id}/${starting_move}`).then((response) => {
       response.json().then((data) => {
         if (!data.length){
           salert("At beginning game state");
@@ -564,7 +564,7 @@ class Observer extends ModTemplate {
         first_tx = JSON.parse(data[0].game_state);
 
         console.log("UPDATED GAME TxStep to: " + JSON.stringify(first_tx.step));
-        console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
+        //console.log("UPDATED GAME QUEUE to: " + JSON.stringify(first_tx.queue));
 
         //
         // single transaction
@@ -576,21 +576,23 @@ class Observer extends ModTemplate {
         //first_tx.future.push(JSON.stringify(future_tx.transaction));
 
 
-        let idx = -1;
-        for (let i = 0; i < arcade_self.app.options.games.length; i++) {
-          if (arcade_self.app.options.games[i].id === first_tx.id) {
-            idx = i;
-          }
-        }
-        if (idx == -1) {
-          arcade_self.app.options.games.push(first_tx);
-        } else {
-          arcade_self.app.options.games[idx] = first_tx;
-        }
+        //let idx = -1;
+        //for (let i = 0; i < arcade_self.app.options.games.length; i++) {
+        //  if (arcade_self.app.options.games[i].id === first_tx.id) {
+        //    idx = i;
+        //  }
+        //}
+        //if (idx == -1) {
+        //  arcade_self.app.options.games.push(first_tx);
+        //} else {
+        //  arcade_self.app.options.games[idx] = first_tx;
+        //}
 
 
-        arcade_self.app.storage.saveOptions();
-        let game_mod = arcade_self.app.modules.returnActiveModule();
+        //arcade_self.app.storage.saveOptions();
+        //let game_mod = arcade_self.app.modules.returnActiveModule();
+        game_mod.game = first_tx;
+        game_mod.saveGame(game_mod.game.id);
 
         if (callback){
           callback(game_mod);
