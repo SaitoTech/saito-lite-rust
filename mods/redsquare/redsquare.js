@@ -604,6 +604,8 @@ class RedSquare extends ModTemplate {
     };
     app.storage.executeDatabase(sql, params, "redsquare");
 
+    this.sqlcache = [];
+
     return;
 
   }
