@@ -21,9 +21,12 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
   let bannerBack = gameModule.respondTo("arcade-carousel")?.background || `/${slug}/img/arcade.jpg`;
   let gameBack = gameModule.respondTo("arcade-games")?.img || `/${slug}/img/arcade.jpg`;
 
+  let gameIndicator = `<i class="game_status_indicator game_${msg.game_status} fas fa-circle"></i>`;
+
   let inviteHtml = `
     <div id="invite-${msg.game_id}" class="arcade-tile" style="background-image: url('${bannerBack}');">
       <div class="invite-tile-wrapper">
+        ${gameIndicator}
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${gameName}</div>
