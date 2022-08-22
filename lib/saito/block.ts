@@ -316,7 +316,8 @@ class Block {
     //
     // return obj w/ default values
     //
-    const cv: any = {};
+    const cv: any = {
+    };
 
     cv.total_fees = BigInt(0);
     cv.ft_num = 0;
@@ -1210,7 +1211,7 @@ class Block {
     this.confirmations = conf;
   }
 
-  generateMerkleRoot() {
+  generateMerkleRoot() : string {
     console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
@@ -1225,31 +1226,31 @@ class Block {
     }
 
     let mr = "";
-    let txs = [];
+    let txs: string[] = [];
 
     for (let i = 0; i < this.transactions.length; i++) {
       if (this.transactions[i].transaction.type === TransactionType.SPV) {
         txs.push(this.transactions[i].transaction.sig);
       } else {
         txs.push(
-          this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app))
+            this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app))
         );
       }
     }
 
-    while (mr === "") {
-      const tx2 = [];
+    while (!mr) {
+      const tx2: string[] = [];
 
       if (txs.length <= 2) {
         if (txs.length === 1) {
           mr = txs[0];
         } else {
-          mr = this.app.crypto.hash("" + txs[0] + txs[1]);
+          mr = this.app.crypto.hash(Buffer.from("" + txs[0] + txs[1], "hex"));
         }
       } else {
         for (let i = 0; i < txs.length; i++) {
           if (i <= txs.length - 2) {
-            tx2.push(this.app.crypto.hash("" + txs[i] + txs[i + 1]));
+            tx2.push(this.app.crypto.hash(Buffer.from("" + txs[i] + txs[i + 1], "hex")));
             i++;
           } else {
             tx2.push(txs[i]);
@@ -1726,9 +1727,7 @@ class Block {
     // that should collect payment.
     //
     if (cv.ft_num > 0) {
-      //
       // no golden ticket? invalid
-      //
       if (cv.gt_num === 0) {
         console.log("ERROR 48203: fee transaction exists but no golden ticket, thus invalid");
         return false;
@@ -1743,10 +1742,8 @@ class Block {
       //
       cv.fee_transaction.generateMetadata(this.returnCreator());
 
-      const hash1 = this.app.crypto.hash(
-        fee_transaction.serializeForSignature(this.app)
-      );
-      const hash2 = this.app.crypto.hash(cv.fee_transaction.serialize_for_signature());
+      const hash1 = this.app.crypto.hash(fee_transaction.serializeForSignature(this.app));
+      const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
 
       if (hash1 !== hash2) {
         console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
