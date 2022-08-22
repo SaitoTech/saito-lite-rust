@@ -170,3 +170,32 @@ describe("serializeForSignature", function () {
     //expect(block.block.signature.toUpperCase()).toEqual( "EB4C09C0A335F50329198CE74295DAE88242A25B0CF6BC3A292A45C0FA51A1575E916C73C8BAF2CCDD649A4B23A227E0744CFCD01B206E50C78B8D867DF6069B");
   });
 });
+
+describe("merkletreeGeneration", function () {
+  test("generation", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const mockApp: Saito = {};
+    const networkApi = new NetworkAPI(mockApp);
+    const crypto = new Crypto(mockApp);
+    const binary = new Binary(mockApp);
+    mockApp.networkApi = networkApi;
+    mockApp.crypto = crypto;
+    mockApp.binary = binary;
+    mockApp.hash = (data: Uint8Array) => {
+      return blake3.hash(data).toString("hex");
+    };
+
+    const block = new Block(mockApp);
+
+    for (let i = 0 ; i < 5 ; ++i) {
+      let tx = new Transaction();
+      tx.transaction.ts = i;
+      block.transactions.push(tx);
+    }
+
+    let mr = block.generateMerkleRoot();
+    console.log(mr);
+  });
+
+});

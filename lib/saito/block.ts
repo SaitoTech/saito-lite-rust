@@ -1210,7 +1210,7 @@ class Block {
     this.confirmations = conf;
   }
 
-  generateMerkleRoot() {
+  generateMerkleRoot() : string {
     console.log("generating merkle root of block : " + this.hash);
     //
     // if we are lite-client and have been given a block without transactions
@@ -1224,42 +1224,60 @@ class Block {
       return this.block.merkle;
     }
 
-    let mr = "";
+    let mr : Buffer | null = null;
     let txs = [];
 
     for (let i = 0; i < this.transactions.length; i++) {
       if (this.transactions[i].transaction.type === TransactionType.SPV) {
-        txs.push(this.transactions[i].transaction.sig);
+        let signature = Buffer.from(this.transactions[i].transaction.sig, "hex");
+        console.log("Tx[", i, "] = (SPV) ", signature);
+        txs.push(signature);
       } else {
-        txs.push(
-          this.app.crypto.hash(this.transactions[i].serializeForSignature(this.app))
-        );
+        let buffer = this.transactions[i].serializeForSignature(this.app);
+        let hash = Buffer.from(this.app.crypto.hash(buffer), "hex")
+        console.log("Tx[", i, "] = ", buffer, ", hash = ", hash);
+        txs.push(hash);
       }
     }
 
-    while (mr === "") {
+    console.log("---------------------");
+
+    while (mr === null) {
       const tx2 = [];
 
       if (txs.length <= 2) {
         if (txs.length === 1) {
+          console.log("Node : hash = ", txs[0]);
           mr = txs[0];
         } else {
-          mr = this.app.crypto.hash("" + txs[0] + txs[1]);
+          let buffer = Buffer.concat([txs[0], txs[1]]);
+          let hash = Buffer.from(this.app.crypto.hash(buffer), "hex");
+          console.log("Node : buffer = ", buffer, ", hash = ", hash);
+          mr = hash
         }
       } else {
         for (let i = 0; i < txs.length; i++) {
           if (i <= txs.length - 2) {
-            tx2.push(this.app.crypto.hash("" + txs[i] + txs[i + 1]));
+            let buffer = Buffer.concat([txs[i], txs[i + 1]]);
+            let hash = Buffer.from(this.app.crypto.hash(buffer), "hex");
+            console.log("Node : buffer = ", buffer, ", hash = ", hash);
+            tx2.push(hash);
             i++;
           } else {
+            console.log("Node : hash = ", txs[i]);
             tx2.push(txs[i]);
           }
         }
 
         txs = tx2;
+
+        console.log("---------------------");
       }
     }
-    return mr;
+
+    console.log(mr.toString("hex"));
+    console.log("Merkle root generation complete");
+    return mr.toString("hex");
   }
 
   //
