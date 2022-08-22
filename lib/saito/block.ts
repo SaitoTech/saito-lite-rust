@@ -1737,7 +1737,7 @@ class Block {
 
       //
       // the fee transaction we receive from the CV needs to be updated with
-      // block-specific data in the same way that all of the transactions in
+      // block-specific data in the same way that all the transactions in
       // the block have been. we must do this prior to comparing them.
       //
       cv.fee_transaction.generateMetadata(this.returnCreator());
@@ -1746,7 +1746,9 @@ class Block {
       const hash2 = this.app.crypto.hash(cv.fee_transaction.serializeForSignature(this.app));
 
       if (hash1 !== hash2) {
-        console.log("ERROR 892032: block {} fee transaction doesn't match cv fee transaction");
+        console.error(`ERROR 892032: block ${this.hash} fee transaction doesn't match cv fee transaction`);
+        console.log("expected: ",cv.fee_transaction);
+        console.log("actual: ",fee_transaction);
         return false;
       }
     }
