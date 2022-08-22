@@ -98,6 +98,9 @@
     text-align: center;
     cursor: pointer;
 }
+.saito-calendar-day > span {
+    margin-right: 1rem;
+}
 
 .saito-calendar-days div:hover {
     background-color: var(--saito-primary);
