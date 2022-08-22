@@ -241,7 +241,6 @@ Saito Module Boxes
 /*  border: 1px solid aqua; */
   position: relative;
   width: 100%;
-  height: 100%;
 }
 .saito-loader::after {
     background-color: transparent;
