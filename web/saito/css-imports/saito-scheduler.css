@@ -1,9 +1,16 @@
 .saito-scheduler {
   min-width: 50rem;
   background-color: #fff;
-  border-radius: 2rem;
+  border-radius: 1rem;
   padding: 3rem;
 }
+
+.saito-scheduler-details {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 5fr;
+}
+
 .saito-scheduler-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -11,9 +18,7 @@
 .saito-scheduler h5 {
   padding-top: 0.5rem;
 }
-.saito-scheduler-event {
-  float: right;
-}
+
 .saito-scheduler-label {
   padding-top: 2rem;
   clear: both;
@@ -21,8 +26,25 @@
 }
 .saito-scheduler-button {
   margin-top: 2rem;
-  width: 20rem;
   margin-left: 0rem;
+}
+
+.saito-select-btn {
+  width: 100%;
+}
+
+.saito-scheduler-time-outputs {
+  display: grid;
+  grid-template-columns: 4fr 2fr;
+}
+
+input#schedule-datetime-input, .saito-scheduler-natural-time {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--saito-border);
+  border-radius: 0;
+  height: 3rem;
+  line-height: 3rem;
 }
 
 
