@@ -122,8 +122,10 @@ class RedSquare extends ModTemplate {
     }
 
     super.render(app, this);
+    if (mod) {
+      mod.saitoLoader.remove(app, mod);
+    }
 
-    mod.saitoLoader.remove(app, mod);
 
   }
 
@@ -316,9 +318,7 @@ class RedSquare extends ModTemplate {
   async onPeerHandshakeComplete(app, peer) {
 
     let redsquare_self = this;
-
     if (this.app.BROWSER == 1) {
-
       if (document.querySelector(".redsquare-list")) {
         let tweet_id = app.browser.returnURLParameter('tweet_id');
 
@@ -329,7 +329,6 @@ class RedSquare extends ModTemplate {
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
-
         }
       }
     }
