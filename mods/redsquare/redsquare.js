@@ -338,16 +338,16 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
         if (txmsg.request === "like tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
         if (txmsg.request === "flag tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveFlagTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
       }
     } catch (err) {
@@ -561,6 +561,8 @@ class RedSquare extends ModTemplate {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
+
+    this.sqlcache = [];
 
     return;
 
