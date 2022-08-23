@@ -26,7 +26,7 @@ class RedSquare extends ModTemplate {
     this.saitoLoader = new SaitoLoader(app, this)
     this.redsquare = {}; // where settings go, saved to options file
 
-    this.sqlcache_enabled = 0;
+    this.sqlcache_enabled = 1;
 
     this.tweets = [];
 
@@ -369,9 +369,6 @@ class RedSquare extends ModTemplate {
 
       async (res) => {
 
-        console.log('tweet rows');
-        console.log(sql);
-        console.log(res.rows);
 
         if (res.rows) {
           res.rows.forEach(row => {
