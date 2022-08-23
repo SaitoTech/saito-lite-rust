@@ -119,6 +119,10 @@ span.redsquare-home-red-square+span {
   border-bottom: 1px solid #a5a5a533;
 }
 
+.link-preview>.redsquare-item { 
+  border-bottom: none;
+}
+
 .redsquare-item-contents {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
