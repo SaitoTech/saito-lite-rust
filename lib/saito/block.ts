@@ -537,7 +537,7 @@ class Block {
     //
     // calculate payments to miners / routers
     //
-    if (cv.gt_idx > 0) {
+    if (cv.gt_num > 0) {
       const golden_ticket_transaction = this.transactions[cv.gt_idx];
       const gt = this.app.goldenticket.deserializeFromTransaction(golden_ticket_transaction);
 
