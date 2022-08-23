@@ -369,6 +369,7 @@ class RedSquare extends ModTemplate {
 
       async (res) => {
 
+
         if (res.rows) {
           res.rows.forEach(row => {
 
