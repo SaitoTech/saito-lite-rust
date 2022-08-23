@@ -131,12 +131,16 @@ class Post {
 
       canvas.getContext("2d").drawImage(this, 0, 0, w, h);
       let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-      let imgSize = result_img_uri.length/1024; /* in KB */
+      let imgSize = result_img_uri.length/1024; // in KB
+
       this.remove();
 
-      if (imgSize > 1024) { /* 1 MB */ 
+      if (imgSize > 1024) { // 1 MB 
 
-        post_self.resizeImg(result_img_uri, dimensions, quality);
+        let newDimensions = (dimensions < 0.95) ? dimensions+0.05 : 0.95;
+        let newQuality = (quality < 0.95) ? quality+0.05 : 0.95;
+
+        post_self.resizeImg(result_img_uri, newDimensions, newQuality);
       
       } else {
 
