@@ -719,7 +719,7 @@ class Blockchain {
         }
       }
 
-      let current_block_id = pbid;
+      let current_block_id :bigint = pbid;
 
       //
       // loop backwards through blockchain
@@ -730,7 +730,7 @@ class Blockchain {
         //
         // do not loop around if block id < 0
         //
-        if (current_block_id < mbid && current_block_id > 0) {
+        if (current_block_id < mbid && current_block_id > BigInt(0)) {
           let idx = 2 * i;
 
           let block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(pbid);
