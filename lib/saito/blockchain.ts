@@ -680,7 +680,7 @@ class Blockchain {
     }
   }
 
-  generateLastSharedAncestor(peer_latest_block_id, fork_id) {
+  generateLastSharedAncestor(peer_latest_block_id, fork_id) : bigint {
     let my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
     let pbid = peer_latest_block_id;
@@ -740,7 +740,7 @@ class Blockchain {
         }
       }
 
-      return 0;
+      return BigInt(0);
 
       //
       // peer is not further ahead
@@ -781,7 +781,7 @@ class Blockchain {
         }
       }
 
-      return 0;
+      return BigInt(0);
     }
   }
 

@@ -773,7 +773,7 @@ class Network {
         syncobj.start =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(last_shared_ancestor);
 
-        for (let i = last_shared_ancestor + 1; i <= this.app.blockring.returnLatestBlockId(); i++) {
+        for (let i = last_shared_ancestor + BigInt(1); i <= this.app.blockring.returnLatestBlockId(); i++) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
             if (this.app.blockchain.blocks[block_hash]) {
