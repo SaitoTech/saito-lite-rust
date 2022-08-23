@@ -376,7 +376,7 @@ class RedSquare extends ModTemplate {
 
 
         if (res.rows) {
-          console.log("results ", res.rows)
+
           res.rows.forEach(row => {
 
             let new_tweet = 1;
