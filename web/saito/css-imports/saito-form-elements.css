@@ -28,7 +28,9 @@ text and password inputs
 -----------------------------------------------------------------*/
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"] {
   border: 1px solid var(--saito-border);
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
@@ -38,7 +40,8 @@ input[type="password"] {
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="datetime-local"] {
   outline: none;
 }
 
