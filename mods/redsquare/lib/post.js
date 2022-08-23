@@ -135,7 +135,7 @@ class Post {
 
       this.remove();
 
-      if (imgSize > 1024) { // 1 MB 
+      if (imgSize > 970) { // 1 MB 
 
         let newDimensions = (dimensions < 0.95) ? dimensions+0.05 : 0.95;
         let newQuality = (quality < 0.95) ? quality+0.05 : 0.95;
