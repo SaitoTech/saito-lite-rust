@@ -429,11 +429,6 @@ class RedSquare extends ModTemplate {
     // browsers
     //
     if (app.BROWSER == 1) {
-      if (tx.transaction.from[0] === app.wallet.returnPublicKey()) {
-        this.redsquare.lik
-
-
-      }
       return;
     }
 
