@@ -680,11 +680,11 @@ class Blockchain {
     }
   }
 
-  generateLastSharedAncestor(peer_latest_block_id, fork_id) : bigint {
+  generateLastSharedAncestor(peer_latest_block_id : bigint, fork_id) : bigint {
     let my_latest_block_id = this.app.blockring.returnLatestBlockId();
 
-    let pbid = peer_latest_block_id;
-    let mbid = my_latest_block_id;
+    let pbid: bigint = peer_latest_block_id;
+    let mbid: bigint = my_latest_block_id;
     let weights = [
       BigInt(0),
       BigInt(10),
@@ -713,8 +713,8 @@ class Blockchain {
       for (let i = 0; i < 10; i++) {
         //if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
         //  pbid -= BigInt(i);
-        if ((pbid - i) % 10 === 0) {
-          pbid -= i;
+        if ((pbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
+          pbid -= BigInt(i);
           break;
         }
       }

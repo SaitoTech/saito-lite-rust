@@ -175,7 +175,7 @@ export default class Blockring {
     return BigInt(0);
   }
 
-  returnLatestBlock() {
+  returnLatestBlock(): Block | null {
     const block_hash = this.returnLatestBlockHash();
     if (this.app.blockchain.isBlockIndexed(block_hash)) {
       return this.app.blockchain.blocks[block_hash];
@@ -183,8 +183,8 @@ export default class Blockring {
     return null;
   }
 
-  returnLongestChainBlockHashByBlockId(block_id) {
-    const insert_pos = block_id % this.ring_buffer_length;
+  returnLongestChainBlockHashByBlockId(block_id: bigint): string {
+    const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
 
     if (this.ring[insert_pos].block_hashes.length > this.ring[insert_pos].lc_pos) {
       if (this.ring[insert_pos].block_hashes.length > 0) {
