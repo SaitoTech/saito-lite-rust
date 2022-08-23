@@ -196,7 +196,7 @@ class RedSquare extends ModTemplate {
     //
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
-      mod.renderWithChildren(app, redsquare_self, sig);
+      mod.renderWithChildren(app, mod, sig);
     });
 
 
