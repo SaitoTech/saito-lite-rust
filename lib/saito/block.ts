@@ -1195,8 +1195,8 @@ class Block {
   }
 
   async runCallbacks(conf, run_callbacks = 1) {
-    if (this.confirmations && this.callbacks) {
-      for (let i = this.confirmations + 1; i <= conf; i++) {
+    if (Number(this.confirmations) && this.callbacks) {
+      for (let i = Number(this.confirmations) + 1; i <= conf; i++) {
         for (let ii = 0; ii < this.callbacks.length; ii++) {
           try {
             if (run_callbacks === 1) {
