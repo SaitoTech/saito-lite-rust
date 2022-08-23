@@ -295,7 +295,7 @@ class RedSquareTweet {
         obj.parentNode.classList.remove("saito-tweet-no-activity");
         obj.parentNode.classList.add("saito-tweet-activity");
       };
-    };
+    };  
 
 
     //
@@ -343,12 +343,35 @@ class RedSquareTweet {
         oImg.setAttribute('src', imgdata_uri);
         document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
 
+        let img_width =  oImg.width;
+        let img_height = oImg.height;
+        let aspRatio = img_width/img_height;
+
+        let winHeight = window.innerHeight;
+        let winWidth = window.innerWidth;
+
+        if (aspRatio > 1) {
+          oImg.style.width = '95vw';
+          oImg.style.height = 'auto';
+
+           if (oImg.height > winHeight) {
+            oImg.style.width = (oImg.width*0.75)+'px';
+          }
+        } else {
+          oImg.style.height = '95vh';
+          oImg.style.width = 'auto';
+
+          if (oImg.width > winWidth) {
+            oImg.height = (oImg.height*0.75)+'px';
+          }
+        }
       }
 
       if (e.target.classList.contains('tweet-link')) {
         let url = e.target.getAttribute('href');
         window.open(url, '_blank').focus();
       }
+
     });
   }
 
