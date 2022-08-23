@@ -62,6 +62,9 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   <div class="saito-page-header">
+
+    <div class="saito-button-secondary small" style="float: right;" id="restore-privatekey-btn">Import Key</div>
+    <div class="saito-button-secondary small" style="float: right;" id="restore-account-btn">Restore Wallet</div>
     <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
     <div class="saito-page-header-title">SETTINGS</div>
     <div class="saito-page-header-text">
@@ -71,6 +74,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   </div>
 
   <div class="settings-appspace">
+
+    <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
 
     <div>
 
@@ -100,11 +105,6 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           </div>
 
 	       </div>
-         <div class="saito-grid-1-1-1">
-         <div class="saito-button-secondary" id="restore-account-btn">Restore</div>
-         <div class="saito-button-secondary" id="restore-privatekey-btn">Import Private Key</div>
-         <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
-         </div>
      
   </div>
 
@@ -112,13 +112,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div class="settings-appspace-modules-container">
         <h6> Installed Modules </h6>
-        `;
 
-  if (app.modules.returnModule("AppStore") != null) {
-    html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
-  }
-
-  html += `
   <div class="settings-appspace-modules">
       ${modules_html_active}
    </div>
