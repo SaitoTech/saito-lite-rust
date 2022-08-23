@@ -867,7 +867,7 @@ class Block {
       // creator signs fee transaction
       //
       cv.fee_transaction.sign(this.app);
-      this.add_transaction(cv.fee_transaction);
+      this.transactions.push(cv.fee_transaction);
     }
 
     //
