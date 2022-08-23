@@ -691,10 +691,10 @@ console.log("---------------------");
     //
     // this adds a 1 block buffer so that inputs are valid in the future block included
     //
-    const lowest_block =
-      this.app.blockchain.blockchain.last_block_id -
-      this.app.blockchain.blockchain.genesis_period +
-      2;
+    const lowest_block: bigint =
+        this.app.blockchain.blockchain.last_block_id -
+        this.app.blockchain.blockchain.genesis_period +
+        BigInt(2);
 
     //
     // check pending txs to avoid slip reuse if necessary

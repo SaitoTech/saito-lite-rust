@@ -756,8 +756,8 @@ class Network {
         }
 
         if (last_shared_ancestor <= 0) {
-          if (this.app.blockchain.returnLatestBlockId() > 10) {
-            last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - 10;
+          if (this.app.blockchain.returnLatestBlockId() > BigInt(10)) {
+            last_shared_ancestor = this.app.blockchain.returnLatestBlockId() - BigInt(10);
           }
         }
 

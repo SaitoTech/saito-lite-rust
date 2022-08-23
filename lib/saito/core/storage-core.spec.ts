@@ -63,7 +63,7 @@ test("write_read_block_with_data_to_file", async () => {
   };
 
   const block = new Block(mockApp);
-  block.block.id = 10;
+  block.block.id = BigInt(10);
   block.block.timestamp = 1637034582666;
   block.block.previous_block_hash =
     "bcf6cceb74717f98c3f7239459bb36fdcd8f350eedbfccfbebf7c0b0161fcd8b";

@@ -17,7 +17,7 @@ export enum BlockType {
 class Block {
   public app: Saito;
   public block = {
-    id: 0,
+    id: BigInt(0),
     timestamp: 0,
     previous_block_hash: "",
     merkle: "",
@@ -139,7 +139,7 @@ class Block {
     console.debug("deserializing block");
     const transactions_length = this.app.binary.u32FromBytes(buffer.slice(0, 4));
 
-    this.block.id = parseInt(this.app.binary.u64FromBytes(buffer.slice(4, 12)).toString()); // TODO : fix this to support correct ranges.
+    this.block.id = this.app.binary.u64FromBytes(buffer.slice(4, 12)); // TODO : fix this to support correct ranges.
     this.block.timestamp = parseInt(this.app.binary.u64FromBytes(buffer.slice(12, 20)).toString());
     this.block.previous_block_hash = Buffer.from(buffer.slice(20, 52)).toString("hex");
     this.block.creator = this.app.crypto.toBase58(
@@ -375,7 +375,7 @@ class Block {
     //
     // calculate automatic transaction rebroadcasts / ATR / atr
     //
-    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + 1) {
+    if (this.block.id > this.app.blockchain.returnGenesisPeriod() + BigInt(1)) {
       const pruned_block_id = this.block.id - this.app.blockchain.returnGenesisPeriod();
       const pruned_block_hash =
         this.app.blockring.returnLongestChainBlockHashByBlockId(pruned_block_id);
@@ -482,7 +482,7 @@ class Block {
 
       if (previous_block.block.avg_income > cv.total_fees) {
         let adjustment =
-          Number(previous_block.block.avg_income - cv.total_fees) /
+            (previous_block.block.avg_income - cv.total_fees) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income -= adjustment;
@@ -490,7 +490,7 @@ class Block {
       }
       if (previous_block.block.avg_income < cv.total_fees) {
         let adjustment =
-          Number(cv.total_fees - previous_block.block.avg_income) /
+            (cv.total_fees - previous_block.block.avg_income )/
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_income += adjustment;
@@ -502,7 +502,7 @@ class Block {
       //
       if (previous_block.block.avg_atr_income > cv.total_rebroadcast_nolan) {
         let adjustment =
-          Number(previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
+          (previous_block.block.avg_atr_income - cv.total_rebroadcast_nolan) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income -= adjustment;
@@ -510,7 +510,7 @@ class Block {
       }
       if (previous_block.block.avg_atr_income < cv.total_rebroadcast_nolan) {
         let adjustment =
-         Number (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
+          (cv.total_rebroadcast_nolan - previous_block.block.avg_atr_income) /
           this.app.blockchain.blockchain.genesis_period;
         if (adjustment > 0) {
           cv.avg_atr_income += adjustment;
@@ -723,7 +723,7 @@ class Block {
           break;
         }
 
-        const bid = this.returnId() - i;
+        const bid:bigint = this.returnId() - BigInt(i);
         const previous_block_hash = this.app.blockring.returnLongestChainBlockHashByBlockId(bid);
         if (previous_block_hash !== "") {
           const previous_block = await this.app.blockchain.loadBlockAsync(previous_block_hash);
@@ -752,7 +752,7 @@ class Block {
     //
     // fetch consensus values from preceding block
     //
-    let previous_block_id = 0;
+    let previous_block_id = BigInt(0);
     let previous_block_timestamp = 0;
     let previous_block_difficulty = 0;
     let previous_block_burnfee = BigInt(0);
@@ -780,7 +780,7 @@ class Block {
     //
     // set our values
     //
-    this.block.id = previous_block_id + 1;
+    this.block.id = previous_block_id + BigInt(1);
     this.block.previous_block_hash = previous_block_hash;
     this.block.burnfee = current_burnfee;
     this.block.timestamp = current_timestamp;
@@ -799,7 +799,7 @@ class Block {
     //
     // first block gets issuance
     //
-    if (this.block.id === 1) {
+    if (this.block.id === BigInt(1)) {
       let tokens_issued = BigInt(0);
       let slips = this.app.storage.returnTokenSupplySlipsFromDisk();
       let newtx = this.app.wallet.createUnsignedTransaction();
@@ -1186,7 +1186,7 @@ class Block {
     return this.hash;
   }
 
-  returnId() {
+  returnId() :bigint {
     return this.block.id;
   }
 

@@ -6,25 +6,25 @@ export default class Blockring {
   public ring_buffer_length: number;
   public ring: Array<{
     block_hashes: Array<string>;
-    block_ids: Array<number>;
+    block_ids: Array<bigint>;
     lc_pos: number;
   }>;
   public is_empty: boolean;
   public lc_pos: number;
 
-  constructor(app: Saito, genesis_period: number) {
+  constructor(app: Saito, genesis_period: bigint) {
     this.app = app;
 
     //
     // consensus variables
     //
-    this.ring_buffer_length = genesis_period * 2;
+    this.ring_buffer_length = (genesis_period * BigInt(2)) as unknown as number;
     this.ring = new Array<any>(this.ring_buffer_length);
 
     for (let i = 0; i < this.ring_buffer_length; i++) {
       this.ring[i] = {
         block_hashes: new Array<string>(),
-        block_ids: new Array<number>(),
+        block_ids: new Array<bigint>(),
         lc_pos: 0,
       };
     }
@@ -34,8 +34,8 @@ export default class Blockring {
   }
 
   addBlock(block) {
-    const insert_pos = block.returnId() % this.ring_buffer_length;
-    const block_id = block.returnId();
+    const insert_pos :number = block.returnId() % this.ring_buffer_length;
+    const block_id : bigint = block.returnId();
     const block_hash = block.returnHash();
     //console.log("blockring.addBlock : " + block.hash + " at position " + block_id);
     if (!this.containsBlockHashAtBlockId(block_id, block_hash)) {
@@ -51,7 +51,7 @@ export default class Blockring {
 
   deleteBlock(block: Block) {
     console.debug("blockring.deleteBlock : " + block.returnId() + " : " + block.returnHash());
-    const insert_pos = block.returnId() % this.ring_buffer_length;
+    const insert_pos  = Number(block.returnId() % BigInt(this.ring_buffer_length));
     const block_id = block.returnId();
     const block_hash = block.returnHash();
 
@@ -78,7 +78,6 @@ export default class Blockring {
       this.ring[insert_pos].block_hashes = new_block_hashes;
       this.ring[insert_pos].block_ids = new_block_ids;
       this.ring[insert_pos].lc_pos = new_lc_pos;
-    } else {
     }
   }
 
@@ -144,8 +143,8 @@ export default class Blockring {
     return v;
   }
 
-  returnLongestChainBlockHashAtBlockId(block_id: number) {
-    const insert_pos = block_id % this.ring_buffer_length;
+  returnLongestChainBlockHashAtBlockId(block_id: bigint) {
+    const insert_pos = Number(block_id % BigInt(this.ring_buffer_length));
     if (this.ring[insert_pos].lc_pos < this.ring[insert_pos].block_hashes.length) {
       return this.ring[insert_pos].block_hashes[this.ring[insert_pos].lc_pos];
     }
@@ -162,18 +161,18 @@ export default class Blockring {
     return "";
   }
 
-  returnLatestBlockId() {
+  returnLatestBlockId():bigint {
     if (this.lc_pos == 0) {
       if (this.ring[0].block_ids.length > 0) {
         return this.ring[0].block_ids[this.ring[0].lc_pos];
       } else {
-        return 0;
+        return BigInt(0);
       }
     }
     if (this.ring[this.lc_pos].block_ids.length > this.ring[this.lc_pos].lc_pos) {
       return this.ring[this.lc_pos].block_ids[this.ring[this.lc_pos].lc_pos];
     }
-    return 0;
+    return BigInt(0);
   }
 
   returnLatestBlock() {

@@ -8,23 +8,23 @@ class Blockchain {
 
     // last in longest_chain
     last_block_hash: "",
-    last_block_id: 0,
+    last_block_id: BigInt(0),
     last_timestamp: new Date().getTime(),
     last_burnfee: 0,
 
     // earliest in epoch
-    genesis_period: 100000,
-    genesis_block_id: 0,
+    genesis_period: BigInt(100000),
+    genesis_block_id: BigInt(0),
     genesis_timestamp: 0,
     genesis_block_hash: "",
 
     // first received this sync (used to prevent recursive fetch forever)
     lowest_acceptable_timestamp: 0,
     lowest_acceptable_block_hash: "",
-    lowest_acceptable_block_id: 0,
+    lowest_acceptable_block_id: BigInt(0),
 
     // set dynamically on load to avoid duplicating callbacks
-    last_callback_block_id: 0,
+    last_callback_block_id: BigInt(0),
   };
   // public blockring: Blockring;
   public blocks: Map<string, Block>;
@@ -73,7 +73,7 @@ class Blockchain {
   }
 
   addGhostToBlockchain(
-    id = 0,
+    id = BigInt(0),
     previous_block_hash = "",
     ts = 0,
     prehash = "",
@@ -443,19 +443,19 @@ class Blockchain {
       // don't run callbacks if reloading (force!)
       //
       if (block.lc === 1 && block.force !== 1) {
-        let block_id_from_which_to_run_callbacks = block.returnId() - this.callback_limit + 1;
-        let block_id_in_which_to_delete_callbacks = block.returnId() - this.prune_after_blocks;
+        let block_id_from_which_to_run_callbacks = block.returnId() - BigInt(this.callback_limit + 1);
+        let block_id_in_which_to_delete_callbacks = block.returnId() - BigInt(this.prune_after_blocks);
         if (block_id_from_which_to_run_callbacks <= 0) {
-          block_id_from_which_to_run_callbacks = 1;
+          block_id_from_which_to_run_callbacks = BigInt(1);
         }
         if (block_id_from_which_to_run_callbacks <= block_id_in_which_to_delete_callbacks) {
-          block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + 1;
+          block_id_from_which_to_run_callbacks = block_id_from_which_to_run_callbacks + BigInt(1);
         }
 
         if (block_id_from_which_to_run_callbacks > 0) {
           for (let i = block_id_from_which_to_run_callbacks; i <= block.returnId(); i++) {
-            let blocks_back = block.returnId() - i;
-            let this_confirmation = blocks_back + 1;
+            let blocks_back = block.returnId() - BigInt(i);
+            let this_confirmation = blocks_back + BigInt(1);
             let run_callbacks = 1;
 
             //
@@ -489,7 +489,7 @@ class Blockchain {
         //
         if (block_id_in_which_to_delete_callbacks >= 0) {
           let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(
-            block_id_in_which_to_delete_callbacks + 1 // because block ring starts from 1
+            block_id_in_which_to_delete_callbacks + BigInt(1) // because block ring starts from 1
           );
           let callback_block = this.blocks[callback_block_hash];
           if (callback_block) {
@@ -519,7 +519,7 @@ class Blockchain {
   //
   // deletes all blocks at a single block_id
   //
-  async deleteBlocks(delete_block_id: number) {
+  async deleteBlocks(delete_block_id: bigint) {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(delete_block_id);
     if (this.debugging) {
       console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
@@ -545,8 +545,8 @@ class Blockchain {
     }
 
     let prune_blocks_at_block_id =
-      this.app.blockring.returnLatestBlockId() - this.prune_after_blocks;
-    if (prune_blocks_at_block_id < 1) {
+      this.app.blockring.returnLatestBlockId() - BigInt(this.prune_after_blocks);
+    if (prune_blocks_at_block_id < BigInt(1)) {
       return;
     }
 
@@ -623,7 +623,7 @@ class Blockchain {
   }
 
   // deletes a single block
-  async deleteBlock(deletedBlockId: number, deletedBlockHash: string) {
+  async deleteBlock(deletedBlockId: bigint, deletedBlockHash: string) {
     if (this.debugging) {
       console.debug("blockchain.deleteBlock : " + deletedBlockId + " : " + deletedBlockHash);
     }
@@ -669,7 +669,23 @@ class Blockchain {
 
     let pbid = peer_latest_block_id;
     let mbid = my_latest_block_id;
-    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
+    let weights = [
+      BigInt(0),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(25),
+      BigInt(25),
+      BigInt(100),
+      BigInt(300),
+      BigInt(500),
+      BigInt(4000),
+      BigInt(10000),
+      BigInt(20000),
+      BigInt(50000),
+      BigInt(100000)];
 
     //
     // peer is further ahead
@@ -718,8 +734,8 @@ class Blockchain {
       // roll back to last even 10 blocks
       //
       for (let i = 0; i < 10; i++) {
-        if ((mbid - i) % 10 === 0) {
-          mbid -= i;
+        if ((mbid - BigInt(i)) % BigInt(10) === BigInt(0)) {
+          mbid -= BigInt(i);
           break;
         }
       }
@@ -900,14 +916,14 @@ class Blockchain {
     // last in longest_chain
     //
     this.blockchain.last_block_hash = "";
-    this.blockchain.last_block_id = 0;
+    this.blockchain.last_block_id = BigInt(0);
     this.blockchain.last_timestamp = new Date().getTime();
     this.blockchain.last_burnfee = 0;
 
     //
     // earliest in epoch
     //
-    this.blockchain.genesis_block_id = 0;
+    this.blockchain.genesis_block_id = BigInt(0);
     this.blockchain.genesis_timestamp = 0;
 
     //
@@ -915,7 +931,7 @@ class Blockchain {
     //
     this.blockchain.lowest_acceptable_timestamp = 0;
     this.blockchain.lowest_acceptable_block_hash = "";
-    this.blockchain.lowest_acceptable_block_id = 0;
+    this.blockchain.lowest_acceptable_block_id = BigInt(0);
 
     this.saveBlockchain();
   }
@@ -924,7 +940,7 @@ class Blockchain {
     return 1;
   }
 
-  returnGenesisPeriod() {
+  returnGenesisPeriod() : bigint {
     return this.blockchain.genesis_period;
   }
 
@@ -997,12 +1013,12 @@ class Blockchain {
     // so we check that our block is the head of the longest-chain and only
     // update the genesis period when that is the case.
     //
-    const latest_block_id: number = longest_chain_block.returnId();
-    if (latest_block_id >= this.returnGenesisPeriod() * 2 + 1) {
+    const latest_block_id: bigint = longest_chain_block.returnId();
+    if (latest_block_id >= this.returnGenesisPeriod() * BigInt(2) + BigInt(1)) {
       //
       // prune blocks
       //
-      const purge_block_id: number = latest_block_id - this.returnGenesisPeriod() * 2;
+      const purge_block_id: bigint = latest_block_id - this.returnGenesisPeriod() * BigInt(2);
       this.blockchain.genesis_block_id = latest_block_id - this.returnGenesisPeriod();
 
       //
@@ -1016,9 +1032,9 @@ class Blockchain {
         //
         // update blockchain consensus variables
         //
-        this.blockchain.genesis_block_id = purge_block_id + 1;
+        this.blockchain.genesis_block_id = purge_block_id + BigInt(1);
         this.blockchain.genesis_block_hash =
-          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_block_id + 1);
+          this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_block_id + BigInt(1));
         const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
@@ -1163,10 +1179,10 @@ class Blockchain {
     let MAX_STAKER_RECURSION = 3; // current block + 2 payouts
 
     for (let i = 0; i < MAX_STAKER_RECURSION; i++) {
-      if (i >= latest_block_id) {
+      if (BigInt(i) >= latest_block_id) {
         break;
       }
-      let bid = latest_block_id - i;
+      let bid = latest_block_id - BigInt(i);
 
       //
       // bid starts from the latest block, which will not have its blockring
@@ -1175,7 +1191,7 @@ class Blockchain {
       // skip loading the previous_block_hash if this is the same as the
       // latest_block_id;
       //
-      let insert_pos = bid % this.app.blockring.ring_buffer_length;
+      let insert_pos = Number(bid % BigInt(this.app.blockring.ring_buffer_length));
 
       let previous_block_hash;
 
