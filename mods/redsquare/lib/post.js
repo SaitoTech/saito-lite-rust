@@ -153,7 +153,7 @@ class Post {
          /><i data-id="${post_self.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
          </div>`, document.getElementById("post-tweet-img-preview-container"));  
 
-        post_self.images.push(resizedImg);
+        post_self.images.push(result_img_uri);
         return result_img_uri;
       }
     };
