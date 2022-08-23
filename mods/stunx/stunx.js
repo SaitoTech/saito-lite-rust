@@ -1,14 +1,15 @@
 const saito = require("../../lib/saito/saito");
-const ModTemplate = require("../../lib/templates/modtemplate");
+//const ModTemplate = require("../../lib/templates/modtemplate");
+const InviteTemplate = require("../../lib/templates/invitetemplate");
 var serialize = require('serialize-javascript');
 const ChatManagerLarge = require('./lib/components/chat-manager-large');
 const ChatManagerSmall = require("./lib/components/chat-manager-small");
 const StunxAppspace = require('./lib/appspace/main');
 const InviteOverlay = require("./lib/components/invite-overlay");
 const StunxGameMenu = require("./lib/game-menu/main");
+const StunxInvite = require('./lib/invite/main');
 
-
-class Stunx extends ModTemplate {
+class Stunx extends InviteTemplate {
 
     constructor(app, mod) {
         super(app);
@@ -60,9 +61,9 @@ class Stunx extends ModTemplate {
 
     respondTo(type) {
         if (type === 'invite') {
-            this.styles = ['/' + this.returnSlug() + '/css/style.css',];
-            super.render(this.app, this);
-            // return new StunInvite(this.app, this);
+          this.styles = ['/' + this.returnSlug() + '/css/style.css',];
+          super.render(this.app, this); // for scripts + styles
+          return new StunxInvite(this.app, this);
         }
         if (type === 'appspace') {
             this.styles = ['/' + this.returnSlug() + '/css/style.css',];

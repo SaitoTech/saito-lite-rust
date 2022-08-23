@@ -328,7 +328,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
       }
@@ -368,6 +368,7 @@ class RedSquare extends ModTemplate {
       sql,
 
       async (res) => {
+
 
         if (res.rows) {
           res.rows.forEach(row => {
@@ -488,6 +489,7 @@ class RedSquare extends ModTemplate {
     }
 
 
+
     //
     // servers
     //
@@ -561,6 +563,18 @@ class RedSquare extends ModTemplate {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
+
+
+    if (tweet.retweet_tx != null) {
+
+      let ts = new Date().getTime();
+      let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
+      let params3 = {
+        $sig: tweet.thread_id,
+      }
+      app.storage.executeDatabase(sql3, params3, "redsquare");
+
+    }
 
     this.sqlcache = [];
 
