@@ -128,6 +128,7 @@ class Blackjack extends GameTemplate {
     }
 
     if (this.game.deck.length == 0) {
+
       this.game.state = this.returnInitialState(this.game.players.length);
       this.updateStatus("Generating the Game");
       //Neither of these show up
@@ -164,7 +165,14 @@ class Blackjack extends GameTemplate {
 
     for (let i = 0; i < num_of_players; i++) {
       state.player[i] = { credit : this.game.stake,
-                          name : this.app.keys.returnIdentifierByPublicKey(this.game.players[i], 1)};           
+                          name : this.app.keys.returnIdentifierByPublicKey(this.game.players[i], 1),
+                          wager : 0,
+                          payout : 1,
+                          hand : [],
+                          total : 0,
+                          winner : null,
+                          split : []
+                        };           
       if (state.player[i].name.indexOf("@") > 0) {
         state.player[i].name = state.player[i].name.substring(0, state.player[i].name.indexOf("@"));
       }
@@ -265,31 +273,40 @@ class Blackjack extends GameTemplate {
       this.settleLastRound();
       return 1;
     }else if (this.game.state.player.length > 2){ //if more than 2, remove extras
-        for (let i = 0; i < this.game.state.player.length; i++){
+        for (let i = this.game.state.player.length - 1; i >=0 ; i--){
           if (this.game.state.player[i].credit<=0){
               removal = true;
               console.log(`*** Removing Player ${i+1}`);
               this.game.state.player.splice(i,1);  //Remove player from game state
               this.removePlayer(this.game.players[i]); //Remove player in gamemodule
-              i--;
             }      
         } 
     }
 
     if (removal){
+      //Save game with fewer players
+      this.saveGame(this.game.id);
 
-      this.game.player = 1 + this.game.players.indexOf(this.app.wallet.returnPublicKey());
-      //Update DOM -- re-render the playerboxes
+      //Update DOM 
       try{
-        //this.playerbox.remove();
+        //Remove playerboxes
         let boxes = document.querySelectorAll(".player-box");
         for (let box of boxes){
           box.remove();
         }
-        this.playerbox.render(this.app,this);
+        //this.playerbox.render(this.app,this);
+
+        //Hide cardfan
+        this.cardfan.hide();
+
       }catch(err){
         console.error(err);
       }
+
+      //Let's just try reloading the game
+      this.initialize_game_run = 0;
+      this.initializeGameFeeder(this.game.id);
+      return 0;
     }
     
     //
@@ -305,7 +322,7 @@ class Blackjack extends GameTemplate {
        el.innerHTML = "";
     });
     this.initializeQueue();
-
+    return 1;
   }
 
 
@@ -323,9 +340,9 @@ class Blackjack extends GameTemplate {
       this.displayBoard();
       
       if (mv[0] === "start" || mv[0] === "newround") {
-        this.game.queue.splice(qe, 1);
-        this.newRound(); 
-        return 1;
+        //If we change the # of players, we want to stop the queue and refresh the game
+        //Otherwise return 1, and run through the initialized queue commands
+        return this.newRound(); 
       }
 
       //Player takes their turn
@@ -828,12 +845,8 @@ class Blackjack extends GameTemplate {
 
     if (this.browser_active == 0) { return; }
 
-    try {
-      this.displayPlayers();
-      this.displayHand();
-    } catch (err) {
-     console.error("err: " + err);
-    }
+    this.displayPlayers();
+    this.displayHand();
 
   }
 
@@ -846,14 +859,13 @@ class Blackjack extends GameTemplate {
   displayPlayers() {
 
     if (this.browser_active == 0) { return; }
-  
-    for (let i = 0; i < this.game.players.length; i++) {
 
-      let newhtml = '';
-      let player_hand_shown = 0;
+    try{  
+      for (let i = 0; i < this.game.state.player.length; i++) {
 
-      if (this.game.state.player.length > 0) {
-        //
+        let newhtml = '';
+        let player_hand_shown = 0;
+
         this.playerbox.refreshName(i+1);
 
         if (this.game.state.player[i].wager>0 && this.game.state.dealer !== (i+1)){
@@ -905,38 +917,48 @@ class Blackjack extends GameTemplate {
                     
             this.playerbox.refreshGraphic(newhtml, (i+1));
         }
+          
         
       }
+    } catch (err) {
+     console.error("Display Players err: " + err);
     }
+
   }
 
 
   displayHand() {
-    let cardhtml = "";
-    for (let c of this.myCards()){
-      cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
-    }
+    if (this.game.player == 0) { return; }
+    try{
+      let cardhtml = "";
+      for (let c of this.myCards()){
+        cardhtml += `<img class="card" src="${this.card_img_dir}/${c}.png">`;
+      }
 
-    this.cardfan.render(this.app, this, cardhtml);
-    this.cardfan.attachEvents(this.app, this);
+      this.cardfan.render(this.app, this, cardhtml);
+      this.cardfan.attachEvents(this.app, this);
 
-    //Add split hands
-    if (this.game.state.player[this.game.player-1].split.length>0){
-      let newhtml = "";
-      for (let z = 0; z<this.game.state.player[this.game.player-1].split.length; z++){
-        let ts = this.scoreArrayOfCards(this.game.state.player[this.game.player-1].split[z]);
-      
-        newhtml += (ts>0)? `<span>Score: ${ts}</span>` : `<span>Bust</span>`;
+      //Add split hands
+      if (this.game.state.player[this.game.player-1].split.length>0){
+        let newhtml = "";
+        for (let z = 0; z<this.game.state.player[this.game.player-1].split.length; z++){
+          let ts = this.scoreArrayOfCards(this.game.state.player[this.game.player-1].split[z]);
         
-        newhtml += `<div class="splithand">`;
-        newhtml += this.handToHTML(this.game.state.player[this.game.player-1].split[z]);
-        newhtml += "</div>";
-     }
-     this.playerbox.refreshGraphic(newhtml);
-     $("#player-box-graphic-1").removeClass("hidden");
-    }else{
-      $("#player-box-graphic-1").addClass("hidden");
+          newhtml += (ts>0)? `<span>Score: ${ts}</span>` : `<span>Bust</span>`;
+          
+          newhtml += `<div class="splithand">`;
+          newhtml += this.handToHTML(this.game.state.player[this.game.player-1].split[z]);
+          newhtml += "</div>";
+       }
+       this.playerbox.refreshGraphic(newhtml);
+       $("#player-box-graphic-1").removeClass("hidden");
+      }else{
+        $("#player-box-graphic-1").addClass("hidden");
+      }
+    } catch (err) {
+     console.error("Display Hand err: " + err);
     }
+
   }
 
 
@@ -1175,6 +1197,8 @@ class Blackjack extends GameTemplate {
       });
       this.game.halted = 1;  
       return 0;
+    }else{
+      this.overlay.show(this.app, this, `<div class="shim-notice">${dealerHTML}${playerHTML}</div>`);
     } 
     return 1;
   }

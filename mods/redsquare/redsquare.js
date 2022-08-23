@@ -105,7 +105,13 @@ class RedSquare extends ModTemplate {
   }
 
 
+
+  initializeHTML(app) {
+    this.saitoLoader.render(app, this, '', true);
+  }
+
   render(app, mod, selector = "") {
+
     if (this.ui_initialized == false) {
       this.main = new RedSquareMain(this.app, this);
       this.header = new SaitoHeader(this.app, this);
@@ -114,7 +120,13 @@ class RedSquare extends ModTemplate {
       this.ui_initialized = true;
 
     }
+
     super.render(app, this);
+    if (mod) {
+      mod.saitoLoader.remove(app, mod);
+    }
+
+
   }
 
 
@@ -148,8 +160,6 @@ class RedSquare extends ModTemplate {
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
       mod.renderParentWithChildren(app, mod, sig);
-      mod.saitoLoader.remove(app, mod);
-
 
     });
 
@@ -186,8 +196,9 @@ class RedSquare extends ModTemplate {
     //
     let sql = `SELECT * FROM tweets WHERE sig = '${sig}' OR parent_id = '${sig}'`;
     mod.fetchTweets(app, mod, sql, function (app, mod) {
-      mod.renderWithChildren(app, redsquare_self, sig);
+      mod.renderWithChildren(app, mod, sig);
     });
+
 
 
   }
@@ -307,7 +318,6 @@ class RedSquare extends ModTemplate {
   async onPeerHandshakeComplete(app, peer) {
 
     let redsquare_self = this;
-
     if (this.app.BROWSER == 1) {
       this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
 
@@ -316,38 +326,32 @@ class RedSquare extends ModTemplate {
       if (document.querySelector(".redsquare-list")) {
         if (tweet_id) {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderWithChildren(app, redsquare_self, this.tweet_id); });
+          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = 'SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30';
-          this.fetchTweets(app, redsquare_self, sql, function(app, mod) { mod.renderMainPage(app, redsquare_self); });
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
+          this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
       }
-
-      setTimeout(function(){
-        redsquare_self.saitoLoader.remove();
-      }, 1000);
     }
   }
 
 
   async onConfirmation(blk, tx, conf, app) {
-
     let redsquare_self = this;
     let txmsg = tx.returnMessage();
-
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
         if (txmsg.request === "like tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
         if (txmsg.request === "flag tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveFlagTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
       }
     } catch (err) {
@@ -364,6 +368,7 @@ class RedSquare extends ModTemplate {
       sql,
 
       async (res) => {
+
 
         if (res.rows) {
           res.rows.forEach(row => {
@@ -395,6 +400,7 @@ class RedSquare extends ModTemplate {
           }
 
         }
+        mod.saitoLoader.remove(app, mod);
       }
     );
   }
@@ -429,11 +435,6 @@ class RedSquare extends ModTemplate {
     // browsers
     //
     if (app.BROWSER == 1) {
-      if (tx.transaction.from[0] === app.wallet.returnPublicKey()) {
-        this.redsquare.lik
-
-
-      }
       return;
     }
 
@@ -562,6 +563,8 @@ class RedSquare extends ModTemplate {
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
 
+    this.sqlcache = [];
+
     return;
 
   }
@@ -606,6 +609,8 @@ class RedSquare extends ModTemplate {
       $sig: txmsg.data.sig,
     };
     app.storage.executeDatabase(sql, params, "redsquare");
+
+    this.sqlcache = [];
 
     return;
 

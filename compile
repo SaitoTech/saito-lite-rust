@@ -64,6 +64,7 @@ function reset_nonpersistent {
 
   # we explicitly don't delete registry/balance databases
   rm -f ./data/appstore.sq3
+  rm -f ./data/observer.sq3
   rm -f ./data/hospital.sq3
   rm -f ./data/records.sq3
   rm -f ./data/archive.sq3
@@ -71,6 +72,7 @@ function reset_nonpersistent {
   rm -f ./data/timeclock.sq3
   rm -f ./data/earlybirds.sq3
   rm -f ./data/arcade.sq3
+  rm -f ./data/observer.sq3
   rm -f ./data/chat.sq3
   rm -f ./data/database.sq3
   rm -f ./data/stunx.sq3

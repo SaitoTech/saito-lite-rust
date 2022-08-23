@@ -32,7 +32,7 @@ class Post {
         } else {
         
           this.resizeImg(file, 0.75, 0.75); // (img, dimensions, quality)
-        
+      
         }
       }, 
       false);
@@ -112,7 +112,7 @@ class Post {
     let img_width = 0;
     let img_height = 0;
 
-    original.onload = function() {
+    let resizedImg = original.onload = function() {
       img_width =  this.width;
       img_height = this.height;
 
@@ -131,15 +131,34 @@ class Post {
 
       canvas.getContext("2d").drawImage(this, 0, 0, w, h);
       let result_img_uri = canvas.toDataURL('image/jpeg', quality);
-      
-      post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
-       /><i data-id="${post_self.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
-       </div>`, document.getElementById("post-tweet-img-preview-container"));  
+      let imgSize = result_img_uri.length/1024; // in KB
 
-      post_self.images.push(img);
       this.remove();
-      return result_img_uri;
+
+      if (imgSize > 970) { // 1 MB 
+
+        let newDimensions = (dimensions < 0.95) ? dimensions+0.05 : 0.95;
+        let newQuality = (quality < 0.95) ? quality+0.05 : 0.95;
+
+        post_self.resizeImg(result_img_uri, newDimensions, newQuality);
+      
+      } else {
+
+        post_self.app.browser.addElementToDom(`<div class="post-tweet-img-preview"><img src="${result_img_uri}"
+         /><i data-id="${post_self.images.length-1}" class="fas fa-times-circle saito-overlay-closebox-btn post-tweet-img-preview-close"></i>
+         </div>`, document.getElementById("post-tweet-img-preview-container"));  
+
+        post_self.images.push(resizedImg);
+        return result_img_uri;
+      }
     };
+
+
+
+    
+
+    
+    
   }
 }
 

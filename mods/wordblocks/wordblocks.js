@@ -226,8 +226,8 @@ class Wordblocks extends GameTemplate {
 
   initializeGame(game_id) {
 
-    // OBSERVER MODE
-    //if (this.game.player == 0) { return; }
+
+    console.log("InitializeGame");
 
     //
     // deal cards
@@ -256,10 +256,10 @@ class Wordblocks extends GameTemplate {
     //
     // stop here if initializing
     //
-    if (this.game.initializing == 1 || !this.browser_active) {
+    if (/*this.game.initializing == 1 ||*/ !this.browser_active) {
       return;
     }
-
+    console.log("InitializeGame Checkpoint");
 
     if (this.wordlist == ""){
       console.log("Loading dictionary...");
@@ -298,22 +298,25 @@ class Wordblocks extends GameTemplate {
       //
       // new board
       //
+      console.log("Create new board");
       this.game.board = this.returnBoard();
-    } else {
-      //
-      // load board
-      //
-      for (var i in this.game.board) {
-        let divname = "#" + i;
-        let letter = this.game.board[i].letter; // $(divname).html(this.returnTile(letter));
-        this.addTile($(divname), letter);
-        if (!(letter == "_") && !(letter == "")) {
-          try {
-            $(divname).addClass("set");
-          } catch (err) { }
-        }
+    } 
+
+    //
+    // Draw board
+    //
+    console.log("Drawing board");
+    for (var i in this.game.board) {
+      let divname = "#" + i;
+      let letter = this.game.board[i].letter; // $(divname).html(this.returnTile(letter));
+      this.addTile($(divname), letter);
+      if (!(letter == "_") && !(letter == "")) {
+        try {
+          $(divname).addClass("set");
+        } catch (err) { }
       }
     }
+    
 
     //
     // has a move been made
@@ -381,6 +384,11 @@ class Wordblocks extends GameTemplate {
   }
 
   updateStatusWithTiles(status) {
+    if (this.game.player == 0){
+      this.updateStatus(`<div class="hud-status-update-message">${status}</div>`);
+      return;
+    }
+
     try {
       let tile_html = "";
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
@@ -428,9 +436,12 @@ class Wordblocks extends GameTemplate {
   }
 
   addTile(obj, letter) {
+    obj.find(".tile").remove();
     if (letter !== "_") {
       obj.find(".bonus").css("display", "none");
       obj.append(this.returnTileHTML(letter));
+    }else{
+      obj.find(".bonus").css("display", "flex");
     }
   }
 
@@ -2159,7 +2170,8 @@ class Wordblocks extends GameTemplate {
       //
       // save before we start executing the game queue
       //
-      wordblocks_self.saveGame(wordblocks_self.game.id);
+      //wordblocks_self.saveGame(wordblocks_self.game.id);
+      
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
@@ -2240,10 +2252,7 @@ class Wordblocks extends GameTemplate {
           return;
         }
 
-        if (
-          wordblocks_self.game.player ==
-          wordblocks_self.returnNextPlayer(player)
-        ) {
+        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
           if (wordblocks_self.checkForEndGame() == 1) {
             return;
           }
@@ -2277,14 +2286,16 @@ class Wordblocks extends GameTemplate {
         //
         // observer mode
         //
-        if (this.game.player == 0) {
-          this.game.queue.push("OBSERVER_CHECKPOINT");
-          this.game.queue.splice(this.game.queue.length - 1, 1);
-          return 1;
-        }
+        //if (this.game.player == 0) {
+        //  this.game.queue.push("OBSERVER_CHECKPOINT");
+        //  this.game.queue.splice(this.game.queue.length - 1, 1);
+        //  return 1;
+        //}
 
-        if (wordblocks_self.checkForEndGame() == 1) {
-          return;
+        if (this.game.player !== 0){
+          if (wordblocks_self.checkForEndGame() == 1) {
+            return;
+          }
         }
 
         let player = mv[1];
@@ -2328,10 +2339,7 @@ class Wordblocks extends GameTemplate {
           );
         }
         $("player-box").removeClass("active");
-        this.playerbox.addClass(
-          "active",
-          wordblocks_self.returnNextPlayer(player)
-        );
+        this.playerbox.addClass("active", wordblocks_self.returnNextPlayer(player));
         this.playerbox.alertNextPlayer(wordblocks_self.returnNextPlayer(player), 'flash');
         this.game.queue.splice(this.game.queue.length - 1, 1);
         console.log("New Queue:",JSON.stringify(this.game.queue));

@@ -1421,12 +1421,6 @@ try {
          
           } else {
 
-            if (twilight_self.game.player == 2) {
-              twilight_self.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play second ${twilight_self.cardToText("che")} coup</div>`);
-              twilight_self.attachCardboxEvents();
-              return 0;
-            }   
-
             if (twilight_self.game.player == 1) {
 
               //If the event card has a UI component, run the clock for the player we are waiting on
@@ -1452,6 +1446,11 @@ try {
                 twilight_self.addMove("NOTIFY\tChe launches coup in "+twilight_self.countries[c].name);
                 twilight_self.endTurn();
               });
+            }else{
+
+              twilight_self.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play second ${twilight_self.cardToText("che")} coup</div>`);
+              twilight_self.attachCardboxEvents();
+              return 0;
             }
           }
 
@@ -1750,10 +1749,7 @@ try {
     }
 
     if (mv[0] == "northsea") {
-      if (this.game.player == 1) {
-        let html  = "US determining whether to take extra turn";
-        this.updateStatus(html);
-      }
+
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -1779,6 +1775,8 @@ try {
           }
 
         });
+      }else{
+        this.updateStatus("US determining whether to take extra turn");
       }
       shd_continue = 0;
     }
@@ -1875,11 +1873,6 @@ try {
           uscards.push(this.game.queue.pop());
         }
         
-
-        if (this.game.player == 2) {
-          this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText("aldrichames")}: USSR choosing card to discard</div>`);
-        }
-
         if (this.game.player == 1) {
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
@@ -1890,6 +1883,8 @@ try {
             twilight_self.addMove("aldrich\tussr\t"+action2);
             twilight_self.endTurn();
           });
+        }else{
+          this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText("aldrichames")}: USSR choosing card to discard</div>`);
         }
 
         return 0;
@@ -1945,53 +1940,50 @@ try {
 
     if (mv[0] === "teardownthiswall") {
 
-      if (this.game.player == 1) {
-        this.updateStatus("<div class='status-message' id='status-message'>US playing Tear Down This Wall</div>");
-        return 0;
+      if (this.game.player == 2){
 
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
+        let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
+        let html = `<ul>
+            <li class="card" id="taketear">make coup or realign</li>
+            <li class="card" id="skiptear">skip coup</li>
+            </ul>`;
+        twilight_self.updateStatusWithOptions(user_message, html,false);
+        twilight_self.attachCardboxEvents(function(action2) {
+
+          if (action2 == "skiptear") {
+            twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Tear Down this Wall...</div>");
+            twilight_self.addMove("resolve\tteardownthiswall");
+            twilight_self.endTurn();
+          }
+
+          if (action2 == "taketear") {
+            twilight_self.addMove("resolve\tteardownthiswall");
+            twilight_self.addMove("unlimit\tignoredefcon");
+            twilight_self.addMove("unlimit\tregion");
+            twilight_self.addMove("unlimit\tplacement");
+            twilight_self.addMove("unlimit\tmilops");
+            twilight_self.addMove("ops\tus\tteardown\t3");
+            twilight_self.addMove("limit\tmilops");
+            twilight_self.addMove("limit\tplacement");
+            twilight_self.addMove("limit\tregion\tasia");
+            twilight_self.addMove("limit\tregion\tseasia");
+            twilight_self.addMove("limit\tregion\tmideast");
+            twilight_self.addMove("limit\tregion\tsamerica");
+            twilight_self.addMove("limit\tregion\tcamerica");
+            twilight_self.addMove("limit\tregion\tafrica");
+            twilight_self.addMove("limit\tignoredefcon");
+            twilight_self.endTurn();
+          }
+
+        });
+      }else{
+          this.updateStatus("<div class='status-message' id='status-message'>US playing Tear Down This Wall</div>");     
       }
-
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
-
-      let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
-      let html = `<ul>
-          <li class="card" id="taketear">make coup or realign</li>
-          <li class="card" id="skiptear">skip coup</li>
-          </ul>`;
-      twilight_self.updateStatusWithOptions(user_message, html,false);
-      twilight_self.attachCardboxEvents(function(action2) {
-
-        if (action2 == "skiptear") {
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Tear Down this Wall...</div>");
-          twilight_self.addMove("resolve\tteardownthiswall");
-          twilight_self.endTurn();
-        }
-
-        if (action2 == "taketear") {
-          twilight_self.addMove("resolve\tteardownthiswall");
-          twilight_self.addMove("unlimit\tignoredefcon");
-          twilight_self.addMove("unlimit\tregion");
-          twilight_self.addMove("unlimit\tplacement");
-          twilight_self.addMove("unlimit\tmilops");
-          twilight_self.addMove("ops\tus\tteardown\t3");
-          twilight_self.addMove("limit\tmilops");
-          twilight_self.addMove("limit\tplacement");
-          twilight_self.addMove("limit\tregion\tasia");
-          twilight_self.addMove("limit\tregion\tseasia");
-          twilight_self.addMove("limit\tregion\tmideast");
-          twilight_self.addMove("limit\tregion\tsamerica");
-          twilight_self.addMove("limit\tregion\tcamerica");
-          twilight_self.addMove("limit\tregion\tafrica");
-          twilight_self.addMove("limit\tignoredefcon");
-          twilight_self.endTurn();
-        }
-
-      });
-
-      shd_continue = 0;
-
-    }
+        shd_continue = 0;
+      }
 
 
     if (mv[0] === "deal") {
@@ -2691,11 +2683,8 @@ try {
         if (this.isControlled("us", "canada") == 1) {
 
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
-
-          if (this.game.player == 1) {
-            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");
-            return 0;
-          } else {
+          
+          if (this.game.player == 2) {
 
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
@@ -2718,6 +2707,8 @@ try {
               twilight_self.endTurn();
             });
 
+          }else{
+            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");
           }
           return 0;
         }
@@ -2761,35 +2752,34 @@ try {
         //
         this.game.state.events.northseaoil_bonus = 0;
         
-        if (this.game.player == 1) {
+        if (this.game.player == 2) {
+
+          //
+          // US gets extra move
+          //
+          let html  = `<ul>
+                      <li class="card" id="play">play extra turn</li>
+                      <li class="card" id="nope">do not play</li>
+                      </ul>`;
+          this.updateStatusWithOptions(`Do you want to take an extra turn? (North Sea Oil)`,html,false);
+
+          twilight_self.attachCardboxEvents(function(action2) {
+
+            if (action2 == "play") {
+              twilight_self.addMove("play\t2");
+              twilight_self.endTurn(1);
+            }
+            if (action2 == "nope") {
+              twilight_self.addMove("NOTIFY\tUS does not play extra turn");
+              twilight_self.endTurn(1);
+            }
+
+          });
+        }else{
           this.updateStatus("<div class='status-message' id='status-message'>US is deciding whether to take extra turn</div>");
-          return 0;
         }
 
-        //
-        // US gets extra move
-        //
-        let html  = `<ul>
-                    <li class="card" id="play">play extra turn</li>
-                    <li class="card" id="nope">do not play</li>
-                    </ul>`;
-        this.updateStatusWithOptions(`Do you want to take an extra turn? (North Sea Oil)`,html,false);
-
-        twilight_self.attachCardboxEvents(function(action2) {
-
-          if (action2 == "play") {
-            twilight_self.addMove("play\t2");
-            twilight_self.endTurn(1);
-          }
-          if (action2 == "nope") {
-            twilight_self.addMove("NOTIFY\tUS does not play extra turn");
-            twilight_self.endTurn(1);
-          }
-
-        });
-
         return 0;
-
       }
 
       //
@@ -3025,11 +3015,8 @@ try {
           /*
           This is the block of code that gets called for NORAD
           */
-          if (this.game.player == 1) { //USSR waits for US to move
-            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");  
-            return 0;
-          }else{
-            
+          if (this.game.player == 2) { 
+
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
                 $("#"+i).addClass("westerneurope");
@@ -3050,6 +3037,8 @@ try {
               twilight_self.endTurn();
               });
             });
+          }else{
+            this.updateStatus("<div class='status-message' id='status-message'>NORAD triggers: US places 1 influence in country with US influence</div>");  
           }
           return 0;
         } 
@@ -3315,7 +3304,7 @@ try {
     let twilight_self = this;
     if (this.browser_active == 0) { return; }
 
-    let player = (this.game.player == 1)? "ussr": "us";
+    let player = this.playerRoles[this.game.player];
     let x = "";
 
     //
@@ -3331,7 +3320,9 @@ try {
     } else {
       x = `${player.toUpperCase()} pick your headline card`;
     }
-
+    if (this.game.player == 0){
+      x = "Players picking headline cards";
+    }
     this.updateStatusAndListCards(x,this.game.deck[0].hand);
 
     if (twilight_self.confirm_moves == 1) { twilight_self.cardbox.skip_card_prompt = 0; }
@@ -4216,8 +4207,6 @@ playerTurnHeadlineSelected(card, player) {
 
   playOps(player, ops, card) {
 
-    if (this.game.player == 0) { return; }
-
     let original_ops = ops;
     let twilight_self = this;
     
@@ -4225,8 +4214,7 @@ playerTurnHeadlineSelected(card, player) {
     // modify ops
     ops = this.modifyOps(ops, card, player);
 
-    let me = "ussr";
-    if (this.game.player == 2) { me = "us"; }
+    let me = this.playerRoles[this.game.player];
 
     // reset events / DOM
     twilight_self.playerFinishedPlacingInfluence();
@@ -4595,7 +4583,8 @@ playerTurnHeadlineSelected(card, player) {
   */
   cancelCubanMissileCrisis(){
     let twilight_self = this;
-  
+    if (twilight_self.game.player == 0) { return; } //just in case
+
     if (twilight_self.game.player == 1) {
       twilight_self.removeInfluence("cuba", 2, "ussr");
       twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
@@ -4668,6 +4657,8 @@ playerTurnHeadlineSelected(card, player) {
   playerTriggerOps(player, card) {
 
     let twilight_self = this;
+    if (this.game.player == 0 ) {return; } //just in case
+
     let opponent = "us";
     if (this.game.player == 2) { opponent = "ussr"; }
 
@@ -5568,7 +5559,7 @@ playerTurnHeadlineSelected(card, player) {
     //
     if (this.game.state.events.deathsquads != 0) {
       if (this.game.state.events.deathsquads <= -1) {
-	let roll_modifier = Math.abs(this.game.state.events.deathsquads);
+	      let roll_modifier = Math.abs(this.game.state.events.deathsquads);
         if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
           if (player == "ussr") {
             this.updateLog(`${this.cardToText("deathsquads")} triggers: USSR +"+roll_modifier+" modifier`);
@@ -5607,7 +5598,8 @@ playerTurnHeadlineSelected(card, player) {
 
     // Lower Defcon in BG countries unless US has nuclear subs or special condition flagged
     if (this.countries[countryname].bg == 1 && this.game.state.lower_defcon_on_coup == 1) {
-      if (player !== "us" || this.game.state.events.nuclearsubs == 0 ){
+      if (player == "ussr" || this.game.state.events.nuclearsubs == 0 ){
+        console.log("DEFCON MONITOR: about to lower defcon in coup logic 2...");
         this.lowerDefcon();
       }
     }
@@ -5769,7 +5761,9 @@ playerTurnHeadlineSelected(card, player) {
     //
     this.updateEventTiles();
 
-
+    if (this.game.player == 0){
+      console.log("Observer submitting moves, something went wrong: ", JSON.stringify(this.moves));
+    }
     this.updateStatus("<div class='status-message' id='status-message'>Submitting moves... awaiting response from peers...</div>");
 
     //
@@ -8758,9 +8752,6 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.aldrich = 1;
 
-      if (this.game.player == 1) {
-        return 0;
-      }
       if (this.game.player == 2) {
         //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
         this.addMove("resolve\taldrichames");
@@ -8963,10 +8954,6 @@ playerTurnHeadlineSelected(card, player) {
     // US may discard any number of cards and replace them with a new draw
     if (card == "asknot") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>Waiting for US to play Ask Not What Your Country Can Do For You</div>");
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9123,11 +9110,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 1) {
-        this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
-        this.attachCardboxEvents();
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9180,9 +9162,12 @@ playerTurnHeadlineSelected(card, player) {
           }
 
         });
-
-        return 0;
+      
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>US is responding to ${this.cardToText(card)}</div>`);
+        this.attachCardboxEvents();
       }
+      return 0;
     }
 
 
@@ -9321,11 +9306,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'><span>USSR is playing The Cambridge Five (fetching scoring cards in US hand)</span></div>");
-        return 0;
-      }
-
       if (this.game.player == 2) {
 
         this.addMove("resolve\tcambridge");
@@ -9429,8 +9409,6 @@ playerTurnHeadlineSelected(card, player) {
     }
 
 
-
-
       
     //
     // Che
@@ -9457,10 +9435,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       } 
         
-      if (this.game.player == 2) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
-        return 0;
-      }   
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9583,9 +9557,9 @@ playerTurnHeadlineSelected(card, player) {
         }
 
         this.endTurn();
-      }
+        this.updateStatus(`<div class='status-message' id='status-message'>US saw your hand and is playing 1OP (${this.cardToText(card)})</div>`);
 
-      this.updateStatus(`<div class='status-message' id='status-message'>US saw your hand and is playing 1OP (${this.cardToText(card)})</div>`);
+      }
 
       return 0;
     }
@@ -9595,9 +9569,6 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "colonial") {
 
-      if (this.game.player == 1) {
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9636,9 +9607,9 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.displayModal("you already placed there...");
           }
         });
-
-        return 0;
       }
+      return 0;
+
     }
 
 
@@ -9648,7 +9619,6 @@ playerTurnHeadlineSelected(card, player) {
     /////////////
     if (card == "comecon") {
 
-      if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9690,10 +9660,10 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.displayModal("you already place one there...");
           }
         });
-
-
-        return 0;
       }
+
+      return 0;
+      
     }
 
 
@@ -9848,45 +9818,30 @@ playerTurnHeadlineSelected(card, player) {
 
 
     if (card == "debtcrisis") {
-
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US playing Latin American Debt Crisis</div>");
-        return 0;
-      }
-
       
       let twilight_self = this;
-      let player = "ussr";
-      if (this.game.player == 2) { player = "us"; }
+      if (this.game.player == 2) { 
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
+        let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
+        
+        let cards_to_discard = [];
 
-      let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
-      
-      let cards_to_discard = [];
-
-      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-        if (this.game.deck[0].hand[i] != "china") {
-          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0);
-          if (avops >= 3) { 
-            cards_to_discard.push(this.game.deck[0].hand[i]);
+        for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+          if (this.game.deck[0].hand[i] != "china") {
+            let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], "us", 0);
+            if (avops >= 3) { 
+              cards_to_discard.push(this.game.deck[0].hand[i]);
+            }
           }
         }
-      }
 
-      cards_to_discard.push("no discard");
-      
-      this.updateStatusAndListCards(user_message, cards_to_discard, false);
+        cards_to_discard.push("no discard");
+        
+        this.updateStatusAndListCards(user_message, cards_to_discard, false);
 
-      if (cards_to_discard.length <= 1) {
-        this.addMove("resolve\tdebtcrisis");
-        this.addMove("latinamericandebtcrisis");
-        this.addMove("notify\tUS has no cards available for Latin American Debt Crisis");
-        this.endTurn();
-        return 0;
-      }
-
+<<<<<<< HEAD
       twilight_self.attachCardboxEvents(function(action2) {
 
 	// do not remove spacing pls
@@ -9894,17 +9849,32 @@ playerTurnHeadlineSelected(card, player) {
           twilight_self.addMove("resolve\tdebtcrisis");
           twilight_self.addMove("latinamericandebtcrisis");
           twilight_self.endTurn();
+=======
+        if (cards_to_discard.length <= 1) {
+          this.addMove("resolve\tdebtcrisis");
+          this.addMove("latinamericandebtcrisis");
+          this.addMove("notify\tUS has no cards available for Latin American Debt Crisis");
+          this.endTurn();
+>>>>>>> making basic games compatible with gameObserver
           return 0;
         }
 
-        twilight_self.addMove("resolve\tdebtcrisis");
-        twilight_self.addMove("discard\tus\t"+action2);
-        twilight_self.addMove("NOTIFY\tUS discards "+twilight_self.cardToText(action2) + " to resolve "+ twilight_self.cardToText(card));
-        twilight_self.removeCardFromHand(action2);
-        twilight_self.endTurn();
+        twilight_self.attachCardboxEvents(function(action2) {
+          if (action2 == "nodiscard") {
+            twilight_self.addMove("resolve\tdebtcrisis");
+            twilight_self.addMove("latinamericandebtcrisis");
+            twilight_self.endTurn();
+            return 0;
+          }
 
-      });
+          twilight_self.addMove("resolve\tdebtcrisis");
+          twilight_self.addMove("discard\tus\t"+action2);
+          twilight_self.addMove("NOTIFY\tUS discards "+twilight_self.cardToText(action2) + " to resolve "+ twilight_self.cardToText(card));
+          twilight_self.removeCardFromHand(action2);
+          twilight_self.endTurn();
 
+        });
+      }
       return 0;
     }
 
@@ -9915,9 +9885,6 @@ playerTurnHeadlineSelected(card, player) {
     ////////////////////
     if (card == "decolonization") {
 
-      if (this.game.player == 2) {
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -9957,9 +9924,9 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.displayModal("you already placed there...");
           }
         });
-
-        return 0;
       }
+      return 0;
+      
     }
 
 
@@ -10011,11 +9978,6 @@ playerTurnHeadlineSelected(card, player) {
     /////////////////////
     if (card == "destalinization") {
 
-      if (this.game.player == 2) {
-        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Destalinization</div>");
-        return 0;
-
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -10123,10 +10085,6 @@ playerTurnHeadlineSelected(card, player) {
     //////////////////////////
     if (card == "easteuropean") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing East European Unrest</div>");
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -10190,8 +10148,9 @@ playerTurnHeadlineSelected(card, player) {
             }
           });
         }
-        return 0;
       }
+      return 0;
+
     }
 
 
@@ -10267,15 +10226,6 @@ playerTurnHeadlineSelected(card, player) {
       let twilight_self = this;
 
       //
-      // US has to wait for Soviets to execute
-      // burn 1 roll
-      //
-      if (this.game.player == 2) {
-        let burnrand = this.rollDice();
-        return 0;
-      }
-
-      //
       // Soviets self-report - TODO provide proof
       // of randomness
       //
@@ -10325,8 +10275,12 @@ playerTurnHeadlineSelected(card, player) {
 
           return 0;
         }
-        return 0;
+    
+      }else{
+        let burnrand = this.rollDice();
       }
+      return 0;
+  
     }
 
 
@@ -10422,15 +10376,6 @@ playerTurnHeadlineSelected(card, player) {
       let twilight_self = this;
 
       //
-      // US has to wait for Soviets to execute
-      // burn 1 roll
-      //
-      if (this.game.player == 2) {
-        let burnrand = this.rollDice();
-        return 0;
-      }
-
-      //
       // Soviets self-report - TODO provide proof
       // of randomness
       //
@@ -10468,6 +10413,8 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.updateStatus(`<div class='status-message' id='status-message'>Sending ${twilight_self.cardToText(newcard)} to US</div>`);
           });
         }
+      }else{
+        let burnrand = this.rollDice();
       }
       return 0;
     }
@@ -10558,15 +10505,10 @@ playerTurnHeadlineSelected(card, player) {
     ////////////////////////
     if (card == "indopaki") {
       let target = 4;
-      let me = "ussr";
       let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      if (this.game.player == 2) { opponent = "ussr";  }
 
-      if (me != player) {
-        let burned = this.rollDice(6);
-        return 0;
-      }
-      if (me == player) {
+      if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -10618,6 +10560,8 @@ playerTurnHeadlineSelected(card, player) {
           twilight_self.endTurn();
             
         });
+      }else{
+        let burned = this.rollDice(6);
       }
       return 0;
     }
@@ -10627,97 +10571,93 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "indreds") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Independent Reds</div>");
-        return 0;
-      }
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
+      if (this.game.player == 2) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
-      let yugo_ussr = this.countries['yugoslavia'].ussr;
-      let romania_ussr = this.countries['romania'].ussr;
-      let bulgaria_ussr = this.countries['bulgaria'].ussr;
-      let hungary_ussr = this.countries['hungary'].ussr;
-      let czechoslovakia_ussr = this.countries['czechoslovakia'].ussr;
+        let yugo_ussr = this.countries['yugoslavia'].ussr;
+        let romania_ussr = this.countries['romania'].ussr;
+        let bulgaria_ussr = this.countries['bulgaria'].ussr;
+        let hungary_ussr = this.countries['hungary'].ussr;
+        let czechoslovakia_ussr = this.countries['czechoslovakia'].ussr;
 
-      let yugo_us = this.countries['yugoslavia'].us;
-      let romania_us = this.countries['romania'].us;
-      let bulgaria_us = this.countries['bulgaria'].us;
-      let hungary_us = this.countries['hungary'].us;
-      let czechoslovakia_us = this.countries['czechoslovakia'].us;
+        let yugo_us = this.countries['yugoslavia'].us;
+        let romania_us = this.countries['romania'].us;
+        let bulgaria_us = this.countries['bulgaria'].us;
+        let hungary_us = this.countries['hungary'].us;
+        let czechoslovakia_us = this.countries['czechoslovakia'].us;
 
-      let yugo_diff = yugo_ussr - yugo_us;
-      let romania_diff = romania_ussr - romania_us;
-      let bulgaria_diff = bulgaria_ussr - bulgaria_us;
-      let hungary_diff = hungary_ussr - hungary_us;
-      let czechoslovakia_diff = czechoslovakia_ussr - czechoslovakia_us;
+        let yugo_diff = yugo_ussr - yugo_us;
+        let romania_diff = romania_ussr - romania_us;
+        let bulgaria_diff = bulgaria_ussr - bulgaria_us;
+        let hungary_diff = hungary_ussr - hungary_us;
+        let czechoslovakia_diff = czechoslovakia_ussr - czechoslovakia_us;
 
 
-      this.addMove("resolve\tindreds");
-      if (hungary_us >= hungary_ussr && yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
-        this.endTurn();
-        return 0;
-      } else {
-
-
-        let userhtml = "<ul>";
-
-        if (yugo_diff > 0) {
-          userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
-        }
-        if (romania_diff > 0) {
-          userhtml += '<li class="card" id="romania">Romania</li>';
-        }
-        if (bulgaria_diff > 0) {
-          userhtml += '<li class="card" id="bulgaria">Bulgaria</li>';
-        }
-        if (hungary_diff > 0) {
-          userhtml += '<li class="card" id="hungary">Hungary</li>';
-        }
-        if (czechoslovakia_diff > 0) {
-          userhtml += '<li class="card" id="czechoslovakia">Czechoslovakia</li>';
-        }
-        userhtml += '</ul>';
-
-        this.updateStatusWithOptions("Match USSR influence in which country?",userhtml,false);
-        let twilight_self = this;
-
-        twilight_self.attachCardboxEvents(function(myselect) {
-          $('.card').off();
-
-          if (myselect == "romania") {
-            twilight_self.placeInfluence(myselect, romania_diff, "us");
-            twilight_self.addMove("place\tus\tus\tromania\t"+romania_diff);
-            twilight_self.endTurn();
-          }
-          if (myselect == "yugoslavia") {
-            twilight_self.placeInfluence(myselect, yugo_diff, "us");
-            twilight_self.addMove("place\tus\tus\tyugoslavia\t"+yugo_diff);
-            twilight_self.endTurn();
-          }
-          if (myselect == "bulgaria") {
-            twilight_self.placeInfluence(myselect, bulgaria_diff, "us");
-            twilight_self.addMove("place\tus\tus\tbulgaria\t"+bulgaria_diff);
-            twilight_self.endTurn();
-          }
-          if (myselect == "hungary") {
-            twilight_self.placeInfluence(myselect, hungary_diff, "us");
-            twilight_self.addMove("place\tus\tus\thungary\t"+hungary_diff);
-            twilight_self.endTurn();
-          }
-          if (myselect == "czechoslovakia") {
-            twilight_self.placeInfluence(myselect, czechoslovakia_diff, "us");
-            twilight_self.addMove("place\tus\tus\tczechoslovakia\t"+czechoslovakia_diff);
-            twilight_self.endTurn();
-          }
-
+        this.addMove("resolve\tindreds");
+        if (hungary_us >= hungary_ussr && yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
+          this.endTurn();
           return 0;
+        } else {
 
-        });
 
-        return 0;
+          let userhtml = "<ul>";
+
+          if (yugo_diff > 0) {
+            userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
+          }
+          if (romania_diff > 0) {
+            userhtml += '<li class="card" id="romania">Romania</li>';
+          }
+          if (bulgaria_diff > 0) {
+            userhtml += '<li class="card" id="bulgaria">Bulgaria</li>';
+          }
+          if (hungary_diff > 0) {
+            userhtml += '<li class="card" id="hungary">Hungary</li>';
+          }
+          if (czechoslovakia_diff > 0) {
+            userhtml += '<li class="card" id="czechoslovakia">Czechoslovakia</li>';
+          }
+          userhtml += '</ul>';
+
+          this.updateStatusWithOptions("Match USSR influence in which country?",userhtml,false);
+          let twilight_self = this;
+
+          twilight_self.attachCardboxEvents(function(myselect) {
+            $('.card').off();
+
+            if (myselect == "romania") {
+              twilight_self.placeInfluence(myselect, romania_diff, "us");
+              twilight_self.addMove("place\tus\tus\tromania\t"+romania_diff);
+              twilight_self.endTurn();
+            }
+            if (myselect == "yugoslavia") {
+              twilight_self.placeInfluence(myselect, yugo_diff, "us");
+              twilight_self.addMove("place\tus\tus\tyugoslavia\t"+yugo_diff);
+              twilight_self.endTurn();
+            }
+            if (myselect == "bulgaria") {
+              twilight_self.placeInfluence(myselect, bulgaria_diff, "us");
+              twilight_self.addMove("place\tus\tus\tbulgaria\t"+bulgaria_diff);
+              twilight_self.endTurn();
+            }
+            if (myselect == "hungary") {
+              twilight_self.placeInfluence(myselect, hungary_diff, "us");
+              twilight_self.addMove("place\tus\tus\thungary\t"+hungary_diff);
+              twilight_self.endTurn();
+            }
+            if (myselect == "czechoslovakia") {
+              twilight_self.placeInfluence(myselect, czechoslovakia_diff, "us");
+              twilight_self.addMove("place\tus\tus\tczechoslovakia\t"+czechoslovakia_diff);
+              twilight_self.endTurn();
+            }
+
+            return 0;
+
+          });
+        }
       }
-      return 1;
+      return 0;
     }
 
 
@@ -10767,15 +10707,9 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "iraniraq") {
 
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      let opponent = (this.game.player == 2)? "ussr" : "us";
 
-      if (me != player) {
-        let burned = this.rollDice(6);
-        return 0;
-      }
-      if (me == player) {
+      if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -10830,6 +10764,8 @@ playerTurnHeadlineSelected(card, player) {
 
 
         });
+      }else{
+        let burned = this.rollDice(6);
       }
       return 0;
     }
@@ -11134,9 +11070,6 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "liberation") {
 
-      if (this.game.player == 2) {
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -11179,9 +11112,8 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.displayModal("you cannot place there...");
           }
         });
-          
-        return 0;
       }
+      return 0;
     }
 
 
@@ -11193,11 +11125,6 @@ playerTurnHeadlineSelected(card, player) {
     //
     if (card == "lonegunman") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Lone Gunman</div>");
-        return 0;
-
-      }
       if (this.game.player == 2) {
 
         this.addMove("resolve\tlonegunman");
@@ -11253,9 +11180,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 2) {
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -11300,9 +11224,8 @@ playerTurnHeadlineSelected(card, player) {
         
         });
 
-        
-        return 0;
       }
+      return 0;
     }
 
 
@@ -11315,11 +11238,6 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.events.marshall = 1;
       var twilight_self = this;
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Marshall Plan</div>");
-        return 0;
-
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -11359,9 +11277,9 @@ playerTurnHeadlineSelected(card, player) {
             twilight_self.displayModal("you already place one there...");
           }
         });
-
-        return 0;
       }
+      return 0;
+
     }
 
 
@@ -11390,24 +11308,16 @@ playerTurnHeadlineSelected(card, player) {
 
       let twilight_self = this;
 
-      let instigator = 1;
       let respondant = 2;
       let opponent = "us";
-      if (player == "us") { respondant = 1; instigator = 2; opponent = "ussr"; }
+      if (player == "us") { respondant = 1; opponent = "ussr"; }
       this.game.state.events.missileenvy = 1;
 
-      //
-      //
-      //
-      if (this.game.player == instigator) {
-        this.updateStatus("<div class='status-message' id='status-message'>Opponent is returning card for Missile Envy</div>");
-        return 0;
-      }
 
       //
       // targeted player provided list if multiple options available
       //
-      if (this.game.player != instigator && this.game.player != 0) {
+      if (this.game.player == respondant) {
 
         this.addMove("resolve\tmissileenvy");
 
@@ -11482,6 +11392,8 @@ playerTurnHeadlineSelected(card, player) {
 
           });
         }
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>${this.playerRoles[respondant].toUpperCase()} is returning card for ${this.cardToText(card)}</div>`);
       }
       return 0;
     }
@@ -11532,7 +11444,6 @@ playerTurnHeadlineSelected(card, player) {
       //
       // or ask the USSR to choose
       //
-      if (this.game.player == 2) { return 0; }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -11806,9 +11717,6 @@ playerTurnHeadlineSelected(card, player) {
     //
     if (card == "oas") {
 
-      if (this.game.player == 1) {
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -11847,10 +11755,8 @@ playerTurnHeadlineSelected(card, player) {
               }
                 
             });
-          
-        
-        return 0;
       }
+        return 0;
     }
 
 
@@ -11866,11 +11772,7 @@ playerTurnHeadlineSelected(card, player) {
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
-      if (player == me) {
-        this.updateStatus(`<div class='status-message' id='status-message'>${opponent.toUpperCase()} is deciding whether to boycott the ${this.cardToText(card)}</div>`);
-        this.attachCardboxEvents();
-        return 0;
-      } else {
+      if (player == opponent) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -11926,6 +11828,9 @@ playerTurnHeadlineSelected(card, player) {
             }
           }
         });
+      }else{
+        this.updateStatus(`<div class='status-message' id='status-message'>${opponent.toUpperCase()} is deciding whether to boycott the ${this.cardToText(card)}</div>`);
+        this.attachCardboxEvents();
       }
 
       return 0;
@@ -12005,7 +11910,6 @@ playerTurnHeadlineSelected(card, player) {
       if (this.countries["honduras"].us > 0) { can_coup = 1; }
       if (this.countries["costarica"].us > 0) { can_coup = 1; }
 
-
       if (can_coup == 0) {
         this.updateLog("notify\tUSSR does not have valid coup target");
         return 1;
@@ -12017,50 +11921,48 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 2){
-        return 0;
-      }
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
+      if (this.game.player == 1){
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
-      let twilight_self = this;
-      let neighbors = ["costarica","cuba","honduras"];      
+        let twilight_self = this;
+        let neighbors = ["costarica","cuba","honduras"];      
 
-      twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="card" id="skiportega">or skip coup</li></ul>',false);
+        twilight_self.updateStatusWithOptions("Pick a country adjacent to Nicaragua to coup:", '<ul><li class="card" id="skiportega">or skip coup</li></ul>',false);
 
-      //To Skip the Coup
-      twilight_self.attachCardboxEvents(function(action2) {
-        if (action2 == "skiportega") {
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Ortega coup...</div>");
-          twilight_self.addMove("resolve\tortega");
-          twilight_self.endTurn();
+        //To Skip the Coup
+        twilight_self.attachCardboxEvents(function(action2) {
+          if (action2 == "skiportega") {
+            twilight_self.updateStatus("<div class='status-message' id='status-message'>Skipping Ortega coup...</div>");
+            twilight_self.addMove("resolve\tortega");
+            twilight_self.endTurn();
+          }
+        })
+
+        //To Launch the Coup
+
+
+        for (var c of neighbors) {
+          $("#"+c).addClass("easterneurope");
         }
-      })
 
-      //To Launch the Coup
+        $(".easterneurope").off();
+        $(".easterneurope").on('click', function() {
+          let c = $(this).attr('id');
 
-
-      for (var c of neighbors) {
-        $("#"+c).addClass("easterneurope");
-      }
-
-      $(".easterneurope").off();
-      $(".easterneurope").on('click', function() {
-        let c = $(this).attr('id');
-
-        if (twilight_self.countries[c].us>0){
-          twilight_self.playerFinishedPlacingInfluence();
-          twilight_self.addMove("resolve\tortega");
-          twilight_self.addMove("unlimit\tmilops");
-          twilight_self.addMove("coup\tussr\t"+c+"\t2");
-          twilight_self.addMove("limit\tmilops");
-          twilight_self.addMove("notify\tUSSR launches coup in "+twilight_self.countries[c].name + " with " + twilight_self.cardToText(card));
-          twilight_self.endTurn();  
-        }else{
-          twilight_self.displayModal("Invalid Target", "No US influence to coup");
-        }
-      });   
-      
+          if (twilight_self.countries[c].us>0){
+            twilight_self.playerFinishedPlacingInfluence();
+            twilight_self.addMove("resolve\tortega");
+            twilight_self.addMove("unlimit\tmilops");
+            twilight_self.addMove("coup\tussr\t"+c+"\t2");
+            twilight_self.addMove("limit\tmilops");
+            twilight_self.addMove("notify\tUSSR launches coup in "+twilight_self.countries[c].name + " with " + twilight_self.cardToText(card));
+            twilight_self.endTurn();  
+          }else{
+            twilight_self.displayModal("Invalid Target", "No US influence to coup");
+          }
+        });   
+      }      
       return 0;
     }
 
@@ -12093,10 +11995,6 @@ playerTurnHeadlineSelected(card, player) {
     //
     if (card == "pershing") {
 
-      if (this.game.player == 2) {
-        return 0;
-
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -12189,10 +12087,6 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "puppet") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>US is playing ${this.cardToText(card)}</div>`);
-        return 0;
-      }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -12246,9 +12140,8 @@ playerTurnHeadlineSelected(card, player) {
           twilight_self.playerFinishedPlacingInfluence();
           twilight_self.endTurn();
         } 
-        
-        return 0;
       }
+      return 0;
     }
 
 
@@ -12323,9 +12216,6 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.reformer = 1;
 
-      if (this.game.player == 2) {
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -12369,10 +12259,8 @@ playerTurnHeadlineSelected(card, player) {
           }
         });
          
-        return 0;
       }
-
-      
+     return 0;
     }
 
 
@@ -12445,49 +12333,47 @@ playerTurnHeadlineSelected(card, player) {
       }
 
 
-      if (!i_played_the_card) {
-        return 0;
-      }
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
+      if (i_played_the_card) {
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
 
-      // pick discarded card
-      var twilight_self = this;
+        // pick discarded card
+        var twilight_self = this;
 
-      let discard_deck = [];
-      for (var i in this.game.deck[0].discards) {
-	// edge-case bug where scoring is not in scoring card (???)
-	try {
-          if (this.game.deck[0].discards[i].scoring == 0) {
-            if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
-              discard_deck.push(i);
-              console.log(i);
-              //html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+        let discard_deck = [];
+        for (var i in this.game.deck[0].discards) {
+        	// edge-case bug where scoring is not in scoring card (???)
+        	try {
+            if (this.game.deck[0].discards[i].scoring == 0) {
+              if (this.game.state.events.shuttlediplomacy == 0 || (this.game.state.events.shuttlediplomacy == 1 && i != "shuttle")) {
+                discard_deck.push(i);
+                console.log(i);
+                //html += '<li class="card" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
+              }
             }
-          }
-        } catch (err) {
-	  console.log("ERROR: please check scoring error in SALT for card: " + i);
-	}
+          } catch (err) {
+        	  console.log("ERROR: please check scoring error in SALT for card: " + i);
+        	}
+        }
+        
+        twilight_self.updateStatusAndListCards("Choose Card to Reclaim:",discard_deck,true);
+        twilight_self.addMove("resolve\tsaltnegotiations");
+
+        twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.game.deck[0].hand.push(action2);
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" retrieved "+twilight_self.cardToText(action2));
+          twilight_self.addMove("undiscard\t"+action2); 
+          twilight_self.endTurn();
+        });
+
+        twilight_self.bindBackButtonFunction(()=>{
+          twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" does not retrieve card");
+          twilight_self.endTurn();
+        })
+                  
       }
-      
-      twilight_self.updateStatusAndListCards("Choose Card to Reclaim:",discard_deck,true);
-      twilight_self.addMove("resolve\tsaltnegotiations");
-
-      twilight_self.attachCardboxEvents(function(action2) {
-        twilight_self.game.deck[0].hand.push(action2);
-        twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" retrieved "+twilight_self.cardToText(action2));
-        twilight_self.addMove("undiscard\t"+action2); 
-        twilight_self.endTurn();
-      });
-
-      twilight_self.bindBackButtonFunction(()=>{
-        twilight_self.addMove("NOTIFY\t"+player.toUpperCase() +" does not retrieve card");
-        twilight_self.endTurn();
-      })
-                
-      return 0;
+     return 0;
     }
-
 
 
 
@@ -12539,10 +12425,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 2) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
-        return 0;
-      }
       if (this.game.player == 1) {
 
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -12620,7 +12502,6 @@ playerTurnHeadlineSelected(card, player) {
         }
       }
 
-
       return 1;
     }
 
@@ -12629,11 +12510,6 @@ playerTurnHeadlineSelected(card, player) {
 
     if (card == "southafrican") {
 
-      if (this.game.player == 2) {
-        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing South African Unrest</div>");
-        return 0;
-
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -12677,8 +12553,8 @@ playerTurnHeadlineSelected(card, player) {
               });
           }
         });
-        return 0;
       }
+      return 0;
     }
 
 
@@ -12706,63 +12582,62 @@ playerTurnHeadlineSelected(card, player) {
 
       if (this.isControlled("us", "uk") == 1) {
 
-        if (this.game.player == 1) {
+        if (this.game.player == 2) {
+          //If the event card has a UI component, run the clock for the player we are waiting on
+          this.startClock();
+          
+          let twilight_self = this;
+          let ops_to_place = 1;
+          let placeable = [];
+
+          twilight_self.addMove("resolve\tspecialrelation");
+          
+          if (this.game.state.events.nato == 1) {
+            twilight_self.addMove("vp\tus\t2");
+            ops_to_place = 2;
+            placeable.push("canada");
+            placeable.push("uk");
+            placeable.push("italy");
+            placeable.push("france");
+            placeable.push("spain");
+            placeable.push("greece");
+            placeable.push("turkey");
+            placeable.push("austria");
+            placeable.push("benelux");
+            placeable.push("westgermany");
+            placeable.push("denmark");
+            placeable.push("norway");
+            placeable.push("sweden");
+            placeable.push("finland");
+            this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
+
+          } else {
+
+            this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship. Place 1 OP adjacent to the UK.</div>");
+            placeable.push("canada");
+            placeable.push("france");
+            placeable.push("norway");
+            placeable.push("benelux");
+          }
+
+          for (let i of placeable) {
+            $("#"+i).addClass("westerneurope");
+          }
+
+          $(".westerneurope").off();
+          $(".westerneurope").on('click', function() {
+              let c = $(this).attr('id');
+              twilight_self.placeInfluence(c, ops_to_place, "us");
+              twilight_self.addMove("place\tus\tus\t"+c+"\t"+ops_to_place);
+              twilight_self.playerFinishedPlacingInfluence();
+              twilight_self.endTurn();
+            });
           return 0;
+        }else{
+          this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
         }
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
-        
-        let twilight_self = this;
-        let ops_to_place = 1;
-        let placeable = [];
-
-        twilight_self.addMove("resolve\tspecialrelation");
-        
-        if (this.game.state.events.nato == 1) {
-          twilight_self.addMove("vp\tus\t2");
-          ops_to_place = 2;
-          placeable.push("canada");
-          placeable.push("uk");
-          placeable.push("italy");
-          placeable.push("france");
-          placeable.push("spain");
-          placeable.push("greece");
-          placeable.push("turkey");
-          placeable.push("austria");
-          placeable.push("benelux");
-          placeable.push("westgermany");
-          placeable.push("denmark");
-          placeable.push("norway");
-          placeable.push("sweden");
-          placeable.push("finland");
-          this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
-
-        } else {
-
-          this.updateStatus("<div class='status-message' id='status-message'>US is playing Special Relationship. Place 1 OP adjacent to the UK.</div>");
-          placeable.push("canada");
-          placeable.push("france");
-          placeable.push("norway");
-          placeable.push("benelux");
-        }
-
-        for (let i of placeable) {
-          $("#"+i).addClass("westerneurope");
-        }
-
-        $(".westerneurope").off();
-        $(".westerneurope").on('click', function() {
-            let c = $(this).attr('id');
-            twilight_self.placeInfluence(c, ops_to_place, "us");
-            twilight_self.addMove("place\tus\tus\t"+c+"\t"+ops_to_place);
-            twilight_self.playerFinishedPlacingInfluence();
-            twilight_self.endTurn();
-          });
-        return 0;
-      }else{
-        this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
       }
-      return 1;
+      return 0;
     }
 
 
@@ -12804,21 +12679,19 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-      if (this.game.player == 1) {
-        return 0;
+      if (this.game.player == 2) {
+    
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
+        twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
+        twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.addMove("event\tus\t"+action2);
+          twilight_self.addMove("NOTIFY\t"+player+" retrieved "+twilight_self.cardToText(action2));
+          twilight_self.addMove("undiscard\t"+action2);
+          twilight_self.endTurn();
+        });
       }
-
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
-
-      twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
-      twilight_self.attachCardboxEvents(function(action2) {
-        twilight_self.addMove("event\tus\t"+action2);
-        twilight_self.addMove("NOTIFY\t"+player+" retrieved "+twilight_self.cardToText(action2));
-        twilight_self.addMove("undiscard\t"+action2);
-        twilight_self.endTurn();
-      });
-
       return 0;
     }
 
@@ -12829,10 +12702,6 @@ playerTurnHeadlineSelected(card, player) {
     /////////////////
     if (card == "suezcrisis") {
 
-      if (this.game.player == 2) {
-        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Suez Crisis</div>");
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -12951,12 +12820,8 @@ playerTurnHeadlineSelected(card, player) {
 
       this.updateLog(`${this.cardToText(card)}: US rolls ${usbase} (${(us_roll - usbase)}) and USSR rolls ${ussrbase} (${(ussr_roll-ussrbase)})`);
 
-      let is_winner = 0;
 
-      if (us_roll > ussr_roll) { is_winner = 1; }
-      if (ussr_roll > us_roll) { is_winner = 1; }
-
-      if (is_winner == 0) {
+      if (us_roll === ussr_roll) {
         this.updateLog(`${this.cardToText(card)}: no winner`);
         this.displayModal(`${this.cardToText(card)}: no winner`);
         return 1;
@@ -12965,11 +12830,12 @@ playerTurnHeadlineSelected(card, player) {
         //
         // winner
         //
-        let my_go = 0;
-        if (us_roll > ussr_roll && this.game.player == 2) { my_go = 1; }
-        if (ussr_roll > us_roll && this.game.player == 1) { my_go = 1; }
+        let winner = 1;
+        if (us_roll > ussr_roll){
+          winner = 2;
+        }
 
-        if (my_go == 1) {
+        if (this.game.player === winner) {
 
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
@@ -13010,7 +12876,12 @@ playerTurnHeadlineSelected(card, player) {
 
           });
         }else{
-          this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);
+          if (this.game.player == 0){
+            this.updateStatus(`${this.playerRoles[winner].toUpperCase()} won the ${this.cardToText(card)}`);
+          }else{
+            this.updateStatus(`You lost the ${this.cardToText(card)}, waiting for opponent to change DEFCON`);            
+          }
+
         }
         return 0;
       }
@@ -13072,10 +12943,6 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.ourmanintehran = 1;
 
-      if (this.game.player == 2) {
-        return 0;
-      }
-
       if (this.game.player == 1) {
         this.addMove("resolve\ttehran");
         let keys_given = 0;
@@ -13098,7 +12965,9 @@ playerTurnHeadlineSelected(card, player) {
       let cards_to_discard = 1;
       let target = (player == "ussr")? "us": "ussr";
       
-      if (target == "us") { if (this.game.state.events.iranianhostage == 1) { cards_to_discard = 2; } }
+      if (target == "us" && this.game.state.events.iranianhostage == 1) { 
+        cards_to_discard = 2; 
+      } 
 
       this.addMove("resolve\tterrorism");
 
@@ -13166,13 +13035,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is selecting target for Truman</div>");
-        return 0;
-
-      }
-
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -13234,13 +13096,7 @@ playerTurnHeadlineSelected(card, player) {
       this.game.state.events.unintervention = 1;
       this.game.state.cancel_back_button = 1;
 
-      let me = "ussr";
-      let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
-
-      if (player != me) {
-        return 0;
-      } else {
+      if (player === this.playerRoles[this.game.player]) {
 
         let twilight_self = this;
 
@@ -13260,8 +13116,8 @@ playerTurnHeadlineSelected(card, player) {
         //this.addMove("setvar\tgame\tstate\tback_button_cancelled\t1");
 
         this.playerTurn();
-        return 0;
       }
+      return 0;
 
     }
 
@@ -13340,11 +13196,6 @@ playerTurnHeadlineSelected(card, player) {
         //
         // place four in asia
         //
-        if (this.game.player == 1) {
-          this.updateStatus("<div class='status-message' id='status-message'>US is playing USSURI River Skirmish</div>");
-          return 0;
-
-        }
         if (this.game.player == 2) {
           //If the event card has a UI component, run the clock for the player we are waiting on
           this.startClock();
@@ -13390,8 +13241,11 @@ playerTurnHeadlineSelected(card, player) {
               });
             }
           }
-          return 0;
+        }else{
+          this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText(card)}: US is placing influence in Asia </div>`);
         }
+        return 0;
+  
       } else {
 
         this.updateLog("US gets the China Card (face up)");
@@ -13452,8 +13306,6 @@ playerTurnHeadlineSelected(card, player) {
         return 1;
       }
 
-
-      if (this.game.player == 1) { return 0; }
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -13516,33 +13368,31 @@ playerTurnHeadlineSelected(card, player) {
       }
 
       let twilight_self = this;
-      if (!i_played_the_card){
-        return 0;
+      if (i_played_the_card){
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
+        let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
+
+        this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, false);
+        
+
+        twilight_self.attachCardboxEvents(function(action2) {
+
+          if (action2 == "endgame") {
+            twilight_self.updateStatus("<div class='status-message' id='status-message'>Triggering Wargames...</div>");
+            twilight_self.addMove("resolve\twargames");
+            twilight_self.addMove("wargames\t"+player+"\t1");
+            twilight_self.endTurn();
+          }
+          if (action2 == "cont") {
+            twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding Wargames...</div>");
+            twilight_self.addMove("resolve\twargames");
+            twilight_self.addMove("wargames\t"+player+"\t0");
+            twilight_self.endTurn();
+          }
+        });
       }
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
-
-      let choicehtml = '<ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
-
-      this.updateStatusWithOptions(`${this.cardToText(card)}: Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponent)`, choicehtml, false);
-      
-
-      twilight_self.attachCardboxEvents(function(action2) {
-
-        if (action2 == "endgame") {
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Triggering Wargames...</div>");
-          twilight_self.addMove("resolve\twargames");
-          twilight_self.addMove("wargames\t"+player+"\t1");
-          twilight_self.endTurn();
-        }
-        if (action2 == "cont") {
-          twilight_self.updateStatus("<div class='status-message' id='status-message'>Discarding Wargames...</div>");
-          twilight_self.addMove("resolve\twargames");
-          twilight_self.addMove("wargames\t"+player+"\t0");
-          twilight_self.endTurn();
-        }
-      });
-
       return 0;
     }
 
@@ -13555,10 +13405,6 @@ playerTurnHeadlineSelected(card, player) {
 
       this.game.state.events.warsawpact = 1;
 
-      if (this.game.player == 2) {
-        //this.updateStatus(`<div class='status-message' id='status-message'>Waiting for USSR to play ${this.cardToText(card)}</div>`);
-        return 0;
-      }
       if (this.game.player == 1) {
 
         //If the event card has a UI component, run the clock for the player we are waiting on
@@ -13679,10 +13525,9 @@ playerTurnHeadlineSelected(card, player) {
 
           }
         });
-        return 0;
       }
 
-      return 1;
+      return 0;
     }
 
 

@@ -328,6 +328,22 @@ body {
   align-items: center;
 }
 
+.game_status_indicator{
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  border-radius: 100%;
+  box-shadow: 0 0 0 1px black;
+}
+
+.game_status_indicator.game_live{
+  color: darkred;
+}
+
+.game_status_indicator.game_over{
+  color: grey;
+}
+
 .game-inset-img {
   background-size: cover;
   background-position: center;

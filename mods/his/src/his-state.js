@@ -222,6 +222,7 @@
   }
 
   returnFactionLandUnitsInSpace(faction, space) {
+console.log("FACTION: " + faction);
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units[faction].length; i++) {
@@ -2678,7 +2679,6 @@
       language: "italian",
       type: "town"
     }
-
 
     for (let key in spaces) {
       spaces[key].units = {};

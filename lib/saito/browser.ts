@@ -584,6 +584,7 @@ class Browser {
 
   formatDate(timestamp) {
     const datetime = new Date(timestamp);
+    
     const hours = datetime.getHours();
     let minutes = datetime.getMinutes();
     const months = [12];
@@ -600,11 +601,12 @@ class Browser {
     months[10] = "November";
     months[11] = "December";
     const month = months[datetime.getMonth()];
-
-    const day = datetime.getDay();
+    //getDay = Day of the Week, getDate = day of the month
+    const day = datetime.getDate(); 
     const year = datetime.getFullYear();
 
     minutes = minutes.toString().length == 1 ? `0${minutes}` : `${minutes}`;
+
     return { year, month, day, hours, minutes };
   }
 
@@ -1038,6 +1040,9 @@ class Browser {
         const decoder = document.createElement('div');
         decoder.innerText = text;
         text = decoder.innerHTML;
+
+        //trim trailing line breaks
+        text = text.replace(/[\r<br>]+$/, '');
 
         // wrap link in <a> tag
         let urlPattern = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\z`!()\[\]{};:'".,<>?«»“”‘’]))/ig;       

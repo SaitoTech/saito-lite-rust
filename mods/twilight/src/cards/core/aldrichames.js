@@ -6,9 +6,6 @@
 
       this.game.state.events.aldrich = 1;
 
-      if (this.game.player == 1) {
-        return 0;
-      }
       if (this.game.player == 2) {
         //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Aldrich Ames</div>");
         this.addMove("resolve\taldrichames");

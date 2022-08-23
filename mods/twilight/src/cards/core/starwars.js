@@ -36,21 +36,19 @@
         return 1;
       }
 
-      if (this.game.player == 1) {
-        return 0;
+      if (this.game.player == 2) {
+    
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClock();
+
+        twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
+        twilight_self.attachCardboxEvents(function(action2) {
+          twilight_self.addMove("event\tus\t"+action2);
+          twilight_self.addMove("NOTIFY\t"+player+" retrieved "+twilight_self.cardToText(action2));
+          twilight_self.addMove("undiscard\t"+action2);
+          twilight_self.endTurn();
+        });
       }
-
-      //If the event card has a UI component, run the clock for the player we are waiting on
-      this.startClock();
-
-      twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
-      twilight_self.attachCardboxEvents(function(action2) {
-        twilight_self.addMove("event\tus\t"+action2);
-        twilight_self.addMove("NOTIFY\t"+player+" retrieved "+twilight_self.cardToText(action2));
-        twilight_self.addMove("undiscard\t"+action2);
-        twilight_self.endTurn();
-      });
-
       return 0;
     }
 

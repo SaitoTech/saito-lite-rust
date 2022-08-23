@@ -280,7 +280,12 @@ class Poker extends GameTemplate {
       }
     }
 
+    this.startRound();
+
     if (removal){
+      //Save game with fewer players
+      this.saveGame(this.game.id);
+
       this.cardfan.hide(); //hide everyone's cards at first
       
       //Update DOM -- re-render the playerboxes
@@ -289,29 +294,32 @@ class Poker extends GameTemplate {
         for (let box of boxes){
           box.remove();
         }
-        this.playerbox.render(this.app,this);
-        this.playerbox.addClassAll("poker-seat-", true);
-        this.playerbox.addStatus(); //enable update Status to display in playerbox
+        //this.playerbox.render(this.app,this);
+        //this.playerbox.addClassAll("poker-seat-", true);
+        //this.playerbox.addStatus(); //enable update Status to display in playerbox
 
       } catch(err) {
         console.log("ERROR reRendering Playerboxes",err);
       }
 
       //Fix dealer and blinds Dealer -> Small -> Big
-      if (this.game.state.button_player < 1) {
-        this.game.state.button_player = this.game.players.length;
-      } 
-      this.game.state.small_blind_player = this.game.state.button_player - 1;     
-      if (this.game.state.small_blind_player < 1) {
-        this.game.state.small_blind_player = this.game.players.length;
-      }
-      this.game.state.big_blind_player = this.game.state.small_blind_player - 1;     
-      if (this.game.state.big_blind_player < 1) {
-        this.game.state.big_blind_player = this.game.players.length;
-      }
+      //if (this.game.state.button_player < 1) {
+      //  this.game.state.button_player = this.game.players.length;
+      //} 
+      //this.game.state.small_blind_player = this.game.state.button_player - 1;     
+      //if (this.game.state.small_blind_player < 1) {
+      //  this.game.state.small_blind_player = this.game.players.length;
+     // }
+      //this.game.state.big_blind_player = this.game.state.small_blind_player - 1;     
+      //if (this.game.state.big_blind_player < 1) {
+      //  this.game.state.big_blind_player = this.game.players.length;
+     // }
+
+      this.initialize_game_run = 0;
+      this.initializeGameFeeder(this.game.id);
+      return 0;
     }
 
-    this.startRound();
   }
 
   settleLastRound() {
@@ -405,7 +413,13 @@ class Poker extends GameTemplate {
       // turns "resolve"
       //
       if (mv[0] === "resolve") {
-        this.game.queue.splice(qe - 1, 2);
+        let last_mv = this.game.queue[qe-1].split("\t");
+        if (mv[1] === last_mv[0]){
+          this.game.queue.splice(qe - 1, 2);
+        }else{
+          console.error("Unexpected resolve in queue");
+          this.game.queue.splice(qe, 1);
+        }
         return 1;
       }
 
@@ -565,7 +579,9 @@ class Poker extends GameTemplate {
         this.game.queue.splice(qe, 1);
 
         if (this.game.state.flipped === 0) {
-          this.updateLog(`*** HOLE CARDS *** [${this.cardToHuman(this.game.deck[0].hand[0])} ${this.cardToHuman(this.game.deck[0].hand[1])}]`);
+          if (this.game.player > 0){
+            this.updateLog(`*** HOLE CARDS *** [${this.cardToHuman(this.game.deck[0].hand[0])} ${this.cardToHuman(this.game.deck[0].hand[1])}]`);  
+          }
         }
         if (this.game.state.flipped === 3) {
           this.updateLog(`*** FLOP *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(this.game.pool[0].hand[1])} ${this.cardToHuman(this.game.pool[0].hand[2])}]`);
@@ -680,11 +696,11 @@ class Poker extends GameTemplate {
 
             //
             // send wagers to winner
-            let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
-            if (chips_to_send !== Math.round(chips_to_send)){
-              salert("Uneven pot split. House keeps difference");
-              chips_to_send = Math.floor(chips_to_send);
-            }
+            //let chips_to_send = this.game.state.player_pot[this.game.player - 1] / winners.length;
+            //if (chips_to_send !== Math.round(chips_to_send)){
+            //  salert("Uneven pot split. House keeps difference");
+            //  chips_to_send = Math.floor(chips_to_send);
+            //}
 
             for (let i = 0; i < winners.length; i++) {
               //
@@ -967,6 +983,10 @@ class Poker extends GameTemplate {
 
   playerTurn() {
     if (this.browser_active == 0) {
+      return;
+    }
+    if (this.game.player == 0 ){
+      salert("How the fuck did we call player turn??");
       return;
     }
 
@@ -1305,6 +1325,8 @@ class Poker extends GameTemplate {
   }
 
   displayHand() {
+    if (this.game.player == 0){ return; }
+
     if (this.game.state.passed[this.game.player-1]){
       this.cardfan.hide();
     }else{

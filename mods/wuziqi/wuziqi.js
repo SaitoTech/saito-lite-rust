@@ -31,8 +31,9 @@ class Wuziqi extends GameTemplate {
     initializeHTML(app) {
 
         if (!this.browser_active) { return; }
+        if (this.initialize_game_run) {return;} 
 
-        // Override the game template initializeHTML function
+        // Don't completly Override the game template initializeHTML function
         super.initializeHTML(app);
 
         //Define black and white so can use in menus        
@@ -105,8 +106,13 @@ class Wuziqi extends GameTemplate {
 
         //Player Boxes
         this.playerbox.render(this.app,this);
-        this.playerbox.addClass("me",this.game.player);
-        this.playerbox.addClass("notme",3-this.game.player);
+        if (this.game.player == 0){
+            this.playerbox.addClass("me",1);
+            this.playerbox.addClass("notme",2);
+        }else{
+            this.playerbox.addClass("me",this.game.player);
+            this.playerbox.addClass("notme",3-this.game.player);
+        }
         this.playerbox.attachEvents(this.app);
         this.playerbox.makeDraggable(); //I think we still want to be able to move them
 
@@ -114,10 +120,10 @@ class Wuziqi extends GameTemplate {
         try {
             // Check if anyone has played yet (black goes first)
             let blackplayedyet = this.serializeBoard(this.game.board).indexOf("B");
+            this.drawBoard(this.game.board);
 
             // If no one has played set up the board
             if (blackplayedyet < 0) {
-                this.drawBoard(this.game.board);
                 // If you are black, you are up.
                 if (this.game.player == 1) {
                     this.addEvents(this.game.board);
@@ -356,7 +362,7 @@ class Wuziqi extends GameTemplate {
         if (this.game.queue.length > 0) {
             
             // Save before we start executing the game queue
-            this.saveGame(this.game.id);
+            // this.saveGame(this.game.id);
 
             // Get the last move and split it on tabs.
             let qe = this.game.queue.length - 1;
@@ -418,26 +424,26 @@ class Wuziqi extends GameTemplate {
                 this.game.score[0] = mv[4].split("|")[0];
                 this.game.score[1] = mv[4].split("|")[1];
                 this.updateScore();
+            
+                // Regenerate the game board object from the serialized version sent by the other player.
+                // Even though the player who just placed has an accurate board, we rerun it in case of browser refresh
 
-                // If the player is next, add events, if not let them know they are waiting.
-                if (this.game.player != mv[3]) {
-                
-                    // Regenerate the game board object from the serialized version sent by the other player.
-                    this.boardFromString(mv[1]);
-                    // Grab the played cell
-                    let cell = this.returnCellById(parseInt(mv[2]));
-                    // And check if it won the game
-                    let winner = this.findWinner(cell);
-                    // Redraw the board (adding winning cells if any)
-                    this.drawBoard(this.game.board);
-                
+                this.boardFromString(mv[1]);
+                // Grab the played cell
+                let cell = this.returnCellById(parseInt(mv[2]));
+                // And check if it won the game
+                let winner = this.findWinner(cell);
+                // Redraw the board (adding winning cells if any)
+                this.drawBoard(this.game.board);
+            
+                if (this.game.player != mv[3] && this.game.player !== 0){
                     //Let player make their move
                     this.addEvents(this.game.board);
                     this.updateStatus("Your move");
-                } else {
-                    //We don't need to run the above functions because this player already ran them through the board events
-                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[(mv[3]) % 2] + "</span>");
+                }else{
+                    this.updateStatus("Waiting on <span class='playertitle'>" + this.game.sides[(mv[3]) % 2] + "</span>");                        
                 }
+                
                 // Remove this item from the queue.
                 this.game.queue.splice(this.game.queue.length - 1, 1);
                 return 1;
@@ -448,6 +454,7 @@ class Wuziqi extends GameTemplate {
 
     // Add button to continue the game
     addContinueButton() {
+        if (this.game.player == 0 ) { return; }
         var el = document.createElement('button');
         el.textContent = "Continue";
         el.classList.add("continue");
