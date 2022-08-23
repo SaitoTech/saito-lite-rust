@@ -495,6 +495,7 @@ class RedSquare extends ModTemplate {
     }
 
 
+
     //
     // servers
     //
@@ -568,6 +569,18 @@ class RedSquare extends ModTemplate {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
+
+
+    if (tweet.retweet_tx != null) {
+
+      let ts = new Date().getTime();
+      let sql3 = "UPDATE tweets SET num_retweets = num_retweets + 1 WHERE sig = $sig";
+      let params3 = {
+        $sig: tweet.thread_id,
+      }
+      app.storage.executeDatabase(sql3, params3, "redsquare");
+
+    }
 
     this.sqlcache = [];
 

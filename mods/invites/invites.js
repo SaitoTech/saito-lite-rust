@@ -38,7 +38,6 @@ class Invites extends InviteTemplate {
   }
 
   async onConfirmation(blk, tx, conf, app) {
-console.log(" INVITE ONCONFIRMATION ");
     super.onConfirmation(blk, tx, conf, app);
   }
 
