@@ -9841,26 +9841,16 @@ playerTurnHeadlineSelected(card, player) {
         
         this.updateStatusAndListCards(user_message, cards_to_discard, false);
 
-<<<<<<< HEAD
-      twilight_self.attachCardboxEvents(function(action2) {
-
-	// do not remove spacing pls
-        if (action2 === 'no discard') {
-          twilight_self.addMove("resolve\tdebtcrisis");
-          twilight_self.addMove("latinamericandebtcrisis");
-          twilight_self.endTurn();
-=======
         if (cards_to_discard.length <= 1) {
           this.addMove("resolve\tdebtcrisis");
           this.addMove("latinamericandebtcrisis");
           this.addMove("notify\tUS has no cards available for Latin American Debt Crisis");
           this.endTurn();
->>>>>>> making basic games compatible with gameObserver
           return 0;
         }
 
         twilight_self.attachCardboxEvents(function(action2) {
-          if (action2 == "nodiscard") {
+          if (action2 == "no discard") {
             twilight_self.addMove("resolve\tdebtcrisis");
             twilight_self.addMove("latinamericandebtcrisis");
             twilight_self.endTurn();

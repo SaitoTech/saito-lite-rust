@@ -69,10 +69,15 @@ class Post {
 
           if (thread_id !== "") {
             console.log("RENDER MAIN PAGE");
-      	    mod.renderMainPage(app, mod);
-      	  } else {
-            console.log("RENDER WITH CHILDREN");
             mod.renderWithChildren(app, mod, thread_id);
+      	    //mod.renderMainPage(app, mod);
+      	  } else {
+            if (parent_id !== "") {
+              console.log("RENDER WITH CHILDREN");
+              mod.renderWithChildren(app, mod, parent_id);
+	    } else {
+              mod.renderMainPage(app, mod);
+	    }
       	  }
 
       	  post_self.overlay.hide();
