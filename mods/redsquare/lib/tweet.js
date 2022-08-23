@@ -449,11 +449,6 @@ class RedSquareTweet {
 
         this.youtube_id = videoId;
 
-        //
-        // and cut the link from the tweet
-        //
-        this.text = this.text.replace(this.link, '');
-
         return this;
 
       }
@@ -466,11 +461,6 @@ class RedSquareTweet {
         if (res != '') {
 
           this.link_properties = res;
-
-          //
-          // and cut the link from the tweet
-          //
-          this.text = this.text.replace(this.link, '');
 
         }
 
