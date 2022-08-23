@@ -8,7 +8,7 @@ module.exports = ArcadeAppspaceGameTemplate = (app, mod, invite, idx) => {
     <div class="saito-list-user">
   
     <div class="saito-list-user-content-box">
-    <div class="saito-username">
+    <div class="saito-address">
         <p>CHESS</p>
         <i class="fas fa-certificate redsquare-certificate"></i>
    </div>

@@ -319,12 +319,13 @@ class RedSquare extends ModTemplate {
 
     let redsquare_self = this;
     if (this.app.BROWSER == 1) {
-      if (document.querySelector(".redsquare-list")) {
-        let tweet_id = app.browser.returnURLParameter('tweet_id');
+      this.saitoLoader.render(app, redsquare_self, 'redsquare-home-header', false);
 
+      let tweet_id = app.browser.returnURLParameter('tweet_id');
+
+      if (document.querySelector(".redsquare-list")) {
         if (tweet_id) {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
-
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
           let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 0 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
@@ -341,12 +342,16 @@ class RedSquare extends ModTemplate {
     try {
       if (conf == 0) {
         if (txmsg.request === "create tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveTweetTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
         if (txmsg.request === "like tweet") {
-          this.sqlcache = [];
           redsquare_self.receiveLikeTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
+        }
+        if (txmsg.request === "flag tweet") {
+          redsquare_self.receiveFlagTransaction(blk, tx, conf, app);
+          this.sqlcache = [];
         }
       }
     } catch (err) {
@@ -429,11 +434,6 @@ class RedSquare extends ModTemplate {
     // browsers
     //
     if (app.BROWSER == 1) {
-      if (tx.transaction.from[0] === app.wallet.returnPublicKey()) {
-        this.redsquare.lik
-
-
-      }
       return;
     }
 
@@ -561,6 +561,8 @@ class RedSquare extends ModTemplate {
       $sig: tweet.thread_id,
     }
     app.storage.executeDatabase(sql2, params2, "redsquare");
+
+    this.sqlcache = [];
 
     return;
 

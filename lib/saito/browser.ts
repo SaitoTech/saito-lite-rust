@@ -883,13 +883,13 @@ class Browser {
   returnAddressHTML(key) {
     const identifier = this.app.keys.returnIdentifierByPublicKey(key);
     const id = !identifier ? key : identifier;
-    return `<span data-id="${key}" class="saito-address saito-address-${key}">${id}</span>`;
+    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
   }
 
   async returnAddressHTMLPromise(key) {
     const identifier = await this.returnIdentifier(key);
     const id = !identifier ? key : identifier;
-    return `<span class="saito-address saito-address-${key}">${id}</span>`;
+    return `<span data-id="${key}" id="saito-address-${key}" class="saito-address saito-address-${key}">${id}</span>`;
   }
 
   updateAddressHTML(key, id) {

@@ -42,6 +42,7 @@ class RedSquareTweet {
     // 
     //  
     this.num_retweets = 0;
+    this.num_likes = 0;
 
     this.children = [];
     this.unknown_children = [];
@@ -73,6 +74,12 @@ class RedSquareTweet {
     // prefer server-provided updated-info as it will have context for TX-order
     if (tx.optional?.updated_at) {
       this.updated_at = tx.optional.updated_at;
+    }
+    if (tx.optional?.num_likes) {
+      this.updated_at = tx.optional.num_likes;
+    }
+    if (tx.optional?.num_retweets) {
+      this.num_retweets = tx.optional.num_retweets;
     }
 
 
@@ -182,8 +189,6 @@ class RedSquareTweet {
 
       let tweet_sig_id = el.getAttribute("data-id");
 
-      // console.log('tweet id ', tw)
-
       document.querySelector(".redsquare-list").innerHTML = "";
 
       let new_title = "<i class='saito-back-button fas fa-arrow-left'></i> RED SQUARE";
@@ -292,6 +297,7 @@ class RedSquareTweet {
       };
     };
 
+
     //
     // flag
     //
@@ -301,7 +307,7 @@ class RedSquareTweet {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      mod.sendLikeTransaction(app, mod, { sig: this.tx.transaction.sig });
+      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
 
       let obj = document.querySelector(sel);
       obj.classList.add("saito-tweet-activity");

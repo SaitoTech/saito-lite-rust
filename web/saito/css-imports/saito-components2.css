@@ -38,7 +38,7 @@ Saito User
 /* this hack is required in chrome to force */
 /* the name to steal the upper row from the */
 /* timebox, so the name does not cut off    */
-.saito-user>.saito-username-long:nth-child(2) {
+.saito-user>.saito-address-long:nth-child(2) {
     grid-column-end: 4;
 }
 
