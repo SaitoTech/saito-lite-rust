@@ -41,7 +41,7 @@ module.exports = (app, mod, tweet, include_controls = 1, include_header = 1) => 
       if (typeof tweet.link_properties != 'undefined') {
         if (tweet.link_properties['og:exists'] !== false) {
           let d = tweet.link_properties;
-          if (d['og:url'] != '') {
+          if (d['og:url'] != '' && d['og:image'] != '') {
             let link = new URL(d['og:url']);
             link_preview = `
                         <a target="_blank" href="${d['og:url']}">
