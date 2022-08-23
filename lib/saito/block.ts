@@ -549,10 +549,10 @@ class Block {
       //
       let previous_block_payout = previous_block.returnFeesTotal();
       if (
-        previous_block_payout > (previous_block.block.avg_income * BigInt(125))/BigInt(100) &&
+        previous_block_payout > BigInt(Number(previous_block.block.avg_income) * 1.25) &&
         previous_block_payout > 50
       ) {
-        previous_block_payout = (previous_block.block.avg_income * BigInt(124))/BigInt(100);
+        previous_block_payout = BigInt(Number(previous_block.block.avg_income) * 1.24);
       }
 
       //
@@ -560,7 +560,7 @@ class Block {
       //
       if (previous_block) {
         const miner_payment = previous_block_payout / BigInt(2);
-        const router_payment = previous_block_payout / BigInt(2);
+        const router_payment = previous_block_payout  - miner_payment;
 
         //
         // calculate miner and router payments
@@ -637,10 +637,10 @@ class Block {
                 //
                 let previous_staking_block_payout = staking_block.returnFeesTotal();
                 if (
-                    previous_staking_block_payout > staking_block.block.avg_income * BigInt(125) / BigInt(100) &&
+                    previous_staking_block_payout > BigInt(Number(staking_block.block.avg_income) *1.25) &&
                     previous_staking_block_payout > 50
                 ) {
-                  previous_staking_block_payout = staking_block.block.avg_income * BigInt(124) / BigInt(100);
+                  previous_staking_block_payout =BigInt(Number( staking_block.block.avg_income) * 1.24);
                 }
 
                 const sp = previous_staking_block_payout / BigInt(2);
