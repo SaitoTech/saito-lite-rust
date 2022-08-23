@@ -4,15 +4,10 @@
     ////////////////////////
     if (card == "indopaki") {
       let target = 4;
-      let me = "ussr";
       let opponent = "us";
-      if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+      if (this.game.player == 2) { opponent = "ussr";  }
 
-      if (me != player) {
-        let burned = this.rollDice(6);
-        return 0;
-      }
-      if (me == player) {
+      if (this.playerRoles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
 
@@ -64,6 +59,8 @@
           twilight_self.endTurn();
             
         });
+      }else{
+        let burned = this.rollDice(6);
       }
       return 0;
     }

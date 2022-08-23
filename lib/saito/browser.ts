@@ -601,8 +601,8 @@ class Browser {
     months[10] = "November";
     months[11] = "December";
     const month = months[datetime.getMonth()];
-
-    const day = datetime.getDate();
+    //getDay = Day of the Week, getDate = day of the month
+    const day = datetime.getDate(); 
     const year = datetime.getFullYear();
 
     minutes = minutes.toString().length == 1 ? `0${minutes}` : `${minutes}`;

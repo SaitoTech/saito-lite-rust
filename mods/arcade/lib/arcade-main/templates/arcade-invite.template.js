@@ -1,6 +1,6 @@
 module.exports = ArcadeInviteTemplate = (app, mod, invite, idx) => {
   //console.log("ARCADEINVITETEMPLATE");
-  //console.log(invite);
+  console.log(invite);
 
   let gameModule = app.modules.returnModule(invite.msg.game);
   if (!gameModule){

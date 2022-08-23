@@ -5,11 +5,6 @@
     //
     if (card == "lonegunman") {
 
-      if (this.game.player == 1) {
-        //this.updateStatus("<div class='status-message' id='status-message'>US is playing Lone Gunman</div>");
-        return 0;
-
-      }
       if (this.game.player == 2) {
 
         this.addMove("resolve\tlonegunman");

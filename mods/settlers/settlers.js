@@ -178,7 +178,7 @@ class Settlers extends GameTemplate {
 
     if (!this.browser_active) { return; }
     //Prevent this function from running twice as saito-lite is configured to run it twice
-    if (this.initialized) {return;} else { this.initialized = 1;}
+    if (this.initialize_game_run) {return;} 
 
     super.initializeHTML(app);
     if (this.game.state.lastroll.length == 0){

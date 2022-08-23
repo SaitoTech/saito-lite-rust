@@ -4,11 +4,6 @@
     /////////////////////
     if (card == "destalinization") {
 
-      if (this.game.player == 2) {
-        //this.updateStatus("<div class='status-message' id='status-message'>USSR is playing Destalinization</div>");
-        return 0;
-
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
