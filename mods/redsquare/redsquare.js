@@ -29,6 +29,8 @@ class RedSquare extends ModTemplate {
     this.sqlcache_enabled = 1;
 
     this.tweets = [];
+    this.resultsPerPage = 10;
+    this.pageNumber = 1;
 
     this.styles = [
       '/saito/saito.css',
@@ -102,6 +104,9 @@ class RedSquare extends ModTemplate {
         this.tweets[i - 1] = y;
       }
     }
+
+
+
   }
 
 
@@ -328,7 +333,7 @@ class RedSquare extends ModTemplate {
           let sql = `SELECT * FROM tweets WHERE sig = '${tweet_id}' OR parent_id = '${tweet_id}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderWithChildren(app, redsquare_self, tweet_id); });
         } else {
-          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 30`;
+          let sql = `SELECT * FROM tweets WHERE (flagged IS NOT 1 OR moderated IS NOT 1) AND tx_size < 1000000 ORDER BY updated_at DESC LIMIT 0,'${this.resultsPerPage}'`;
           this.fetchTweets(app, redsquare_self, sql, function (app, mod) { mod.renderMainPage(app, redsquare_self); });
         }
       }
@@ -371,6 +376,7 @@ class RedSquare extends ModTemplate {
 
 
         if (res.rows) {
+          console.log("results ", res.rows)
           res.rows.forEach(row => {
 
             let new_tweet = 1;

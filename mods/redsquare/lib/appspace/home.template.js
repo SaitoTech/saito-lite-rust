@@ -1,7 +1,7 @@
 
 module.exports = (app, mod) => {
 
-    return `
+  return `
       <div class="redsquare-new-tweets-banner" id="redsquare-new-tweets-banner">Load New Tweets</div>
       <div id="redsquare-appspace-home" class="redsquare-appspace-home">
 
@@ -17,7 +17,8 @@ module.exports = (app, mod) => {
 	  </p></p>
 	  loading...
 	</div>
-
+      <div id="redsquare-intersection">
+      </div>
       </div>
     `;
 
