@@ -572,23 +572,39 @@ class Blockchain {
     }
   }
 
-  generateForkId(block_id) {
+  generateForkId(block_id:bigint) {
     let fork_id = [];
     for (let i = 0; i < 32; i++) {
       fork_id[i] = "0";
     }
-    let current_block_id = block_id;
+    let current_block_id:bigint = block_id;
 
     //
     // roll back to last even 10 blocks
     //
     for (let i = 0; i < 10; i++) {
-      if ((current_block_id - i) % 10 === 0) {
-        current_block_id -= i;
+      if ((current_block_id - BigInt(i)) % BigInt(10) === BigInt(0)) {
+        current_block_id -= BigInt(i);
       }
     }
 
-    let weights = [0, 10, 10, 10, 10, 10, 25, 25, 100, 300, 500, 4000, 10000, 20000, 50000, 100000];
+    let weights = [
+      BigInt(0),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(10),
+      BigInt(25),
+      BigInt(25),
+      BigInt(100),
+      BigInt(300),
+      BigInt(500),
+      BigInt(4000),
+      BigInt(10000),
+      BigInt(20000),
+      BigInt(50000),
+      BigInt(100000)];
 
     //
     // loop backwards through blockchain
@@ -599,7 +615,7 @@ class Blockchain {
       //
       // do not loop around if block id < 0
       //
-      if (current_block_id > block_id || current_block_id <= 0) {
+      if (current_block_id > block_id || current_block_id <= BigInt(0)) {
         break;
       }
 
