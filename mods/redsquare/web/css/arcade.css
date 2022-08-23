@@ -126,7 +126,25 @@
 
 .rules-overlay p{
   margin-top: 0.5em;
+  font-size: 0.875em;
 }
+
+.rules-overlay h4{
+  margin-top: 0.5em;
+  font-size: 3rem;
+}
+
+.rules-overlay ul li{
+    margin-top: 0.1em;
+    width: 100%;
+    border-top: 1px solid var(--saito-skyline-grey);
+    cursor: pointer;
+    font-size: 0.875em;
+    text-align: -webkit-match-parent;
+    display: list-item;
+    list-style: inside;
+}
+
 .game-overlay {
   min-width: 320px;
   padding: 1rem;

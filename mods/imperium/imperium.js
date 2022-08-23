@@ -11750,8 +11750,6 @@ ACTION CARD - types
       }
     });
 
-
-
     //
     // factions
     //
@@ -11774,9 +11772,6 @@ ACTION CARD - types
         }
       });
     }
-
-
-
 
     this.menu.addMenuOption({
       text : "Cards",

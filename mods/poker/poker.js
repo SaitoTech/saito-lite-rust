@@ -2592,22 +2592,25 @@ class Poker extends GameTemplate {
     return `<div class="rules-overlay">
     <h1>Texas Hold'em</h1>
     <p>This is a standard implementation of the popular poker game.</p>
+    <h4>The Play</h4>
     <p>Each player attempts to form the best hand with their two private cards (called "the hole") and the five public cards.</p>
     <p>Players are initially dealt their two secret cards and betting begins. The player to the left (clockwise) of the dealer is called the small blind and must bet the small blind, the player to his/her left (clockwise) is the big blind and must also bet. Any other players must fold, call the big blind, or raise the pot. Once all bets are called, the three public cards are flipped over (the "flop").</p>
     <p>Another round of betting then commences from the player to the left of the dealer. Players can fold, check (i.e. not increase the pot), raise, or call (i.e. match a raise). Another card (the "turn") is revealed followed by another round of betting, and the final card (the "river") is revealed with another round of betting. </p> 
     <p>Any remaining players after the final round of betting go into the showdown and the highest hand wins the pot.</p>
-    <h2>Poker Hands</h2>
+    <h4>Poker-hand Rank: from strongest to weakest</h4>
     <ul>
-    <li><em>Straight Flush</em> is the best possible hand, where all the cards are of the same suit and continuous, with Ace high. A straight flush of A, K, Q, J, 10 is called a royal flush.</li>
-    <li><em>Four of a Kind</em></li>
-    <li><em>Full House</em>--three of a kind and a pair.</li>
-    <li><em>Flush</em>--All five cards of of the same suit</li>
-    <li><em>Straight</em>--the five cards are sequential in order (but not of the same suit)</li>
-    <li><em>Three of a Kind</em></li>
-    <li><em>Two Pair</em></li>
-    <li><em>One Pair</em></li>
-    <li><em>No Pair</em></li>
+    <li><strong>Straight Flush</strong> is the best possible hand, where all the cards are of the same suit and continuous, with Ace high. A straight flush of A, K, Q, J, 10 is called a royal flush.</li>
+    <li><strong>Four of a Kind</strong></li>
+    <li><strong>Full House</strong>--three of a kind and a pair.</li>
+    <li><strong>Flush</strong>--All five cards of of the same suit</li>
+    <li><strong>Straight</strong>--the five cards are sequential in order (but not of the same suit)</li>
+    <li><strong>Three of a Kind</strong></li>
+    <li><strong>Two Pair</strong></li>
+    <li><strong>One Pair</strong></li>
+    <li><strong>No Pair</strong></li>
     </ul>
+    <h4>References</h4>
+    <p>1. <a href="https://www.youtube.com/watch?v=CpSewSHZhmo" target="_blank">Video Tutorial</a></p>
     </div>`;
   }
 

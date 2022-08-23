@@ -38,6 +38,9 @@ class Spider extends GameTemplate {
   returnGameRulesHTML(){
     return `<div class="rules-overlay">
             <h1>Spider Saitolaire</h1>
+            <h4>The Objective</h4>
+            <p>The goal is to organize a shuffled deck of cards in ascending order from Ace to King until all cards have been moved to the foundation</p>
+            <h4>The Play</h4>
             <ul>
             <li>You have ten slots in which to arrange two decks of playing cards. </li>
             <li>Only half the cards are dealt at the beginning, and additional draws place a new card on each stack</li>
@@ -46,6 +49,8 @@ class Spider extends GameTemplate {
             <li>Any card may be placed on an open slot.</li>
             <li>When you complete a set from A to K, it is immediately removed from gameplay</li>
             </ul>
+            <h4>References</h4>
+            <p>1. <a href="https://www.youtube.com/watch?v=pZVH6EfYHhI" target="_blank">Video Tutorial</a></p>
             </div>
             `;
 
