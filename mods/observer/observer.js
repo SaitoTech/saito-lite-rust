@@ -381,7 +381,7 @@ class Observer extends ModTemplate {
     }
   }
 
-  observeGame(game_id) {
+  observeGame(game_id, watch_live) {
 
     let msgobj = null;
 
@@ -442,7 +442,7 @@ class Observer extends ModTemplate {
     //We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
     this.sendFollowTx(msgobj);
 
-    this.initializeObserverMode(game_id);
+    this.initializeObserverMode(game_id, watch_live);
   }
 
 
@@ -609,7 +609,7 @@ class Observer extends ModTemplate {
   /**
    * 
    */ 
-  initializeObserverMode(game_id) {
+  async initializeObserverMode(game_id, watch_live) {
     let arcade_self = this;
 
     let first_tx = null;
@@ -640,6 +640,10 @@ class Observer extends ModTemplate {
           first_tx.observer_mode = 1;
           first_tx.player = 0; //Set me as an observer
           first_tx.halted = 1; // Default to paused
+          if (watch_live){
+            first_tx.halted = 0;
+            first_tx.live = 1;
+          }
 
           //Either add the cloned game to my wallet or update my wallet
           let idx = -1;
