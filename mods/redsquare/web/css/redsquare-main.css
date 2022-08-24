@@ -69,6 +69,11 @@ span.redsquare-home-red-square+span {
   padding-bottom: 1rem;
 }
 
+.post-tweet-preview .tweet-body {
+  height: 55vh;
+  overflow-y: scroll;
+}
+
 .post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
   display: none;
 }
