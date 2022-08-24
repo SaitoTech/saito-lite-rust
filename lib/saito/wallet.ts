@@ -834,7 +834,7 @@ console.log("---------------------");
       console.error("###   -revert-   ###");
       console.error("####################");
       console.error(err);
-      tx.msg = {};
+      tx.msg = null;
       return tx;
     }
 
@@ -880,7 +880,7 @@ console.log("---------------------");
       console.log("###   -revert-   ###");
       console.log("####################");
       console.log(err);
-      tx.msg = {};
+      tx.msg = null;
     }
 
     tx.sign(this.app);

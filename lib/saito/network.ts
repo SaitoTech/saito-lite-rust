@@ -881,9 +881,13 @@ class Network {
               if (reconstructed_data.transaction) {
                 if (reconstructed_data.transaction.m) {
                   // backwards compatible - in case modules try the old fashioned way
-                  msg.data.transaction.msg = JSON.parse(
-                    this.app.crypto.base64ToString(msg.data.transaction.m)
-                  );
+                  if (msg.data.transaction.m.length === 0) {
+                    msg.data.transaction.msg = null;
+                  } else {
+                    msg.data.transaction.msg = JSON.parse(
+                        this.app.crypto.base64ToString(msg.data.transaction.m)
+                    );
+                  }
                   msg.data.msg = msg.data.transaction.msg;
                 }
               }

@@ -144,7 +144,7 @@ class Mempool {
         if (this.mempool.blocks.length > 0) {
           if (this.app.blockchain.indexing_active === false) {
             const block = this.mempool.blocks.shift();
-            this.app.blockchain.addBlockToBlockchain(block);
+            this.app.blockchain.addBlockToBlockchain(block).then(r => {return;});
           }
         } else {
           this.processing_active = false;

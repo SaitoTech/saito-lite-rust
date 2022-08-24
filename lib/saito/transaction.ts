@@ -64,7 +64,7 @@ class Transaction {
         // cumulative weight of the usable fees that
         // are behind the transactions.
 
-        this.msg = {};
+        this.msg = null;
         this.dmsg = "";
         this.size = 0;
         this.is_valid = 1;
@@ -76,8 +76,13 @@ class Transaction {
             }
             if (this.transaction.type === TransactionType.Normal) {
                 try {
-                    const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-                    this.msg = JSON.parse(reconstruct);
+                    let buffer = Buffer.from(this.transaction.m);
+                    if (buffer.byteLength === 0) {
+                        this.msg = null;
+                    } else {
+                        const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+                        this.msg = JSON.parse(reconstruct);
+                    }
                 } catch (err) {
                     console.log(this.transaction);
                     console.error(err);
@@ -145,14 +150,22 @@ class Transaction {
     decryptMessage(app) {
         if (this.transaction.from[0].add !== app.wallet.returnPublicKey()) {
             try {
-                const parsed_msg = this.msg;
-                this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
+                if (this.msg === null) {
+                    this.dmsg = "";
+                } else {
+                    const parsed_msg = this.msg;
+                    this.dmsg = app.keys.decryptMessage(this.transaction.from[0].add, parsed_msg);
+                }
             } catch (e) {
                 console.error("ERROR: " + e);
             }
             return;
         }
         try {
+            if (this.msg === null) {
+                this.dmsg = "";
+                return;
+            }
             this.dmsg = app.keys.decryptMessage(this.transaction.to[0].add, this.msg);
         } catch (e) {
             this.dmsg = "";
@@ -234,8 +247,13 @@ class Transaction {
 
         try {
             if (this.transaction.type === TransactionType.Normal) {
-                const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-                this.msg = JSON.parse(reconstruct);
+                let buffer = Buffer.from(this.transaction.m);
+                if (buffer.byteLength === 0) {
+                    this.msg = null;
+                } else {
+                    const reconstruct = buffer.toString("utf-8");
+                    this.msg = JSON.parse(reconstruct);
+                }
             }
             //            console.log("reconstructed msg: " + JSON.stringify(this.msg));
         } catch (err) {
@@ -394,12 +412,16 @@ class Transaction {
         if (this.dmsg !== "") {
             return this.dmsg;
         }
-        if (this.msg !== {}) {
+        if (this.msg !== {} && this.msg !== null) {
             return this.msg;
         }
         try {
-            const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
-            this.msg = JSON.parse(reconstruct);
+            if (this.transaction.m.length > 0) {
+                const reconstruct = Buffer.from(this.transaction.m).toString("utf-8");
+                this.msg = JSON.parse(reconstruct);
+            } else {
+                this.msg = null;
+            }
         } catch (err) {
             console.error(err);
         }
@@ -670,7 +692,7 @@ class Transaction {
 
         const m_as_hex = Buffer.from(this.transaction.m).toString("hex");
         const tm = app.binary.hexToSizedArray(m_as_hex, m_as_hex.length / 2);
-        buffer = Buffer.concat([buffer, tm]);
+        buffer = Buffer.concat([buffer, this.transaction.m]);
 
         return buffer;
     }
@@ -689,8 +711,12 @@ class Transaction {
         //
         // transaction message
         //
-        if (this.transaction.m.length === 0) {
-            this.transaction.m = Buffer.from(app.crypto.stringToBase64(JSON.stringify(this.msg)), "base64");
+        if (this.transaction.m.byteLength === 0) {
+            if (this.msg === null) {
+                this.transaction.m = Buffer.alloc(0);
+            } else {
+                this.transaction.m = Buffer.from(app.crypto.stringToBase64(JSON.stringify(this.msg)), "base64");
+            }
         }
     }
 
