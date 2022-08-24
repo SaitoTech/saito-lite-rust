@@ -676,7 +676,7 @@ class Network {
               //              console.log("adding ghostchain blcok! " + block_hash);
             }
             this.app.blockchain.addGhostToBlockchain(
-              syncobj.block_ids[i],
+              BigInt(syncobj.block_ids[i]),
               previous_block_hash,
               syncobj.block_ts[i],
               syncobj.prehash[i],
@@ -764,7 +764,7 @@ class Network {
           start: "",
           prehash: [],
           previous_block_hash: [],
-          block_ids: [],
+          block_ids: new Array<bigint>(),
           block_ts: [],
           txs: [],
           gts: [],
