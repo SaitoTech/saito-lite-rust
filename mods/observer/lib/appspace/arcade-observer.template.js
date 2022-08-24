@@ -29,7 +29,7 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
         <div class="game-inset-img" style="background-image: url('${gameBack}');"></div>
         <div class="invite-col-2">
           <div class="gameName">${gameName}</div>
-          <div class="gameName" style="font-size:0.9em">${msg.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
+          <div style="font-size:0.9em">${msg.step} moves as of ${datetime.hours}:${datetime.minutes}, ${datetime.day} ${datetime.month} ${datetime.year}</div>
           ${playersHtml}
         </div>
         <div class="gameShortDescription">${makeDescription(app, msg)}</div>
@@ -41,7 +41,6 @@ module.exports = ArcadeObserverTemplate = (app, mod, msg) => {
     </div>
     `;
 
-  console.log(inviteHtml);
   return inviteHtml;
 }
 
