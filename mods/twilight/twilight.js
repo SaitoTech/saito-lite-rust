@@ -12568,7 +12568,7 @@ playerTurnHeadlineSelected(card, player) {
       if (this.isControlled("us", "uk") == 1) {
 
         if (this.game.player == 2) {
-          //If the event card has a UI component, run the clock for the player we are waiting on
+
           this.startClock();
           
           let twilight_self = this;
@@ -12618,11 +12618,16 @@ playerTurnHeadlineSelected(card, player) {
               twilight_self.endTurn();
             });
           return 0;
-        }else{
+        } else {
           this.updateLog(`${this.cardToText(card)} doesn't trigger because UK not controlled by US`);
         }
+
+        return 0;
+
       }
-      return 0;
+
+      return 1;
+
     }
 
 
