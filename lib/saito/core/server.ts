@@ -177,7 +177,7 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = this.app.blockchain.blocks[bhash];
+        const blk = this.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
@@ -216,7 +216,7 @@ class Server {
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const blk = server_self.app.blockchain.blocks[bhash];
+        const blk = server_self.app.blockchain.blocks.get(bhash);
         if (!blk) {
           return;
         }
@@ -292,10 +292,10 @@ class Server {
       //
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const block = this.app.blockchain.blocks[bsh];
+      const block = this.app.blockchain.blocks.get(bsh);
 
       if (block) {
-        if (block.hasKeylistTransactions(bsh, keylist) === 0) {
+        if (!block.hasKeylistTransactions(keylist)) {
           res.writeHead(200, {
             "Content-Type": "text/plain",
             "Content-Transfer-Encoding": "utf8",
@@ -303,7 +303,7 @@ class Server {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const liteblock = block.returnLiteBlock(keylist);
-          const buffer = Buffer.from(liteblock.serialize(), "binary").toString("base64");
+          const buffer = Buffer.from(liteblock.serialize()).toString("base64");
 
           //res.write(Buffer.from(liteblock.serialize(), "utf8"), "utf8");
           res.write(buffer, "utf8");

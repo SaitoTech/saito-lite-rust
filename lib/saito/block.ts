@@ -1091,7 +1091,7 @@ class Block {
     return this.has_issuance_transaction;
   }
 
-  hasKeylistTransactions(keylist) {
+  hasKeylistTransactions(keylist) :boolean {
     if (!this.txs_hmap_generated) {
       console.log("generating tx hashmap for " + JSON.stringify(keylist));
       this.generateTransactionsHashmap();

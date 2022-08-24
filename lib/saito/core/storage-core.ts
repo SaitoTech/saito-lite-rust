@@ -213,10 +213,10 @@ class StorageCore extends Storage {
   }
 
   async loadBlockByHash(bsh) {
-    if (!this.app.blockchain.blocks[bsh]) {
+    if (!this.app.blockchain.blocks.get(bsh)) {
       return null;
     }
-    const blk = this.app.blockchain.blocks[bsh];
+    const blk = this.app.blockchain.blocks.get(bsh);
     const filename = blk.returnFilename();
     const block = await this.loadBlockByFilename(filename);
     return block;

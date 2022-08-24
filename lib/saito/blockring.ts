@@ -180,7 +180,7 @@ export default class Blockring {
   returnLatestBlock(): Block | null {
     const block_hash = this.returnLatestBlockHash();
     if (this.app.blockchain.isBlockIndexed(block_hash)) {
-      return this.app.blockchain.blocks[block_hash];
+      return this.app.blockchain.blocks.get(block_hash);
     }
     return null;
   }

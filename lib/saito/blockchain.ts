@@ -115,7 +115,7 @@ class Blockchain {
     // arrival if they do not exist.
     //
     if (!this.isBlockIndexed(block.hash)) {
-      this.blocks[block.hash] = block;
+      this.blocks.set(block.hash, block);
     }
 
     // update longest-chain
@@ -220,7 +220,7 @@ class Blockchain {
     // arrival if they do not exist.
     //
     if (!this.isBlockIndexed(block_hash)) {
-      this.blocks[block_hash] = block;
+      this.blocks.set(block_hash, block);
     }
 
     //
@@ -234,8 +234,8 @@ class Blockchain {
     let am_i_the_longest_chain = 0;
 
     while (!shared_ancestor_found) {
-      if (this.blocks[new_chain_hash]) {
-        if (this.blocks[new_chain_hash].lc === 1) {
+      if (this.blocks.has(new_chain_hash)) {
+        if (this.blocks.get(new_chain_hash).lc === 1) {
           shared_ancestor_found = true;
           break;
         } else {
@@ -244,7 +244,7 @@ class Blockchain {
           }
         }
         new_chain.push(new_chain_hash);
-        new_chain_hash = this.blocks[new_chain_hash].block.previous_block_hash;
+        new_chain_hash = this.blocks.get(new_chain_hash).block.previous_block_hash;
       } else {
         break;
       }
@@ -255,9 +255,9 @@ class Blockchain {
     //
     if (shared_ancestor_found) {
       while (new_chain_hash !== old_chain_hash) {
-        if (this.blocks[old_chain_hash]) {
+        if (this.blocks.get(old_chain_hash)) {
           old_chain.push(old_chain_hash);
-          old_chain_hash = this.blocks[old_chain_hash].block.previous_block_hash;
+          old_chain_hash = this.blocks.get(old_chain_hash).block.previous_block_hash;
           if (old_chain_hash === "") {
             break;
           }
@@ -364,7 +364,7 @@ class Blockchain {
 
       if (does_new_chain_validate) {
         await this.addBlockSuccess(block);
-        this.blocks[block_hash].lc = 1;
+        this.blocks.get(block_hash).lc = 1;
 
         this.app.connection.emit("BlockchainAddBlockSuccess", block_hash);
         this.app.connection.emit("BlockchainNewLongestChainBlock", {
@@ -375,7 +375,7 @@ class Blockchain {
         return 1;
       } else {
         await this.addBlockFailure(block);
-        this.blocks[block_hash].lc = 0;
+        this.blocks.get(block_hash).lc = 0;
         this.app.connection.emit("BlockchainAddBlockFailure", block_hash);
         this.indexing_active = false;
         return 0;
@@ -475,7 +475,7 @@ class Blockchain {
             if (run_callbacks === 1) {
               let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
               if (callback_block_hash !== "") {
-                let callback_block = this.blocks[callback_block_hash];
+                let callback_block = this.blocks.get(callback_block_hash);
                 if (callback_block) {
                   await callback_block.runCallbacks(this_confirmation);
                 }
@@ -491,7 +491,7 @@ class Blockchain {
           let callback_block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(
             block_id_in_which_to_delete_callbacks + BigInt(1) // because block ring starts from 1
           );
-          let callback_block = this.blocks[callback_block_hash];
+          let callback_block = this.blocks.get(callback_block_hash);
           if (callback_block) {
             callback_block.callbacks = [];
             callback_block.callbackTxs = [];
@@ -525,8 +525,8 @@ class Blockchain {
       console.debug("blockchain.deleteBlocks : " + delete_block_id, block_hashes);
     }
     for (let i = 0; i < block_hashes.length; i++) {
-      if (this.blocks[block_hashes[i]]) {
-        if (this.blocks[block_hashes[i]].returnId() === delete_block_id) {
+      if (this.blocks.has(block_hashes[i])) {
+        if (this.blocks.get(block_hashes[i]).returnId() === delete_block_id) {
           await this.deleteBlock(delete_block_id, block_hashes[i]);
         }
       }
@@ -554,8 +554,8 @@ class Blockchain {
     let block_hashes = this.app.blockring.returnBlockHashesAtBlockId(prune_blocks_at_block_id);
 
     for (let i = 0; i < block_hashes.length; i++) {
-      if (this.blocks[block_hashes[i]]) {
-        if (prune_blocks_at_block_id >= this.blocks[block_hashes[i]].returnId()) {
+      if (this.blocks.has(block_hashes[i])) {
+        if (prune_blocks_at_block_id >= this.blocks.get(block_hashes[i]).returnId()) {
           block_hashes_copy.push(block_hashes[i]);
         }
       }
@@ -676,7 +676,7 @@ class Blockchain {
 
     // remove from block index
     if (this.isBlockIndexed(deletedBlockHash)) {
-      delete this.blocks[deletedBlockHash];
+      this.blocks.delete(deletedBlockHash);
     }
   }
 
@@ -823,7 +823,7 @@ class Blockchain {
     if (old_chain.length > new_chain.length) {
       return false;
     }
-    if (this.app.blockring.returnLatestBlockId() >= this.blocks[new_chain[0]].block.id) {
+    if (this.app.blockring.returnLatestBlockId() >= this.blocks.get(new_chain[0]).block.id) {
       return false;
     }
 
@@ -831,10 +831,10 @@ class Blockchain {
     let new_bf = BigInt(0);
 
     for (let i = 0; i < old_chain.length; i++) {
-      old_bf += BigInt(this.blocks[old_chain[i]].block.burnfee);
+      old_bf += BigInt(this.blocks.get(old_chain[i]).block.burnfee);
     }
     for (let i = 0; i < new_chain.length; i++) {
-      new_bf += BigInt(this.blocks[new_chain[i]].block.burnfee);
+      new_bf += BigInt(this.blocks.get(new_chain[i]).block.burnfee);
     }
 
     //
@@ -844,14 +844,14 @@ class Blockchain {
   }
 
   isBlockIndexed(block_hash) {
-    return !!this.blocks[block_hash];
+    return this.blocks.has(block_hash);
   }
 
   async loadBlockAsync(block_hash: string):Promise<Block | null> {
     if (!block_hash) return null;
     if (typeof window === "undefined") {
-      if (this.blocks[block_hash] && this.blocks[block_hash].block_type === BlockType.Full) {
-        return this.blocks[block_hash];
+      if (this.blocks.has(block_hash) && this.blocks.get(block_hash).block_type === BlockType.Full) {
+        return this.blocks.get(block_hash);
       }
       if (this.debugging) {
         console.debug(`loading block from disk : ${block_hash}`);
@@ -866,8 +866,8 @@ class Blockchain {
       block.block_type = BlockType.Full;
       return block;
     } else {
-      if (this.blocks[block_hash]) {
-        return this.blocks[block_hash];
+      if (this.blocks.has(block_hash)) {
+        return this.blocks.get(block_hash);
       }
     }
 
@@ -1051,7 +1051,7 @@ class Blockchain {
         this.blockchain.genesis_block_id = purge_block_id + BigInt(1);
         this.blockchain.genesis_block_hash =
           this.app.blockring.returnLongestChainBlockHashAtBlockId(purge_block_id + BigInt(1));
-        const genesis_block = this.blocks[this.blockchain.genesis_block_hash];
+        const genesis_block = this.blocks.get(this.blockchain.genesis_block_hash);
         if (genesis_block) {
           this.blockchain.genesis_timestamp = genesis_block.returnTimestamp();
         }
@@ -1079,8 +1079,8 @@ class Blockchain {
     for (let i = 0; i < MIN_GOLDEN_TICKETS_DENOMINATOR; i++) {
       search_depth_idx += 1;
 
-      if (this.blocks[latest_block_hash]) {
-        let block: Block = this.blocks[latest_block_hash];
+      if (this.blocks.has(latest_block_hash)) {
+        let block: Block = this.blocks.get(latest_block_hash);
 
         if (i === 0) {
           if (block.returnId() < MIN_GOLDEN_TICKETS_DENOMINATOR) {
@@ -1132,7 +1132,7 @@ class Blockchain {
   }
 
   async validate(new_chain, old_chain) {
-    let block = this.blocks[new_chain[0]];
+    let block = this.blocks.get(new_chain[0]);
     let previous_block_hash = block.returnPreviousBlockHash();
 
     let does_chain_meet_golden_ticket_requirements =

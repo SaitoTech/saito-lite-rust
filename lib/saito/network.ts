@@ -775,8 +775,8 @@ class Network {
         for (let i = last_shared_ancestor + BigInt(1); i <= this.app.blockring.returnLatestBlockId(); i++) {
           block_hash = this.app.blockring.returnLongestChainBlockHashAtBlockId(i);
           if (block_hash !== "") {
-            if (this.app.blockchain.blocks[block_hash]) {
-              let block = this.app.blockchain.blocks[block_hash];
+            if (this.app.blockchain.blocks.get(block_hash)) {
+              let block = this.app.blockchain.blocks.get(block_hash);
               syncobj.gts.push(block.hasGoldenTicket());
               syncobj.block_ts.push(block.returnTimestamp());
               syncobj.prehash.push(block.prehash);
