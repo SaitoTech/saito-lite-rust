@@ -10,7 +10,7 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
   render(){
 
 	$("#gameboard").css({
-	  'background-image': 'url("/pandemic/img/alt/pandemic_map.jpg")',
+	  'background-image': 'url("/pandemic/img/alt/pandemic_map2.jpg")',
 	  'background-size': 'cover',
 	  width: this.boardWidth+'px',
 	  height: this.boardHeight+'px',
@@ -95,8 +95,6 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
     let ctx = c.getContext("2d");
     ctx.clearRect(0, 0, this.boardWidth, this.boardHeight);
     ctx.beginPath();
-    ctx.strokeStyle = "#C0C0C0";
-    ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     let exceptions = ["tokyosanfrancisco", "sanfranciscotokyo","manilasanfrancisco", "sanfranciscomanila", "losangelessydney","sydneylosangeles"];
@@ -119,6 +117,20 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         if (!label){
           this.app.browser.addElementToElement(`<div class="name">${cities[i].name}</div>`, city);
         }
+
+        if (this.shouldMap(cities[i])){
+          ctx.strokeStyle = "#333333";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(cities[i].left+40,cities[i].top+40);
+          ctx.lineTo(cities[i].x, cities[i].y);    
+          ctx.stroke();
+          ctx.arc(cities[i].x, cities[i].y, 5, 0, 2*Math.PI);
+          ctx.fill();          
+        }
+        ctx.strokeStyle = "#C0C0C0";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
 
         for (let neigh of cities[i].neighbours){
         	if (exceptions.includes(i+neigh)){
@@ -145,21 +157,33 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
   }
 
 
+  shouldMap(city){
+    if (!city.x || !city.y){
+      return false;
+    }
+
+    if (Math.sqrt(Math.pow(city.x-city.left-40, 2) + Math.pow(city.y - city.top-40, 2)) > 60){
+      return true;
+    }
+
+    return false;
+  }
+
   returnCities() {
     var cities = {};
 
     cities["sanfrancisco"] = {
-      top: 515,
-      left: 340,
+      top: 300,
+      left: 275,
       neighbours: ["tokyo", "manila", "losangeles", "chicago"],
       name: "Vancouver",
-      x: 395,
-      y: 580,
+      x: 313,
+      y: 387,
       virus: "blue",
     };
     cities["chicago"] = {
-      top: 520,
-      left: 533,
+      top: 300,
+      left: 500,
       neighbours: [
         "sanfrancisco",
         "losangeles",
@@ -168,112 +192,134 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
         "montreal",
       ],
       name: "Chicago",
-      x:660,
-      y:620,
+      x:594,
+      y:449,
       virus: "blue",
     };
     cities["montreal"] = {
-      top: 500,
-      left: 700,
+      top: 300,
+      left: 675,
       neighbours: ["chicago", "newyork", "washington"],
       name: "Toronto",
-      x: 530,
-      y: 750,
+      x: 658,
+      y: 406,
       virus: "blue",
     };
     cities["newyork"] = {
-      top: 520,
+      top: 360,
       left: 815,
       neighbours: ["montreal", "washington", "london", "madrid"],
       name: "New York",
+      x: 718,
+      y: 467,
       virus: "blue",
     };
     cities["washington"] = {
-      top: 625,
-      left: 795,
+      top: 500,
+      left: 700,
       neighbours: ["montreal", "newyork", "miami", "atlanta"],
       name: "Washington",
+      x: 671,
+      y: 512,
       virus: "blue",
     };
     cities["atlanta"] = {
-      top: 630,
-      left: 605,
+      top: 525,
+      left: 550,
       neighbours: ["chicago", "miami", "washington"],
       name: "Atlanta",
+      x: 586,
+      y: 533,
       virus: "blue",
     };
     cities["losangeles"] = {
-      top: 700,
-      left: 385,
+      top: 500,
+      left: 300,
       neighbours: ["sydney", "sanfrancisco", "mexicocity", "chicago"],
       name: "Los Angeles",
+      x: 311,
+      y: 551,
       virus: "yellow",
     };
     cities["mexicocity"] = {
-      top: 810,
-      left: 520,
+      top: 650,
+      left: 410,
       neighbours: ["chicago", "losangeles", "miami", "bogota", "lima"],
       name: "Mexico City",
+      x: 442,
+      y: 704,
       virus: "yellow",
     };
     cities["miami"] = {
-      top: 735,
-      left: 735,
+      top: 675,
+      left: 660,
       neighbours: ["washington", "atlanta", "mexicocity", "bogota"],
       name: "Santo Domingo",
+      x: 697,
+      y: 727,
       virus: "yellow",
     };
     cities["bogota"] = {
-      top: 905,
-      left: 670,
-      neighbours: ["miami", "mexicocity", "lima", "saopaulo", "buenosaires"],
+      top: 850,
+      left: 620,
+      neighbours: ["miami", "mexicocity", "lima", "saopaulo"],
       name: "Bogota",
+      x: 663,
+      y: 882,
       virus: "yellow",
     };
     cities["lima"] = {
-      top: 1100,
-      left: 650,
+      top: 1000,
+      left: 500,
       neighbours: ["santiago", "bogota", "mexicocity"],
       name: "Lima",
+      x: 633,
+      y: 1050,
       virus: "yellow",
     };
     cities["santiago"] = {
-      top: 1285,
-      left: 625,
+      top: 1250,
+      left: 525,
       neighbours: ["lima"],
       name: "Santiago",
+      x: 710,
+      y: 1271,
       virus: "yellow",
     };
     cities["buenosaires"] = {
-      top: 1280,
+      top: 1225,
       left: 885,
       neighbours: ["saopaulo", "bogota"],
       name: "Buenos Aires",
+      x: 810,
+      y: 1287,
       virus: "yellow",
     };
     cities["saopaulo"] = {
-      top: 1070,
+      top: 1075,
       left: 985,
       neighbours: ["bogota", "buenosaires", "madrid", "lagos"],
       name: "Sao Paulo",
+      x: 892,
+      y: 1159,
       virus: "yellow",
     };
     cities["lagos"] = {
-      top: 950,
+      top: 800,
       left: 1250,
       neighbours: ["saopaulo", "khartoum", "kinshasa"],
       name: "Lagos",
       virus: "yellow",
     };
     cities["khartoum"] = {
-      top: 910,
+      top: 850,
       left: 1500,
       neighbours: ["cairo", "lagos", "kinshasa", "johannesburg"],
       name: "Dar Es Salaam",
       virus: "yellow",
     };
     cities["kinshasa"] = {
-      top: 1080,
+      top: 1030,
       left: 1340,
       neighbours: ["lagos", "khartoum", "johannesburg"],
       name: "Luanda",
@@ -287,140 +333,141 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "yellow",
     };
     cities["london"] = {
-      top: 425,
-      left: 1150,
-      neighbours: ["newyork", "madrid", "essen", "paris"],
+      top: 315,
+      left: 1130,
+      neighbours: ["newyork", "madrid", "paris"],
       name: "London",
       virus: "blue",
     };
     cities["madrid"] = {
-      top: 580,
-      left: 1145,
+      top: 475,
+      left: 1125,
       neighbours: ["newyork", "paris", "london", "algiers", "saopaulo"],
       name: "Madrid",
       virus: "blue",
     };
     cities["essen"] = {
-      top: 475,
+      top: 400,
       left: 1415,
-      neighbours: ["stpetersburg", "london", "milan", "paris"],
+      neighbours: ["stpetersburg", "istanbul", "milan", "paris"],
       name: "Kiev",
       virus: "blue",
     };
     cities["paris"] = {
-      top: 500,
-      left: 1295,
+      top: 390,
+      left: 1255,
       neighbours: ["london", "essen", "madrid", "milan", "algiers"],
       name: "Paris",
       virus: "blue",
     };
     cities["stpetersburg"] = {
-      top: 365,
+      top: 265,
       left: 1480,
       neighbours: ["essen", "moscow", "istanbul"],
       name: "St. Petersburg",
       virus: "blue",
     };
     cities["milan"] = {
-      top: 575,
+      top: 500,
       left: 1370,
       neighbours: ["essen", "istanbul", "paris", "algiers"],
       name: "Rome",
       virus: "blue",
     };
     cities["algiers"] = {
-      top: 685,
+      top: 550,
       left: 1250,
       neighbours: ["madrid", "paris", "cairo", "milan"],
       name: "Casablanca",
       virus: "black",
     };
     cities["cairo"] = {
-      top: 720,
+      top: 625,
       left: 1445,
       neighbours: ["khartoum", "algiers", "istanbul", "baghdad", "riyadh"],
       name: "Cairo",
       virus: "black",
     };
     cities["istanbul"] = {
-      top: 580,
-      left: 1490,
+      top: 480,
+      left: 1500,
       neighbours: [
         "stpetersburg",
         "milan",
         "cairo",
         "baghdad",
         "moscow",
+        "essen",
       ],
       name: "Istanbul",
       virus: "black",
     };
     cities["moscow"] = {
-      top: 450,
-      left: 1535,
+      top: 330,
+      left: 1600,
       neighbours: ["stpetersburg", "tehran", "istanbul"],
       name: "Moscow",
       virus: "black",
     };
     cities["baghdad"] = {
-      top: 660,
+      top: 575,
       left: 1585,
       neighbours: ["cairo", "riyadh", "karachi", "tehran", "istanbul"],
       name: "Baghdad",
       virus: "black",
     };
     cities["riyadh"] = {
-      top: 760,
+      top: 700,
       left: 1615,
       neighbours: ["cairo", "baghdad", "karachi"],
       name: "Riyadh",
       virus: "black",
     };
     cities["tehran"] = {
-      top: 540,
-      left: 1710,
+      top: 475,
+      left: 1725,
       neighbours: ["moscow", "karachi", "baghdad", "delhi"],
       name: "Tehran",
       virus: "black",
     };
     cities["karachi"] = {
       top: 675,
-      left: 1730,
+      left: 1780,
       neighbours: ["baghdad", "tehran", "delhi", "riyadh", "mumbai"],
       name: "Karachi",
       virus: "black",
     };
     cities["mumbai"] = {
       top: 800,
-      left: 1750,
+      left: 1800,
       neighbours: ["chennai", "karachi", "delhi"],
       name: "Mumbai",
       virus: "black",
     };
     cities["delhi"] = {
-      top: 650,
-      left: 1845,
+      top: 550,
+      left: 1875,
       neighbours: ["tehran", "karachi", "mumbai", "chennai", "kolkata"],
       name: "Delhi",
       virus: "black",
     };
     cities["chennai"] = {
       top: 890,
-      left: 1870,
+      left: 1900,
       neighbours: ["mumbai", "delhi", "kolkata", "bangkok", "jakarta"],
       name: "Bangalore",
       virus: "black",
     };
     cities["kolkata"] = {
-      top: 715,
-      left: 1940,
-      neighbours: ["delhi", "chennai", "bangkok", "hongkong"],
+      top: 615,
+      left: 2000,
+      neighbours: ["delhi", "chennai", "bangkok"],
       name: "Dhaka",
       virus: "black",
     };
     cities["bangkok"] = {
-      top: 810,
-      left: 2005,
+      top: 750,
+      left: 2050,
       neighbours: [
         "kolkata",
         "hongkong",
@@ -432,8 +479,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "red",
     };
     cities["jakarta"] = {
-      top: 995,
-      left: 2000,
+      top: 950,
+      left: 2100,
       neighbours: ["chennai", "bangkok", "hochiminhcity", "sydney"],
       name: "Jakarta",
       virus: "red",
@@ -446,8 +493,8 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "red",
     };
     cities["manila"] = {
-      top: 850,
-      left: 2260,
+      top: 750,
+      left: 2350,
       neighbours: [
         "sydney",
         "hongkong",
@@ -458,20 +505,19 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "red",
     };
     cities["hochiminhcity"] = {
-      top: 900,
-      left: 2100,
+      top: 850,
+      left: 2200,
       neighbours: ["jakarta", "bangkok", "hongkong", "manila"],
       name: "Ho Chi Minh City",
       virus: "red",
     };
     cities["hongkong"] = {
-      top: 790,
-      left: 2115,
+      top: 675,
+      left: 2200,
       neighbours: [
         "hochiminhcity",
         "shanghai",
         "bangkok",
-        "kolkata",
         "taipei",
         "manila",
       ],
@@ -479,43 +525,43 @@ class PandemicRetroSkin extends PandemicOriginalSkin {
       virus: "red",
     };
     cities["taipei"] = {
-      top: 660,
-      left: 2030,
+      top: 600,
+      left: 2100,
       neighbours: ["shanghai", "hongkong", "beijing"],
       name: "Chongqing",
       virus: "red",
     };
     cities["shanghai"] = {
-      top: 685,
-      left: 2205,
+      top: 600,
+      left: 2275,
       neighbours: ["hongkong", "taipei", "seoul", "tokyo", "osaka"],
       name: "Shanghai",
       virus: "red",
     };
     cities["beijing"] = {
-      top: 545,
-      left: 2085,
+      top: 425,
+      left: 2050,
       neighbours: ["seoul", "taipei"],
       name: "Beijing",
       virus: "red",
     };
     cities["seoul"] = {
-      top: 530,
-      left: 2185,
+      top: 400,
+      left: 2250,
       neighbours: ["beijing", "shanghai", "tokyo"],
       name: "Seoul",
       virus: "red",
     };
     cities["tokyo"] = {
-      top: 550,
-      left: 2385,
+      top: 500,
+      left: 2450,
       neighbours: ["seoul", "shanghai", "sanfrancisco", "osaka"],
       name: "Tokyo",
       virus: "red",
     };
     cities["osaka"] = {
-      top: 710,
-      left: 2325,
+      top: 600,
+      left: 2450,
       neighbours: ["shanghai", "tokyo"],
       name: "Osaka",
       virus: "red",
