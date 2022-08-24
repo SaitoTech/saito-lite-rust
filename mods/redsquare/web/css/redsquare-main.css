@@ -70,7 +70,7 @@ span.redsquare-home-red-square+span {
 }
 
 .post-tweet-preview .tweet-body {
-  height: 55vh;
+  max-height: 55vh;
   overflow-y: scroll;
 }
 
