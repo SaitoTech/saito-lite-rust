@@ -196,12 +196,18 @@ class RedSquareTweet {
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
+        let redsquareUrl = window.location.origin + window.location.pathname;
+        window.history.pushState({}, document.title, redsquareUrl);  
       }
 
       // // mod.fetchTweetsFromServer(app, mod, tweet_sig_id, function(app, mod) {mod.renderWithChildren(app, mod,)})
       let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
       mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
 
+      if (!window.location.href.includes('type=tweet')) {
+        let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;      
+        window.history.pushState({}, document.title, tweetUrl);  
+      }
 
     };
 
