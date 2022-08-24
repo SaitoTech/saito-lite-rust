@@ -313,7 +313,7 @@
 
 /* rp suggestions */
 
-h1, h2, h3, h4, h5, h6, .saito-username {
+h1, h2, h3, h4, h5, h6, .saito-address {
     font-weight: normal;
 }
 

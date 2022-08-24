@@ -5,7 +5,7 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
 <div class="saito-sidebar right">
 
   <div class="settings-appspace-versions-container">
-    <h6> Version </h6>
+    <h6>Version</h6>
     <div class="settings-appspace-versions">
       <p class="saito-black">Code Version:</p>
       <p>${app.wallet.wallet.version}</p>
@@ -15,16 +15,42 @@ module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
   </div>
 
   <div class="settings-appspace-icons-container">
-    <h6> Help </h6>
-    <div class="settings-appspace-icons"  style="padding-bottom:40px;">
-    <div><a target="_blank" href="https://discord.gg/HjTFh9Tfec"><i class="fab fa-discord"></i></a></div>
-    <div class="saito-black">Discord</div>
+    <h6>Help</h6>
+    <div class="settings-appspace-icons">
+    <div>
+      <a target="_blank" href="https://discord.gg/HjTFh9Tfec">
+        <i class="fab fa-discord"></i>
+        <span class="saito-black">Discord</span>
+      </a>
+    </div>
 
-    <div> <a target="_blank" href="https://t.me/SaitoIO"><i class="fab fa-telegram"></i></a></div>
-    <div class="saito-black">Telegram</div>
+    <div> 
+      <a target="_blank" href="https://t.me/SaitoIO">
+        <i class="fab fa-telegram"></i>
+        <span class="saito-black">Telegram</span>
+      </a>
+    </div>
 
-     <div> <a target="_blank" href="https://github.com/SaitoTech"> <i class="fab fa-github"></i></a></div>
-    <div class="saito-black">Github</div>    
+    <div> 
+      <a target="_blank" href="https://github.com/SaitoTech"> 
+        <i class="fab fa-github"></i>
+        <span class="saito-black">Github</span>    
+      </a>
+    </div>
+
+    <div>
+      <a target="_blank" href="mailto:community@saito.tech">
+        <i class="fas fa-envelope"></i>
+        <span class="saito-black">help@saito.tech</span>
+      </a>
+    </div>
+
+    <div class="settings-sidebar-nuke"> 
+      <i class="fas fa-bomb"></i>
+      <span class="saito-black">Nuke Wallet</span>    
+    </div>
+
+
   </div>
 
 

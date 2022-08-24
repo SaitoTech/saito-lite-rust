@@ -20,7 +20,7 @@ class Mixin extends ModTemplate {
 
     super(app);
 
-    this.name = "Mixin";
+    this.name = "Crypto Wallet";
     this.appname = "Crypto";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
@@ -56,7 +56,7 @@ class Mixin extends ModTemplate {
   respondTo(type = "") {
     let mixin_self = this;
 
-    if (type === 'appspace') {
+    if (type === 'appspace' && this.mixin.app_id != "") {
       this.scripts['/mixin/css/appspace.css'];
       super.render(this.app, this); // for scripts + styles
       return new MixinAppspace(this.app, this);
@@ -81,6 +81,7 @@ class Mixin extends ModTemplate {
       if (app.BROWSER == 0) {
 
         m = JSON.parse(process.env.MIXIN);
+        
 	if (m.appId) {
 
           let method = "POST";
@@ -168,8 +169,6 @@ class Mixin extends ModTemplate {
     try {
       this.request(appId, sessionId, privateKey, method, uri).then(
         (res) => {
-console.log("SNAPSHOT HISTORY: ");
-console.log(res.data);
           let d = res.data;
           for (let i = 0; i < d.data.length; i++) {
             /********************************************

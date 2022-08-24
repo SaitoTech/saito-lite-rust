@@ -13,8 +13,6 @@ class RedSquareGamesSidebar {
     this.selector = selector;
 
     app.connection.on("game-invite-render-request", (tx) => {
-        console.log("RECEIVED INVITE TO ADD");
-        console.log(tx);
         let gi = new GameInvite(app, mod, tx);
         gi.render(app, mod, ".saito-arcade-invite-list");
         this.attachEvents(app, mod);
@@ -55,13 +53,11 @@ class RedSquareGamesSidebar {
 
   attachEvents(app, mod) {
     Array.from(document.querySelectorAll('.saito-arcade-invite')).forEach(game => {
-      console.log("Adding invite",game);
       game.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
 
         let game_id = e.currentTarget.getAttribute("data-id");
-        console.log("Click on invite for game:" + game_id);
         let arcade_mod = app.modules.returnModule("Arcade");
         if (arcade_mod) {
           for (let i = 0; i < arcade_mod.games.length; i++) {

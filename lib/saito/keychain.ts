@@ -585,25 +585,19 @@ console.log("IS HIS A NEW OR EXISTING KEY: " + JSON.stringify(tmpkey));
       (res) => {
         try {
           let rows = [];
-          if (typeof res.rows == "undefined") {
-            mycallback(rows);
-            return;
-          }
-          if (res.err) {
-            mycallback(rows);
-            return;
-          }
-          if (res.rows.length == 0) {
-            mycallback(rows);
-            return;
-          }
-          rows = res.rows.map((row) => {
-            const { publickey, identifier, bid, bsh, lc } = row;
-            this.addKey(publickey, { identifier :  identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
-            if (!found_keys.includes(publickey)) {
-              found_keys[publickey] = identifier;
+          if (typeof res.rows != "undefined") {
+            if (!res.err) {
+              if (res.rows.length > 0) {
+                rows = res.rows.map((row) => {
+                  const { publickey, identifier, bid, bsh, lc } = row;
+                  this.addKey(publickey, { identifier :  identifier, watched : false, block_id : bid, block_hash : bsh, lc : lc});
+                  if (!found_keys.includes(publickey)) {
+                    found_keys[publickey] = identifier;
+                  }
+                });      
+              }
             }
-          });
+          }
           mycallback(found_keys);
         } catch (err) {
           console.log(err);

@@ -34,9 +34,7 @@ module.exports = (app, mod) => {
 
       html += `
         <div class="saito-game">
-
 	        ${SaitoModuleTemplate(app, mod, modtitle, modimage)}
-
           <div class="saito-game-content">
             <div class="saito-leaderboard">
 	            <div class="saito-table">`;
@@ -45,12 +43,11 @@ module.exports = (app, mod) => {
           if (league_mod.leagues.length > 0){
             for (let l of league_mod.leagues){
               if (l.admin == "saito" && l.id == modname.toUpperCase()){
-                console.log(JSON.parse(JSON.stringify(l)));
                 for (let i = 1; i <= 3; i ++){
                   let player = (i <= l.top3.length) ? l.top3[i-1] : null;
                   if (player){
                     html += `<div class="saito-table-row ${(i%2 == 1)?"odd":""}">
-                              <div class="saito-leaderboard-gamename">${app.browser.returnAddressHTML(player)}</div>
+                              <div class="saito-leaderboard-gamename">${app.keys.returnUsername(player)}</div>
                               <div class="saito-leaderboard-rank">${i}</div>
                             </div>`;     
                   }

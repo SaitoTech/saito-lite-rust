@@ -48,10 +48,11 @@ class SettingsAppspace {
         }
 
         if (e.target.id == "register-identifier-btn"){
-          mod.modal_register_username = new ModalRegisterUsername(app, function() {
-          });
-          mod.modal_register_username.render(app, mod);
-          mod.modal_register_username.attachEvents(app, mod);
+          if (!e.target.innerHTML.includes("@saito")) {
+            mod.modal_register_username = new ModalRegisterUsername(app, function() {});
+            mod.modal_register_username.render(app, mod);
+            mod.modal_register_username.attachEvents(app, mod); 
+          }
         }
 
       })

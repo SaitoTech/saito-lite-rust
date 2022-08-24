@@ -39,8 +39,9 @@ class Chessgame extends GameTemplate {
     this.confirm_moves = this.loadGamePreference("chess_expert_mode"); 
     if (this.confirm_moves == null || this.confirm_moves == undefined){
       this.confirm_moves = 1;
+      console.log("Default to move confirmations");
     }
-    console.log(this.loadGamePreference("chess_expert_mode"), this.confirm_moves);
+
 
     //
     // ADD MENU
@@ -143,6 +144,38 @@ class Chessgame extends GameTemplate {
     }
   }
 
+  switchColors(){
+    // observer skips
+    if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
+          return 1;
+      } 
+
+      //Game engine automatically randomizes player order, so we are good to go
+      if (!this.game.options.player1 || this.game.options.player1 == "random"){
+        return 1;
+      }
+      
+      //Reordeer the players so that originator can be the correct role
+      if (this.game.options.player1 === "white"){
+        if (this.game.players[0] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }else{
+        if (this.game.players[1] !== this.game.originator){
+          let p = this.game.players.shift();
+          this.game.players.push(p);
+        }
+      }
+      //Fix game.player so that it corresponds to the indices of game.players[]
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.app.wallet.returnPublicKey()){
+          this.game.player = i+1;
+        }
+      }
+
+  }
+
   async initializeGame(game_id) {
 
     console.log('######################################################');
@@ -160,34 +193,7 @@ class Chessgame extends GameTemplate {
     if (this.game.initializing == 1) {
       this.game.queue.push("READY");
       //Check colors
-      // observer skips
-        if (this.game.player === 0 || !this.game.players.includes(this.app.wallet.returnPublicKey())) { 
-            return 1;
-        } 
-
-        //Game engine automatically randomizes player order, so we are good to go
-        if (!this.game.options.player1 || this.game.options.player1 == "random"){
-          return 1;
-        }
-        
-        //Reordeer the players so that originator can be the correct role
-        if (this.game.options.player1 === "white"){
-          if (this.game.players[0] !== this.game.originator){
-            let p = this.game.players.shift();
-            this.game.players.push(p);
-          }
-        }else{
-          if (this.game.players[1] !== this.game.originator){
-            let p = this.game.players.shift();
-            this.game.players.push(p);
-          }
-        }
-        //Fix game.player so that it corresponds to the indices of game.players[]
-        for (let i = 0; i < this.game.players.length; i++){
-          if (this.game.players[i] === this.app.wallet.returnPublicKey()){
-            this.game.player = i+1;
-          }
-        }
+      this.switchColors();
     }
 
 
@@ -214,45 +220,52 @@ class Chessgame extends GameTemplate {
       this.lockBoard(this.engine.fen());
     }
 
-    var opponent = this.game.opponents[0];
+    //Plug Opponent Information into the Controls 
+    if (this.game.player){
+      var opponent = this.game.opponents[0];
 
-    if (this.app.crypto.isPublicKey(opponent)) {
-      if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
-        opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
-      }
-      else {
-        try {
-          // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
+      if (this.app.crypto.isPublicKey(opponent)) {
+        if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
+          opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
         }
-        catch (err) {
-          console.log(err);
+        else {
+          try {
+            // opponent = await this.app.keys.fetchIdentifierPromise(opponent);
+          }
+          catch (err) {
+            console.log(err);
+          }
         }
       }
-    }
 
-    let opponent_elem = document.getElementById('opponent_id');
-    if (opponent_elem) {
-      opponent_elem.innerHTML = sanitize(opponent);
-      opponent_elem.setAttribute('data-add', opponent)
-    }
-
-    let identicon = "";
-
-    name = this.game.players[0];
-    name = this.app.keys.returnUsername(opponent);
-    identicon = this.app.keys.returnIdenticon(name);
-    
-    if (name != "") {
-      if (name.indexOf("@") > 0) {
-        name = name.substring(0, name.indexOf("@"));
+      let opponent_elem = document.getElementById('opponent_id');
+      if (opponent_elem) {
+        opponent_elem.innerHTML = sanitize(opponent);
+        opponent_elem.setAttribute('data-add', opponent)
       }
-    }
 
-    let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
-    document.getElementById("opponent_identicon").innerHTML = html;
+      let identicon = "";
+
+      name = this.game.players[0];
+      name = this.app.keys.returnUsername(opponent);
+      identicon = this.app.keys.returnIdenticon(name);
+      
+      if (name != "") {
+        if (name.indexOf("@") > 0) {
+          name = name.substring(0, name.indexOf("@"));
+        }
+      }
+
+      let html = identicon ? `<img class="player-identicon" src="${identicon}">` : "";
+      document.getElementById("opponent_identicon").innerHTML = html;
+
+    }else{
+      //Hide some controls in Observer Mode
+      $(".hide_in_observer").remove();
+    }
 
     this.updateStatusMessage();
-    this.attachEvents();
+    this.attachGameEvents();
 
 
   }
@@ -268,9 +281,9 @@ class Chessgame extends GameTemplate {
 
     msg = {};
     if (this.game.queue.length > 0) {
-      if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
-        return;
-      }
+      //if (this.game.queue[this.game.queue.length-1] == "OBSERVER_CHECKPOINT") {
+      //  return;
+      //}
 
       msg.extra = JSON.parse(this.app.crypto.base64ToString(this.game.queue[this.game.queue.length-1]));
     } else {
@@ -320,10 +333,10 @@ class Chessgame extends GameTemplate {
     }
     this.updateStatusMessage();
 
-    if (this.game.player == 0) {
-      this.game.queue.push("OBSERVER_CHECKPOINT");
-      return 1;
-    }
+    //if (this.game.player == 0) {
+    //  this.game.queue.push("OBSERVER_CHECKPOINT");
+    //  return 1;
+    //}
 
     this.saveGame(this.game.id);
     return 0;
@@ -348,7 +361,10 @@ class Chessgame extends GameTemplate {
 
   }
 
-  attachEvents() {
+  attachGameEvents() {
+    if (this.game?.player == 0 || !this.browser_active){
+      return;
+    }
 
     let resign_icon = document.getElementById('resign_icon');
     let move_accept = document.getElementById('move_accept');
@@ -370,43 +386,46 @@ class Chessgame extends GameTemplate {
       }
     }
 
+    if (copy_btn){
+      copy_btn.onclick = () => {
+            let public_key = document.getElementById('opponent_id').getAttribute('data-add');
 
-    copy_btn.onclick = () => {
-          let public_key = document.getElementById('opponent_id').getAttribute('data-add');
+            navigator.clipboard.writeText(public_key).then(function(x) {
+              copy_btn.classList.add("copy-check");
+            });
+             copy_btn.classList.add("copy-check");
 
-          navigator.clipboard.writeText(public_key).then(function(x) {
-            copy_btn.classList.add("copy-check");
-          });
-           copy_btn.classList.add("copy-check");
+            setTimeout(() => {
+              copy_btn.classList.remove("copy-check");            
+            }, 400);
+          
+      }
+    }
+    if (move_accept){
+      move_accept.onclick = () => {
+        console.log('send move transaction and wait for reply.');
 
-          setTimeout(() => {
-            copy_btn.classList.remove("copy-check");            
-          }, 400);
-        
+        var data = {};
+        data.white = this.game.white;
+        data.black = this.game.black;
+        data.id = this.game.id;
+        data.position = this.engine.fen();
+        data.move = this.game.move;
+        this.endTurn(data);
+
+        move_accept.disabled = true;
+        move_reject.disabled = true;
+      };
     }
 
-    move_accept.onclick = () => {
-      console.log('send move transaction and wait for reply.');
+    if (move_reject){
+      move_reject.onclick = () => {
+        this.setBoard(this.game.position);
 
-      var data = {};
-      data.white = this.game.white;
-      data.black = this.game.black;
-      data.id = this.game.id;
-      data.position = this.engine.fen();
-      data.move = this.game.move;
-      this.endTurn(data);
-
-      move_accept.disabled = true;
-      move_reject.disabled = true;
-    };
-
-    move_reject.onclick = () => {
-      this.setBoard(this.game.position);
-
-      move_accept.disabled = true;
-      move_reject.disabled = true;
+        move_accept.disabled = true;
+        move_reject.disabled = true;
+      };
     }
-
     window.onresize = () => this.board.resize();
 
   }

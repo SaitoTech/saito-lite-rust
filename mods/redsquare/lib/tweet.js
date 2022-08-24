@@ -19,10 +19,12 @@ class RedSquareTweet {
 
     this.parent_id = "";
     this.thread_id = "";
+    this.critical_child_post = null;
     this.text = null;
     this.link = null;
     this.link_properties = null;
     this.youtube_id = null;
+    this.flagged = null;
 
     //
     // retweet
@@ -38,9 +40,9 @@ class RedSquareTweet {
 
     //
     // 
-    //
-    this.num_likes = 0;
+    //  
     this.num_retweets = 0;
+    this.num_likes = 0;
 
     this.children = [];
     this.unknown_children = [];
@@ -73,6 +75,12 @@ class RedSquareTweet {
     if (tx.optional?.updated_at) {
       this.updated_at = tx.optional.updated_at;
     }
+    if (tx.optional?.num_likes) {
+      this.updated_at = tx.optional.num_likes;
+    }
+    if (tx.optional?.num_retweets) {
+      this.num_retweets = tx.optional.num_retweets;
+    }
 
 
     //
@@ -98,6 +106,18 @@ class RedSquareTweet {
   }
 
 
+  isCriticalChild(app, mod, tweet) {
+    for (let i = 0; i < tweet.tx.transaction.to.length; i++) {
+      if (tweet.tx.transaction.to[i].add === app.wallet.returnPublicKey()) {
+        if (this.critical_child == null) { return true; }
+        if (tweet.tx.transaction.ts > this.critical_child.tx.transaction.tx) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   render(app, mod, selector = "") {
 
     let html = TweetTemplate(app, mod, this);
@@ -111,6 +131,19 @@ class RedSquareTweet {
       app.browser.addElementToSelector(html, selector);
     }
 
+    if (this.critical_child != null && this.flagged != 1) {
+      if (obj) {
+        obj.classList.add("before-ellipsis");
+        obj.nextSibling.classList.add("after-ellipsis");
+        app.browser.addElementToDom('<div class="redsquare-ellipsis"></div>', obj);
+        this.critical_child.render(app, mod, tweet_div);
+      } else {
+        app.browser.addElementToSelector('<div class="redsquare-ellipsis"></div>', selector);
+        this.critical_child.render(app, mod, selector);
+        document.querySelector(selector).querySelector('.redsquare-ellipsis').previousElementSibling.classList.add("before-ellipsis");
+        document.querySelector(selector).querySelector('.redsquare-ellipsis').nextElementSibling.classList.add("after-ellipsis");
+      }
+    }
     this.attachEvents(app, mod);
   }
 
@@ -141,14 +174,12 @@ class RedSquareTweet {
     this.attachEvents(app, mod);
   }
 
-
-
   attachEvents(app, mod) {
 
     //
     // render tweet with children
     //
-    let sel = "#tweet-box-" + this.tx.transaction.sig;
+    let sel = "#tweet-" + this.tx.transaction.sig;
     document.querySelector(sel).onclick = (e) => {
 
       //e.preventDefault();
@@ -165,12 +196,20 @@ class RedSquareTweet {
       document.querySelector(".saito-back-button").onclick = (e) => {
         app.browser.replaceElementById(`<div class="saito-page-header-title" id="saito-page-header-title">Red Square</div>`, "saito-page-header-title");
         mod.renderMainPage(app, mod);
+        let redsquareUrl = window.location.origin + window.location.pathname;
+        window.history.pushState({}, document.title, redsquareUrl);  
       }
 
-      mod.renderWithChildren(app, mod, tweet_sig_id);
+      // // mod.fetchTweetsFromServer(app, mod, tweet_sig_id, function(app, mod) {mod.renderWithChildren(app, mod,)})
+      let sql = `SELECT * FROM tweets WHERE sig = '${tweet_sig_id}'`;
+      mod.fetchTweets(app, mod, sql, function (app, mod) { mod.renderWithChildren(app, mod, tweet_sig_id); });
+
+      if (!window.location.href.includes('type=tweet')) {
+        let tweetUrl = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;      
+        window.history.pushState({}, document.title, tweetUrl);  
+      }
 
     };
-
 
     //
     // reply to tweet
@@ -199,6 +238,19 @@ class RedSquareTweet {
       }
     };
 
+
+    //
+    // click on interior retweet to view it
+    //
+    // sel = `#redsquare-item-contents-${this.tx.transaction.sig} > .tweet-body > .link-preview > .redsquare-item > .redsquare-item-contents > .tweet-body`;
+    // let x = document.querySelector(sel);
+    // if (x) {
+    //   x.onclick = (e) => {
+    //     let tweet_id = e.currentTarget.getAttribute("data-id");
+    //     // parent --> forces load of top-level element
+    //     mod.renderParentWithChildren(app, mod, tweet_id);
+    //   }
+    // }
 
 
     //
@@ -249,12 +301,88 @@ class RedSquareTweet {
         obj.parentNode.classList.remove("saito-tweet-no-activity");
         obj.parentNode.classList.add("saito-tweet-activity");
       };
+    };  
+
+
+    //
+    // flag
+    //
+    sel = ".tweet-flag-" + this.tx.transaction.sig;
+    document.querySelector(sel).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      mod.sendFlagTransaction(app, mod, { sig: this.tx.transaction.sig });
+
+      let obj = document.querySelector(sel);
+      obj.classList.add("saito-tweet-activity");
+      document.querySelector('#tweet-box-' + this.tx.transaction.sig).style.display = 'none';
+      salert("Tweet reported to moderators successfully.");
     };
+
+    //
+    // share tweet
+    //
+    sel = ".tweet-share-" + this.tx.transaction.sig;
+    document.querySelector(sel).onclick = (e) => {
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      let url = window.location.href + '?type=tweet&id=' + this.tx.transaction.sig;
+      navigator.clipboard.writeText(url).then(() => {
+        siteMessageNew("Link copied to clipboard.", 2000);
+      });
+    };
+
+    document.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      if (e.target && e.target.classList.contains('tweet-img')) {
+        let imgdata_uri = e.target.style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        let img_overlay = new SaitoOverlay(app, mod);
+        img_overlay.show(app, mod, "<div id='tweet-overlay-img-cont'></div>");
+
+        let oImg = document.createElement("img");
+        oImg.setAttribute('src', imgdata_uri);
+        document.querySelector('#tweet-overlay-img-cont').appendChild(oImg);
+
+        let img_width =  oImg.width;
+        let img_height = oImg.height;
+        let aspRatio = img_width/img_height;
+
+        let winHeight = window.innerHeight;
+        let winWidth = window.innerWidth;
+
+        if (aspRatio > 1) {
+          oImg.style.width = '95vw';
+          oImg.style.height = 'auto';
+
+           if (oImg.height > winHeight) {
+            oImg.style.width = (oImg.width*0.75)+'px';
+          }
+        } else {
+          oImg.style.height = '95vh';
+          oImg.style.width = 'auto';
+
+          if (oImg.width > winWidth) {
+            oImg.height = (oImg.height*0.75)+'px';
+          }
+        }
+      }
+
+      if (e.target.classList.contains('tweet-link')) {
+        let url = e.target.getAttribute('href');
+        window.open(url, '_blank').focus();
+      }
+
+    });
   }
 
 
   addTweet(app, mod, tweet) {
-
     //
     // maybe we have some parentless children?
     //
@@ -264,6 +392,10 @@ class RedSquareTweet {
     //
     for (let i = 0; i < this.unknown_children.length; i++) {
       if (this.unknown_children[i].parent_id === tweet.tx.transaction.sig) {
+        if (this.isCriticalChild(app, mod, this.unknown_children[i])) {
+          this.critical_child = this.unknown_children[i];
+          this.updated_at = this.critical_child;
+        }
         tweet.children.push(this.unknown_children[i]);
         this.unknown_children.splice(i, 0);
       }
@@ -276,19 +408,25 @@ class RedSquareTweet {
           return 1;
         }
       }
-      this.last_updated = tweet.last_updated;
+      this.updated_at = tweet.updated_at;
       if (tweet.tx.transaction.from[0].add === this.tx.transaction.from[0].add) {
         this.children.unshift(tweet);
         return 1;
       } else {
+        if (this.isCriticalChild(app, mod, tweet)) {
+          this.critical_child = tweet;
+        }
         this.children.push(tweet);
         return 1;
       }
     } else {
       for (let i = 0; i < this.children.length; i++) {
+        if (this.isCriticalChild(app, mod, tweet)) {
+          this.critical_child = tweet;
+        }
         let x = this.children[i].addTweet(app, mod, tweet);
         if (x == 1) {
-          this.last_updated = tweet.last_updated;
+          this.updated_at = tweet.updated_at;
         }
         return x;
       }
@@ -346,11 +484,6 @@ class RedSquareTweet {
 
         this.youtube_id = videoId;
 
-        //
-        // and cut the link from the tweet
-        //
-        this.text = this.text.replace(this.link, '');
-
         return this;
 
       }
@@ -363,11 +496,6 @@ class RedSquareTweet {
         if (res != '') {
 
           this.link_properties = res;
-
-          //
-          // and cut the link from the tweet
-          //
-          this.text = this.text.replace(this.link, '');
 
         }
 

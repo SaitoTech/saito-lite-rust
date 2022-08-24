@@ -5,9 +5,6 @@
     ////////////////////
     if (card == "decolonization") {
 
-      if (this.game.player == 2) {
-        return 0;
-      }
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClock();
@@ -47,9 +44,9 @@
             twilight_self.displayModal("you already placed there...");
           }
         });
-
-        return 0;
       }
+      return 0;
+      
     }
 
 

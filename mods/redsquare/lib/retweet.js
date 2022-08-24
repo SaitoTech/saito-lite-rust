@@ -24,16 +24,17 @@ class Retweet {
         e.preventDefault();
 
         let text = document.getElementById('post-tweet-textarea').value;
+
         let retweet_tx = JSON.stringify(this.tweet.tx.transaction);
         let data = { text : text , retweet_tx : retweet_tx , retweet_link_properties : this.tweet.link_properties , retweet_link : this.tweet.link };
 
         let newtx = mod.sendTweetTransaction(app, mod, data);  
 
-	mod.addTweetFromTransaction(app, mod, newtx);
-	mod.renderMainPage(app, mod);
+      	mod.addTweetFromTransaction(app, mod, newtx);
+      	mod.renderMainPage(app, mod);
 
-	this.overlay.hide();
-
+      	this.overlay.hide();
+        document.getElementById("redsquare-new-tweets-banner").style.display = 'block';
       }
     }
 

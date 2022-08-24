@@ -1,4 +1,4 @@
-const path        = require('path');
+const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const RegistryModal = require('./lib/modal/registry-modal');
@@ -10,10 +10,10 @@ class Registry extends ModTemplate {
 
     super(app);
 
-    this.app            = app;
-    this.name           = "Registry";
-    this.description    = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
-    this.categories     = "Core Utilities Messaging";
+    this.app = app;
+    this.name = "Registry";
+    this.description = "Adds support for the Saito DNS system, so that users can register user-generated names. Runs DNS server on core nodes.";
+    this.categories = "Core Utilities Messaging";
 
     //
     // master DNS publickey for this module
@@ -32,15 +32,15 @@ class Registry extends ModTemplate {
     // registering domains should report they run the registry module.
     //
     //if (this.publickey == this.app.wallet.returnPublicKey()) {
-      services.push({ service : "registry" , domain : "saito" });
+    services.push({ service: "registry", domain: "saito" });
     //}
     return services;
   }
-  
+
   respondTo(type = "") {
-    if (type == "do-registry-prompt") {        
+    if (type == "do-registry-prompt") {
       return {
-        doRegistryPrompt: async() => {
+        doRegistryPrompt: async () => {
           var requested_id = await sprompt("Pick a handle or nickname. <br /><sub>Alphanumeric characters only - Do not include an @</sub.>");
           try {
             let success = this.tryRegisterIdentifier(requested_id);
@@ -49,9 +49,9 @@ class Registry extends ModTemplate {
             } else {
               throw "Unknown error";
             }
-          } catch(err){
-            if(err.message == "Alphanumeric Characters only") {
-              salert("Alphanumeric Characters only"); 
+          } catch (err) {
+            if (err.message == "Alphanumeric Characters only") {
+              salert("Alphanumeric Characters only");
             } else {
               throw err;
             }
@@ -81,13 +81,13 @@ class Registry extends ModTemplate {
       //
       // registration from DNS registrar?
       //
-      let identifier     = tx.msg.identifier;
+      let identifier = tx.msg.identifier;
       let signed_message = tx.msg.signed_message;
-      let sig            = tx.msg.sig;
+      let sig = tx.msg.sig;
 
       try {
         if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-          registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier : identifier, watched : true, block_id : registry_self.app.blockchain.returnLatestBlockId(), block_hash : registry_self.app.blockchain.returnLatestBlockHash(), lc : 1});
+          registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: registry_self.app.blockchain.returnLatestBlockId(), block_hash: registry_self.app.blockchain.returnLatestBlockHash(), lc: 1 });
           registry_self.app.browser.updateAddressHTML(tx.transaction.to[0].add, identifier);
         }
       } catch (err) {
@@ -106,9 +106,9 @@ class Registry extends ModTemplate {
         // fwd tx to peer
         //
         let message = {};
-          message.request = "registry username update";
-          message.data = {};
-          message.data.tx = tx;
+        message.request = "registry username update";
+        message.data = {};
+        message.data.tx = tx;
         app.network.peers[i].sendRequest(message.request, message.data);
       }
     }
@@ -117,43 +117,43 @@ class Registry extends ModTemplate {
 
 
 
-  tryRegisterIdentifier(identifier, domain="@saito") {
+  tryRegisterIdentifier(identifier, domain = "@saito") {
 
-      let registry_self = this.app.modules.returnModule("Registry");
+    let registry_self = this.app.modules.returnModule("Registry");
 
-      //console.log("REGISTERING TO WHICH MODULE: " + this.name);
-      //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
-      //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
+    //console.log("REGISTERING TO WHICH MODULE: " + this.name);
+    //console.log("REGISTERING TO WHICH PKEY: " + this.publickey);
+    //console.log("REGISTERING TO WHICH PKEY: " + registry_self.publickey);
 
-      let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
-      if (!newtx) {
-        console.log("NULL TX CREATED IN REGISTRY MODULE")
-        throw Error("NULL TX CREATED IN REGISTRY MODULE");
+    let newtx = this.app.wallet.createUnsignedTransaction(registry_self.publickey, 0.0, this.app.wallet.wallet.default_fee);
+    if (!newtx) {
+      console.log("NULL TX CREATED IN REGISTRY MODULE")
+      throw Error("NULL TX CREATED IN REGISTRY MODULE");
+    }
+
+    if (typeof identifier === 'string' || identifier instanceof String) {
+      var regex = /^[0-9A-Za-z]+$/;
+      if (!regex.test(identifier)) {
+        throw Error("Alphanumeric Characters only");
       }
 
-      if (typeof identifier === 'string' || identifier instanceof String) {
-        var regex=/^[0-9A-Za-z]+$/;
-        if (!regex.test(identifier)) {
-          throw Error("Alphanumeric Characters only");
-        }
+      newtx.msg.module = "Registry";
+      //newtx.msg.request	= "register";
+      newtx.msg.identifier = identifier + domain;
 
-        newtx.msg.module   	= "Registry";
-        //newtx.msg.request	= "register";
-        newtx.msg.identifier	= identifier + domain;
+      newtx = this.app.wallet.signTransaction(newtx);
+      this.app.network.propagateTransaction(newtx);
 
-        newtx = this.app.wallet.signTransaction(newtx);
-        this.app.network.propagateTransaction(newtx);
-
-        // sucessful send
-        return true;
-      } else {
-        throw TypeError("identifier must be a string");
-      }
-      return false;
+      // sucessful send
+      return true;
+    } else {
+      throw TypeError("identifier must be a string");
+    }
+    return false;
   }
 
   // DEPRECATED, USE tryRegisterIdentifier()
-  registerIdentifier(identifier, domain="@saito") {
+  registerIdentifier(identifier, domain = "@saito") {
 
     let newtx = this.app.wallet.createUnsignedTransaction(this.publickey, 0.0, this.app.wallet.wallet.default_fee);
     if (newtx == null) {
@@ -162,12 +162,12 @@ class Registry extends ModTemplate {
     }
 
     if (typeof identifier === 'string' || identifier instanceof String) {
-      var regex=/^[0-9A-Za-z]+$/;
+      var regex = /^[0-9A-Za-z]+$/;
       if (!regex.test(identifier)) { salert("Alphanumeric Characters only"); return false; }
 
-      newtx.msg.module   	= "Registry";
+      newtx.msg.module = "Registry";
       //newtx.msg.request	= "register";
-      newtx.msg.identifier	= identifier + domain;
+      newtx.msg.identifier = identifier + domain;
 
       newtx = this.app.wallet.signTransaction(newtx);
       this.app.network.propagateTransaction(newtx);
@@ -202,9 +202,9 @@ class Registry extends ModTemplate {
     if (conf == 0) {
       if (txmsg.module === "Registry") {
 
-	//
-	// this is to us, and we are the main registry server
-	//
+        //
+        // this is to us, and we are the main registry server
+        //
         if (tx.isTo(registry_self.publickey) && app.wallet.returnPublicKey() === registry_self.publickey) {
 
           let request = txmsg.request;
@@ -227,13 +227,13 @@ class Registry extends ModTemplate {
           if (res == 1) {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0, fee);
-                newtx.msg.module = "Email";
-                newtx.msg.origin = "Registry";
-                newtx.msg.title  = "Address Registration Success!";
-                newtx.msg.message = "<p>You have successfully registered the identifier: <span class='boldred'>" + identifier + "</span></p>";
-                newtx.msg.identifier = identifier;
-                newtx.msg.signed_message = signed_message;
-                newtx.msg.sig = sig;
+            newtx.msg.module = "Email";
+            newtx.msg.origin = "Registry";
+            newtx.msg.title = "Address Registration Success!";
+            newtx.msg.message = "<p>You have successfully registered the identifier: <span class='boldred'>" + identifier + "</span></p>";
+            newtx.msg.identifier = identifier;
+            newtx.msg.signed_message = signed_message;
+            newtx.msg.sig = sig;
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
@@ -241,12 +241,12 @@ class Registry extends ModTemplate {
           } else {
 
             let newtx = registry_self.app.wallet.createUnsignedTransaction(tx.transaction.from[0].add, 0.0, fee);
-                newtx.msg.module = "Email";
-                newtx.msg.title  = "Address Registration Failed!";
-                newtx.msg.message = "<p>The identifier you requested (<span class='boldred'>" + identifier + "</span>) has already been registered.</p>";
-                newtx.msg.identifier = identifier;
-                newtx.msg.signed_message = "";
-                newtx.msg.sig = "";
+            newtx.msg.module = "Email";
+            newtx.msg.title = "Address Registration Failed!";
+            newtx.msg.message = "<p>The identifier you requested (<span class='boldred'>" + identifier + "</span>) has already been registered.</p>";
+            newtx.msg.identifier = identifier;
+            newtx.msg.signed_message = "";
+            newtx.msg.sig = "";
 
             newtx = registry_self.app.wallet.signTransaction(newtx);
             registry_self.app.network.propagateTransaction(newtx);
@@ -267,43 +267,43 @@ class Registry extends ModTemplate {
               //
               // am email? for us? from the DNS registrar?
               //
-              let identifier 	 = tx.msg.identifier;
+              let identifier = tx.msg.identifier;
               let signed_message = tx.msg.signed_message;
-              let sig		 = tx.msg.sig;
+              let sig = tx.msg.sig;
 
-	      try {
+              try {
                 if (registry_self.app.crypto.verifyMessage(signed_message, sig, registry_self.publickey)) {
-                  registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier : identifier, watched : true, block_id : blk.block.id, block_hash : blk.returnHash(), lc : 1});
+                  registry_self.app.keys.addKey(tx.transaction.to[0].add, { identifier: identifier, watched: true, block_id: blk.block.id, block_hash: blk.returnHash(), lc: 1 });
                 }
-  	      } catch (err) {
-		console.log("ERROR verifying username registration message: " + err);
-	      }
+              } catch (err) {
+                console.log("ERROR verifying username registration message: " + err);
+              }
             }
           } else {
 
-	    if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
+            if (registry_self.app.wallet.returnPublicKey() != registry_self.publickey) {
               //
               // am email? for us? from the DNS registrar?
               //
-              let identifier 	 = tx.msg.identifier;
-              let signed_message   = tx.msg.signed_message;
-              let sig		 = tx.msg.sig;
- 
-	      // if i am server, save copy of record
-              registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);   
+              let identifier = tx.msg.identifier;
+              let signed_message = tx.msg.signed_message;
+              let sig = tx.msg.sig;
 
-	      // if i am a server, i will notify lite-peers of 
-	      console.log("notifying lite-peers of registration!");
-  	      this.notifyPeers(app, tx);
+              // if i am server, save copy of record
+              registry_self.addRecord(identifier, tx.transaction.to[0].add, tx.transaction.ts, blk.block.id, blk.returnHash(), 0, sig, registry_self.publickey);
 
-	    }
-	  }
+              // if i am a server, i will notify lite-peers of 
+              console.log("notifying lite-peers of registration!");
+              this.notifyPeers(app, tx);
+
+            }
+          }
         }
       }
     }
   }
 
-  async addRecord(identifier="", publickey="", unixtime=0, bid=0, bsh="", lock_block=0, sig="", signer="", lc=1) {
+  async addRecord(identifier = "", publickey = "", unixtime = 0, bid = 0, bsh = "", lock_block = 0, sig = "", signer = "", lc = 1) {
 
     let sql = `INSERT INTO records (
         identifier, 
@@ -327,16 +327,16 @@ class Registry extends ModTemplate {
         $lc
       )`;
     let params = {
-        $identifier	:	identifier ,
-        $publickey	:	publickey ,
-        $unixtime	:	unixtime ,
-        $bid		:	bid ,
-        $bsh		:	bsh ,
-        $lock_block	:	lock_block ,
-        $sig		:	sig,
-        $signer		:	signer,
-        $lc		:	lc,
-      }
+      $identifier: identifier,
+      $publickey: publickey,
+      $unixtime: unixtime,
+      $bid: bid,
+      $bsh: bsh,
+      $lock_block: lock_block,
+      $sig: sig,
+      $signer: signer,
+      $lc: lc,
+    }
     await this.app.storage.executeDatabase(sql, params, "registry");
 
     sql = "SELECT * FROM records WHERE identifier = $identifier AND publickey = $publickey AND unixtime = $unixtime AND bid = $bid AND bsh = $bsh AND lock_block = $lock_block AND sig = $sig AND signer = $signer AND lc = $lc";
@@ -352,8 +352,8 @@ class Registry extends ModTemplate {
 
   async onChainReorganization(bid, bsh, lc) {
 
-    var sql    = "UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh";
-    var params = { $bid : bid , $bsh : bsh }
+    var sql = "UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh";
+    var params = { $bid: bid, $bsh: bsh }
     await this.app.storage.executeDatabase(sql, params, "registry");
     return;
 
@@ -369,5 +369,4 @@ class Registry extends ModTemplate {
 }
 
 module.exports = Registry;
-
 

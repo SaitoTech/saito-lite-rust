@@ -39,7 +39,7 @@
 
             <div class="controls column player-data-hud">
 
-                <div class="tool-cont" id="identicon-cont">
+                <div class="tool-cont hide_in_observer" id="identicon-cont">
                     <div class="tool-item item-name">OPPONENT</div>
                     <div id="opponent_identicon"></div>
                     <div class="tool-item item-detail" id="opponent_id"></div>
@@ -49,8 +49,8 @@
                 <div class="tool-cont">
                     <div class="tool-item item-name">TURN</div>
                     <div class="tool-item item-detail turn-shape" id="turn-shape"></div>
-                    <div class="tool-item item-name" >RESIGN</div>
-                    <div class="tool-item item-detail">
+                    <div class="tool-item item-name hide_in_observer" >RESIGN</div>
+                    <div class="tool-item item-detail hide_in_observer">
                         <i id="resign_icon" class="fas fa-solid fa-flag"></i>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                 <div id="promotion" class="promotion-holder">
                     <span id="promotion-choices"></span>
                 </div>
-                <div id="buttons" class="button_row">
+                <div id="buttons" class="button_row ">
                     <button id="move_reject" class="chess_button" disabled>✘</button>
                     <button id="move_accept" class="chess_button " disabled>✔</button>
                 </div>

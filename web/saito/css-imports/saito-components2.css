@@ -24,6 +24,9 @@ Saito User
     margin-bottom: 1px;
     width: 100%;
 }
+.saito-user.small {
+    grid-template-rows: min-content min-content;
+}
 
 .saito-user>div:nth-child(1) {
     margin-right: 1rem;
@@ -35,7 +38,7 @@ Saito User
 /* this hack is required in chrome to force */
 /* the name to steal the upper row from the */
 /* timebox, so the name does not cut off    */
-.saito-user>.saito-username-long:nth-child(2) {
+.saito-user>.saito-address-long:nth-child(2) {
     grid-column-end: 4;
 }
 
@@ -52,6 +55,10 @@ Saito User
     grid-row-start: 2;
     grid-row-end: span 1;
     font-size: 1.4rem;
+}
+.saito-user.small>div:nth-child(3) {
+    line-height: 1.8rem;
+    padding-top: 0.5rem;
 }
 
 .saito-user>div:nth-child(4).saito-user-alert,
@@ -94,6 +101,11 @@ Saito Page Header
     color: #222;
     font-size: 2.5rem;
     padding-top: 1rem;
+    text-transform: uppercase;
+}
+
+.saito-page-header-title>span {
+    text-transform: none;
 }
 
 .saito-page-header-button {
@@ -108,6 +120,7 @@ Saito Page Header
 }
 
 
+
 /* ----------------------------------------------------------------
 Saito Table
 -----------------------------------------------------------------*/
@@ -115,6 +128,7 @@ Saito Table
     background-color: #fff;
     display: grid;
     grid-template-columns: auto;
+    width: 100%;
 }
 .saito-table-row {
     align-items: center;
@@ -123,6 +137,12 @@ Saito Table
     background-color: #fafafa;
 }
 
+.saito-address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: inherit;
+  }
 
 /* ----------------------------------------------------------------
 Saito Leaderboard
@@ -139,6 +159,11 @@ Saito Leaderboard
     border-color: #fff;
     border-style: solid;
 }
+
+.saito-leaderboard-gamename {
+    width: 100%;
+    overflow: hidden;
+  }
 
 
 /* ----------------------------------------------------------------
@@ -208,29 +233,68 @@ Saito Module Boxes
 }
 
 
+
 /* ----------------------------------------------------------------
 Saito Module Boxes
 -----------------------------------------------------------------*/
 .saito-loader {
-    animation: spin;
-    width: 100px;
-    height: 115px;
-    animation-name: spin;
-    animation-duration: 4000ms;
+/* border struggles with overlay 8?
+/*  border: 1px solid aqua; */
+  position: relative;
+  width: 100%;
+}
+.saito-loader::after {
+    background-color: transparent;
+    background-image: url(../img/saito-loader.svg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    animation-duration: 2s;
+    animation-name: pulse;
     animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    background-image: url(/saito/img/logo-color.svg);
-    background-size: contain;
+    position: relative;
+    width: 70px;
+    height: 70px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    display: block;
+    transform-origin: 50%, 50%;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    border-radius: 50%;
+    background-size: 0px;
+ }
+
+  30% {
+    transform: translate(-50%, -50%) scale(1);
+    border-radius: 0;
+    background-color: red;
+    background-size: 0px;
+  }
+  
+  50% {
+    background-size: 50px;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  70% {
+    transform: translate(-50%, -50%) scale(1);
+    border-radius: 0;
+    background-color: red;
+    background-size: 50px;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(0.5);
+    border-radius: 50%;
+    background-size: 0px;
+  }
 }
+
 
 
 
@@ -471,3 +535,22 @@ Saito Arcade Invite
     height: 3rem;
 }
 
+
+/* ----------------------------------------------------------------
+Legacy Site Message
+-----------------------------------------------------------------*/
+div#message-wrapper {
+    border: 2px solid var(--saito-primary);
+    min-width: 500px;
+    padding: 1em;
+    background: var(--saito-primary);
+    position: fixed;
+    bottom: 1em;
+    left: 1em;
+    z-index: 200;
+  }
+
+  div#message-wrapper p {
+    font-size: 3rem;
+    color: #fff !important;
+  }

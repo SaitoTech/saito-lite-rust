@@ -1,8 +1,8 @@
 const SaitoArcadeInviteTemplate = require('./../../../../lib/saito/new-ui/templates/saito-arcade-invite.template');
+const RedSquareLeagueSidebar = require('./league-sidebar.template');
 
 
 module.exports = RedSquareGamesSidebarTemplate = (app, mod) => {
-
 
   let html =  `
         <div class="saito-sidebar right">

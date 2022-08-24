@@ -16,8 +16,6 @@ class RedSquareGamesSidebar {
       document.querySelector(".saito-sidebar.right").remove();
     }
 
-    console.log("ADDING GAMES SIDEBAR!");
-
     if (selector != "") {
       app.browser.addElementToSelector(RedSquareSettingsSidebarTemplate(app, mod), selector);
     } else {
@@ -29,6 +27,12 @@ class RedSquareGamesSidebar {
   }
 
   attachEvents(app, mod) { 
+    document.querySelector(".settings-sidebar-nuke").addEventListener("click", async () => {
+      let c = await sconfirm("Are you sure you want to delete your wallet?");
+      if (c) {
+        app.wallet.resetWallet();
+      }
+    });
   }
 
 }

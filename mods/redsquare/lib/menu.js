@@ -26,7 +26,7 @@ class RedSquareMenu {
         let html = `
                 <li class="redsquare-menu-${app.modules.mods[i].returnSlug()}" data-id="${i}">
                   <i class="${app.modules.mods[i].icon}"></i>
-                  <span> ${app.modules.mods[i].name}</span>
+                  <span> ${app.modules.mods[i].returnName()}</span>
                 </li>
     `;
         if (!document.querySelector(`.redsquare-menu-${app.modules.mods[i].returnSlug()}`)){
@@ -46,28 +46,25 @@ class RedSquareMenu {
     let obj;
 
     obj = document.querySelector('.redsquare-menu-home');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "home");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-notifications');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "notifications");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-settings');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "settings");
-    }
-
+    } }
     obj = document.querySelector('.redsquare-menu-contacts');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "contacts");
-    }
+    } }
     obj = document.querySelector('.redsquare-menu-games');
-    obj.onclick = (e) => {
+    if (obj) { obj.onclick = (e) => {
       this_menu.renderItem(app, mod, "games");
-    }
+    } }
 
 
     //

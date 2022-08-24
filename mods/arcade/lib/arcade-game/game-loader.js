@@ -7,6 +7,7 @@ module.exports = GameLoader = {
     mod.viewing_arcade_initialization_page = 1;
     if (game_id != "") {
       if (game_id == -1) {
+console.log("GAME ID IS: " + game_id);
         document.getElementById("arcade-main").innerHTML = GameLoadingTemplate(); //P2P Magic Happening
       } else {
         document.getElementById("arcade-main").innerHTML = GameLoadedTemplate(game_id);

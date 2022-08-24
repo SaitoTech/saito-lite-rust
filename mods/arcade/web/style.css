@@ -24,7 +24,7 @@ body {
   justify-content: center;
 }
 
-/*Game Advanced Options*/
+/* Game Advanced Options*/
 .game-overlay {
   min-width: 320px;
   padding: 1rem;
@@ -326,6 +326,22 @@ body {
   top: 50%;
   transform: translateY(-50%);
   align-items: center;
+}
+
+.game_status_indicator{
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  border-radius: 100%;
+  box-shadow: 0 0 0 1px black;
+}
+
+.game_status_indicator.game_live{
+  color: darkred;
+}
+
+.game_status_indicator.game_over{
+  color: grey;
 }
 
 .game-inset-img {

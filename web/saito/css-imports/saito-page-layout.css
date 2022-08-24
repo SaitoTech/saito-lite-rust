@@ -79,7 +79,7 @@
 }
 
 .saito-sidebar.left .hamburger:hover {
-    transform: scale(1.05);
+    /* transform: scale(1.05); */
 }
 
 .saito-sidebar.left .hamburger i {

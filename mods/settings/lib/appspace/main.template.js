@@ -3,7 +3,10 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   let email_registered = app.keys.returnEmail(app.wallet.returnPublicKey());
   let identifier_registered = app.keys.returnIdentifierByPublicKey(app.wallet.returnPublicKey());
   if (email_registered == "") { email_registered = `<span id="register-email-btn" style="cursor:pointer" class="register-email-btn settings-appspace-link">Register an email address</span>`; }
-  if (identifier_registered == "") { identifier_registered = `<span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>`; }
+  if (identifier_registered == "") { 
+    identifier_registered = `
+    <span id="register-identifier-btn" style="cursor:pointer" class="register-identifier-btn settings-appspace-link">Register a username</span>
+    `; }
 
   let modules_html = "Wallet Outdated - module selection not supported";
   let modules_html_active = "Wallet Outdated - module selection not supported";
@@ -59,6 +62,9 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
 
   <div class="saito-page-header">
+
+    <div class="saito-button-secondary small" style="float: right;" id="restore-privatekey-btn">Import Key</div>
+    <div class="saito-button-secondary small" style="float: right;" id="restore-account-btn">Restore Wallet</div>
     <div class="saito-button-secondary small" style="float: right;" id="backup-account-btn">Backup Wallet</div>
     <div class="saito-page-header-title">SETTINGS</div>
     <div class="saito-page-header-text">
@@ -68,6 +74,8 @@ module.exports = SettingsAppspaceTemplate = (app) => {
   </div>
 
   <div class="settings-appspace">
+
+    <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
 
     <div>
 
@@ -84,11 +92,11 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           <div id="register-email-btn" class="saito-black">Email:</div>
           <div >${email_registered}</div>
 
-          <div id="register-identifier-btn" class="saito-black">Username:</div>
+          <div id="register-identifier-btn-label" class="saito-black">Username:</div>
          <div>${identifier_registered}</div>
 
           <div class="saito-black">Public Key:</div>
-          <div class="saito-username">${app.wallet.returnPublicKey()}</div>
+          <div class="saito-address">${app.wallet.returnPublicKey()}</div>
 
           <div class="saito-black">Private Key:</div>
           <div class="settings-appspace-privatekey">
@@ -97,11 +105,6 @@ module.exports = SettingsAppspaceTemplate = (app) => {
           </div>
 
 	       </div>
-         <div class="saito-grid-1-1-1">
-         <div class="saito-button-secondary" id="restore-account-btn">Restore</div>
-         <div class="saito-button-secondary" id="restore-privatekey-btn">Import Private Key</div>
-         <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />
-         </div>
      
   </div>
 
@@ -109,13 +112,7 @@ module.exports = SettingsAppspaceTemplate = (app) => {
 
       <div class="settings-appspace-modules-container">
         <h6> Installed Modules </h6>
-        `;
 
-  if (app.modules.returnModule("AppStore") != null) {
-    html += ` &nbsp; [<span id="trigger-appstore-btn" class="trigger-appstore-btn">&nbsp;install more&nbsp;</span>]`;
-  }
-
-  html += `
   <div class="settings-appspace-modules">
       ${modules_html_active}
    </div>

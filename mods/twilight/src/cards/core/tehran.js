@@ -26,10 +26,6 @@
 
       this.game.state.events.ourmanintehran = 1;
 
-      if (this.game.player == 2) {
-        return 0;
-      }
-
       if (this.game.player == 1) {
         this.addMove("resolve\ttehran");
         let keys_given = 0;

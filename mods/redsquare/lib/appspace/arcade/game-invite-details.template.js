@@ -32,23 +32,19 @@ module.exports = GameCreatorTemplate = (app, mod, invite = null) => {
       ">
          <h5>${game_name}</h5>
 
-<div class="saito-leaderboard game-invite-info-table" style="
-    margin-top: 2rem;
-">
-    <div class="saito-table">
-      ${formatOptions(gameModule.returnShortGameOptionsArray(invite.msg.options))}
-    </div>
+      <div class="saito-leaderboard game-invite-info-table" style="
+          margin-top: 2rem;
+      ">
+        <div class="saito-table">
+          ${formatOptions(gameModule.returnShortGameOptionsArray(invite.msg.options))}
+        </div>
+      </div>`;
 
-  
-</div>
+    if (invite.msg.originator !== app.wallet.returnPublicKey()){
+      html += `<div class="saito-button-primary game-invite-join-btn" style="margin-top: 2rem;">Join Game</div>`;
+    }
 
-<div class="saito-button-primary game-invite-join-btn" style="
-    margin-top: 2rem;
-">Join Game</div>
-
-          </div>
-    </div>`;
-
+    html += `</div></div>`;
 
     return html;
 }
