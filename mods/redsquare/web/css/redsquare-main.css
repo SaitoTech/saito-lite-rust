@@ -498,3 +498,7 @@ span.redsquare-home-red-square+span {
 .saito-arcade-invite-list .saito-arcade-invite {
   display: grid;
 }
+
+.saito-back-button {
+  cursor: pointer;
+}
