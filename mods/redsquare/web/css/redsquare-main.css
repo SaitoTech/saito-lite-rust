@@ -36,7 +36,7 @@ span.redsquare-home-red-square+span {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.7rem;
-  line-height: 2.2rem;
+  line-height: 2rem;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
@@ -67,6 +67,11 @@ span.redsquare-home-red-square+span {
   padding-left: 0rem;
   padding-top: 0rem;
   padding-bottom: 1rem;
+}
+
+.post-tweet-preview .tweet-body {
+  max-height: 55vh;
+  overflow-y: scroll;
 }
 
 .post-tweet-preview .redsquare-item .redsquare-item-contents .redsquare-tweet-tools {
@@ -321,7 +326,7 @@ span.redsquare-home-red-square+span {
 
 .youtube-embed-container {
   width: 100%;
-  margin: 15px 0px;
+  margin: 0px;
 }
 
 .youtube-embed {
